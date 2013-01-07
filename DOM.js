@@ -10,8 +10,9 @@
  * 5) self-documenting: every error message has a link with detailed explaination
  * 6) jsdoc, generate documentation by it
  */
- /*global CustomEvent */
- // TODO: replace, extending Error, specs
+/*jslint browser:true*/
+/*global define CustomEvent */
+// TODO: replace, remove, specs
 (function (window, document, undefined) {
     "use strict";
 
@@ -63,7 +64,7 @@
                 quick[1] = (quick[1] || "").toLowerCase();
                 quick[4] = quick[4] ? " " + quick[4] + " " : "";
             } else {
-                throw Error(fmtMessage("quickParse"));
+                throw new DOMMethodError("quickParse");
             }
 
             return quick;
@@ -77,11 +78,6 @@
                 (!m[3] || m[3] in attrs) &&
                 (!m[4] || ~(" " + (attrs["class"] || "").value  + " ").indexOf(m[4]))
             );
-        },
-        fmtMessage = function (methodName, objectName, hashName) {
-            // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            return "Invalid call of the " + methodName + 
-                " method. See http://domjs.net/doc/" + methodName + " for details";
         },
         // classes
         DOMElement = function (native) {
@@ -110,7 +106,13 @@
 	        
 	        return ctr;
 	    })(),
-        NullElement = function () { };
+        NullElement = function () { },
+        DOMMethodError = function (methodName, objectName, hashName) {
+            this.name = "DOMMethodError";
+            // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
+            this.message = "Invalid call of the " + methodName + 
+                " method. See http://domjs.net/doc/" + methodName + " for details";
+        };
 
     // DOMElement
 
@@ -118,12 +120,12 @@
         find: function (selector, multiple) {
             var elements;
             
-            if (multiple === undefined) {
+            if (selector && multiple === undefined) {
                 elements = this.querySelector(selector);
-            } else if (multiple === true) {
+            } else if (selector && multiple === true) {
                 elements = this.querySelectorAll(selector);
             } else {
-                throw Error(fmtMessage("find"));
+                throw new DOMMethodError("find");
             }
             
             return factory["create" + (multiple ? "DOMElements" : "DOMElement")](elements);
@@ -132,7 +134,7 @@
             var result = [], quick = (filter ? quickParse(filter) : null);
 
             if (filter && !quick) {
-                throw Error(fmtMessage("children"));
+                throw new DOMMethodError("children");
             }
             // FIXME: use children collection?
             for (var n = this.firstChild; n; n = n.nextSibling) {
@@ -146,7 +148,7 @@
         on: (function () {
             var processHandlers = function (event, options, handler, thisPtr) {
                     if (typeof handler !== "function") {
-                        throw Error(fmtMessage("on"));
+                        throw new DOMMethodError("on");
                     }
 
                     var quick = options.filter ? quickParse(options.filter) : null,
@@ -160,7 +162,7 @@
                                     var value = e[arg];
 
                                     if (value === undefined) {
-                                        throw Error(fmtMessage("on"));
+                                        throw new DOMMethodError("on");
                                     }
 
                                     args.push(value);
@@ -190,7 +192,7 @@
                 } else if (optionsfmtMessageype === "string") {
                     options = {filter: options};
                 } else if (optionsfmtMessageype !== "object") {
-                    throw Error(fmtMessage("on"));
+                    throw new DOMMethodError("on");
                 }
 
                 if (eventType === "string") {
@@ -200,7 +202,7 @@
                         processHandlers.call(this, eventType, {}, event[eventType], thisPtr);
                     }, this);
                 } else {
-                    throw Error(fmtMessage("on"));
+                    throw new DOMMethodError("on");
                 }
 
                 return this._DOM;
@@ -236,7 +238,7 @@
                 if (valueType === "function") {
                     value = value.call(this._DOM, this._DOM.get(name));
                 } else if (valueType !== "string") {
-                    throw Error(fmtMessage("set"));
+                    throw new DOMMethodError("set");
                 }
 
                 if (name in this) {
@@ -256,7 +258,7 @@
                         processAttribute.call(this, attrName, name[attrName]);
                     }, this);
                 } else {
-                    throw Error(fmtMessage("set"));
+                    throw new DOMMethodError("set");
                 }
 
                 return this._DOM;
@@ -266,7 +268,7 @@
             var quick = quickParse(filter);
 
             if (!quick) {
-                throw Error(fmtMessage("is"));
+                throw new DOMMethodError("is");
             }
 
             return quickIs(this, quick);
@@ -275,7 +277,7 @@
             var functor = this[name], result;
 
             if (typeof functor !== "function") {
-                throw Error(fmtMessage("call"));
+                throw new DOMMethodError("call");
             }
 
             result = functor.apply(this, arguments.length > 1 ? 
@@ -304,7 +306,7 @@
             if (elem.constructor === DOMElement) {
                 this.replaceChild(this, elem._native);
             } else {
-                throw Error(fmtMessage("replace"));
+                throw new DOMMethodError("replace");
             }
 
             return this._DOM;
@@ -349,7 +351,7 @@
                         fragment.appendChild(element);
                     });
                 } else {
-                    throw Error(fmtMessage(methodName));
+                    throw new DOMMethodError(methodName);
                 }
 
                 process.call(this, fragment);
@@ -405,7 +407,7 @@
 
             DOMElement.prototype[methodName] = function (className) {
                 if (typeof className !== "string") {
-                    throw Error(fmtMessage(methodName));
+                    throw new DOMMethodError(methodName);
                 }
 
                 var classes = className.split(" ");
@@ -462,6 +464,9 @@
         // each method is a noop function
         NullElement.prototype[method] = function () {};
     });
+    
+    // DOMMethodError
+    DOMMethodError.prototype = new Error();
 
     // finish prototypes
     [DOMElement, DOMElements, NullElement].forEach(function (ctr) {
@@ -520,7 +525,7 @@
                 // return implementation
                 return function (callback) {
                     if (typeof callback !== "function") {
-                        throw Error(fmtMessage("ready"));
+                        throw new DOMMethodError("ready");
                     }
 
                     if (readyCallbacks) {
