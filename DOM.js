@@ -10,12 +10,47 @@
  * 5) self-documenting: every error message has a link with detailed explaination
  * 6) jsdoc, generate documentation by it
  */
- /*global CustomEvent*/
- // TODO: replace, extending array for DOMElements, extending Error, specs
+ /*global CustomEvent */
+ // TODO: replace, extending Error, specs
 (function (window, document, undefined) {
     "use strict";
 
-    var elements = [],
+    var factory = (function () {
+		    var storage = [];
+		    
+		    return {
+		        get: function(guid) {
+		            return storage[guid];
+		        },
+		        remove: function(guid) {
+		            storage[guid] = null;
+		        },
+		        createDOMElement: function (native) {
+		            if (!native) return new NullElement();
+		            
+		            var instance = native._DOM;
+		            
+		            if (!instance) {
+		                native._DOM = (instance = new DOMElement(native));
+		                
+						instance.guid = storage.push(native) - 1;
+		            }
+		        
+		            return instance;    
+		        },
+		        createDOMElements: function (native) {
+					var instance = new DOMElements();
+				
+					DOMElement.call(instance, instance);
+				
+					Array.prototype.forEach.call(native, function (e) {
+	                    instance.push(factory.createDOMElement(e));
+	                });
+	                
+					return instance;
+				}
+			};
+		})(),
         // helpers
         rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
         
@@ -50,34 +85,32 @@
         },
         // classes
         DOMElement = function (native) {
-            if (this) {
-                this.guid = elements.push(native) - 1;
-                // data should be a simple object without toString, hasOwnProperty etc.
-                this.data = Object.create(null);
-            } else {
-                return native._DOM || (native._DOM = new DOMElement(native));
-            }
+            // data should be a simple object without toString, hasOwnProperty etc.
+            this.data = Object.create(null);
         },
-        DOMElements = function (native) {
-            if (this) {
-                DOMElement.call(this, this);
-                // TODO: research on custom array implementation
-                Object.defineProperty(this, "length", {
-                    value: native.length,
-                    writable: false,
-                    configurable: false
-                });
-
-                Array.prototype.forEach.call(native, function (e, index) {
-                    this[index] = DOMElement(e);
-                }, this);
-            } else {
-                return new DOMElements(native);
-            }
-        },
-        NullElement = function () { 
-            return this || new NullElement(); 
-        };
+        DOMElements = (function () {
+			// Creates clean copy of Array prototype. Inspired by
+			// http://dean.edwards.name/weblog/2006/11/hooray/
+			var ref = document.getElementsByTagName('script')[0],
+				iframe = document.createElement("iframe"),
+				ctr;
+				
+	        iframe.src = "about:blank"; 
+	        iframe.style.display = "none";
+	            
+	        ref.parentNode.insertBefore(iframe, ref);
+	        iframe.contentWindow.document.write(
+				"<script>parent._DOM = Array;<\/script>"
+	        );
+	        // store reference
+	        ctr = window._DOM;
+	        // cleanup
+	        ref.parentNode.removeChild(iframe);
+	        delete window._DOM;
+	        
+	        return ctr;
+	    })(),
+        NullElement = function () { };
 
     // DOMElement
 
@@ -92,14 +125,8 @@
             } else {
                 throw Error(fmtMessage("find"));
             }
-
-            if (multiple) {
-                return DOMElements(elements);
-            } else if (elements) {
-                return DOMElement(elements);
-            } else {
-                return NullElement();
-            }
+            
+            return factory["create" + (multiple ? "DOMElements" : "DOMElement")](elements);
         },
         children: function (filter) {
             var result = [], quick = (filter ? quickParse(filter) : null);
@@ -114,7 +141,7 @@
                 }
             }
 
-            return DOMElements(result);
+            return factory.createDOMElements(result);
         },
         on: (function () {
             var processHandlers = function (event, options, handler, thisPtr) {
@@ -124,7 +151,7 @@
 
                     var quick = options.filter ? quickParse(options.filter) : null,
                         nativeEventHandler = function (e) {
-                            var target = DOMElement(e.target), args = [];
+                            var target = factory.createDOMElement(e.target), args = [];
 
                             if (options.prevent) e.preventDefault();
                             if (options.stop) e.stopPropagation();
@@ -269,7 +296,7 @@
         remove: function () {
             this.parentNode.removeChild(this);
             // cleanup cache entry
-            elements[this._DOM.guid] = null;
+            factory.remove(this._DOM.guid);
 
             return this._DOM;
         },
@@ -283,7 +310,7 @@
             return this._DOM;
         },
         clone: function (deep) {
-            return DOMElement(this.clone(deep));
+            return factory.createDOMElement(this.clone(deep));
         },
         css: function () {
             return window.getComputedStyle(this);
@@ -314,11 +341,11 @@
                 var fragment;
 
                 if (element.constructor === DOMElement) {
-                    fragment = elements[element.guid];
+                    fragment = factory.get(element.guid);
                 } else if (element.constructor === DOMElements) {
                     fragment = document.createDocumentFragment();
 
-                    elements[element.guid].forEach(function (element) {
+                    factory.get(element.guid).forEach(function (element) {
                         fragment.appendChild(element);
                     });
                 } else {
@@ -400,7 +427,7 @@
         var method = DOMElement.prototype[methodName];
 
         DOMElement.prototype[methodName] = function () {
-            var element = elements[this.guid];
+            var element = factory.get(this.guid);
 
             Object.defineProperty(this, methodName, {
                 value: method.bind(element),
@@ -413,8 +440,6 @@
     });
 
     // DOMElements
-
-    DOMElements.prototype = [];
 
     // extend DOMElements.prototype with only specific methods
     ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function (methodName) {
@@ -449,10 +474,10 @@
     });
 
     // initialize publicAPI
-    var publicAPI = Object.create(DOMElement(document.documentElement), {
+    var publicAPI = Object.create(factory.createDOMElement(document.documentElement), {
         create: {
             value: function (tagName, attrs, content) {
-                var elem = new DOMElement(document.createElement(tagName));
+                var elem = factory.createDOMElement(document.createElement(tagName));
 
                 if (attrs && typeof attrs === "object") {
                     elem.set(attrs);
