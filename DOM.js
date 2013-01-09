@@ -20,18 +20,18 @@
         var storage = [];
    
             return {
-		        get: function(guid) {
-		            return storage[guid];
-		        },
-		        remove: function(guid) {
-		            storage[guid] = null;
-		        },
-		        create: function(native) {
-		            if (!native) return new NullElement();
-		            
-		            var instance = native._DOM;
-		            
-		            if (!instance) {
+                get: function(guid) {
+                    return storage[guid];
+                },
+                remove: function(guid) {
+                    storage[guid] = null;
+                },
+                create: function(native) {
+                    if (!native) return new NullElement();
+                    
+                    var instance = native._DOM;
+                    
+                    if (!instance) {
                         if (native.length === undefined) {
                             native._DOM = (instance = new DOMElement(native));
                         } else {
@@ -41,14 +41,16 @@
                                 instance.push(factory.create(e));
                             });
                         }
-		                
-						instance.guid = storage.push(native) - 1;
-		            }
-		        
-		            return instance;    
-		        }
-			};
-		})(),
+                        
+                        instance.guid = storage.push(native) - 1;
+                        // data should be a simple object without toString, hasOwnProperty etc.
+                        instance.data = Object.create(null);
+                    }
+                
+                    return instance;    
+                }
+            };
+        })(),
         // helpers
         rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
         
@@ -77,32 +79,29 @@
             );
         },
         // classes
-        DOMElement = function(native) {
-            // data should be a simple object without toString, hasOwnProperty etc.
-            this.data = Object.create(null);
-        },
+        DOMElement = function(native) { },
         DOMElements = (function() {
-			// Creates clean copy of Array prototype. Inspired by
-			// http://dean.edwards.name/weblog/2006/11/hooray/
-			var ref = document.getElementsByTagName('script')[0],
-				iframe = document.createElement("iframe"),
-				ctr;
-				
-	        iframe.src = "about:blank"; 
-	        iframe.style.display = "none";
-	            
-	        ref.parentNode.insertBefore(iframe, ref);
-	        iframe.contentWindow.document.write(
-				"<script>parent._DOM = Array;<\/script>"
-	        );
-	        // store reference
-	        ctr = window._DOM;
-	        // cleanup
-	        ref.parentNode.removeChild(iframe);
-	        delete window._DOM;
-	        
-	        return ctr;
-	    })(),
+            // Creates clean copy of Array prototype. Inspired by
+            // http://dean.edwards.name/weblog/2006/11/hooray/
+            var ref = document.getElementsByTagName('script')[0],
+                iframe = document.createElement("iframe"),
+                ctr;
+                
+            iframe.src = "about:blank"; 
+            iframe.style.display = "none";
+                
+            ref.parentNode.insertBefore(iframe, ref);
+            iframe.contentWindow.document.write(
+                "<script>parent._DOM = Array;<\/script>"
+            );
+            // store reference
+            ctr = window._DOM;
+            // cleanup
+            ref.parentNode.removeChild(iframe);
+            delete window._DOM;
+            
+            return ctr;
+        })(),
         NullElement = function () { },
         // errors
         DOMMethodError = function (methodName, objectName, hashName) {
@@ -144,7 +143,10 @@
             return factory.create(result);
         },
         on: (function () {
-            var processHandlers = function (event, options, handler, thisPtr) {
+            var getArgValue = function(arg) {
+                    return this[arg];
+                },
+                processHandlers = function (event, options, handler, thisPtr) {
                     if (typeof handler !== "function") {
                         throw new DOMMethodError("on");
                     }
@@ -155,19 +157,8 @@
 
                             if (options.prevent) e.preventDefault();
                             if (options.stop) e.stopPropagation();
-                            // TODO: optimize this + fix browser-specific bugs
-                            if (options.args) options.args.forEach(function (arg) {
-                                    var value = e[arg];
-
-                                    if (value === undefined) {
-                                        throw new DOMMethodError("on");
-                                    }
-
-                                    args.push(value);
-                                }
-                            );
                             
-                            handler.apply(thisPtr || target, args);
+                            handler.apply(thisPtr || target, (options.args || []).map(getArgValue, e));
                         };
                     // TODO: store handler in _events property of the native element
                     this.addEventListener(event, !options.filter ? nativeEventHandler : function (e) {
@@ -205,7 +196,7 @@
                     throw new DOMMethodError("on");
                 }
 
-                return this._DOM;
+                return this;
             };
         })(),
         fire: function (eventType, detail) {
@@ -220,7 +211,7 @@
             
             this.dispatchEvent(event);
 
-            return this._DOM;
+            return this;
         },
         get: function (name) {
             var value = this[name];
@@ -236,7 +227,7 @@
                 var valueType = typeof value;
 
                 if (valueType === "function") {
-                    value = value.call(this._DOM, this._DOM.get(name));
+                    value = value.call(this._DOM, DOMElement.prototype.get.call(this, name));
                 } else if (valueType !== "string") {
                     throw new DOMMethodError("set");
                 }
@@ -261,7 +252,7 @@
                     throw new DOMMethodError("set");
                 }
 
-                return this._DOM;
+                return this;
             };
         })(),
         is: function (filter) {
@@ -283,24 +274,24 @@
             result = functor.apply(this, arguments.length > 1 ? 
                 Array.prototype.splice.call(arguments, 1) : undefined);
 
-            return result === undefined ? this._DOM : result;
+            return result === undefined ? this : result;
         },
         show: function () {
             this.style.display = "";
 
-            return this._DOM;
+            return this;
         },
         hide: function () {
             this.style.display = "none";
 
-            return this._DOM;
+            return this;
         },
         remove: function () {
             this.parentNode.removeChild(this);
             // cleanup cache entry
             factory.remove(this._DOM.guid);
 
-            return this._DOM;
+            return this;
         },
         replace: function (elem) {
             if (elem.constructor === DOMElement) {
@@ -309,7 +300,7 @@
                 throw new DOMMethodError("replace");
             }
 
-            return this._DOM;
+            return this;
         },
         clone: function (deep) {
             return factory.create(this.clone(deep));
@@ -348,7 +339,7 @@
                     fragment = document.createDocumentFragment();
 
                     factory.get(element.guid).forEach(function (element) {
-                        fragment.appendChild(element);
+                        fragment.appendChild(factory.get(element.guid));
                     });
                 } else {
                     throw new DOMMethodError(methodName);
@@ -356,7 +347,7 @@
 
                 process.call(this, fragment);
 
-                return this._DOM;
+                return this;
             };
         });
     })();
@@ -417,7 +408,7 @@
                 } else {
                     classes.forEach(process, this);
 
-                    return this._DOM;
+                    return this;
                 }
             };
         });
@@ -429,15 +420,20 @@
         var method = DOMElement.prototype[methodName];
 
         DOMElement.prototype[methodName] = function () {
-            var element = factory.get(this.guid);
+            var element = factory.get(this.guid),
+                getter = function() {
+                    var result = method.apply(element, arguments);
+
+                    return result === element ? this : result;
+                };
 
             Object.defineProperty(this, methodName, {
-                value: method.bind(element),
+                value: getter,
                 writable: false,
                 configurable: false
             });
 
-            return method.apply(element, arguments);
+            return getter.apply(this, arguments);
         };
     });
 
