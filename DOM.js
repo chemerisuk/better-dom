@@ -16,46 +16,43 @@
 (function (window, document, undefined) {
     "use strict";
 
-    var factory = (function () {
-		    var storage = [];
-		    
-		    return {
+    var factory = (function() {
+        var storage = [];
+   
+            return {
 		        get: function(guid) {
 		            return storage[guid];
 		        },
 		        remove: function(guid) {
 		            storage[guid] = null;
 		        },
-		        createDOMElement: function (native) {
+		        create: function(native) {
 		            if (!native) return new NullElement();
 		            
 		            var instance = native._DOM;
 		            
 		            if (!instance) {
-		                native._DOM = (instance = new DOMElement(native));
+                        if (native.length === undefined) {
+                            native._DOM = (instance = new DOMElement(native));
+                        } else {
+                            instance = new DOMElements();
+                
+                            Array.prototype.forEach.call(native, function (e) {
+                                instance.push(factory.create(e));
+                            });
+                        }
 		                
 						instance.guid = storage.push(native) - 1;
 		            }
 		        
 		            return instance;    
-		        },
-		        createDOMElements: function (native) {
-					var instance = new DOMElements();
-				
-					DOMElement.call(instance, instance);
-				
-					Array.prototype.forEach.call(native, function (e) {
-	                    instance.push(factory.createDOMElement(e));
-	                });
-	                
-					return instance;
-				}
+		        }
 			};
 		})(),
         // helpers
         rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
         
-        quickParse = function (selector) {
+        quickParse = function(selector) {
             var quick = rquickIs.exec(selector);
             // TODO: support attribute value check
             if (quick) {
@@ -80,11 +77,11 @@
             );
         },
         // classes
-        DOMElement = function (native) {
+        DOMElement = function(native) {
             // data should be a simple object without toString, hasOwnProperty etc.
             this.data = Object.create(null);
         },
-        DOMElements = (function () {
+        DOMElements = (function() {
 			// Creates clean copy of Array prototype. Inspired by
 			// http://dean.edwards.name/weblog/2006/11/hooray/
 			var ref = document.getElementsByTagName('script')[0],
@@ -107,6 +104,7 @@
 	        return ctr;
 	    })(),
         NullElement = function () { },
+        // errors
         DOMMethodError = function (methodName, objectName, hashName) {
             this.name = "DOMMethodError";
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
@@ -128,7 +126,7 @@
                 throw new DOMMethodError("find");
             }
             
-            return factory["create" + (multiple ? "DOMElements" : "DOMElement")](elements);
+            return factory.create(elements);
         },
         children: function (filter) {
             var result = [], quick = (filter ? quickParse(filter) : null);
@@ -138,12 +136,12 @@
             }
             // FIXME: use children collection?
             for (var n = this.firstChild; n; n = n.nextSibling) {
-                if (n.nodefmtMessageype === 1 && (!filter || quickIs(n, quick))) {
+                if (n.nodeType === 1 && (!filter || quickIs(n, quick))) {
                     result.push(n);
                 }
             }
 
-            return factory.createDOMElements(result);
+            return factory.create(result);
         },
         on: (function () {
             var processHandlers = function (event, options, handler, thisPtr) {
@@ -153,7 +151,7 @@
 
                     var quick = options.filter ? quickParse(options.filter) : null,
                         nativeEventHandler = function (e) {
-                            var target = factory.createDOMElement(e.target), args = [];
+                            var target = factory.create(e.target), args = [];
 
                             if (options.prevent) e.preventDefault();
                             if (options.stop) e.stopPropagation();
@@ -175,7 +173,9 @@
                     this.addEventListener(event, !options.filter ? nativeEventHandler : function (e) {
                         for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
                             if (quickIs(el, quick)) {
-                                return nativeEventHandler(e);
+                                nativeEventHandler(e);
+
+                                break;
                             }
                         }
                     }, false);
@@ -312,7 +312,7 @@
             return this._DOM;
         },
         clone: function (deep) {
-            return factory.createDOMElement(this.clone(deep));
+            return factory.create(this.clone(deep));
         },
         css: function () {
             return window.getComputedStyle(this);
@@ -479,10 +479,10 @@
     });
 
     // initialize publicAPI
-    var publicAPI = Object.create(factory.createDOMElement(document.documentElement), {
+    var publicAPI = Object.create(factory.create(document.documentElement), {
         create: {
             value: function (tagName, attrs, content) {
-                var elem = factory.createDOMElement(document.createElement(tagName));
+                var elem = factory.create(document.createElement(tagName));
 
                 if (attrs && typeof attrs === "object") {
                     elem.set(attrs);
