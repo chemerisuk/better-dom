@@ -47,7 +47,7 @@
                         instance.data = Object.create(null);
                     }
                 
-                    return instance;    
+                    return instance;
                 }
             };
         })(),
@@ -87,18 +87,14 @@
                 iframe = document.createElement("iframe"),
                 ctr;
                 
-            iframe.src = "about:blank"; 
+            iframe.src = "about:blank";
             iframe.style.display = "none";
                 
             ref.parentNode.insertBefore(iframe, ref);
-            iframe.contentWindow.document.write(
-                "<script>parent._DOM = Array;<\/script>"
-            );
-            // store reference
-            ctr = window._DOM;
+            // store reference to clean Array
+            ctr = iframe.contentWindow.Array;
             // cleanup
             ref.parentNode.removeChild(iframe);
-            delete window._DOM;
             
             return ctr;
         })(),
@@ -107,7 +103,7 @@
         DOMMethodError = function (methodName, objectName, hashName) {
             this.name = "DOMMethodError";
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            this.message = "Invalid call of the " + methodName + 
+            this.message = "Invalid call of the " + methodName +
                 " method. See http://domjs.net/doc/" + methodName + " for details";
         };
 
@@ -179,7 +175,7 @@
                 if (optionsfmtMessageype === "function") {
                     thisPtr = handler;
                     handler = options;
-                    options = {};    
+                    options = {};
                 } else if (optionsfmtMessageype === "string") {
                     options = {filter: options};
                 } else if (optionsfmtMessageype !== "object") {
@@ -271,7 +267,7 @@
                 throw new DOMMethodError("call");
             }
 
-            result = functor.apply(this, arguments.length > 1 ? 
+            result = functor.apply(this, arguments.length > 1 ?
                 Array.prototype.splice.call(arguments, 1) : undefined);
 
             return result === undefined ? this : result;
@@ -471,7 +467,7 @@
         // lock interfaces
         if (Object.freeze) {
             Object.freeze(ctr.prototype);
-        } 
+        }
     });
 
     // initialize publicAPI
@@ -490,15 +486,15 @@
                     } else if (content.constructor === DOMElement ||
                         content.constructor === DOMElements) {
                         elem.append(content);
-                    }    
+                    }
                 }
                 
                 return elem;
             }
-        }, 
+        },
         ready: {
             value: (function () {
-                var readyCallbacks = null, 
+                var readyCallbacks = null,
                     readyProcess = function () {
                         if (readyCallbacks) {
                             // trigger callbacks
@@ -525,7 +521,7 @@
                     }
 
                     if (readyCallbacks) {
-                        readyCallbacks.push(callback);    
+                        readyCallbacks.push(callback);
                     } else {
                         callback();
                     }
