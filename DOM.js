@@ -110,33 +110,42 @@
     // DOMElement
 
     DOMElement.prototype = {
-        find: function (selector, multiple) {
-            var elements;
-            
-            if (selector && multiple === undefined) {
-                elements = this.querySelector(selector);
-            } else if (selector && multiple === true) {
-                elements = this.querySelectorAll(selector);
-            } else {
+        find: function (filter) {
+            if (typeof filter !== "string") {
                 throw new DOMMethodError("find");
             }
+
+            var element;
+
+            if (filter.charAt(0) === "#" && filter.indexOf(" ") === -1) {
+                element = document.getElementById(filter.substr(1));
+            } else {
+                element = this.querySelector(filter);
+            }
             
-            return factory.create(elements);
+            return factory.create(element);
         },
-        children: function (filter) {
-            var result = [], quick = (filter ? quickParse(filter) : null);
-
-            if (filter && !quick) {
-                throw new DOMMethodError("children");
+        findAll: function(filter) {
+            if (typeof filter !== "string") {
+                throw new DOMMethodError("search");
             }
-            // FIXME: use children collection?
-            for (var n = this.firstChild; n; n = n.nextSibling) {
-                if (n.nodeType === 1 && (!filter || quickIs(n, quick))) {
-                    result.push(n);
+
+            var elements;
+
+            if (filter.charAt(0) === ">") {
+                filter = filter.length > 1 ? quickParse(filter.substr(1).trim()) : null;
+                elements = [];
+
+                for (var n = this.firstChild; n; n = n.nextSibling) {
+                    if (n.nodeType === 1 && (!filter || quickIs(n, filter))) {
+                        elements.push(n);
+                    }
                 }
+            } else {
+                elements = this.querySelectorAll(filter);
             }
 
-            return factory.create(result);
+            return factory.create(elements);
         },
         on: (function () {
             var getArgValue = function(arg) {
@@ -474,6 +483,10 @@
     var publicAPI = Object.create(factory.create(document.documentElement), {
         create: {
             value: function (tagName, attrs, content) {
+                if (typeof tagName !== "string") {
+                    throw new DOMMethodError("create");
+                }
+
                 var elem = factory.create(document.createElement(tagName));
 
                 if (attrs && typeof attrs === "object") {
