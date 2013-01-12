@@ -151,24 +151,40 @@
             var getArgValue = function(arg) {
                     return this[arg];
                 },
-                processHandlers = function (event, options, handler, thisPtr) {
+                eventElementProperties = ["target", "currentTarget", "relatedTarget"],
+                processHandlers = function (event, filter, handler, thisPtr) {
                     if (typeof handler !== "function") {
                         throw new DOMMethodError("on");
                     }
 
-                    var quick = options.filter ? quickParse(options.filter) : null,
-                        nativeEventHandler = function (e) {
-                            var target = factory.create(e.target), args = [];
+                    filter = filter ? quickParse(filter) : null;
+                    thisPtr = thisPtr || this._DOM;
 
-                            if (options.prevent) e.preventDefault();
-                            if (options.stop) e.stopPropagation();
-                            
-                            handler.apply(thisPtr || target, (options.args || []).map(getArgValue, e));
+                    var nativeEventHandler = function (e) {
+                            var originalProperties = {};
+
+                            // modify event object
+                            eventElementProperties.forEach(function(prop) {
+                                var element = e[prop];
+
+                                delete e[prop];
+
+                                e[prop] = factory.create(element);
+
+                                originalProperties[prop] = element;
+                            });
+
+                            handler.call(thisPtr, e);
+
+                            // restore event object
+                            eventElementProperties.forEach(function(prop) {
+                                e[prop] = originalProperties[prop];
+                            });
                         };
                     // TODO: store handler in _events property of the native element
-                    this.addEventListener(event, !options.filter ? nativeEventHandler : function (e) {
+                    this.addEventListener(event, !filter ? nativeEventHandler : function (e) {
                         for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
-                            if (quickIs(el, quick)) {
+                            if (quickIs(el, filter)) {
                                 nativeEventHandler(e);
 
                                 break;
@@ -177,25 +193,23 @@
                     }, false);
                 };
 
-            return function (event, options, handler, thisPtr) {
-                var optionsfmtMessageype = typeof options,
+            return function (event, filter, handler, thisPtr) {
+                var filterType = typeof filter,
                     eventType = typeof event;
 
-                if (optionsfmtMessageype === "function") {
+                if (filterType === "function") {
                     thisPtr = handler;
-                    handler = options;
-                    options = {};
-                } else if (optionsfmtMessageype === "string") {
-                    options = {filter: options};
-                } else if (optionsfmtMessageype !== "object") {
+                    handler = filter;
+                    filter = undefined;
+                } else if (filter && filterType !== "string") {
                     throw new DOMMethodError("on");
                 }
 
                 if (eventType === "string") {
-                    processHandlers.call(this, event, options, handler, thisPtr);
+                    processHandlers.call(this, event, filter, handler, thisPtr);
                 } else if (event && eventType === "object") {
                     Object.keys(event).forEach(function (eventType) {
-                        processHandlers.call(this, eventType, {}, event[eventType], thisPtr);
+                        processHandlers.call(this, eventType, undefined, event[eventType], thisPtr);
                     }, this);
                 } else {
                     throw new DOMMethodError("on");
