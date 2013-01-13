@@ -13,7 +13,7 @@
 /*jslint browser:true*/
 /*global define CustomEvent */
 // TODO: replace, remove, specs
-(function (window, document, undefined) {
+(function(window, document, undefined) {
     "use strict";
 
     var factory = (function() {
@@ -37,7 +37,7 @@
                         } else {
                             instance = new DOMElements();
                 
-                            Array.prototype.forEach.call(native, function (e) {
+                            Array.prototype.forEach.call(native, function(e) {
                                 instance.push(factory.create(e));
                             });
                         }
@@ -68,7 +68,7 @@
 
             return quick;
         },
-        quickIs = function (elem, m) {
+        quickIs = function(elem, m) {
             var attrs = elem.attributes || {};
             
             return (
@@ -98,9 +98,9 @@
             
             return ctr;
         })(),
-        NullElement = function () { },
+        NullElement = function() { },
         // errors
-        DOMMethodError = function (methodName, objectName, hashName) {
+        DOMMethodError = function(methodName, objectName, hashName) {
             this.name = "DOMMethodError";
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
             this.message = "Invalid call of the " + methodName +
@@ -110,7 +110,7 @@
     // DOMElement
 
     DOMElement.prototype = {
-        find: function (filter) {
+        find: function(filter) {
             if (typeof filter !== "string") {
                 throw new DOMMethodError("find");
             }
@@ -147,12 +147,12 @@
 
             return factory.create(elements);
         },
-        on: (function () {
+        on: (function() {
             var getArgValue = function(arg) {
                     return this[arg];
                 },
                 eventElementProperties = ["target", "currentTarget", "relatedTarget"],
-                processHandlers = function (event, filter, handler, thisPtr) {
+                processHandlers = function(event, filter, handler, thisPtr) {
                     if (typeof handler !== "function") {
                         throw new DOMMethodError("on");
                     }
@@ -160,7 +160,7 @@
                     filter = filter ? quickParse(filter) : null;
                     thisPtr = thisPtr || this._DOM;
 
-                    var nativeEventHandler = function (e) {
+                    var nativeEventHandler = function(e) {
                             var originalProperties = {};
 
                             // modify event object
@@ -182,7 +182,7 @@
                             });
                         };
                     // TODO: store handler in _events property of the native element
-                    this.addEventListener(event, !filter ? nativeEventHandler : function (e) {
+                    this.addEventListener(event, !filter ? nativeEventHandler : function(e) {
                         for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
                             if (quickIs(el, filter)) {
                                 nativeEventHandler(e);
@@ -193,7 +193,7 @@
                     }, false);
                 };
 
-            return function (event, filter, handler, thisPtr) {
+            return function(event, filter, handler, thisPtr) {
                 var filterType = typeof filter,
                     eventType = typeof event;
 
@@ -208,7 +208,7 @@
                 if (eventType === "string") {
                     processHandlers.call(this, event, filter, handler, thisPtr);
                 } else if (event && eventType === "object") {
-                    Object.keys(event).forEach(function (eventType) {
+                    Object.keys(event).forEach(function(eventType) {
                         processHandlers.call(this, eventType, undefined, event[eventType], thisPtr);
                     }, this);
                 } else {
@@ -218,7 +218,7 @@
                 return this;
             };
         })(),
-        fire: function (eventType, detail) {
+        fire: function(eventType, detail) {
             var event;
             
             if (detail !== undefined) {
@@ -232,7 +232,7 @@
 
             return this;
         },
-        get: function (name) {
+        get: function(name) {
             var value = this[name];
             
             if (value === undefined) {
@@ -241,8 +241,8 @@
             
             return value;
         },
-        set: (function () {
-            var processAttribute = function (name, value) {
+        set: (function() {
+            var processAttribute = function(name, value) {
                 var valueType = typeof value;
 
                 if (valueType === "function") {
@@ -258,13 +258,13 @@
                 }
             };
 
-            return function (name, value) {
+            return function(name, value) {
                 var nameType = typeof name;
 
                 if (nameType === "string") {
                     processAttribute.call(this, name, value);
                 } else if (name && nameType === "object") {
-                    Object.keys(name).forEach(function (attrName) {
+                    Object.keys(name).forEach(function(attrName) {
                         processAttribute.call(this, attrName, name[attrName]);
                     }, this);
                 } else {
@@ -274,7 +274,7 @@
                 return this;
             };
         })(),
-        is: function (filter) {
+        is: function(filter) {
             var quick = quickParse(filter);
 
             if (!quick) {
@@ -283,7 +283,7 @@
 
             return quickIs(this, quick);
         },
-        call: function (name) {
+        call: function(name) {
             var functor = this[name], result;
 
             if (typeof functor !== "function") {
@@ -295,24 +295,24 @@
 
             return result === undefined ? this : result;
         },
-        show: function () {
+        show: function() {
             this.style.display = "";
 
             return this;
         },
-        hide: function () {
+        hide: function() {
             this.style.display = "none";
 
             return this;
         },
-        remove: function () {
+        remove: function() {
             this.parentNode.removeChild(this);
             // cleanup cache entry
             factory.remove(this._DOM.guid);
 
             return this;
         },
-        replace: function (elem) {
+        replace: function(elem) {
             if (elem.constructor === DOMElement) {
                 this.replaceChild(this, elem._native);
             } else {
@@ -321,35 +321,35 @@
 
             return this;
         },
-        clone: function (deep) {
+        clone: function(deep) {
             return factory.create(this.clone(deep));
         },
-        css: function () {
+        css: function() {
             return window.getComputedStyle(this);
         }
     };
 
     // dom manipulation
-    (function () {
+    (function() {
         var strategies = {
-            after: function (element) {
+            after: function(element) {
                 this.parentNode.insertBefore(element, this.nextSibling);
             },
-            before: function (element) {
+            before: function(element) {
                 this.parentNode.insertBefore(element, this);
             },
-            append: function (element) {
+            append: function(element) {
                 this.appendChild(element);
             },
-            prepend: function (element) {
+            prepend: function(element) {
                 this.insertBefore(element, this.firstChild);
             }
         };
 
-        Object.keys(strategies).forEach(function (methodName) {
+        Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function (element) {
+            DOMElement.prototype[methodName] = function(element) {
                 var fragment;
 
                 if (element.constructor === DOMElement) {
@@ -357,7 +357,7 @@
                 } else if (element.constructor === DOMElements) {
                     fragment = document.createDocumentFragment();
 
-                    factory.get(element.guid).forEach(function (element) {
+                    factory.get(element.guid).forEach(function(element) {
                         fragment.appendChild(factory.get(element.guid));
                     });
                 } else {
@@ -372,36 +372,36 @@
     })();
 
     // classes manipulation
-    (function () {
+    (function() {
         var rclass = /[\n\t\r]/g,
             strategies = document.documentElement.classList ? {
-                hasClass: function (className) {
+                hasClass: function(className) {
                     return this.classList.constains(className);
                 },
-                addClass: function (className) {
+                addClass: function(className) {
                     this.classList.add(className);
                 },
-                removeClass: function (className) {
+                removeClass: function(className) {
                     this.classList.remove(className);
                 },
-                toggleClass: function (className) {
+                toggleClass: function(className) {
                     this.classList.toggle(className);
                 }
             } : {
-                hasClass: function (className) {
+                hasClass: function(className) {
                     return !!~((" " + this.className + " ")
                             .replace(rclass, " ")).indexOf(" " + className + " ");
                 },
-                addClass: function (className) {
+                addClass: function(className) {
                     if (!strategies.hasClass.call(this, className)) {
                         this.className += " " + className;
                     }
                 },
-                removeClass: function (className) {
+                removeClass: function(className) {
                     this.className = (" " + this.className + " ")
                             .replace(rclass, " ").replace(" " + className + " ", " ").trim();
                 },
-                toggleClass: function (className) {
+                toggleClass: function(className) {
                     var originalClassName = this.className;
 
                     strategies.addClass.call(this, className);
@@ -412,10 +412,10 @@
                 }
             };
 
-        Object.keys(strategies).forEach(function (methodName) {
+        Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function (className) {
+            DOMElement.prototype[methodName] = function(className) {
                 if (typeof className !== "string") {
                     throw new DOMMethodError(methodName);
                 }
@@ -435,10 +435,10 @@
     })();
 
     // add guid support to prototype methods
-    Object.keys(DOMElement.prototype).forEach(function (methodName) {
+    Object.keys(DOMElement.prototype).forEach(function(methodName) {
         var method = DOMElement.prototype[methodName];
 
-        DOMElement.prototype[methodName] = function () {
+        DOMElement.prototype[methodName] = function() {
             var element = factory.get(this.guid),
                 getter = function() {
                     var result = method.apply(element, arguments);
@@ -459,13 +459,13 @@
     // DOMElements
 
     // extend DOMElements.prototype with only specific methods
-    ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function (methodName) {
-        var process = function (elem) {
+    ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function(methodName) {
+        var process = function(elem) {
                 // 'this' will be an arguments object
                 elem[methodName].apply(elem, this);
             };
 
-        DOMElements.prototype[methodName] = function () {
+        DOMElements.prototype[methodName] = function() {
             this.forEach(process, arguments);
 
             return this;
@@ -475,16 +475,16 @@
     // initialize null element prototype
     NullElement.prototype = {};
 
-    Object.keys(DOMElement.prototype).forEach(function (method) {
+    Object.keys(DOMElement.prototype).forEach(function(method) {
         // each method is a noop function
-        NullElement.prototype[method] = function () {};
+        NullElement.prototype[method] = function() {};
     });
     
     // DOMMethodError
     DOMMethodError.prototype = new Error();
 
     // finish prototypes
-    [DOMElement, DOMElements, NullElement].forEach(function (ctr) {
+    [DOMElement, DOMElements, NullElement].forEach(function(ctr) {
         // fix constructor
         ctr.prototype.constructor = ctr;
         // lock interfaces
@@ -496,7 +496,7 @@
     // initialize publicAPI
     var publicAPI = Object.create(factory.create(document.documentElement), {
         create: {
-            value: function (tagName, attrs, content) {
+            value: function(tagName, attrs, content) {
                 if (typeof tagName !== "string") {
                     throw new DOMMethodError("create");
                 }
@@ -520,12 +520,12 @@
             }
         },
         ready: {
-            value: (function () {
+            value: (function() {
                 var readyCallbacks = null,
-                    readyProcess = function () {
+                    readyProcess = function() {
                         if (readyCallbacks) {
                             // trigger callbacks
-                            readyCallbacks.forEach(function (callback) {
+                            readyCallbacks.forEach(function(callback) {
                                 callback();
                             });
                             // cleanup
@@ -542,7 +542,7 @@
                 }
 
                 // return implementation
-                return function (callback) {
+                return function(callback) {
                     if (typeof callback !== "function") {
                         throw new DOMMethodError("ready");
                     }
@@ -558,7 +558,7 @@
     });
 
     // make static properties readonly
-    Object.getOwnPropertyNames(publicAPI).forEach(function (prop) {
+    Object.getOwnPropertyNames(publicAPI).forEach(function(prop) {
         var desc = Object.getOwnPropertyDescriptor(publicAPI, prop);
 
         desc.configurable = false;
@@ -569,7 +569,7 @@
 
     // register API
     if (window.define) {
-        define("DOM", [], function () { return publicAPI; });
+        define("DOM", [], function() { return publicAPI; });
     } else {
         window.DOM = publicAPI;
     }
