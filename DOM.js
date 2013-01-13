@@ -274,7 +274,7 @@
                 return this;
             };
         })(),
-        is: function(filter) {
+        matches: function(filter) {
             var quick = quickParse(filter);
 
             if (!quick) {
@@ -312,15 +312,6 @@
 
             return this;
         },
-        replace: function(elem) {
-            if (elem.constructor === DOMElement) {
-                this.replaceChild(this, elem._native);
-            } else {
-                throw new DOMMethodError("replace");
-            }
-
-            return this;
-        },
         clone: function(deep) {
             return factory.create(this.clone(deep));
         },
@@ -343,6 +334,9 @@
             },
             prepend: function(element) {
                 this.insertBefore(element, this.firstChild);
+            },
+            replace: function(element) {
+                this.parentNode.replaceChild(this, element);
             }
         };
 
