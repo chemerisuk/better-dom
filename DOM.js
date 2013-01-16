@@ -12,7 +12,7 @@
  */
 /*jslint browser:true*/
 /*global define CustomEvent */
-// TODO: replace, remove, specs
+// TODO: remove, specs
 (function(window, document, undefined) {
     "use strict";
 
@@ -79,7 +79,7 @@
             );
         },
         // classes
-        DOMElement = function(native) { },
+        DOMElement = function() { },
         DOMElements = (function() {
             // Creates clean copy of Array prototype. Inspired by
             // http://dean.edwards.name/weblog/2006/11/hooray/
@@ -322,43 +322,48 @@
 
     // dom manipulation
     (function() {
-        var strategies = {
-            after: function(element) {
-                this.parentNode.insertBefore(element, this.nextSibling);
+        // http://www.w3.org/TR/domcore/
+        // 5.2.2 Mutation methods
+        var populateFragment = function(element) {
+                this.appendChild(factory.get(element.guid));
             },
-            before: function(element) {
-                this.parentNode.insertBefore(element, this);
-            },
-            append: function(element) {
-                this.appendChild(element);
-            },
-            prepend: function(element) {
-                this.insertBefore(element, this.firstChild);
-            },
-            replace: function(element) {
-                this.parentNode.replaceChild(this, element);
-            }
-        };
+            strategies = {
+                after: function(element) {
+                    this.parentNode.insertBefore(element, this.nextSibling);
+                },
+                before: function(element) {
+                    this.parentNode.insertBefore(element, this);
+                },
+                append: function(element) {
+                    this.appendChild(element);
+                },
+                prepend: function(element) {
+                    this.insertBefore(element, this.firstChild);
+                },
+                replace: function(element) {
+                    this.parentNode.replaceChild(this, element);
+                }
+            };
 
         Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
             DOMElement.prototype[methodName] = function(element) {
-                var fragment;
+                if (this.parentNode) {
+                    var fragment;
 
-                if (element.constructor === DOMElement) {
-                    fragment = factory.get(element.guid);
-                } else if (element.constructor === DOMElements) {
-                    fragment = document.createDocumentFragment();
+                    if (element.constructor === DOMElement) {
+                        fragment = factory.get(element.guid);
+                    } else if (element.constructor === DOMElements) {
+                        fragment = document.createDocumentFragment();
 
-                    factory.get(element.guid).forEach(function(element) {
-                        fragment.appendChild(factory.get(element.guid));
-                    });
-                } else {
-                    throw new DOMMethodError(methodName);
+                        factory.get(element.guid).forEach(populateFragment, fragment);
+                    } else {
+                        throw new DOMMethodError(methodName);
+                    }
+
+                    process.call(this, fragment);
                 }
-
-                process.call(this, fragment);
 
                 return this;
             };
