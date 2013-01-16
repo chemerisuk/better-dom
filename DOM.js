@@ -10,10 +10,10 @@
  * 5) self-documenting: every error message has a link with detailed explaination
  * 6) jsdoc, generate documentation by it
  */
-/*jslint browser:true*/
+/*jslint browser:true boss:true*/
 /*global define CustomEvent */
 // TODO: remove, specs
-(function(window, document, undefined) {
+(function(window, document, undefined, docElem) {
     "use strict";
 
     var factory = (function() {
@@ -107,6 +107,53 @@
                 " method. See http://domjs.net/doc/" + methodName + " for details";
         };
 
+    // Required Polyfills. They will make code lighter
+
+    // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+    if (window.Node && Node.prototype && !Node.prototype.contains) {
+        Node.prototype.contains = function (arg) {
+            return !!(this.compareDocumentPosition(arg) & 16);
+        };
+    }
+
+    if (!Function.prototype.bind) {
+        Function.prototype.bind = (function (slice) {
+            // (C) WebReflection - Mit Style License
+            function bind(context) {
+                var self = this; // "trapped" function reference
+
+                // only if there is more than an argument
+                // we are interested into more complex operations
+                // this will speed up common bind creation
+                // avoiding useless slices over arguments
+                if (1 < arguments.length) {
+                    // extra arguments to send by default
+                    var $arguments = slice.call(arguments, 1);
+                    return function () {
+                        return self.apply(
+                            context,
+                            // thanks @kangax for this suggestion
+                            arguments.length ?
+                                // concat arguments with those received
+                                $arguments.concat(slice.call(arguments)) :
+                                // send just arguments, no concat, no slice
+                                $arguments
+                        );
+                    };
+                }
+                // optimized callback
+                return function () {
+                    // speed up when function is called without arguments
+                    return arguments.length ? self.apply(context, arguments) : self.call(context);
+                };
+            }
+
+            // the named function
+            return bind;
+
+        }(Array.prototype.slice));
+    }
+
     // DOMElement
 
     DOMElement.prototype = {
@@ -125,28 +172,137 @@
             
             return factory.create(element);
         },
-        findAll: function(filter) {
-            if (typeof filter !== "string") {
-                throw new DOMMethodError("search");
-            }
+        findAll: (function() {
+            // most of code stoled from the Sizzle:
+            // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-            var elements;
+            // Easily-parseable/retrievable ID or TAG or CLASS selectors
+            var rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+                rsibling = /[\x20\t\r\n\f]*[+~>]/,
+                rsiblingQuick = /\w*([+~>])[\s]*(.+)*/,
+                rescape = /'|\\/g,
+                expando = "DOM" + new Date().getTime();
 
-            if (filter.charAt(0) === ">") {
-                filter = filter.length > 1 ? quickParse(filter.substr(1).trim()) : null;
-                elements = [];
+            return function(filter) {
+                if (typeof filter !== "string") {
+                    throw new DOMMethodError("findAll");
+                }
 
-                for (var n = this.firstChild; n; n = n.nextSibling) {
-                    if (n.nodeType === 1 && (!filter || quickIs(n, filter))) {
-                        elements.push(n);
+                var elements, m, elem, match, quick;
+
+                if (match = rquickExpr.exec(filter)) {
+                    // Speed-up: "#ID"
+                    if (m = match[1]) {
+                        if (this === docElem) {
+                            elem = this.getElementById(m);
+                            // Check parentNode to catch when Blackberry 4.6 returns
+                            // nodes that are no longer in the document #6963
+                            if (elem && elem.parentNode) {
+                                // Handle the case where IE, Opera, and Webkit return items
+                                // by name instead of ID
+                                if (elem.id === m) {
+                                    elements = [elem];
+                                }
+                            }
+                        } else {
+                            // Context is not a document
+                            if (this.ownerDocument && (elem = this.ownerDocument.getElementById(m)) &&
+                                this.contains(elem) && elem.id === m) {
+                                elements = [elem];
+                            }
+                        }
+                    // Speed-up: "TAG"
+                    } else if (match[2]) {
+                        elements = this.getElementsByTagName(filter);
+                    // Speed-up: ".CLASS"
+                    } else if (m = match[3]) {
+                        elements = this.getElementsByTagName(this.getElementsByClassName( m ));
+                    }
+                } else if ((match = rsiblingQuick.exec(filter)) && (quick = quickParse(match[2]))) {
+                    elements = [];
+
+                    switch (match[1]) {
+                        case "+":
+                            for (elem = this; elem; elem = elem.nextSibling) {
+                                if (elem.nodeType === 1) {
+                                    if (quickIs(elem, quick)) {
+                                        elements.push(elem);
+
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+
+                        case "~":
+                            for (elem = this; elem; elem = elem.nextSibling) {
+                                if (elem.nodeType === 1 && quickIs(elem, quick)) {
+                                    elements.push(elem);
+                                }
+                            }
+                            break;
+
+                        case ">":
+                            for (elem = this.firstChild; elem; elem = elem.nextSibling) {
+                                if (elem.nodeType === 1 && quickIs(elem, quick)) {
+                                    elements.push(elem);
+                                }
+                            }
+                            break;
+                    }
+                } else if (this !== docElem) {
+                    var old = true,
+                        nid = expando,
+                        newContext = this,
+                        newSelector = this === docElem && filter;
+
+                    // qSA works strangely on Element-rooted queries
+                    // We can work around this by specifying an extra ID on the root
+                    // and working up from there (Thanks to Andrew Dupont for the technique)
+                    if ( (old = this.getAttribute("id")) ) {
+                        nid = old.replace(rescape, "\\$&");
+                    } else {
+                        this.setAttribute("id", nid);
+                    }
+
+                    nid = "[id='" + nid + "'] ";
+
+                    newContext = rsibling.test(filter) && this.parentNode || this;
+                    newSelector = nid + filter.replace(/","/g, "," + nid);
+
+                    if (newSelector) {
+                        try {
+                            elements = newContext.querySelectorAll(newSelector);
+                        } catch(qsaError) {
+                        } finally {
+                            if ( !old ) {
+                                this.removeAttribute("id");
+                            }
+                        }
                     }
                 }
-            } else {
-                elements = this.querySelectorAll(filter);
-            }
 
-            return factory.create(elements);
-        },
+                return factory.create(elements);
+            };
+        })(),
+        contains: (function() {
+            // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
+            var containsElement = function(element) {
+                    return this.contains(factory.get(element.guid));
+                };
+
+            return function(element) {
+                var ctr = element.constructor;
+
+                if (ctr === DOMElement) {
+                    return containsElement.call(this, element);
+                } else if (ctr === DOMElements) {
+                    return factory.get(element.guid).every(containsElement, this);
+                } else {
+                    throw new DOMMethodError("contains");
+                }
+            };
+        })(),
         on: (function() {
             var getArgValue = function(arg) {
                     return this[arg];
@@ -493,7 +649,7 @@
     });
 
     // initialize publicAPI
-    var publicAPI = Object.create(factory.create(document.documentElement), {
+    var publicAPI = Object.create(factory.create(docElem), {
         create: {
             value: function(tagName, attrs, content) {
                 if (typeof tagName !== "string") {
@@ -573,4 +729,4 @@
         window.DOM = publicAPI;
     }
 
-})(window, document, undefined);
+})(window, document, undefined, document.documentElement);
