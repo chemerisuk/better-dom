@@ -111,7 +111,7 @@
 
     // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
     if (window.Node && Node.prototype && !Node.prototype.contains) {
-        Node.prototype.contains = function (arg) {
+        Node.prototype.contains = function(arg) {
             return !!(this.compareDocumentPosition(arg) & 16);
         };
     }
@@ -173,7 +173,7 @@
             return factory.create(element);
         },
         findAll: (function() {
-            // most of code stoled from the Sizzle:
+            // big part of code is stoled from Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
             // Easily-parseable/retrievable ID or TAG or CLASS selectors
@@ -434,7 +434,7 @@
             var quick = quickParse(filter);
 
             if (!quick) {
-                throw new DOMMethodError("is");
+                throw new DOMMethodError("matches");
             }
 
             return quickIs(this, quick);
@@ -451,20 +451,14 @@
 
             return result === undefined ? this : result;
         },
-        show: function() {
-            this.style.display = "";
-
-            return this;
-        },
-        hide: function() {
-            this.style.display = "none";
-
-            return this;
-        },
         remove: function() {
-            this.parentNode.removeChild(this);
-            // cleanup cache entry
-            factory.remove(this._DOM.guid);
+            var parent = this.parentNode;
+
+            if (parent) {
+                this.parentNode.removeChild(this);
+                // cleanup cache entry
+                factory.remove(this._DOM.guid);
+            }
 
             return this;
         },
@@ -484,20 +478,20 @@
                 this.appendChild(factory.get(element.guid));
             },
             strategies = {
-                after: function(element) {
-                    this.parentNode.insertBefore(element, this.nextSibling);
+                after: function(element, parent) {
+                    parent.insertBefore(element, this.nextSibling);
                 },
-                before: function(element) {
-                    this.parentNode.insertBefore(element, this);
+                before: function(element, parent) {
+                    parent.insertBefore(element, this);
                 },
-                append: function(element) {
+                append: function(element, parent) {
                     this.appendChild(element);
                 },
-                prepend: function(element) {
+                prepend: function(element, parent) {
                     this.insertBefore(element, this.firstChild);
                 },
-                replace: function(element) {
-                    this.parentNode.replaceChild(this, element);
+                replace: function(element, parent) {
+                    parent.replaceChild(this, element);
                 }
             };
 
@@ -505,7 +499,9 @@
             var process = strategies[methodName];
 
             DOMElement.prototype[methodName] = function(element) {
-                if (this.parentNode) {
+                var parent = this.parentNode;
+
+                if (parent) {
                     var fragment;
 
                     if (element.constructor === DOMElement) {
@@ -518,7 +514,7 @@
                         throw new DOMMethodError(methodName);
                     }
 
-                    process.call(this, fragment);
+                    process.call(this, fragment, parent);
                 }
 
                 return this;
