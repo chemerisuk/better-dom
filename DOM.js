@@ -706,7 +706,11 @@
                         }
                     };
 
-                if (document.readyState !== "complete") {
+                // Catch cases where ready is called after the browser event has already occurred.
+                // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
+                // hey, at least it's not a UA sniff
+                // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+                if ( document.attachEvent ? document.readyState !== "complete" : document.readyState === "loading") {
                     readyCallbacks = [];
 
                     document.addEventListener("DOMContentLoaded", readyProcess, false);
