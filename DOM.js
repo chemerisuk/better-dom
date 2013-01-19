@@ -314,14 +314,12 @@
                 docElem.oMatchesSelector ||
                 docElem.msMatchesSelector;
 
-            return function(selector) {
-                var quick = quickParse(selector);
-
-                if (quick) {
-                    return quickIs(this, quick);
-                } else {
-                    matches.call(this, selector);
+            return function(selector, quick) {
+                if (!quick) {
+                    quick = quickParse(selector);
                 }
+
+                return quick ? quickIs(this, quick) : matches.call(this, selector);
             };
         })(),
         on: (function() {
@@ -463,17 +461,6 @@
 
             return result === undefined ? this : result;
         },
-        remove: function() {
-            var parent = this.parentNode;
-
-            if (parent) {
-                this.parentNode.removeChild(this);
-                // cleanup cache entry
-                factory.remove(this._DOM.guid);
-            }
-
-            return this;
-        },
         clone: function(deep) {
             return factory.create(this.clone(deep));
         },
@@ -504,6 +491,11 @@
                 },
                 replace: function(element, parent) {
                     parent.replaceChild(this, element);
+                },
+                remove: function(parent) {
+                    parent.removeChild(this);
+                    // cleanup cache entry
+                    factory.remove(this._DOM.guid);
                 }
             };
 
@@ -514,19 +506,25 @@
                 var parent = this.parentNode;
 
                 if (parent) {
-                    var fragment;
+                    var fragment, ctr = element.constructor;
 
-                    if (element.constructor === DOMElement) {
-                        fragment = factory.get(element.guid);
-                    } else if (element.constructor === DOMElements) {
-                        fragment = document.createDocumentFragment();
+                    if (element) {
+                        if (ctr === DOMElement) {
+                            fragment = factory.get(element.guid);
+                        } else if (ctr === DOMElements) {
+                            fragment = document.createDocumentFragment();
 
-                        factory.get(element.guid).forEach(populateFragment, fragment);
+                            factory.get(element.guid).forEach(populateFragment, fragment);
+                        }
+                    } else if (process.length === 1) {
+                        fragment = parent;
+                    }
+
+                    if (fragment) {
+                       process.call(this, fragment, parent);
                     } else {
                         throw new DOMMethodError(methodName);
                     }
-
-                    process.call(this, fragment, parent);
                 }
 
                 return this;
@@ -537,7 +535,7 @@
     // classes manipulation
     (function() {
         var rclass = /[\n\t\r]/g,
-            strategies = document.documentElement.classList ? {
+            strategies = docElem.classList ? {
                 hasClass: function(className) {
                     return this.classList.constains(className);
                 },
