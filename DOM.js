@@ -157,17 +157,17 @@
     // DOMElement
 
     DOMElement.prototype = {
-        find: function(filter) {
-            if (typeof filter !== "string") {
+        find: function(selector) {
+            if (typeof selector !== "string") {
                 throw new DOMMethodError("find");
             }
 
             var element;
 
-            if (filter.charAt(0) === "#" && filter.indexOf(" ") === -1) {
-                element = document.getElementById(filter.substr(1));
+            if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
+                element = document.getElementById(selector.substr(1));
             } else {
-                element = this.querySelector(filter);
+                element = this.querySelector(selector);
             }
             
             return factory.create(element);
@@ -176,6 +176,8 @@
             // big part of code is stoled from Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
+            // TODO: disallow to use buggy selectors
+
             // Easily-parseable/retrievable ID or TAG or CLASS selectors
             var rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
@@ -183,14 +185,14 @@
                 rescape = /'|\\/g,
                 expando = "DOM" + new Date().getTime();
 
-            return function(filter) {
-                if (typeof filter !== "string") {
+            return function(selector) {
+                if (typeof selector !== "string") {
                     throw new DOMMethodError("findAll");
                 }
 
                 var elements, m, elem, match, quick;
 
-                if (match = rquickExpr.exec(filter)) {
+                if (match = rquickExpr.exec(selector)) {
                     // Speed-up: "#ID"
                     if (m = match[1]) {
                         if (this === docElem) {
@@ -213,12 +215,12 @@
                         }
                     // Speed-up: "TAG"
                     } else if (match[2]) {
-                        elements = this.getElementsByTagName(filter);
+                        elements = this.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
                         elements = this.getElementsByTagName(this.getElementsByClassName( m ));
                     }
-                } else if ((match = rsiblingQuick.exec(filter)) && (quick = quickParse(match[2]))) {
+                } else if ((match = rsiblingQuick.exec(selector)) && (quick = quickParse(match[2]))) {
                     elements = [];
 
                     switch (match[1]) {
@@ -250,25 +252,27 @@
                             }
                             break;
                     }
-                } else if (this !== docElem) {
+                } else {
                     var old = true,
                         nid = expando,
                         newContext = this,
-                        newSelector = this === docElem && filter;
+                        newSelector = this === docElem && selector;
 
-                    // qSA works strangely on Element-rooted queries
-                    // We can work around this by specifying an extra ID on the root
-                    // and working up from there (Thanks to Andrew Dupont for the technique)
-                    if ( (old = this.getAttribute("id")) ) {
-                        nid = old.replace(rescape, "\\$&");
-                    } else {
-                        this.setAttribute("id", nid);
+                    if (this !== docElem) {
+                        // qSA works strangely on Element-rooted queries
+                        // We can work around this by specifying an extra ID on the root
+                        // and working up from there (Thanks to Andrew Dupont for the technique)
+                        if ( (old = this.getAttribute("id")) ) {
+                            nid = old.replace(rescape, "\\$&");
+                        } else {
+                            this.setAttribute("id", nid);
+                        }
+
+                        nid = "[id='" + nid + "'] ";
+
+                        newContext = rsibling.test(selector) && this.parentNode || this;
+                        newSelector = nid + selector.replace(/","/g, "," + nid);
                     }
-
-                    nid = "[id='" + nid + "'] ";
-
-                    newContext = rsibling.test(filter) && this.parentNode || this;
-                    newSelector = nid + filter.replace(/","/g, "," + nid);
 
                     if (newSelector) {
                         try {
@@ -303,17 +307,34 @@
                 }
             };
         })(),
+        matches: (function() {
+            var matches = docElem.matchesSelector ||
+                docElem.mozMatchesSelector ||
+                docElem.webkitMatchesSelector ||
+                docElem.oMatchesSelector ||
+                docElem.msMatchesSelector;
+
+            return function(selector) {
+                var quick = quickParse(selector);
+
+                if (quick) {
+                    return quickIs(this, quick);
+                } else {
+                    matches.call(this, selector);
+                }
+            };
+        })(),
         on: (function() {
             var getArgValue = function(arg) {
                     return this[arg];
                 },
                 eventElementProperties = ["target", "currentTarget", "relatedTarget"],
-                processHandlers = function(event, filter, handler, thisPtr) {
+                processHandlers = function(event, selector, handler, thisPtr) {
                     if (typeof handler !== "function") {
                         throw new DOMMethodError("on");
                     }
 
-                    filter = filter ? quickParse(filter) : null;
+                    selector = selector ? quickParse(selector) : null;
                     thisPtr = thisPtr || this._DOM;
 
                     var nativeEventHandler = function(e) {
@@ -338,9 +359,9 @@
                             });
                         };
                     // TODO: store handler in _events property of the native element
-                    this.addEventListener(event, !filter ? nativeEventHandler : function(e) {
+                    this.addEventListener(event, !selector ? nativeEventHandler : function(e) {
                         for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
-                            if (quickIs(el, filter)) {
+                            if (quickIs(el, selector)) {
                                 nativeEventHandler(e);
 
                                 break;
@@ -349,20 +370,20 @@
                     }, false);
                 };
 
-            return function(event, filter, handler, thisPtr) {
-                var filterType = typeof filter,
+            return function(event, selector, handler, thisPtr) {
+                var filterType = typeof selector,
                     eventType = typeof event;
 
                 if (filterType === "function") {
                     thisPtr = handler;
-                    handler = filter;
-                    filter = undefined;
-                } else if (filter && filterType !== "string") {
+                    handler = selector;
+                    selector = undefined;
+                } else if (selector && filterType !== "string") {
                     throw new DOMMethodError("on");
                 }
 
                 if (eventType === "string") {
-                    processHandlers.call(this, event, filter, handler, thisPtr);
+                    processHandlers.call(this, event, selector, handler, thisPtr);
                 } else if (event && eventType === "object") {
                     Object.keys(event).forEach(function(eventType) {
                         processHandlers.call(this, eventType, undefined, event[eventType], thisPtr);
@@ -430,15 +451,6 @@
                 return this;
             };
         })(),
-        matches: function(filter) {
-            var quick = quickParse(filter);
-
-            if (!quick) {
-                throw new DOMMethodError("matches");
-            }
-
-            return quickIs(this, quick);
-        },
         call: function(name) {
             var functor = this[name], result;
 
@@ -647,24 +659,34 @@
     // initialize publicAPI
     var publicAPI = Object.create(factory.create(docElem), {
         create: {
-            value: function(tagName, attrs, content) {
+            value: function(tagName, attrs) {
                 if (typeof tagName !== "string") {
                     throw new DOMMethodError("create");
                 }
 
-                var elem = factory.create(document.createElement(tagName));
+                var elem;
 
-                if (attrs && typeof attrs === "object") {
-                    elem.set(attrs);
+                if (tagName.charAt(0) === "<") {
+                    elem = document.createElement("div");
+                    elem.innerHTML = tagName;
+
+                    if (elem.children.length > 1) {
+                        throw new DOMMethodError("create");
+                    }
+
+                    elem = elem.firstChild;
+                } else {
+                    elem = document.createElement(tagName);
                 }
 
-                if (content) {
-                    if (typeof content === "string") {
-                        elem.set("innerHTML", content);
-                    } else if (content.constructor === DOMElement ||
-                        content.constructor === DOMElements) {
-                        elem.append(content);
+                elem = factory.create(elem);
+
+                if (attrs) {
+                    if (typeof attrs !== "object") {
+                        throw new DOMMethodError("create");
                     }
+
+                    elem.set(attrs);
                 }
                 
                 return elem;
