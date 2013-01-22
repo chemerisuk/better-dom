@@ -80,13 +80,6 @@
                 " method. See http://domjs.net/doc/" + methodName + " for details";
         };
 
-    // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
-    if (window.Node && Node.prototype && !Node.prototype.contains) {
-        Node.prototype.contains = function(arg) {
-            return !!(this.compareDocumentPosition(arg) & 16);
-        };
-    }
-
     // DOMElement
 
     DOMElement.prototype = {
@@ -163,9 +156,12 @@
             return factory.create(element);
         },
         contains: (function() {
-            // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
-            var containsElement = function(element) {
+            var containsElement = Node.prototype.contains ?
+                function(element) {
                     return this.contains(factory.get(element.guid));
+                } :
+                function(element) {
+                    return !!(this.compareDocumentPosition(factory.get(element.guid)) & 16);
                 };
 
             return function(element) {
