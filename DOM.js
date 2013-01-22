@@ -51,39 +51,12 @@
                 }
             };
         })(),
-        // helpers
-        rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-        
-        quickParse = function(selector) {
-            var quick = rquickIs.exec(selector);
-            // TODO: support attribute value check
-            if (quick) {
-                //   0  1    2   3          4
-                // [ _, tag, id, attribute, class ]
-                quick[1] = (quick[1] || "").toLowerCase();
-                quick[4] = quick[4] ? " " + quick[4] + " " : "";
-            } else {
-                throw new DOMMethodError("quickParse");
-            }
-
-            return quick;
-        },
-        quickIs = function(elem, m) {
-            var attrs = elem.attributes || {};
-            
-            return (
-                (!m[1] || elem.nodeName.toLowerCase() === m[1]) &&
-                (!m[2] || (attrs.id || {}).value === m[2]) &&
-                (!m[3] || m[3] in attrs) &&
-                (!m[4] || ~(" " + (attrs["class"] || "").value  + " ").indexOf(m[4]))
-            );
-        },
         // classes
         DOMElement = function() { },
         DOMElements = (function() {
-            // Creates clean copy of Array prototype. Inspired by
+            // Create clean copy of Array prototype. Inspired by
             // http://dean.edwards.name/weblog/2006/11/hooray/
-            var ref = document.getElementsByTagName('script')[0],
+            var ref = document.getElementsByTagName("script")[0],
                 iframe = document.createElement("iframe"),
                 ctr;
                 
@@ -107,8 +80,6 @@
                 " method. See http://domjs.net/doc/" + methodName + " for details";
         };
 
-    // Required Polyfills. They will make code lighter
-
     // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
     if (window.Node && Node.prototype && !Node.prototype.contains) {
         Node.prototype.contains = function(arg) {
@@ -116,47 +87,66 @@
         };
     }
 
-    if (!Function.prototype.bind) {
-        Function.prototype.bind = (function (slice) {
-            // (C) WebReflection - Mit Style License
-            function bind(context) {
-                var self = this; // "trapped" function reference
-
-                // only if there is more than an argument
-                // we are interested into more complex operations
-                // this will speed up common bind creation
-                // avoiding useless slices over arguments
-                if (1 < arguments.length) {
-                    // extra arguments to send by default
-                    var $arguments = slice.call(arguments, 1);
-                    return function () {
-                        return self.apply(
-                            context,
-                            // thanks @kangax for this suggestion
-                            arguments.length ?
-                                // concat arguments with those received
-                                $arguments.concat(slice.call(arguments)) :
-                                // send just arguments, no concat, no slice
-                                $arguments
-                        );
-                    };
-                }
-                // optimized callback
-                return function () {
-                    // speed up when function is called without arguments
-                    return arguments.length ? self.apply(context, arguments) : self.call(context);
-                };
-            }
-
-            // the named function
-            return bind;
-
-        }(Array.prototype.slice));
-    }
-
     // DOMElement
 
     DOMElement.prototype = {
+        matches: (function() {
+            // Quick matching inspired by
+            // https://github.com/jquery/jquery
+            var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
+                quickParse = function(selector) {
+                    var quick = rquickIs.exec(selector);
+                    // TODO: support attribute value check
+                    if (quick) {
+                        //   0  1    2   3          4
+                        // [ _, tag, id, attribute, class ]
+                        quick[1] = (quick[1] || "").toLowerCase();
+                        quick[4] = quick[4] ? " " + quick[4] + " " : "";
+                    } else {
+                        throw new DOMMethodError("quickParse");
+                    }
+
+                    return quick;
+                },
+                quickIs = function(elem, m) {
+                    var attrs = elem.attributes || {};
+                    
+                    return (
+                        (!m[1] || elem.nodeName.toLowerCase() === m[1]) &&
+                        (!m[2] || (attrs.id || {}).value === m[2]) &&
+                        (!m[3] || m[3] in attrs) &&
+                        (!m[4] || ~(" " + (attrs["class"] || "").value  + " ").indexOf(m[4]))
+                    );
+                },
+                lastQuick, lastQuickSelector,
+                // remember native function
+                matches = docElem.matchesSelector ||
+                docElem.mozMatchesSelector ||
+                docElem.webkitMatchesSelector ||
+                docElem.oMatchesSelector ||
+                docElem.msMatchesSelector;
+
+            return function(selector) {
+                var quick;
+
+                if (lastQuick && lastQuickSelector === selector) {
+                    quick = lastQuick;
+                } else if (typeof selector === "string") {
+                    quick = quickParse(selector);
+                } else {
+                    throw new DOMMethodError("matches");
+                }
+
+                if (quick) {
+                    lastQuick = quick;
+                    lastQuickSelector = selector;
+
+                    return quickIs(this, quick);
+                } else {
+                    return matches.call(this, selector);
+                }
+            };
+        })(),
         find: function(selector) {
             if (typeof selector !== "string") {
                 throw new DOMMethodError("find");
@@ -172,123 +162,6 @@
             
             return factory.create(element);
         },
-        findAll: (function() {
-            // big part of code is stoled from Sizzle:
-            // https://github.com/jquery/sizzle/blob/master/sizzle.js
-
-            // TODO: disallow to use buggy selectors
-
-            // Easily-parseable/retrievable ID or TAG or CLASS selectors
-            var rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
-                rsibling = /[\x20\t\r\n\f]*[+~>]/,
-                rsiblingQuick = /\w*([+~>])[\s]*(.+)*/,
-                rescape = /'|\\/g,
-                expando = "DOM" + new Date().getTime();
-
-            return function(selector) {
-                if (typeof selector !== "string") {
-                    throw new DOMMethodError("findAll");
-                }
-
-                var elements, m, elem, match, quick;
-
-                if (match = rquickExpr.exec(selector)) {
-                    // Speed-up: "#ID"
-                    if (m = match[1]) {
-                        if (this === docElem) {
-                            elem = this.getElementById(m);
-                            // Check parentNode to catch when Blackberry 4.6 returns
-                            // nodes that are no longer in the document #6963
-                            if (elem && elem.parentNode) {
-                                // Handle the case where IE, Opera, and Webkit return items
-                                // by name instead of ID
-                                if (elem.id === m) {
-                                    elements = [elem];
-                                }
-                            }
-                        } else {
-                            // Context is not a document
-                            if (this.ownerDocument && (elem = this.ownerDocument.getElementById(m)) &&
-                                this.contains(elem) && elem.id === m) {
-                                elements = [elem];
-                            }
-                        }
-                    // Speed-up: "TAG"
-                    } else if (match[2]) {
-                        elements = this.getElementsByTagName(selector);
-                    // Speed-up: ".CLASS"
-                    } else if (m = match[3]) {
-                        elements = this.getElementsByTagName(this.getElementsByClassName( m ));
-                    }
-                } else if ((match = rsiblingQuick.exec(selector)) && (quick = quickParse(match[2]))) {
-                    elements = [];
-
-                    switch (match[1]) {
-                        case "+":
-                            for (elem = this; elem; elem = elem.nextSibling) {
-                                if (elem.nodeType === 1) {
-                                    if (quickIs(elem, quick)) {
-                                        elements.push(elem);
-
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-
-                        case "~":
-                            for (elem = this; elem; elem = elem.nextSibling) {
-                                if (elem.nodeType === 1 && quickIs(elem, quick)) {
-                                    elements.push(elem);
-                                }
-                            }
-                            break;
-
-                        case ">":
-                            for (elem = this.firstChild; elem; elem = elem.nextSibling) {
-                                if (elem.nodeType === 1 && quickIs(elem, quick)) {
-                                    elements.push(elem);
-                                }
-                            }
-                            break;
-                    }
-                } else {
-                    var old = true,
-                        nid = expando,
-                        newContext = this,
-                        newSelector = this === docElem && selector;
-
-                    if (this !== docElem) {
-                        // qSA works strangely on Element-rooted queries
-                        // We can work around this by specifying an extra ID on the root
-                        // and working up from there (Thanks to Andrew Dupont for the technique)
-                        if ( (old = this.getAttribute("id")) ) {
-                            nid = old.replace(rescape, "\\$&");
-                        } else {
-                            this.setAttribute("id", nid);
-                        }
-
-                        nid = "[id='" + nid + "'] ";
-
-                        newContext = rsibling.test(selector) && this.parentNode || this;
-                        newSelector = nid + selector.replace(/","/g, "," + nid);
-                    }
-
-                    if (newSelector) {
-                        try {
-                            elements = newContext.querySelectorAll(newSelector);
-                        } catch(qsaError) {
-                        } finally {
-                            if ( !old ) {
-                                this.removeAttribute("id");
-                            }
-                        }
-                    }
-                }
-
-                return factory.create(elements);
-            };
-        })(),
         contains: (function() {
             // http://www.quirksmode.org/blog/archives/2006/01/contains_for_mo.html
             var containsElement = function(element) {
@@ -305,92 +178,6 @@
                 } else {
                     throw new DOMMethodError("contains");
                 }
-            };
-        })(),
-        matches: (function() {
-            var matches = docElem.matchesSelector ||
-                docElem.mozMatchesSelector ||
-                docElem.webkitMatchesSelector ||
-                docElem.oMatchesSelector ||
-                docElem.msMatchesSelector;
-
-            return function(selector, quick) {
-                if (!quick) {
-                    quick = quickParse(selector);
-                }
-
-                return quick ? quickIs(this, quick) : matches.call(this, selector);
-            };
-        })(),
-        on: (function() {
-            var getArgValue = function(arg) {
-                    return this[arg];
-                },
-                eventElementProperties = ["target", "currentTarget", "relatedTarget"],
-                processHandlers = function(event, selector, handler, thisPtr) {
-                    if (typeof handler !== "function") {
-                        throw new DOMMethodError("on");
-                    }
-
-                    selector = selector ? quickParse(selector) : null;
-                    thisPtr = thisPtr || this._DOM;
-
-                    var nativeEventHandler = function(e) {
-                            var originalProperties = {};
-
-                            // modify event object
-                            eventElementProperties.forEach(function(prop) {
-                                var element = e[prop];
-
-                                delete e[prop];
-
-                                e[prop] = factory.create(element);
-
-                                originalProperties[prop] = element;
-                            });
-
-                            handler.call(thisPtr, e);
-
-                            // restore event object
-                            eventElementProperties.forEach(function(prop) {
-                                e[prop] = originalProperties[prop];
-                            });
-                        };
-                    // TODO: store handler in _events property of the native element
-                    this.addEventListener(event, !selector ? nativeEventHandler : function(e) {
-                        for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
-                            if (quickIs(el, selector)) {
-                                nativeEventHandler(e);
-
-                                break;
-                            }
-                        }
-                    }, false);
-                };
-
-            return function(event, selector, handler, thisPtr) {
-                var filterType = typeof selector,
-                    eventType = typeof event;
-
-                if (filterType === "function") {
-                    thisPtr = handler;
-                    handler = selector;
-                    selector = undefined;
-                } else if (selector && filterType !== "string") {
-                    throw new DOMMethodError("on");
-                }
-
-                if (eventType === "string") {
-                    processHandlers.call(this, event, selector, handler, thisPtr);
-                } else if (event && eventType === "object") {
-                    Object.keys(event).forEach(function(eventType) {
-                        processHandlers.call(this, eventType, undefined, event[eventType], thisPtr);
-                    }, this);
-                } else {
-                    throw new DOMMethodError("on");
-                }
-
-                return this;
             };
         })(),
         fire: function(eventType, detail) {
@@ -416,39 +203,6 @@
             
             return value;
         },
-        set: (function() {
-            var processAttribute = function(name, value) {
-                var valueType = typeof value;
-
-                if (valueType === "function") {
-                    value = value.call(this._DOM, DOMElement.prototype.get.call(this, name));
-                } else if (valueType !== "string") {
-                    throw new DOMMethodError("set");
-                }
-
-                if (name in this) {
-                    this[name] = value;
-                } else {
-                    this.setAttribute(name, value);
-                }
-            };
-
-            return function(name, value) {
-                var nameType = typeof name;
-
-                if (nameType === "string") {
-                    processAttribute.call(this, name, value);
-                } else if (name && nameType === "object") {
-                    Object.keys(name).forEach(function(attrName) {
-                        processAttribute.call(this, attrName, name[attrName]);
-                    }, this);
-                } else {
-                    throw new DOMMethodError("set");
-                }
-
-                return this;
-            };
-        })(),
         call: function(name) {
             var functor = this[name], result;
 
@@ -468,6 +222,227 @@
             return window.getComputedStyle(this);
         }
     };
+
+    DOMElement.prototype.findAll = (function() {
+        // big part of code is stoled from Sizzle:
+        // https://github.com/jquery/sizzle/blob/master/sizzle.js
+
+        // TODO: disallow to use buggy selectors
+
+        // Easily-parseable/retrievable ID or TAG or CLASS selectors
+        var rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+            rsibling = /[\x20\t\r\n\f]*[+~>]/,
+            rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
+            rescape = /'|\\/g,
+            expando = "DOM" + new Date().getTime(),
+            matches = DOMElement.prototype.matches;
+
+        return function(selector) {
+            if (typeof selector !== "string") {
+                throw new DOMMethodError("findAll");
+            }
+
+            var elements, m, elem, match, quick;
+
+            if (match = rquickExpr.exec(selector)) {
+                // Speed-up: "#ID"
+                if (m = match[1]) {
+                    if (this === docElem) {
+                        elem = this.getElementById(m);
+                        // Check parentNode to catch when Blackberry 4.6 returns
+                        // nodes that are no longer in the document #6963
+                        if (elem && elem.parentNode) {
+                            // Handle the case where IE, Opera, and Webkit return items
+                            // by name instead of ID
+                            if (elem.id === m) {
+                                elements = [elem];
+                            }
+                        }
+                    } else {
+                        // Context is not a document
+                        if (this.ownerDocument && (elem = this.ownerDocument.getElementById(m)) &&
+                            this.contains(elem) && elem.id === m) {
+                            elements = [elem];
+                        }
+                    }
+                // Speed-up: "TAG"
+                } else if (match[2]) {
+                    elements = this.getElementsByTagName(selector);
+                // Speed-up: ".CLASS"
+                } else if (m = match[3]) {
+                    elements = this.getElementsByClassName(m);
+                }
+            } else if (match = rsiblingQuick.exec(selector)) {
+                m = match[1];
+                selector = match[2];
+                elements = [];
+
+                switch (m) {
+                    case "+":
+                        for (elem = this; elem; elem = null) {
+                            if (matches.call(elem, selector)) {
+                                elements.push(elem);
+                            }
+                        }
+                        break;
+
+                    case "~":
+                        for (elem = this; elem; elem = elem.nextElementSibling) {
+                            if (matches.call(elem, selector)) {
+                                elements.push(elem);
+                            }
+                        }
+                        break;
+
+                    case ">":
+                        for (elem = this.firstElementChild; elem; elem = elem.nextElementSibling) {
+                            if (matches.call(elem, selector)) {
+                                elements.push(elem);
+                            }
+                        }
+                        break;
+                }
+            } else {
+                var old = true,
+                    nid = expando,
+                    newContext = this,
+                    newSelector = this === docElem && selector;
+
+                if (this !== docElem) {
+                    // qSA works strangely on Element-rooted queries
+                    // We can work around this by specifying an extra ID on the root
+                    // and working up from there (Thanks to Andrew Dupont for the technique)
+                    if ( (old = this.getAttribute("id")) ) {
+                        nid = old.replace(rescape, "\\$&");
+                    } else {
+                        this.setAttribute("id", nid);
+                    }
+
+                    nid = "[id='" + nid + "'] ";
+
+                    newContext = rsibling.test(selector) && this.parentNode || this;
+                    newSelector = nid + selector.replace(/","/g, "," + nid);
+                }
+
+                if (newSelector) {
+                    try {
+                        elements = newContext.querySelectorAll(newSelector);
+                    } catch(qsaError) {
+                    } finally {
+                        if ( !old ) {
+                            this.removeAttribute("id");
+                        }
+                    }
+                }
+            }
+
+            return factory.create(elements);
+        };
+    })();
+
+    DOMElement.prototype.on = (function() {
+        var matches = DOMElement.prototype.matches,
+            eventElementProperties = ["target", "currentTarget", "relatedTarget"],
+            processHandlers = function(event, selector, handler, thisPtr) {
+                if (typeof handler !== "function") {
+                    throw new DOMMethodError("on");
+                }
+
+                thisPtr = thisPtr || this._DOM;
+
+                var nativeEventHandler = function(e) {
+                        var originalProperties = {};
+
+                        // modify event object
+                        eventElementProperties.forEach(function(prop) {
+                            var element = e[prop];
+
+                            delete e[prop];
+
+                            e[prop] = factory.create(element);
+
+                            originalProperties[prop] = element;
+                        });
+
+                        handler.call(thisPtr, e);
+
+                        // restore event object
+                        eventElementProperties.forEach(function(prop) {
+                            e[prop] = originalProperties[prop];
+                        });
+                    };
+                // TODO: store handler in _events property of the native element
+                this.addEventListener(event, !selector ? nativeEventHandler : function(e) {
+                    for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
+                        if (matches.call(el, selector)) {
+                            nativeEventHandler(e);
+
+                            break;
+                        }
+                    }
+                }, false);
+            };
+
+        return function(event, selector, handler, thisPtr) {
+            var selectorType = typeof selector,
+                eventType = typeof event;
+
+            if (selectorType === "function") {
+                thisPtr = handler;
+                handler = selector;
+                selector = undefined;
+            } else if (selector && selectorType !== "string") {
+                throw new DOMMethodError("on");
+            }
+
+            if (eventType === "string") {
+                processHandlers.call(this, event, selector, handler, thisPtr);
+            } else if (event && eventType === "object") {
+                Object.keys(event).forEach(function(eventType) {
+                    processHandlers.call(this, eventType, undefined, event[eventType], thisPtr);
+                }, this);
+            } else {
+                throw new DOMMethodError("on");
+            }
+
+            return this;
+        };
+    })();
+
+    DOMElement.prototype.set = (function() {
+        var getter = DOMElement.prototype.get,
+            processAttribute = function(name, value) {
+            var valueType = typeof value;
+
+            if (valueType === "function") {
+                value = value.call(this._DOM, getter.call(this, name));
+            } else if (valueType !== "string") {
+                throw new DOMMethodError("set");
+            }
+
+            if (name in this) {
+                this[name] = value;
+            } else {
+                this.setAttribute(name, value);
+            }
+        };
+
+        return function(name, value) {
+            var nameType = typeof name;
+
+            if (nameType === "string") {
+                processAttribute.call(this, name, value);
+            } else if (name && nameType === "object") {
+                Object.keys(name).forEach(function(attrName) {
+                    processAttribute.call(this, attrName, name[attrName]);
+                }, this);
+            } else {
+                throw new DOMMethodError("set");
+            }
+
+            return this;
+        };
+    })();
 
     // dom manipulation
     (function() {
@@ -584,7 +559,7 @@
                 var classes = className.split(" ");
 
                 if (methodName === "hasClass") {
-                    return classes.any(process, this);
+                    return classes.every(process, this);
                 } else {
                     classes.forEach(process, this);
 
@@ -657,7 +632,7 @@
     // initialize publicAPI
     var publicAPI = Object.create(factory.create(docElem), {
         create: {
-            value: function(tagName, attrs) {
+            value: function(tagName, attrs, content) {
                 if (typeof tagName !== "string") {
                     throw new DOMMethodError("create");
                 }
@@ -678,6 +653,14 @@
                 }
 
                 elem = factory.create(elem);
+
+                if (content) {
+                    if (typeof content !== "string") {
+                        throw new DOMMethodError("create");
+                    }
+
+                    attrs.innerHTML = content;
+                }
 
                 if (attrs) {
                     if (typeof attrs !== "object") {
