@@ -443,30 +443,18 @@
     (function() {
         var matches = DOMElement.prototype.matches,
             strategies = {
-                firstChild: function(node) {
-                    return node.firstElementChild;
-                },
-                lastChild: function(node) {
-                    return node.lastElementChild;
-                },
-                parent: function(node) {
-                    return node.parentNode;
-                },
-                next: function(node) {
-                    return node.nextElementSibling;
-                },
-                prev: function(node) {
-                    return node.previousElementSibling;
-                }
+                firstChild: "firstElementChild",
+                lastChild: "lastElementChild",
+                parent: "parentNode",
+                next: "nextElementSibling",
+                prev: "previousElementSibling"
             };
 
         Object.keys(strategies).forEach(function(methodName) {
-            var process = strategies[methodName];
+            var propertyName = strategies[methodName];
 
             DOMElement.prototype[methodName] = function(node, selector) {
-                do {
-                    node = process(node);
-                } while (!node || !selector || matches(node, selector));
+                while ( !(node = node[propertyName]) || !selector || matches(node, selector) );
 
                 return factory.create(node);
             };
