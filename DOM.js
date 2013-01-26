@@ -439,6 +439,41 @@
         };
     })();
 
+    // dom traversing
+    (function() {
+        var matches = DOMElement.prototype.matches,
+            strategies = {
+                firstChild: function(node) {
+                    return node.firstElementChild;
+                },
+                lastChild: function(node) {
+                    return node.lastElementChild;
+                },
+                parent: function(node) {
+                    return node.parentNode;
+                },
+                next: function(node) {
+                    return node.nextElementSibling;
+                },
+                prev: function(node) {
+                    return node.previousElementSibling;
+                }
+            };
+
+        Object.keys(strategies).forEach(function(methodName) {
+            var process = strategies[methodName];
+
+            DOMElement.prototype[methodName] = function(node, selector) {
+                do {
+                    node = process(node);
+                } while (!node || !selector || matches(node, selector));
+
+                return factory.create(node);
+            };
+        });
+
+    })();
+
     // dom manipulation
     (function() {
         // http://www.w3.org/TR/domcore/
@@ -504,7 +539,7 @@
         });
     })();
 
-    // classes manipulation
+    // css classes manipulation
     (function() {
         var rclass = /[\n\t\r]/g,
             strategies = docElem.classList ? {
