@@ -347,7 +347,18 @@
 
     DOMElement.prototype.on = (function() {
         var matches = DOMElement.prototype.matches,
-            eventElementProperties = ["target", "currentTarget", "relatedTarget"],
+            nodeProperties = ["target", "currentTarget", "relatedTarget"],
+            modifyProperties = function(prop) {
+                var node = this[prop];
+
+                if (node) {
+                    delete this[prop];
+
+                    this[prop] = factory.create(node);
+                }
+
+                return node;
+            },
             processHandlers = function(node, event, selector, handler, thisPtr) {
                 if (typeof handler !== "function") {
                     throw new DOMMethodError("on");
@@ -356,24 +367,14 @@
                 thisPtr = thisPtr || node._DOM;
 
                 var nativeEventHandler = function(e) {
-                        var originalProperties = {};
-
                         // modify event object
-                        eventElementProperties.forEach(function(prop) {
-                            var element = e[prop];
-
-                            delete e[prop];
-
-                            e[prop] = factory.create(element);
-
-                            originalProperties[prop] = element;
-                        });
+                        var props = nodeProperties.map(modifyProperties, e);
 
                         handler.call(thisPtr, e);
 
                         // restore event object
-                        eventElementProperties.forEach(function(prop) {
-                            e[prop] = originalProperties[prop];
+                        nodeProperties.forEach(function(prop, i) {
+                            e[prop] = props[i];
                         });
                     };
                 // TODO: store handler in _events property of the native element
