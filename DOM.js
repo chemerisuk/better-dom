@@ -1,18 +1,29 @@
 /*!
  * DOM.js
+ * Modern javascript library for working with DOM
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  *
- * 1) encapsulation: completely hides native objects
- * 2) usability: provides more friendly apis
- * 3) safety: api can't be changed after initialization
- * 4) performance: use native methods where it's possible
- * 5) self-documenting: every error message has a link with detailed explaination
- * 6) jsdoc, generate documentation by it
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 /*jslint browser:true boss:true*/
 /*global define CustomEvent */
-// TODO: remove, specs
 (function(window, document, undefined, docElem) {
     "use strict";
 
@@ -237,7 +248,7 @@
                 throw new DOMMethodError("findAll");
             }
 
-            var elements, m, elem, match, quick;
+            var elements, m, elem, match;
 
             if (match = rquickExpr.exec(selector)) {
                 // Speed-up: "#ID"
@@ -268,13 +279,12 @@
                     elements = node.getElementsByClassName(m);
                 }
             } else if (match = rsiblingQuick.exec(selector)) {
-                m = match[1];
                 selector = match[2];
                 elements = [];
 
-                switch (m) {
+                switch (match[1]) {
                     case "+":
-                        for (elem = node; elem; elem = null) {
+                        for (elem = node.nextElementSibling; elem; elem = null) {
                             if (matches(elem, selector)) {
                                 elements.push(elem);
                             }
@@ -282,7 +292,7 @@
                         break;
 
                     case "~":
-                        for (elem = node; elem; elem = elem.nextElementSibling) {
+                        for (elem = node; elem = elem.nextElementSibling; ) {
                             if (matches(elem, selector)) {
                                 elements.push(elem);
                             }
