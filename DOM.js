@@ -17,14 +17,14 @@
     "use strict";
 
     var factory = (function() {
-        var storage = [];
-   
+            var repository = [];
+       
             return {
                 get: function(guid) {
-                    return storage[guid];
+                    return repository[guid];
                 },
                 remove: function(guid) {
-                    storage[guid] = null;
+                    repository[guid] = null;
                 },
                 create: function(native) {
                     if (!native) return new NullElement();
@@ -42,7 +42,7 @@
                             });
                         }
                         
-                        instance.guid = storage.push(native) - 1;
+                        instance.guid = repository.push(native) - 1;
                         // data should be a simple object without toString, hasOwnProperty etc.
                         instance.data = Object.create(null);
                     }
@@ -111,15 +111,13 @@
                         (!m[4] || ~(" " + (attrs["class"] || "").value  + " ").indexOf(m[4]))
                     );
                 },
-                lastQuick, lastQuickSelector,
-                // remember native function
-                matches = docElem.matchesSelector ||
-                docElem.mozMatchesSelector ||
-                docElem.webkitMatchesSelector ||
-                docElem.oMatchesSelector ||
-                docElem.msMatchesSelector;
+                lastQuick, lastQuickSelector, matchesProperty;
 
-            return function(selector) {
+            ["m","oM","msM","mozM","webkitM"].some(function(prefix) {
+                return !!docElem[matchesProperty = prefix + "atchesSelector"];
+            });
+
+            return function(node, selector) {
                 var quick;
 
                 if (lastQuick && lastQuickSelector === selector) {
@@ -134,13 +132,13 @@
                     lastQuick = quick;
                     lastQuickSelector = selector;
 
-                    return quickIs(this, quick);
+                    return quickIs(node, quick);
                 } else {
-                    return matches.call(this, selector);
+                    return node[matchesProperty](selector);
                 }
             };
         })(),
-        find: function(selector) {
+        find: function(node, selector) {
             if (typeof selector !== "string") {
                 throw new DOMMethodError("find");
             }
@@ -150,7 +148,7 @@
             if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
                 element = document.getElementById(selector.substr(1));
             } else {
-                element = this.querySelector(selector);
+                element = node.querySelector(selector);
             }
             
             return factory.create(element);
@@ -164,19 +162,19 @@
                     return !!(this.compareDocumentPosition(factory.get(element.guid)) & 16);
                 };
 
-            return function(element) {
+            return function(node, element) {
                 var ctr = element.constructor;
 
                 if (ctr === DOMElement) {
-                    return containsElement.call(this, element);
+                    return containsElement.call(node, element);
                 } else if (ctr === DOMElements) {
-                    return factory.get(element.guid).every(containsElement, this);
+                    return factory.get(element.guid).every(containsElement, node);
                 } else {
                     throw new DOMMethodError("contains");
                 }
             };
         })(),
-        fire: function(eventType, detail) {
+        fire: function(node, eventType, detail) {
             var event;
             
             if (detail !== undefined) {
@@ -186,36 +184,36 @@
                 event.initEvent(eventType, true, true);
             }
             
-            this.dispatchEvent(event);
+            node.dispatchEvent(event);
 
-            return this;
+            return node;
         },
-        get: function(name) {
-            var value = this[name];
+        get: function(node, name) {
+            var value = node[name];
             
             if (value === undefined) {
-                value = this.getAttribute(name);
+                value = node.getAttribute(name);
             }
             
             return value;
         },
-        call: function(name) {
-            var functor = this[name], result;
+        call: function(node, name) {
+            var functor = node[name], result;
 
             if (typeof functor !== "function") {
                 throw new DOMMethodError("call");
             }
 
-            result = functor.apply(this, arguments.length > 1 ?
-                Array.prototype.splice.call(arguments, 1) : undefined);
+            result = functor.apply(node, arguments.length > 2 ?
+                Array.prototype.splice.call(arguments, 2) : undefined);
 
-            return result === undefined ? this : result;
+            return result === undefined ? node : result;
         },
-        clone: function(deep) {
-            return factory.create(this.clone(deep));
+        clone: function(node, deep) {
+            return factory.create(node.clone(deep));
         },
-        css: function() {
-            return window.getComputedStyle(this);
+        css: function(node) {
+            return window.getComputedStyle(node);
         }
     };
 
@@ -231,9 +229,10 @@
             rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
             rescape = /'|\\/g,
             expando = "DOM" + new Date().getTime(),
-            matches = DOMElement.prototype.matches;
+            matches = DOMElement.prototype.matches,
+            contains = DOMElement.prototype.contains;
 
-        return function(selector) {
+        return function(node, selector) {
             if (typeof selector !== "string") {
                 throw new DOMMethodError("findAll");
             }
@@ -243,8 +242,8 @@
             if (match = rquickExpr.exec(selector)) {
                 // Speed-up: "#ID"
                 if (m = match[1]) {
-                    if (this === docElem) {
-                        elem = this.getElementById(m);
+                    if (node === docElem) {
+                        elem = node.getElementById(m);
                         // Check parentNode to catch when Blackberry 4.6 returns
                         // nodes that are no longer in the document #6963
                         if (elem && elem.parentNode) {
@@ -256,17 +255,17 @@
                         }
                     } else {
                         // Context is not a document
-                        if (this.ownerDocument && (elem = this.ownerDocument.getElementById(m)) &&
-                            this.contains(elem) && elem.id === m) {
+                        if (node.ownerDocument && (elem = node.ownerDocument.getElementById(m)) &&
+                            contains(node, elem) && elem.id === m) {
                             elements = [elem];
                         }
                     }
                 // Speed-up: "TAG"
                 } else if (match[2]) {
-                    elements = this.getElementsByTagName(selector);
+                    elements = node.getElementsByTagName(selector);
                 // Speed-up: ".CLASS"
                 } else if (m = match[3]) {
-                    elements = this.getElementsByClassName(m);
+                    elements = node.getElementsByClassName(m);
                 }
             } else if (match = rsiblingQuick.exec(selector)) {
                 m = match[1];
@@ -275,24 +274,24 @@
 
                 switch (m) {
                     case "+":
-                        for (elem = this; elem; elem = null) {
-                            if (matches.call(elem, selector)) {
+                        for (elem = node; elem; elem = null) {
+                            if (matches(elem, selector)) {
                                 elements.push(elem);
                             }
                         }
                         break;
 
                     case "~":
-                        for (elem = this; elem; elem = elem.nextElementSibling) {
-                            if (matches.call(elem, selector)) {
+                        for (elem = node; elem; elem = elem.nextElementSibling) {
+                            if (matches(elem, selector)) {
                                 elements.push(elem);
                             }
                         }
                         break;
 
                     case ">":
-                        for (elem = this.firstElementChild; elem; elem = elem.nextElementSibling) {
-                            if (matches.call(elem, selector)) {
+                        for (elem = node.firstElementChild; elem; elem = elem.nextElementSibling) {
+                            if (matches(elem, selector)) {
                                 elements.push(elem);
                             }
                         }
@@ -301,22 +300,22 @@
             } else {
                 var old = true,
                     nid = expando,
-                    newContext = this,
-                    newSelector = this === docElem && selector;
+                    newContext = node,
+                    newSelector = node === docElem && selector;
 
-                if (this !== docElem) {
+                if (node !== docElem) {
                     // qSA works strangely on Element-rooted queries
                     // We can work around this by specifying an extra ID on the root
                     // and working up from there (Thanks to Andrew Dupont for the technique)
-                    if ( (old = this.getAttribute("id")) ) {
+                    if ( (old = node.getAttribute("id")) ) {
                         nid = old.replace(rescape, "\\$&");
                     } else {
-                        this.setAttribute("id", nid);
+                        node.setAttribute("id", nid);
                     }
 
                     nid = "[id='" + nid + "'] ";
 
-                    newContext = rsibling.test(selector) && this.parentNode || this;
+                    newContext = rsibling.test(selector) && node.parentNode || node;
                     newSelector = nid + selector.replace(/","/g, "," + nid);
                 }
 
@@ -326,7 +325,7 @@
                     } catch(qsaError) {
                     } finally {
                         if ( !old ) {
-                            this.removeAttribute("id");
+                            node.removeAttribute("id");
                         }
                     }
                 }
@@ -339,12 +338,12 @@
     DOMElement.prototype.on = (function() {
         var matches = DOMElement.prototype.matches,
             eventElementProperties = ["target", "currentTarget", "relatedTarget"],
-            processHandlers = function(event, selector, handler, thisPtr) {
+            processHandlers = function(node, event, selector, handler, thisPtr) {
                 if (typeof handler !== "function") {
                     throw new DOMMethodError("on");
                 }
 
-                thisPtr = thisPtr || this._DOM;
+                thisPtr = thisPtr || node._DOM;
 
                 var nativeEventHandler = function(e) {
                         var originalProperties = {};
@@ -368,9 +367,9 @@
                         });
                     };
                 // TODO: store handler in _events property of the native element
-                this.addEventListener(event, !selector ? nativeEventHandler : function(e) {
-                    for (var el = e.target, root = this.parentNode; el !== root; el = el.parentNode) {
-                        if (matches.call(el, selector)) {
+                node.addEventListener(event, !selector ? nativeEventHandler : function(e) {
+                    for (var el = e.target, root = node.parentNode; el !== root; el = el.parentNode) {
+                        if (matches(el, selector)) {
                             nativeEventHandler(e);
 
                             break;
@@ -379,7 +378,7 @@
                 }, false);
             };
 
-        return function(event, selector, handler, thisPtr) {
+        return function(node, event, selector, handler, thisPtr) {
             var selectorType = typeof selector,
                 eventType = typeof event;
 
@@ -392,51 +391,51 @@
             }
 
             if (eventType === "string") {
-                processHandlers.call(this, event, selector, handler, thisPtr);
+                processHandlers(node, event, selector, handler, thisPtr);
             } else if (event && eventType === "object") {
                 Object.keys(event).forEach(function(eventType) {
-                    processHandlers.call(this, eventType, undefined, event[eventType], thisPtr);
-                }, this);
+                    processHandlers(node, eventType, undefined, event[eventType], thisPtr);
+                });
             } else {
                 throw new DOMMethodError("on");
             }
 
-            return this;
+            return node;
         };
     })();
 
     DOMElement.prototype.set = (function() {
         var getter = DOMElement.prototype.get,
-            processAttribute = function(name, value) {
-            var valueType = typeof value;
+            processAttribute = function(node, name, value) {
+                var valueType = typeof value;
 
-            if (valueType === "function") {
-                value = value.call(this._DOM, getter.call(this, name));
-            } else if (valueType !== "string") {
-                throw new DOMMethodError("set");
-            }
+                if (valueType === "function") {
+                    value = value.call(node._DOM, getter(node, name));
+                } else if (valueType !== "string") {
+                    throw new DOMMethodError("set");
+                }
 
-            if (name in this) {
-                this[name] = value;
-            } else {
-                this.setAttribute(name, value);
-            }
-        };
+                if (name in node) {
+                    node[name] = value;
+                } else {
+                    node.setAttribute(name, value);
+                }
+            };
 
-        return function(name, value) {
+        return function(node, name, value) {
             var nameType = typeof name;
 
             if (nameType === "string") {
-                processAttribute.call(this, name, value);
+                processAttribute(node, name, value);
             } else if (name && nameType === "object") {
                 Object.keys(name).forEach(function(attrName) {
-                    processAttribute.call(this, attrName, name[attrName]);
-                }, this);
+                    processAttribute(node, attrName, name[attrName]);
+                });
             } else {
                 throw new DOMMethodError("set");
             }
 
-            return this;
+            return node;
         };
     })();
 
@@ -444,61 +443,63 @@
     (function() {
         // http://www.w3.org/TR/domcore/
         // 5.2.2 Mutation methods
-        var populateFragment = function(element) {
+        var populateNode = function(element) {
                 this.appendChild(factory.get(element.guid));
             },
             strategies = {
-                after: function(element, parent) {
-                    parent.insertBefore(element, this.nextSibling);
+                after: function(node, relatedNode, parent) {
+                    parent.insertBefore(relatedNode, node.nextSibling);
                 },
-                before: function(element, parent) {
-                    parent.insertBefore(element, this);
+                before: function(node, relatedNode, parent) {
+                    parent.insertBefore(relatedNode, node);
                 },
-                append: function(element, parent) {
-                    this.appendChild(element);
+                replace: function(node, relatedNode, parent) {
+                    parent.replaceChild(node, relatedNode);
                 },
-                prepend: function(element, parent) {
-                    this.insertBefore(element, this.firstChild);
+                append: function(node, relatedNode) {
+                    node.appendChild(relatedNode);
                 },
-                replace: function(element, parent) {
-                    parent.replaceChild(this, element);
+                prepend: function(node, relatedNode) {
+                    node.insertBefore(relatedNode, node.firstChild);
                 },
-                remove: function(parent) {
-                    parent.removeChild(this);
+                remove: function(node, parent) {
+                    parent.removeChild(node);
                     // cleanup cache entry
-                    factory.remove(this._DOM.guid);
+                    factory.remove(node._DOM.guid);
                 }
             };
 
         Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function(element) {
-                var parent = this.parentNode;
+            DOMElement.prototype[methodName] = function(node, element) {
+                var parent = node.parentNode;
 
                 if (parent) {
-                    var fragment, ctr = element.constructor;
+                    var relatedNode, ctr;
 
                     if (element) {
-                        if (ctr === DOMElement) {
-                            fragment = factory.get(element.guid);
-                        } else if (ctr === DOMElements) {
-                            fragment = document.createDocumentFragment();
+                        ctr = element.constructor;
 
-                            factory.get(element.guid).forEach(populateFragment, fragment);
+                        if (ctr === DOMElement) {
+                            relatedNode = factory.get(element.guid);
+                        } else if (ctr === DOMElements) {
+                            relatedNode = document.createDocumentFragment();
+
+                            factory.get(element.guid).forEach(populateNode, relatedNode);
                         }
-                    } else if (process.length === 1) {
-                        fragment = parent;
+                    } else {
+                        relatedNode = parent;
                     }
 
-                    if (fragment) {
-                       process.call(this, fragment, parent);
+                    if (relatedNode) {
+                       process(node, relatedNode, parent);
                     } else {
                         throw new DOMMethodError(methodName);
                     }
                 }
 
-                return this;
+                return node;
             };
         });
     })();
@@ -547,7 +548,7 @@
         Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function(className) {
+            DOMElement.prototype[methodName] = function(node, className) {
                 if (typeof className !== "string") {
                     throw new DOMMethodError(methodName);
                 }
@@ -555,11 +556,11 @@
                 var classes = className.split(" ");
 
                 if (methodName === "hasClass") {
-                    return classes.every(process, this);
+                    return classes.every(process, node);
                 } else {
-                    classes.forEach(process, this);
+                    classes.forEach(process, node);
 
-                    return this;
+                    return node;
                 }
             };
         });
@@ -571,11 +572,11 @@
         var method = DOMElement.prototype[methodName];
 
         DOMElement.prototype[methodName] = function() {
-            var element = factory.get(this.guid),
-                getter = function() {
-                    var result = method.apply(element, arguments);
+            var node = factory.get(this.guid),
+                getter = function(a, b, c, d, e) {
+                    var result = method(node, a, b, c, d, e);
 
-                    return result === element ? this : result;
+                    return result === node ? this : result;
                 };
 
             Object.defineProperty(this, methodName, {
@@ -590,15 +591,18 @@
 
     // DOMElements
 
-    // extend DOMElements.prototype with only specific methods
+    // shortcuts
     ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function(methodName) {
-        var process = function(elem) {
+        var slice = Array.prototype.slice,
+            process = function(element) {
                 // 'this' will be an arguments object
-                elem[methodName].apply(elem, this);
+                element[methodName].apply(element, this);
             };
 
         DOMElements.prototype[methodName] = function() {
-            this.forEach(process, arguments);
+            var args = slice.call(arguments, 0);
+
+            this.forEach(process, args);
 
             return this;
         };
