@@ -225,6 +225,17 @@
         },
         css: function(node) {
             return window.getComputedStyle(node);
+        },
+        index: function(node) {
+            var parent = node.parentNode;
+            
+            if (parent) {
+                for (var it = parent.firstElementChild, i = 0; it; it = it.nextElementSibling, ++i) {
+                    if (it === node) return i;
+                }
+            }
+            
+            return -1;
         }
     };
 
