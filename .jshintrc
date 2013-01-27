@@ -1,0 +1,8 @@
+{
+	"browser": true,
+	"boss": true,
+	"globals": {
+		"define": true,
+		"CustomEvent": true
+	}
+}

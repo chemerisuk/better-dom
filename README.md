@@ -1,4 +1,4 @@
 DOM.js
 ======
 
-Modern library for working with DOM in javascript
+Modern javascript library for working with DOM

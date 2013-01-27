@@ -1,29 +1,9 @@
 /*!
- * DOM.js
+ * DOM.js (https://github.com/chemerisuk/DOM.js)
  * Modern javascript library for working with DOM
  *
  * Copyright (c) 2013 Maksim Chemerisuk
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
  */
-/*jslint browser:true boss:true*/
-/*global define CustomEvent */
 (function(window, document, undefined, docElem) {
     "use strict";
 
@@ -228,7 +208,7 @@
         },
         index: function(node) {
             var parent = node.parentNode;
-            
+
             if (parent) {
                 for (var it = parent.firstElementChild, i = 0; it; it = it.nextElementSibling, ++i) {
                     if (it === node) return i;
@@ -246,7 +226,7 @@
         // TODO: disallow to use buggy selectors
 
         // Easily-parseable/retrievable ID or TAG or CLASS selectors
-        var rquickExpr = /^(?:#([\w-]+)|(\w+)|\.([\w-]+))$/,
+        var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
             rescape = /'|\\/g,
