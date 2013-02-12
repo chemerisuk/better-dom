@@ -1,6 +1,7 @@
 {
 	"browser": true,
 	"boss": true,
+    "newcap": false,
 	"globals": {
 		"define": true,
 		"CustomEvent": true

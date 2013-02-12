@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="DOM.js"></script>
+<style type="text/css">
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+html {
+    background: #EEE;
+}
+
+body {
+    width: 960px;
+    background: white;
+    margin: 0 auto;
+    box-shadow: 0 0 10px #AAA;
+}
+
+body > section {
+    min-height: 100%;
+    padding: 6em 1em 4em 1em;
+}
+
+body > header {
+    height: 5em;
+    margin-bottom: -5em;
+
+    background: #00F;
+    border: 2px solid #005;
+    padding: 1em;
+}
+
+body > footer {
+    height: 3em;
+    margin-top: -3em;
+
+    background: #0F0;
+    border: 2px solid #050;
+    padding: 1em;
+}
+
+body > section,
+body > header,
+body > footer {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+</style>
+</head>
+<body>
+    <header>
+            logo
+    </header>
+    <section>
+        <a href="#">test1</a>
+        <a href="#">test2</a>
+        <a href="#">test3</a>
+    </section>
+    <footer>
+        Copyright 2012
+    </footer>
+<script type="text/javascript">
+DOM.ready(function(){
+    "use strict";
+
+    var link = DOM.find("a"),
+        links = DOM.findAll("a");
+
+    console.log(link);
+    console.log(links);
+    console.log(DOM.find("section").findAll("a"));
+    console.log(DOM.find("section").findAll("> a"));
+
+    links.on("click", function(e) {
+        console.log("clicked " + this.get("innerHTML"));
+
+        e.preventDefault();
+    });
+
+    DOM.on("click", "a[data-test].cc", function() {
+        console.log("clicked " + this.get("innerHTML"));
+    });
+    
+    link.on("click", function(e) {
+        console.log(e.button);
+
+        e.preventDefault();
+        e.stopPropagation();
+    });
+
+    links.set("data-test", "test");
+    links.set("href", "#test");
+
+    link.call("focus");
+
+    links.addClass("cc");
+
+    // data property test
+    link.data.test = "test";
+
+    link.append(DOM.create("span", {"data-test1": "testappend"}, "|append|"));
+
+    link.prepend(DOM.create("span", {"data-test2": "testprepend"}, "|prepend|"));
+
+    try {
+        link.__proto__.foo = "bar";
+    } catch (err) {
+        console.log("fail to change prototype")
+    }
+
+    var quick = false;
+
+    link.matches("a", quick);
+    
+
+});
+</script>
+</body>
+</html>
