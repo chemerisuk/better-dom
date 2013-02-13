@@ -606,16 +606,13 @@
 
     // shortcuts
     ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function(methodName) {
-        var slice = Array.prototype.slice,
-            process = function(element) {
+        var process = function(element) {
                 // 'this' will be an arguments object
                 element[methodName].apply(element, this);
             };
 
         DOMElementCollection.prototype[methodName] = function() {
-            var args = slice.call(arguments, 0);
-
-            this.forEach(process, args);
+            this.forEach(process, slice.call(arguments, 0));
 
             return this;
         };
@@ -721,10 +718,6 @@
     [DOMElement, DOMElementCollection].forEach(function(ctr) {
         // fix constructor
         ctr.prototype.constructor = ctr;
-        // lock interfaces
-        if (Object.freeze) {
-            Object.freeze(ctr.prototype);
-        }
     });
 
     // TODO: DOM and NULL should be immutable?
