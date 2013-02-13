@@ -8,6 +8,8 @@
     "use strict";
 
     var docElem = document.documentElement,
+        headElem = document.head,
+        slice = Array.prototype.slice,
         // classes
         DOMElement = function(node) {
             if (!this) {
@@ -162,10 +164,10 @@
                         }
                     // Speed-up: "TAG"
                     } else if (match[2]) {
-                        elements = node.getElementsByTagName(selector);
+                        elements = slice.call(node.getElementsByTagName(selector), 0);
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
-                        elements = node.getElementsByClassName(m);
+                        elements = slice.call(node.getElementsByClassName(m), 0);
                     }
                 } else if (match = rsiblingQuick.exec(selector)) {
                     selector = match[2];
@@ -416,7 +418,39 @@
             node[propName] = value;
 
             return this;
-        }
+        },
+        html: (function() {
+            var processScripts = function(el) {
+                    if (el.src) {
+                        var script = document.createElement("script");
+
+                        script.src = el.src;
+
+                        headElem.removeChild(headElem.appendChild(script));
+                    } else {
+                        eval(el.innerHTML);
+                    }
+                };
+
+            return function(value) {
+                var node = this._node;
+
+                if (value === undefined) {
+                    return node.innerHTML;
+                }
+
+                if (typeof value !== "string") {
+                    throw new DOMMethodError("html");
+                }
+                // fix NoScope elements in IE9-
+                node.innerHTML = "&shy;" + value;
+                node.removeChild(node.firstChild);
+                // fix script elements
+                slice.call(node.getElementsByTagName("script"), 0).forEach(processScripts);
+
+                return this;
+            };
+        })()
     };
 
     // dom traversing

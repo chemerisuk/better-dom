@@ -77,13 +77,13 @@ DOM.ready(function(){
     console.log(DOM.find("section").findAll("> a"));
 
     links.on("click", function(e) {
-        console.log("clicked " + this.get("innerHTML"));
+        console.log("clicked " + this.html());
 
         e.preventDefault();
     });
 
     DOM.on("click", "a[data-test].cc", function() {
-        console.log("clicked " + this.get("innerHTML"));
+        console.log("clicked " + this.html());
     });
     
     link.on("click", function(e) {
@@ -106,6 +106,8 @@ DOM.ready(function(){
     link.append(DOM.create("span", {"data-test1": "testappend"}, "|append|"));
 
     link.prepend(DOM.create("span", {"data-test2": "testprepend"}, "|prepend|"));
+
+    link.html("<script src=\"testscript.js\"><" + "/script>updated");
 
     try {
         link.__proto__.foo = "bar";

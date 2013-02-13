@@ -2,6 +2,7 @@
 	"browser": true,
 	"boss": true,
     "newcap": false,
+    "evil": true,
 	"globals": {
 		"define": true,
 		"CustomEvent": true
