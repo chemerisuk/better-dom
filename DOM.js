@@ -13,7 +13,7 @@
         // classes
         DOMElement = function(node) {
             if (!this) {
-                // TODO: check cache
+                // TODO: check if such element is created
                 return node ? new DOMElement(node) : NULL_ELEMENT;
             }
 
@@ -31,24 +31,28 @@
                 }
             });
         },
-        DOMElementCollection = (function() {
-            // Create clean copy of Array prototype. Inspired by
-            // http://dean.edwards.name/weblog/2006/11/hooray/
-            var ref = document.getElementsByTagName("script")[0],
-                iframe = document.createElement("iframe"),
-                ctr;
-                
-            iframe.src = "about:blank";
-            iframe.style.display = "none";
-                
-            ref.parentNode.insertBefore(iframe, ref);
-            // store reference to clean Array
-            ctr = iframe.contentWindow.Array;
-            // cleanup
-            ref.parentNode.removeChild(iframe);
-            
-            return ctr;
-        })(),
+        DOMElementCollection = function(nodes) {
+            var elems = Array.prototype.map.call(nodes, DOMElement);
+
+            Object.defineProperties(this, {
+                each: {
+                    value: function(callback, thisPtr) {
+                        elems.forEach(function(elem, index) {
+                            callback.call(thisPtr, elem, index);
+                        });
+
+                        return this;
+                    },
+                    writable: false,
+                    configurable: false
+                },
+                length: {
+                    value: elems.length,
+                    writable: false,
+                    configurable: false
+                }
+            });
+        },
         SelectorMatcher = (function() {
             // Quick matching inspired by
             // https://github.com/jquery/jquery
@@ -233,25 +237,31 @@
                     }
                 }
 
-                return DOMElementCollection.prototype.map.call(elements || [], DOMElement);
+                return new DOMElementCollection(elements || []);
             };
         })(),
         contains: (function() {
             var containsElement = Node.prototype.contains ?
-                function(element) {
-                    return this.contains(element._node);
+                function(parent, child) {
+                    return parent.contains(child);
                 } :
-                function(element) {
-                    return !!(this.compareDocumentPosition(element._node) & 16);
+                function(parent, child) {
+                    return !!(parent.compareDocumentPosition(child) & 16);
                 };
 
-            return function(node, element) {
+            return function(element) {
                 var ctr = element.constructor;
 
                 if (ctr === DOMElement) {
-                    return containsElement.call(node, element);
+                    return containsElement(this._node, element._node);
                 } else if (ctr === DOMElementCollection) {
-                    return element.every(containsElement, node);
+                    var result = false;
+
+                    element.each(function(element) {
+                        return result = this.contains(element);
+                    }, this);
+
+                    return result;
                 } else {
                     throw new DOMMethodError("contains");
                 }
@@ -522,7 +532,7 @@
                             // create a fragment for the node collection
                             relatedNode = document.createDocumentFragment();
                             // populate fragment
-                            element.forEach(populateNode, relatedNode);
+                            element.each(populateNode, relatedNode);
                         }
                     } else {
                         // indicate case with remove() function
@@ -607,14 +617,14 @@
     // shortcuts
     ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function(methodName) {
         var process = function(element) {
-                // 'this' will be an arguments object
-                element[methodName].apply(element, this);
-            };
+            // this will be an arguments array
+            element[methodName].apply(element, this);
+        };
 
         DOMElementCollection.prototype[methodName] = function() {
-            this.forEach(process, slice.call(arguments, 0));
+            if (this.length === 0) return this;
 
-            return this;
+            return this.each(process, slice.call(arguments, 0));
         };
     });
 
@@ -718,6 +728,8 @@
     [DOMElement, DOMElementCollection].forEach(function(ctr) {
         // fix constructor
         ctr.prototype.constructor = ctr;
+        // freeze prototypes
+        Object.freeze(ctr.prototype);
     });
 
     // TODO: DOM and NULL should be immutable?
