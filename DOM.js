@@ -638,6 +638,8 @@
         // each method is a noop function
         NULL_ELEMENT[method] = function() {};
     });
+    // make NULL_ELEMENT to be immutable
+    Object.freeze(NULL_ELEMENT);
 
     DOM = Object.create(new DOMElement(docElem), {
         create: {
@@ -731,8 +733,6 @@
         // freeze prototypes
         Object.freeze(ctr.prototype);
     });
-
-    // TODO: DOM and NULL should be immutable?
 
     // register API
     if (typeof window.define === "function") {
