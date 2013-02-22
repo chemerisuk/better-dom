@@ -13,7 +13,7 @@
         // classes
         DOMElement = function(node) {
             if (!this) {
-                // TODO: check if such element is created
+                // TODO: check if such element was created?
                 return node ? new DOMElement(node) : NULL_ELEMENT;
             }
 
@@ -726,12 +726,21 @@
         }
     });
 
-    // protection
     [DOMElement, DOMElementCollection].forEach(function(ctr) {
         // fix constructor
         ctr.prototype.constructor = ctr;
-        // freeze prototypes
-        Object.freeze(ctr.prototype);
+    });
+
+    // protection
+    [DOMElement.prototype, DOMElementCollection.prototype, NULL_ELEMENT, DOM].forEach(function(obj) {
+        Object.keys(obj).forEach(function(prop) {
+            var desc = Object.getOwnPropertyDescriptor(obj, prop);
+
+            desc.writable = false;
+            desc.configurable = false;
+
+            Object.defineProperty(obj, prop, desc);
+        });
     });
 
     // register API
