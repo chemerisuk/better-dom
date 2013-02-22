@@ -82,7 +82,7 @@ DOM.ready(function(){
         e.preventDefault();
     });
 
-    DOM.on("click", "a[data-test].cc", function() {
+    DOM.on("click a[data-test].cc", function() {
         console.log("clicked " + this.html());
     });
     

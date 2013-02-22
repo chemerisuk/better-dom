@@ -288,14 +288,15 @@
 
                     return node;
                 },
-                processHandlers = function(element, event, selector, handler, thisPtr) {
+                processHandlers = function(element, event, handler, thisPtr) {
                     if (typeof handler !== "function") {
                         throw new DOMMethodError("on");
                     }
 
-                    thisPtr = thisPtr || element;
-
-                    var matcher = selector ? new SelectorMatcher(selector) : null,
+                    var selectorStart = event.indexOf(" "),
+                        eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
+                        selector = ~selectorStart ? event.substr(selectorStart + 1) : undefined,
+                        matcher = selector ? new SelectorMatcher(selector) : null,
                         nativeEventHandler = function(e) {
                             // modify event object
                             var props = nodeProperties.map(modifyProperties, e);
@@ -325,24 +326,17 @@
                     ( element._events[event] || (element._events[event] = []) ).push(eventsEntry);
                 };
 
-            return function(event, selector, handler, thisPtr) {
-                var selectorType = typeof selector,
-                    eventType = typeof event;
+            return function(event, handler, thisPtr) {
+                var eventType = typeof event;
 
-                if (selectorType === "function") {
-                    thisPtr = handler;
-                    handler = selector;
-                    selector = undefined;
-                } else if (selector && selectorType !== "string") {
-                    throw new DOMMethodError("on");
-                }
+                thisPtr = thisPtr || this;
 
                 if (eventType === "string") {
-                    processHandlers(this, event, selector, handler, thisPtr);
-                } else if (event && eventType === "object") {
-                    Object.keys(event).forEach(function(eventType) {
-                        processHandlers(this, eventType, undefined, event[eventType], thisPtr);
-                    });
+                    processHandlers(this, event, handler, thisPtr);
+                } else if (eventType === "object") {
+                    Object.keys(event).forEach(function(key) {
+                        processHandlers(this, key, event[eventType], thisPtr);
+                    }, this);
                 } else {
                     throw new DOMMethodError("on");
                 }
