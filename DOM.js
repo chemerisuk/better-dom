@@ -7,14 +7,15 @@
 (function(window, document, undefined) {
     "use strict";
 
-    var docElem = document.documentElement,
+    var DOM,
+        docElem = document.documentElement,
         headElem = document.head,
         slice = Array.prototype.slice,
         // classes
         DOMElement = function(node) {
             if (!this) {
                 // TODO: check if such element was created?
-                return node ? new DOMElement(node) : NULL_ELEMENT;
+                return node ? new DOMElement(node) : new NullDOMElement();
             }
 
             Object.defineProperties(this, {
@@ -52,6 +53,9 @@
                     configurable: false
                 }
             });
+        },
+        NullDOMElement = function() {
+            DOMElement.call(this, null);
         },
         SelectorMatcher = (function() {
             // Quick matching inspired by
@@ -104,8 +108,6 @@
 
             return ctr;
         })(),
-        // constants
-        DOM, NULL_ELEMENT,
         // errors
         DOMMethodError = function(methodName, objectName, hashName) {
             this.name = "DOMMethodError";
@@ -628,19 +630,16 @@
         };
     });
 
+    // NullDOMElement
+    Object.keys(DOMElement.prototype).forEach(function(method) {
+        // each method is a noop function
+        NullDOMElement.prototype[method] = function() {};
+    });
+
     // DOMMethodError
     DOMMethodError.prototype = new Error();
 
     // initialize constants
-    NULL_ELEMENT = new DOMElement(null);
-
-    Object.keys(NULL_ELEMENT).forEach(function(method) {
-        // each method is a noop function
-        NULL_ELEMENT[method] = function() {};
-    });
-    // make NULL_ELEMENT to be immutable
-    Object.freeze(NULL_ELEMENT);
-
     DOM = Object.create(new DOMElement(docElem), {
         create: {
             value: function(tagName, attrs, content) {
@@ -732,7 +731,7 @@
     });
 
     // protection
-    [DOMElement.prototype, DOMElementCollection.prototype, NULL_ELEMENT, DOM].forEach(function(obj) {
+    [DOMElement.prototype, DOMElementCollection.prototype, NullDOMElement.prototype, DOM].forEach(function(obj) {
         Object.keys(obj).forEach(function(prop) {
             var desc = Object.getOwnPropertyDescriptor(obj, prop);
 
