@@ -25,6 +25,12 @@
                     enumerable: false,
                     configurable: false
                 },
+                _events: {
+                    value: Object.create(null),
+                    writable: false,
+                    enumerable: false,
+                    configurable: false
+                },
                 data: {
                     value: Object.create(null),
                     writable: false,
@@ -300,17 +306,23 @@
                             nodeProperties.forEach(function(prop, i) {
                                 e[prop] = props[i];
                             });
-                        };
-                    // TODO: store handler in _events property of the native element
-                    element._node.addEventListener(event, !selector ? nativeEventHandler : function(e) {
-                        for (var el = e.target, root = element._node.parentNode; el !== root; el = el.parentNode) {
-                            if (matcher.test(el)) {
-                                nativeEventHandler(e);
+                        },
+                        eventsEntry = {
+                            key: handler, 
+                            value: !selector ? nativeEventHandler : function(e) {
+                                for (var el = e.target, root = element._node.parentNode; el !== root; el = el.parentNode) {
+                                    if (matcher.test(el)) {
+                                        nativeEventHandler(e);
 
-                                break;
+                                        break;
+                                    }
+                                }
                             }
-                        }
-                    }, false);
+                        };
+                    // attach event listener
+                    element._node.addEventListener(event, eventsEntry.value, false);
+                    // store event entry
+                    ( element._events[event] || (element._events[event] = []) ).push(eventsEntry);
                 };
 
             return function(event, selector, handler, thisPtr) {
@@ -338,6 +350,21 @@
                 return this;
             };
         })(),
+        off: function(event, handler) {
+            if (typeof event !== "string" || handler && typeof handler !== "function") {
+                throw new DOMMethodError("off");
+            }
+
+            ( this._events[event] || [] ).forEach(function(eventsEntry, index, eventsEntries) {
+                if (!handler || handler === eventsEntry.key) {
+                    this._node.removeEventListener(event, eventsEntry.value, false);
+                    // TODO: find a better way to free memory
+                    eventsEntries[index] = undefined;
+                }
+            });
+
+            return this;
+        },
         fire: function(eventType, detail) {
             var event;
             
