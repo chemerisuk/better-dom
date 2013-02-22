@@ -9,6 +9,7 @@
 
     var DOM,
         docElem = document.documentElement,
+        bodyElem = document.body,
         headElem = document.head,
         slice = Array.prototype.slice,
         // classes
@@ -483,7 +484,21 @@
 
                 return this;
             };
-        })()
+        })(),
+        offset: function() {
+            var boundingRect = this._node.getBoundingClientRect(),
+                clientTop = docElem.clientTop || bodyElem.clientTop || 0,
+                clientLeft = docElem.clientLeft || bodyElem.clientLeft || 0,
+                scrollTop = window.pageYOffset || docElem.scrollTop || bodyElem.scrollTop,
+                scrollLeft = window.pageXOffset || docElem.scrollLeft || bodyElem.scrollLeft;
+
+            return {
+                top: boundingRect.top + scrollTop - clientTop,
+                left: boundingRect.left + scrollLeft - clientLeft,
+                right: boundingRect.right + scrollLeft - clientLeft,
+                bottom: boundingRect.bottom + scrollTop - clientTop
+            };
+        }
     };
 
     // dom traversing
