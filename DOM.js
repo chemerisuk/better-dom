@@ -674,29 +674,22 @@
         };
     });
 
-    // cleanup prototype by saving only specific methods
-    ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource",
-     "toString", "toLocaleString", "indexOf", "lastIndexOf"].forEach(function(methodName) {
-        delete DOMElementCollection.prototype[methodName];
-    });
-
-    ["forEach", "filter"].forEach(function(methodName) {
-        var process = DOMElementCollection.prototype[methodName];
-
-        delete DOMElementCollection.prototype[methodName];
-
-        if (methodName === "forEach") {
-            // fix forEach to be each
-            methodName = "each";
-        }
-
-        DOMElementCollection.prototype[methodName] = function(callback, thisPtr) {
+    DOMElementCollection.prototype.each = (function() {
+        var forEach = DOMElementCollection.prototype.forEach;
+        // patch native forEach to return reference to this 
+        return function(callback, thisPtr) {
             if (this.length) {
-                process.call(this, callback, thisPtr);    
+                forEach.call(this, callback, thisPtr);
             }
 
             return this;
         };
+    });
+
+    // cleanup prototype by saving only specific methods
+    ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource", "toString", 
+    "toLocaleString", "indexOf", "lastIndexOf", "forEach", "sort", "reverce"].forEach(function(methodName) {
+        delete DOMElementCollection.prototype[methodName];
     });
 
     // use Array.prototype implementation to return regular array
