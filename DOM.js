@@ -333,7 +333,11 @@
                     processHandlers(this, event, handler, thisPtr);
                 } else if (eventType === "object") {
                     Object.keys(event).forEach(function(key) {
-                        processHandlers(this, key, event[eventType], thisPtr);
+                        processHandlers(this, key, event[key], thisPtr);
+                    }, this);
+                } else if (Array.isArray(event)) {
+                    event.forEach(function(key) {
+                        processHandlers(this, key, handler, thisPtr);
                     }, this);
                 } else {
                     throw new DOMMethodError("on");
@@ -674,9 +678,10 @@
         };
     });
 
+    // patch native forEach to return reference to be chainable
     DOMElementCollection.prototype.each = (function() {
         var forEach = DOMElementCollection.prototype.forEach;
-        // patch native forEach to return reference to this 
+         
         return function(callback, thisPtr) {
             if (this.length) {
                 forEach.call(this, callback, thisPtr);
