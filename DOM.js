@@ -11,7 +11,6 @@
         htmlEl = document.documentElement,
         bodyEl = document.body,
         headEl = document.head,
-        slice = Array.prototype.slice,
         // classes
         DOMElement = function(node) {
             if (!this) {
@@ -39,55 +38,24 @@
                 }
             });
         },
-        DOMElementCollection = function(nodes) {
-            var elems = Array.prototype.map.call(nodes, DOMElement);
+        DOMElementCollection = (function() {
+            // Create clean copy of Array prototype. Inspired by
+            // http://dean.edwards.name/weblog/2006/11/hooray/
+            var ref = document.getElementsByTagName("script")[0],
+                iframe = document.createElement("iframe"),
+                ctr;
+                
+            iframe.src = "about:blank";
+            iframe.style.display = "none";
+                
+            ref.parentNode.insertBefore(iframe, ref);
+            // store reference to clean Array
+            ctr = iframe.contentWindow.Array;
+            // cleanup
+            ref.parentNode.removeChild(iframe);
             
-            Object.defineProperties(this, {
-                each: {
-                    value: function(callback, thisPtr) {
-                        elems.forEach(function(elem, index) {
-                            callback.call(thisPtr, elem, index);
-                        });
-
-                        return this;
-                    },
-                    writable: false,
-                    configurable: false
-                },
-                some: {
-                    value: function(callback, thisPtr) {
-                        return elems.some(function(elem, index) {
-                            return callback.call(thisPtr, elem, index);
-                        });
-                    },
-                    writable: false,
-                    configurable: false
-                },
-                every: {
-                    value: function(callback, thisPtr) {
-                        return elems.every(function(elem, index) {
-                            return callback.call(thisPtr, elem, index);
-                        });
-                    },
-                    writable: false,
-                    configurable: false
-                },
-                map: {
-                    value: function(callback, thisPtr) {
-                        return elems.map(function(elem, index) {
-                            return callback.call(thisPtr, elem, index);
-                        });
-                    },
-                    writable: false,
-                    configurable: false
-                },
-                length: {
-                    value: elems.length,
-                    writable: false,
-                    configurable: false
-                }
-            });
-        },
+            return ctr;
+        })(),
         NullDOMElement = function() {
             DOMElement.call(this, null);
         },
@@ -184,7 +152,9 @@
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
                 rescape = /'|\\/g,
-                expando = "DOM" + new Date().getTime();
+                expando = "DOM" + new Date().getTime(),
+                slice = DOMElementCollection.prototype.slice,
+                map = DOMElementCollection.prototype.map;
 
             return function(selector) {
                 if (typeof selector !== "string") {
@@ -273,7 +243,7 @@
                     }
                 }
 
-                return new DOMElementCollection(elements || []);
+                return map.call(elements || [], DOMElement);
             };
         })(),
         contains: (function() {
@@ -481,7 +451,9 @@
             return this;
         },
         html: (function() {
-            var processScripts = function(el) {
+            var slice = DOMElementCollection.prototype.slice,
+                forEach = DOMElementCollection.prototype.forEach,
+                processScripts = function(el) {
                     if (el.src) {
                         var script = document.createElement("script");
 
@@ -507,7 +479,7 @@
                 node.innerHTML = "&shy;" + value;
                 node.removeChild(node.firstChild);
                 // fix script elements
-                slice.call(node.getElementsByTagName("script"), 0).forEach(processScripts);
+                forEach.call(slice.call(node.getElementsByTagName("script"), 0), processScripts);
 
                 return this;
             };
@@ -677,11 +649,20 @@
 
     })();
 
+    // NullDOMElement
+    Object.keys(DOMElement.prototype).forEach(function(method) {
+        // each method is a noop function
+        NullDOMElement.prototype[method] = function() {};
+    });
+
+    NullDOMElement.constructor = DOMElement;
+
     // DOMElementCollection
 
     // shortcuts
     ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function(methodName) {
-        var process = function(element) {
+        var slice = DOMElementCollection.prototype.slice,
+            process = function(element) {
             // this will be an arguments array
             element[methodName].apply(element, this);
         };
@@ -693,13 +674,33 @@
         };
     });
 
-    // NullDOMElement
-    Object.keys(DOMElement.prototype).forEach(function(method) {
-        // each method is a noop function
-        NullDOMElement.prototype[method] = function() {};
+    // cleanup prototype by saving only specific methods
+    ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource",
+     "toString", "toLocaleString", "indexOf", "lastIndexOf"].forEach(function(methodName) {
+        delete DOMElementCollection.prototype[methodName];
     });
 
-    NullDOMElement.constructor = DOMElement;
+    ["forEach", "filter"].forEach(function(methodName) {
+        var process = DOMElementCollection.prototype[methodName];
+
+        delete DOMElementCollection.prototype[methodName];
+
+        if (methodName === "forEach") {
+            // fix forEach to be each
+            methodName = "each";
+        }
+
+        DOMElementCollection.prototype[methodName] = function(callback, thisPtr) {
+            if (this.length) {
+                process.call(this, callback, thisPtr);    
+            }
+
+            return this;
+        };
+    });
+
+    // use Array.prototype implementation to return regular array
+    DOMElementCollection.prototype.map = Array.prototype.map;
 
     // DOMMethodError
     DOMMethodError.prototype = new Error();
@@ -795,13 +796,14 @@
         ctr.prototype.constructor = ctr;
     });
 
-    // protection
+    // API protection
     [DOMElement.prototype, DOMElementCollection.prototype, NullDOMElement.prototype, DOM].forEach(function(obj) {
         Object.keys(obj).forEach(function(prop) {
             var desc = Object.getOwnPropertyDescriptor(obj, prop);
 
             desc.writable = false;
             desc.configurable = false;
+            desc.enumerable = false;
 
             Object.defineProperty(obj, prop, desc);
         });
