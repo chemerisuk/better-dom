@@ -8,9 +8,9 @@
     "use strict";
 
     var DOM,
-        docElem = document.documentElement,
-        bodyElem = document.body,
-        headElem = document.head,
+        htmlEl = document.documentElement,
+        bodyEl = document.body,
+        headEl = document.head,
         slice = Array.prototype.slice,
         // classes
         DOMElement = function(node) {
@@ -41,8 +41,6 @@
         },
         DOMElementCollection = function(nodes) {
             var elems = Array.prototype.map.call(nodes, DOMElement);
-
-            // TODO: determine if it's usefull to pass index 
             
             Object.defineProperties(this, {
                 each: {
@@ -129,7 +127,7 @@
                 matchesProperty;
 
             ["m","oM","msM","mozM","webkitM"].some(function(prefix) {
-                return !!docElem[matchesProperty = prefix + "atchesSelector"];
+                return !!htmlEl[matchesProperty = prefix + "atchesSelector"];
             });
 
             ctr.prototype = {
@@ -489,7 +487,7 @@
 
                         script.src = el.src;
 
-                        headElem.removeChild(headElem.appendChild(script));
+                        headEl.removeChild(headEl.appendChild(script));
                     } else {
                         eval(el.innerHTML);
                     }
@@ -516,10 +514,10 @@
         })(),
         offset: function() {
             var boundingRect = this._node.getBoundingClientRect(),
-                clientTop = docElem.clientTop || bodyElem.clientTop || 0,
-                clientLeft = docElem.clientLeft || bodyElem.clientLeft || 0,
-                scrollTop = window.pageYOffset || docElem.scrollTop || bodyElem.scrollTop,
-                scrollLeft = window.pageXOffset || docElem.scrollLeft || bodyElem.scrollLeft;
+                clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
+                clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
+                scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
+                scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
 
             return {
                 top: boundingRect.top + scrollTop - clientTop,
@@ -621,7 +619,7 @@
     // css classes manipulation
     (function() {
         var rclass = /[\n\t\r]/g,
-            strategies = docElem.classList ? {
+            strategies = htmlEl.classList ? {
                 hasClass: function(className) {
                     return this.classList.constains(className);
                 },
@@ -701,11 +699,13 @@
         NullDOMElement.prototype[method] = function() {};
     });
 
+    NullDOMElement.constructor = DOMElement;
+
     // DOMMethodError
     DOMMethodError.prototype = new Error();
 
     // initialize constants
-    DOM = Object.create(new DOMElement(docElem), {
+    DOM = Object.create(new DOMElement(htmlEl), {
         create: {
             value: function(tagName, attrs, content) {
                 if (typeof tagName !== "string") {
