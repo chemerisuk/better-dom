@@ -31,9 +31,10 @@
                     enumerable: false,
                     configurable: false
                 },
-                data: {
+                _data: {
                     value: Object.create(null),
                     writable: false,
+                    enumerable: false,
                     configurable: false
                 }
             });
@@ -372,6 +373,26 @@
             }
             
             this._node.dispatchEvent(event);
+
+            return this;
+        },
+        data: function(name, value) {
+            if (typeof name !== "string") {
+                throw new DOMMethodError("data");
+            }
+
+            var dataAttrName = "data-" + name,
+                isGetter = value === undefined;
+
+            if (this._node.hasAttribute(dataAttrName)) {
+                return isGetter ? this.get(dataAttrName) : this.set(dataAttrName, value);
+            }
+
+            if (isGetter) {
+                return this._data[name];
+            }
+
+            this._data[name] = value;
 
             return this;
         },

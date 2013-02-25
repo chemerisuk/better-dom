@@ -100,8 +100,8 @@ DOM.ready(function(){
 
     links.addClass("cc");
 
-    // data property test
-    link.data.test = "test";
+    // data method test
+    link.data("test", "test");
 
     link.append(DOM.create("span", {"data-test1": "testappend"}, "|append|"));
 
