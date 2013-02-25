@@ -42,6 +42,8 @@
         DOMElementCollection = function(nodes) {
             var elems = Array.prototype.map.call(nodes, DOMElement);
 
+            // TODO: determine if it's usefull to pass index 
+            
             Object.defineProperties(this, {
                 each: {
                     value: function(callback, thisPtr) {
@@ -50,6 +52,33 @@
                         });
 
                         return this;
+                    },
+                    writable: false,
+                    configurable: false
+                },
+                some: {
+                    value: function(callback, thisPtr) {
+                        return elems.some(function(elem, index) {
+                            return callback.call(thisPtr, elem, index);
+                        });
+                    },
+                    writable: false,
+                    configurable: false
+                },
+                every: {
+                    value: function(callback, thisPtr) {
+                        return elems.every(function(elem, index) {
+                            return callback.call(thisPtr, elem, index);
+                        });
+                    },
+                    writable: false,
+                    configurable: false
+                },
+                map: {
+                    value: function(callback, thisPtr) {
+                        return elems.map(function(elem, index) {
+                            return callback.call(thisPtr, elem, index);
+                        });
                     },
                     writable: false,
                     configurable: false
