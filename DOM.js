@@ -14,14 +14,11 @@
         // classes
         DOMElement = function(node) {
             if (!this) {
-                // TODO: check if such element was created?
                 return node ? new DOMElement(node) : new NullDOMElement();
             }
-
-            var privateObject = {
-                "@": {},   /* events data */
-                "!": {}    /* custom data */
-            };
+            // private data objects
+            var dataStorage = {},
+                eventsStorage = {};
 
             Object.defineProperties(this, {
                 _el: {
@@ -30,51 +27,33 @@
                     enumerable: false,
                     configurable: false
                 },
-                get: {
-                    value: function(name) {
+                data: {
+                   value: function(name, value) {
                         if (typeof name !== "string") {
-                            throw new DOMMethodError("get");
+                            throw new DOMMethodError("data");
                         }
 
-                        var dataObject = privateObject[name.substr(0, 1)];
+                        var isGetter = value === undefined,
+                            storage = dataStorage;
 
-                        if (dataObject) {
-                            return dataObject[name.substr(1)];
-                        }
-
-                        return node[name] || node.getAttribute(name);
-                    },
-                    writable: false,
-                    configurable: false
-                },
-                set: {
-                    value: function(name, value) {
-                        if (typeof name === "string") {
-                            var dataObject = privateObject[name.substr(0, 1)],
-                                valueType = typeof value;
-
-                            if (dataObject) {
-                                dataObject[name.substr(1)] = value;
-                            } else if (value === null) {
-                                node.removeAttribute(name, value);
-                            } else if (valueType === "function") {
-                                value = value.call(this, this.get(name));
-                            } else if (valueType === "string") {
-                                if (name in node) {
-                                    node[name] = value;
-                                } else {
-                                    node.setAttribute(name, value);
-                                }    
-                            } else {
-                                throw new DOMMethodError("set");
+                        if (name.indexOf("data-") === 0) {
+                            if (isGetter) {
+                                return this._el.getAttribute(name);
                             }
-                        } else if (name && typeof name === "object") {
-                            Object.keys(name).forEach(function(key) {
-                                this.set(key, name[key]);
-                            }, this);
-                        } else {
-                            throw new DOMMethodError("set");
+
+                            this._el.setAttribute(name, value);
+
+                            return this;
+                        } else if (name.substr(0, 1) === "@") {
+                            storage = eventsStorage;
+                            name = name.substr(1);
                         }
+
+                        if (isGetter) {
+                            return storage[name];
+                        }
+
+                        storage[name] = value;
 
                         return this;
                     },
@@ -349,7 +328,7 @@
                                 e[prop] = props[i];
                             });
                         },
-                        eventsEntries = element.get("@" + event),
+                        eventsEntries = element.data("@" + event),
                         eventsEntry = {
                             key: handler, 
                             value: !selector ? nativeEventHandler : function(e) {
@@ -368,7 +347,7 @@
                     if (eventsEntries) {
                         eventsEntries.push(eventsEntry);
                     } else {
-                        element.set("@" + event, [eventsEntry]);
+                        element.data("@" + event, [eventsEntry]);
                     }
                 };
 
@@ -399,10 +378,10 @@
                 throw new DOMMethodError("off");
             }
 
-            var eventsEntries = this.get("@" + event);
+            var eventsEntries = this.data("@" + event);
 
             if (eventsEntries) {
-                this.set("@" + event, eventsEntries.filter(function(eventsEntry) {
+                this.data("@" + event, eventsEntries.filter(function(eventsEntry) {
                     if (!handler || handler === eventsEntry.key) {
                         this._el.removeEventListener(event, eventsEntry.value, false);
                     }
@@ -425,26 +404,42 @@
 
             return this;
         },
-        data: function(name, value) {
-            if (typeof name !== "string") {
-                throw new DOMMethodError("data");
-            }
+        get: function(name) {
+            return this._el[name] || this._el.getAttribute(name);
+        },
+        set: (function() {
+            var processAttribute = function(element, name, value) {
+                    var valueType = typeof value;
 
-            var dataAttrName = "data-" + name,
-                isGetter = value === undefined;
+                    if (valueType === "function") {
+                        value = value.call(this, element.get(name));
+                    } else if (valueType !== "string") {
+                        throw new DOMMethodError("set");
+                    }
 
-            if (this._el.hasAttribute(dataAttrName)) {
-                if (isGetter) {
-                    return this._el.getAttribute(dataAttrName); 
+                    if (name in element._el) {
+                        element._el[name] = value;
+                    } else {
+                        element._el.setAttribute(name, value);
+                    }
+                };
+
+            return function(name, value) {
+                var nameType = typeof name;
+
+                if (nameType === "string") {
+                    processAttribute(this, name, value);
+                } else if (name && nameType === "object") {
+                    Object.keys(name).forEach(function(attrName) {
+                        processAttribute(this, attrName, name[attrName]);
+                    }, this);
+                } else {
+                    throw new DOMMethodError("set");
                 }
 
-                this._el.setAttribute(dataAttrName, value);
-
                 return this;
-            }
-
-            return this[isGetter ? "get" : "set"]("!" + name, value);
-        },
+            };
+        })(),
         clone: function(deep) {
             return new DOMElement(this._el.cloneNode(deep));
         },
