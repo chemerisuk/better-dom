@@ -18,23 +18,67 @@
                 return node ? new DOMElement(node) : new NullDOMElement();
             }
 
+            var privateObject = {
+                "@": {},   /* events data */
+                "!": {}    /* custom data */
+            };
+
             Object.defineProperties(this, {
-                _node: {
+                _el: {
                     value: node,
                     writable: false,
                     enumerable: false,
                     configurable: false
                 },
-                _events: {
-                    value: Object.create(null),
+                get: {
+                    value: function(name) {
+                        if (typeof name !== "string") {
+                            throw new DOMMethodError("get");
+                        }
+
+                        var dataObject = privateObject[name.substr(0, 1)];
+
+                        if (dataObject) {
+                            return dataObject[name.substr(1)];
+                        }
+
+                        return node[name] || node.getAttribute(name);
+                    },
                     writable: false,
-                    enumerable: false,
                     configurable: false
                 },
-                _data: {
-                    value: Object.create(null),
+                set: {
+                    value: function(name, value) {
+                        if (typeof name === "string") {
+                            var dataObject = privateObject[name.substr(0, 1)],
+                                valueType = typeof value;
+
+                            if (dataObject) {
+                                dataObject[name.substr(1)] = value;
+                            } else if (value === null) {
+                                node.removeAttribute(name, value);
+                            } else if (valueType === "function") {
+                                value = value.call(this, this.get(name));
+                            } else if (valueType === "string") {
+                                if (name in node) {
+                                    node[name] = value;
+                                } else {
+                                    node.setAttribute(name, value);
+                                }    
+                            } else {
+                                throw new DOMMethodError("set");
+                            }
+                        } else if (name && typeof name === "object") {
+                            Object.keys(name).forEach(function(key) {
+                                this.set(key, name[key]);
+                            }, this);
+                        } else {
+                            throw new DOMMethodError("set");
+                        }
+
+                        return this;
+                    },
                     writable: false,
-                    enumerable: false,
                     configurable: false
                 }
             });
@@ -57,9 +101,7 @@
             
             return ctr;
         })(),
-        NullDOMElement = function() {
-            DOMElement.call(this, null);
-        },
+        NullDOMElement = function() {},
         SelectorMatcher = (function() {
             // Quick matching inspired by
             // https://github.com/jquery/jquery
@@ -125,7 +167,7 @@
         matches: function(selector) {
             var matcher = new SelectorMatcher(selector);
 
-            return matcher.test(this._node);
+            return matcher.test(this._el);
         },
         find: function(selector) {
             if (typeof selector !== "string") {
@@ -137,7 +179,7 @@
             if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
                 result = document.getElementById(selector.substr(1));
             } else {
-                result = this._node.querySelector(selector);
+                result = this._el.querySelector(selector);
             }
             
             return DOMElement(result);
@@ -162,7 +204,7 @@
                     throw new DOMMethodError("findAll");
                 }
 
-                var elements, m, elem, match, node = this._node, matcher;
+                var elements, m, elem, match, matcher;
 
                 if (match = rquickExpr.exec(selector)) {
                     // Speed-up: "#ID"
@@ -175,10 +217,10 @@
                         }
                     // Speed-up: "TAG"
                     } else if (match[2]) {
-                        elements = slice.call(node.getElementsByTagName(selector), 0);
+                        elements = slice.call(this._el.getElementsByTagName(selector), 0);
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
-                        elements = slice.call(node.getElementsByClassName(m), 0);
+                        elements = slice.call(this._el.getElementsByClassName(m), 0);
                     }
                 } else if (match = rsiblingQuick.exec(selector)) {
                     selector = match[2];
@@ -187,7 +229,7 @@
 
                     switch (match[1]) {
                         case "+":
-                            for (elem = node.nextElementSibling; elem; elem = null) {
+                            for (elem = this._el.nextElementSibling; elem; elem = null) {
                                 if (matcher.test(elem)) {
                                     elements.push(elem);
                                 }
@@ -195,7 +237,7 @@
                             break;
 
                         case "~":
-                            for (elem = node; elem = elem.nextElementSibling; ) {
+                            for (elem = this._el; elem = elem.nextElementSibling; ) {
                                 if (matcher.test(elem)) {
                                     elements.push(elem);
                                 }
@@ -203,7 +245,7 @@
                             break;
 
                         case ">":
-                            for (elem = node.firstElementChild; elem; elem = elem.nextElementSibling) {
+                            for (elem = this._el.firstElementChild; elem; elem = elem.nextElementSibling) {
                                 if (matcher.test(elem)) {
                                     elements.push(elem);
                                 }
@@ -213,22 +255,22 @@
                 } else {
                     var old = true,
                         nid = expando,
-                        newContext = node,
+                        newContext = this._el,
                         newSelector = this === DOM && selector;
 
                     if (this !== DOM) {
                         // qSA works strangely on Element-rooted queries
                         // We can work around this by specifying an extra ID on the root
                         // and working up from there (Thanks to Andrew Dupont for the technique)
-                        if ( (old = node.getAttribute("id")) ) {
+                        if ( (old = this._el.getAttribute("id")) ) {
                             nid = old.replace(rescape, "\\$&");
                         } else {
-                            node.setAttribute("id", nid);
+                            this._el.setAttribute("id", nid);
                         }
 
                         nid = "[id='" + nid + "'] ";
 
-                        newContext = rsibling.test(selector) && node.parentNode || node;
+                        newContext = rsibling.test(selector) && this._el.parentNode || this._el;
                         newSelector = nid + selector.replace(/","/g, "," + nid);
                     }
 
@@ -238,7 +280,7 @@
                         } catch(qsaError) {
                         } finally {
                             if ( !old ) {
-                                node.removeAttribute("id");
+                                this._el.removeAttribute("id");
                             }
                         }
                     }
@@ -260,7 +302,7 @@
                 var ctr = element.constructor;
 
                 if (ctr === DOMElement) {
-                    return containsElement(this._node, element._node);
+                    return containsElement(this._el, element._el);
                 } else if (ctr === DOMElementCollection) {
                     var result = false;
 
@@ -307,10 +349,11 @@
                                 e[prop] = props[i];
                             });
                         },
+                        eventsEntries = element.get("@" + event),
                         eventsEntry = {
                             key: handler, 
                             value: !selector ? nativeEventHandler : function(e) {
-                                for (var el = e.target, root = element._node.parentNode; el !== root; el = el.parentNode) {
+                                for (var el = e.target, root = element._el.parentNode; el !== root; el = el.parentNode) {
                                     if (matcher.test(el)) {
                                         nativeEventHandler(e);
 
@@ -320,9 +363,13 @@
                             }
                         };
                     // attach event listener
-                    element._node.addEventListener(event, eventsEntry.value, false);
+                    element._el.addEventListener(eventType, eventsEntry.value, false);
                     // store event entry
-                    ( element._events[event] || (element._events[event] = []) ).push(eventsEntry);
+                    if (eventsEntries) {
+                        eventsEntries.push(eventsEntry);
+                    } else {
+                        element.set("@" + event, [eventsEntry]);
+                    }
                 };
 
             return function(event, handler, thisPtr) {
@@ -352,13 +399,15 @@
                 throw new DOMMethodError("off");
             }
 
-            ( this._events[event] || [] ).forEach(function(eventsEntry, index, eventsEntries) {
-                if (!handler || handler === eventsEntry.key) {
-                    this._node.removeEventListener(event, eventsEntry.value, false);
-                    // TODO: find a better way to free memory
-                    eventsEntries[index] = undefined;
-                }
-            });
+            var eventsEntries = this.get("@" + event);
+
+            if (eventsEntries) {
+                this.set("@" + event, eventsEntries.filter(function(eventsEntry) {
+                    if (!handler || handler === eventsEntry.key) {
+                        this._el.removeEventListener(event, eventsEntry.value, false);
+                    }
+                }, this));
+            }
 
             return this;
         },
@@ -372,7 +421,7 @@
                 event.initEvent(eventType, true, true);
             }
             
-            this._node.dispatchEvent(event);
+            this._el.dispatchEvent(event);
 
             return this;
         },
@@ -384,76 +433,26 @@
             var dataAttrName = "data-" + name,
                 isGetter = value === undefined;
 
-            if (this._node.hasAttribute(dataAttrName)) {
-                return isGetter ? this.get(dataAttrName) : this.set(dataAttrName, value);
-            }
-
-            if (isGetter) {
-                return this._data[name];
-            }
-
-            this._data[name] = value;
-
-            return this;
-        },
-        get: function(name) {
-            var value = this._node[name];
-            
-            return value !== undefined ? value : this._node.getAttribute(name);
-        },
-        set: (function() {
-            var processAttribute = function(element, name, value) {
-                    var valueType = typeof value;
-
-                    if (valueType === "function") {
-                        value = value.call(this, element.get(name));
-                    } else if (valueType !== "string") {
-                        throw new DOMMethodError("set");
-                    }
-
-                    if (name in element._node) {
-                        element._node[name] = value;
-                    } else {
-                        element._node.setAttribute(name, value);
-                    }
-                };
-
-            return function(name, value) {
-                var nameType = typeof name;
-
-                if (nameType === "string") {
-                    processAttribute(this, name, value);
-                } else if (name && nameType === "object") {
-                    Object.keys(name).forEach(function(attrName) {
-                        processAttribute(this, attrName, name[attrName]);
-                    }, this);
-                } else {
-                    throw new DOMMethodError("set");
+            if (this._el.hasAttribute(dataAttrName)) {
+                if (isGetter) {
+                    return this._el.getAttribute(dataAttrName); 
                 }
 
-                return this;
-            };
-        })(),
-        call: function(name) {
-            var functor = this._node[name], result;
+                this._el.setAttribute(dataAttrName, value);
 
-            if (typeof functor !== "function") {
-                throw new DOMMethodError("call");
+                return this;
             }
 
-            result = functor.apply(this._node, arguments.length > 2 ?
-                Array.prototype.splice.call(arguments, 2) : undefined);
-
-            return result === undefined ? this : result;
+            return this[isGetter ? "get" : "set"]("!" + name, value);
         },
         clone: function(deep) {
-            return new DOMElement(this._node.cloneNode(deep));
+            return new DOMElement(this._el.cloneNode(deep));
         },
         css: function() {
-            return window.getComputedStyle(this._node);
+            return window.getComputedStyle(this._el);
         },
         value: function(value) {
-            var node = this._node, propName;
+            var node = this._el, propName;
 
             if (node.value !== undefined) {
                 propName = "value";
@@ -491,7 +490,7 @@
                 };
 
             return function(value) {
-                var node = this._node;
+                var node = this._el;
 
                 if (value === undefined) {
                     return node.innerHTML;
@@ -510,7 +509,7 @@
             };
         })(),
         offset: function() {
-            var boundingRect = this._node.getBoundingClientRect(),
+            var boundingRect = this._el.getBoundingClientRect(),
                 clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
                 clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
                 scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
@@ -539,7 +538,7 @@
             var propertyName = strategies[methodName];
 
             DOMElement.prototype[methodName] = function(selector) {
-                var node = this._node,
+                var node = this._el,
                     matcher = selector ? new SelectorMatcher(selector) : null;
 
                 while ( !(node = node[propertyName]) || !matcher || matcher.test(node) );
@@ -555,7 +554,7 @@
         // http://www.w3.org/TR/domcore/
         // 5.2.2 Mutation methods
         var populateNode = function(element) {
-                this.appendChild(element._node);
+                this.appendChild(element._el);
             },
             strategies = {
                 after: function(node, relatedNode, parent) {
@@ -584,12 +583,12 @@
             DOMElement.prototype[methodName] = function(element) {
                 var parent, relatedNode, ctr;
 
-                if (parent = this._node.parentNode) {
+                if (parent = this._el.parentNode) {
                     if (element) {
                         ctr = element.constructor;
 
                         if (ctr === DOMElement) {
-                            relatedNode = element._node;
+                            relatedNode = element._el;
                         } else if (ctr === DOMElementCollection) {
                             // create a fragment for the node collection
                             relatedNode = document.createDocumentFragment();
@@ -602,7 +601,7 @@
                     }
 
                     if (relatedNode) {
-                       process(this._node, relatedNode, parent);
+                       process(this._el, relatedNode, parent);
                     } else {
                         throw new DOMMethodError(methodName);
                     }
@@ -665,22 +664,32 @@
                 var classes = classNames.split(" ");
 
                 if (methodName === "hasClass") {
-                    return classes.every(process, this._node);
+                    return classes.every(process, this._el);
                 } else {
-                    return classes.forEach(process, this._node) || this;
+                    return classes.forEach(process, this._el) || this;
                 }
             };
         });
 
     })();
 
+    // focus/blur
+    ["focus", "blur"].forEach(function(methodName) {
+        DOMElement.prototype[methodName] = function() {
+            this._el[methodName]();
+
+            return this;
+        };
+    });
+
     // NullDOMElement
-    Object.keys(DOMElement.prototype).forEach(function(method) {
+    Object.keys(DOMElement.prototype).concat(["get", "set"]).forEach(function(method) {
         // each method is a noop function
         NullDOMElement.prototype[method] = function() {};
     });
 
     NullDOMElement.constructor = DOMElement;
+    NullDOMElement.prototype._el = null;
 
     // DOMElementCollection
 
@@ -710,7 +719,7 @@
 
             return this;
         };
-    });
+    })();
 
     // cleanup prototype by saving only specific methods
     ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource", "toString", 

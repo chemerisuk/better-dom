@@ -96,7 +96,7 @@ DOM.ready(function(){
     links.set("data-test", "test");
     links.set("href", "#test");
 
-    link.call("focus");
+    link.focus();
 
     links.addClass("cc");
 
@@ -114,11 +114,6 @@ DOM.ready(function(){
     } catch (err) {
         console.log("fail to change prototype")
     }
-
-    var quick = false;
-
-    link.matches("a", quick);
-    
 
 });
 </script>
