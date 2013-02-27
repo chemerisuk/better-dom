@@ -34,14 +34,15 @@
                         }
 
                         var isGetter = value === undefined,
-                            storage = dataStorage;
+                            storage = dataStorage,
+                            dataAttributeName = "data-" + name;
 
-                        if (name.indexOf("data-") === 0) {
+                        if (this._el.hasAttribute(dataAttributeName)) {
                             if (isGetter) {
-                                return this._el.getAttribute(name);
+                                return this._el.getAttribute(dataAttributeName);
                             }
 
-                            this._el.setAttribute(name, value);
+                            this._el.setAttribute(dataAttributeName, value);
 
                             return this;
                         } else if (name.substr(0, 1) === "@") {
@@ -100,13 +101,11 @@
                     return quick;
                 },
                 quickIs = function(elem, m) {
-                    var attrs = elem.attributes || {};
-                    
                     return (
                         (!m[1] || elem.nodeName.toLowerCase() === m[1]) &&
-                        (!m[2] || (attrs.id || {}).value === m[2]) &&
-                        (!m[3] || m[3] in attrs) &&
-                        (!m[4] || ~(" " + (attrs["class"] || "").value  + " ").indexOf(m[4]))
+                        (!m[2] || elem.id === m[2]) &&
+                        (!m[3] || elem.hasAttribute(m[3])) &&
+                        (!m[4] || ~(" " + elem.className  + " ").indexOf(m[4]))
                     );
                 },
                 ctr =  function(selector, quickOnly) {
@@ -447,15 +446,8 @@
             return window.getComputedStyle(this._el);
         },
         value: function(value) {
-            var node = this._el, propName;
-
-            if (node.value !== undefined) {
-                propName = "value";
-            } else if (node.innerText !== undefined) {
-                propName = "innerText";
-            } else {
-                propName = "textContent";
-            }
+            var node = this._el, 
+                propName = "value" in node ? "value" : "textContent";
 
             if (value === undefined) {
                 return node[propName];
