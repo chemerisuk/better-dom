@@ -28,7 +28,7 @@
                     configurable: false
                 },
                 data: {
-                   value: function(name, value) {
+                    value: function(name, value) {
                         if (typeof name !== "string") {
                             throw new DOMMethodError("data");
                         }
@@ -45,7 +45,7 @@
                             this._el.setAttribute(dataAttributeName, value);
 
                             return this;
-                        } else if (name.substr(0, 1) === "@") {
+                        } else if (name.charAt(0) === "@") {
                             storage = eventsStorage;
                             name = name.substr(1);
                         }
@@ -143,24 +143,22 @@
 
     DOMElement.prototype = {
         matches: function(selector) {
-            var matcher = new SelectorMatcher(selector);
-
-            return matcher.test(this._el);
+            return new SelectorMatcher(selector).test(this._el);
         },
         find: function(selector) {
             if (typeof selector !== "string") {
                 throw new DOMMethodError("find");
             }
 
-            var result;
+            var node;
 
             if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
-                result = document.getElementById(selector.substr(1));
+                node = document.getElementById(selector.substr(1));
             } else {
-                result = this._el.querySelector(selector);
+                node = this._el.querySelector(selector);
             }
             
-            return DOMElement(result);
+            return DOMElement(node);
         },
         findAll: (function() {
             // big part of code is stoled from Sizzle:
@@ -653,7 +651,9 @@
                 if (methodName === "hasClass") {
                     return classes.every(process, this._el);
                 } else {
-                    return classes.forEach(process, this._el) || this;
+                    classes.forEach(process, this._el);
+
+                    return this;
                 }
             };
         });
