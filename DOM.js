@@ -21,11 +21,8 @@
                 eventsStorage = {};
 
             Object.defineProperties(this, {
-                _el: {
-                    value: node,
-                    writable: false,
-                    enumerable: false,
-                    configurable: false
+                _el: { 
+                    value: node 
                 },
                 data: {
                     value: function(name, value) {
@@ -57,9 +54,7 @@
                         storage[name] = value;
 
                         return this;
-                    },
-                    writable: false,
-                    configurable: false
+                    }
                 }
             });
         },
@@ -293,18 +288,7 @@
             };
         })(),
         on: (function() {
-            var nodeProperties = ["target", "currentTarget", "relatedTarget"],
-                modifyProperties = function(prop) {
-                    var node = this[prop];
-
-                    if (node) {
-                        delete this[prop];
-
-                        this[prop] = DOMElement(node);
-                    }
-
-                    return node;
-                },
+            var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"],
                 processHandlers = function(element, event, handler, thisPtr) {
                     if (typeof handler !== "function") {
                         throw new DOMMethodError("on");
@@ -315,15 +299,26 @@
                         selector = ~selectorStart ? event.substr(selectorStart + 1) : undefined,
                         matcher = selector ? new SelectorMatcher(selector) : null,
                         nativeEventHandler = function(e) {
+                            var propertyDescriptors = {};
                             // modify event object
-                            var props = nodeProperties.map(modifyProperties, e);
+                            nodeProperties.forEach(function(propertyName) {
+                                var node = e[propertyName], element;
 
-                            handler.call(thisPtr, e);
+                                if (node) {
+                                    Object.defineProperty(e, propertyName, {
+                                        // lazy create DOMElement objects
+                                        get: function() {
+                                            return element || ( element = DOMElement(node) );
+                                        }
+                                    });
 
-                            // restore event object
-                            nodeProperties.forEach(function(prop, i) {
-                                e[prop] = props[i];
+                                    propertyDescriptors[propertyName] = { value: node };    
+                                }
                             });
+                            // ignore return value
+                            handler.call(thisPtr, e);
+                            // restore event object properties
+                            Object.defineProperties(e, propertyDescriptors);
                         },
                         eventsEntries = element.data("@" + event),
                         eventsEntry = {
