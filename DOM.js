@@ -320,26 +320,25 @@
                             // restore event object properties
                             Object.defineProperties(e, propertyDescriptors);
                         },
-                        eventsEntries = element.data("@" + event),
-                        eventsEntry = {
+                        eventDataKey = "@" + event,
+                        eventDataEntries = element.data(eventDataKey),
+                        eventDataEntry = {
                             key: handler, 
                             value: !selector ? nativeEventHandler : function(e) {
                                 for (var el = e.target, root = element._el.parentNode; el !== root; el = el.parentNode) {
                                     if (matcher.test(el)) {
-                                        nativeEventHandler(e);
-
-                                        break;
+                                        return nativeEventHandler(e);
                                     }
                                 }
                             }
                         };
                     // attach event listener
-                    element._el.addEventListener(eventType, eventsEntry.value, false);
+                    element._el.addEventListener(eventType, eventDataEntry.value, false);
                     // store event entry
-                    if (eventsEntries) {
-                        eventsEntries.push(eventsEntry);
+                    if (eventDataEntries) {
+                        eventDataEntries.push(eventDataEntry);
                     } else {
-                        element.data("@" + event, [eventsEntry]);
+                        element.data(eventDataKey, [eventDataEntry]);
                     }
                 };
 
@@ -366,17 +365,21 @@
             };
         })(),
         off: function(event, handler) {
-            if (typeof event !== "string" || handler && typeof handler !== "function") {
+            if (typeof event !== "string" || handler !== undefined && typeof handler !== "function") {
                 throw new DOMMethodError("off");
             }
 
-            var eventsEntries = this.data("@" + event);
+            var eventDataKey = "@" + event,
+                eventDataEntries = this.data(eventDataKey),
+                eventType = event.split(" ")[0];
 
-            if (eventsEntries) {
-                this.data("@" + event, eventsEntries.filter(function(eventsEntry) {
-                    if (!handler || handler === eventsEntry.key) {
-                        this._el.removeEventListener(event, eventsEntry.value, false);
+            if (eventDataEntries) {
+                this.data(eventDataKey, eventDataEntries.filter(function(eventDataEntry) {
+                    if (handler && handler !== eventDataEntry.key) {
+                        return true;
                     }
+                    // remove event listener from the element
+                    this._el.removeEventListener(eventType, eventDataEntry.value, false);
                 }, this));
             }
 
