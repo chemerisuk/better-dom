@@ -710,7 +710,7 @@
 
     // cleanup prototype by saving only specific methods
     ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource", "toString", 
-    "toLocaleString", "indexOf", "lastIndexOf", "forEach", "sort", "reverce"].forEach(function(methodName) {
+    "toLocaleString", "indexOf", "lastIndexOf", "forEach", "sort", "reverse", "reduce", "reduceRight"].forEach(function(methodName) {
         delete DOMElementCollection.prototype[methodName];
     });
 
