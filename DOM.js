@@ -287,83 +287,86 @@
                 }
             };
         })(),
-        on: (function() {
-            var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"],
-                processHandlers = function(element, event, handler, thisPtr) {
-                    if (typeof handler !== "function") {
-                        throw new DOMMethodError("on");
-                    }
+        capture: (function() {
+            var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"];
+                
+            return function(event, callback, thisPtr, bubbling) {
+                if (typeof callback !== "function") {
+                    throw new DOMMethodError("on");
+                }
 
-                    var selectorStart = event.indexOf(" "),
-                        eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
-                        selector = ~selectorStart ? event.substr(selectorStart + 1) : undefined,
-                        matcher = selector ? new SelectorMatcher(selector) : null,
-                        nativeEventHandler = function(e) {
-                            var propertyDescriptors = {};
-                            // modify event object
-                            nodeProperties.forEach(function(propertyName) {
-                                var node = e[propertyName], element;
+                var selectorStart = event.indexOf(" "),
+                    eventType = bubbling && ~selectorStart ? event.substr(0, selectorStart) : event,
+                    selector = bubbling && ~selectorStart ? event.substr(selectorStart + 1) : undefined,
+                    matcher = selector ? new SelectorMatcher(selector) : null,
+                    handleEvent = function(e) {
+                        var propertyDescriptors = {};
+                        // modify event object
+                        nodeProperties.forEach(function(propertyName) {
+                            var node = e[propertyName], element;
 
-                                if (node) {
-                                    Object.defineProperty(e, propertyName, {
-                                        // lazy create DOMElement objects
-                                        get: function() {
-                                            return element || ( element = DOMElement(node) );
-                                        }
-                                    });
-
-                                    propertyDescriptors[propertyName] = { value: node };    
-                                }
-                            });
-                            // ignore return value
-                            handler.call(thisPtr, e);
-                            // restore event object properties
-                            Object.defineProperties(e, propertyDescriptors);
-                        },
-                        eventDataKey = "@" + event,
-                        eventDataEntries = element.data(eventDataKey),
-                        eventDataEntry = {
-                            key: handler, 
-                            value: !selector ? nativeEventHandler : function(e) {
-                                for (var el = e.target, root = element._el.parentNode; el !== root; el = el.parentNode) {
-                                    if (matcher.test(el)) {
-                                        return nativeEventHandler(e);
+                            if (node) {
+                                Object.defineProperty(e, propertyName, {
+                                    // lazy create DOMElement objects
+                                    get: function() {
+                                        return element || ( element = DOMElement(node) );
                                     }
+                                });
+
+                                propertyDescriptors[propertyName] = { value: node };    
+                            }
+                        });
+                        // ignore return value
+                        callback.call(thisPtr, e);
+                        // restore event object properties
+                        Object.defineProperties(e, propertyDescriptors);
+                    },
+                    parentNode = this._el.parentNode,
+                    eventDataKey = "@" + event,
+                    eventDataEntries = this.data(eventDataKey),
+                    eventDataEntry = {
+                        key: callback, 
+                        value: !selector ? handleEvent : function(e) {
+                            for (var el = e.target; el !== parentNode; el = el.parentNode) {
+                                if (matcher.test(el)) {
+                                    return handleEvent(e);
                                 }
                             }
-                        };
-                    // attach event listener
-                    element._el.addEventListener(eventType, eventDataEntry.value, false);
-                    // store event entry
-                    if (eventDataEntries) {
-                        eventDataEntries.push(eventDataEntry);
-                    } else {
-                        element.data(eventDataKey, [eventDataEntry]);
-                    }
-                };
-
-            return function(event, handler, thisPtr) {
-                var eventType = typeof event;
-
-                thisPtr = thisPtr || this;
-
-                if (eventType === "string") {
-                    processHandlers(this, event, handler, thisPtr);
-                } else if (eventType === "object") {
-                    Object.keys(event).forEach(function(key) {
-                        processHandlers(this, key, event[key], thisPtr);
-                    }, this);
-                } else if (Array.isArray(event)) {
-                    event.forEach(function(key) {
-                        processHandlers(this, key, handler, thisPtr);
-                    }, this);
+                        }
+                    };
+                // attach event listener
+                this._el.addEventListener(eventType, eventDataEntry.value, !bubbling);
+                // store event entry
+                if (eventDataEntries) {
+                    eventDataEntries.push(eventDataEntry);
                 } else {
-                    throw new DOMMethodError("on");
+                    this.data(eventDataKey, [eventDataEntry]);
                 }
 
                 return this;
             };
         })(),
+        on: function(event, handler, thisPtr) {
+            var eventType = typeof event;
+
+            thisPtr = thisPtr || this;
+
+            if (eventType === "string") {
+                this.capture(event, handler, thisPtr, true);
+            } else if (eventType === "object") {
+                Object.keys(event).forEach(function(key) {
+                    this.capture(key, event[key], thisPtr, true);
+                }, this);
+            } else if (Array.isArray(event)) {
+                event.forEach(function(key) {
+                    this.capture(key, handler, thisPtr, true);
+                }, this);
+            } else {
+                throw new DOMMethodError("on");
+            }
+
+            return this;
+        },
         off: function(event, handler) {
             if (typeof event !== "string" || handler !== undefined && typeof handler !== "function") {
                 throw new DOMMethodError("off");
