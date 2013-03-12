@@ -274,13 +274,9 @@
                 if (ctr === DOMElement) {
                     return containsElement(this._el, element._el);
                 } else if (ctr === DOMElementCollection) {
-                    var result = false;
-
-                    element.each(function(element) {
-                        return result = this.contains(element);
+                    return element.every(function(element) {
+                        return this.contains(element);
                     }, this);
-
-                    return result;
                 } else {
                     throw new DOMMethodCallError("contains");
                 }
@@ -509,6 +505,13 @@
                 right: boundingRect.right + scrollLeft - clientLeft,
                 bottom: boundingRect.bottom + scrollTop - clientTop
             };
+        },
+        call: function(name) {
+            if (arguments.length === 1) {
+                return this._el[name]();
+            } else {
+                return this._el[name].apply(this._el, Array.prototype.slice.call(arguments, 1));
+            }
         }
     };
 
@@ -581,7 +584,7 @@
                             // create a fragment for the node collection
                             relatedNode = document.createDocumentFragment();
                             // populate fragment
-                            element.each(populateNode, relatedNode);
+                            element.forEach(populateNode, relatedNode);
                         }
                     } else {
                         // indicate case with remove() function
@@ -663,17 +666,8 @@
 
     })();
 
-    // focus/blur
-    ["focus", "blur"].forEach(function(methodName) {
-        DOMElement.prototype[methodName] = function() {
-            this._el[methodName]();
-
-            return this;
-        };
-    });
-
     // NullDOMElement
-    Object.keys(DOMElement.prototype).concat(["get", "set"]).forEach(function(method) {
+    Object.keys(DOMElement.prototype).concat(["data"]).forEach(function(method) {
         // each method is a noop function
         NullDOMElement.prototype[method] = function() {};
     });
@@ -694,26 +688,15 @@
         DOMElementCollection.prototype[methodName] = function() {
             if (this.length === 0) return this;
 
-            return this.each(process, slice.call(arguments, 0));
-        };
-    });
-
-    // patch native forEach to return reference to be chainable
-    DOMElementCollection.prototype.each = (function() {
-        var forEach = DOMElementCollection.prototype.forEach;
-         
-        return function(callback, thisPtr) {
-            if (this.length) {
-                forEach.call(this, callback, thisPtr);
-            }
+            this.forEach(process, slice.call(arguments, 0));
 
             return this;
         };
-    })();
+    });
 
     // cleanup prototype by saving only specific methods
     ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource", "toString", 
-    "toLocaleString", "indexOf", "lastIndexOf", "forEach", "sort", "reverse", "reduce", "reduceRight"].forEach(function(methodName) {
+    "toLocaleString", "indexOf", "lastIndexOf", "sort", "reverse", "reduce", "reduceRight"].forEach(function(methodName) {
         delete DOMElementCollection.prototype[methodName];
     });
 
@@ -809,22 +792,14 @@
         }
     });
 
+    // fix constructors
     [DOMElement, DOMElementCollection].forEach(function(ctr) {
-        // fix constructor
         ctr.prototype.constructor = ctr;
     });
 
     // API protection
-    [DOMElement.prototype, DOMElementCollection.prototype, NullDOMElement.prototype, DOM].forEach(function(obj) {
-        Object.keys(obj).forEach(function(prop) {
-            var desc = Object.getOwnPropertyDescriptor(obj, prop);
-
-            desc.writable = false;
-            desc.configurable = false;
-            desc.enumerable = false;
-
-            Object.defineProperty(obj, prop, desc);
-        });
+    [DOMElement.prototype, DOMElementCollection.prototype, NullDOMElement.prototype].forEach(function(proto) {
+        Object.freeze(proto);
     });
 
     // register API
