@@ -429,12 +429,12 @@
                     this._el.setAttribute(name, value);
                 } 
             } else if (Array.isArray(name)) {
-                this._el.forEach(function(name) {
+                name.forEach(function(name) {
                     this.set(name, value);
                 }, this);
             } else if (nameType === "object") {
                 Object.keys(name).forEach(function(key) {
-                    this.set(key, value);
+                    this.set(key, name[key]);
                 }, this);
             } else {
                 throw new DOMMethodCallError("set");
