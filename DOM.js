@@ -403,41 +403,44 @@
             return this;
         },
         get: function(name) {
+            if (typeof name !== "string") {
+                throw new DOMMethodError("get");
+            }
+
             return this._el[name] || this._el.getAttribute(name);
         },
-        set: (function() {
-            var processAttribute = function(element, name, value) {
-                    var valueType = typeof value;
+        set: function(name, value) {
+            var nameType = typeof name,
+                valueType = typeof value;
 
-                    if (valueType === "function") {
-                        value = value.call(this, element.get(name));
-                    } else if (valueType !== "string") {
-                        throw new DOMMethodError("set");
-                    }
+            if (valueType === "function") {
+                value = value.call(this, this.get(name));
+            }
 
-                    if (name in element._el) {
-                        element._el[name] = value;
-                    } else {
-                        element._el.setAttribute(name, value);
-                    }
-                };
-
-            return function(name, value) {
-                var nameType = typeof name;
-
-                if (nameType === "string") {
-                    processAttribute(this, name, value);
-                } else if (name && nameType === "object") {
-                    Object.keys(name).forEach(function(attrName) {
-                        processAttribute(this, attrName, name[attrName]);
-                    }, this);
-                } else {
+            if (nameType === "string") {
+                if (value !== null && valueType !== "string") {
                     throw new DOMMethodError("set");
                 }
 
-                return this;
-            };
-        })(),
+                if (value === null) {
+                    this._el.removeAttribute(name);
+                } else if (name in this._el) {
+                    this._el[name] = value;
+                } else {
+                    this._el.setAttribute(name, value);
+                } 
+            } else if (Array.isArray(name)) {
+                this._el.forEach(function(name) {
+                    this.set(name, value);
+                }, this);
+            } else if (nameType === "object") {
+                Object.keys(name).forEach(function(key) {
+                    this.set(key, value);
+                }, this);
+            } else {
+                throw new Error("Illegal set call");
+            }
+        },
         clone: function(deep) {
             return new DOMElement(this._el.cloneNode(deep));
         },
