@@ -608,38 +608,38 @@
         var rclass = /[\n\t\r]/g,
             strategies = htmlEl.classList ? {
                 hasClass: function(className) {
-                    return this.classList.constains(className);
+                    return this._el.classList.constains(className);
                 },
                 addClass: function(className) {
-                    this.classList.add(className);
+                    this._el.classList.add(className);
                 },
                 removeClass: function(className) {
-                    this.classList.remove(className);
+                    this._el.classList.remove(className);
                 },
                 toggleClass: function(className) {
-                    this.classList.toggle(className);
+                    this._el.classList.toggle(className);
                 }
             } : {
                 hasClass: function(className) {
-                    return !!~((" " + this.className + " ")
+                    return !!~((" " + this._el.className + " ")
                             .replace(rclass, " ")).indexOf(" " + className + " ");
                 },
                 addClass: function(className) {
-                    if (!strategies.hasClass.call(this, className)) {
-                        this.className += " " + className;
+                    if (!this.hasClass(className)) {
+                        this._el.className += " " + className;
                     }
                 },
                 removeClass: function(className) {
-                    this.className = (" " + this.className + " ")
+                    this._el.className = (" " + this._el.className + " ")
                             .replace(rclass, " ").replace(" " + className + " ", " ").trim();
                 },
                 toggleClass: function(className) {
-                    var originalClassName = this.className;
+                    var originalClassName = this._el.className;
 
-                    strategies.addClass.call(this, className);
+                    this.addClass(className);
 
-                    if (originalClassName !== this.className) {
-                        strategies.removeClass.call(this, className);
+                    if (originalClassName !== this._el.className) {
+                        this.removeClass(className);
                     }
                 }
             };
@@ -648,18 +648,12 @@
             var process = strategies[methodName];
 
             DOMElement.prototype[methodName] = function(classNames) {
-                if (typeof classNames !== "string") {
-                    throw new DOMMethodCallError(methodName);
-                }
-
-                var classes = classNames.split(" ");
-
-                if (methodName === "hasClass") {
-                    return classes.every(process, this._el);
+                if (typeof classNames === "string") {
+                    return process.call(this, classNames);
+                } else if (Array.isArray(classNames)) {
+                    return classNames[methodName === "hasClass" ? "every" : "forEach"](process, this) || this;
                 } else {
-                    classes.forEach(process, this._el);
-
-                    return this;
+                    throw new DOMMethodCallError(methodName);
                 }
             };
         });
