@@ -27,7 +27,7 @@
                 data: {
                     value: function(name, value) {
                         if (typeof name !== "string") {
-                            throw new DOMMethodError("data");
+                            throw new DOMMethodCallError("data");
                         }
 
                         var isGetter = value === undefined,
@@ -90,7 +90,7 @@
                         quick[1] = (quick[1] || "").toLowerCase();
                         quick[4] = quick[4] ? " " + quick[4] + " " : "";
                     } else {
-                        throw new DOMMethodError("quickParse");
+                        throw new DOMMethodCallError("quickParse");
                     }
 
                     return quick;
@@ -127,11 +127,10 @@
             return ctr;
         })(),
         // errors
-        DOMMethodError = function(methodName, objectName, hashName) {
-            this.name = "DOMMethodError";
+        DOMMethodCallError = function(methodName, objectName, hashName) {
+            this.name = "DOMMethodCallError";
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            this.message = "Invalid call of the " + methodName +
-                " method. See http://domjs.net/doc/" + methodName + " for details";
+            this.message = "Illegal " + methodName + " method call";
         };
 
     // DOMElement
@@ -142,7 +141,7 @@
         },
         find: function(selector) {
             if (typeof selector !== "string") {
-                throw new DOMMethodError("find");
+                throw new DOMMethodCallError("find");
             }
 
             var node;
@@ -172,7 +171,7 @@
 
             return function(selector) {
                 if (typeof selector !== "string") {
-                    throw new DOMMethodError("findAll");
+                    throw new DOMMethodCallError("findAll");
                 }
 
                 var elements, m, elem, match, matcher;
@@ -283,7 +282,7 @@
 
                     return result;
                 } else {
-                    throw new DOMMethodError("contains");
+                    throw new DOMMethodCallError("contains");
                 }
             };
         })(),
@@ -292,7 +291,7 @@
                 
             return function(event, callback, thisPtr, bubbling) {
                 if (typeof callback !== "function") {
-                    throw new DOMMethodError("on");
+                    throw new DOMMethodCallError("on");
                 }
 
                 var selectorStart = event.indexOf(" "),
@@ -362,14 +361,14 @@
                     this.capture(key, handler, thisPtr, true);
                 }, this);
             } else {
-                throw new DOMMethodError("on");
+                throw new DOMMethodCallError("on");
             }
 
             return this;
         },
         off: function(event, handler) {
             if (typeof event !== "string" || handler !== undefined && typeof handler !== "function") {
-                throw new DOMMethodError("off");
+                throw new DOMMethodCallError("off");
             }
 
             var eventDataKey = "@" + event,
@@ -404,7 +403,7 @@
         },
         get: function(name) {
             if (typeof name !== "string") {
-                throw new DOMMethodError("get");
+                throw new DOMMethodCallError("get");
             }
 
             return this._el[name] || this._el.getAttribute(name);
@@ -419,7 +418,7 @@
 
             if (nameType === "string") {
                 if (value !== null && valueType !== "string") {
-                    throw new DOMMethodError("set");
+                    throw new DOMMethodCallError("set");
                 }
 
                 if (value === null) {
@@ -438,7 +437,7 @@
                     this.set(key, value);
                 }, this);
             } else {
-                throw new Error("Illegal set call");
+                throw new DOMMethodCallError("set");
             }
         },
         clone: function(deep) {
@@ -456,7 +455,7 @@
             }
 
             if (typeof value !== "string") {
-                throw new DOMMethodError("value");
+                throw new DOMMethodCallError("value");
             }
 
             node[propName] = value;
@@ -486,7 +485,7 @@
                 }
 
                 if (typeof value !== "string") {
-                    throw new DOMMethodError("html");
+                    throw new DOMMethodCallError("html");
                 }
                 // fix NoScope elements in IE9-
                 node.innerHTML = "&shy;" + value;
@@ -592,7 +591,7 @@
                     if (relatedNode) {
                        process(this._el, relatedNode, parent);
                     } else {
-                        throw new DOMMethodError(methodName);
+                        throw new DOMMethodCallError(methodName);
                     }
                 }
 
@@ -647,7 +646,7 @@
 
             DOMElement.prototype[methodName] = function(classNames) {
                 if (typeof classNames !== "string") {
-                    throw new DOMMethodError(methodName);
+                    throw new DOMMethodCallError(methodName);
                 }
 
                 var classes = classNames.split(" ");
@@ -721,15 +720,15 @@
     // use Array.prototype implementation to return regular array
     DOMElementCollection.prototype.map = Array.prototype.map;
 
-    // DOMMethodError
-    DOMMethodError.prototype = new Error();
+    // DOMMethodCallError
+    DOMMethodCallError.prototype = new Error();
 
     // initialize constants
     DOM = Object.create(new DOMElement(htmlEl), {
         create: {
             value: function(tagName, attrs, content) {
                 if (typeof tagName !== "string") {
-                    throw new DOMMethodError("create");
+                    throw new DOMMethodCallError("create");
                 }
 
                 var elem;
@@ -739,7 +738,7 @@
                     elem.innerHTML = tagName;
 
                     if (elem.children.length > 1) {
-                        throw new DOMMethodError("create");
+                        throw new DOMMethodCallError("create");
                     }
 
                     elem = elem.firstChild;
@@ -751,7 +750,7 @@
 
                 if (content) {
                     if (typeof content !== "string") {
-                        throw new DOMMethodError("create");
+                        throw new DOMMethodCallError("create");
                     }
 
                     attrs.innerHTML = content;
@@ -759,7 +758,7 @@
 
                 if (attrs) {
                     if (typeof attrs !== "object") {
-                        throw new DOMMethodError("create");
+                        throw new DOMMethodCallError("create");
                     }
 
                     elem.set(attrs);
@@ -797,7 +796,7 @@
                 // return implementation
                 return function(callback) {
                     if (typeof callback !== "function") {
-                        throw new DOMMethodError("ready");
+                        throw new DOMMethodCallError("ready");
                     }
 
                     if (readyCallbacks) {
