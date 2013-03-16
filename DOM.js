@@ -15,38 +15,16 @@
             if (!this) {
                 return new DOMElement(node);
             }
-            // private data objects
-            var dataStorage = {},
-                eventsStorage = {};
-
+            
             Object.defineProperties(this, {
                 _do: {
                     value: !node ? function() {} : function(method, args) {
                         return DOMElement.prototype[method].apply(this, [node].concat(args));
                     }
                 },
-                data: {
-                    value: function(name, value) {
-                        if (typeof name !== "string") {
-                            throw new DOMMethodCallError("data");
-                        }
-
-                        var storage = dataStorage;
-
-                        if (name.charAt(0) === "@") {
-                            storage = eventsStorage;
-                            name = name.substr(1);
-                        }
-
-                        if (value === undefined) {
-                            return storage[name];
-                        }
-
-                        storage[name] = value;
-
-                        return this;
-                    }
-                }
+                // private data objects
+                _data: { value: {} },
+                _events: { value: [] }
             });
         },
         DOMElementCollection = (function() {
@@ -150,7 +128,6 @@
 
     // DOMElement
     DOMElement.prototype = {
-        constructor: DOMElement,
         _matches: function(el, selector) {
             return new SelectorMatcher(selector).test(el);
         },
@@ -306,8 +283,8 @@
                 }
 
                 var selectorStart = event.indexOf(" "),
-                    eventType = bubbling && ~selectorStart ? event.substr(0, selectorStart) : event,
-                    selector = bubbling && ~selectorStart ? event.substr(selectorStart + 1) : undefined,
+                    eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
+                    selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
                     matcher = selector ? new SelectorMatcher(selector) : null,
                     handleEvent = function(e) {
                         var propertyDescriptors = {};
@@ -331,11 +308,10 @@
                         // restore event object properties
                         Object.defineProperties(e, propertyDescriptors);
                     },
-                    eventDataKey = "@" + event,
-                    eventDataEntries = this.data(eventDataKey),
-                    eventDataEntry = {
-                        key: callback, 
-                        value: !selector ? handleEvent : function(e) {
+                    eventEntry = {
+                        event: event,
+                        callback: callback, 
+                        handler: !selector ? handleEvent : function(e) {
                             for (var elem = e.target; elem !== el.parentNode; elem = elem.parentNode) {
                                 if (matcher.test(elem)) {
                                     return handleEvent(e);
@@ -344,13 +320,9 @@
                         }
                     };
                 // attach event listener
-                el.addEventListener(eventType, eventDataEntry.value, !bubbling);
+                el.addEventListener(eventType, eventEntry.handler, !bubbling);
                 // store event entry
-                if (eventDataEntries) {
-                    eventDataEntries.push(eventDataEntry);
-                } else {
-                    this.data(eventDataKey, [eventDataEntry]);
-                }
+                this._events.push(eventEntry);
 
                 return this;
             };
@@ -376,24 +348,19 @@
 
             return this;
         },
-        _off: function(el, event, handler) {
-            if (typeof event !== "string" || handler !== undefined && typeof handler !== "function") {
+        _off: function(node, event, callback) {
+            if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
                 throw new DOMMethodCallError("off");
             }
 
-            var eventDataKey = "@" + event,
-                eventDataEntries = this.data(eventDataKey),
-                eventType = event.split(" ")[0];
+            var eventType = event.split(" ")[0];
 
-            if (eventDataEntries) {
-                this.data(eventDataKey, eventDataEntries.filter(function(eventDataEntry) {
-                    if (handler && handler !== eventDataEntry.key) {
-                        return true;
-                    }
+            this._events.forEach(function(entry) {
+                if (event === entry.event && (!callback || callback === entry.callback)) {
                     // remove event listener from the element
-                    el.removeEventListener(eventType, eventDataEntry.value, false);
-                }));
-            }
+                    node.removeEventListener(eventType, entry.handler, false);
+                }
+            });
 
             return this;
         },
@@ -530,6 +497,27 @@
             } else {
                 return el[name].apply(el, slice.call(arguments, 1));
             }
+        },
+        _data: function(node, name, value) {
+            if (typeof name !== "string") {
+                throw new DOMMethodCallError("data");
+            }
+
+            var result;
+
+            if (value === undefined) {
+                result = this._data[name];
+
+                if (result === undefined && node.hasAttribute("data-" + name)) {
+                    result = this._data[name] = node.getAttribute("data-" + name);
+                }
+            } else {
+                this._data[name] = value;
+
+                result = this;
+            }
+
+            return result;
         }
     };
 
@@ -562,63 +550,47 @@
     (function() {
         // http://www.w3.org/TR/domcore/
         // 5.2.2 Mutation methods
-        var populateNode = function(element) {
-                this.appendChild(element._el);
+        var strategies = {
+            after: function(node, relatedNode, parent) {
+                parent.insertBefore(relatedNode, node.nextSibling);
             },
-            strategies = {
-                after: function(node, relatedNode, parent) {
-                    parent.insertBefore(relatedNode, node.nextSibling);
-                },
-                before: function(node, relatedNode, parent) {
-                    parent.insertBefore(relatedNode, node);
-                },
-                replace: function(node, relatedNode, parent) {
-                    parent.replaceChild(node, relatedNode);
-                },
-                append: function(node, relatedNode) {
-                    node.appendChild(relatedNode);
-                },
-                prepend: function(node, relatedNode) {
-                    node.insertBefore(relatedNode, node.firstChild);
-                },
-                remove: function(node, parent) {
-                    parent.removeChild(node);
-                }
-            };
+            before: function(node, relatedNode, parent) {
+                parent.insertBefore(relatedNode, node);
+            },
+            replace: function(node, relatedNode, parent) {
+                parent.replaceChild(node, relatedNode);
+            },
+            append: function(node, relatedNode) {
+                node.appendChild(relatedNode);
+            },
+            prepend: function(node, relatedNode) {
+                node.insertBefore(relatedNode, node.firstChild);
+            },
+            remove: function(node, parent) {
+                parent.removeChild(node);
+            }
+        };
 
         Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
             DOMElement.prototype["_" + methodName] = function(node, element, /*INTERNAL*/reverse) {
-                var parent, relatedNode, ctr;
+                var parent, relatedNode;
 
-                //if (parent = node.parentNode) {
-                    if (element) {
-                        // ctr = element.constructor;
+                if (element) {
+                    relatedNode = document.createElement("div");
+                    relatedNode.innerHTML = element;
+                    relatedNode = relatedNode.firstElementChild;
+                } else {
+                    // indicate case with remove() function
+                    relatedNode = parent;
+                }
 
-                        // if (ctr === DOMElement) {
-                        //     relatedNode = element._el;
-                        // } else if (ctr === DOMElementCollection) {
-                        //     // create a fragment for the node collection
-                        //     relatedNode = document.createDocumentFragment();
-                        //     // populate fragment
-                        //     element.forEach(populateNode, relatedNode);
-                        // } else if (ctr === String) {
-                            relatedNode = document.createElement("div");
-                            relatedNode.innerHTML = element;
-                            relatedNode = relatedNode.firstElementChild;
-                        // }
-                    } else {
-                        // indicate case with remove() function
-                        relatedNode = parent;
-                    }
-
-                    if (relatedNode) {
-                       process(node, relatedNode, parent);
-                    } else {
-                        throw new DOMMethodCallError(methodName);
-                    }
-                //}
+                if (relatedNode) {
+                   process(node, relatedNode, parent);
+                } else {
+                    throw new DOMMethodCallError(methodName);
+                }
 
                 return this;
             };
@@ -697,6 +669,8 @@
             return this._do(key, slice.call(arguments, 0));
         };
     });
+
+    DOMElement.constructor = DOMElement;
 
     // DOMMethodCallError
     DOMMethodCallError.prototype = new Error();
