@@ -103,9 +103,8 @@ DOM.ready(function(){
     // data method test
     link.data("test", "test");
 
-    link.append(DOM.create("span", {"data-test1": "testappend"}, "|append|"));
-
-    link.prepend(DOM.create("span", {"data-test2": "testprepend"}, "|prepend|"));
+    link.append('<span data-test1="testappend">|append|');
+    //link.prepend(DOM.create('<span data-test2="testprepend">|prepend|'));
 
     link.html("<script src=\"testscript.js\"><" + "/script>updated");
 

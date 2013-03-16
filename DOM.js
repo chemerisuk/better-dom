@@ -13,15 +13,17 @@
         // classes 
         DOMElement = function(node) {
             if (!this) {
-                return node ? new DOMElement(node) : new NullDOMElement();
+                return new DOMElement(node);
             }
             // private data objects
             var dataStorage = {},
                 eventsStorage = {};
 
             Object.defineProperties(this, {
-                _el: { 
-                    value: node 
+                _do: {
+                    value: !node ? function() {} : function(method, args) {
+                        return DOMElement.prototype[method].apply(this, [node].concat(args));
+                    }
                 },
                 data: {
                     value: function(name, value) {
@@ -66,6 +68,7 @@
             ctr._new = ctr.prototype.map;
             // use Array.prototype implementation to return regular array
             ctr.prototype.map = Array.prototype.map;
+            ctr.prototype.constructor = ctr;
             // cleanup collection prototype
             "pop push shift slice splice unshift concat join toSource toString toLocaleString indexOf lastIndexOf sort reverse reduce reduceRight".split(" ")
             .forEach(function(methodName) {
@@ -73,9 +76,9 @@
             });
             // shortcuts
             "set on off capture addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
-                var process = function(el) {
+                var process = function(obj) {
                     // this will be an arguments array
-                    el[methodName].apply(el, this);
+                    obj._do("_" + methodName, this);
                 };
 
                 ctr.prototype[methodName] = function() {
@@ -89,7 +92,6 @@
             
             return ctr;
         })(),
-        NullDOMElement = function() {},
         SelectorMatcher = (function() {
             // Quick matching inspired by
             // https://github.com/jquery/jquery
@@ -147,12 +149,12 @@
         };
 
     // DOMElement
-
     DOMElement.prototype = {
-        matches: function(selector) {
-            return new SelectorMatcher(selector).test(this._el);
+        constructor: DOMElement,
+        _matches: function(el, selector) {
+            return new SelectorMatcher(selector).test(el);
         },
-        find: function(selector) {
+        _find: function(el, selector) {
             if (typeof selector !== "string") {
                 throw new DOMMethodCallError("find");
             }
@@ -162,12 +164,12 @@
             if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
                 node = document.getElementById(selector.substr(1));
             } else {
-                node = this._el.querySelector(selector);
+                node = el.querySelector(selector);
             }
             
             return DOMElement(node);
         },
-        findAll: (function() {
+        _findAll: (function() {
             // big part of code is stoled from Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
@@ -180,7 +182,7 @@
                 rescape = /'|\\/g,
                 expando = "DOM" + new Date().getTime();
 
-            return function(selector) {
+            return function(el, selector) {
                 if (typeof selector !== "string") {
                     throw new DOMMethodCallError("findAll");
                 }
@@ -198,10 +200,10 @@
                         }
                     // Speed-up: "TAG"
                     } else if (match[2]) {
-                        elements = this._el.getElementsByTagName(selector);
+                        elements = el.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
-                        elements = this._el.getElementsByClassName(m);
+                        elements = el.getElementsByClassName(m);
                     }
                 } else if (match = rsiblingQuick.exec(selector)) {
                     selector = match[2];
@@ -210,7 +212,7 @@
 
                     switch (match[1]) {
                         case "+":
-                            for (elem = this._el.nextElementSibling; elem; elem = null) {
+                            for (elem = el.nextElementSibling; elem; elem = null) {
                                 if (matcher.test(elem)) {
                                     elements.push(elem);
                                 }
@@ -218,7 +220,7 @@
                             break;
 
                         case "~":
-                            for (elem = this._el; elem = elem.nextElementSibling; ) {
+                            for (elem = el; elem = elem.nextElementSibling; ) {
                                 if (matcher.test(elem)) {
                                     elements.push(elem);
                                 }
@@ -226,7 +228,7 @@
                             break;
 
                         case ">":
-                            for (elem = this._el.firstElementChild; elem; elem = elem.nextElementSibling) {
+                            for (elem = el.firstElementChild; elem; elem = elem.nextElementSibling) {
                                 if (matcher.test(elem)) {
                                     elements.push(elem);
                                 }
@@ -236,22 +238,22 @@
                 } else {
                     var old = true,
                         nid = expando,
-                        newContext = this._el,
+                        newContext = el,
                         newSelector = this === DOM && selector;
 
                     if (this !== DOM) {
                         // qSA works strangely on Element-rooted queries
                         // We can work around this by specifying an extra ID on the root
                         // and working up from there (Thanks to Andrew Dupont for the technique)
-                        if ( (old = this._el.getAttribute("id")) ) {
+                        if ( (old = el.getAttribute("id")) ) {
                             nid = old.replace(rescape, "\\$&");
                         } else {
-                            this._el.setAttribute("id", nid);
+                            el.setAttribute("id", nid);
                         }
 
                         nid = "[id='" + nid + "'] ";
 
-                        newContext = rsibling.test(selector) && this._el.parentNode || this._el;
+                        newContext = rsibling.test(selector) && el.parentNode || el;
                         newSelector = nid + selector.replace(/","/g, "," + nid);
                     }
 
@@ -261,7 +263,7 @@
                         } catch(qsaError) {
                         } finally {
                             if ( !old ) {
-                                this._el.removeAttribute("id");
+                                el.removeAttribute("id");
                             }
                         }
                     }
@@ -270,7 +272,7 @@
                 return DOMElementCollection._new.call(elements || [], DOMElement);
             };
         })(),
-        contains: (function() {
+        _contains: (function() {
             var containsElement = Node.prototype.contains ?
                 function(parent, child) {
                     return parent.contains(child);
@@ -279,24 +281,26 @@
                     return !!(parent.compareDocumentPosition(child) & 16);
                 };
 
-            return function(element) {
+            return function(node, element, /*INTERNAL*/reverse) {
                 var ctr = element.constructor;
 
-                if (ctr === DOMElement) {
-                    return containsElement(this._el, element._el);
+                if (element instanceof Node) {
+                    return containsElement(reverse ? element : node, reverse ? node : element);
+                } else if (ctr === DOMElement) {
+                    return element.contains(node, true);
                 } else if (ctr === DOMElementCollection) {
                     return element.every(function(element) {
-                        return this.contains(element);
-                    }, this);
+                        return element.contains(node, true);
+                    });
                 } else {
                     throw new DOMMethodCallError("contains");
                 }
             };
         })(),
-        capture: (function() {
+        _capture: (function() {
             var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"];
                 
-            return function(event, callback, thisPtr, bubbling) {
+            return function(el, event, callback, thisPtr, bubbling) {
                 if (typeof callback !== "function") {
                     throw new DOMMethodCallError("on");
                 }
@@ -327,21 +331,20 @@
                         // restore event object properties
                         Object.defineProperties(e, propertyDescriptors);
                     },
-                    parentNode = this._el.parentNode,
                     eventDataKey = "@" + event,
                     eventDataEntries = this.data(eventDataKey),
                     eventDataEntry = {
                         key: callback, 
                         value: !selector ? handleEvent : function(e) {
-                            for (var el = e.target; el !== parentNode; el = el.parentNode) {
-                                if (matcher.test(el)) {
+                            for (var elem = e.target; elem !== el.parentNode; elem = elem.parentNode) {
+                                if (matcher.test(elem)) {
                                     return handleEvent(e);
                                 }
                             }
                         }
                     };
                 // attach event listener
-                this._el.addEventListener(eventType, eventDataEntry.value, !bubbling);
+                el.addEventListener(eventType, eventDataEntry.value, !bubbling);
                 // store event entry
                 if (eventDataEntries) {
                     eventDataEntries.push(eventDataEntry);
@@ -352,20 +355,20 @@
                 return this;
             };
         })(),
-        on: function(event, handler, thisPtr) {
+        _on: function(el, event, handler, thisPtr) {
             var eventType = typeof event;
 
             thisPtr = thisPtr || this;
 
             if (eventType === "string") {
-                this.capture(event, handler, thisPtr, true);
+                this._capture(el, event, handler, thisPtr, true);
             } else if (eventType === "object") {
                 Object.keys(event).forEach(function(key) {
-                    this.capture(key, event[key], thisPtr, true);
+                    this._capture(el, key, event[key], thisPtr, true);
                 }, this);
             } else if (Array.isArray(event)) {
                 event.forEach(function(key) {
-                    this.capture(key, handler, thisPtr, true);
+                    this._capture(el, key, handler, thisPtr, true);
                 }, this);
             } else {
                 throw new DOMMethodCallError("on");
@@ -373,7 +376,7 @@
 
             return this;
         },
-        off: function(event, handler) {
+        _off: function(el, event, handler) {
             if (typeof event !== "string" || handler !== undefined && typeof handler !== "function") {
                 throw new DOMMethodCallError("off");
             }
@@ -388,13 +391,13 @@
                         return true;
                     }
                     // remove event listener from the element
-                    this._el.removeEventListener(eventType, eventDataEntry.value, false);
-                }, this));
+                    el.removeEventListener(eventType, eventDataEntry.value, false);
+                }));
             }
 
             return this;
         },
-        fire: function(eventType, detail) {
+        _fire: function(el, eventType, detail) {
             var event;
             
             if (detail !== undefined) {
@@ -404,23 +407,23 @@
                 event.initEvent(eventType, true, true);
             }
             
-            this._el.dispatchEvent(event);
+            el.dispatchEvent(event);
 
             return this;
         },
-        get: function(name) {
+        _get: function(el, name) {
             if (typeof name !== "string") {
                 throw new DOMMethodCallError("get");
             }
 
-            return this._el[name] || this._el.getAttribute(name);
+            return el[name] || el.getAttribute(name);
         },
-        set: function(name, value) {
+        _set: function(el, name, value) {
             var nameType = typeof name,
                 valueType = typeof value;
 
             if (valueType === "function") {
-                value = value.call(this, this.get(name));
+                value = value.call(this, this._get(el, name));
                 valueType = typeof value;
             }
 
@@ -430,19 +433,19 @@
                 }
 
                 if (value === null) {
-                    this._el.removeAttribute(name);
-                } else if (name in this._el) {
-                    this._el[name] = value;
+                    el.removeAttribute(name);
+                } else if (name in el) {
+                    el[name] = value;
                 } else {
-                    this._el.setAttribute(name, value);
+                    el.setAttribute(name, value);
                 } 
             } else if (Array.isArray(name)) {
                 name.forEach(function(name) {
-                    this.set(name, value);
+                    this._set(el, name, value);
                 }, this);
             } else if (nameType === "object") {
                 Object.keys(name).forEach(function(key) {
-                    this.set(key, name[key]);
+                    this._set(el, key, name[key]);
                 }, this);
             } else {
                 throw new DOMMethodCallError("set");
@@ -450,25 +453,25 @@
 
             return this;
         },
-        clone: function(deep) {
-            return new DOMElement(this._el.cloneNode(deep));
+        _clone: function(el, deep) {
+            return new DOMElement(el.cloneNode(deep));
         },
-        css: function(property, value) {
+        _css: function(el, property, value) {
             var propType = typeof property;
 
             if (property === undefined) {
-                return window.getComputedStyle(this._el);
+                return window.getComputedStyle(el);
             }
 
             if (propType === "string") {
                 if (value === undefined) {
-                    return this._el.style[property] || window.getComputedStyle(this._el)[property];
+                    return el.style[property] || window.getComputedStyle(el)[property];
                 }
 
-                this._el.style[property] = value;
+                el.style[property] = value;
             } else if (propType === "object") {
                 Object.keys(property).forEach(function(key) {
-                    this.css(key, property[key]);
+                    this._css(el, key, property[key]);
                 }, this);
             } else {
                 throw new DOMMethodCallError("css");
@@ -476,9 +479,8 @@
 
             return this;
         },
-        html: (function() {
-            var forEach = DOMElementCollection.prototype.forEach,
-                processScripts = function(el) {
+        _html: (function() {
+            var processScripts = function(el) {
                     if (el.src) {
                         var script = document.createElement("script");
 
@@ -486,32 +488,30 @@
 
                         headEl.removeChild(headEl.appendChild(script));
                     } else {
-                        eval(el.innerHTML);
+                        eval(el.textContent);
                     }
                 };
 
-            return function(value) {
-                var node = this._el;
-
+            return function(el, value) {
                 if (value === undefined) {
-                    return node.innerHTML;
+                    return el.innerHTML;
                 }
 
                 if (typeof value !== "string") {
                     throw new DOMMethodCallError("html");
                 }
                 // fix NoScope elements in IE9-
-                node.innerHTML = "&shy;" + value;
-                node.removeChild(node.firstChild);
+                el.innerHTML = "&shy;" + value;
+                el.removeChild(el.firstChild);
                 // fix script elements
-                forEach.call(slice.call(node.getElementsByTagName("script"), 0), processScripts);
+                DOMElementCollection.prototype.forEach.call(slice.call(el.getElementsByTagName("script"), 0), processScripts);
 
                 return this;
             };
         })(),
-        offset: function() {
+        _offset: function(el) {
             var bodyEl = document.body,
-                boundingRect = this._el.getBoundingClientRect(),
+                boundingRect = el.getBoundingClientRect(),
                 clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
                 clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
                 scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
@@ -524,39 +524,39 @@
                 bottom: boundingRect.bottom + scrollTop - clientTop
             };
         },
-        call: function(name) {
+        _call: function(el, name) {
             if (arguments.length === 1) {
-                return this._el[name]();
+                return el[name]();
             } else {
-                return this._el[name].apply(this._el, slice.call(arguments, 1));
+                return el[name].apply(el, slice.call(arguments, 1));
             }
         }
     };
 
     // dom traversing
-    (function() {
-        var strategies = {
-                firstChild: "firstElementChild",
-                lastChild: "lastElementChild",
-                parent: "parentNode",
-                next: "nextElementSibling",
-                prev: "previousElementSibling"
-            };
+    // (function() {
+    //     var strategies = {
+    //             firstChild: "firstElementChild",
+    //             lastChild: "lastElementChild",
+    //             parent: "parentNode",
+    //             next: "nextElementSibling",
+    //             prev: "previousElementSibling"
+    //         };
 
-        Object.keys(strategies).forEach(function(methodName) {
-            var propertyName = strategies[methodName];
+    //     Object.keys(strategies).forEach(function(methodName) {
+    //         var propertyName = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function(selector) {
-                var node = this._el,
-                    matcher = selector ? new SelectorMatcher(selector) : null;
+    //         DOMElement.prototype[methodName] = function(selector) {
+    //             var node = this._el,
+    //                 matcher = selector ? new SelectorMatcher(selector) : null;
 
-                while ( (node = node[propertyName]) && matcher && matcher.test(node) );
+    //             while ( (node = node[propertyName]) && matcher && matcher.test(node) );
 
-                return DOMElement(node);
-            };
-        });
+    //             return DOMElement(node);
+    //         };
+    //     });
 
-    })();
+    // })();
 
     // dom manipulation
     (function() {
@@ -589,36 +589,36 @@
         Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function(element) {
+            DOMElement.prototype["_" + methodName] = function(node, element, /*INTERNAL*/reverse) {
                 var parent, relatedNode, ctr;
 
-                if (parent = this._el.parentNode) {
+                //if (parent = node.parentNode) {
                     if (element) {
-                        ctr = element.constructor;
+                        // ctr = element.constructor;
 
-                        if (ctr === DOMElement) {
-                            relatedNode = element._el;
-                        } else if (ctr === DOMElementCollection) {
-                            // create a fragment for the node collection
-                            relatedNode = document.createDocumentFragment();
-                            // populate fragment
-                            element.forEach(populateNode, relatedNode);
-                        } else if (ctr === String) {
+                        // if (ctr === DOMElement) {
+                        //     relatedNode = element._el;
+                        // } else if (ctr === DOMElementCollection) {
+                        //     // create a fragment for the node collection
+                        //     relatedNode = document.createDocumentFragment();
+                        //     // populate fragment
+                        //     element.forEach(populateNode, relatedNode);
+                        // } else if (ctr === String) {
                             relatedNode = document.createElement("div");
                             relatedNode.innerHTML = element;
                             relatedNode = relatedNode.firstElementChild;
-                        }
+                        // }
                     } else {
                         // indicate case with remove() function
                         relatedNode = parent;
                     }
 
                     if (relatedNode) {
-                       process(this._el, relatedNode, parent);
+                       process(node, relatedNode, parent);
                     } else {
                         throw new DOMMethodCallError(methodName);
                     }
-                }
+                //}
 
                 return this;
             };
@@ -629,38 +629,38 @@
     (function() {
         var rclass = /[\n\t\r]/g,
             strategies = htmlEl.classList ? {
-                hasClass: function(className) {
-                    return this._el.classList.constains(className);
+                hasClass: function(el, className) {
+                    return el.classList.constains(className);
                 },
-                addClass: function(className) {
-                    this._el.classList.add(className);
+                addClass: function(el, className) {
+                    el.classList.add(className);
                 },
-                removeClass: function(className) {
-                    this._el.classList.remove(className);
+                removeClass: function(el, className) {
+                    el.classList.remove(className);
                 },
-                toggleClass: function(className) {
-                    this._el.classList.toggle(className);
+                toggleClass: function(el, className) {
+                    el.classList.toggle(className);
                 }
             } : {
-                hasClass: function(className) {
-                    return !!~((" " + this._el.className + " ")
+                hasClass: function(el, className) {
+                    return !!~((" " + el.className + " ")
                             .replace(rclass, " ")).indexOf(" " + className + " ");
                 },
-                addClass: function(className) {
+                addClass: function(el, className) {
                     if (!this.hasClass(className)) {
-                        this._el.className += " " + className;
+                        el.className += " " + className;
                     }
                 },
-                removeClass: function(className) {
-                    this._el.className = (" " + this._el.className + " ")
-                            .replace(rclass, " ").replace(" " + className + " ", " ").trim();
+                removeClass: function(el, className) {
+                    el.className = (" " + el.className + " ")
+                        .replace(rclass, " ").replace(" " + className + " ", " ").trim();
                 },
-                toggleClass: function(className) {
-                    var originalClassName = this._el.className;
+                toggleClass: function(el, className) {
+                    var originalClassName = el.className;
 
                     this.addClass(className);
 
-                    if (originalClassName !== this._el.className) {
+                    if (originalClassName !== el.className) {
                         this.removeClass(className);
                     }
                 }
@@ -669,11 +669,21 @@
         Object.keys(strategies).forEach(function(methodName) {
             var process = strategies[methodName];
 
-            DOMElement.prototype[methodName] = function(classNames) {
+            DOMElement.prototype["_" + methodName] = function(el, classNames) {
                 if (typeof classNames === "string") {
-                    return process.call(this, classNames);
+                    return process.call(this, el, classNames);
                 } else if (Array.isArray(classNames)) {
-                    return classNames[methodName === "hasClass" ? "every" : "forEach"](process, this) || this;
+                    if (methodName === "hasClass") {
+                        return classNames.every(function(className) {
+                            process.call(this, el, className);
+                        }, this);
+                    } else {
+                        classNames.forEach(function(className) {
+                            process.call(this, el, className);
+                        }, this);
+
+                        return this;
+                    }
                 } else {
                     throw new DOMMethodCallError(methodName);
                 }
@@ -682,14 +692,11 @@
 
     })();
 
-    // NullDOMElement
-    Object.keys(DOMElement.prototype).concat(["data"]).forEach(function(method) {
-        // each method is a noop function
-        NullDOMElement.prototype[method] = function() {};
+    Object.keys(DOMElement.prototype).forEach(function(key) {
+        DOMElement.prototype[key.substr(1)] = function() {
+            return this._do(key, slice.call(arguments, 0));
+        };
     });
-
-    NullDOMElement.constructor = DOMElement;
-    NullDOMElement.prototype._el = null;
 
     // DOMMethodCallError
     DOMMethodCallError.prototype = new Error();
@@ -697,7 +704,7 @@
     // initialize constants
     DOM = Object.create(new DOMElement(htmlEl), {
         create: {
-            value: function(tagName, attrs, content) {
+            value: function(tagName) {
                 var elem;
 
                 if (typeof tagName == "string") {
@@ -717,25 +724,7 @@
                     elem = tagName;
                 }
 
-                elem = DOMElement(elem);
-
-                if (content) {
-                    if (typeof content !== "string") {
-                        throw new DOMMethodCallError("create");
-                    }
-
-                    attrs.innerHTML = content;
-                }
-
-                if (attrs) {
-                    if (typeof attrs !== "object") {
-                        throw new DOMMethodCallError("create");
-                    }
-
-                    elem.set(attrs);
-                }
-                
-                return elem;
+                return DOMElement(elem);
             }
         },
         ready: {
@@ -780,13 +769,8 @@
         }
     });
 
-    // fix constructors
-    [DOMElement, DOMElementCollection].forEach(function(ctr) {
-        ctr.prototype.constructor = ctr;
-    });
-
     // API protection
-    [DOMElement.prototype, DOMElementCollection.prototype, NullDOMElement.prototype].forEach(function(proto) {
+    [DOMElement.prototype, DOMElementCollection.prototype].forEach(function(proto) {
         Object.keys(proto).forEach(function(key) {
             var pd = Object.getOwnPropertyDescriptor(proto, key);
 
