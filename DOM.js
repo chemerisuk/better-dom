@@ -23,7 +23,7 @@
                     }
                 },
                 // private data objects
-                _data: { value: {} },
+                _data: { value: Object.create(null) },
                 _events: { value: [] }
             });
         },
@@ -46,7 +46,6 @@
             ctr._new = ctr.prototype.map;
             // use Array.prototype implementation to return regular array
             ctr.prototype.map = Array.prototype.map;
-            ctr.prototype.constructor = ctr;
             // cleanup collection prototype
             "pop push shift slice splice unshift concat join toSource toString toLocaleString indexOf lastIndexOf sort reverse reduce reduceRight".split(" ")
             .forEach(function(methodName) {
@@ -670,7 +669,21 @@
         };
     });
 
-    DOMElement.constructor = DOMElement;
+    // types finalization
+    [DOMElement, DOMElementCollection].forEach(function(ctr) {
+        var proto = ctr.prototype;
+        // fix constructor
+        proto.constructor = ctr;
+        // make all methods not to be enumerable
+        Object.keys(proto).forEach(function(key) {
+            Object.defineProperty(proto, key, {
+                value: proto[key],
+                enumerable: false
+            });
+        });
+        // prevent extensions
+        Object.preventExtensions(proto);
+    });
 
     // DOMMethodCallError
     DOMMethodCallError.prototype = new Error();
@@ -741,21 +754,6 @@
                 };
             })()
         }
-    });
-
-    // API protection
-    [DOMElement.prototype, DOMElementCollection.prototype].forEach(function(proto) {
-        Object.keys(proto).forEach(function(key) {
-            var pd = Object.getOwnPropertyDescriptor(proto, key);
-
-            pd.enumerable = false;
-            pd.writable = false;
-            pd.configurable = false;
-
-            Object.defineProperty(proto, key, pd);
-        });
-
-        Object.preventExtensions(proto);
     });
 
     // register API
