@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, undefined) {
+(function(window, document, undefined, slice) {
     "use strict";
 
     var DOM,
@@ -50,7 +50,7 @@
         DOMElementCollection = (function() {
             // Create clean copy of Array prototype. Inspired by
             // http://dean.edwards.name/weblog/2006/11/hooray/
-            var ref = document.getElementsByTagName("script")[0],
+            var ref = document.scripts[0],
                 iframe = document.createElement("iframe"),
                 ctr;
                 
@@ -60,8 +60,32 @@
             ref.parentNode.insertBefore(iframe, ref);
             // store reference to clean Array
             ctr = iframe.contentWindow.Array;
-            // cleanup
+            // cleanup DOM
             ref.parentNode.removeChild(iframe);
+            // operator for internal use only
+            ctr._new = ctr.prototype.map;
+            // use Array.prototype implementation to return regular array
+            ctr.prototype.map = Array.prototype.map;
+            // cleanup collection prototype
+            "pop push shift slice splice unshift concat join toSource toString toLocaleString indexOf lastIndexOf sort reverse reduce reduceRight".split(" ")
+            .forEach(function(methodName) {
+                delete ctr.prototype[methodName];
+            });
+            // shortcuts
+            "set on off capture addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
+                var process = function(el) {
+                    // this will be an arguments array
+                    el[methodName].apply(el, this);
+                };
+
+                ctr.prototype[methodName] = function() {
+                    if (this.length > 0) {
+                        this.forEach(process, slice.call(arguments, 0));
+                    }
+
+                    return this;
+                };
+            });
             
             return ctr;
         })(),
@@ -154,9 +178,7 @@
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
                 rescape = /'|\\/g,
-                expando = "DOM" + new Date().getTime(),
-                slice = DOMElementCollection.prototype.slice,
-                map = DOMElementCollection.prototype.map;
+                expando = "DOM" + new Date().getTime();
 
             return function(selector) {
                 if (typeof selector !== "string") {
@@ -176,10 +198,10 @@
                         }
                     // Speed-up: "TAG"
                     } else if (match[2]) {
-                        elements = slice.call(this._el.getElementsByTagName(selector), 0);
+                        elements = this._el.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
-                        elements = slice.call(this._el.getElementsByClassName(m), 0);
+                        elements = this._el.getElementsByClassName(m);
                     }
                 } else if (match = rsiblingQuick.exec(selector)) {
                     selector = match[2];
@@ -245,7 +267,7 @@
                     }
                 }
 
-                return map.call(elements || [], DOMElement);
+                return DOMElementCollection._new.call(elements || [], DOMElement);
             };
         })(),
         contains: (function() {
@@ -455,8 +477,7 @@
             return this;
         },
         html: (function() {
-            var slice = DOMElementCollection.prototype.slice,
-                forEach = DOMElementCollection.prototype.forEach,
+            var forEach = DOMElementCollection.prototype.forEach,
                 processScripts = function(el) {
                     if (el.src) {
                         var script = document.createElement("script");
@@ -507,7 +528,7 @@
             if (arguments.length === 1) {
                 return this._el[name]();
             } else {
-                return this._el[name].apply(this._el, Array.prototype.slice.call(arguments, 1));
+                return this._el[name].apply(this._el, slice.call(arguments, 1));
             }
         }
     };
@@ -670,34 +691,6 @@
     NullDOMElement.constructor = DOMElement;
     NullDOMElement.prototype._el = null;
 
-    // DOMElementCollection
-
-    // shortcuts
-    ["set", "on", "show", "hide", "addClass", "removeClass", "toggleClass"].forEach(function(methodName) {
-        var slice = DOMElementCollection.prototype.slice,
-            process = function(element) {
-            // this will be an arguments array
-            element[methodName].apply(element, this);
-        };
-
-        DOMElementCollection.prototype[methodName] = function() {
-            if (this.length === 0) return this;
-
-            this.forEach(process, slice.call(arguments, 0));
-
-            return this;
-        };
-    });
-
-    // cleanup prototype by saving only specific methods
-    ["pop", "push", "shift", "splice", "unshift", "concat", "join", "slice", "toSource", "toString", 
-    "toLocaleString", "indexOf", "lastIndexOf", "sort", "reverse", "reduce", "reduceRight"].forEach(function(methodName) {
-        delete DOMElementCollection.prototype[methodName];
-    });
-
-    // use Array.prototype implementation to return regular array
-    DOMElementCollection.prototype.map = Array.prototype.map;
-
     // DOMMethodCallError
     DOMMethodCallError.prototype = new Error();
 
@@ -794,7 +787,17 @@
 
     // API protection
     [DOMElement.prototype, DOMElementCollection.prototype, NullDOMElement.prototype].forEach(function(proto) {
-        Object.freeze(proto);
+        Object.keys(proto).forEach(function(key) {
+            var pd = Object.getOwnPropertyDescriptor(proto, key);
+
+            pd.enumerable = false;
+            pd.writable = false;
+            pd.configurable = false;
+
+            Object.defineProperty(proto, key, pd);
+        });
+
+        Object.preventExtensions(proto);
     });
 
     // register API
@@ -804,4 +807,4 @@
         window.DOM = DOM;
     }
 
-})(window, document, undefined);
+})(window, document, undefined, Array.prototype.slice);
