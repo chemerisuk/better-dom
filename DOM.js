@@ -18,8 +18,8 @@
             
             Object.defineProperties(this, {
                 _do: {
-                    value: !node ? function() {} : function(method, args) {
-                        return DOMElement.prototype[method].apply(this, [node].concat(args));
+                    value: !node ? function() {} : function(methodName, args) {
+                        return DOMElement.prototype[methodName].apply(this, [node].concat(args));
                     }
                 },
                 // private data objects
@@ -521,29 +521,27 @@
     };
 
     // dom traversing
-    // (function() {
-    //     var strategies = {
-    //             firstChild: "firstElementChild",
-    //             lastChild: "lastElementChild",
-    //             parent: "parentNode",
-    //             next: "nextElementSibling",
-    //             prev: "previousElementSibling"
-    //         };
+    (function() {
+        var strategies = {
+                firstChild: "firstElementChild",
+                lastChild: "lastElementChild",
+                next: "nextElementSibling",
+                prev: "previousElementSibling"
+            };
 
-    //     Object.keys(strategies).forEach(function(methodName) {
-    //         var propertyName = strategies[methodName];
+        Object.keys(strategies).forEach(function(methodName) {
+            var propertyName = strategies[methodName];
 
-    //         DOMElement.prototype[methodName] = function(selector) {
-    //             var node = this._el,
-    //                 matcher = selector ? new SelectorMatcher(selector) : null;
+            DOMElement.prototype["_" + methodName] = function(node, selector) {
+                var matcher = selector ? new SelectorMatcher(selector) : null;
 
-    //             while ( (node = node[propertyName]) && matcher && matcher.test(node) );
+                while ( (node = node[propertyName]) && matcher && matcher.test(node) );
 
-    //             return DOMElement(node);
-    //         };
-    //     });
+                return DOMElement(node);
+            };
+        });
 
-    // })();
+    })();
 
     // dom manipulation
     (function() {
