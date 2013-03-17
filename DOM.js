@@ -12,9 +12,15 @@
         headEl = document.head,
         // classes 
         DOMElement = function(node) {
+            if (node.__DOM__) {
+                return node.__DOM__;
+            }
+
             if (!this) {
                 return new DOMElement(node);
             }
+
+            node.__DOM__ = this;
             
             Object.defineProperties(this, {
                 _do: {
@@ -367,7 +373,7 @@
             var event;
             
             if (detail !== undefined) {
-                event = new CustomEvent(eventType, {detail: detail});
+                event = new CustomEvent(eventType, {detail: detail, bubbles: true});
             } else {
                 event = document.createEvent(eventType);
                 event.initEvent(eventType, true, true);
@@ -378,7 +384,7 @@
             return this;
         },
         _get: function(el, name) {
-            if (typeof name !== "string") {
+            if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
                 throw new DOMMethodCallError("get");
             }
 
@@ -572,7 +578,7 @@
             var process = strategies[methodName];
 
             DOMElement.prototype["_" + methodName] = function(node, element, /*INTERNAL*/reverse) {
-                var parent, relatedNode;
+                var parent = node.parentNode, relatedNode;
 
                 if (element) {
                     relatedNode = document.createElement("div");
