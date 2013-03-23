@@ -370,9 +370,13 @@
             return this;
         },
         _fire: function(el, eventType, detail) {
-            var event;
+            if (typeof eventType !== "string") {
+                throw new DOMMethodCallError("fire");
+            }
+
+            var event; 
             
-            if (detail !== undefined) {
+            if (~eventType.indexOf(":")) {
                 event = new CustomEvent(eventType, {detail: detail, bubbles: true});
             } else {
                 event = document.createEvent(eventType);
