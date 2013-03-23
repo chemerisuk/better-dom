@@ -38,7 +38,8 @@
             // http://dean.edwards.name/weblog/2006/11/hooray/
             var ref = document.scripts[0],
                 iframe = document.createElement("iframe"),
-                ctr;
+                protoMethods = "forEach map every some filter length".split(" "),
+                ctr, proto;
                 
             iframe.src = "about:blank";
             iframe.style.display = "none";
@@ -48,14 +49,15 @@
             ctr = iframe.contentWindow.Array;
             // cleanup DOM
             ref.parentNode.removeChild(iframe);
+
+            proto = ctr.prototype;
             // operator for internal use only
-            ctr._new = ctr.prototype.map;
-            // use Array.prototype implementation to return regular array
-            ctr.prototype.map = Array.prototype.map;
+            ctr._new = proto.map;
+            // use Array.prototype implementation to return regular array for map
+            proto.map = Array.prototype.map;
             // cleanup collection prototype
-            "pop push shift slice splice unshift concat join toSource toString toLocaleString indexOf lastIndexOf sort reverse reduce reduceRight".split(" ")
-            .forEach(function(methodName) {
-                delete ctr.prototype[methodName];
+            Object.getOwnPropertyNames(proto).forEach(function(methodName) {
+                ~protoMethods.indexOf(methodName) || delete proto[methodName];
             });
             // shortcuts
             "set on off capture addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
@@ -64,7 +66,7 @@
                     obj._do("_" + methodName, this);
                 };
 
-                ctr.prototype[methodName] = function() {
+                proto[methodName] = function() {
                     if (this.length > 0) {
                         this.forEach(process, slice.call(arguments, 0));
                     }
