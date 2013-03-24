@@ -93,7 +93,7 @@
                         quick[1] = (quick[1] || "").toLowerCase();
                         quick[4] = quick[4] ? " " + quick[4] + " " : "";
                     } else {
-                        throw new makeArgumentsError("quickParse");
+                        throw makeArgumentsError();
                     }
 
                     return quick;
@@ -130,7 +130,8 @@
             return ctr;
         })(),
         // errors
-        makeArgumentsError = function(methodName) {
+        makeArgumentsError = function() {
+            var methodName = new Error().stack.split("\n")[2].replace(/^\s+at\s+|\s+.+$/g,"").split(".")[1];
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
             return "Error: '" + methodName + "' method called with illegal arguments";
         };
@@ -142,7 +143,7 @@
         },
         find: function(el, selector) {
             if (typeof selector !== "string") {
-                throw new makeArgumentsError("find");
+                throw makeArgumentsError();
             }
 
             var node;
@@ -170,8 +171,7 @@
 
             return function(el, selector) {
                 if (typeof selector !== "string") {
-                    //throw new makeArgumentsError("findAll");
-                    throw makeArgumentsError("findAll");
+                    throw makeArgumentsError();
                 }
 
                 var elements, m, elem, match, matcher;
@@ -260,7 +260,7 @@
                         return element.contains(node, true);
                     });
                 } else {
-                    throw new makeArgumentsError("contains");
+                    throw makeArgumentsError();
                 }
             };
         })(),
@@ -269,7 +269,7 @@
                 
             return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
                 if (typeof callback !== "function") {
-                    throw new makeArgumentsError("on");
+                    throw makeArgumentsError();
                 }
 
                 var selectorStart = event.indexOf(" "),
@@ -333,14 +333,14 @@
                     this._do("capture", [key, handler, thisPtr, true]);
                 }, this);
             } else {
-                throw new makeArgumentsError("on");
+                throw makeArgumentsError();
             }
 
             return this;
         },
         off: function(node, event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new makeArgumentsError("off");
+                throw new makeArgumentsError();
             }
 
             var eventType = event.split(" ")[0];
@@ -356,7 +356,7 @@
         },
         fire: function(el, eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new makeArgumentsError("fire");
+                throw new makeArgumentsError();
             }
 
             var event; 
@@ -374,7 +374,7 @@
         },
         get: function(el, name) {
             if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
-                throw new makeArgumentsError("get");
+                throw makeArgumentsError();
             }
 
             return el[name] || el.getAttribute(name);
@@ -390,7 +390,7 @@
 
             if (nameType === "string") {
                 if (value !== null && valueType !== "string") {
-                    throw new makeArgumentsError("set");
+                    throw makeArgumentsError();
                 }
 
                 if (value === null) {
@@ -409,7 +409,7 @@
                     this._do("set", [key, name[key]]);
                 }, this);
             } else {
-                throw new makeArgumentsError("set");
+                throw makeArgumentsError();
             }
 
             return this;
@@ -435,7 +435,7 @@
                     this._do("css", [key, property[key]]);
                 }, this);
             } else {
-                throw new makeArgumentsError("css");
+                throw makeArgumentsError();
             }
 
             return this;
@@ -459,7 +459,7 @@
                 }
 
                 if (typeof value !== "string") {
-                    throw new makeArgumentsError("html");
+                    throw makeArgumentsError();
                 }
                 // fix NoScope elements in IE
                 el.innerHTML = "&shy;" + value;
@@ -494,7 +494,7 @@
         },
         data: function(node, name, value) {
             if (typeof name !== "string") {
-                throw new makeArgumentsError("data");
+                throw makeArgumentsError();
             }
 
             var result;
@@ -582,7 +582,7 @@
                 if (relatedNode) {
                    process(node, relatedNode, parent);
                 } else {
-                    throw new makeArgumentsError(methodName);
+                    throw makeArgumentsError();
                 }
 
                 return this;
@@ -650,7 +650,7 @@
                         return this;
                     }
                 } else {
-                    throw new makeArgumentsError(methodName);
+                    throw makeArgumentsError();
                 }
             };
         });
@@ -707,7 +707,7 @@
                     }
 
                     if (!elem) {
-                        throw new makeArgumentsError("create");
+                        throw makeArgumentsError();
                     }
 
                     return DOMElement(elem);
@@ -743,7 +743,7 @@
                 // return implementation
                 return function(callback) {
                     if (typeof callback !== "function") {
-                        throw new makeArgumentsError("ready");
+                        throw makeArgumentsError();
                     }
 
                     if (readyCallbacks) {
@@ -771,7 +771,7 @@
                         } else if (typeof styles === "string") {
                             ruleText += styles;
                         } else {
-                            throw new makeArgumentsError("importStyles");
+                            throw makeArgumentsError();
                         }
 
                         styleEl.appendChild(document.createTextNode(ruleText + "}"));
@@ -789,7 +789,7 @@
                             process(selector, rule[selector]);
                         });
                     } else {
-                        throw new makeArgumentsError("importStyles");
+                        throw makeArgumentsError();
                     }
                 };
             })()
@@ -801,37 +801,35 @@
                 if (htmlEl.addBehavior) {
                     return (function() {
                         var scripts = document.scripts,
-                            behavior = scripts[scripts.length - 1].getAttribute("src");
+                            behavior = scripts[scripts.length - 1].getAttribute("src"),
+                            watch = function(selector, callback) {
+                                var entry = listeners[selector];
+                                
+                                if (entry) {
+                                    entry.push(callback);
+                                } else {
+                                    listeners[selector] = [callback];
+                                    // append style rule at the last step
+                                    DOM.importStyles(selector, {"behavior": behavior});
+                                }
+                            };
                         
                         behavior = "url(" + behavior.substr(0, behavior.lastIndexOf(".")) + ".htc)";
-                        
-                        return function(selector, callback) {
-                            var entry = listeners[selector];
-                            
-                            if (entry) {
-                                entry.callbacks.push(callback);
-                            } else {
-                                listeners[selector] = entry = { 
-                                    callbacks: [callback],
-                                    context: document/*this*/
-                                };
-                                // append style rule at the last step
-                                entry.styleIndex = cssRules.addRule(selector, "-ms-behavior:" + behavior);
-                            }
+                        // IE-SPECIFIC: this function will be called inside of htc file
+                        watch._init = function(el) {
+                            Object.keys(listeners).forEach(function(selector) {
+                                var entry = listeners[selector];
+                                
+                                if (el.msMatchesSelector(selector)) {
+                                    entry.forEach(function(callback) {
+                                        callback.call(DOMElement(el));
+                                    });
+                                }
+                            });
                         };
+                        
+                        return watch;
                     })();
-                    // IE-SPECIFIC: this function will be called inside of htc file
-                    CustomTag._init = function(element) {
-                        Object.keys(listeners).forEach(function(selector) {
-                            var entry = listeners[selector];
-                            
-                            if (element.msMatchesSelector(selector)) {
-                                entry.callbacks.forEach(function(callback) {
-                                    callback.call(entry.context, element);
-                                });
-                            }
-                        });
-                    };
                 } else {
                     return (function() {
                         // use trick discovered by Daniel Buchner: 
@@ -856,12 +854,12 @@
 
                             startNames.forEach(function(name){
                                 document.addEventListener(name, function(e) {
-                                    var target = e.target;
+                                    var el = e.target;
 
                                     if (e.animationName === animationName) {
-                                        fn.call(this, target);
+                                        fn.call(DOMElement(el));
                                         // prevent double initialization
-                                        target.addEventListener(name, function(e) {
+                                        el.addEventListener(name, function(e) {
                                             if (e.animationName === animationName) {
                                                 e.stopPropagation();
                                             }
@@ -877,10 +875,6 @@
     });
 
     // register API
-    if (typeof window.define === "function" && window.define.amd) {
-        window.define("DOM", [], function() { return DOM; });
-    } else {
-        window.DOM = DOM;
-    }
+    window.DOM = DOM;
 
 })(window, document, undefined, Array.prototype.slice, Array.prototype.map);
