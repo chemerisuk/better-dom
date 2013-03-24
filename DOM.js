@@ -272,7 +272,7 @@
         capture: (function() {
             var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"];
                 
-            return function(el, event, callback, thisPtr, bubbling) {
+            return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
                 if (typeof callback !== "function") {
                     throw new DOMMethodCallError("on");
                 }
@@ -447,16 +447,16 @@
         },
         html: (function() {
             var processScripts = function(el) {
-                    if (el.src) {
-                        var script = document.createElement("script");
+                if (el.src) {
+                    var script = document.createElement("script");
 
-                        script.src = el.src;
+                    script.src = el.src;
 
-                        headEl.removeChild(headEl.appendChild(script));
-                    } else {
-                        eval(el.textContent);
-                    }
-                };
+                    headEl.removeChild(headEl.appendChild(script));
+                } else {
+                    eval(el.textContent);
+                }
+            };
 
             return function(el, value) {
                 if (value === undefined) {
@@ -466,11 +466,11 @@
                 if (typeof value !== "string") {
                     throw new DOMMethodCallError("html");
                 }
-                // fix NoScope elements in IE9-
+                // fix NoScope elements in IE
                 el.innerHTML = "&shy;" + value;
                 el.removeChild(el.firstChild);
                 // fix script elements
-                DOMElementCollection.prototype.forEach.call(slice.call(el.getElementsByTagName("script"), 0), processScripts);
+                slice.call(el.getElementsByTagName("script"), 0).forEach(processScripts);
 
                 return this;
             };
