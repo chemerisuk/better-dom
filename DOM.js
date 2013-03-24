@@ -197,34 +197,16 @@
                         elements = el.getElementsByClassName(m);
                     }
                 } else if (match = rsiblingQuick.exec(selector)) {
-                    selector = match[2];
+                    // Speed-up "+ selector", "> selector", "~ selector"
+                    matcher = new SelectorMatcher(match[2], true);
                     elements = [];
-                    matcher = new SelectorMatcher(selector, true);
 
-                    switch (match[1]) {
-                        case "+":
-                            for (elem = el.nextElementSibling; elem; elem = null) {
-                                if (matcher.test(elem)) {
-                                    elements.push(elem);
-                                }
-                            }
-                            break;
+                    for (elem = el[match[1] === ">" ? "firstElementChild" : "nextElementSibling"]; elem; elem = elem.nextElementSibling) {
+                        if (matcher.test(elem)) {
+                            elements.push(elem);
+                        }
 
-                        case "~":
-                            for (elem = el; elem = elem.nextElementSibling; ) {
-                                if (matcher.test(elem)) {
-                                    elements.push(elem);
-                                }
-                            }
-                            break;
-
-                        case ">":
-                            for (elem = el.firstElementChild; elem; elem = elem.nextElementSibling) {
-                                if (matcher.test(elem)) {
-                                    elements.push(elem);
-                                }
-                            }
-                            break;
+                        if (match[1] === "+") break;
                     }
                 } else {
                     var old = true,
