@@ -62,10 +62,6 @@
             ref.parentNode.removeChild(iframe);
 
             proto = ctr.prototype;
-            // operator for internal use only
-            ctr._new = proto.map;
-            // use Array.prototype implementation to return regular array for map
-            proto.map = Array.prototype.map;
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
                 ~"forEach map every some filter length".indexOf(methodName) || delete proto[methodName];
@@ -82,6 +78,11 @@
                     return this;
                 };
             });
+
+            // temporary store operator for internal use only
+            ctr._new = proto.map;
+            // use Array.prototype implementation to return regular array for map
+            proto.map = Array.prototype.map;
             
             return ctr;
         })(),
@@ -243,7 +244,7 @@
                     }
                 }
 
-                return DOMElementCollection._new.call(elements || [], DOMElement);
+                return DOM.create(elements || []);
             };
         })(),
         contains: (function() {
@@ -256,7 +257,7 @@
                 };
 
             return function(node, element, /*INTERNAL*/reverse) {
-                if (element instanceof Node) {
+                if (element instanceof Element) {
                     return containsElement(reverse ? element : node, reverse ? node : element);
                 } else if (element instanceof DOMElement) {
                     return element.contains(node, true);
@@ -407,11 +408,11 @@
                 } 
             } else if (Array.isArray(name)) {
                 name.forEach(function(name) {
-                    this._set(el, name, value);
+                    this._do("set", [name, value]);
                 }, this);
             } else if (nameType === "object") {
                 Object.keys(name).forEach(function(key) {
-                    this._set(el, key, name[key]);
+                    this._do("set", [key, name[key]]);
                 }, this);
             } else {
                 throw new DOMMethodCallError("set");
@@ -437,7 +438,7 @@
                 el.style[property] = value;
             } else if (propType === "object") {
                 Object.keys(property).forEach(function(key) {
-                    this._css(el, key, property[key]);
+                    this._do("css", [key, property[key]]);
                 }, this);
             } else {
                 throw new DOMMethodCallError("css");
@@ -526,7 +527,8 @@
                 firstChild: "firstElementChild",
                 lastChild: "lastElementChild",
                 next: "nextElementSibling",
-                prev: "previousElementSibling"
+                prev: "previousElementSibling",
+                parent: "parentNode"
             };
 
         Object.keys(traversingStrategies).forEach(function(methodName) {
@@ -672,15 +674,14 @@
         var proto = ctr.prototype;
         // fix constructor
         proto.constructor = ctr;
-        // make all methods not to be enumerable
+        // make all methods to be readonly and not enumerable
         Object.keys(proto).forEach(function(key) {
             Object.defineProperty(proto, key, {
                 value: proto[key],
+                writable: false,
                 enumerable: false
             });
         });
-        // prevent extensions
-        Object.preventExtensions(proto);
     });
 
     // DOMMethodCallError
@@ -689,28 +690,38 @@
     // initialize constants
     DOM = Object.create(new DOMElement(htmlEl), {
         create: {
-            value: function(tagName) {
-                var elem;
+            value: (function() {
+                var newCollection = DOMElementCollection._new;
+                // cleanup temporary stored var
+                delete DOMElementCollection._new; 
 
-                if (typeof tagName == "string") {
-                    if (tagName.charAt(0) === "<") {
-                        elem = document.createElement("div");
-                        elem.innerHTML = tagName;
+                return function(content) {
+                    var elem;
 
-                        if (elem.children.length > 1) {
-                            throw new DOMMethodCallError("create");
+                    if (typeof content === "string") {
+                        if (content.indexOf(">") !== content.length - 1) {
+                            elem = document.createElement("div");
+                            elem.innerHTML = content;
+
+                            if (elem.children.length === 1) {
+                                elem = elem.firstChild;
+                            }
+                        } else {
+                            elem = document.createElement(content.substr(1, content.length - 2));
                         }
-
-                        elem = elem.firstChild;
-                    } else {
-                        elem = document.createElement(tagName);
+                    } else if (content instanceof Element) {
+                        elem = content;
+                    } else if (Array.isArray(content) || content instanceof NodeList) {
+                        return newCollection.call(content, DOMElement);
                     }
-                } else {
-                    elem = tagName;
-                }
 
-                return DOMElement(elem);
-            }
+                    if (!elem) {
+                        throw new DOMMethodCallError("create");
+                    }
+
+                    return DOMElement(elem);
+                };
+            })()
         },
         ready: {
             value: (function() {

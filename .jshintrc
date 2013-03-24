@@ -6,6 +6,8 @@
     "expr": true,
 	"globals": {
 		"define": true,
-		"CustomEvent": true
+		"CustomEvent": true,
+        "Element": true,
+        "NodeList": true
 	}
 }
