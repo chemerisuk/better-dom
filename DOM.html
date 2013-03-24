@@ -9,13 +9,8 @@ html, body {
     height: 100%;
 }
 
-html {
-    background: #EEE;
-}
-
 body {
     width: 960px;
-    background: white;
     margin: 0 auto;
     box-shadow: 0 0 10px #AAA;
 }
@@ -29,7 +24,6 @@ body > header {
     height: 5em;
     margin-bottom: -5em;
 
-    background: #00F;
     border: 2px solid #005;
     padding: 1em;
 }
@@ -38,7 +32,6 @@ body > footer {
     height: 3em;
     margin-top: -3em;
 
-    background: #0F0;
     border: 2px solid #050;
     padding: 1em;
 }
@@ -115,6 +108,28 @@ DOM.ready(function(){
     }
 
     link.next();
+
+    DOM.importStyles({
+        selector: "html",
+        styles: {
+            background: "#EEE"
+        }
+    }, {
+        selector: "body",
+        styles: {
+            background: "#FFF"
+        }
+    }, {
+        selector: "body > header",
+        styles: {
+            background: "#00F"
+        }
+    }, {
+        selector: "body > footer",
+        styles: {
+            background: "#0F0"
+        }
+    });
 
 });
 </script>

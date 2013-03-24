@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, undefined, slice) {
+(function(window, document, undefined, slice, map) {
     "use strict";
 
     var DOM,
@@ -82,7 +82,7 @@
             // temporary store operator for internal use only
             ctr._new = proto.map;
             // use Array.prototype implementation to return regular array for map
-            proto.map = Array.prototype.map;
+            proto.map = map;
             
             return ctr;
         })(),
@@ -762,6 +762,28 @@
                     }
                 };
             })()
+        },
+        importStyles: {
+            value: (function() {
+                var ref = document.scripts[0],
+                    styleEl = ref.parentNode.insertBefore(document.createElement("style"), ref);
+
+                return function(styles) {
+                    var rules = map.call(arguments, function(rule) {
+                        var styleText = rule.selector + " {";
+
+                        Object.keys(rule.styles).forEach(function(styleName) {
+                            styleText += styleName + ": " + rule.styles[styleName] + ",";
+                        });
+
+                        return styleText.substr(0, styleText.length - 1) + "}";
+                    });
+
+                    rules.forEach(function(rule) {
+                        styleEl.appendChild(document.createTextNode(rule));
+                    });
+                };
+            })()
         }
     });
 
@@ -772,4 +794,4 @@
         window.DOM = DOM;
     }
 
-})(window, document, undefined, Array.prototype.slice);
+})(window, document, undefined, Array.prototype.slice, Array.prototype.map);
