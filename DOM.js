@@ -25,7 +25,18 @@
             Object.defineProperties(this, {
                 _do: {
                     value: !node ? function() {} : function(methodName, args) {
-                        return DOMElement.prototype[methodName].apply(this, [node].concat(args));
+                        var functor = DOMElement.prototype["_" + methodName];
+
+                        if (!this.hasOwnProperty(methodName)) {
+                            // improve performance by creating a local method (-1 function call next time)
+                            Object.defineProperty(this, methodName, {
+                                value: function() {
+                                    return functor.apply(this, [node].concat(slice.call(arguments, 0)));
+                                }
+                            });
+                        }
+
+                        return functor.apply(this, [node].concat(args));
                     }
                 },
                 // private data objects
@@ -38,7 +49,6 @@
             // http://dean.edwards.name/weblog/2006/11/hooray/
             var ref = document.scripts[0],
                 iframe = document.createElement("iframe"),
-                protoMethods = "forEach map every some filter length".split(" "),
                 ctr, proto;
                 
             iframe.src = "about:blank";
@@ -57,14 +67,11 @@
             proto.map = Array.prototype.map;
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
-                ~protoMethods.indexOf(methodName) || delete proto[methodName];
+                ~"forEach map every some filter length".indexOf(methodName) || delete proto[methodName];
             });
             // shortcuts
             "set on off capture addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
-                var process = function(obj) {
-                    // this will be an arguments array
-                    obj._do("_" + methodName, this);
-                };
+                var process = function(obj) { obj._do(methodName, this); };
 
                 proto[methodName] = function() {
                     if (this.length > 0) {
@@ -674,7 +681,9 @@
     })();
 
     Object.keys(DOMElement.prototype).forEach(function(key) {
-        DOMElement.prototype[key.substr(1)] = function() {
+        key = key.substr(1);
+
+        DOMElement.prototype[key] = function() {
             return this._do(key, slice.call(arguments, 0));
         };
     });
@@ -767,7 +776,7 @@
     });
 
     // register API
-    if (typeof window.define === "function") {
+    if (typeof window.define === "function" && window.define.amd) {
         window.define("DOM", [], function() { return DOM; });
     } else {
         window.DOM = DOM;

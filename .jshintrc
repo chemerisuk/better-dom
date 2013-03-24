@@ -3,6 +3,7 @@
 	"boss": true,
     "newcap": false,
     "evil": true,
+    "expr": true,
 	"globals": {
 		"define": true,
 		"CustomEvent": true
