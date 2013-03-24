@@ -8,37 +8,36 @@
     "use strict";
 
     var DOM,
-        DOMElementStrategies,
         htmlEl = document.documentElement,
         headEl = document.head,
         // classes 
-        DOMElement = function(node) {
-            if (node.__DOM__) {
-                return node.__DOM__;
-            }
+        DOMElement = (function(cachePropName) {
+            return function(node) {
+                return node[cachePropName] || Object.defineProperty(node, cachePropName, {
+                    value: Object.create(this || DOMElement.prototype, {
+                        _do: {
+                            value: !node ? function() {} : function(methodName, args) {
+                                var functor = mainStrategies[methodName];
 
-            return node.__DOM__ = Object.create(this || DOMElement.prototype, {
-                _do: {
-                    value: !node ? function() {} : function(methodName, args) {
-                        var functor = DOMElementStrategies[methodName];
-
-                        if (!this.hasOwnProperty(methodName)) {
-                            // improve performance by creating a local method (-1 function call next time)
-                            Object.defineProperty(this, methodName, {
-                                value: function() {
-                                    return functor.apply(this, [node].concat(slice.call(arguments, 0)));
+                                if (!this.hasOwnProperty(methodName)) {
+                                    // improve performance by creating a local method
+                                    Object.defineProperty(this, methodName, {
+                                        value: function() {
+                                            return functor.apply(this, [node].concat(slice.call(arguments, 0)));
+                                        }
+                                    });
                                 }
-                            });
-                        }
 
-                        return functor.apply(this, [node].concat(args));
-                    }
-                },
-                // private data objects
-                _data: { value: {} },
-                _events: { value: [] }
-            });
-        },
+                                return functor.apply(this, [node].concat(args));
+                            }
+                        },
+                        // private data objects
+                        _data: { value: {} },
+                        _events: { value: [] }
+                    })
+                })[cachePropName];
+            };
+        })("__dom__"),
         DOMElementCollection = (function() {
             // Create clean copy of Array prototype. Inspired by
             // http://dean.edwards.name/weblog/2006/11/hooray/
@@ -133,388 +132,386 @@
         makeArgumentsError = function(methodName) {
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
             return "Error: '" + methodName + "' method called with illegal arguments";
-        };
-
-    // DOMElement
-    DOMElementStrategies = {
-        matches: function(el, selector) {
-            return new SelectorMatcher(selector).test(el);
-        },
-        find: function(el, selector) {
-            if (typeof selector !== "string") {
-                throw makeArgumentsError("find");
-            }
-
-            var node;
-
-            if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
-                node = document.getElementById(selector.substr(1));
-            } else {
-                node = el.querySelector(selector);
-            }
-            
-            return DOMElement(node);
-        },
-        findAll: (function() {
-            // big part of code is stoled from Sizzle:
-            // https://github.com/jquery/sizzle/blob/master/sizzle.js
-
-            // TODO: disallow to use buggy selectors
-
-            // Easily-parseable/retrievable ID or TAG or CLASS selectors
-            var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
-                rsibling = /[\x20\t\r\n\f]*[+~>]/,
-                rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
-                rescape = /'|\\/g,
-                expando = "DOM" + new Date().getTime();
-
-            return function(el, selector) {
+        }, 
+        mainStrategies = {
+            matches: function(el, selector) {
+                return new SelectorMatcher(selector).test(el);
+            },
+            find: function(el, selector) {
                 if (typeof selector !== "string") {
-                    throw makeArgumentsError("findAll");
+                    throw makeArgumentsError("find");
                 }
 
-                var elements, m, elem, match, matcher;
+                var node;
 
-                if (match = rquickExpr.exec(selector)) {
-                    // Speed-up: "#ID"
-                    if (m = match[1]) {
-                        elem = document.getElementById(m);
-                        // Handle the case where IE, Opera, and Webkit return items
-                        // by name instead of ID
-                        if ( elem && elem.parentNode && elem.id === m && (this === DOM || this.contains(elem)) ) {
-                            elements = [elem];
-                        }
-                    // Speed-up: "TAG"
-                    } else if (match[2]) {
-                        elements = el.getElementsByTagName(selector);
-                    // Speed-up: ".CLASS"
-                    } else if (m = match[3]) {
-                        elements = el.getElementsByClassName(m);
-                    }
-                } else if (match = rsiblingQuick.exec(selector)) {
-                    // Speed-up "+ selector", "> selector", "~ selector"
-                    matcher = new SelectorMatcher(match[2], true);
-                    elements = [];
-
-                    for (elem = el[match[1] === ">" ? "firstElementChild" : "nextElementSibling"]; elem; elem = elem.nextElementSibling) {
-                        if (matcher.test(elem)) {
-                            elements.push(elem);
-                        }
-
-                        if (match[1] === "+") break;
-                    }
+                if (selector.charAt(0) === "#" && selector.indexOf(" ") === -1) {
+                    node = document.getElementById(selector.substr(1));
                 } else {
-                    var old = true,
-                        nid = expando,
-                        newContext = el,
-                        newSelector = this === DOM && selector;
-
-                    if (this !== DOM) {
-                        // qSA works strangely on Element-rooted queries
-                        // We can work around this by specifying an extra ID on the root
-                        // and working up from there (Thanks to Andrew Dupont for the technique)
-                        if ( (old = el.getAttribute("id")) ) {
-                            nid = old.replace(rescape, "\\$&");
-                        } else {
-                            el.setAttribute("id", nid);
-                        }
-
-                        nid = "[id='" + nid + "'] ";
-
-                        newContext = rsibling.test(selector) && el.parentNode || el;
-                        newSelector = nid + selector.replace(/","/g, "," + nid);
-                    }
-
-                    if (newSelector) {
-                        try {
-                            elements = newContext.querySelectorAll(newSelector);
-                        } catch(qsaError) {
-                        } finally {
-                            if ( !old ) {
-                                el.removeAttribute("id");
-                            }
-                        }
-                    }
+                    node = el.querySelector(selector);
                 }
-
-                return DOM.create(elements || []);
-            };
-        })(),
-        contains: (function() {
-            var containsElement = Node.prototype.contains ?
-                function(parent, child) {
-                    return parent.contains(child);
-                } :
-                function(parent, child) {
-                    return !!(parent.compareDocumentPosition(child) & 16);
-                };
-
-            return function(node, element, /*INTERNAL*/reverse) {
-                if (element instanceof Element) {
-                    return containsElement(reverse ? element : node, reverse ? node : element);
-                } else if (element instanceof DOMElement) {
-                    return element.contains(node, true);
-                } else if (element instanceof DOMElementCollection) {
-                    return element.every(function(element) {
-                        return element.contains(node, true);
-                    });
-                } else {
-                    throw makeArgumentsError("contains");
-                }
-            };
-        })(),
-        capture: (function() {
-            var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"];
                 
-            return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
-                if (typeof callback !== "function") {
-                    throw makeArgumentsError("capture");
-                }
+                return DOMElement(node);
+            },
+            findAll: (function() {
+                // big part of code is stoled from Sizzle:
+                // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-                var selectorStart = event.indexOf(" "),
-                    eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
-                    selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
-                    matcher = selector ? new SelectorMatcher(selector) : null,
-                    handleEvent = function(e) {
-                        var propertyDescriptors = {};
-                        // modify event object
-                        nodeProperties.forEach(function(propertyName) {
-                            var node = e[propertyName], element;
+                // TODO: disallow to use buggy selectors
 
-                            if (node) {
-                                Object.defineProperty(e, propertyName, {
-                                    // lazy create DOMElement objects
-                                    get: function() {
-                                        return element || ( element = DOMElement(node) );
-                                    }
-                                });
+                // Easily-parseable/retrievable ID or TAG or CLASS selectors
+                var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
+                    rsibling = /[\x20\t\r\n\f]*[+~>]/,
+                    rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
+                    rescape = /'|\\/g,
+                    expando = "DOM" + new Date().getTime();
 
-                                propertyDescriptors[propertyName] = { value: node };    
+                return function(el, selector) {
+                    if (typeof selector !== "string") {
+                        throw makeArgumentsError("findAll");
+                    }
+
+                    var elements, m, elem, match, matcher;
+
+                    if (match = rquickExpr.exec(selector)) {
+                        // Speed-up: "#ID"
+                        if (m = match[1]) {
+                            elem = document.getElementById(m);
+                            // Handle the case where IE, Opera, and Webkit return items
+                            // by name instead of ID
+                            if ( elem && elem.parentNode && elem.id === m && (this === DOM || this.contains(elem)) ) {
+                                elements = [elem];
                             }
-                        });
-                        // ignore return value
-                        callback.call(thisPtr, e);
-                        // restore event object properties
-                        Object.defineProperties(e, propertyDescriptors);
-                    },
-                    eventEntry = {
-                        event: event,
-                        callback: callback, 
-                        handler: !selector ? handleEvent : function(e) {
-                            for (var elem = e.target; elem !== el.parentNode; elem = elem.parentNode) {
-                                if (matcher.test(elem)) {
-                                    return handleEvent(e);
+                        // Speed-up: "TAG"
+                        } else if (match[2]) {
+                            elements = el.getElementsByTagName(selector);
+                        // Speed-up: ".CLASS"
+                        } else if (m = match[3]) {
+                            elements = el.getElementsByClassName(m);
+                        }
+                    } else if (match = rsiblingQuick.exec(selector)) {
+                        // Speed-up "+ selector", "> selector", "~ selector"
+                        matcher = new SelectorMatcher(match[2], true);
+                        elements = [];
+
+                        for (elem = el[match[1] === ">" ? "firstElementChild" : "nextElementSibling"]; elem; elem = elem.nextElementSibling) {
+                            if (matcher.test(elem)) {
+                                elements.push(elem);
+                            }
+
+                            if (match[1] === "+") break;
+                        }
+                    } else {
+                        var old = true,
+                            nid = expando,
+                            newContext = el,
+                            newSelector = this === DOM && selector;
+
+                        if (this !== DOM) {
+                            // qSA works strangely on Element-rooted queries
+                            // We can work around this by specifying an extra ID on the root
+                            // and working up from there (Thanks to Andrew Dupont for the technique)
+                            if ( (old = el.getAttribute("id")) ) {
+                                nid = old.replace(rescape, "\\$&");
+                            } else {
+                                el.setAttribute("id", nid);
+                            }
+
+                            nid = "[id='" + nid + "'] ";
+
+                            newContext = rsibling.test(selector) && el.parentNode || el;
+                            newSelector = nid + selector.replace(/","/g, "," + nid);
+                        }
+
+                        if (newSelector) {
+                            try {
+                                elements = newContext.querySelectorAll(newSelector);
+                            } catch(qsaError) {
+                            } finally {
+                                if ( !old ) {
+                                    el.removeAttribute("id");
                                 }
                             }
                         }
+                    }
+
+                    return DOM.create(elements || []);
+                };
+            })(),
+            contains: (function() {
+                var containsElement = Node.prototype.contains ?
+                    function(parent, child) {
+                        return parent.contains(child);
+                    } :
+                    function(parent, child) {
+                        return !!(parent.compareDocumentPosition(child) & 16);
                     };
-                // attach event listener
-                el.addEventListener(eventType, eventEntry.handler, !bubbling);
-                // store event entry
-                this._events.push(eventEntry);
+
+                return function(node, element, /*INTERNAL*/reverse) {
+                    if (element instanceof Element) {
+                        return containsElement(reverse ? element : node, reverse ? node : element);
+                    } else if (element instanceof DOMElement) {
+                        return element.contains(node, true);
+                    } else if (element instanceof DOMElementCollection) {
+                        return element.every(function(element) {
+                            return element.contains(node, true);
+                        });
+                    } else {
+                        throw makeArgumentsError("contains");
+                    }
+                };
+            })(),
+            capture: (function() {
+                var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"];
+                    
+                return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
+                    if (typeof callback !== "function") {
+                        throw makeArgumentsError("capture");
+                    }
+
+                    var selectorStart = event.indexOf(" "),
+                        eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
+                        selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
+                        matcher = selector ? new SelectorMatcher(selector) : null,
+                        handleEvent = function(e) {
+                            var propertyDescriptors = {};
+                            // modify event object
+                            nodeProperties.forEach(function(propertyName) {
+                                var node = e[propertyName], element;
+
+                                if (node) {
+                                    Object.defineProperty(e, propertyName, {
+                                        // lazy create DOMElement objects
+                                        get: function() {
+                                            return element || ( element = DOMElement(node) );
+                                        }
+                                    });
+
+                                    propertyDescriptors[propertyName] = { value: node };    
+                                }
+                            });
+                            // ignore return value
+                            callback.call(thisPtr, e);
+                            // restore event object properties
+                            Object.defineProperties(e, propertyDescriptors);
+                        },
+                        eventEntry = {
+                            event: event,
+                            callback: callback, 
+                            handler: !selector ? handleEvent : function(e) {
+                                for (var elem = e.target; elem !== el.parentNode; elem = elem.parentNode) {
+                                    if (matcher.test(elem)) {
+                                        return handleEvent(e);
+                                    }
+                                }
+                            }
+                        };
+                    // attach event listener
+                    el.addEventListener(eventType, eventEntry.handler, !bubbling);
+                    // store event entry
+                    this._events.push(eventEntry);
+
+                    return this;
+                };
+            })(),
+            on: function(el, event, handler, thisPtr) {
+                var eventType = typeof event;
+
+                thisPtr = thisPtr || this;
+
+                if (eventType === "string") {
+                    this._do("capture", [event, handler, thisPtr, true]);
+                } else if (eventType === "object") {
+                    Object.keys(event).forEach(function(key) {
+                        this._do("capture", [key, event[key], thisPtr, true]);
+                    }, this);
+                } else if (Array.isArray(event)) {
+                    event.forEach(function(key) {
+                        this._do("capture", [key, handler, thisPtr, true]);
+                    }, this);
+                } else {
+                    throw makeArgumentsError("on");
+                }
 
                 return this;
-            };
-        })(),
-        on: function(el, event, handler, thisPtr) {
-            var eventType = typeof event;
-
-            thisPtr = thisPtr || this;
-
-            if (eventType === "string") {
-                this._do("capture", [event, handler, thisPtr, true]);
-            } else if (eventType === "object") {
-                Object.keys(event).forEach(function(key) {
-                    this._do("capture", [key, event[key], thisPtr, true]);
-                }, this);
-            } else if (Array.isArray(event)) {
-                event.forEach(function(key) {
-                    this._do("capture", [key, handler, thisPtr, true]);
-                }, this);
-            } else {
-                throw makeArgumentsError("on");
-            }
-
-            return this;
-        },
-        off: function(node, event, callback) {
-            if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new makeArgumentsError("off");
-            }
-
-            var eventType = event.split(" ")[0];
-
-            this._events.forEach(function(entry) {
-                if (event === entry.event && (!callback || callback === entry.callback)) {
-                    // remove event listener from the element
-                    node.removeEventListener(eventType, entry.handler, false);
+            },
+            off: function(node, event, callback) {
+                if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
+                    throw new makeArgumentsError("off");
                 }
-            });
 
-            return this;
-        },
-        fire: function(el, eventType, detail) {
-            if (typeof eventType !== "string") {
-                throw new makeArgumentsError("fire");
-            }
+                var eventType = event.split(" ")[0];
 
-            var event; 
-            
-            if (~eventType.indexOf(":")) {
-                event = new CustomEvent(eventType, {detail: detail, bubbles: true});
-            } else {
-                event = document.createEvent(eventType);
-                event.initEvent(eventType, true, true);
-            }
-            
-            el.dispatchEvent(event);
+                this._events.forEach(function(entry) {
+                    if (event === entry.event && (!callback || callback === entry.callback)) {
+                        // remove event listener from the element
+                        node.removeEventListener(eventType, entry.handler, false);
+                    }
+                });
 
-            return this;
-        },
-        get: function(el, name) {
-            if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
-                throw makeArgumentsError("get");
-            }
+                return this;
+            },
+            fire: function(el, eventType, detail) {
+                if (typeof eventType !== "string") {
+                    throw new makeArgumentsError("fire");
+                }
 
-            return el[name] || el.getAttribute(name);
-        },
-        set: function(el, name, value) {
-            var nameType = typeof name,
-                valueType = typeof value;
+                var event; 
+                
+                if (~eventType.indexOf(":")) {
+                    event = new CustomEvent(eventType, {detail: detail, bubbles: true});
+                } else {
+                    event = document.createEvent(eventType);
+                    event.initEvent(eventType, true, true);
+                }
+                
+                el.dispatchEvent(event);
 
-            if (valueType === "function") {
-                value = value.call(this, this._get(el, name));
-                valueType = typeof value;
-            }
+                return this;
+            },
+            get: function(el, name) {
+                if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
+                    throw makeArgumentsError("get");
+                }
 
-            if (nameType === "string") {
-                if (value !== null && valueType !== "string") {
+                return el[name] || el.getAttribute(name);
+            },
+            set: function(el, name, value) {
+                var nameType = typeof name,
+                    valueType = typeof value;
+
+                if (valueType === "function") {
+                    value = value.call(this, this._get(el, name));
+                    valueType = typeof value;
+                }
+
+                if (nameType === "string") {
+                    if (value !== null && valueType !== "string") {
+                        throw makeArgumentsError("set");
+                    }
+
+                    if (value === null) {
+                        el.removeAttribute(name);
+                    } else if (name in el) {
+                        el[name] = value;
+                    } else {
+                        el.setAttribute(name, value);
+                    } 
+                } else if (Array.isArray(name)) {
+                    name.forEach(function(name) {
+                        this._do("set", [name, value]);
+                    }, this);
+                } else if (nameType === "object") {
+                    Object.keys(name).forEach(function(key) {
+                        this._do("set", [key, name[key]]);
+                    }, this);
+                } else {
                     throw makeArgumentsError("set");
                 }
 
-                if (value === null) {
-                    el.removeAttribute(name);
-                } else if (name in el) {
-                    el[name] = value;
+                return this;
+            },
+            clone: function(el, deep) {
+                return new DOMElement(el.cloneNode(deep));
+            },
+            css: function(el, property, value) {
+                var propType = typeof property;
+
+                if (property === undefined) {
+                    return window.getComputedStyle(el);
+                }
+
+                if (propType === "string") {
+                    if (value === undefined) {
+                        return el.style[property] || window.getComputedStyle(el)[property];
+                    }
+
+                    el.style[property] = value;
+                } else if (propType === "object") {
+                    Object.keys(property).forEach(function(key) {
+                        this._do("css", [key, property[key]]);
+                    }, this);
                 } else {
-                    el.setAttribute(name, value);
-                } 
-            } else if (Array.isArray(name)) {
-                name.forEach(function(name) {
-                    this._do("set", [name, value]);
-                }, this);
-            } else if (nameType === "object") {
-                Object.keys(name).forEach(function(key) {
-                    this._do("set", [key, name[key]]);
-                }, this);
-            } else {
-                throw makeArgumentsError("set");
-            }
-
-            return this;
-        },
-        clone: function(el, deep) {
-            return new DOMElement(el.cloneNode(deep));
-        },
-        css: function(el, property, value) {
-            var propType = typeof property;
-
-            if (property === undefined) {
-                return window.getComputedStyle(el);
-            }
-
-            if (propType === "string") {
-                if (value === undefined) {
-                    return el.style[property] || window.getComputedStyle(el)[property];
+                    throw makeArgumentsError("css");
                 }
-
-                el.style[property] = value;
-            } else if (propType === "object") {
-                Object.keys(property).forEach(function(key) {
-                    this._do("css", [key, property[key]]);
-                }, this);
-            } else {
-                throw makeArgumentsError("css");
-            }
-
-            return this;
-        },
-        html: (function() {
-            var processScripts = function(el) {
-                if (el.src) {
-                    var script = document.createElement("script");
-
-                    script.src = el.src;
-
-                    headEl.removeChild(headEl.appendChild(script));
-                } else {
-                    eval(el.textContent);
-                }
-            };
-
-            return function(el, value) {
-                if (value === undefined) {
-                    return el.innerHTML;
-                }
-
-                if (typeof value !== "string") {
-                    throw makeArgumentsError("html");
-                }
-                // fix NoScope elements in IE
-                el.innerHTML = "&shy;" + value;
-                el.removeChild(el.firstChild);
-                // fix script elements
-                slice.call(el.getElementsByTagName("script"), 0).forEach(processScripts);
 
                 return this;
-            };
-        })(),
-        offset: function(el) {
-            var bodyEl = document.body,
-                boundingRect = el.getBoundingClientRect(),
-                clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
-                clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
-                scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
-                scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
+            },
+            html: (function() {
+                var processScripts = function(el) {
+                    if (el.src) {
+                        var script = document.createElement("script");
 
-            return {
-                top: boundingRect.top + scrollTop - clientTop,
-                left: boundingRect.left + scrollLeft - clientLeft,
-                right: boundingRect.right + scrollLeft - clientLeft,
-                bottom: boundingRect.bottom + scrollTop - clientTop
-            };
-        },
-        call: function(el, name) {
-            if (arguments.length === 1) {
-                return el[name]();
-            } else {
-                return el[name].apply(el, slice.call(arguments, 1));
-            }
-        },
-        data: function(node, name, value) {
-            if (typeof name !== "string") {
-                throw makeArgumentsError("data");
-            }
+                        script.src = el.src;
 
-            var result;
+                        headEl.removeChild(headEl.appendChild(script));
+                    } else {
+                        eval(el.textContent);
+                    }
+                };
 
-            if (value === undefined) {
-                result = this._data[name];
+                return function(el, value) {
+                    if (value === undefined) {
+                        return el.innerHTML;
+                    }
 
-                if (result === undefined && node.hasAttribute("data-" + name)) {
-                    result = this._data[name] = node.getAttribute("data-" + name);
+                    if (typeof value !== "string") {
+                        throw makeArgumentsError("html");
+                    }
+                    // fix NoScope elements in IE
+                    el.innerHTML = "&shy;" + value;
+                    el.removeChild(el.firstChild);
+                    // fix script elements
+                    slice.call(el.getElementsByTagName("script"), 0).forEach(processScripts);
+
+                    return this;
+                };
+            })(),
+            offset: function(el) {
+                var bodyEl = document.body,
+                    boundingRect = el.getBoundingClientRect(),
+                    clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
+                    clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
+                    scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
+                    scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
+
+                return {
+                    top: boundingRect.top + scrollTop - clientTop,
+                    left: boundingRect.left + scrollLeft - clientLeft,
+                    right: boundingRect.right + scrollLeft - clientLeft,
+                    bottom: boundingRect.bottom + scrollTop - clientTop
+                };
+            },
+            call: function(el, name) {
+                if (arguments.length === 1) {
+                    return el[name]();
+                } else {
+                    return el[name].apply(el, slice.call(arguments, 1));
                 }
-            } else {
-                this._data[name] = value;
+            },
+            data: function(node, name, value) {
+                if (typeof name !== "string") {
+                    throw makeArgumentsError("data");
+                }
 
-                result = this;
+                var result;
+
+                if (value === undefined) {
+                    result = this._data[name];
+
+                    if (result === undefined && node.hasAttribute("data-" + name)) {
+                        result = this._data[name] = node.getAttribute("data-" + name);
+                    }
+                } else {
+                    this._data[name] = value;
+
+                    result = this;
+                }
+
+                return result;
             }
+        };
 
-            return result;
-        }
-    };
-
-    // dom traversing
+    // dom traversing strategies
     (function() {
         var traversingStrategies = {
                 firstChild: "firstElementChild",
@@ -527,7 +524,7 @@
         Object.keys(traversingStrategies).forEach(function(methodName) {
             var propertyName = traversingStrategies[methodName];
 
-            DOMElementStrategies[methodName] = function(node, selector) {
+            mainStrategies[methodName] = function(node, selector) {
                 var matcher = selector ? new SelectorMatcher(selector) : null;
 
                 while ( (node = node[propertyName]) && matcher && matcher.test(node) );
@@ -538,7 +535,7 @@
 
     })();
 
-    // dom manipulation
+    // dom manipulation strategies
     (function() {
         // http://www.w3.org/TR/domcore/
         // 5.2.2 Mutation methods
@@ -566,7 +563,7 @@
         Object.keys(manipulationStrategies).forEach(function(methodName) {
             var process = manipulationStrategies[methodName];
 
-            DOMElementStrategies[methodName] = function(node, element, /*INTERNAL*/reverse) {
+            mainStrategies[methodName] = function(node, element, /*INTERNAL*/reverse) {
                 var parent = node.parentNode, relatedNode;
 
                 if (element) {
@@ -589,7 +586,7 @@
         });
     })();
 
-    // css classes manipulation
+    // css classes manipulation strategies
     (function() {
         var rclass = /[\n\t\r]/g,
             classStrategies = htmlEl.classList ? {
@@ -633,7 +630,7 @@
         Object.keys(classStrategies).forEach(function(methodName) {
             var process = classStrategies[methodName];
 
-            DOMElementStrategies[methodName] = function(el, classNames) {
+            mainStrategies[methodName] = function(el, classNames) {
                 if (typeof classNames === "string") {
                     return process.call(this, el, classNames);
                 } else if (Array.isArray(classNames)) {
@@ -656,7 +653,7 @@
 
     })();
 
-    Object.keys(DOMElementStrategies).forEach(function(key) {
+    Object.keys(mainStrategies).forEach(function(key) {
         DOMElement.prototype[key] = function() {
             return this._do(key, slice.call(arguments, 0));
         };
@@ -799,10 +796,10 @@
                     watcher = mixins,
                     props = {};
 
-                if (mixinsType === "object") {
+                if (mixins && mixinsType === "object") {
                     Object.keys(mixins).forEach(function(key) {
                         if (key !== "constructor") {
-                            if (key in DOMElementStrategies) {
+                            if (key in mainStrategies) {
                                 throw makeArgumentsError("extend");
                             }
 
@@ -817,7 +814,7 @@
                             mixins.constructor.call(this);
                         }
                     };
-                } else if (mixinsType !== "function") {
+                } else if (mixinsType !== "function" || !mixins) {
                     throw makeArgumentsError("extend");
                 }
 
