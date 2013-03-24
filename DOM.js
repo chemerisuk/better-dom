@@ -17,13 +17,7 @@
                 return node.__DOM__;
             }
 
-            if (!this) {
-                return new DOMElement(node);
-            }
-
-            node.__DOM__ = this;
-            
-            Object.defineProperties(this, {
+            return node.__DOM__ = Object.create(this || DOMElement.prototype, {
                 _do: {
                     value: !node ? function() {} : function(methodName, args) {
                         var functor = DOMElementStrategies[methodName];
@@ -41,7 +35,7 @@
                     }
                 },
                 // private data objects
-                _data: { value: Object.create(null) },
+                _data: { value: {} },
                 _events: { value: [] }
             });
         },
@@ -99,7 +93,7 @@
                         quick[1] = (quick[1] || "").toLowerCase();
                         quick[4] = quick[4] ? " " + quick[4] + " " : "";
                     } else {
-                        throw new DOMMethodCallError("quickParse");
+                        throw new makeArgumentsError("quickParse");
                     }
 
                     return quick;
@@ -136,10 +130,9 @@
             return ctr;
         })(),
         // errors
-        DOMMethodCallError = function(methodName, objectName, hashName) {
-            this.name = "DOMMethodCallError";
+        makeArgumentsError = function(methodName) {
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            this.message = "Illegal " + methodName + " method call";
+            return "Error: '" + methodName + "' method called with illegal arguments";
         };
 
     // DOMElement
@@ -149,7 +142,7 @@
         },
         find: function(el, selector) {
             if (typeof selector !== "string") {
-                throw new DOMMethodCallError("find");
+                throw new makeArgumentsError("find");
             }
 
             var node;
@@ -177,7 +170,8 @@
 
             return function(el, selector) {
                 if (typeof selector !== "string") {
-                    throw new DOMMethodCallError("findAll");
+                    //throw new makeArgumentsError("findAll");
+                    throw makeArgumentsError("findAll");
                 }
 
                 var elements, m, elem, match, matcher;
@@ -266,7 +260,7 @@
                         return element.contains(node, true);
                     });
                 } else {
-                    throw new DOMMethodCallError("contains");
+                    throw new makeArgumentsError("contains");
                 }
             };
         })(),
@@ -275,7 +269,7 @@
                 
             return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
                 if (typeof callback !== "function") {
-                    throw new DOMMethodCallError("on");
+                    throw new makeArgumentsError("on");
                 }
 
                 var selectorStart = event.indexOf(" "),
@@ -339,14 +333,14 @@
                     this._do("capture", [key, handler, thisPtr, true]);
                 }, this);
             } else {
-                throw new DOMMethodCallError("on");
+                throw new makeArgumentsError("on");
             }
 
             return this;
         },
         off: function(node, event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new DOMMethodCallError("off");
+                throw new makeArgumentsError("off");
             }
 
             var eventType = event.split(" ")[0];
@@ -362,7 +356,7 @@
         },
         fire: function(el, eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new DOMMethodCallError("fire");
+                throw new makeArgumentsError("fire");
             }
 
             var event; 
@@ -380,7 +374,7 @@
         },
         get: function(el, name) {
             if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
-                throw new DOMMethodCallError("get");
+                throw new makeArgumentsError("get");
             }
 
             return el[name] || el.getAttribute(name);
@@ -396,7 +390,7 @@
 
             if (nameType === "string") {
                 if (value !== null && valueType !== "string") {
-                    throw new DOMMethodCallError("set");
+                    throw new makeArgumentsError("set");
                 }
 
                 if (value === null) {
@@ -415,7 +409,7 @@
                     this._do("set", [key, name[key]]);
                 }, this);
             } else {
-                throw new DOMMethodCallError("set");
+                throw new makeArgumentsError("set");
             }
 
             return this;
@@ -441,7 +435,7 @@
                     this._do("css", [key, property[key]]);
                 }, this);
             } else {
-                throw new DOMMethodCallError("css");
+                throw new makeArgumentsError("css");
             }
 
             return this;
@@ -465,7 +459,7 @@
                 }
 
                 if (typeof value !== "string") {
-                    throw new DOMMethodCallError("html");
+                    throw new makeArgumentsError("html");
                 }
                 // fix NoScope elements in IE
                 el.innerHTML = "&shy;" + value;
@@ -500,7 +494,7 @@
         },
         data: function(node, name, value) {
             if (typeof name !== "string") {
-                throw new DOMMethodCallError("data");
+                throw new makeArgumentsError("data");
             }
 
             var result;
@@ -588,7 +582,7 @@
                 if (relatedNode) {
                    process(node, relatedNode, parent);
                 } else {
-                    throw new DOMMethodCallError(methodName);
+                    throw new makeArgumentsError(methodName);
                 }
 
                 return this;
@@ -656,7 +650,7 @@
                         return this;
                     }
                 } else {
-                    throw new DOMMethodCallError(methodName);
+                    throw new makeArgumentsError(methodName);
                 }
             };
         });
@@ -683,9 +677,6 @@
             });
         });
     });
-
-    // DOMMethodCallError
-    DOMMethodCallError.prototype = new Error();
 
     // initialize constants
     DOM = Object.create(new DOMElement(htmlEl), {
@@ -716,7 +707,7 @@
                     }
 
                     if (!elem) {
-                        throw new DOMMethodCallError("create");
+                        throw new makeArgumentsError("create");
                     }
 
                     return DOMElement(elem);
@@ -752,7 +743,7 @@
                 // return implementation
                 return function(callback) {
                     if (typeof callback !== "function") {
-                        throw new DOMMethodCallError("ready");
+                        throw new makeArgumentsError("ready");
                     }
 
                     if (readyCallbacks) {
@@ -780,7 +771,7 @@
                         } else if (typeof styles === "string") {
                             ruleText += styles;
                         } else {
-                            throw new DOMMethodCallError("importStyles");
+                            throw new makeArgumentsError("importStyles");
                         }
 
                         styleEl.appendChild(document.createTextNode(ruleText + "}"));
@@ -798,7 +789,7 @@
                             process(selector, rule[selector]);
                         });
                     } else {
-                        throw new DOMMethodCallError("importStyles");
+                        throw new makeArgumentsError("importStyles");
                     }
                 };
             })()
