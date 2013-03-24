@@ -59,25 +59,25 @@ body > footer {
     </footer>
 <script type="text/javascript">
 DOM.importStyles({
-    selector: "html",
-    styles: {
+    "html": {
         background: "#EEE"
     }
 }, {
-    selector: "body",
-    styles: {
+    "body": {
         background: "#FFF"
     }
 }, {
-    selector: "body > header",
-    styles: {
+    "body > header": {
         background: "#00F"
     }
 }, {
-    selector: "body > footer",
-    styles: {
+    "body > footer": {
         background: "#0F0"
     }
+});
+
+DOM.watch(".cc", function() {
+    console.log("cc!");
 });
 
 DOM.ready(function(){

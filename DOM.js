@@ -765,23 +765,122 @@
         },
         importStyles: {
             value: (function() {
-                var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild);
+                var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
+                    computed = window.getComputedStyle(htmlEl, ""),
+                    pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
+                    process = function(selector, styles) {
+                        var ruleText = selector + " {";
 
-                return function(styles) {
-                    var rules = map.call(arguments, function(rule) {
-                        var styleText = rule.selector + " {";
+                        if (typeof styles === "object") {
+                            Object.keys(styles).forEach(function(styleName) {
+                                var prefixed = (pre + styleName.charAt(0).toUpperCase() + styleName.substr(1) in computed);
+                                // append vendor prefix if it's required
+                                ruleText += (prefixed ? "-" + pre + "-" : "") + styleName + ": " + styles[styleName] + ";";
+                            });
+                        } else if (typeof styles === "string") {
+                            ruleText += styles;
+                        } else {
+                            throw new DOMMethodCallError("importStyles");
+                        }
 
-                        Object.keys(rule.styles).forEach(function(styleName) {
-                            styleText += styleName + ": " + rule.styles[styleName] + ",";
+                        styleEl.appendChild(document.createTextNode(ruleText + "}"));
+                    };
+                            
+                return function(selector, styles) {
+                    var selectorType = typeof selector;
+
+                    if (selectorType === "string") {
+                        process(selector, styles);
+                    } else if (selectorType === "object") {
+                        slice.call(arguments, 0).forEach(function(rule) {
+                            var selector = Object.keys(rule)[0];
+
+                            process(selector, rule[selector]);
                         });
-
-                        return styleText.substr(0, styleText.length - 1) + "}";
-                    });
-
-                    rules.forEach(function(rule) {
-                        styleEl.appendChild(document.createTextNode(rule));
-                    });
+                    } else {
+                        throw new DOMMethodCallError("importStyles");
+                    }
                 };
+            })()
+        },
+        watch: {
+            value: (function() {
+                var listeners = {};
+
+                if (htmlEl.addBehavior) {
+                    return (function() {
+                        var scripts = document.scripts,
+                            behavior = scripts[scripts.length - 1].getAttribute("src");
+                        
+                        behavior = "url(" + behavior.substr(0, behavior.lastIndexOf(".")) + ".htc)";
+                        
+                        return function(selector, callback) {
+                            var entry = listeners[selector];
+                            
+                            if (entry) {
+                                entry.callbacks.push(callback);
+                            } else {
+                                listeners[selector] = entry = { 
+                                    callbacks: [callback],
+                                    context: document/*this*/
+                                };
+                                // append style rule at the last step
+                                entry.styleIndex = cssRules.addRule(selector, "-ms-behavior:" + behavior);
+                            }
+                        };
+                    })();
+                    // IE-SPECIFIC: this function will be called inside of htc file
+                    CustomTag._init = function(element) {
+                        Object.keys(listeners).forEach(function(selector) {
+                            var entry = listeners[selector];
+                            
+                            if (element.msMatchesSelector(selector)) {
+                                entry.callbacks.forEach(function(callback) {
+                                    callback.call(entry.context, element);
+                                });
+                            }
+                        });
+                    };
+                } else {
+                    return (function() {
+                        // use trick discovered by Daniel Buchner: 
+                        // https://github.com/csuwldcat/SelectorListener
+                        var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
+                            computed = window.getComputedStyle(htmlEl, ""),
+                            pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
+                            keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + pre + ")", "i"))[1] + "CSSKeyframesRule"]);
+
+                        return function(selector, fn) {
+                            var animationName = "DOM-" + new Date().getTime();
+
+                            DOM.importStyles(
+                                "@" + (keyframes ? "-" + pre + "-" : "") + "keyframes " + animationName,
+                                "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                            );
+
+                            DOM.importStyles(selector, {
+                                "animation-duration": "0.001s",
+                                "animation-name": animationName + " !important"
+                            });
+
+                            startNames.forEach(function(name){
+                                document.addEventListener(name, function(e) {
+                                    var target = e.target;
+
+                                    if (e.animationName === animationName) {
+                                        fn.call(this, target);
+                                        // prevent double initialization
+                                        target.addEventListener(name, function(e) {
+                                            if (e.animationName === animationName) {
+                                                e.stopPropagation();
+                                            }
+                                        }, false);
+                                    }
+                                }, false);
+                            });
+                        };
+                    })();
+                }
             })()
         }
     });
