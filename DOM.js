@@ -765,8 +765,7 @@
         },
         importStyles: {
             value: (function() {
-                var ref = document.scripts[0],
-                    styleEl = ref.parentNode.insertBefore(document.createElement("style"), ref);
+                var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild);
 
                 return function(styles) {
                     var rules = map.call(arguments, function(rule) {

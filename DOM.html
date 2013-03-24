@@ -58,6 +58,28 @@ body > footer {
         Copyright 2012
     </footer>
 <script type="text/javascript">
+DOM.importStyles({
+    selector: "html",
+    styles: {
+        background: "#EEE"
+    }
+}, {
+    selector: "body",
+    styles: {
+        background: "#FFF"
+    }
+}, {
+    selector: "body > header",
+    styles: {
+        background: "#00F"
+    }
+}, {
+    selector: "body > footer",
+    styles: {
+        background: "#0F0"
+    }
+});
+
 DOM.ready(function(){
     "use strict";
 
@@ -108,29 +130,6 @@ DOM.ready(function(){
     }
 
     link.next();
-
-    DOM.importStyles({
-        selector: "html",
-        styles: {
-            background: "#EEE"
-        }
-    }, {
-        selector: "body",
-        styles: {
-            background: "#FFF"
-        }
-    }, {
-        selector: "body > header",
-        styles: {
-            background: "#00F"
-        }
-    }, {
-        selector: "body > footer",
-        styles: {
-            background: "#0F0"
-        }
-    });
-
 });
 </script>
 </body>
