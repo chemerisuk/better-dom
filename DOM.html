@@ -76,8 +76,13 @@ DOM.importStyles({
     }
 });
 
-DOM.watch(".cc", function() {
-    console.log("cc!");
+DOM.extend(".cc", {
+    constructor: function() {
+        console.log("cc");
+    },
+    test: function() {
+        console.log("test");
+    }
 });
 
 DOM.ready(function(){

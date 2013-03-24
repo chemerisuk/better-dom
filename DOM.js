@@ -93,7 +93,7 @@
                         quick[1] = (quick[1] || "").toLowerCase();
                         quick[4] = quick[4] ? " " + quick[4] + " " : "";
                     } else {
-                        throw makeArgumentsError();
+                        throw makeArgumentsError("quick");
                     }
 
                     return quick;
@@ -130,8 +130,7 @@
             return ctr;
         })(),
         // errors
-        makeArgumentsError = function() {
-            var methodName = new Error().stack.split("\n")[2].replace(/^\s+at\s+|\s+.+$/g,"").split(".")[1];
+        makeArgumentsError = function(methodName) {
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
             return "Error: '" + methodName + "' method called with illegal arguments";
         };
@@ -143,7 +142,7 @@
         },
         find: function(el, selector) {
             if (typeof selector !== "string") {
-                throw makeArgumentsError();
+                throw makeArgumentsError("find");
             }
 
             var node;
@@ -171,7 +170,7 @@
 
             return function(el, selector) {
                 if (typeof selector !== "string") {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError("findAll");
                 }
 
                 var elements, m, elem, match, matcher;
@@ -260,7 +259,7 @@
                         return element.contains(node, true);
                     });
                 } else {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError("contains");
                 }
             };
         })(),
@@ -269,7 +268,7 @@
                 
             return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
                 if (typeof callback !== "function") {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError("capture");
                 }
 
                 var selectorStart = event.indexOf(" "),
@@ -333,14 +332,14 @@
                     this._do("capture", [key, handler, thisPtr, true]);
                 }, this);
             } else {
-                throw makeArgumentsError();
+                throw makeArgumentsError("on");
             }
 
             return this;
         },
         off: function(node, event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new makeArgumentsError();
+                throw new makeArgumentsError("off");
             }
 
             var eventType = event.split(" ")[0];
@@ -356,7 +355,7 @@
         },
         fire: function(el, eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new makeArgumentsError();
+                throw new makeArgumentsError("fire");
             }
 
             var event; 
@@ -374,7 +373,7 @@
         },
         get: function(el, name) {
             if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
-                throw makeArgumentsError();
+                throw makeArgumentsError("get");
             }
 
             return el[name] || el.getAttribute(name);
@@ -390,7 +389,7 @@
 
             if (nameType === "string") {
                 if (value !== null && valueType !== "string") {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError("set");
                 }
 
                 if (value === null) {
@@ -409,7 +408,7 @@
                     this._do("set", [key, name[key]]);
                 }, this);
             } else {
-                throw makeArgumentsError();
+                throw makeArgumentsError("set");
             }
 
             return this;
@@ -435,7 +434,7 @@
                     this._do("css", [key, property[key]]);
                 }, this);
             } else {
-                throw makeArgumentsError();
+                throw makeArgumentsError("css");
             }
 
             return this;
@@ -459,7 +458,7 @@
                 }
 
                 if (typeof value !== "string") {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError("html");
                 }
                 // fix NoScope elements in IE
                 el.innerHTML = "&shy;" + value;
@@ -494,7 +493,7 @@
         },
         data: function(node, name, value) {
             if (typeof name !== "string") {
-                throw makeArgumentsError();
+                throw makeArgumentsError("data");
             }
 
             var result;
@@ -582,7 +581,7 @@
                 if (relatedNode) {
                    process(node, relatedNode, parent);
                 } else {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError(methodName);
                 }
 
                 return this;
@@ -650,7 +649,7 @@
                         return this;
                     }
                 } else {
-                    throw makeArgumentsError();
+                    throw makeArgumentsError(methodName);
                 }
             };
         });
@@ -707,7 +706,7 @@
                     }
 
                     if (!elem) {
-                        throw makeArgumentsError();
+                        throw makeArgumentsError("create");
                     }
 
                     return DOMElement(elem);
@@ -743,7 +742,7 @@
                 // return implementation
                 return function(callback) {
                     if (typeof callback !== "function") {
-                        throw makeArgumentsError();
+                        throw makeArgumentsError("ready");
                     }
 
                     if (readyCallbacks) {
@@ -771,7 +770,7 @@
                         } else if (typeof styles === "string") {
                             ruleText += styles;
                         } else {
-                            throw makeArgumentsError();
+                            throw makeArgumentsError("importStyles");
                         }
 
                         styleEl.appendChild(document.createTextNode(ruleText + "}"));
@@ -789,10 +788,41 @@
                             process(selector, rule[selector]);
                         });
                     } else {
-                        throw makeArgumentsError();
+                        throw makeArgumentsError("importStyles");
                     }
                 };
             })()
+        },
+        extend: {
+            value: function(selector, mixins) {
+                var mixinsType = typeof mixins,
+                    watcher = mixins,
+                    props = {};
+
+                if (mixinsType === "object") {
+                    Object.keys(mixins).forEach(function(key) {
+                        if (key !== "constructor") {
+                            if (key in DOMElementStrategies) {
+                                throw makeArgumentsError("extend");
+                            }
+
+                            props[key] = { value: mixins[key] };
+                        }
+                    });
+
+                    watcher = function() {
+                        Object.defineProperties(this, props);
+
+                        if (mixins.hasOwnProperty("constructor")) {
+                            mixins.constructor.call(this);
+                        }
+                    };
+                } else if (mixinsType !== "function") {
+                    throw makeArgumentsError("extend");
+                }
+
+                DOM.watch(selector, watcher);
+            }
         },
         watch: {
             value: (function() {
@@ -839,7 +869,7 @@
                             pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
                             keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + pre + ")", "i"))[1] + "CSSKeyframesRule"]);
 
-                        return function(selector, fn) {
+                        return function(selector, callback) {
                             var animationName = "DOM-" + new Date().getTime();
 
                             DOM.importStyles(
@@ -857,7 +887,7 @@
                                     var el = e.target;
 
                                     if (e.animationName === animationName) {
-                                        fn.call(DOMElement(el));
+                                        callback.call(DOMElement(el));
                                         // prevent double initialization
                                         el.addEventListener(name, function(e) {
                                             if (e.animationName === animationName) {
