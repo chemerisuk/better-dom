@@ -1,6 +1,21 @@
 <PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="window.DOM.watch._init(element)" />  
-    <script type="text/javascript"></script>
+    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(element)" />  
+    <script type="text/javascript">
+    var DOM = window.DOM,
+        listeners = DOM.watch._listeners;
+
+    function handleEvent(el) {
+        Object.keys(listeners).forEach(function(selector) {
+            var callbacks = listeners[selector];
+            
+            if (el.msMatchesSelector(selector)) {
+                callbacks.forEach(function(callback) {
+                    callback.call(DOM.create(el));
+                });
+            }
+        });
+    }
+    </script>
     <!-- 
         IE will sometimes hang for a long time on unload of pages with .htc behaviors
         attached to many elements, if the script block is a certain size. We can work

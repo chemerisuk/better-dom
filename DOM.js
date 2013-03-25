@@ -822,81 +822,63 @@
             }
         },
         watch: {
-            value: (function() {
-                var listeners = {};
+            value: htmlEl.addBehavior ? (function() {
+                var scripts = document.scripts,
+                    behavior = scripts[scripts.length - 1].getAttribute("src"),
+                    watch = function(selector, callback) {
+                        var entry = watch._listeners[selector];
 
-                if (htmlEl.addBehavior) {
-                    return (function() {
-                        var scripts = document.scripts,
-                            behavior = scripts[scripts.length - 1].getAttribute("src"),
-                            watch = function(selector, callback) {
-                                var entry = listeners[selector];
-                                
-                                if (entry) {
-                                    entry.push(callback);
-                                } else {
-                                    listeners[selector] = [callback];
-                                    // append style rule at the last step
-                                    DOM.importStyles(selector, {"behavior": behavior});
-                                }
-                            };
-                        
-                        behavior = "url(" + behavior.substr(0, behavior.lastIndexOf(".")) + ".htc)";
-                        // IE-SPECIFIC: this function will be called inside of htc file
-                        watch._init = function(el) {
-                            Object.keys(listeners).forEach(function(selector) {
-                                var entry = listeners[selector];
-                                
-                                if (el.msMatchesSelector(selector)) {
-                                    entry.forEach(function(callback) {
-                                        callback.call(DOMElement(el));
-                                    });
-                                }
-                            });
-                        };
-                        
-                        return watch;
-                    })();
-                } else {
-                    return (function() {
-                        // use trick discovered by Daniel Buchner: 
-                        // https://github.com/csuwldcat/SelectorListener
-                        var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
-                            computed = window.getComputedStyle(htmlEl, ""),
-                            pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
-                            keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + pre + ")", "i"))[1] + "CSSKeyframesRule"]);
+                        if (entry) {
+                            entry.push(callback);
+                        } else {
+                            watch._listeners[selector] = [callback];
+                            // append style rule at the last step
+                            DOM.importStyles(selector, { behavior: behavior });
+                        }
+                    };
 
-                        return function(selector, callback) {
-                            var animationName = "DOM-" + new Date().getTime();
+                behavior = "url(" + behavior.substr(0, behavior.lastIndexOf(".")) + ".htc)";
 
-                            DOM.importStyles(
-                                "@" + (keyframes ? "-" + pre + "-" : "") + "keyframes " + animationName,
-                                "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
-                            );
+                watch._listeners = {};
+                
+                return watch;
+            })() : (function() {
+                // use trick discovered by Daniel Buchner: 
+                // https://github.com/csuwldcat/SelectorListener
+                var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
+                    computed = window.getComputedStyle(htmlEl, ""),
+                    pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
+                    keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + pre + ")", "i"))[1] + "CSSKeyframesRule"]);
 
-                            DOM.importStyles(selector, {
-                                "animation-duration": "0.001s",
-                                "animation-name": animationName + " !important"
-                            });
+                return function(selector, callback) {
+                    var animationName = "DOM-" + new Date().getTime();
 
-                            startNames.forEach(function(name){
-                                document.addEventListener(name, function(e) {
-                                    var el = e.target;
+                    DOM.importStyles(
+                        "@" + (keyframes ? "-" + pre + "-" : "") + "keyframes " + animationName,
+                        "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                    );
 
+                    DOM.importStyles(selector, {
+                        "animation-duration": "0.001s",
+                        "animation-name": animationName + " !important"
+                    });
+
+                    startNames.forEach(function(name){
+                        document.addEventListener(name, function(e) {
+                            var el = e.target;
+
+                            if (e.animationName === animationName) {
+                                callback.call(DOMElement(el));
+                                // prevent double initialization
+                                el.addEventListener(name, function(e) {
                                     if (e.animationName === animationName) {
-                                        callback.call(DOMElement(el));
-                                        // prevent double initialization
-                                        el.addEventListener(name, function(e) {
-                                            if (e.animationName === animationName) {
-                                                e.stopPropagation();
-                                            }
-                                        }, false);
+                                        e.stopPropagation();
                                     }
                                 }, false);
-                            });
-                        };
-                    })();
-                }
+                            }
+                        }, false);
+                    });
+                };
             })()
         }
     });
