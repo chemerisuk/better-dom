@@ -7,12 +7,16 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+
+    background: #EEE;
 }
 
 body {
     width: 960px;
     margin: 0 auto;
     box-shadow: 0 0 10px #AAA;
+
+    background: #FFF;
 }
 
 body > section {
@@ -26,6 +30,8 @@ body > header {
 
     border: 2px solid #005;
     padding: 1em;
+
+    background: #00F;
 }
 
 body > footer {
@@ -34,6 +40,8 @@ body > footer {
 
     border: 2px solid #050;
     padding: 1em;
+
+    background: #0F0;
 }
 
 body > section,
@@ -43,6 +51,9 @@ body > footer {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
+
+[data-i18n="button.save"]:before { content: "Save changes" }
+[data-i18n="button.cancel"]:before { content: "Cancel" }
 </style>
 </head>
 <body>
@@ -53,38 +64,17 @@ body > footer {
         <a href="#">test1</a>
         <a href="#">test2</a>
         <a href="#">test3</a>
+        <p>
+        <button onclick='DOM.find("section").append(DOM.find(".editable").get("outerHTML"))'>
+            append new editable
+        </button>
+        </p>
+        <p class="editable">Underscore provides 80-odd functions that support both the usual functional suspects: map, select, invoke — as well as more specialized helpers: function binding, javascript templating, deep equality testing, and so on. It delegates to built-in functions, if present, so modern browsers will use the native implementations of forEach, map, reduce, filter, every, some and indexOf.</p>
     </section>
     <footer>
         Copyright 2012
     </footer>
 <script type="text/javascript">
-DOM.importStyles({
-    "html": {
-        background: "#EEE"
-    }
-}, {
-    "body": {
-        background: "#FFF"
-    }
-}, {
-    "body > header": {
-        background: "#00F"
-    }
-}, {
-    "body > footer": {
-        background: "#0F0"
-    }
-});
-
-DOM.extend(".cc", {
-    constructor: function() {
-        console.log("cc");
-    },
-    test: function() {
-        console.log("test");
-    }
-});
-
 DOM.ready(function(){
     "use strict";
 
@@ -135,6 +125,73 @@ DOM.ready(function(){
     }
 
     link.next();
+});
+
+// editable plugin example
+
+DOM.importStyles({
+    ".editable": {
+        cursor: "text",
+        "white-space": "pre-wrap"
+    }
+}, {
+    ".editable:hover": {
+        background: "#FFFFD3"
+    }
+}, {
+    ".editable-form": {
+        display: "none",
+        position: "relative"
+    }
+}, {
+    ".editable-textarea": {
+        background: "#FFFFD3",
+        border: 0,
+        padding: 0,
+        display: "block"
+    }
+});
+
+DOM.extend(".editable", {
+    constructor: function() {
+        this.after('<form class="editable-form"><textarea class="editable-textarea"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">');
+
+        var formEl = this.next(),
+            textareaEl = formEl.find("textarea");
+
+        textareaEl.css("font", this.css("font"));
+
+        formEl.on("reset", function() {
+            formEl.css("display", "none");
+
+            this.set("textContent", textareaEl.get("defaultValue")).css("display", "");
+        }, this);
+
+        formEl.on("submit", function(e) {
+            textareaEl.set("defaultValue", textareaEl.get("value"));
+
+            formEl.call("reset");
+
+            this.fire("editable:changed", true);
+
+            e.preventDefault();
+            e.stopPropagation();
+        }, this);
+
+        this.on("click", function() {
+            var offset = this.offset();
+
+            this.css("display", "none");
+            formEl.css("display", "block");
+
+            textareaEl.css({
+                width: (offset.right - offset.left) + "px",
+                height: (offset.bottom - offset.top) + "px"
+            });
+
+            textareaEl.set(["value", "defaultValue"], this.get("textContent")).call("focus");
+        });
+    }
 });
 </script>
 </body>
