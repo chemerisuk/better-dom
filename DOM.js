@@ -19,10 +19,10 @@
                 return node[cachePropName] || Object.defineProperty(node, cachePropName, {
                     value: Object.create(this || DOMElement.prototype, {
                         _do: {
-                            value: !node ? function() {} : function(methodName, args) {
+                            value: !node ? function() {} : function(methodName, args, optimize) {
                                 var functor = mainStrategies[methodName];
 
-                                if (!this.hasOwnProperty(methodName)) {
+                                if (optimize) {
                                     // improve performance by creating a local method
                                     Object.defineProperty(this, methodName, {
                                         value: function() {
@@ -661,7 +661,7 @@
     Object.keys(mainStrategies).forEach(function(key) {
         Object.defineProperty(DOMElement.prototype, key, {
             value: function() {
-                return this._do(key, slice.call(arguments, 0));
+                return this._do(key, slice.call(arguments, 0), true);
             }
         });
     });
