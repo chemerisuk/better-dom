@@ -4,15 +4,18 @@
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, undefined, slice, map) {
+(function(window, document, undefined, slice) {
     "use strict";
 
     var DOM,
         htmlEl = document.documentElement,
         headEl = document.head,
+        scripts = document.scripts,
         // classes 
         DOMElement = (function(cachePropName) {
             return function(node) {
+                var nodeArg = [node]; // cache node arg array
+
                 return node[cachePropName] || Object.defineProperty(node, cachePropName, {
                     value: Object.create(this || DOMElement.prototype, {
                         _do: {
@@ -23,12 +26,12 @@
                                     // improve performance by creating a local method
                                     Object.defineProperty(this, methodName, {
                                         value: function() {
-                                            return functor.apply(this, [node].concat(slice.call(arguments, 0)));
+                                            return functor.apply(this, arguments.length ? nodeArg.concat(slice.call(arguments, 0)) : nodeArg);
                                         }
                                     });
                                 }
 
-                                return functor.apply(this, [node].concat(args));
+                                return functor.apply(this, nodeArg.concat(args));
                             }
                         },
                         // private data objects
@@ -41,7 +44,7 @@
         DOMElementCollection = (function() {
             // Create clean copy of Array prototype. Inspired by
             // http://dean.edwards.name/weblog/2006/11/hooray/
-            var ref = document.scripts[0],
+            var ref = scripts[0],
                 iframe = document.createElement("iframe"),
                 ctr, proto;
                 
@@ -63,19 +66,21 @@
             "set on off capture addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
                 var process = function(obj) { obj._do(methodName, this); };
 
-                proto[methodName] = function() {
-                    if (this.length > 0) {
-                        this.forEach(process, slice.call(arguments, 0));
-                    }
+                Object.defineProperty(proto, methodName, {
+                    value: function() {
+                        if (this.length > 0) {
+                            this.forEach(process, slice.call(arguments, 0));
+                        }
 
-                    return this;
-                };
+                        return this;
+                    }
+                });
             });
 
             // temporary store operator for internal use only
             ctr._new = proto.map;
             // use Array.prototype implementation to return regular array for map
-            proto.map = map;
+            proto.map = Array.prototype.map;
             
             return ctr;
         })(),
@@ -654,25 +659,14 @@
     })();
 
     Object.keys(mainStrategies).forEach(function(key) {
-        DOMElement.prototype[key] = function() {
-            return this._do(key, slice.call(arguments, 0));
-        };
-    });
-
-    // types finalization
-    [DOMElement, DOMElementCollection].forEach(function(ctr) {
-        var proto = ctr.prototype;
-        // fix constructor
-        proto.constructor = ctr;
-        // make all methods to be readonly and not enumerable
-        Object.keys(proto).forEach(function(key) {
-            Object.defineProperty(proto, key, {
-                value: proto[key],
-                writable: false,
-                enumerable: false
-            });
+        Object.defineProperty(DOMElement.prototype, key, {
+            value: function() {
+                return this._do(key, slice.call(arguments, 0));
+            }
         });
     });
+
+    DOMElement.prototype.constructor = DOMElement;
 
     // initialize constants
     DOM = Object.create(new DOMElement(htmlEl), {
@@ -823,8 +817,7 @@
         },
         watch: {
             value: htmlEl.addBehavior ? (function() {
-                var scripts = document.scripts,
-                    behavior = scripts[scripts.length - 1].getAttribute("src"),
+                var behavior = scripts[scripts.length - 1].getAttribute("src"),
                     watch = function(selector, callback) {
                         var entry = watch._listeners[selector];
 
@@ -886,4 +879,4 @@
     // register API
     window.DOM = DOM;
 
-})(window, document, undefined, Array.prototype.slice, Array.prototype.map);
+})(window, document, undefined, Array.prototype.slice);
