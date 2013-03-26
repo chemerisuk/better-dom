@@ -547,7 +547,7 @@
             mainStrategies[methodName] = function(node, selector) {
                 var matcher = selector ? new SelectorMatcher(selector) : null;
 
-                while ( (node = node[propertyName]) && matcher && matcher.test(node) );
+                while ( (node = node[propertyName]) && matcher && !matcher.test(node) );
 
                 return DOMElement(node);
             };
@@ -803,33 +803,29 @@
         },
         extend: {
             value: function(selector, mixins) {
-                var mixinsType = typeof mixins,
-                    watcher = mixins,
-                    props = {};
-
-                if (mixins && mixinsType === "object") {
-                    Object.keys(mixins).forEach(function(key) {
-                        if (key !== "constructor") {
-                            if (key in mainStrategies) {
-                                throw makeArgumentsError("extend");
-                            }
-
-                            props[key] = { value: mixins[key] };
-                        }
-                    });
-
-                    watcher = function() {
-                        Object.defineProperties(this, props);
-
-                        if (mixins.hasOwnProperty("constructor")) {
-                            mixins.constructor.call(this);
-                        }
-                    };
-                } else if (mixinsType !== "function" || !mixins) {
+                if (!mixins || typeof mixins !== "object") {
                     throw makeArgumentsError("extend");
                 }
 
-                DOM.watch(selector, watcher);
+                var props = {};
+
+                Object.keys(mixins).forEach(function(key) {
+                    if (key !== "constructor") {
+                        if (key in mainStrategies) {
+                            throw makeArgumentsError("extend");
+                        }
+
+                        props[key] = { value: mixins[key] };
+                    }
+                });
+
+                DOM.watch(selector, function() {
+                    Object.defineProperties(this, props);
+
+                    if (mixins.hasOwnProperty("constructor")) {
+                        mixins.constructor.call(this);
+                    }
+                });
             }
         },
         watch: {
