@@ -300,6 +300,7 @@
                             Object.defineProperties(e, propertyDescriptors);
                         },
                         eventEntry = {
+                            capturing: !bubbling,
                             event: event,
                             callback: callback, 
                             handler: !selector ? handleEvent : function(e) {
@@ -349,7 +350,7 @@
                 this._events.forEach(function(entry) {
                     if (event === entry.event && (!callback || callback === entry.callback)) {
                         // remove event listener from the element
-                        node.removeEventListener(eventType, entry.handler, false);
+                        node.removeEventListener(eventType, entry.handler, entry.capturing);
                     }
                 });
 
@@ -390,11 +391,11 @@
                 }
 
                 if (nameType === "string") {
-                    if (value !== null && valueType !== "string") {
+                    if (valueType === "function") {
                         throw makeArgumentsError("set");
                     }
 
-                    if (value === null) {
+                    if (value === null || value === false) {
                         el.removeAttribute(name);
                     } else if (name in el) {
                         el[name] = value;
@@ -513,6 +514,20 @@
                 }
 
                 return result;
+            },
+            destroy: function(el) {
+                var events = this._events;
+
+                Object.keys(events).forEach(function(key) {
+                    var entry = events[key];
+                    
+                    el.removeEventListener(entry.event, entry.handler, entry.capturing);
+
+                    delete events[key];
+                });
+                // clear all possible referencies
+                delete this._data;
+                delete el.__dom__;
             }
         };
 
@@ -766,6 +781,8 @@
 
                         styleEl.appendChild(document.createTextNode(ruleText + "}"));
                     };
+
+                process("[hidden]", "{display:none}");
                             
                 return function(selector, styles) {
                     var selectorType = typeof selector;

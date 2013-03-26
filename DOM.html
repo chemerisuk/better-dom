@@ -140,7 +140,6 @@ DOM.importStyles({
     }
 }, {
     ".editable-form": {
-        display: "none",
         position: "relative"
     }
 }, {
@@ -154,7 +153,7 @@ DOM.importStyles({
 
 DOM.extend(".editable", {
     constructor: function() {
-        this.after('<form class="editable-form"><textarea class="editable-textarea"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">');
+        this.after('<form class="editable-form" hidden><textarea class="editable-textarea"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">');
 
         var formEl = this.next(),
             textareaEl = formEl.find("textarea");
@@ -162,9 +161,9 @@ DOM.extend(".editable", {
         textareaEl.css("font", this.css("font"));
 
         formEl.on("reset", function() {
-            formEl.css("display", "none");
+            formEl.set("hidden", true);
 
-            this.set("textContent", textareaEl.get("defaultValue")).css("display", "");
+            this.set("textContent", textareaEl.get("defaultValue")).set("hidden", false);
         }, this);
 
         formEl.on("submit", function(e) {
@@ -181,8 +180,8 @@ DOM.extend(".editable", {
         this.on("click", function() {
             var offset = this.offset();
 
-            this.css("display", "none");
-            formEl.css("display", "block");
+            this.set("hidden", true);
+            formEl.set("hidden", false);
 
             textareaEl.css({
                 width: (offset.right - offset.left) + "px",
