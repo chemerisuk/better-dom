@@ -11,33 +11,36 @@
         htmlEl = document.documentElement,
         headEl = document.head,
         scripts = document.scripts,
-        // classes 
-        DOMElement = (function(cachePropName) {
-            return function(node) {
-                var nodeArg = [node]; // cache node arg array
+        // types
+        DOMNode = function(node) {
+            var nodeArg = [node]; // cache node arg array
 
-                return node[cachePropName] || Object.defineProperty(node, cachePropName, {
-                    value: Object.create(this || DOMElement.prototype, {
-                        _do: {
-                            value: !node ? function() {} : function(methodName, args, optimize) {
-                                var functor = mainStrategies[methodName];
+            return Object.create(this || DOMNode.prototype, {
+                _do: {
+                    value: !node ? function() {} : function(methodName, args, optimize) {
+                        var functor = mainStrategies[methodName];
 
-                                if (optimize) {
-                                    // improve performance by creating a local method
-                                    Object.defineProperty(this, methodName, {
-                                        value: function() {
-                                            return functor.apply(this, arguments.length ? nodeArg.concat(slice.call(arguments, 0)) : nodeArg);
-                                        }
-                                    });
+                        if (optimize) {
+                            // improve performance by creating a local method
+                            Object.defineProperty(this, methodName, {
+                                value: function() {
+                                    return functor.apply(this, arguments.length ? nodeArg.concat(slice.call(arguments, 0)) : nodeArg);
                                 }
+                            });
+                        }
 
-                                return functor.apply(this, nodeArg.concat(args));
-                            }
-                        },
-                        // private data objects
-                        _data: { value: {} },
-                        _events: { value: [] }
-                    })
+                        return functor.apply(this, nodeArg.concat(args));
+                    }
+                },
+                // private data objects
+                _data: { value: {} },
+                _events: { value: [] }
+            });
+        },
+        DOMElement = (function(cachePropName) {
+            return function(element) {
+                return element[cachePropName] || Object.defineProperty(element, cachePropName, {
+                    value: DOMNode.call(this || DOMElement.prototype, element)
                 })[cachePropName];
             };
         })("__dom__"),
@@ -137,7 +140,7 @@
         makeArgumentsError = function(methodName) {
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
             return "Error: '" + methodName + "' method called with illegal arguments";
-        }, 
+        },
         mainStrategies = {
             matches: function(el, selector) {
                 return new SelectorMatcher(selector).test(el);
@@ -266,7 +269,7 @@
                 };
             })(),
             capture: (function() {
-                var nodeProperties = ["target", "currentTarget", "relatedTarget", "srcElement", "toElement", "fromElement"];
+                var nodeProperties = "target currentTarget relatedTarget srcElement toElement fromElement".split(" ");
                     
                 return function(el, event, callback, thisPtr, /*INTERNAL*/bubbling) {
                     if (typeof callback !== "function") {
@@ -552,7 +555,6 @@
                 return DOMElement(node);
             };
         });
-
     })();
 
     // dom manipulation strategies
@@ -670,8 +672,15 @@
                 }
             };
         });
-
     })();
+
+    "find findAll contains capture on off fire data".split(" ").forEach(function(key) {
+        Object.defineProperty(DOMNode.prototype, key, {
+            value: function() {
+                return this._do(key, slice.call(arguments, 0), true);
+            }
+        });
+    });
 
     Object.keys(mainStrategies).forEach(function(key) {
         Object.defineProperty(DOMElement.prototype, key, {
@@ -684,7 +693,7 @@
     DOMElement.prototype.constructor = DOMElement;
 
     // initialize constants
-    DOM = Object.create(new DOMElement(htmlEl), {
+    DOM = Object.create(new DOMNode(document), {
         create: {
             value: (function() {
                 var newCollection = DOMElementCollection._new;
