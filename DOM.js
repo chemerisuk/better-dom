@@ -15,7 +15,7 @@
         DOMNode = function(node) {
             var nodeArg = [node]; // cache node arg array
 
-            return Object.create(this || DOMNode.prototype, {
+            return Object.create(this === DOMElement.prototype ? this : DOMNode.prototype, {
                 _do: {
                     value: !node ? function() {} : function(methodName, args, optimize) {
                         var functor = mainStrategies[methodName];
@@ -40,7 +40,7 @@
         DOMElement = (function(cachePropName) {
             return function(element) {
                 return element[cachePropName] || Object.defineProperty(element, cachePropName, {
-                    value: DOMNode.call(this || DOMElement.prototype, element)
+                    value: DOMNode.call(DOMElement.prototype, element)
                 })[cachePropName];
             };
         })("__dom__"),
@@ -693,7 +693,7 @@
     DOMElement.prototype.constructor = DOMElement;
 
     // initialize constants
-    DOM = Object.create(new DOMNode(document), {
+    DOM = Object.create(DOMNode(document), {
         create: {
             value: (function() {
                 var newCollection = DOMElementCollection._new;
@@ -716,7 +716,7 @@
                         }
                     } else if (content instanceof Element) {
                         elem = content;
-                    } else if (Array.isArray(content) || content instanceof NodeList) {
+                    } else if ("length" in content) {
                         return newCollection.call(content, DOMElement);
                     }
 
@@ -780,7 +780,7 @@
                             Object.keys(styles).forEach(function(styleName) {
                                 var prefixed = (pre + styleName.charAt(0).toUpperCase() + styleName.substr(1) in computed);
                                 // append vendor prefix if it's required
-                                ruleText += (prefixed ? "-" + pre + "-" : "") + styleName + ": " + styles[styleName] + ";";
+                                ruleText += (prefixed ? "-" + pre + "-" : "") + styleName + ":" + styles[styleName] + "; ";
                             });
                         } else if (typeof styles === "string") {
                             ruleText += styles;
@@ -791,7 +791,7 @@
                         styleEl.appendChild(document.createTextNode(ruleText + "}"));
                     };
 
-                process("[hidden]", "{display:none}");
+                process("[hidden]", "display:none");
                             
                 return function(selector, styles) {
                     var selectorType = typeof selector;
