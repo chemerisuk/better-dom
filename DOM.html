@@ -97,7 +97,7 @@ DOM.ready(function(){
     });
     
     link.on("click", function(e) {
-        console.log(e.button);
+        console.log(e.get("button"));
 
         e.preventDefault();
         e.stopPropagation();

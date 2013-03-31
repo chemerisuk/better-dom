@@ -300,7 +300,7 @@
                     event: event,
                     callback: callback, 
                     handler: !selector ? handleEvent : function(e) {
-                        for (var elem = e.target, root = e.currentTarget.parentNode; elem !== root; elem = elem.parentNode) {
+                        for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
                             if (matcher.test(elem)) {
                                 return handleEvent(e);
                             }
@@ -521,16 +521,10 @@
             };
         },
         show: function() {
-            this._node.removeAttribute("hidden");
-            this._node.hidden = false;
-
-            return this;
+            return this.set("hidden", false);
         },
         hide: function() {
-            this._node.setAttribute("hidden", "");
-            this._node.hidden = true;
-
-            return this;
+            return this.set("hidden", true);
         }
     });
 
