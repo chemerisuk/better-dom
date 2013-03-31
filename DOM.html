@@ -92,8 +92,8 @@ DOM.ready(function(){
         e.preventDefault();
     });
 
-    DOM.on("click a[data-test].cc", function() {
-        console.log("clicked " + this.html());
+    DOM.on("click a[data-test].cc", function(e) {
+        console.log("clicked " + e.target.html());
     });
     
     link.on("click", function(e) {
@@ -125,6 +125,8 @@ DOM.ready(function(){
     }
 
     link.next();
+
+    console.log(DOM.find("#not-in-dom"));
 });
 
 // editable plugin example
