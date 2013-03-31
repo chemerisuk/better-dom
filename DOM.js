@@ -519,6 +519,18 @@
                 right: boundingRect.right + scrollLeft - clientLeft,
                 bottom: boundingRect.bottom + scrollTop - clientTop
             };
+        },
+        show: function() {
+            this._node.removeAttribute("hidden");
+            this._node.hidden = false;
+
+            return this;
+        },
+        hide: function() {
+            this._node.setAttribute("hidden", "");
+            this._node.hidden = true;
+
+            return this;
         }
     });
 
@@ -787,7 +799,7 @@
                 computed = window.getComputedStyle(htmlEl, ""),
                 pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
                 process = function(selector, styles) {
-                    var ruleText = selector + " {";
+                    var ruleText = selector + " { ";
 
                     if (typeof styles === "object") {
                         Object.keys(styles).forEach(function(styleName) {
@@ -804,7 +816,9 @@
                     styleEl.appendChild(document.createTextNode(ruleText + "}"));
                 };
 
-            process("[hidden]", "display:none");
+            if (!("hidden" in htmlEl)) {
+                process("[hidden]", "display:none");    
+            }
                         
             return function(selector, styles) {
                 var selectorType = typeof selector;

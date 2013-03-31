@@ -163,9 +163,9 @@ DOM.extend(".editable", {
         textareaEl.css("font", this.css("font"));
 
         formEl.on("reset", function() {
-            formEl.set("hidden", true);
+            formEl.hide();
 
-            this.set("textContent", textareaEl.get("defaultValue")).set("hidden", false);
+            this.set("textContent", textareaEl.get("defaultValue")).show();
         }, this);
 
         formEl.on("submit", function(e) {
@@ -182,8 +182,8 @@ DOM.extend(".editable", {
         this.on("click", function() {
             var offset = this.offset();
 
-            this.set("hidden", true);
-            formEl.set("hidden", false);
+            this.hide();
+            formEl.show();
 
             textareaEl.css({
                 width: (offset.right - offset.left) + "px",
