@@ -26,9 +26,12 @@
 
             return proto;
         },
-        makeArgumentsError = function(methodName) {
+        makeArgumentsError = function(methodName, type) {
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            return "Error: '" + methodName + "' method called with illegal arguments";
+            return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
+        },
+        makeDOMEventsArgumentsError = function(methodName) {
+            return makeArgumentsError(methodName, "DOMEvent");
         },
         // types
         DOMNode = function(node) {
@@ -145,7 +148,14 @@
             };
 
             return ctr;
-        })();
+        })(),
+        DOMEvent = function(event) {
+            if (!(this instanceof DOMEvent)) {
+                return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
+            }
+
+            this._event = event;
+        };
 
     DOMNode.prototype = extend({}, {
         find: function(selector) {
@@ -273,60 +283,37 @@
                 }
             };
         })(),
-        capture: (function() {
-            var nodeProperties = "target currentTarget relatedTarget srcElement toElement fromElement".split(" ");
-                
-            return function(event, callback, thisPtr, /*INTERNAL*/bubbling) {
-                if (typeof callback !== "function") {
-                    throw makeArgumentsError("capture");
-                }
+        capture: function(event, callback, thisPtr, /*INTERNAL*/bubbling) {
+            if (typeof callback !== "function") {
+                throw makeArgumentsError("capture");
+            }
 
-                var selectorStart = event.indexOf(" "),
-                    eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
-                    selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
-                    matcher = selector ? new SelectorMatcher(selector) : null,
-                    handleEvent = function(e) {
-                        var propertyDescriptors = {};
-                        // modify event object
-                        nodeProperties.forEach(function(propertyName) {
-                            var node = e[propertyName], element;
-
-                            if (node) {
-                                Object.defineProperty(e, propertyName, {
-                                    // lazy create DOMElement objects
-                                    get: function() {
-                                        return element || ( element = DOMElement(node) );
-                                    }
-                                });
-
-                                propertyDescriptors[propertyName] = { value: node };    
-                            }
-                        });
-                        // ignore return value
-                        callback.call(thisPtr, e);
-                        // restore event object properties
-                        Object.defineProperties(e, propertyDescriptors);
-                    },
-                    eventEntry = {
-                        capturing: !bubbling,
-                        event: event,
-                        callback: callback, 
-                        handler: !selector ? handleEvent : function(e) {
-                            for (var elem = e.target, root = e.currentTarget.parentNode; elem !== root; elem = elem.parentNode) {
-                                if (matcher.test(elem)) {
-                                    return handleEvent(e);
-                                }
+            var selectorStart = event.indexOf(" "),
+                eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
+                selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
+                matcher = selector ? new SelectorMatcher(selector) : null,
+                handleEvent = function(e) {
+                    callback.call(thisPtr, DOMEvent(e));
+                },
+                eventEntry = {
+                    capturing: !bubbling,
+                    event: event,
+                    callback: callback, 
+                    handler: !selector ? handleEvent : function(e) {
+                        for (var elem = e.target, root = e.currentTarget.parentNode; elem !== root; elem = elem.parentNode) {
+                            if (matcher.test(elem)) {
+                                return handleEvent(e);
                             }
                         }
-                    };
-                // attach event listener
-                this._node.addEventListener(eventType, eventEntry.handler, !bubbling);
-                // store event entry
-                this._events.push(eventEntry);
+                    }
+                };
+            // attach event listener
+            this._node.addEventListener(eventType, eventEntry.handler, !bubbling);
+            // store event entry
+            this._events.push(eventEntry);
 
-                return this;
-            };
-        })(),
+            return this;
+        },
         on: function(event, handler, thisPtr) {
             var eventType = typeof event;
 
@@ -680,6 +667,31 @@
         });
     })();
 
+    DOMEvent.prototype = extend({}, {
+        get: function(name) {
+            if (typeof name !== "string" || ~name.indexOf("arget") || ~name.indexOf("lement")) {
+                throw makeDOMEventsArgumentsError("get");
+            }
+
+            return this._event[name];
+        }
+    });
+    // methods
+    "preventDefault stopPropagation stopImmediatePropagation".split(" ").forEach(function(key) {
+        extend(DOMEvent.prototype, key, function() {
+            this._event[key]();
+        });
+    });
+    // getters
+    "target currentTarget relatedTarget".split(" ").forEach(function(key) {
+        Object.defineProperty(DOMEvent.prototype, key, {
+            enumerable: true,
+            get: function() {
+                return DOMElement(this._event[key]);
+            }
+        });
+    });
+
     // null object types
     DOMNullNode.prototype = new DOMNode();
     DOMNullElement.prototype = new DOMElement();
@@ -694,7 +706,7 @@
     });
 
     // fix constructor property
-    [DOMNode, DOMElement, DOMNullNode, DOMNullElement].forEach(function(ctr) {
+    [DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement].forEach(function(ctr) {
         Object.defineProperty(ctr.prototype, "constructor", { value: ctr });
     });
 
