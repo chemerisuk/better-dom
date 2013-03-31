@@ -283,57 +283,51 @@
                 }
             };
         })(),
-        capture: function(event, callback, thisPtr, /*INTERNAL*/bubbling) {
-            if (typeof callback !== "function") {
-                throw makeArgumentsError("capture");
-            }
-
-            var selectorStart = event.indexOf(" "),
-                eventType = ~selectorStart ? event.substr(0, selectorStart) : event,
-                selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
-                matcher = selector ? new SelectorMatcher(selector) : null,
-                handleEvent = function(e) {
-                    callback.call(thisPtr, DOMEvent(e));
-                },
-                eventEntry = {
-                    capturing: !bubbling,
-                    event: event,
-                    callback: callback, 
-                    handler: !selector ? handleEvent : function(e) {
-                        for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
-                            if (matcher.test(elem)) {
-                                return handleEvent(e);
-                            }
-                        }
-                    }
-                };
-            // attach event listener
-            this._node.addEventListener(eventType, eventEntry.handler, !bubbling);
-            // store event entry
-            this._events.push(eventEntry);
-
-            return this;
-        },
-        on: function(event, handler, thisPtr) {
+        on: function(event, callback, thisPtr, /*INTERNAL*/capturing) {
             var eventType = typeof event;
 
             thisPtr = thisPtr || this;
 
-            if (eventType === "string") {
-                this.capture(event, handler, thisPtr, true);
+            if (eventType === "string" && typeof callback === "function") {
+                var selectorStart = event.indexOf(" "),
+                    nodeEvent = ~selectorStart ? event.substr(0, selectorStart) : event,
+                    selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
+                    matcher = selector ? new SelectorMatcher(selector) : null,
+                    handleEvent = function(e) {
+                        callback.call(thisPtr, DOMEvent(e));
+                    },
+                    eventEntry = {
+                        capturing: !!capturing,
+                        event: nodeEvent,
+                        callback: callback, 
+                        handler: !selector ? handleEvent : function(e) {
+                            for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
+                                if (matcher.test(elem)) {
+                                    return handleEvent(e);
+                                }
+                            }
+                        }
+                    };
+                // attach event listener
+                this._node.addEventListener(nodeEvent, eventEntry.handler, !!capturing);
+                // store event entry
+                this._events.push(eventEntry);
             } else if (eventType === "object") {
                 Object.keys(event).forEach(function(key) {
-                    this.capture(key, event[key], thisPtr, true);
+                    this.on(key, event[key], thisPtr);
                 }, this);
             } else if (Array.isArray(event)) {
                 event.forEach(function(key) {
-                    this.capture(key, handler, thisPtr, true);
+                    this.on(key, callback, thisPtr);
                 }, this);
             } else {
                 throw makeArgumentsError("on");
             }
 
             return this;
+        },
+        capture: function(event, callback, thisPtr) {
+            return this.on(event, callback, thisPtr, true);
         },
         off: function(event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
