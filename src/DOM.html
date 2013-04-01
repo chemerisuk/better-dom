@@ -127,6 +127,10 @@ DOM.ready(function(){
     link.next();
 
     console.log(DOM.find("#not-in-dom"));
+
+    DOM.on("editable:changed", function(e) {
+        console.log("editabled changed to " + e.target.html());
+    });
 });
 
 // editable plugin example
@@ -173,7 +177,7 @@ DOM.extend(".editable", {
 
             formEl.call("reset");
 
-            this.fire("editable:changed", true);
+            this.fire("editable:changed");
 
             e.preventDefault();
             e.stopPropagation();
