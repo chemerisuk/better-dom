@@ -158,41 +158,26 @@
         };
 
     DOMNode.prototype = extend({}, {
-        find: function(selector) {
-            if (typeof selector !== "string") {
-                throw makeArgumentsError("find");
-            }
-
-            var result;
-
-            if (selector.charAt(0) === "#" && !~selector.indexOf(" ")) {
-                result = document.getElementById(selector.substr(1));
-            } else {
-                result = this._node.querySelector(selector);
-            }
-            
-            return DOMElement(result);
-        },
-        findAll: (function() {
+        find: (function() {
             // big part of code is stoled from Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
             // TODO: disallow to use buggy selectors
-
-            // Easily-parseable/retrievable ID or TAG or CLASS selectors
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
                 expando = "DOM" + new Date().getTime();
 
-            return function(selector) {
+            return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
-                    throw makeArgumentsError("findAll");
+                    throw makeArgumentsError("find");
                 }
 
-                var node = this._node, elements, m, elem, match;
+                var node = this._node, m, elem, 
+                    match = rquickExpr.exec(selector),
+                    elements = multiple ? [] : null;
 
-                if (match = rquickExpr.exec(selector)) {
+                if (match) {
                     // Speed-up: "#ID"
                     if (m = match[1]) {
                         elem = document.getElementById(m);
@@ -203,10 +188,14 @@
                         }
                     // Speed-up: "TAG"
                     } else if (match[2]) {
-                        elements = slice.call(node.getElementsByTagName(selector));
+                        elements = node.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
-                        elements = slice.call(node.getElementsByClassName(m));
+                        elements = node.getElementsByClassName(m);
+                    }
+
+                    if (elements && !multiple) {
+                        elements = elements[0];
                     }
                 } else {
                     var old = true,
@@ -232,8 +221,7 @@
 
                     if (newSelector) {
                         try {
-                            elements = newContext.querySelectorAll(newSelector);
-                        } catch(qsaError) {
+                            elements = newContext[multiple ? "querySelectorAll" : "querySelector"](newSelector);
                         } finally {
                             if ( !old ) {
                                 node.removeAttribute("id");
@@ -242,9 +230,12 @@
                     }
                 }
 
-                return DOM.create(elements || []);
+                return DOM.create(elements);
             };
         })(),
+        findAll: function(selector) {
+            return this.find(selector, true);
+        },
         contains: (function() {
             var containsElement = Node.prototype.contains ?
                 function(parent, child) {
@@ -722,12 +713,13 @@
     // publi API
     DOM = window.DOM = extend(new DOMNode(document), {
         create: (function() {
-            var newCollection = DOMElementCollection._new;
+            var rcollection = /^\[object (HTMLCollection|NodeList|Array)\]$/,
+                newCollection = DOMElementCollection._new;
             // cleanup temporary var
             delete DOMElementCollection._new; 
 
             return function(content) {
-                var elem;
+                var elem = null;
 
                 if (typeof content === "string") {
                     if (content.indexOf(">") !== content.length - 1) {
@@ -742,11 +734,9 @@
                     }
                 } else if (content instanceof Element) {
                     elem = content;
-                } else if ("length" in content) {
+                } else if (content && rcollection.test(content)) {
                     return newCollection.call(content, DOMElement);
-                }
-
-                if (!elem) {
+                } else if (content) {
                     throw makeArgumentsError("create");
                 }
 
