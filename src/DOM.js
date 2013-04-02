@@ -182,7 +182,6 @@
             // Easily-parseable/retrievable ID or TAG or CLASS selectors
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
-                rsiblingQuick = /\s*([+~>])\s*(\w*(?:#[\w\-]+)?(?:\[[\w\-]+\])?(?:\.[\w\-]+)?)/,
                 rescape = /'|\\/g,
                 expando = "DOM" + new Date().getTime();
 
@@ -191,7 +190,7 @@
                     throw makeArgumentsError("findAll");
                 }
 
-                var node = this._node, elements, m, elem, match, matcher;
+                var node = this._node, elements, m, elem, match;
 
                 if (match = rquickExpr.exec(selector)) {
                     // Speed-up: "#ID"
@@ -208,18 +207,6 @@
                     // Speed-up: ".CLASS"
                     } else if (m = match[3]) {
                         elements = slice.call(node.getElementsByClassName(m));
-                    }
-                } else if (match = rsiblingQuick.exec(selector)) {
-                    // Speed-up "+ selector", "> selector", "~ selector"
-                    matcher = new SelectorMatcher(match[2], true);
-                    elements = [];
-
-                    for (elem = node[match[1] === ">" ? "firstElementChild" : "nextElementSibling"]; elem; elem = elem.nextElementSibling) {
-                        if (matcher.test(elem)) {
-                            elements.push(elem);
-                        }
-
-                        if (match[1] === "+") break;
                     }
                 } else {
                     var old = true,
@@ -525,6 +512,9 @@
     // dom traversing strategies
     (function() {
         var traversingStrategies = {
+                nextAll: "nextElementSibling",
+                prevAll: "previousElementSibling",
+                children: "children",
                 firstChild: "firstElementChild",
                 lastChild: "lastElementChild",
                 next: "nextElementSibling",
@@ -536,12 +526,31 @@
             var propertyName = traversingStrategies[methodName];
 
             extend(DOMElement.prototype, methodName, function(selector) {
-                var el = this._node,
-                    matcher = selector ? new SelectorMatcher(selector) : null;
+                var it = this._node[propertyName],
+                    matcher = selector ? new SelectorMatcher(selector) : null,
+                    nodes = ~methodName.lastIndexOf("All") ? [] : null;
 
-                while ( (el = el[propertyName]) && matcher && !matcher.test(el) );
+                if (propertyName === "children") {
+                    if (!matcher) {
+                        nodes = slice.call(it);
+                    } else {
+                        nodes = Array.prototype.filter.call(it, function(el) {
+                            return matcher.test(el);
+                        });
+                    }
+                } else {
+                    for (; it; it = it[propertyName]) {
+                        if (!matcher || matcher.test(it)) {
+                            if (!nodes) {
+                                return DOMElement(it);
+                            }
 
-                return DOMElement(el);
+                            nodes.push(it);
+                        }
+                    }
+                }
+
+                return DOM.create(nodes);
             });
         });
     })();
