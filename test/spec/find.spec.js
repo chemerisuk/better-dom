@@ -1,4 +1,4 @@
-describe("DOMNode.find", function() {
+describe("find", function() {
 
     it("should find an element by id", function() {
         setFixtures("<a id='test'>test</a>");
