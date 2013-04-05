@@ -290,13 +290,13 @@
                 this._node.addEventListener(nodeEvent, eventEntry.handler, !!capturing);
                 // store event entry
                 this._events.push(eventEntry);
-            } else if (eventType === "object") {
-                Object.keys(event).forEach(function(key) {
-                    this.on(key, event[key], thisPtr);
-                }, this);
             } else if (Array.isArray(event)) {
                 event.forEach(function(key) {
                     this.on(key, callback, thisPtr);
+                }, this);
+            } else if (eventType === "object") {
+                Object.keys(event).forEach(function(key) {
+                    this.on(key, event[key], thisPtr);
                 }, this);
             } else {
                 throw makeArgumentsError("on");
@@ -892,19 +892,17 @@
                 css = options.css;
 
             if (template) {
-                "after before append prepend".split(" ").forEach(function(key) {
-                    if (key in template) {
-                        var el = document.createElement("div"),
-                            fragment = document.createDocumentFragment();
+                Object.keys(template).forEach(function(key) {
+                    var el = document.createElement("div"),
+                        fragment = document.createDocumentFragment();
 
-                        el.innerHTML = template[key];
+                    el.innerHTML = template[key];
 
-                        for (var node = el.firstElementChild; node; node = node.nextElementSibling) {
-                            fragment.appendChild(node);
-                        }
-
-                        template[key] = fragment;    
+                    for (var node = el.firstElementChild; node; node = node.nextElementSibling) {
+                        fragment.appendChild(node);
                     }
+
+                    template[key] = fragment;
                 });
 
                 delete options.template;
