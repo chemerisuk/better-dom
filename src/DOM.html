@@ -135,32 +135,17 @@ DOM.ready(function(){
 
 // editable plugin example
 
-DOM.importStyles({
-    ".editable": {
-        cursor: "text",
-        "white-space": "pre-wrap"
-    }
-}, {
-    ".editable:hover": {
-        background: "#FFFFD3"
-    }
-}, {
-    ".editable-form": {
-        position: "relative"
-    }
-}, {
-    ".editable-textarea": {
-        background: "#FFFFD3",
-        border: 0,
-        padding: 0,
-        display: "block"
-    }
-});
-
 DOM.extend(".editable", {
+    template: {
+        after: '<form class="editable-form" hidden><textarea class="editable-textarea"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">'
+    },
+    css: [
+        {".editable": "cursor:text; white-space:pre-wrap"},
+        {".editable:hover": "background:#FFFFD3"},
+        {".editable-form": "position:relative"},
+        {".editable-textarea": "background:#FFFFD3; border:0; padding:0; display:block"}
+    ],
     constructor: function() {
-        this.after('<form class="editable-form" hidden><textarea class="editable-textarea"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">');
-
         var formEl = this.next(),
             textareaEl = formEl.find("textarea");
 

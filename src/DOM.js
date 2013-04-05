@@ -579,11 +579,13 @@
                     parent = el.parentNode, 
                     relatedNode;
 
-                if (element) {
+                if (typeof element === "string") {
                     relatedNode = document.createElement("div");
                     relatedNode.innerHTML = element;
                     relatedNode = relatedNode.firstElementChild;
-                } else {
+                } else if (element instanceof Element || element instanceof DocumentFragment) {
+                    relatedNode = element;
+                } else { 
                     // indicate case with remove() function
                     relatedNode = parent;
                 }
@@ -880,27 +882,60 @@
                 });
             };
         })(),
-        extend: function(selector, mixins) {
-            if (!mixins || typeof mixins !== "object") {
+        extend: function(selector, options) {
+            if (!options || typeof options !== "object") {
                 throw makeArgumentsError("extend");
             }
 
-            var props = {};
+            var mixins = {}, 
+                template = options.template,
+                css = options.css;
 
-            Object.keys(mixins).forEach(function(key) {
+            if (template) {
+                "after before append prepend".split(" ").forEach(function(key) {
+                    if (key in template) {
+                        var el = document.createElement("div"),
+                            fragment = document.createDocumentFragment();
+
+                        el.innerHTML = template[key];
+
+                        for (var node = el.firstElementChild; node; node = node.nextElementSibling) {
+                            fragment.appendChild(node);
+                        }
+
+                        template[key] = fragment;    
+                    }
+                });
+
+                delete options.template;
+            }
+
+            if (css) {
+                DOM.importStyles.apply(DOM, css);
+
+                delete options.css;
+            }
+
+            Object.keys(options).forEach(function(key) {
                 if (key !== "constructor") {
-                    props[key] = { 
-                        value: mixins[key],
+                    mixins[key] = { 
+                        value: options[key],
                         enumerable: true
                     };
+                } else if (key === "template") {
+                    template = options[key];
                 }
             });
 
             DOM.watch(selector, function() {
-                Object.defineProperties(this, props);
+                Object.defineProperties(this, mixins);
 
-                if (mixins.hasOwnProperty("constructor")) {
-                    mixins.constructor.call(this);
+                Object.keys(template).forEach(function(key) {
+                    this[key](template[key].cloneNode(true));
+                }, this);
+
+                if (options.hasOwnProperty("constructor")) {
+                    options.constructor.call(this);
                 }
             });
         }

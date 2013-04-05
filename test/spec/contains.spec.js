@@ -7,12 +7,12 @@ describe("contains", function() {
         testEl = DOM.find("#test");
     });
 
-    it("should contain element's children", function() {
-        expect(testEl.contains(testEl.find("a"))).toBeTruthy();
-    });
-
     it("should accept native elements", function() {
         expect(testEl.contains(testEl.find("a")._node)).toBeTruthy();
+    });
+
+    it("should accept a DOM element", function() {
+        expect(testEl.contains(testEl.find("a"))).toBeTruthy();
     });
 
     it("should accept DOM collections", function() {
