@@ -72,7 +72,7 @@ body > footer {
         <p class="editable">Underscore provides 80-odd functions that support both the usual functional suspects: map, select, invoke — as well as more specialized helpers: function binding, javascript templating, deep equality testing, and so on. It delegates to built-in functions, if present, so modern browsers will use the native implementations of forEach, map, reduce, filter, every, some and indexOf.</p>
     </section>
     <footer>
-        Copyright 2012
+        Copyright 2013
     </footer>
 <script type="text/javascript">
 DOM.ready(function(){
@@ -114,7 +114,7 @@ DOM.ready(function(){
     link.data("test", "test");
 
     link.append('<span data-test1="testappend">|append|');
-    //link.prepend(DOM.create('<span data-test2="testprepend">|prepend|'));
+    link.prepend('<span data-test2="testprepend">|prepend|');
 
     link.html("<script src=\"testscript.js\"><" + "/script>updated");
 

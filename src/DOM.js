@@ -268,26 +268,25 @@
 
             if (eventType === "string" && typeof callback === "function") {
                 var selectorStart = event.indexOf(" "),
-                    nodeEvent = ~selectorStart ? event.substr(0, selectorStart) : event,
-                    selector = ~selectorStart ? event.substr(selectorStart + 1) : null,
-                    matcher = selector ? new SelectorMatcher(selector) : null,
                     handleEvent = function(e) {
                         callback.call(thisPtr, DOMEvent(e));
                     },
                     eventEntry = {
                         capturing: !!capturing,
-                        event: nodeEvent,
+                        nodeEvent: ~selectorStart ? event.substr(0, selectorStart) : event,
+                        selector: ~selectorStart ? event.substr(selectorStart + 1) : null,
                         callback: callback, 
-                        handler: !selector ? handleEvent : function(e) {
+                        handler: !~selectorStart ? handleEvent : function(e) {
                             for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
                                 if (matcher.test(elem)) {
                                     return handleEvent(e);
                                 }
                             }
                         }
-                    };
+                    },
+                    matcher = eventEntry.selector ? new SelectorMatcher(eventEntry.selector) : null;
                 // attach event listener
-                this._node.addEventListener(nodeEvent, eventEntry.handler, !!capturing);
+                this._node.addEventListener(eventEntry.nodeEvent, eventEntry.handler, eventEntry.capturing);
                 // store event entry
                 this._events.push(eventEntry);
             } else if (Array.isArray(event)) {
@@ -312,12 +311,14 @@
                 throw new makeArgumentsError("off");
             }
 
-            var eventType = event.split(" ")[0];
+            var selectorStart = event.indexOf(" "),
+                nodeEvent = ~selectorStart ? event.substr(0, selectorStart) : event,
+                selector = ~selectorStart ? event.substr(selectorStart + 1) : null;
 
             this._events.forEach(function(entry) {
-                if (event === entry.event && (!callback || callback === entry.callback)) {
+                if (nodeEvent === entry.nodeEvent && (!callback || (selector === entry.selector && callback === entry.callback))) {
                     // remove event listener from the element
-                    this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                    this._node.removeEventListener(nodeEvent, entry.handler, entry.capturing);
                 }
             }, this);
 
@@ -916,19 +917,17 @@
 
             Object.keys(options).forEach(function(key) {
                 if (key !== "constructor") {
-                    mixins[key] = { 
+                    mixins[key] = {
                         value: options[key],
                         enumerable: true
                     };
-                } else if (key === "template") {
-                    template = options[key];
                 }
             });
 
             DOM.watch(selector, function() {
                 Object.defineProperties(this, mixins);
 
-                Object.keys(template).forEach(function(key) {
+                template && Object.keys(template).forEach(function(key) {
                     this[key](template[key].cloneNode(true));
                 }, this);
 
