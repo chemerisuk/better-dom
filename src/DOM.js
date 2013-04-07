@@ -76,7 +76,7 @@
             proto = ctr.prototype;
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
-                ~"forEach map every some filter length".indexOf(methodName) || delete proto[methodName];
+                ~"forEach map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
             });
             // shortcuts
             "set on off capture fire data addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
@@ -92,11 +92,6 @@
                     return this;
                 });
             });
-
-            // temporary store operator for internal use only
-            ctr._new = proto.map;
-            // use Array.prototype implementation to return regular array for map
-            proto.map = Array.prototype.map;
             
             return ctr;
         })(),
@@ -104,46 +99,39 @@
             // Quick matching inspired by
             // https://github.com/jquery/jquery
             var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-                quickParse = function(selector) {
-                    var quick = rquickIs.exec(selector);
-                    // TODO: support attribute value check
-                    if (quick) {
-                        //   0  1    2   3          4
-                        // [ _, tag, id, attribute, class ]
-                        quick[1] = (quick[1] || "").toLowerCase();
-                        quick[4] = quick[4] ? " " + quick[4] + " " : "";
-                    } else {
-                        throw makeArgumentsError("quick");
-                    }
-
-                    return quick;
-                },
-                quickIs = function(elem, m) {
-                    return (
-                        (!m[1] || elem.nodeName.toLowerCase() === m[1]) &&
-                        (!m[2] || elem.id === m[2]) &&
-                        (!m[3] || elem.hasAttribute(m[3])) &&
-                        (!m[4] || ~(" " + elem.className  + " ").indexOf(m[4]))
-                    );
-                },
                 ctr =  function(selector, quickOnly) {
                     this.selector = selector;
-                    this.quick = quickParse(selector);
                     this.quickOnly = !!quickOnly;
-                },
-                matchesProperty;
 
-            ["m","oM","msM","mozM","webkitM"].some(function(prefix) {
-                return !!htmlEl[matchesProperty = prefix + "atchesSelector"];
-            });
+                    var quick = rquickIs.exec(selector);
+                    // TODO: support attribute value check
+                    if (this.quick = quick) {
+                        //   0  1    2   3          4
+                        // [ _, tag, id, attribute, class ]
+                        quick[1] && (quick[1] = quick[1].toLowerCase());
+                        quick[4] && (quick[4] = " " + quick[4] + " ");
+                    } else if (quickOnly) {
+                        throw makeArgumentsError("quick");
+                    }
+                },
+                matchesProp = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix) {
+                    var property = prefix + "atchesSelector";
+
+                    return result || htmlEl[property] && property;
+                }, null);
 
             ctr.prototype = {
-                test: function(node) {
+                test: function(el) {
                     if (this.quick) {
-                        return quickIs(node, this.quick);
+                        return (
+                            (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
+                            (!this.quick[2] || el.id === this.quick[2]) &&
+                            (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
+                            (!this.quick[4] || ~(" " + el.className  + " ").indexOf(this.quick[4]))
+                        );
                     }
 
-                    return !this.quickOnly && node[matchesProperty](this.selector);
+                    return !this.quickOnly && el[matchesProp](this.selector);
                 }
             };
 
@@ -473,7 +461,7 @@
                 el.innerHTML = "&shy;" + value;
                 el.removeChild(el.firstChild);
                 // fix script elements
-                slice.call(el.getElementsByTagName("script"), 0).forEach(processScripts);
+                slice.call(el.getElementsByTagName("script")).forEach(processScripts);
 
                 return this;
             };
@@ -717,9 +705,9 @@
     DOM = window.DOM = extend(new DOMNode(document), {
         create: (function() {
             var rcollection = /^\[object (HTMLCollection|NodeList|Array)\]$/,
-                newCollection = DOMElementCollection._new;
-            // cleanup temporary var
-            delete DOMElementCollection._new; 
+                newCollection = DOMElementCollection.prototype.map;
+            // use Array.prototype implementation to return regular array for map
+            DOMElementCollection.prototype.map = Array.prototype.map;
 
             return function(content) {
                 var elem = null;
@@ -816,7 +804,7 @@
                 if (selectorType === "string") {
                     process(selector, styles);
                 } else if (selectorType === "object") {
-                    slice.call(arguments, 0).forEach(function(rule) {
+                    slice.call(arguments).forEach(function(rule) {
                         var selector = Object.keys(rule)[0];
 
                         process(selector, rule[selector]);
