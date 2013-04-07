@@ -8,6 +8,10 @@ describe("on", function() {
         input = DOM.find("#input");
     });
 
+    it("should return reference to 'this'", function() {
+        expect(input.on("click", obj.test)).toEqual(input);
+    });
+
     it("should accept single callback", function() {
         spyOn(obj, "test");
 
@@ -71,6 +75,21 @@ describe("on", function() {
         });
 
         input.on("click", obj.test, link).call("click");
+    });
+
+    it("should not stop to call handlers if any of them throws an error inside", function() {
+        window.onerror = function() {
+            return true; // suppress displaying expected error for this test
+        };
+
+        spyOn(obj, "test").andCallFake(function() { throw "test"; });
+        spyOn(obj, "test2");
+
+        input.on("click", obj.test).on("click", obj.test2).call("click");
+
+        expect(obj.test2).toHaveBeenCalled();
+
+        window.onerror = null; // restore default error handling
     });
 
     it("should throw error if arguments are invalid", function() {

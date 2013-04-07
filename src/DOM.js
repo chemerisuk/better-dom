@@ -334,7 +334,7 @@
             if (~eventType.indexOf(":")) {
                 event = new CustomEvent(eventType, {detail: detail, bubbles: true});
             } else {
-                event = document.createEvent(eventType);
+                event = document.createEvent("Event");
                 event.initEvent(eventType, true, true);
             }
             
