@@ -363,50 +363,6 @@
         matches: function(selector) {
             return new SelectorMatcher(selector).test(this._node);
         },
-        get: function(name) {
-            if (typeof name !== "string" || ~name.indexOf("Node") || ~name.indexOf("Element")) {
-                throw makeArgumentsError("get");
-            }
-
-            var el = this._node;
-
-            return el[name] || el.getAttribute(name);
-        },
-        set: function(name, value) {
-            var el = this._node,
-                nameType = typeof name,
-                valueType = typeof value;
-
-            if (valueType === "function") {
-                valueType = typeof ( value = value.call(this, this.get(name)) );
-            }
-
-            if (nameType === "string") {
-                if (valueType === "function") {
-                    throw makeArgumentsError("set");
-                }
-
-                if (value === null || value === false) {
-                    el.removeAttribute(name);
-                } else if (name in el) {
-                    el[name] = value;
-                } else {
-                    el.setAttribute(name, value);
-                } 
-            } else if (Array.isArray(name)) {
-                name.forEach(function(name) {
-                    this.set(name, value);
-                }, this);
-            } else if (nameType === "object") {
-                Object.keys(name).forEach(function(key) {
-                    this.set(key, name[key]);
-                }, this);
-            } else {
-                throw makeArgumentsError("set");
-            }
-
-            return this;
-        },
         clone: function(deep) {
             return new DOMElement(this._node.cloneNode(deep));
         },
@@ -489,19 +445,66 @@
         }
     });
 
-    // dom traversing strategies
-    (function() {
-        var traversingStrategies = {
-                nextAll: "nextElementSibling",
-                prevAll: "previousElementSibling",
-                children: "children",
-                firstChild: "firstElementChild",
-                lastChild: "lastElementChild",
-                next: "nextElementSibling",
-                prev: "previousElementSibling",
-                parent: "parentNode"
-            };
+    // getter/setter
+    (function(protectedNames) {
+        extend(DOMElement.prototype, {
+            get: function(name) {
+                if (typeof name !== "string" || name in protectedNames) {
+                    throw makeArgumentsError("get");
+                }
 
+                var el = this._node;
+
+                return el[name] || el.getAttribute(name);
+            },
+            set: function(name, value) {
+                var el = this._node,
+                    nameType = typeof name,
+                    valueType = typeof value;
+
+                if (nameType === "string" && !(name in protectedNames)) {
+                    if (valueType === "function") {
+                        value = value.call(this, this.get(name));
+                    }
+
+                    if (value === null || value === false) {
+                        el.removeAttribute(name);
+                    } else if (name in el) {
+                        el[name] = value;
+                    } else {
+                        el.setAttribute(name, value);
+                    } 
+                } else if (Array.isArray(name)) {
+                    name.forEach(function(name) {
+                        this.set(name, value);
+                    }, this);
+                } else if (nameType === "object") {
+                    Object.keys(name).forEach(function(key) {
+                        this.set(key, name[key]);
+                    }, this);
+                } else {
+                    throw makeArgumentsError("set");
+                }
+
+                return this;
+            }
+        });
+    })({
+        children: true,
+        childNodes: true,
+        firstChild: true,
+        lastChild: true,
+        nextSibling: true,
+        previousSibling: true,
+        firstElementChild: true,
+        lastElementChild: true,
+        nextElementSibling: true,
+        previousElementSibling: true,
+        parentNode: true
+    });
+
+    // dom traversing strategies
+    (function(traversingStrategies) {
         Object.keys(traversingStrategies).forEach(function(methodName) {
             var propertyName = traversingStrategies[methodName];
 
@@ -533,7 +536,16 @@
                 return DOM.create(nodes);
             });
         });
-    })();
+    })({
+        nextAll: "nextElementSibling",
+        prevAll: "previousElementSibling",
+        children: "children",
+        firstChild: "firstElementChild",
+        lastChild: "lastElementChild",
+        next: "nextElementSibling",
+        prev: "previousElementSibling",
+        parent: "parentNode"
+    });
 
     // dom manipulation strategies
     (function() {
