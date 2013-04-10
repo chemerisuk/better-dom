@@ -55,8 +55,8 @@
 
             DOMNode.call(this, el);
         },
-        DOMNullNode = function() { },
-        DOMNullElement = function() { },
+        DOMNullNode = function() { this._node = null; },
+        DOMNullElement = function() { this._node = null; },
         DOMElementCollection = (function() {
             // Create clean copy of Array prototype. Inspired by
             // http://dean.edwards.name/weblog/2006/11/hooray/
@@ -508,21 +508,22 @@
         Object.keys(traversingStrategies).forEach(function(methodName) {
             var propertyName = traversingStrategies[methodName];
 
-            extend(DOMElement.prototype, methodName, function(selector) {
-                var it = this._node[propertyName],
-                    matcher = selector ? new SelectorMatcher(selector) : null,
-                    nodes = ~methodName.lastIndexOf("All") ? [] : null;
+            if (methodName === "children") {
+                extend(DOMElement.prototype, methodName, function(selector) {
+                    var children = this._node.children,
+                        matcher = selector ? new SelectorMatcher(selector) : null;
 
-                if (propertyName === "children") {
-                    if (!matcher) {
-                        nodes = slice.call(it);
-                    } else {
-                        nodes = Array.prototype.filter.call(it, function(el) {
-                            return matcher.test(el);
-                        });
-                    }
-                } else {
-                    for (; it; it = it[propertyName]) {
+                    return DOM.create(!matcher ? slice.call(children) : Array.prototype.filter.call(children, function(el) {
+                        return matcher.test(el);
+                    }));
+                });                
+            } else {
+                extend(DOMElement.prototype, methodName, function(selector) {
+                    var matcher = selector ? new SelectorMatcher(selector) : null,
+                        nodes = ~methodName.lastIndexOf("All") ? [] : null,
+                        it = this._node;
+
+                    while (it = it[propertyName]) {
                         if (!matcher || matcher.test(it)) {
                             if (!nodes) {
                                 return DOMElement(it);
@@ -531,10 +532,10 @@
                             nodes.push(it);
                         }
                     }
-                }
 
-                return DOM.create(nodes);
-            });
+                    return DOM.create(nodes);
+                });
+            }
         });
     })({
         nextAll: "nextElementSibling",
@@ -716,7 +717,7 @@
     // publi API
     DOM = window.DOM = extend(new DOMNode(document), {
         create: (function() {
-            var rcollection = /^\[object (HTMLCollection|NodeList|Array)\]$/,
+            var rcollection = /^\[object (HTMLCollection|NodeList)\]$/,
                 newCollection = DOMElementCollection.prototype.map;
             // use Array.prototype implementation to return regular array for map
             DOMElementCollection.prototype.map = Array.prototype.map;
@@ -737,7 +738,7 @@
                     }
                 } else if (content instanceof Element) {
                     elem = content;
-                } else if (content && rcollection.test(content)) {
+                } else if (rcollection.test(content) || Array.isArray(content)) {
                     return newCollection.call(content, DOMElement);
                 } else if (content) {
                     throw makeArgumentsError("create");
