@@ -146,32 +146,33 @@ DOM.extend(".editable", {
         {".editable-textarea": "background:#FFFFD3; border:0; padding:0; display:block"}
     ],
     constructor: function() {
-        var formEl = this.next(),
+        var editable = this,
+            formEl = editable.next(),
             textareaEl = formEl.find("textarea");
 
-        textareaEl.css("font", this.css("font"));
+        textareaEl.css("font", editable.css("font"));
 
         formEl.on("reset", function() {
             formEl.hide();
 
-            this.set("textContent", textareaEl.get("defaultValue")).show();
-        }, this);
+            editable.set("textContent", textareaEl.get("defaultValue")).show();
+        });
 
         formEl.on("submit", function(e) {
             textareaEl.set("defaultValue", textareaEl.get("value"));
 
             formEl.call("reset");
 
-            this.fire("editable:changed");
+            editable.fire("editable:changed");
 
             e.preventDefault();
             e.stopPropagation();
-        }, this);
+        });
 
-        this.on("click", function() {
-            var offset = this.offset();
+        editable.on("click", function() {
+            var offset = editable.offset();
 
-            this.hide();
+            editable.hide();
             formEl.show();
 
             textareaEl.css({
@@ -179,7 +180,7 @@ DOM.extend(".editable", {
                 height: (offset.bottom - offset.top) + "px"
             });
 
-            textareaEl.set(["value", "defaultValue"], this.get("textContent")).call("focus");
+            textareaEl.set(["value", "defaultValue"], editable.get("textContent")).call("focus");
         });
     }
 });

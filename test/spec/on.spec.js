@@ -69,14 +69,6 @@ describe("on", function() {
         input.on("click", obj.test).call("click");
     });
 
-    it("should accept optional 'this' argument", function() {
-        spyOn(obj, "test").andCallFake(function() {
-            expect(this).toEqual(link);
-        });
-
-        input.on("click", obj.test, link).call("click");
-    });
-
     it("should not stop to call handlers if any of them throws an error inside", function() {
         window.onerror = function() {
             return true; // suppress displaying expected error for this test

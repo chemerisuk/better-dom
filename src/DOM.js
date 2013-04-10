@@ -249,10 +249,9 @@
                 }
             };
         })(),
-        on: function(event, callback, thisPtr, /*INTERNAL*/capturing) {
-            var eventType = typeof event;
-
-            thisPtr = thisPtr || this;
+        on: function(event, callback, /*INTERNAL*/capturing) {
+            var eventType = typeof event,
+                thisPtr = this;
 
             if (eventType === "string" && typeof callback === "function") {
                 var selectorStart = event.indexOf(" "),
@@ -279,11 +278,11 @@
                 this._events.push(eventEntry);
             } else if (Array.isArray(event)) {
                 event.forEach(function(key) {
-                    this.on(key, callback, thisPtr);
+                    this.on(key, callback);
                 }, this);
             } else if (eventType === "object") {
                 Object.keys(event).forEach(function(key) {
-                    this.on(key, event[key], thisPtr);
+                    this.on(key, event[key]);
                 }, this);
             } else {
                 throw makeArgumentsError("on");
@@ -291,8 +290,8 @@
 
             return this;
         },
-        capture: function(event, callback, thisPtr) {
-            return this.on(event, callback, thisPtr, true);
+        capture: function(event, callback) {
+            return this.on(event, callback, true);
         },
         off: function(event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
