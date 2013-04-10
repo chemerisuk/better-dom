@@ -603,43 +603,43 @@
         });
     })();
 
-    // css classes manipulation strategies
+    // classes manipulation
     (function() {
         var rclass = /[\n\t\r]/g,
             classStrategies = htmlEl.classList ? {
-                hasClass: function(el, className) {
-                    return el.classList.constains(className);
+                hasClass: function(className) {
+                    return this._node.classList.contains(className);
                 },
-                addClass: function(el, className) {
-                    el.classList.add(className);
+                addClass: function(className) {
+                    this._node.classList.add(className);
                 },
-                removeClass: function(el, className) {
-                    el.classList.remove(className);
+                removeClass: function(className) {
+                    this._node.classList.remove(className);
                 },
-                toggleClass: function(el, className) {
-                    el.classList.toggle(className);
+                toggleClass: function(className) {
+                    this._node.classList.toggle(className);
                 }
             } : {
-                hasClass: function(el, className) {
-                    return !!~((" " + el.className + " ")
+                hasClass: function(className) {
+                    return !!~((" " + this._node.className + " ")
                             .replace(rclass, " ")).indexOf(" " + className + " ");
                 },
-                addClass: function(el, className) {
-                    if (!this.hasClass(className)) {
-                        el.className += " " + className;
+                addClass: function(className) {
+                    if (!classStrategies.hasClass.call(this, className)) {
+                        this._node.className += " " + className;
                     }
                 },
-                removeClass: function(el, className) {
-                    el.className = (" " + el.className + " ")
+                removeClass: function(className) {
+                    this._node.className = (" " + this._node.className + " ")
                         .replace(rclass, " ").replace(" " + className + " ", " ").trim();
                 },
-                toggleClass: function(el, className) {
-                    var originalClassName = el.className;
+                toggleClass: function(className) {
+                    var originalClassName = this._node.className;
 
-                    this.addClass(className);
+                    classStrategies.addClass.call(this, className);
 
-                    if (originalClassName !== el.className) {
-                        this.removeClass(className);
+                    if (originalClassName !== this._node.className) {
+                        classStrategies.removeClass.call(this, className);
                     }
                 }
             };
@@ -647,27 +647,29 @@
         Object.keys(classStrategies).forEach(function(methodName) {
             var process = classStrategies[methodName];
 
-            extend(DOMElement.prototype, methodName, function(classNames) {
-                var el = this._node;
-
-                if (typeof classNames === "string") {
-                    return process.call(this, el, classNames);
-                } else if (Array.isArray(classNames)) {
-                    if (methodName === "hasClass") {
-                        return classNames.every(function(className) {
-                            process.call(this, el, className);
-                        }, this);
+            if (methodName === "hasClass") {
+                extend(DOMElement.prototype, methodName, function(classNames) {
+                    if (typeof classNames === "string") {
+                        return process.call(this, classNames);
+                    } else if (Array.isArray(classNames)) {
+                        return classNames.every(process, this);
                     } else {
-                        classNames.forEach(function(className) {
-                            process.call(this, el, className);
-                        }, this);
-
-                        return this;
+                        throw makeArgumentsError(methodName);
                     }
-                } else {
-                    throw makeArgumentsError(methodName);
-                }
-            });
+                });
+            } else {
+                extend(DOMElement.prototype, methodName, function(classNames) {
+                    if (typeof classNames === "string") {
+                        process.call(this, classNames);
+                    } else if (Array.isArray(classNames)) {
+                        classNames.forEach(process, this);
+                    } else {
+                        throw makeArgumentsError(methodName);
+                    }
+
+                    return this;
+                });
+            }
         });
     })();
 
