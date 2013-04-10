@@ -27,7 +27,8 @@ describe("get", function() {
             lastElementChild: true,
             nextElementSibling: true,
             previousElementSibling: true,
-            parentNode: true
+            parentNode: true,
+            elements: true
         })
         .forEach(function(propName) {
             expect(function() { link.get(propName); }).toThrow();

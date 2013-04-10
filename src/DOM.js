@@ -359,8 +359,8 @@
         matches: function(selector) {
             return new SelectorMatcher(selector).test(this._node);
         },
-        clone: function(deep) {
-            return new DOMElement(this._node.cloneNode(deep));
+        clone: function() {
+            return new DOMElement(this._node.cloneNode(true));
         },
         css: function(property, value) {
             var el = this._node,
@@ -496,7 +496,8 @@
         lastElementChild: true,
         nextElementSibling: true,
         previousElementSibling: true,
-        parentNode: true
+        parentNode: true,
+        elements: true
     });
 
     // dom traversing strategies
