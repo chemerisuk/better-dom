@@ -249,7 +249,7 @@
                 }
             };
         })(),
-        on: function(event, callback, /*INTERNAL*/capturing) {
+        on: function(event, callback, capturing) {
             var eventType = typeof event,
                 thisPtr = this;
 
@@ -289,9 +289,6 @@
             }
 
             return this;
-        },
-        capture: function(event, callback) {
-            return this.on(event, callback, true);
         },
         off: function(event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {

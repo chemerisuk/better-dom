@@ -84,6 +84,35 @@ describe("on", function() {
         window.onerror = null; // restore default error handling
     });
 
+    it("should happen before on if the third argument is 'true'", function() {
+        var indicator;
+
+        spyOn(obj, "test2").andCallFake(function() {
+            indicator = false;
+        });
+
+        spyOn(obj, "test").andCallFake(function() {
+            indicator = true;
+        });
+
+        DOM.on("click", obj.test);
+        DOM.on("click", obj.test2, true);
+
+        input.call("click");
+
+        expect(indicator).toEqual(true);
+    });
+
+    it("should handle non-bubbling events if the third argument is 'true'", function() {
+        spyOn(obj, "test");
+
+        DOM.on("focus", obj.test, true);
+
+        input.call("focus");
+
+        expect(obj.test).toHaveBeenCalled();
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });
