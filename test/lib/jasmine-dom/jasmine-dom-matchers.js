@@ -197,7 +197,7 @@ jasmine.DOM.matchers = {};
 })();
 
 beforeEach(function() {
-  addMatchers(jasmine.DOM.matchers);
+  this.addMatchers(jasmine.DOM.matchers);
 });
 
 afterEach(function() {

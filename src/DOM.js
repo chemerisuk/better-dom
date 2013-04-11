@@ -860,7 +860,12 @@
                 keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + vendorPrefix + ")", "i"))[1] + "CSSKeyframesRule"]);
 
             return function(selector, callback) {
-                var animationName = "DOM-" + new Date().getTime();
+                var animationName = "DOM-" + new Date().getTime(),
+                    cancelBubbling = function(e) {
+                        if (e.animationName === animationName) {
+                            e.stopPropagation();
+                        }
+                    };
 
                 DOM.importStyles(
                     "@" + (keyframes ? "-" + vendorPrefix + "-" : "") + "keyframes " + animationName,
@@ -872,18 +877,14 @@
                     "animation-name": animationName + " !important"
                 });
 
-                startNames.forEach(function(name){
+                startNames.forEach(function(name) {
                     document.addEventListener(name, function(e) {
                         var el = e.target;
 
                         if (e.animationName === animationName) {
-                            callback.call(DOMElement(el));
+                            callback(DOMElement(el));
                             // prevent double initialization
-                            el.addEventListener(name, function(e) {
-                                if (e.animationName === animationName) {
-                                    e.stopPropagation();
-                                }
-                            }, false);
+                            el.addEventListener(name, cancelBubbling, false);
                         }
                     }, false);
                 });
@@ -930,15 +931,15 @@
                 }
             });
 
-            DOM.watch(selector, function() {
-                Object.defineProperties(this, mixins);
+            DOM.watch(selector, function(el) {
+                Object.defineProperties(el, mixins);
 
                 template && Object.keys(template).forEach(function(key) {
-                    this[key](template[key].cloneNode(true));
-                }, this);
+                    el[key](template[key].cloneNode(true));
+                });
 
                 if (options.hasOwnProperty("constructor")) {
-                    options.constructor.call(this);
+                    options.constructor.call(el);
                 }
             });
         }

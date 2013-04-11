@@ -10,7 +10,7 @@
             
             if (el.msMatchesSelector(selector)) {
                 callbacks.forEach(function(callback) {
-                    callback.call(DOM.create(el));
+                    callback(DOM.create(el));
                 });
             }
         });
