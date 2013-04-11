@@ -143,7 +143,12 @@
             }
 
             this._event = event;
-        };
+        },
+        vendorPrefix = (function() {
+            var computed = window.getComputedStyle(htmlEl, "");
+
+            return (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0];
+        })();
 
     DOMNode.prototype = extend({}, {
         find: (function() {
@@ -791,15 +796,14 @@
         importStyles: (function() {
             var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
                 computed = window.getComputedStyle(htmlEl, ""),
-                pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
                 process = function(selector, styles) {
                     var ruleText = selector + " { ";
 
                     if (typeof styles === "object") {
                         Object.keys(styles).forEach(function(styleName) {
-                            var prefixed = (pre + styleName.charAt(0).toUpperCase() + styleName.substr(1) in computed);
+                            var prefixed = (vendorPrefix + styleName.charAt(0).toUpperCase() + styleName.substr(1) in computed);
                             // append vendor prefix if it's required
-                            ruleText += (prefixed ? "-" + pre + "-" : "") + styleName + ":" + styles[styleName] + "; ";
+                            ruleText += (prefixed ? "-" + vendorPrefix + "-" : "") + styleName + ":" + styles[styleName] + "; ";
                         });
                     } else if (typeof styles === "string") {
                         ruleText += styles;
@@ -853,15 +857,13 @@
             // use trick discovered by Daniel Buchner: 
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
-                computed = window.getComputedStyle(htmlEl, ""),
-                pre = (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
-                keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + pre + ")", "i"))[1] + "CSSKeyframesRule"]);
+                keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + vendorPrefix + ")", "i"))[1] + "CSSKeyframesRule"]);
 
             return function(selector, callback) {
                 var animationName = "DOM-" + new Date().getTime();
 
                 DOM.importStyles(
-                    "@" + (keyframes ? "-" + pre + "-" : "") + "keyframes " + animationName,
+                    "@" + (keyframes ? "-" + vendorPrefix + "-" : "") + "keyframes " + animationName,
                     "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
                 );
 
