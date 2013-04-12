@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, undefined, slice) {
+(function(window, document, slice, undefined) {
     "use strict";
 
     var DOM,
@@ -29,9 +29,6 @@
         makeArgumentsError = function(methodName, type) {
             // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
             return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
-        },
-        makeDOMEventsArgumentsError = function(methodName) {
-            return makeArgumentsError(methodName, "DOMEvent");
         },
         // types
         DOMNode = function(node) {
@@ -591,7 +588,7 @@
                     relatedNode = document.createElement("div");
                     relatedNode.innerHTML = element;
                     relatedNode = relatedNode.firstElementChild;
-                } else if (element instanceof Element || element instanceof DocumentFragment) {
+                } else if (element.nodeType === 1 || element.nodeType === 11) {
                     relatedNode = element;
                 } else { 
                     // indicate case with remove() function
@@ -682,7 +679,7 @@
     DOMEvent.prototype = extend({}, {
         get: function(name) {
             if (typeof name !== "string" || ~name.indexOf("arget") || ~name.indexOf("lement")) {
-                throw makeDOMEventsArgumentsError("get");
+                throw makeArgumentsError("get", "DOMEvent");
             }
 
             return this._event[name];
@@ -734,15 +731,13 @@
                 var elem = null;
 
                 if (typeof content === "string") {
-                    if (content.indexOf(">") !== content.length - 1) {
+                    if (~content.indexOf("<")) {
                         elem = document.createElement("div");
                         elem.innerHTML = content;
 
-                        if (elem.children.length === 1) {
-                            elem = elem.firstChild;
-                        }
+                        return newCollection.call(slice.call(elem.children), DOMElement);
                     } else {
-                        elem = document.createElement(content.substr(1, content.length - 2));
+                        elem = document.createElement(content);
                     }
                 } else if (content instanceof Element) {
                     elem = content;
@@ -945,4 +940,4 @@
         }
     });
 
-})(window, document, undefined, Array.prototype.slice);
+})(window, document, Array.prototype.slice);
