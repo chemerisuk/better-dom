@@ -1,18 +1,18 @@
 describe("call", function() {
-    var input, obj = {test: function() {}};
+    var input, callback;
 
     beforeEach(function() {
         setFixtures("<input id='input'/>");
 
         input = DOM.find("#input");
+
+        callback = jasmine.createSpy("callback");
     });
 
     it("should call native object method", function() {
-        spyOn(obj, "test");
+        input.on("click", callback).call("click");
 
-        input.on("focus", obj.test).call("focus");
-
-        expect(obj.test).toHaveBeenCalled();
+        expect(callback).toHaveBeenCalled();
     });
 
     it("should pass parameters into native method", function() {

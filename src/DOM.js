@@ -242,7 +242,7 @@
                     return containsElement(reverse ? element : node, reverse ? node : element);
                 } else if (element instanceof DOMElement) {
                     return element.contains(node, true);
-                } else if (element instanceof DOMElementCollection) {
+                } else if (Array.isArray(element)) {
                     return element.every(function(element) {
                         return element.contains(node, true);
                     });
@@ -315,12 +315,12 @@
                 throw new makeArgumentsError("fire");
             }
 
-            var event; 
-            
-            if (~eventType.indexOf(":")) {
-                event = new CustomEvent(eventType, {detail: detail, bubbles: true});
+            var isCustomEvent = ~eventType.indexOf(":"),
+                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+
+            if (isCustomEvent) {
+                event.initCustomEvent(eventType, true, false, detail);
             } else {
-                event = document.createEvent("Event");
                 event.initEvent(eventType, true, true);
             }
             
@@ -641,7 +641,7 @@
 
                     classStrategies.addClass.call(this, className);
 
-                    if (originalClassName !== this._node.className) {
+                    if (originalClassName === this._node.className) {
                         classStrategies.removeClass.call(this, className);
                     }
                 }
@@ -716,7 +716,7 @@
 
     // fix constructor property
     [DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement].forEach(function(ctr) {
-        Object.defineProperty(ctr.prototype, "constructor", { value: ctr });
+        ctr.prototype.constructor = ctr;
     });
 
     // publi API
