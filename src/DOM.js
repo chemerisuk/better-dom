@@ -31,7 +31,7 @@
                 fragment: function(html) {
                     var fragment = document.createDocumentFragment();
 
-                    this.parse(html).forEach(appendTo, fragment);
+                    Array.prototype.forEach.call(this.parse(html), appendTo, fragment);
 
                     return fragment;
                 }
@@ -166,28 +166,27 @@
 
     DOMNode.prototype = extend({}, {
         find: (function() {
-            // big part of code is stoled from Sizzle:
+            // big part of code inspired by Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-            // TODO: disallow to use buggy selectors
+            // TODO: disallow to use buggy selectors?
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
-                expando = "DOM" + new Date().getTime(),
-                newCollection = DOMElementCollection.prototype.map;
+                tmpId = "DOM" + new Date().getTime(),
+                toCollection = DOMElementCollection.prototype.map;
 
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
                     throw makeArgumentsError("find");
                 }
 
-                var node = this._node, m, elem, 
-                    match = rquickExpr.exec(selector),
-                    elements = multiple ? [] : null;
+                var node = this._node,
+                    quickMatch, m, elem, elements;
 
-                if (match) {
+                if (quickMatch = rquickExpr.exec(selector)) {
                     // Speed-up: "#ID"
-                    if (m = match[1]) {
+                    if (m = quickMatch[1]) {
                         elem = document.getElementById(m);
                         // Handle the case where IE, Opera, and Webkit return items
                         // by name instead of ID
@@ -195,10 +194,10 @@
                             elements = [elem];
                         }
                     // Speed-up: "TAG"
-                    } else if (match[2]) {
+                    } else if (quickMatch[2]) {
                         elements = node.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
-                    } else if (m = match[3]) {
+                    } else if (m = quickMatch[3]) {
                         elements = node.getElementsByClassName(m);
                     }
 
@@ -207,9 +206,8 @@
                     }
                 } else {
                     var old = true,
-                        nid = expando,
-                        newContext = node,
-                        newSelector = node === document && selector;
+                        nid = tmpId,
+                        context = node;
 
                     if (node !== document) {
                         // qSA works strangely on Element-rooted queries
@@ -223,22 +221,20 @@
 
                         nid = "[id='" + nid + "'] ";
 
-                        newContext = rsibling.test(selector) && node.parentNode || node;
-                        newSelector = nid + selector.replace(/","/g, "," + nid);
+                        context = rsibling.test(selector) && node.parentNode || node;
+                        selector = nid + selector.replace(/","/g, "," + nid);
                     }
 
-                    if (newSelector) {
-                        try {
-                            elements = newContext[multiple ? "querySelectorAll" : "querySelector"](newSelector);
-                        } finally {
-                            if ( !old ) {
-                                node.removeAttribute("id");
-                            }
+                    try {
+                        elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
+                    } finally {
+                        if ( !old ) {
+                            node.removeAttribute("id");
                         }
                     }
                 }
 
-                return multiple ? newCollection.call(elements, DOMElement) : DOMElement(elements);
+                return multiple ? toCollection.call(elements || [], DOMElement) : DOMElement(elements);
             };
         })(),
         findAll: function(selector) {
@@ -737,21 +733,21 @@
     DOM = window.DOM = extend(new DOMNode(document), {
         create: (function() {
             var rcollection = /^\[object (HTMLCollection|NodeList)\]$/,
-                newCollection = DOMElementCollection.prototype.map;
+                toCollection = DOMElementCollection.prototype.map;
             
             return function(content) {
                 var elem = null;
 
                 if (typeof content === "string") {
                     if (~content.indexOf("<")) {
-                        return newCollection.call(sandbox.parse(content), DOMElement);
+                        return toCollection.call(sandbox.parse(content), DOMElement);
                     } else {
                         elem = document.createElement(content);
                     }
                 } else if (content instanceof Element) {
                     elem = content;
                 } else if (rcollection.test(content) || Array.isArray(content)) {
-                    return newCollection.call(content, DOMElement);
+                    return toCollection.call(content, DOMElement);
                 } else if (content) {
                     throw makeArgumentsError("create");
                 }
@@ -864,7 +860,7 @@
                 keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + vendorPrefix + ")", "i"))[1] + "CSSKeyframesRule"]);
 
             return function(selector, callback) {
-                var animationName = "DOM-" + new Date().getTime(),
+                var animationName = "DOM" + new Date().getTime(),
                     cancelBubbling = function(e) {
                         if (e.animationName === animationName) {
                             e.stopPropagation();
