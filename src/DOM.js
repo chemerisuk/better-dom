@@ -653,37 +653,21 @@
                         classStrategies.removeClass.call(this, className);
                     }
                 }
-            },
-            classMethod = function(name) {
-                var process = classStrategies[name];
-
-                if (name === "hasClass") {
-                    return function(classNames) {
-                        if (typeof classNames === "string") {
-                            return process.call(this, classNames);
-                        } else if (Array.isArray(classNames)) {
-                            return classNames.every(process, this);
-                        } else {
-                            throw makeArgumentsError(name);
-                        }
-                    };
-                } else {
-                    return function(classNames) {
-                        if (typeof classNames === "string") {
-                            process.call(this, classNames);
-                        } else if (Array.isArray(classNames)) {
-                            classNames.forEach(process, this);
-                        } else {
-                            throw makeArgumentsError(name);
-                        }
-
-                        return this;
-                    };
-                }
             };
 
         Object.keys(classStrategies).forEach(function(methodName) {
-            extend(DOMElement.prototype, methodName, classMethod(methodName));
+            var process = classStrategies[methodName],
+                arrayMethodName = methodName === "hasClass" ? "every" : "forEach";
+
+            extend(DOMElement.prototype, methodName, function(classNames) {
+                if (typeof classNames !== "string") {
+                    throw makeArgumentsError(name);
+                }
+
+                var result = classNames.split(" ")[arrayMethodName](process, this);
+
+                return result === undefined ? this : result;
+            });
         });
     })();
 
