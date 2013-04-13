@@ -23,7 +23,7 @@ describe("on", function() {
     it("should accept optional event filter", function() {
         spyOn(obj, "test");
 
-        DOM.on("click input", obj.test);
+        DOM.on("click", "input", obj.test);
 
         link.call("click");
 
@@ -34,10 +34,10 @@ describe("on", function() {
         expect(obj.test).toHaveBeenCalled();
     });
 
-    it("should accept array of events", function() {
+    it("should accept space-separated event names", function() {
         spyOn(obj, "test");
 
-        input.on(["focus", "click"], obj.test).call("focus");
+        input.on("focus click", obj.test).call("focus");
 
         expect(obj.test).toHaveBeenCalled();
 

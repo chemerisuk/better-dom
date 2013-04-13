@@ -88,7 +88,7 @@
 
                 extend(proto, methodName, function() {
                     if (this.length) {
-                        this.each(process, slice.call(arguments));
+                        this.forEach(process, slice.call(arguments));
                     }
 
                     return this;
@@ -251,68 +251,78 @@
                 }
             };
         })(),
-        on: function(event, callback, capturing) {
-            var eventType = typeof event,
-                thisPtr = this;
-
-            if (eventType === "string" && typeof callback === "function") {
-                var selectorStart = event.indexOf(" "),
-                    handleEvent = function(e) {
+        on: (function() {
+            var createEventHandler = function(thisPtr, callback, selector) {
+                if (!selector) {
+                    return function(e) {
                         callback.call(thisPtr, DOMEvent(e));
-                    },
-                    eventEntry = {
-                        capturing: !!capturing,
-                        nodeEvent: ~selectorStart ? event.substr(0, selectorStart) : event,
-                        selector: ~selectorStart ? event.substr(selectorStart + 1) : null,
-                        callback: callback, 
-                        handler: !~selectorStart ? handleEvent : function(e) {
-                            for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
-                                if (matcher.test(elem)) {
-                                    return handleEvent(e);
-                                }
+                    };
+                }
+
+                var matcher = new SelectorMatcher(selector);
+
+                return function(e) {
+                    for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
+                        if (matcher.test(elem)) {
+                            return callback.call(thisPtr, DOMEvent(e));
+                        }
+                    }
+                };
+            };
+
+            return function(event, selector, callback, capturing) {
+                var eventType = typeof event,
+                    eventHandler;
+
+                if (eventType === "string") {
+                    if (typeof selector === "function") {
+                        capturing = callback;
+                        callback = selector;
+                        selector = null;
+                    }
+
+                    capturing = !!capturing;
+                    eventHandler = createEventHandler(this, callback, selector);
+
+                    event.split(" ").forEach(function(event) {
+                        // fix IE9 focus/blur handlers
+                        if (this._node.attachEvent) {
+                            if (event === "focus") {
+                                event = "focusin";
+                            } else if (event === "blur") {
+                                event = "focusout";
                             }
                         }
-                    },
-                    matcher = eventEntry.selector ? new SelectorMatcher(eventEntry.selector) : null;
-                // fix IE9 focus/blur handlers
-                if (this._node.attachEvent) {
-                    if (eventEntry.nodeEvent === "focus") {
-                        eventEntry.nodeEvent = "focusin";
-                    } else if (eventEntry.nodeEvent === "blur") {
-                        eventEntry.nodeEvent = "focusout";
-                    }
+                        // attach event listener
+                        this._node.addEventListener(event, eventHandler, capturing);
+                        // store event entry
+                        this._events.push({
+                            capturing: capturing,
+                            event: event,
+                            callback: callback, 
+                            handler: eventHandler
+                        });
+                    }, this);
+                } else if (eventType === "object") {
+                    Object.keys(event).forEach(function(key) {
+                        this.on(key, event[key]);
+                    }, this);
+                } else {
+                    throw makeArgumentsError("on");
                 }
-                // attach event listener
-                this._node.addEventListener(eventEntry.nodeEvent, eventEntry.handler, eventEntry.capturing);
-                // store event entry
-                this._events.push(eventEntry);
-            } else if (Array.isArray(event)) {
-                event.forEach(function(key) {
-                    this.on(key, callback);
-                }, this);
-            } else if (eventType === "object") {
-                Object.keys(event).forEach(function(key) {
-                    this.on(key, event[key]);
-                }, this);
-            } else {
-                throw makeArgumentsError("on");
-            }
 
-            return this;
-        },
+                return this;
+            };
+        })(),
         off: function(event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
                 throw new makeArgumentsError("off");
             }
 
-            var selectorStart = event.indexOf(" "),
-                nodeEvent = ~selectorStart ? event.substr(0, selectorStart) : event,
-                selector = ~selectorStart ? event.substr(selectorStart + 1) : null;
-
             this._events.forEach(function(entry) {
-                if (nodeEvent === entry.nodeEvent && (!callback || (selector === entry.selector && callback === entry.callback))) {
+                if (event === entry.event && (!callback || callback === entry.callback)) {
                     // remove event listener from the element
-                    this._node.removeEventListener(nodeEvent, entry.handler, entry.capturing);
+                    this._node.removeEventListener(event, entry.handler, entry.capturing);
                 }
             }, this);
 
@@ -472,22 +482,24 @@
                     nameType = typeof name,
                     valueType = typeof value;
 
-                if (nameType === "string" && !(name in protectedNames)) {
+                if (nameType === "string") {
                     if (valueType === "function") {
                         value = value.call(this, this.get(name));
                     }
 
-                    if (value === null || value === false) {
-                        el.removeAttribute(name);
-                    } else if (name in el) {
-                        el[name] = value;
-                    } else {
-                        el.setAttribute(name, value);
-                    } 
-                } else if (Array.isArray(name)) {
-                    name.forEach(function(name) {
-                        this.set(name, value);
-                    }, this);
+                    name.split(" ").forEach(function(name) {
+                        if (name in protectedNames) {
+                            throw makeArgumentsError("set");
+                        }
+
+                        if (value === null || value === false) {
+                            el.removeAttribute(name);
+                        } else if (name in el) {
+                            el[name] = value;
+                        } else {
+                            el.setAttribute(name, value);
+                        }
+                    });
                 } else if (nameType === "object") {
                     Object.keys(name).forEach(function(key) {
                         this.set(key, name[key]);

@@ -180,7 +180,7 @@ DOM.extend(".editable", {
                 height: (offset.bottom - offset.top) + "px"
             });
 
-            textareaEl.set(["value", "defaultValue"], editable.get("textContent")).call("focus");
+            textareaEl.set("value defaultValue", editable.get("textContent")).call("focus");
         });
     }
 });

@@ -27,8 +27,8 @@ describe("set", function() {
         expect(link.set("href", false)._node).not.toHaveAttr("href");
     });
 
-    it("should accept array of strings as the first argument", function() {
-        link.set(["id", "href"], "changed");
+    it("should accept space-separated property names", function() {
+        link.set("id href", "changed");
 
         expect(link._node).toHaveId("changed");
         expect(link._node).toHaveAttr("href", "changed");
