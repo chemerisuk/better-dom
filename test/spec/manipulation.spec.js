@@ -10,6 +10,10 @@ describe("manipulation", function() {
             expect(document.getElementById("test")).toBeNull();
         });
 
+        it("should throw error if argument is invalid", function() {
+            expect(function() { div.remove(1); }).toThrow();
+        });
+
     });
 
     describe("append, prepend, after, before", function() {
@@ -54,6 +58,12 @@ describe("manipulation", function() {
             });
         });
 
+        it("should throw error if argument is invalid", function() {
+            Object.keys(checkStrategies).forEach(function(strategy) {
+                expect(function() { div[strategy](1); }).toThrow();
+            });
+        });
+
     });
 
     describe("replace", function() {
@@ -81,6 +91,10 @@ describe("manipulation", function() {
             div.replace(createDivFragment("replace"));
 
             expectToBeReplaced("test", "replace");
+        });
+
+        it("should throw error if argument is invalid", function() {
+            expect(function() { div.replace(1); }).toThrow();
         });
     });
 

@@ -16,6 +16,27 @@
 
             return (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0];
         })(),
+        sandbox = (function() {
+            var el = document.createElement("body"),
+                appendTo = function(el) { 
+                    this.appendChild(el); 
+                };
+
+            return {
+                parse: function(html) {
+                    el.innerHTML = html;
+
+                    return slice.call(el.children);
+                },
+                fragment: function(html) {
+                    var fragment = document.createDocumentFragment();
+
+                    this.parse(html).forEach(appendTo, fragment);
+
+                    return fragment;
+                }
+            };
+        })(),
         // helpers
         extend = function(proto, name, value) {
             if (arguments.length === 3) {
@@ -576,14 +597,11 @@
         // http://www.w3.org/TR/domcore/
         // 5.2.2 Mutation methods
         var manipulationStrategies = {
-            after: function(node, relatedNode, parent) {
-                parent.insertBefore(relatedNode, node.nextSibling);
+            after: function(node, relatedNode) {
+                node.parentNode.insertBefore(relatedNode, node.nextSibling);
             },
-            before: function(node, relatedNode, parent) {
-                parent.insertBefore(relatedNode, node);
-            },
-            replace: function(node, relatedNode, parent) {
-                parent.replaceChild(relatedNode, node);
+            before: function(node, relatedNode) {
+                node.parentNode.insertBefore(relatedNode, node);
             },
             append: function(node, relatedNode) {
                 node.appendChild(relatedNode);
@@ -591,34 +609,40 @@
             prepend: function(node, relatedNode) {
                 node.insertBefore(relatedNode, node.firstChild);
             },
-            remove: function(node, parent) {
-                parent.removeChild(node);
+            replace: function(node, relatedNode) {
+                node.parentNode.replaceChild(relatedNode, node);
+            },
+            remove: function(node, parentNode) {
+                parentNode.removeChild(node);
             }
+        },
+        optimizedManipulationStrategies = {
+            after: "afterend",
+            before: "beforebegin",
+            append: "beforeend",
+            prepend: "afterbegin"
         };
 
         Object.keys(manipulationStrategies).forEach(function(methodName) {
-            var process = manipulationStrategies[methodName];
+            var process = manipulationStrategies[methodName],
+                adjStrategy = optimizedManipulationStrategies[methodName];
 
             extend(DOMElement.prototype, methodName, function(element, /*INTERNAL*/reverse) {
                 var el = this._node,
-                    parent = el.parentNode, 
-                    relatedNode;
+                    relatedNode = el.parentNode;
 
                 if (typeof element === "string") {
-                    relatedNode = document.createElement("div");
-                    relatedNode.innerHTML = element;
-                    relatedNode = relatedNode.firstElementChild;
+                    relatedNode = adjStrategy ? null : sandbox.fragment(element);
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
-                } else { 
-                    // indicate case with remove() function
-                    relatedNode = parent;
+                } else if (element !== undefined) {
+                    throw makeArgumentsError(methodName);
                 }
 
                 if (relatedNode) {
-                   process(el, relatedNode, parent);
+                    process(el, relatedNode);
                 } else {
-                    throw makeArgumentsError(methodName);
+                    el.insertAdjacentHTML(adjStrategy, element);
                 }
 
                 return this;
@@ -739,10 +763,7 @@
 
                 if (typeof content === "string") {
                     if (~content.indexOf("<")) {
-                        elem = document.createElement("div");
-                        elem.innerHTML = content;
-
-                        return newCollection.call(slice.call(elem.children), DOMElement);
+                        return newCollection.call(sandbox.parse(content), DOMElement);
                     } else {
                         elem = document.createElement(content);
                     }
@@ -903,16 +924,7 @@
 
             if (template) {
                 Object.keys(template).forEach(function(key) {
-                    var el = document.createElement("div"),
-                        fragment = document.createDocumentFragment();
-
-                    el.innerHTML = template[key];
-
-                    for (var node = el.firstElementChild; node; node = node.nextElementSibling) {
-                        fragment.appendChild(node);
-                    }
-
-                    template[key] = fragment;
+                    template[key] = sandbox.fragment(template[key]);
                 });
 
                 delete options.template;
