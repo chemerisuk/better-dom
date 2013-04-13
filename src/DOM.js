@@ -26,7 +26,7 @@
                 parse: function(html) {
                     el.innerHTML = html;
 
-                    return slice.call(el.children);
+                    return el.children;
                 },
                 fragment: function(html) {
                     var fragment = document.createDocumentFragment();
@@ -173,7 +173,8 @@
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
-                expando = "DOM" + new Date().getTime();
+                expando = "DOM" + new Date().getTime(),
+                newCollection = DOMElementCollection.prototype.map;
 
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
@@ -237,7 +238,7 @@
                     }
                 }
 
-                return DOM.create(elements);
+                return multiple ? newCollection.call(elements, DOMElement) : DOMElement(elements);
             };
         })(),
         findAll: function(selector) {
@@ -732,32 +733,12 @@
         });
     });
 
-    // null object types
-    DOMNullNode.prototype = new DOMNode();
-    DOMNullElement.prototype = new DOMElement();
-
-    Object.keys(DOMNode.prototype).forEach(function(key) {
-        extend(DOMNullNode.prototype, key, function() {});
-        extend(DOMNullElement.prototype, key, function() {});
-    });
-
-    Object.keys(DOMElement.prototype).forEach(function(key) {
-        extend(DOMNullElement.prototype, key, function() {});
-    });
-
-    // fix constructor property
-    [DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement].forEach(function(ctr) {
-        ctr.prototype.constructor = ctr;
-    });
-
-    // publi API
+    // public API
     DOM = window.DOM = extend(new DOMNode(document), {
         create: (function() {
             var rcollection = /^\[object (HTMLCollection|NodeList)\]$/,
                 newCollection = DOMElementCollection.prototype.map;
-            // use Array.prototype implementation to return regular array for map
-            DOMElementCollection.prototype.map = Array.prototype.map;
-
+            
             return function(content) {
                 var elem = null;
 
@@ -957,6 +938,27 @@
                 }
             });
         }
+    });
+
+    // finish prototypes
+    DOMNullNode.prototype = new DOMNode();
+    DOMNullElement.prototype = new DOMElement();
+
+    // use Array.prototype implementation to return regular array for map
+    DOMElementCollection.prototype.map = Array.prototype.map;
+
+    Object.keys(DOMNode.prototype).forEach(function(key) {
+        extend(DOMNullNode.prototype, key, function() {});
+        extend(DOMNullElement.prototype, key, function() {});
+    });
+
+    Object.keys(DOMElement.prototype).forEach(function(key) {
+        extend(DOMNullElement.prototype, key, function() {});
+    });
+
+    // fix constructor property
+    [DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement].forEach(function(ctr) {
+        ctr.prototype.constructor = ctr;
     });
 
 })(window, document, Array.prototype.slice);

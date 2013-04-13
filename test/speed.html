@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DOM.js Speed tests</title>
+    <script src="speed/lib/benchmark-1.0.0/benchmark.js"></script>
+    <script src="speed/lib/jquery-1.9.1/jquery.js"></script>
+    <script src="../src/DOM.js"></script>
+</head>
+<body>
+    <a href="#" id="test1"></a>
+    <a href="#" id="test2"></a>
+    <a href="#" id="test3"></a>
+    <div id="sandbox"></div>
+    <script type="text/javascript">
+    console.log("------------------------------set------------------------------");
+
+    (function() {
+        var nativeLink = document.getElementById("test1"),
+            jqueryLink = $("#test2"),
+            domLink = DOM.find("#test3");
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#attr", function() {
+            jqueryLink.attr("href", new Date().toString());
+        })
+        .add("jquery#prop", function() {
+            jqueryLink.prop("href", new Date().toString());
+        })
+        .add("DOM#set", function() {
+            domLink.set("href", new Date().toString()); 
+        })
+        .add("native set", function() {
+            nativeLink.href = new Date().toString();
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("------------------------------get------------------------------");
+
+    (function() {
+        var nativeLink = document.getElementById("test1"),
+            jqueryLink = $("#test2"),
+            domLink = DOM.find("#test3");
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#attr", function() {
+            jqueryLink.attr("href");
+        })
+        .add("jquery#prop", function() {
+            jqueryLink.prop("href");
+        })
+        .add("DOM#get", function() {
+            domLink.get("href"); 
+        })
+        .add("native#get", function() {
+            nativeLink.href;
+        })
+        // add listeners
+        .on('cycle', function(event) {
+          console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("-------------------------addClass------------------------------");
+
+    (function() {
+        var nativeLink = document.getElementById("test1"),
+            jqueryLink = $("#test2"),
+            domLink = DOM.find("#test3");
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#addClass", function() {
+            jqueryLink.addClass("t" + new Date().getTime());
+        })
+        .add("DOM#addClass", function() {
+            domLink.addClass("t" + new Date().getTime()); 
+        })
+        .add("native", function() {
+            nativeLink.classList.add("t" + new Date().getTime());
+        })
+        // add listeners
+        .on('cycle', function(event) {
+          console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("----------------------toggleClass------------------------------");
+
+    (function() {
+        var nativeSandbox = document.getElementById("sandbox"),
+            jquerySandbox = $("#sandbox"),
+            domSandbox = DOM.find("#sandbox"),
+            className = "t" + new Date().getTime();
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#toggleClass", function() {
+            jquerySandbox.toggleClass(className);
+        })
+        .add("DOM#toggleClass", function() {
+            domSandbox.toggleClass(className); 
+        })
+        .add("native", function() {
+            nativeSandbox.classList.toggle(className);
+        })
+        // add listeners
+        .on('cycle', function(event) {
+          console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("-----------------------------find------------------------------");
+
+    (function() {
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#selector", function() {
+            $("a");
+        })
+        .add("DOM#findAll", function() {
+            DOM.findAll("a");
+        })
+        .add("DOM#find", function() {
+            DOM.find("a");
+        })
+        .add("native", function() {
+            document.getElementsByTagName("a")[0];
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("---------------------------create------------------------------");
+
+    (function() {
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#new", function() {
+            $("<a>");
+        })
+        .add("DOM#create", function() {
+            DOM.create("a");
+        })
+        .add("native", function() {
+            document.createElement("a");
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("---------------------------append------------------------------");
+
+    (function() {
+        var nativeSandbox = document.getElementById("sandbox"),
+            jquerySandbox = $("#sandbox"),
+            domSandbox = DOM.find("#sandbox");
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#append(String)", function() {
+            jquerySandbox.append("<span>");
+        })
+        .add("jquery#append(Element)", function() {
+            jquerySandbox.append(document.createElement("span"));
+        })
+        .add("DOM#append(String)", function() {
+            domSandbox.append("<span>"); 
+        })
+        .add("DOM#append(Element)", function() {
+            domSandbox.append(document.createElement("span")); 
+        })
+        .add("native#appendChild(Element)", function() {
+            nativeSandbox.appendChild(document.createElement("span"));
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+
+            nativeSandbox.innerHTML = '';
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("------------------------show/hide------------------------------");
+
+    (function() {
+        var nativeSandbox = document.getElementById("sandbox"),
+            jqueryLink = $("#link"), 
+            domLink = DOM.find("#link");
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#hide()", function() {
+            jqueryLink.hide();
+        })
+        .add("jquery#show()", function() {
+            jqueryLink.show();
+        })
+        .add("DOM#hide()", function() {
+            domLink.hide(); 
+        })
+        .add("DOM#show()", function() {
+            domLink.show(); 
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+
+            nativeSandbox.innerHTML = '<a id="link">t<a>';
+
+            jqueryLink = $("#link");
+            domLink = DOM.find("#link");
+        })
+        // run sync
+        .run();
+    })();
+    </script>
+</body>
+</html>
