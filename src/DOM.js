@@ -484,16 +484,29 @@
     });
 
     // getter/setter
-    (function(protectedNames) {
+    (function() {
+        var propHooks = {},
+            throwIllegalAccess = function(el) { 
+                throw makeArgumentsError("get"); 
+            };
+        // protect access to some properties
+        "children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" ").forEach(function(key) {
+            propHooks[key] = propHooks[key.replace("Element", "")] = {
+                get: throwIllegalAccess,
+                set: throwIllegalAccess
+            };
+        });
+
         extend(DOMElement.prototype, {
             get: function(name) {
-                if (typeof name !== "string" || name in protectedNames) {
+                if (typeof name !== "string") {
                     throw makeArgumentsError("get");
                 }
 
-                var el = this._node;
+                var el = this._node,
+                    hook = propHooks[name];
 
-                return el[name] || el.getAttribute(name);
+                return hook ? hook.get(el) : el[name] || el.getAttribute(name);
             },
             set: function(name, value) {
                 var el = this._node,
@@ -506,11 +519,11 @@
                     }
 
                     name.split(" ").forEach(function(name) {
-                        if (name in protectedNames) {
-                            throw makeArgumentsError("set");
-                        }
+                        var hook = propHooks[name];
 
-                        if (value === null || value === false) {
+                        if (hook) {
+                            hook.set(el, value);
+                        } else if (value === null || value === false) {
                             el.removeAttribute(name);
                         } else if (name in el) {
                             el[name] = value;
@@ -529,20 +542,7 @@
                 return this;
             }
         });
-    })({
-        children: true,
-        childNodes: true,
-        firstChild: true,
-        lastChild: true,
-        nextSibling: true,
-        previousSibling: true,
-        firstElementChild: true,
-        lastElementChild: true,
-        nextElementSibling: true,
-        previousElementSibling: true,
-        parentNode: true,
-        elements: true
-    });
+    })();
 
     // dom traversing strategies
     (function(traversingStrategies) {

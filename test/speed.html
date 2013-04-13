@@ -8,39 +8,11 @@
     <script src="../src/DOM.js"></script>
 </head>
 <body>
-    <a href="#" id="test1"></a>
-    <a href="#" id="test2"></a>
-    <a href="#" id="test3"></a>
+    <a href="#" id="test1" data-test="t1"></a>
+    <a href="#" id="test2" data-test="t2"></a>
+    <a href="#" id="test3" data-test="t3"></a>
     <div id="sandbox"></div>
     <script type="text/javascript">
-    console.log("------------------------------set------------------------------");
-
-    (function() {
-        var nativeLink = document.getElementById("test1"),
-            jqueryLink = $("#test2"),
-            domLink = DOM.find("#test3");
-
-        new Benchmark.Suite()
-        // add tests
-        .add("jquery#attr", function() {
-            jqueryLink.attr("href", new Date().toString());
-        })
-        .add("jquery#prop", function() {
-            jqueryLink.prop("href", new Date().toString());
-        })
-        .add("DOM#set", function() {
-            domLink.set("href", new Date().toString()); 
-        })
-        .add("native set", function() {
-            nativeLink.href = new Date().toString();
-        })
-        // add listeners
-        .on('cycle', function(event) {
-            console.log(String(event.target));
-        })
-        // run sync
-        .run();
-    })();
 
     console.log("------------------------------get------------------------------");
 
@@ -52,16 +24,16 @@
         new Benchmark.Suite()
         // add tests
         .add("jquery#attr", function() {
-            jqueryLink.attr("href");
+            jqueryLink.attr("id");
         })
         .add("jquery#prop", function() {
-            jqueryLink.prop("href");
+            jqueryLink.prop("id");
         })
         .add("DOM#get", function() {
-            domLink.get("href"); 
+            domLink.get("id"); 
         })
         .add("native#get", function() {
-            nativeLink.href;
+            nativeLink.id;
         })
         // add listeners
         .on('cycle', function(event) {
@@ -71,7 +43,7 @@
         .run();
     })();
 
-    console.log("-------------------------addClass------------------------------");
+    console.log("------------------------------set------------------------------");
 
     (function() {
         var nativeLink = document.getElementById("test1"),
@@ -80,18 +52,49 @@
 
         new Benchmark.Suite()
         // add tests
-        .add("jquery#addClass", function() {
-            jqueryLink.addClass("t" + new Date().getTime());
+        .add("jquery#attr", function() {
+            jqueryLink.attr("id", new Date().toString());
         })
-        .add("DOM#addClass", function() {
-            domLink.addClass("t" + new Date().getTime()); 
+        .add("jquery#prop", function() {
+            jqueryLink.prop("id", new Date().toString());
         })
-        .add("native", function() {
-            nativeLink.classList.add("t" + new Date().getTime());
+        .add("DOM#set", function() {
+            domLink.set("id", new Date().toString()); 
+        })
+        .add("native set", function() {
+            nativeLink.id = new Date().toString();
         })
         // add listeners
         .on('cycle', function(event) {
-          console.log(String(event.target));
+            console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
+
+    console.log("-------------------------addClass------------------------------");
+
+    (function() {
+        var nativeSandbox = document.getElementById("sandbox"),
+            jquerySandbox = $("#sandbox"),
+            domSandbox = DOM.find("#sandbox");
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#addClass", function() {
+            jquerySandbox.addClass("t" + new Date().getTime());
+        })
+        .add("DOM#addClass", function() {
+            domSandbox.addClass("t" + new Date().getTime()); 
+        })
+        .add("native", function() {
+            nativeSandbox.classList.add("t" + new Date().getTime());
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+
+            nativeSandbox.className = "";
         })
         // run sync
         .run();
