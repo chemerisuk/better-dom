@@ -11,6 +11,11 @@
         htmlEl = document.documentElement,
         headEl = document.head,
         scripts = document.scripts,
+        vendorPrefix = (function() {
+            var computed = window.getComputedStyle(htmlEl, "");
+
+            return (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0];
+        })(),
         // helpers
         extend = function(proto, name, value) {
             if (arguments.length === 3) {
@@ -111,11 +116,7 @@
                         throw makeArgumentsError("quick");
                     }
                 },
-                matchesProp = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix) {
-                    var property = prefix + "atchesSelector";
-
-                    return result || htmlEl[property] && property;
-                }, null);
+                matchesProp = htmlEl.matchesSelector ? "matchesSelector" : vendorPrefix + "MatchesSelector";
 
             ctr.prototype = {
                 test: function(el) {
@@ -140,12 +141,7 @@
             }
 
             this._event = event;
-        },
-        vendorPrefix = (function() {
-            var computed = window.getComputedStyle(htmlEl, "");
-
-            return (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0];
-        })();
+        };
 
     DOMNode.prototype = extend({}, {
         find: (function() {
@@ -244,7 +240,11 @@
                     return element.contains(node, true);
                 } else if (Array.isArray(element)) {
                     return element.every(function(element) {
-                        return element.contains(node, true);
+                        if (element instanceof DOMElement) {
+                            return element.contains(node, true);
+                        }
+                        
+                        throw makeArgumentsError("contains");
                     });
                 } else {
                     throw makeArgumentsError("contains");
@@ -274,6 +274,14 @@
                         }
                     },
                     matcher = eventEntry.selector ? new SelectorMatcher(eventEntry.selector) : null;
+                // fix IE9 focus/blur handlers
+                if (this._node.attachEvent) {
+                    if (eventEntry.nodeEvent === "focus") {
+                        eventEntry.nodeEvent = "focusin";
+                    } else if (eventEntry.nodeEvent === "blur") {
+                        eventEntry.nodeEvent = "focusout";
+                    }
+                }
                 // attach event listener
                 this._node.addEventListener(eventEntry.nodeEvent, eventEntry.handler, eventEntry.capturing);
                 // store event entry
@@ -637,42 +645,45 @@
                         .replace(rclass, " ").replace(" " + className + " ", " ").trim();
                 },
                 toggleClass: function(className) {
-                    var originalClassName = this._node.className;
+                    var oldClassName = this._node.className;
 
                     classStrategies.addClass.call(this, className);
 
-                    if (originalClassName === this._node.className) {
+                    if (oldClassName === this._node.className) {
                         classStrategies.removeClass.call(this, className);
                     }
+                }
+            },
+            classMethod = function(name) {
+                var process = classStrategies[name];
+
+                if (name === "hasClass") {
+                    return function(classNames) {
+                        if (typeof classNames === "string") {
+                            return process.call(this, classNames);
+                        } else if (Array.isArray(classNames)) {
+                            return classNames.every(process, this);
+                        } else {
+                            throw makeArgumentsError(name);
+                        }
+                    };
+                } else {
+                    return function(classNames) {
+                        if (typeof classNames === "string") {
+                            process.call(this, classNames);
+                        } else if (Array.isArray(classNames)) {
+                            classNames.forEach(process, this);
+                        } else {
+                            throw makeArgumentsError(name);
+                        }
+
+                        return this;
+                    };
                 }
             };
 
         Object.keys(classStrategies).forEach(function(methodName) {
-            var process = classStrategies[methodName];
-
-            if (methodName === "hasClass") {
-                extend(DOMElement.prototype, methodName, function(classNames) {
-                    if (typeof classNames === "string") {
-                        return process.call(this, classNames);
-                    } else if (Array.isArray(classNames)) {
-                        return classNames.every(process, this);
-                    } else {
-                        throw makeArgumentsError(methodName);
-                    }
-                });
-            } else {
-                extend(DOMElement.prototype, methodName, function(classNames) {
-                    if (typeof classNames === "string") {
-                        process.call(this, classNames);
-                    } else if (Array.isArray(classNames)) {
-                        classNames.forEach(process, this);
-                    } else {
-                        throw makeArgumentsError(methodName);
-                    }
-
-                    return this;
-                });
-            }
+            extend(DOMElement.prototype, methodName, classMethod(methodName));
         });
     })();
 
