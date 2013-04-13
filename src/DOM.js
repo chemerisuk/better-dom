@@ -76,15 +76,12 @@
             ref.parentNode.removeChild(iframe);
 
             proto = ctr.prototype;
-            each = proto.forEach;
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
-                ~"map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
+                ~"forEach map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
             });
-
-            extend(proto, "each", each);
             // shortcuts
-            "set on off capture fire data addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
+            "set on off fire data addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
                 var process = function(el) {
                     el[methodName].apply(el, this);
                 };
@@ -574,7 +571,7 @@
                 parent.insertBefore(relatedNode, node);
             },
             replace: function(node, relatedNode, parent) {
-                parent.replaceChild(node, relatedNode);
+                parent.replaceChild(relatedNode, node);
             },
             append: function(node, relatedNode) {
                 node.appendChild(relatedNode);
@@ -599,7 +596,7 @@
                     relatedNode = document.createElement("div");
                     relatedNode.innerHTML = element;
                     relatedNode = relatedNode.firstElementChild;
-                } else if (element.nodeType === 1 || element.nodeType === 11) {
+                } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
                 } else { 
                     // indicate case with remove() function
