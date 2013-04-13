@@ -64,7 +64,7 @@
             // http://dean.edwards.name/weblog/2006/11/hooray/
             var ref = scripts[0],
                 iframe = document.createElement("iframe"),
-                ctr, proto;
+                ctr, proto, each;
                 
             iframe.src = "about:blank";
             iframe.style.display = "none";
@@ -76,10 +76,13 @@
             ref.parentNode.removeChild(iframe);
 
             proto = ctr.prototype;
+            each = proto.forEach;
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
-                ~"forEach map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
+                ~"map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
             });
+
+            extend(proto, "each", each);
             // shortcuts
             "set on off capture fire data addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
                 var process = function(el) {
@@ -87,8 +90,8 @@
                 };
 
                 extend(proto, methodName, function() {
-                    if (this.length > 0) {
-                        this.forEach(process, slice.call(arguments));
+                    if (this.length) {
+                        this.each(process, slice.call(arguments));
                     }
 
                     return this;
