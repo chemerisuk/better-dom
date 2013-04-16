@@ -24,7 +24,8 @@
 
             return {
                 parse: function(html) {
-                    el.innerHTML = html;
+                    el.innerHTML = "shy;" + html;
+                    el.removeChild(el.firstChild);
 
                     return el.children;
                 },
@@ -428,38 +429,6 @@
 
             return this;
         },
-        html: (function() {
-            var processScripts = function(el) {
-                if (el.src) {
-                    var script = document.createElement("script");
-
-                    script.src = el.src;
-
-                    headEl.removeChild(headEl.appendChild(script));
-                } else {
-                    eval(el.textContent);
-                }
-            };
-
-            return function(value) {
-                var el = this._node;
-
-                if (value === undefined) {
-                    return el.innerHTML;
-                }
-
-                if (typeof value !== "string") {
-                    throw makeArgumentsError("html");
-                }
-                // fix NoScope elements in IE
-                el.innerHTML = "&shy;" + value;
-                el.removeChild(el.firstChild);
-                // fix script elements
-                slice.call(el.getElementsByTagName("script")).forEach(processScripts);
-
-                return this;
-            };
-        })(),
         offset: function() {
             var bodyEl = document.body,
                 boundingRect = this._node.getBoundingClientRect(),
@@ -480,6 +449,49 @@
         },
         hide: function() {
             return this.set("hidden", true);
+        },
+        toString: function() {
+            var el = this._node, result;
+
+            if (el.elements) {
+                result = Array.prototype.reduce.call(el.elements, function(parts, field) {
+                    if (field.name) { // don't include form fields without names
+                        switch(field.type) {
+                            case "select-one":
+                            case "select-multiple":
+                                Array.prototype.forEach.call(field.options, function(option) {
+                                    if (option.selected) {
+                                        parts.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(
+                                                option.hasAttribute("value") ? option.value : option.text));
+                                    }
+                                });
+                                break; 
+            
+                            case undefined: // fieldset
+                            case "file": // file input
+                            case "submit": // submit button
+                            case "reset": // reset button
+                            case "button": // custom button
+                                break; 
+            
+                            case "radio": // radio button
+                            case "checkbox": // checkbox
+                                if (!field.checked) break;
+            
+                            default:
+                                parts.push(encodeURIComponent(field.name) + "=" +encodeURIComponent(field.value));
+                        }
+                    }
+                }, []);
+
+                result = result.join("&").replace(/%20/g, "+");
+            } else if (el.form) {
+                result = el.value;
+            } else {
+                result = el.outerHTML;
+            }
+
+            return result;
         }
     });
 
@@ -496,6 +508,14 @@
                 set: throwIllegalAccess
             };
         });
+        // fix NoScope elements in IE9
+        propHooks.innerHTML = {
+            set: function(el, value) {
+                el.innerHTML = "&shy;" + value;
+                el.removeChild(el.firstChild);
+                // TODO: evaluate script elements?
+            }
+        };
 
         extend(DOMElement.prototype, {
             get: function(name) {
@@ -506,7 +526,9 @@
                 var el = this._node,
                     hook = propHooks[name];
 
-                return hook ? hook.get(el) : el[name] || el.getAttribute(name);
+                hook && (hook = hook.get);
+
+                return hook ? hook(el) : el[name] || el.getAttribute(name);
             },
             set: function(name, value) {
                 var el = this._node,
@@ -545,9 +567,20 @@
     })();
 
     // dom traversing strategies
-    (function(traversingStrategies) {
-        Object.keys(traversingStrategies).forEach(function(methodName) {
-            var propertyName = traversingStrategies[methodName];
+    (function() {
+        var traversingProps = {
+                nextAll: "nextElementSibling",
+                prevAll: "previousElementSibling",
+                children: "children",
+                firstChild: "firstElementChild",
+                lastChild: "lastElementChild",
+                next: "nextElementSibling",
+                prev: "previousElementSibling",
+                parent: "parentNode"
+            };
+
+        Object.keys(traversingProps).forEach(function(methodName) {
+            var propertyName = traversingProps[methodName];
 
             if (methodName === "children") {
                 extend(DOMElement.prototype, methodName, function(selector) {
@@ -578,16 +611,7 @@
                 });
             }
         });
-    })({
-        nextAll: "nextElementSibling",
-        prevAll: "previousElementSibling",
-        children: "children",
-        firstChild: "firstElementChild",
-        lastChild: "lastElementChild",
-        next: "nextElementSibling",
-        prev: "previousElementSibling",
-        parent: "parentNode"
-    });
+    })();
 
     // dom manipulation strategies
     (function() {
