@@ -405,30 +405,6 @@
         clone: function() {
             return new DOMElement(this._node.cloneNode(true));
         },
-        css: function(property, value) {
-            var el = this._node,
-                propType = typeof property;
-
-            if (property === undefined) {
-                return window.getComputedStyle(el);
-            }
-
-            if (propType === "string") {
-                if (value === undefined) {
-                    return el.style[property] || window.getComputedStyle(el)[property];
-                }
-
-                el.style[property] = value;
-            } else if (propType === "object") {
-                Object.keys(property).forEach(function(key) {
-                    this.css(key, property[key]);
-                }, this);
-            } else {
-                throw makeArgumentsError("css");
-            }
-
-            return this;
-        },
         offset: function() {
             var bodyEl = document.body,
                 boundingRect = this._node.getBoundingClientRect(),
@@ -726,6 +702,65 @@
                 return result === undefined ? this : result;
             });
         });
+    })();
+
+    // css
+    (function() {
+        var cssHooks = {},
+            ruppercase = /[A-Z]/g,
+            camelCaseToDashSeparated = function(l) { return "-" + l.toLowerCase(); };
+
+        slice.call(window.getComputedStyle(htmlEl, "")).forEach(function(propName) {
+            var targetPropName = propName.replace(ruppercase, camelCaseToDashSeparated);
+
+            if (!targetPropName.indexOf(vendorPrefix)) {
+                targetPropName = targetPropName.substr(vendorPrefix.length + 1);
+            }
+
+            // TODO: convert integers into appropriate strings
+            if (targetPropName !== propName) {
+                cssHooks[targetPropName] = {
+                    get: function(style) {
+                        return style[propName];
+                    },
+                    set: function(style, value) {
+                        style[propName] = value;
+                    }
+                };
+            }
+        });
+
+        return function(property, value) {
+            var el = this._node,
+                propType = typeof property,
+                result = this,
+                hook, style;
+
+            if (propType === "string") {
+                style = el.style;
+                hook = cssHooks[property];
+
+                if (value === undefined) {
+                    result = hook.get ? hook.get(style) : style[property];
+
+                    if (!result) {
+                        style = window.getComputedStyle(el);
+
+                        result = hook.get ? hook.get(style) : style[property];
+                    }
+                }
+
+                hook.set ? hook.set(style, value) : style[property] = value;
+            } else if (propType === "object") {
+                Object.keys(property).forEach(function(key) {
+                    this.css(key, property[key]);
+                }, this);
+            } else {
+                throw makeArgumentsError("css");
+            }
+
+            return result;
+        };
     })();
 
     DOMEvent.prototype = extend({}, {
