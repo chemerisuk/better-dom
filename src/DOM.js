@@ -707,30 +707,30 @@
     // css
     (function() {
         var cssHooks = {},
-            ruppercase = /[A-Z]/g,
-            camelCaseToDashSeparated = function(l) { return "-" + l.toLowerCase(); };
+            rdash = /\-./g,
+            dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); };
 
         slice.call(window.getComputedStyle(htmlEl, "")).forEach(function(propName) {
-            var targetPropName = propName.replace(ruppercase, camelCaseToDashSeparated);
+            var unprefixedName = propName.indexOf(vendorPrefix) === 1 ? propName.substr(vendorPrefix.length + 2) : propName,
+                stylePropName = unprefixedName !== propName ? propName.substr(1) : propName;
 
-            if (!targetPropName.indexOf(vendorPrefix)) {
-                targetPropName = targetPropName.substr(vendorPrefix.length + 1);
-            }
+            stylePropName = stylePropName.replace(rdash, dashSeparatedToCamelCase);
 
-            // TODO: convert integers into appropriate strings
-            if (targetPropName !== propName) {
-                cssHooks[targetPropName] = {
+            if (stylePropName !== propName) {
+                cssHooks[unprefixedName] = {
                     get: function(style) {
-                        return style[propName];
+                        return style[stylePropName];
                     },
                     set: function(style, value) {
-                        style[propName] = value;
+                        style[stylePropName] = value;
                     }
                 };
             }
         });
 
-        return function(property, value) {
+        // TODO: additional hooks to convert integers into appropriate strings
+
+        DOMElement.prototype.css = function(property, value) {
             var el = this._node,
                 propType = typeof property,
                 result = this,
@@ -741,16 +741,18 @@
                 hook = cssHooks[property];
 
                 if (value === undefined) {
-                    result = hook.get ? hook.get(style) : style[property];
+                    hook = hook && hook.get;
+                    result = hook ? hook(style) : style[property];
 
                     if (!result) {
                         style = window.getComputedStyle(el);
 
-                        result = hook.get ? hook.get(style) : style[property];
+                        result = hook ? hook(style) : style[property];
                     }
+                } else {
+                    hook = hook && hook.set;
+                    hook ? hook(style, value) : style[property] = value;
                 }
-
-                hook.set ? hook.set(style, value) : style[property] = value;
             } else if (propType === "object") {
                 Object.keys(property).forEach(function(key) {
                     this.css(key, property[key]);
