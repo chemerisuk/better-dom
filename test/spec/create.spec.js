@@ -29,28 +29,6 @@ describe("create", function() {
         expect(el._node).toMatchSelector("em"); 
     });
 
-    it("should crete DOM collection when the first argument is a native collection", function() {
-        setFixtures("<a id='test'><strong>1</strong><span>2</span></a>");
-
-        var elements = DOM.create(document.getElementById("test").children),
-            expectedSelectors = ["strong", "span"];
-
-        elements.forEach(function(el, index) {
-            expect(el._node).toMatchSelector(expectedSelectors[index]);
-        });
-    });
-
-    it("should crete DOM collection when the first argument is an array of native elements", function() {
-        setFixtures("<a id='test'><strong>1</strong><span>2</span></a>");
-
-        var elements = DOM.create(Array.prototype.slice.call(document.getElementById("test").children)),
-            expectedSelectors = ["strong", "span"];
-
-        elements.forEach(function(el, index) {
-            expect(el._node).toMatchSelector(expectedSelectors[index]);
-        });
-    });
-
     it("should throw error if argument is invalid", function() {
         expect(function() { DOM.create(2); }).toThrow();
     });
