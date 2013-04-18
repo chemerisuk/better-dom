@@ -16,6 +16,7 @@
 
             return (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0];
         })(),
+        // helpers
         sandbox = (function() {
             var el = document.createElement("body"),
                 appendTo = function(el) { 
@@ -38,7 +39,6 @@
                 }
             };
         })(),
-        // helpers
         extend = function(proto, name, value) {
             if (arguments.length === 3) {
                 Object.defineProperty(proto, name, {
@@ -86,7 +86,7 @@
             // http://dean.edwards.name/weblog/2006/11/hooray/
             var ref = scripts[0],
                 iframe = document.createElement("iframe"),
-                ctr, proto, each;
+                ctr, proto;
                 
             iframe.src = "about:blank";
             iframe.style.display = "none";
@@ -98,10 +98,12 @@
             ref.parentNode.removeChild(iframe);
 
             proto = ctr.prototype;
+
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
                 ~"forEach map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
             });
+
             // shortcuts
             "set on off fire data addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
                 var process = function(el) {
@@ -116,6 +118,19 @@
                     return this;
                 });
             });
+
+            // static method to create a collection
+            ctr.create = (function(){
+                var _map = proto.map;
+
+                return function(collection) {
+                    return _map.call(collection || [], DOMElement);
+                };
+            })();
+
+            // use Array.prototype implementation to return regular array for map
+            proto.map = Array.prototype.map;
+            proto.each = proto.forEach;
             
             return ctr;
         })(),
@@ -174,8 +189,7 @@
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
-                tmpId = "DOM" + new Date().getTime(),
-                toCollection = DOMElementCollection.prototype.map;
+                tmpId = "DOM" + new Date().getTime();
 
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
@@ -235,7 +249,7 @@
                     }
                 }
 
-                return multiple ? toCollection.call(elements || [], DOMElement) : DOMElement(elements);
+                return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
             };
         })(),
         findAll: function(selector) {
@@ -563,9 +577,8 @@
                     var children = this._node.children,
                         matcher = selector ? new SelectorMatcher(selector) : null;
 
-                    return DOM.create(!matcher ? slice.call(children) : Array.prototype.filter.call(children, function(el) {
-                        return matcher.test(el);
-                    }));
+                    return DOMElementCollection.create(!matcher ? children : 
+                        Array.prototype.filter.call(children, matcher.test, matcher));
                 });                
             } else {
                 extend(DOMElement.prototype, methodName, function(selector) {
@@ -583,7 +596,7 @@
                         }
                     }
 
-                    return DOM.create(nodes);
+                    return !nodes ? new DOMNullElement() : DOMElementCollection.create(nodes);
                 });
             }
         });
@@ -792,30 +805,21 @@
 
     // public API
     DOM = window.DOM = extend(new DOMNode(document), {
-        create: (function() {
-            var rcollection = /^\[object (HTMLCollection|NodeList)\]$/,
-                toCollection = DOMElementCollection.prototype.map;
-            
-            return function(content) {
-                var elem = null;
+        create: function(content) {
+            var elem = content;
 
-                if (typeof content === "string") {
-                    if (~content.indexOf("<")) {
-                        return toCollection.call(sandbox.parse(content), DOMElement);
-                    } else {
-                        elem = document.createElement(content);
-                    }
-                } else if (content instanceof Element) {
-                    elem = content;
-                } else if (rcollection.test(content) || Array.isArray(content)) {
-                    return toCollection.call(content, DOMElement);
-                } else if (content) {
-                    throw makeArgumentsError("create");
+            if (typeof content === "string") {
+                if (~content.indexOf("<")) {
+                    return DOMElementCollection.create(sandbox.parse(content));
+                } else {
+                    elem = document.createElement(content);
                 }
+            } else if (!(content instanceof Element)) {
+                throw makeArgumentsError("create");
+            }
 
-                return DOMElement(elem);
-            };
-        })(),
+            return DOMElement(elem);
+        },
         ready: (function() {
             var readyCallbacks = null,
                 readyProcess = function() {
@@ -1000,9 +1004,6 @@
     // finish prototypes
     DOMNullNode.prototype = new DOMNode();
     DOMNullElement.prototype = new DOMElement();
-
-    // use Array.prototype implementation to return regular array for map
-    DOMElementCollection.prototype.map = Array.prototype.map;
 
     Object.keys(DOMNode.prototype).forEach(function(key) {
         extend(DOMNullNode.prototype, key, function() {});
