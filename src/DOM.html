@@ -150,7 +150,7 @@ DOM.extend(".editable", {
             formEl = editable.next(),
             textareaEl = formEl.find("textarea");
 
-        textareaEl.css("font", editable.css("font"));
+        textareaEl.setStyle("font", editable.getStyle("font"));
 
         formEl.on("reset", function() {
             formEl.hide();
@@ -175,7 +175,7 @@ DOM.extend(".editable", {
             editable.hide();
             formEl.show();
 
-            textareaEl.css({
+            textareaEl.setStyle({
                 width: (offset.right - offset.left) + "px",
                 height: (offset.bottom - offset.top) + "px"
             });

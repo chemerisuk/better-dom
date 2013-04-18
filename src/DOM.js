@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, slice, undefined) {
+(function(window, document, slice, filter, undefined) {
     "use strict";
 
     var DOM,
@@ -578,7 +578,7 @@
                         matcher = selector ? new SelectorMatcher(selector) : null;
 
                     return DOMElementCollection.create(!matcher ? children : 
-                        Array.prototype.filter.call(children, matcher.test, matcher));
+                        filter.call(children, matcher.test, matcher));
                 });                
             } else {
                 extend(DOMElement.prototype, methodName, function(selector) {
@@ -717,7 +717,7 @@
         });
     })();
 
-    // css
+    // style manipulation
     (function() {
         var cssHooks = {},
             rdash = /\-./g,
@@ -743,38 +743,47 @@
 
         // TODO: additional hooks to convert integers into appropriate strings
 
-        DOMElement.prototype.css = function(property, value) {
-            var el = this._node,
-                propType = typeof property,
-                result = this,
-                hook, style;
+        DOMElement.prototype.getStyle = function(name) {
+            var style = this._node.style,
+                hook, result;
 
-            if (propType === "string") {
-                style = el.style;
-                hook = cssHooks[property];
+            if (typeof name !== "string") {
+                throw makeArgumentsError("getStyle"); 
+            }
 
-                if (value === undefined) {
-                    hook = hook && hook.get;
-                    result = hook ? hook(style) : style[property];
+            hook = cssHooks[name];
+            hook = hook && hook.get;
 
-                    if (!result) {
-                        style = window.getComputedStyle(el);
+            result = hook ? hook(style) : style[name];
 
-                        result = hook ? hook(style) : style[property];
-                    }
-                } else {
-                    hook = hook && hook.set;
-                    hook ? hook(style, value) : style[property] = value;
-                }
-            } else if (propType === "object") {
-                Object.keys(property).forEach(function(key) {
-                    this.css(key, property[key]);
-                }, this);
-            } else {
-                throw makeArgumentsError("css");
+            if (!result) {
+                style = window.getComputedStyle(this._node);
+
+                result = hook ? hook(style) : style[name];
             }
 
             return result;
+        };
+
+        DOMElement.prototype.setStyle = function(name, value) {
+            var style = this._node.style,
+                nameType = typeof name,
+                hook;
+
+            if (nameType === "string") {
+                hook = cssHooks[name];
+                hook = hook && hook.set;
+
+                hook ? hook(style, value) : style[name] = value;
+            } else if (nameType === "object") {
+                Object.keys(name).forEach(function(key) {
+                    this.setStyle(key, name[key]);
+                }, this);
+            } else {
+                throw makeArgumentsError("setStyle");
+            }
+
+            return this;
         };
     })();
 
@@ -860,17 +869,17 @@
         })(),
         importStyles: (function() {
             var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
-                vendorPrefixed = Array.prototype.filter.call(window.getComputedStyle(htmlEl, ""), function(prop) {
-                    return !prop.indexOf("-" + vendorPrefix);
+                prefixedProps = filter.call(window.getComputedStyle(htmlEl, ""), function(prop) {
+                    return prop.indexOf(vendorPrefix) === 1;
                 }),
                 process = function(selector, styles) {
                     var ruleText = selector + " { ";
 
                     if (typeof styles === "object") {
-                        Object.keys(styles).forEach(function(styleName) {
-                            var prefixedStyleName = "-" + vendorPrefix + "-" + styleName;
+                        Object.keys(styles).forEach(function(propName) {
+                            var prefixedPropName = "-" + vendorPrefix + "-" + propName;
                             // append vendor prefix if it's required
-                            ruleText += (~vendorPrefixed.indexOf(prefixedStyleName) ? prefixedStyleName : styleName) + ":" + styles[styleName] + "; ";
+                            ruleText += (~prefixedProps.indexOf(prefixedPropName) ? prefixedPropName : propName) + ":" + styles[propName] + "; ";
                         });
                     } else if (typeof styles === "string") {
                         ruleText += styles;
@@ -1021,4 +1030,4 @@
         ctr.prototype.constructor = ctr;
     });
 
-})(window, document, Array.prototype.slice);
+})(window, document, Array.prototype.slice, Array.prototype.filter);

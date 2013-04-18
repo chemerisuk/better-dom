@@ -8,11 +8,11 @@ describe("css", function() {
     });
 
     it("should read style property", function() {
-        expect(link.css("color")).toBe("red");
+        expect(link.getStyle("color")).toBe("red");
     });
 
     it("should read properties by dash-separated key", function() {
-        expect(link.css("line-height")).toBe("2");
+        expect(link.getStyle("line-height")).toBe("2");
     });
 
     it("should handle vendor-prefixed properties", function() {
@@ -20,7 +20,7 @@ describe("css", function() {
     });
 
     it("should read runtime style property if style doesn't contain any value", function() {
-        expect(link.css("font-size")).toBeTruthy();
+        expect(link.getStyle("font-size")).toBeTruthy();
     });
 
 });
