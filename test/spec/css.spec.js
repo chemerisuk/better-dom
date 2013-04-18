@@ -20,7 +20,7 @@ describe("css", function() {
     });
 
     it("should read runtime style property if style doesn't contain any value", function() {
-        expect(link.css("font")).toBeTruthy();
+        expect(link.css("font-size")).toBeTruthy();
     });
 
 });

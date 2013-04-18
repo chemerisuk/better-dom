@@ -39,30 +39,19 @@
 <body>
   <script type="text/javascript">
     (function() {
-      var jasmineEnv = jasmine.getEnv();
-      jasmineEnv.updateInterval = 1000;
-
-      var trivialReporter = new jasmine.TrivialReporter();
-
-      jasmineEnv.addReporter(trivialReporter);
-
-      jasmineEnv.specFilter = function(spec) {
-        return trivialReporter.specFilter(spec);
-      };
-
-      var currentWindowOnload = window.onload;
+      var jasmineEnv = jasmine.getEnv(),
+          currentWindowOnload = window.onload;
+      
+      jasmineEnv.updateInterval = 250;
+      jasmineEnv.addReporter(new jasmine.HtmlReporter());
 
       window.onload = function() {
         if (currentWindowOnload) {
           currentWindowOnload();
         }
-        execJasmine();
-      };
 
-      function execJasmine() {
         jasmineEnv.execute();
-      }
-
+      };
     })();
   </script>
 

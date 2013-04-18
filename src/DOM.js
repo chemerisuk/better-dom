@@ -860,15 +860,17 @@
         })(),
         importStyles: (function() {
             var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
-                computed = window.getComputedStyle(htmlEl, ""),
+                vendorPrefixed = Array.prototype.filter.call(window.getComputedStyle(htmlEl, ""), function(prop) {
+                    return !prop.indexOf("-" + vendorPrefix);
+                }),
                 process = function(selector, styles) {
                     var ruleText = selector + " { ";
 
                     if (typeof styles === "object") {
                         Object.keys(styles).forEach(function(styleName) {
-                            var prefixed = (vendorPrefix + styleName.charAt(0).toUpperCase() + styleName.substr(1) in computed);
+                            var prefixedStyleName = "-" + vendorPrefix + "-" + styleName;
                             // append vendor prefix if it's required
-                            ruleText += (prefixed ? "-" + vendorPrefix + "-" : "") + styleName + ":" + styles[styleName] + "; ";
+                            ruleText += (~vendorPrefixed.indexOf(prefixedStyleName) ? prefixedStyleName : styleName) + ":" + styles[styleName] + "; ";
                         });
                     } else if (typeof styles === "string") {
                         ruleText += styles;
