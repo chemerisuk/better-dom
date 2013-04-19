@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript" src="DOM.js"></script>
+<script type="text/javascript" src="DOM.js" data-htc="DOM.htc"></script>
 <style type="text/css">
 html, body {
     margin: 0;
@@ -129,7 +129,7 @@ DOM.ready(function(){
     console.log(DOM.find("#not-in-dom"));
 
     DOM.on("editable:changed", function(e) {
-        console.log("editabled changed to " + e.target.html());
+        console.log("editabled changed to " + e.target);
     });
 });
 

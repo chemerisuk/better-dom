@@ -1,17 +1,17 @@
 <PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(element)" />  
+    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent()" />  
     <script type="text/javascript">
     var DOM = window.DOM,
-        listeners = DOM.watch._listeners;
+        listeners = DOM.watch._listeners,
+        triggerCallback = function(callback) { callback(this); };
 
-    function handleEvent(el) {
+    function handleEvent() {
         Object.keys(listeners).forEach(function(selector) {
-            var callbacks = listeners[selector];
+            var callbacks = listeners[selector],
+                domEl = DOM.create(element);
             
-            if (el.msMatchesSelector(selector)) {
-                callbacks.forEach(function(callback) {
-                    callback(DOM.create(el));
-                });
+            if (domEl.matches(selector)) {
+                callbacks.forEach(triggerCallback, domEl);
             }
         });
     }

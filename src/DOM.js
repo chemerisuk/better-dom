@@ -63,14 +63,9 @@
                 return node ? node.__dom__ || new DOMNode(node) : new DOMNullNode();
             }
 
-            if (node) {
-                node.__dom__ = Object.defineProperties(this, {
-                    _node: { value: node },
-                    // private data objects
-                    _data: { value: {} },
-                    _events: { value: [] }
-                }); 
-            }
+            this._node = node;
+            this._data = {};
+            this._events = [];
         },
         DOMElement = function(el) {
             if (!(this instanceof DOMElement)) {
@@ -818,7 +813,7 @@
             var elem = content;
 
             if (typeof content === "string") {
-                if (~content.indexOf("<")) {
+                if (content.charAt(0) === "<") {
                     return DOMElementCollection.create(sandbox.parse(content));
                 } else {
                     elem = document.createElement(content);
@@ -911,7 +906,7 @@
             };
         })(),
         watch: htmlEl.addBehavior ? (function() {
-            var behavior = scripts[scripts.length - 1].getAttribute("src"),
+            var behavior = scripts[scripts.length - 1].getAttribute("data-htc"),
                 watch = function(selector, callback) {
                     var entry = watch._listeners[selector];
 
@@ -920,11 +915,9 @@
                     } else {
                         watch._listeners[selector] = [callback];
                         // append style rule at the last step
-                        DOM.importStyles(selector, { behavior: behavior });
+                        DOM.importStyles(selector, { behavior: "url(" + behavior + ")" });
                     }
                 };
-
-            behavior = "url(" + behavior.substr(0, behavior.lastIndexOf(".")) + ".htc)";
 
             watch._listeners = {};
             

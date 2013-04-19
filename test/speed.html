@@ -157,11 +157,23 @@
     (function() {
         new Benchmark.Suite()
         // add tests
-        .add("jquery#new", function() {
+        .add("jquery#create(String)", function() {
             $("<a>");
         })
-        .add("DOM#create", function() {
+        .add("jquery#create(Element)", function() {
+            $(document.createElement("a"));
+        })
+        .add("jquery#create(String...)", function() {
+            $("<div><a></a></div><b></b>");
+        })
+        .add("DOM#create(String)", function() {
             DOM.create("a");
+        })
+        .add("DOM#create(Element)", function() {
+            DOM.create(document.createElement("a"));
+        })
+        .add("DOM#create(String...)", function() {
+            DOM.create("<div><a></a></div><b></b>");
         })
         .add("native", function() {
             document.createElement("a");
