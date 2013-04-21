@@ -11,11 +11,6 @@
         htmlEl = document.documentElement,
         headEl = document.head,
         scripts = document.scripts,
-        vendorPrefix = (function() {
-            var computed = window.getComputedStyle(htmlEl, "");
-
-            return (slice.call(computed).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0];
-        })(),
         // helpers
         sandbox = (function() {
             var el = document.createElement("body"),
@@ -147,7 +142,11 @@
                         throw makeArgumentsError("quick");
                     }
                 },
-                matchesProp = htmlEl.matchesSelector ? "matchesSelector" : vendorPrefix + "MatchesSelector";
+                matchesProp = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix) {
+                    var property = prefix + "atchesSelector";
+
+                    return result || htmlEl[property] && property;
+                }, null);
 
             ctr.prototype = {
                 test: function(el) {
@@ -929,7 +928,8 @@
             // use trick discovered by Daniel Buchner: 
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
-                prefix = window.CSSKeyframesRule ? "": "-" + vendorPrefix + "-";
+                vendorPrefix = (slice.call(window.getComputedStyle(htmlEl, "")).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
+                cssPrefix = window.CSSKeyframesRule ? "": "-" + vendorPrefix + "-";
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
@@ -940,13 +940,13 @@
                     };
 
                 DOM.importStyles(
-                    "@" + prefix + "keyframes " + animationName,
+                    "@" + cssPrefix + "keyframes " + animationName,
                     "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
                 );
 
                 DOM.importStyles(
                     selector, 
-                    prefix + "animation-duration:0.001s;" + prefix + "animation-name:" + animationName + " !important"
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationName + " !important"
                 );
 
                 startNames.forEach(function(name) {
