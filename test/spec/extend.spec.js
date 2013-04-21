@@ -23,15 +23,15 @@ describe("extend", function() {
     it("should append css properties", function() {
         DOM.extend(".extend", {
             css: [{
-                ".extend": "line-height: 0"
+                ".extend": "position: relative"
             }]
         });
 
         waits(WAIT_FOR_WATCH_TIME);
 
         runs(function() {
-            DOM.findAll(".extend").each(function(domEl) {
-                expect(domEl.getStyle("line-height")).toBe("0");
+            DOM.findAll(".extend").forEach(function(domEl) {
+                expect(domEl.getStyle("position")).toBe("relative");
             });
         });
     });
@@ -56,7 +56,7 @@ describe("extend", function() {
         waits(WAIT_FOR_WATCH_TIME);
 
         runs(function() {
-            DOM.findAll(".extend").each(function(domEl) {
+            DOM.findAll(".extend").forEach(function(domEl) {
                 Object.keys(checkStrategies).forEach(function(key) {
                     expect(domEl[checkStrategies[key]]("." + key)).toBeDefined();
                 });

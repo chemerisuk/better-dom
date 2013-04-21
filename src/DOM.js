@@ -125,7 +125,6 @@
 
             // use Array.prototype implementation to return regular array for map
             proto.map = Array.prototype.map;
-            proto.each = proto.forEach;
             
             return ctr;
         })(),
