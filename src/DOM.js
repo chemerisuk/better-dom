@@ -966,7 +966,8 @@
 
             var mixins = {}, 
                 template = options.template,
-                css = options.css;
+                css = options.css,
+                ctr;
 
             if (template) {
                 Object.keys(template).forEach(function(key) {
@@ -983,7 +984,9 @@
             }
 
             Object.keys(options).forEach(function(key) {
-                if (key !== "constructor") {
+                if (key === "constructor") {
+                    ctr = options[key];
+                } else {
                     mixins[key] = {
                         value: options[key],
                         enumerable: true
@@ -998,9 +1001,7 @@
                     el[key](template[key].cloneNode(true));
                 });
 
-                if (options.hasOwnProperty("constructor")) {
-                    options.constructor.call(el);
-                }
+                if (ctr) ctr.call(el);
             });
         }
     });

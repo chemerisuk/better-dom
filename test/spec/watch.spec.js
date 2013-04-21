@@ -3,13 +3,13 @@ describe("watch", function() {
         callback;
 
     beforeEach(function() {
-        setFixtures("<a id='test' class='test'></a><span class='test'></span><b class='test'></b>");
+        setFixtures("<a id='test' class='watch'></a><span class='watch'></span><b class='watch'></b>");
 
         callback = jasmine.createSpy("callback");
     });
 
     it("should execute callback for every existed element on page", function() {
-        DOM.watch(".test", callback);
+        DOM.watch(".watch", callback);
 
         waits(WAIT_FOR_WATCH_TIME);
 
@@ -37,7 +37,7 @@ describe("watch", function() {
     });
 
     it("should have DOM element as the first argument", function() {
-        DOM.watch(".test", callback.andCallFake(function(el) {
+        DOM.watch(".watch", callback.andCallFake(function(el) {
             expect(el).toBeDefined();
             expect(el._node).toBeTruthy();
         }));
