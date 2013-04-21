@@ -715,13 +715,21 @@
     (function() {
         var cssHooks = {},
             rdash = /\-./g,
-            dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); };
+            rcamel = /[A-Z]/g,
+            dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
+            camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
+            computed = window.getComputedStyle(htmlEl, "");
 
-        slice.call(window.getComputedStyle(htmlEl, "")).forEach(function(propName) {
-            var unprefixedName = propName.indexOf(vendorPrefix) === 1 ? propName.substr(vendorPrefix.length + 2) : propName,
-                stylePropName = unprefixedName !== propName ? propName.substr(1) : propName;
+        // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
+        (computed.length ? slice.call(computed) : Object.keys(computed).map(function(key) { return key.replace(rcamel, camelCaseToDashSeparated); }) ).forEach(function(propName) {
+            var prefix = propName.charAt(0) === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
+                unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
+                stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
 
-            stylePropName = stylePropName.replace(rdash, dashSeparatedToCamelCase);
+            // some browsers start vendor specific props in lowecase
+            if (!(stylePropName in computed)) {
+                stylePropName = stylePropName.charAt(0).toLowerCase() + stylePropName.substr(1);
+            }
 
             if (stylePropName !== propName) {
                 cssHooks[unprefixedName] = {
@@ -863,17 +871,13 @@
         })(),
         importStyles: (function() {
             var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
-                prefixedProps = filter.call(window.getComputedStyle(htmlEl, ""), function(prop) {
-                    return prop.indexOf(vendorPrefix) === 1;
-                }),
                 process = function(selector, styles) {
                     var ruleText = selector + " { ";
 
                     if (typeof styles === "object") {
                         Object.keys(styles).forEach(function(propName) {
-                            var prefixedPropName = "-" + vendorPrefix + "-" + propName;
                             // append vendor prefix if it's required
-                            ruleText += (~prefixedProps.indexOf(prefixedPropName) ? prefixedPropName : propName) + ":" + styles[propName] + "; ";
+                            ruleText += propName + ":" + styles[propName] + "; ";
                         });
                     } else if (typeof styles === "string") {
                         ruleText += styles;
@@ -925,7 +929,7 @@
             // use trick discovered by Daniel Buchner: 
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
-                keyframes = !!(window.CSSKeyframesRule || window[("WebKit|Moz|MS|O").match(new RegExp("(" + vendorPrefix + ")", "i"))[1] + "CSSKeyframesRule"]);
+                prefix = window.CSSKeyframesRule ? "": "-" + vendorPrefix + "-";
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
@@ -936,14 +940,14 @@
                     };
 
                 DOM.importStyles(
-                    "@" + (keyframes ? "-" + vendorPrefix + "-" : "") + "keyframes " + animationName,
+                    "@" + prefix + "keyframes " + animationName,
                     "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
                 );
 
-                DOM.importStyles(selector, {
-                    "animation-duration": "0.001s",
-                    "animation-name": animationName + " !important"
-                });
+                DOM.importStyles(
+                    selector, 
+                    prefix + "animation-duration:0.001s;" + prefix + "animation-name:" + animationName + " !important"
+                );
 
                 startNames.forEach(function(name) {
                     document.addEventListener(name, function(e) {

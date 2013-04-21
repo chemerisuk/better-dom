@@ -1,4 +1,4 @@
-describe("css", function() {
+describe("style", function() {
     var link;
 
     beforeEach(function() {
