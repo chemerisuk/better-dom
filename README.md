@@ -26,4 +26,6 @@ Browser support
 * Opera
 * IE9+
 
-IE 6-8 support is in TODO list, but definetely will require a lot of additional work.
+TODO
+----
+1. IE8 support - it definetely requires a lot of additional work

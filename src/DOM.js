@@ -34,7 +34,7 @@
                 }
             };
         })(),
-        extend = function(proto, name, value) {
+        mixin = function(proto, name, value) {
             if (arguments.length === 3) {
                 Object.defineProperty(proto, name, {
                     value: value,
@@ -42,7 +42,7 @@
                 });
             } else {
                 Object.keys(name).forEach(function(key) {
-                    extend(proto, key, name[key]);
+                    mixin(proto, key, name[key]);
                 });
             }
 
@@ -100,7 +100,7 @@
                     el[methodName].apply(el, this);
                 };
 
-                extend(proto, methodName, function() {
+                mixin(proto, methodName, function() {
                     if (this.length) {
                         this.forEach(process, slice.call(arguments));
                     }
@@ -173,7 +173,7 @@
             this._event = event;
         };
 
-    DOMNode.prototype = extend({}, {
+    DOMNode.prototype = mixin({}, {
         find: (function() {
             // big part of code inspired by Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -401,7 +401,7 @@
         }
     });
 
-    DOMElement.prototype = extend(new DOMNode(), {
+    DOMElement.prototype = mixin(new DOMNode(), {
         matches: function(selector) {
             if (typeof selector !== "string") {
                 throw makeArgumentsError("matches");
@@ -500,7 +500,7 @@
             }
         };
 
-        extend(DOMElement.prototype, {
+        mixin(DOMElement.prototype, {
             get: function(name) {
                 if (typeof name !== "string") {
                     throw makeArgumentsError("get");
@@ -566,7 +566,7 @@
             var propertyName = traversingProps[methodName];
 
             if (methodName === "children") {
-                extend(DOMElement.prototype, methodName, function(selector) {
+                mixin(DOMElement.prototype, methodName, function(selector) {
                     var children = this._node.children,
                         matcher = selector ? new SelectorMatcher(selector) : null;
 
@@ -574,7 +574,7 @@
                         filter.call(children, matcher.test, matcher));
                 });                
             } else {
-                extend(DOMElement.prototype, methodName, function(selector) {
+                mixin(DOMElement.prototype, methodName, function(selector) {
                     var matcher = selector ? new SelectorMatcher(selector) : null,
                         nodes = ~methodName.lastIndexOf("All") ? [] : null,
                         it = this._node;
@@ -630,7 +630,7 @@
             var process = manipulationStrategies[methodName],
                 adjStrategy = optimizedManipulationStrategies[methodName];
 
-            extend(DOMElement.prototype, methodName, function(element, /*INTERNAL*/reverse) {
+            mixin(DOMElement.prototype, methodName, function(element, /*INTERNAL*/reverse) {
                 var el = this._node,
                     relatedNode = el.parentNode;
 
@@ -698,7 +698,7 @@
             var process = classStrategies[methodName],
                 arrayMethodName = methodName === "hasClass" ? "every" : "forEach";
 
-            extend(DOMElement.prototype, methodName, function(classNames) {
+            mixin(DOMElement.prototype, methodName, function(classNames) {
                 if (typeof classNames !== "string") {
                     throw makeArgumentsError(name);
                 }
@@ -788,7 +788,7 @@
         };
     })();
 
-    DOMEvent.prototype = extend({}, {
+    DOMEvent.prototype = mixin({}, {
         get: function(name) {
             if (typeof name !== "string" || ~name.indexOf("arget") || ~name.indexOf("lement")) {
                 throw makeArgumentsError("get", "DOMEvent");
@@ -799,7 +799,7 @@
     });
     // methods
     "preventDefault stopPropagation stopImmediatePropagation".split(" ").forEach(function(key) {
-        extend(DOMEvent.prototype, key, function() {
+        mixin(DOMEvent.prototype, key, function() {
             this._event[key]();
         });
     });
@@ -814,7 +814,7 @@
     });
 
     // public API
-    DOM = window.DOM = extend(new DOMNode(document), {
+    DOM = window.DOM = mixin(new DOMNode(document), {
         create: function(content) {
             var elem = content;
 
@@ -927,8 +927,9 @@
         })() : (function() {
             // use trick discovered by Daniel Buchner: 
             // https://github.com/csuwldcat/SelectorListener
-            var startNames = ["animationstart", "oAnimationStart", "MSAnimationStart", "webkitAnimationStart"],
-                vendorPrefix = (slice.call(window.getComputedStyle(htmlEl, "")).join("").match(/moz|webkit|ms/)||(computed.OLink===""&&["o"]))[0],
+            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+                computed = window.getComputedStyle(htmlEl, ""),
+                vendorPrefix = (slice.call(computed).join("").match(/moz|webkit|ms/) || (computed.OLink === "" && ["o"]))[0],
                 cssPrefix = window.CSSKeyframesRule ? "": "-" + vendorPrefix + "-";
 
             return function(selector, callback) {
@@ -1014,12 +1015,12 @@
     DOMNullElement.prototype = new DOMElement();
 
     Object.keys(DOMNode.prototype).forEach(function(key) {
-        extend(DOMNullNode.prototype, key, function() {});
-        extend(DOMNullElement.prototype, key, function() {});
+        mixin(DOMNullNode.prototype, key, function() {});
+        mixin(DOMNullElement.prototype, key, function() {});
     });
 
     Object.keys(DOMElement.prototype).forEach(function(key) {
-        extend(DOMNullElement.prototype, key, function() {});
+        mixin(DOMNullElement.prototype, key, function() {});
     });
 
     // fix constructor property
