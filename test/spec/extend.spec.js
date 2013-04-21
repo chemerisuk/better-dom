@@ -23,7 +23,7 @@ describe("extend", function() {
     it("should append css properties", function() {
         DOM.extend(".extend", {
             css: [{
-                ".extend": "font-weight: bold"
+                ".extend": "line-height: 0"
             }]
         });
 
@@ -31,7 +31,7 @@ describe("extend", function() {
 
         runs(function() {
             DOM.findAll(".extend").each(function(domEl) {
-                expect(domEl.getStyle("font-weight")).toBe("bold");
+                expect(domEl.getStyle("line-height")).toBe("0");
             });
         });
     });
