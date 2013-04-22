@@ -253,6 +253,34 @@
         // run sync
         .run();
     })();
+
+    console.log("------------------------foreach--------------------------------");
+
+    (function() {
+        var nativeSandbox = document.getElementById("sandbox"),
+            jqueryElements = $("*"), 
+            domElements = DOM.findAll("*"),
+            i = 0, j = 0, k = 0;
+
+        new Benchmark.Suite()
+        // add tests
+        .add("jquery#each", function() {
+            jqueryElements.each(function() {
+                ++i;
+            });
+        })
+        .add("DOM#each()", function() {
+            domElements.each(function() {
+                ++k;
+            });
+        })
+        // add listeners
+        .on('cycle', function(event) {
+            console.log(String(event.target));
+        })
+        // run sync
+        .run();
+    })();
     </script>
 </body>
 </html>

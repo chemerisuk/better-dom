@@ -1,14 +1,64 @@
 /*!
- * DOM.js (https://github.com/chemerisuk/DOM.js)
+ * DOM.js (https://github.com/chemerisuk/Better-DOM.js)
  * Modern javascript library for working with DOM
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, slice, filter, undefined) {
+(function(window, document, slice, undefined) {
     "use strict";
 
-    var DOM,
-        htmlEl = document.documentElement,
+    // UTILITES
+
+    var _ = {
+        forIn: function(obj, callback, thisPtr) {
+            _.forEach(Object.keys(obj), callback, thisPtr);
+        },
+        forEach: function(list, callback, thisPtr) {
+            for (var i = 0, n = list.length; i < n; ++i) {
+                callback.call(thisPtr, list[i], i);
+            }
+        },
+        forWord: function(str, callback, thisPtr) {
+            _.forEach(str.split(" "), callback, thisPtr);
+        },
+        filter: function(list, testFn, thisPtr) {
+            var result = [];
+
+            _.forEach(list, function(el) {
+                if (testFn.call(thisPtr, el)) result.push(el);
+            });
+
+            return result;
+        },
+        every: function(list, testFn, thisPtr) {
+            var result = true;
+
+            _.forEach(list, function(el) {
+                result = result && testFn.call(thisPtr, el);
+            });
+
+            return result;
+        },
+        mixin: function(obj, name, value) {
+            if (arguments.length === 3) {
+                obj[name] = value;
+            } else {
+                _.forIn(name, function(key) {
+                    _.mixin(obj, key, name[key]);
+                });
+            }
+
+            return obj; 
+        },
+        error: function(methodName, type) {
+            // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
+            return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
+        }
+    };
+
+    // VARIABLES
+
+    var htmlEl = document.documentElement,
         headEl = document.head,
         scripts = document.scripts,
         // helpers
@@ -28,30 +78,12 @@
                 fragment: function(html) {
                     var fragment = document.createDocumentFragment();
 
-                    Array.prototype.forEach.call(this.parse(html), appendTo, fragment);
+                    _.forEach(this.parse(html), appendTo, fragment);
 
                     return fragment;
                 }
             };
         })(),
-        mixin = function(proto, name, value) {
-            if (arguments.length === 3) {
-                Object.defineProperty(proto, name, {
-                    value: value,
-                    enumerable: true
-                });
-            } else {
-                Object.keys(name).forEach(function(key) {
-                    mixin(proto, key, name[key]);
-                });
-            }
-
-            return proto;
-        },
-        makeArgumentsError = function(methodName, type) {
-            // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
-        },
         // types
         DOMNode = function(node) {
             if (!(this instanceof DOMNode)) {
@@ -88,38 +120,11 @@
             ref.parentNode.removeChild(iframe);
 
             proto = ctr.prototype;
-
+            
             // cleanup collection prototype
             Object.getOwnPropertyNames(proto).forEach(function(methodName) {
-                ~"forEach map every some filter length reduce reduceRight".indexOf(methodName) || delete proto[methodName];
+                if (methodName !== "length") delete proto[methodName];
             });
-
-            // shortcuts
-            "set on off fire data addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
-                var process = function(el) {
-                    el[methodName].apply(el, this);
-                };
-
-                mixin(proto, methodName, function() {
-                    if (this.length) {
-                        this.forEach(process, slice.call(arguments));
-                    }
-
-                    return this;
-                });
-            });
-
-            // static method to create a collection
-            ctr.create = (function(){
-                var _map = proto.map;
-
-                return function(collection) {
-                    return _map.call(collection || [], DOMElement);
-                };
-            })();
-
-            // use Array.prototype implementation to return regular array for map
-            proto.map = Array.prototype.map;
             
             return ctr;
         })(),
@@ -139,7 +144,7 @@
                         quick[1] && (quick[1] = quick[1].toLowerCase());
                         quick[4] && (quick[4] = " " + quick[4] + " ");
                     } else if (quickOnly) {
-                        throw makeArgumentsError("quick");
+                        throw _.error("quick");
                     }
                 },
                 matchesProp = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix) {
@@ -173,7 +178,7 @@
             this._event = event;
         };
 
-    DOMNode.prototype = mixin({}, {
+    DOMNode.prototype = _.mixin({}, {
         find: (function() {
             // big part of code inspired by Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -186,7 +191,7 @@
 
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
-                    throw makeArgumentsError("find");
+                    throw _.error("find");
                 }
 
                 var node = this._node,
@@ -265,15 +270,15 @@
                 } else if (element instanceof DOMElement) {
                     return element.contains(node, true);
                 } else if (Array.isArray(element)) {
-                    return element.every(function(element) {
+                    return _.every(element, function(element) {
                         if (element instanceof DOMElement) {
                             return element.contains(node, true);
                         }
                         
-                        throw makeArgumentsError("contains");
+                        throw _.error("contains");
                     });
                 } else {
-                    throw makeArgumentsError("contains");
+                    throw _.error("contains");
                 }
             };
         })(),
@@ -310,7 +315,7 @@
                     capturing = !!capturing;
                     eventHandler = createEventHandler(this, callback, selector);
 
-                    event.split(" ").forEach(function(event) {
+                    _.forWord(event, function(event) {
                         // fix IE9 focus/blur handlers
                         if (this._node.attachEvent) {
                             if (event === "focus") {
@@ -330,11 +335,11 @@
                         });
                     }, this);
                 } else if (eventType === "object") {
-                    Object.keys(event).forEach(function(key) {
+                    _.forIn(event, function(key) {
                         this.on(key, event[key]);
                     }, this);
                 } else {
-                    throw makeArgumentsError("on");
+                    throw _.error("on");
                 }
 
                 return this;
@@ -342,10 +347,10 @@
         })(),
         off: function(event, callback) {
             if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new makeArgumentsError("off");
+                throw new _.error("off");
             }
 
-            this._events.forEach(function(entry) {
+            _.forEach(this._events, function(entry) {
                 if (event === entry.event && (!callback || callback === entry.callback)) {
                     // remove event listener from the element
                     this._node.removeEventListener(event, entry.handler, entry.capturing);
@@ -356,7 +361,7 @@
         },
         fire: function(eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new makeArgumentsError("fire");
+                throw new _.error("fire");
             }
 
             var isCustomEvent = ~eventType.indexOf(":"),
@@ -381,7 +386,7 @@
         },
         data: function(name, value) {
             if (typeof name !== "string") {
-                throw makeArgumentsError("data");
+                throw _.error("data");
             }
 
             var node = this._node, 
@@ -401,10 +406,10 @@
         }
     });
 
-    DOMElement.prototype = mixin(new DOMNode(), {
+    DOMElement.prototype = _.mixin(new DOMNode(), {
         matches: function(selector) {
             if (typeof selector !== "string") {
-                throw makeArgumentsError("matches");
+                throw _.error("matches");
             }
 
             return new SelectorMatcher(selector).test(this._node);
@@ -442,7 +447,7 @@
                         switch(field.type) {
                             case "select-one":
                             case "select-multiple":
-                                Array.prototype.forEach.call(field.options, function(option) {
+                                _.forEach(field.options, function(option) {
                                     if (option.selected) {
                                         parts.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(
                                                 option.hasAttribute("value") ? option.value : option.text));
@@ -482,10 +487,10 @@
     (function() {
         var propHooks = {},
             throwIllegalAccess = function(el) { 
-                throw makeArgumentsError("get"); 
+                throw _.error("get"); 
             };
         // protect access to some properties
-        "children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" ").forEach(function(key) {
+        _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
                 get: throwIllegalAccess,
                 set: throwIllegalAccess
@@ -500,10 +505,10 @@
             }
         };
 
-        mixin(DOMElement.prototype, {
+        _.mixin(DOMElement.prototype, {
             get: function(name) {
                 if (typeof name !== "string") {
-                    throw makeArgumentsError("get");
+                    throw _.error("get");
                 }
 
                 var el = this._node,
@@ -523,7 +528,7 @@
                         value = value.call(this, this.get(name));
                     }
 
-                    name.split(" ").forEach(function(name) {
+                    _.forWord(name, function(name) {
                         var hook = propHooks[name];
 
                         if (hook) {
@@ -537,11 +542,11 @@
                         }
                     });
                 } else if (nameType === "object") {
-                    Object.keys(name).forEach(function(key) {
+                    _.forIn(name, function(key) {
                         this.set(key, name[key]);
                     }, this);
                 } else {
-                    throw makeArgumentsError("set");
+                    throw _.error("set");
                 }
 
                 return this;
@@ -562,19 +567,19 @@
                 parent: "parentNode"
             };
 
-        Object.keys(traversingProps).forEach(function(methodName) {
+        _.forIn(traversingProps, function(methodName) {
             var propertyName = traversingProps[methodName];
 
             if (methodName === "children") {
-                mixin(DOMElement.prototype, methodName, function(selector) {
+                _.mixin(DOMElement.prototype, methodName, function(selector) {
                     var children = this._node.children,
                         matcher = selector ? new SelectorMatcher(selector) : null;
 
                     return DOMElementCollection.create(!matcher ? children : 
-                        filter.call(children, matcher.test, matcher));
+                        _.filter(children, matcher.test, matcher));
                 });                
             } else {
-                mixin(DOMElement.prototype, methodName, function(selector) {
+                _.mixin(DOMElement.prototype, methodName, function(selector) {
                     var matcher = selector ? new SelectorMatcher(selector) : null,
                         nodes = ~methodName.lastIndexOf("All") ? [] : null,
                         it = this._node;
@@ -626,11 +631,11 @@
             prepend: "afterbegin"
         };
 
-        Object.keys(manipulationStrategies).forEach(function(methodName) {
+        _.forIn(manipulationStrategies, function(methodName) {
             var process = manipulationStrategies[methodName],
                 adjStrategy = optimizedManipulationStrategies[methodName];
 
-            mixin(DOMElement.prototype, methodName, function(element, /*INTERNAL*/reverse) {
+            _.mixin(DOMElement.prototype, methodName, function(element, /*INTERNAL*/reverse) {
                 var el = this._node,
                     relatedNode = el.parentNode;
 
@@ -639,7 +644,7 @@
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
                 } else if (element !== undefined) {
-                    throw makeArgumentsError(methodName);
+                    throw _.error(methodName);
                 }
 
                 if (relatedNode) {
@@ -694,16 +699,16 @@
                 }
             };
 
-        Object.keys(classStrategies).forEach(function(methodName) {
+        _.forIn(classStrategies, function(methodName) {
             var process = classStrategies[methodName],
-                arrayMethodName = methodName === "hasClass" ? "every" : "forEach";
+                arrayMethod = methodName === "hasClass" ? _.every : _.forEach;
 
-            mixin(DOMElement.prototype, methodName, function(classNames) {
+            _.mixin(DOMElement.prototype, methodName, function(classNames) {
                 if (typeof classNames !== "string") {
-                    throw makeArgumentsError(name);
+                    throw _.error(name);
                 }
 
-                var result = classNames.split(" ")[arrayMethodName](process, this);
+                var result = arrayMethod(classNames.split(" "), process, this);
 
                 return result === undefined ? this : result;
             });
@@ -749,7 +754,7 @@
                 hook, result;
 
             if (typeof name !== "string") {
-                throw makeArgumentsError("getStyle"); 
+                throw _.error("getStyle"); 
             }
 
             hook = cssHooks[name];
@@ -777,34 +782,34 @@
 
                 hook ? hook(style, value) : style[name] = value;
             } else if (nameType === "object") {
-                Object.keys(name).forEach(function(key) {
+                _.forIn(name, function(key) {
                     this.setStyle(key, name[key]);
                 }, this);
             } else {
-                throw makeArgumentsError("setStyle");
+                throw _.error("setStyle");
             }
 
             return this;
         };
     })();
 
-    DOMEvent.prototype = mixin({}, {
+    DOMEvent.prototype = _.mixin({}, {
         get: function(name) {
             if (typeof name !== "string" || ~name.indexOf("arget") || ~name.indexOf("lement")) {
-                throw makeArgumentsError("get", "DOMEvent");
+                throw _.error("get", "DOMEvent");
             }
 
             return this._event[name];
         }
     });
     // methods
-    "preventDefault stopPropagation stopImmediatePropagation".split(" ").forEach(function(key) {
-        mixin(DOMEvent.prototype, key, function() {
+    _.forWord("preventDefault stopPropagation stopImmediatePropagation", function(key) {
+        _.mixin(DOMEvent.prototype, key, function() {
             this._event[key]();
         });
     });
     // getters
-    "target currentTarget relatedTarget".split(" ").forEach(function(key) {
+    _.forWord("target currentTarget relatedTarget", function(key) {
         Object.defineProperty(DOMEvent.prototype, key, {
             enumerable: true,
             get: function() {
@@ -813,8 +818,58 @@
         });
     });
 
+    // DOMElementCollection
+    
+    DOMElementCollection.create = function(collection) {
+        var result = new DOMElementCollection(),
+            i = 0, n = collection.length;
+
+        while (i < n) {
+            Array.prototype.push.call(result, DOMElement(collection[i++]));
+        }
+
+        return result;
+    };
+
+    DOMElementCollection.prototype.each = function(callback) {
+        _.forEach(this, callback);
+
+        return this;
+    };
+
+    // shortcuts
+    _.forWord("set on off fire data addClass removeClass toggleClass", function(methodName) {
+        var process = DOMElement.prototype[methodName];
+
+        _.mixin(DOMElementCollection.prototype, methodName, function() {
+            for (var i = 0, n = this.length; i < n; ++i) {
+                process.apply(this[i], slice.call(arguments));
+            }
+
+            return this;
+        });
+    });
+
+    // finish prototypes
+    DOMNullNode.prototype = new DOMNode();
+    DOMNullElement.prototype = new DOMElement();
+
+    _.forIn(DOMNode.prototype, function(key) {
+        _.mixin(DOMNullNode.prototype, key, function() {});
+        _.mixin(DOMNullElement.prototype, key, function() {});
+    });
+
+    _.forIn(DOMElement.prototype, function(key) {
+        _.mixin(DOMNullElement.prototype, key, function() {});
+    });
+
+    // fix constructor property
+    _.forEach([DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement], function(ctr) {
+        ctr.prototype.constructor = ctr;
+    });
+
     // public API
-    DOM = window.DOM = mixin(new DOMNode(document), {
+    window.DOM = _.mixin(new DOMNode(document), {
         create: function(content) {
             var elem = content;
 
@@ -825,7 +880,7 @@
                     elem = document.createElement(content);
                 }
             } else if (!(content instanceof Element)) {
-                throw makeArgumentsError("create");
+                throw _.error("create");
             }
 
             return DOMElement(elem);
@@ -835,7 +890,7 @@
                 readyProcess = function() {
                     if (readyCallbacks) {
                         // trigger callbacks
-                        readyCallbacks.forEach(function(callback) {
+                        _.forEach(readyCallbacks, function(callback) {
                             callback();
                         });
                         // cleanup
@@ -858,7 +913,7 @@
             // return implementation
             return function(callback) {
                 if (typeof callback !== "function") {
-                    throw makeArgumentsError("ready");
+                    throw _.error("ready");
                 }
 
                 if (readyCallbacks) {
@@ -874,14 +929,14 @@
                     var ruleText = selector + " { ";
 
                     if (typeof styles === "object") {
-                        Object.keys(styles).forEach(function(propName) {
+                        _.forIn(styles, function(propName) {
                             // append vendor prefix if it's required
                             ruleText += propName + ":" + styles[propName] + "; ";
                         });
                     } else if (typeof styles === "string") {
                         ruleText += styles;
                     } else {
-                        throw makeArgumentsError("importStyles");
+                        throw _.error("importStyles");
                     }
 
                     styleEl.appendChild(document.createTextNode(ruleText + "}"));
@@ -897,13 +952,13 @@
                 if (selectorType === "string") {
                     process(selector, styles);
                 } else if (selectorType === "object") {
-                    slice.call(arguments).forEach(function(rule) {
+                    _.forEach(slice.call(arguments), function(rule) {
                         var selector = Object.keys(rule)[0];
 
                         process(selector, rule[selector]);
                     });
                 } else {
-                    throw makeArgumentsError("importStyles");
+                    throw _.error("importStyles");
                 }
             };
         })(),
@@ -912,14 +967,14 @@
             var behavior = scripts[scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback) {
-                var entry = DOM._watchers[selector];
+                var entry = this._watchers[selector];
 
                 if (entry) {
                     entry.push(callback);
                 } else {
-                    DOM._watchers[selector] = [callback];
+                    this._watchers[selector] = [callback];
                     // append style rule at the last step
-                    DOM.importStyles(selector, { behavior: "url(" + behavior + ")" });
+                    this.importStyles(selector, { behavior: "url(" + behavior + ")" });
                 }
             };
         })() : (function() {
@@ -932,14 +987,14 @@
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
-                    allAnimationNames = DOM._watchers[selector] || animationName,
+                    allAnimationNames = this._watchers[selector] || animationName,
                     cancelBubbling = function(e) {
                         if (e.animationName === animationName) {
                             e.stopPropagation();
                         }
                     };
 
-                DOM.importStyles(
+                this.importStyles(
                     "@" + cssPrefix + "keyframes " + animationName,
                     "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
                 );
@@ -947,12 +1002,12 @@
                 // use comma separated animation names in case of multiple
                 if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
 
-                DOM.importStyles(
+                this.importStyles(
                     selector, 
                     cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
                 );
 
-                startNames.forEach(function(name) {
+                _.forEach(startNames, function(name) {
                     document.addEventListener(name, function(e) {
                         var el = e.target;
 
@@ -964,21 +1019,20 @@
                     }, false);
                 });
 
-                DOM._watchers[selector] = allAnimationNames;
+                this._watchers[selector] = allAnimationNames;
             };
         })(),
         extend: function(selector, options) {
             if (!options || typeof options !== "object") {
-                throw makeArgumentsError("extend");
+                throw _.error("extend");
             }
 
-            var mixins = {}, 
-                template = options.template,
+            var template = options.template,
                 css = options.css,
                 ctr;
 
             if (template) {
-                Object.keys(template).forEach(function(key) {
+                _.forIn(template, function(key) {
                     template[key] = sandbox.fragment(template[key]);
                 });
 
@@ -986,26 +1040,21 @@
             }
 
             if (css) {
-                DOM.importStyles.apply(DOM, css);
+                this.importStyles.apply(this, css);
 
                 delete options.css;
             }
 
-            Object.keys(options).forEach(function(key) {
-                if (key === "constructor") {
-                    ctr = options[key];
-                } else {
-                    mixins[key] = {
-                        value: options[key],
-                        enumerable: true
-                    };
-                }
-            });
+            if (options.hasOwnProperty("constructor")) {
+                ctr = options.constructor;
 
-            DOM.watch(selector, function(el) {
-                Object.defineProperties(el, mixins);
+                delete options.constructor;
+            }
 
-                template && Object.keys(template).forEach(function(key) {
+            this.watch(selector, function(el) {
+                _.mixin(el, options);
+
+                template && _.forIn(template, function(key) {
                     el[key](template[key].cloneNode(true));
                 });
 
@@ -1014,22 +1063,4 @@
         }
     });
 
-    // finish prototypes
-    DOMNullNode.prototype = new DOMNode();
-    DOMNullElement.prototype = new DOMElement();
-
-    Object.keys(DOMNode.prototype).forEach(function(key) {
-        mixin(DOMNullNode.prototype, key, function() {});
-        mixin(DOMNullElement.prototype, key, function() {});
-    });
-
-    Object.keys(DOMElement.prototype).forEach(function(key) {
-        mixin(DOMNullElement.prototype, key, function() {});
-    });
-
-    // fix constructor property
-    [DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement].forEach(function(ctr) {
-        ctr.prototype.constructor = ctr;
-    });
-
-})(window, document, Array.prototype.slice, Array.prototype.filter);
+})(window, document, Array.prototype.slice);

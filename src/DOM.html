@@ -118,11 +118,11 @@ DOM.ready(function(){
 
     link.set("innerHTML", "<script src=\"testscript.js\"><" + "/script>updated");
 
-    try {
-        link.__proto__.get = "bar";
-    } catch (err) {
-        console.log("fail to change prototype")
-    }
+    // try {
+    //     link.__proto__.get = "bar";
+    // } catch (err) {
+    //     console.log("fail to change prototype")
+    // }
 
     link.next();
 

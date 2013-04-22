@@ -40,7 +40,7 @@ describe("traversing", function() {
             };
 
             Object.keys(expectedResults).forEach(function(methodName) {
-                link[methodName]().forEach(function(el, index) {
+                link[methodName]().each(function(el, index) {
                     expect(el._node).toMatchSelector(expectedResults[methodName][index]);
                 });
             });
@@ -56,7 +56,7 @@ describe("traversing", function() {
             Object.keys(filters).forEach(function(methodName) {
                 var selector = filters[methodName];
 
-                link[methodName](selector).forEach(function(el, index) {
+                link[methodName](selector).each(function(el, index) {
                     expect(el._node).toMatchSelector(selector);
                 });
             });

@@ -30,7 +30,7 @@ describe("extend", function() {
         waits(WAIT_FOR_WATCH_TIME);
 
         runs(function() {
-            DOM.findAll(".extend").forEach(function(domEl) {
+            DOM.findAll(".extend").each(function(domEl) {
                 expect(domEl.getStyle("position")).toBe("relative");
             });
         });
@@ -56,7 +56,7 @@ describe("extend", function() {
         waits(WAIT_FOR_WATCH_TIME);
 
         runs(function() {
-            DOM.findAll(".extend").forEach(function(domEl) {
+            DOM.findAll(".extend").each(function(domEl) {
                 Object.keys(checkStrategies).forEach(function(key) {
                     expect(domEl[checkStrategies[key]]("." + key)).toBeDefined();
                 });

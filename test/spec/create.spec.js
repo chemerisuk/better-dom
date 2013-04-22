@@ -14,7 +14,7 @@ describe("create", function() {
 
         expect(elements.length).toBe(2);
 
-        elements.forEach(function(el, index) {
+        elements.each(function(el, index) {
             setFixtures(el._node);
 
             expect(el._node).toMatchSelector(expectedSelectors[index]);
