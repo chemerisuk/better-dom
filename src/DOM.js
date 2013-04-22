@@ -907,23 +907,21 @@
                 }
             };
         })(),
+        _watchers: {},
         watch: htmlEl.addBehavior ? (function() {
-            var behavior = scripts[scripts.length - 1].getAttribute("data-htc"),
-                watch = function(selector, callback) {
-                    var entry = watch._listeners[selector];
+            var behavior = scripts[scripts.length - 1].getAttribute("data-htc");
 
-                    if (entry) {
-                        entry.push(callback);
-                    } else {
-                        watch._listeners[selector] = [callback];
-                        // append style rule at the last step
-                        DOM.importStyles(selector, { behavior: "url(" + behavior + ")" });
-                    }
-                };
+            return function(selector, callback) {
+                var entry = DOM._watchers[selector];
 
-            watch._listeners = {};
-            
-            return watch;
+                if (entry) {
+                    entry.push(callback);
+                } else {
+                    DOM._watchers[selector] = [callback];
+                    // append style rule at the last step
+                    DOM.importStyles(selector, { behavior: "url(" + behavior + ")" });
+                }
+            };
         })() : (function() {
             // use trick discovered by Daniel Buchner: 
             // https://github.com/csuwldcat/SelectorListener
@@ -934,6 +932,7 @@
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
+                    allAnimationNames = DOM._watchers[selector] || animationName,
                     cancelBubbling = function(e) {
                         if (e.animationName === animationName) {
                             e.stopPropagation();
@@ -945,9 +944,12 @@
                     "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
                 );
 
+                // use comma separated animation names in case of multiple
+                if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
+
                 DOM.importStyles(
                     selector, 
-                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationName + " !important"
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
                 );
 
                 startNames.forEach(function(name) {
@@ -961,6 +963,8 @@
                         }
                     }, false);
                 });
+
+                DOM._watchers[selector] = allAnimationNames;
             };
         })(),
         extend: function(selector, options) {

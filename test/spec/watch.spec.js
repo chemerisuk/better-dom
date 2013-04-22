@@ -75,4 +75,17 @@ describe("watch", function() {
         });
     });
 
+    it("should accept several watchers of the same selector", function() {
+        setFixtures("<a class='watch3'></a><b class='watch3'></b>");
+
+        DOM.watch(".watch3", callback);
+        DOM.watch(".watch3", callback);
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback.callCount).toBe(4);
+        });
+    });
+
 });
