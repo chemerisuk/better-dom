@@ -10,12 +10,15 @@
     // UTILITES
 
     var _ = {
+        keys: function(obj) {
+            return Object.keys(obj);
+        },
         forIn: function(obj, callback, thisPtr) {
-            _.forEach(Object.keys(obj), callback, thisPtr);
+            _.forEach(_.keys(obj), callback, thisPtr);
         },
         forEach: function(list, callback, thisPtr) {
             for (var i = 0, n = list.length; i < n; ++i) {
-                callback.call(thisPtr, list[i], i);
+                callback.call(thisPtr, list[i], i, list);
             }
         },
         forWord: function(str, callback, thisPtr) {
@@ -25,7 +28,7 @@
             var result = [];
 
             _.forEach(list, function(el) {
-                if (testFn.call(thisPtr, el)) result.push(el);
+                if (testFn.call(thisPtr, el, list)) result.push(el);
             });
 
             return result;
@@ -34,7 +37,27 @@
             var result = true;
 
             _.forEach(list, function(el) {
-                result = result && testFn.call(thisPtr, el);
+                result = result && testFn.call(thisPtr, el, list);
+            });
+
+            return result;
+        },
+        reduce: function(list, callback, result) {
+            _.forEach(list, function(el, index) {
+                if (!index && result === undefined) {
+                    result = el;
+                } else {
+                    result = callback(result, el, index, list);
+                }
+            });
+
+            return result;
+        },
+        map: function(list, callback, thisPtr) {
+            var result = [];
+
+            _.forEach(list, function(el, index) {
+                result.push(callback.call(thisPtr, el, index, list));
             });
 
             return result;
@@ -147,10 +170,10 @@
                         throw _.error("quick");
                     }
                 },
-                matchesProp = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix) {
-                    var property = prefix + "atchesSelector";
+                matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
+                    var propertyName = prefix + "atchesSelector";
 
-                    return result || htmlEl[property] && property;
+                    return result || htmlEl[propertyName] && propertyName;
                 }, null);
 
             ctr.prototype = {
@@ -439,18 +462,20 @@
             return this.set("hidden", true);
         },
         toString: function() {
-            var el = this._node, result;
+            var el = this._node, result,
+                makePair = function(name, value) {
+                    return encodeURIComponent(name) + "=" +encodeURIComponent(value);
+                };
 
             if (el.elements) {
-                result = Array.prototype.reduce.call(el.elements, function(parts, field) {
+                result = _.reduce(el.elements, function(parts, field) {
                     if (field.name) { // don't include form fields without names
                         switch(field.type) {
                             case "select-one":
                             case "select-multiple":
                                 _.forEach(field.options, function(option) {
                                     if (option.selected) {
-                                        parts.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(
-                                                option.hasAttribute("value") ? option.value : option.text));
+                                        parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
                                     }
                                 });
                                 break; 
@@ -467,8 +492,10 @@
                                 if (!field.checked) break;
             
                             default:
-                                parts.push(encodeURIComponent(field.name) + "=" +encodeURIComponent(field.value));
+                                parts.push(makePair(field.name, field.value));
                         }
+
+                        return parts;
                     }
                 }, []);
 
@@ -701,7 +728,7 @@
 
         _.forIn(classStrategies, function(methodName) {
             var process = classStrategies[methodName],
-                arrayMethod = methodName === "hasClass" ? _.every : _.forEach;
+                arrayMethod = _[methodName === "hasClass" ? "every" : "forEach"];
 
             _.mixin(DOMElement.prototype, methodName, function(classNames) {
                 if (typeof classNames !== "string") {
@@ -722,10 +749,11 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = window.getComputedStyle(htmlEl, "");
+            computed = window.getComputedStyle(htmlEl, ""),
+            props = computed.length ? slice.call(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
 
         // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
-        (computed.length ? slice.call(computed) : Object.keys(computed).map(function(key) { return key.replace(rcamel, camelCaseToDashSeparated); }) ).forEach(function(propName) {
+        _.forEach(props, function(propName) {
             var prefix = propName.charAt(0) === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
                 stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
@@ -953,7 +981,7 @@
                     process(selector, styles);
                 } else if (selectorType === "object") {
                     _.forEach(slice.call(arguments), function(rule) {
-                        var selector = Object.keys(rule)[0];
+                        var selector = _.keys(rule)[0];
 
                         process(selector, rule[selector]);
                     });
@@ -982,8 +1010,7 @@
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
                 computed = window.getComputedStyle(htmlEl, ""),
-                vendorPrefix = (slice.call(computed).join("").match(/moz|webkit|ms/) || (computed.OLink === "" && ["o"]))[0],
-                cssPrefix = window.CSSKeyframesRule ? "": "-" + vendorPrefix + "-";
+                cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
