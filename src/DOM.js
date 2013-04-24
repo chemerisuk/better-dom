@@ -4,80 +4,8 @@
  *
  * Copyright (c) 2013 Maksim Chemerisuk
  */
-(function(window, document, slice, undefined) {
+(function(window, document, _, undefined) {
     "use strict";
-
-    // UTILITES
-
-    var _ = {
-        keys: function(obj) {
-            return Object.keys(obj);
-        },
-        forIn: function(obj, callback, thisPtr) {
-            _.forEach(_.keys(obj), callback, thisPtr);
-        },
-        forEach: function(list, callback, thisPtr) {
-            for (var i = 0, n = list.length; i < n; ++i) {
-                callback.call(thisPtr, list[i], i, list);
-            }
-        },
-        forWord: function(str, callback, thisPtr) {
-            _.forEach(str.split(" "), callback, thisPtr);
-        },
-        filter: function(list, testFn, thisPtr) {
-            var result = [];
-
-            _.forEach(list, function(el) {
-                if (testFn.call(thisPtr, el, list)) result.push(el);
-            });
-
-            return result;
-        },
-        every: function(list, testFn, thisPtr) {
-            var result = true;
-
-            _.forEach(list, function(el) {
-                result = result && testFn.call(thisPtr, el, list);
-            });
-
-            return result;
-        },
-        reduce: function(list, callback, result) {
-            _.forEach(list, function(el, index) {
-                if (!index && result === undefined) {
-                    result = el;
-                } else {
-                    result = callback(result, el, index, list);
-                }
-            });
-
-            return result;
-        },
-        map: function(list, callback, thisPtr) {
-            var result = [];
-
-            _.forEach(list, function(el, index) {
-                result.push(callback.call(thisPtr, el, index, list));
-            });
-
-            return result;
-        },
-        mixin: function(obj, name, value) {
-            if (arguments.length === 3) {
-                obj[name] = value;
-            } else if (name) {
-                _.forIn(name, function(key) {
-                    _.mixin(obj, key, name[key]);
-                });
-            }
-
-            return obj; 
-        },
-        error: function(methodName, type) {
-            // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-            return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
-        }
-    };
 
     // VARIABLES
 
@@ -309,7 +237,7 @@
             if (arguments.length === 1) {
                 return this._node[name]();
             } else {
-                return this._node[name].apply(this._node, slice.call(arguments, 1));
+                return this._node[name].apply(this._node, _.slice(arguments, 1));
             }
         },
         data: function(name, value) {
@@ -761,14 +689,14 @@
 
         _.forIn(classStrategies, function(methodName) {
             var process = classStrategies[methodName],
-                arrayMethod = _[methodName === "hasClass" ? "every" : "forEach"];
+                arrayMethod = methodName === "hasClass" ? "every" : "forEach";
 
             _.mixin(DOMElement.prototype, methodName, function(classNames) {
                 if (typeof classNames !== "string") {
                     throw _.error(name);
                 }
 
-                var result = arrayMethod(classNames.split(" "), process, this);
+                var result = _[arrayMethod](classNames.split(" "), process, this);
 
                 return result === undefined ? this : result;
             });
@@ -783,7 +711,7 @@
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = window.getComputedStyle(htmlEl, ""),
-            props = computed.length ? slice.call(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
+            props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
 
         // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
         _.forEach(props, function(propName) {
@@ -904,7 +832,7 @@
 
         _.mixin(DOMElementCollection.prototype, methodName, function() {
             for (var i = 0, n = this.length; i < n; ++i) {
-                process.apply(this[i], slice.call(arguments));
+                process.apply(this[i], _.slice(arguments));
             }
 
             return this;
@@ -1013,7 +941,7 @@
                 if (selectorType === "string") {
                     process(selector, styles);
                 } else if (selectorType === "object") {
-                    _.forEach(slice.call(arguments), function(rule) {
+                    _.forEach(_.slice(arguments), function(rule) {
                         var selector = _.keys(rule)[0];
 
                         process(selector, rule[selector]);
@@ -1043,7 +971,7 @@
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
                 computed = window.getComputedStyle(htmlEl, ""),
-                cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+                cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
@@ -1123,4 +1051,78 @@
         }
     });
 
-})(window, document, Array.prototype.slice);
+})(window, document, {
+	
+	// UTILITES
+	
+	slice: function(list, index) {
+		return Array.prototype.slice.call(list, index || 0);
+	},
+    keys: function(obj) {
+        return Object.keys(obj);
+    },
+    forIn: function(obj, callback, thisPtr) {
+        this.forEach(this.keys(obj), callback, thisPtr);
+    },
+    forEach: function(list, callback, thisPtr) {
+        for (var i = 0, n = list.length; i < n; ++i) {
+            callback.call(thisPtr, list[i], i, list);
+        }
+    },
+    forWord: function(str, callback, thisPtr) {
+        this.forEach(str.split(" "), callback, thisPtr);
+    },
+    filter: function(list, testFn, thisPtr) {
+        var result = [];
+
+        this.forEach(list, function(el) {
+            if (testFn.call(thisPtr, el, list)) result.push(el);
+        });
+
+        return result;
+    },
+    every: function(list, testFn, thisPtr) {
+        var result = true;
+
+        this.forEach(list, function(el) {
+            result = result && testFn.call(thisPtr, el, list);
+        });
+
+        return result;
+    },
+    reduce: function(list, callback, result) {
+        this.forEach(list, function(el, index) {
+            if (!index && result === undefined) {
+                result = el;
+            } else {
+                result = callback(result, el, index, list);
+            }
+        });
+
+        return result;
+    },
+    map: function(list, callback, thisPtr) {
+        var result = [];
+
+        this.forEach(list, function(el, index) {
+            result.push(callback.call(thisPtr, el, index, list));
+        });
+
+        return result;
+    },
+    mixin: function(obj, name, value) {
+        if (arguments.length === 3) {
+            obj[name] = value;
+        } else if (name) {
+            this.forIn(name, function(key) {
+                this.mixin(obj, key, name[key]);
+            }, this);
+        }
+
+        return obj; 
+    },
+    error: function(methodName, type) {
+        // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
+        return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
+    }
+});
