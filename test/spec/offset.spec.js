@@ -16,11 +16,21 @@ describe("offset", function() {
     });
 
     it("should not change offsets when window is scrolling", function() {
-        var offset = link.offset();
+        var offset = normalize(link.offset());
 
         window.scrollTo(0, window.outerHeight);
 
-        expect(link.offset()).toEqual(offset);
+        expect(normalize(link.offset())).toEqual(offset);
     });
+
+    function normalize(offset) {
+        var result = {};
+
+        for (var prop in offset) {
+            result[prop] = Math.floor(offset[prop]);
+        }
+
+        return result;
+    }
 
 });

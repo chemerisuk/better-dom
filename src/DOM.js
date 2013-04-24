@@ -65,7 +65,7 @@
         mixin: function(obj, name, value) {
             if (arguments.length === 3) {
                 obj[name] = value;
-            } else {
+            } else if (name) {
                 _.forIn(name, function(key) {
                     _.mixin(obj, key, name[key]);
                 });
@@ -305,101 +305,6 @@
                 }
             };
         })(),
-        on: (function() {
-            var createEventHandler = function(thisPtr, callback, selector) {
-                if (!selector) {
-                    return function(e) {
-                        callback.call(thisPtr, DOMEvent(e));
-                    };
-                }
-
-                var matcher = new SelectorMatcher(selector);
-
-                return function(e) {
-                    for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
-                        if (matcher.test(elem)) {
-                            return callback.call(thisPtr, DOMEvent(e));
-                        }
-                    }
-                };
-            };
-
-            return function(event, selector, callback, capturing) {
-                var eventType = typeof event,
-                    eventHandler;
-
-                if (eventType === "string") {
-                    if (typeof selector === "function") {
-                        capturing = callback;
-                        callback = selector;
-                        selector = null;
-                    }
-
-                    capturing = !!capturing;
-                    eventHandler = createEventHandler(this, callback, selector);
-
-                    _.forWord(event, function(event) {
-                        // fix IE9 focus/blur handlers
-                        if (this._node.attachEvent) {
-                            if (event === "focus") {
-                                event = "focusin";
-                            } else if (event === "blur") {
-                                event = "focusout";
-                            }
-                        }
-                        // attach event listener
-                        this._node.addEventListener(event, eventHandler, capturing);
-                        // store event entry
-                        this._events.push({
-                            capturing: capturing,
-                            event: event,
-                            callback: callback, 
-                            handler: eventHandler
-                        });
-                    }, this);
-                } else if (eventType === "object") {
-                    _.forIn(event, function(key) {
-                        this.on(key, event[key]);
-                    }, this);
-                } else {
-                    throw _.error("on");
-                }
-
-                return this;
-            };
-        })(),
-        off: function(event, callback) {
-            if (typeof event !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new _.error("off");
-            }
-
-            _.forEach(this._events, function(entry) {
-                if (event === entry.event && (!callback || callback === entry.callback)) {
-                    // remove event listener from the element
-                    this._node.removeEventListener(event, entry.handler, entry.capturing);
-                }
-            }, this);
-
-            return this;
-        },
-        fire: function(eventType, detail) {
-            if (typeof eventType !== "string") {
-                throw new _.error("fire");
-            }
-
-            var isCustomEvent = ~eventType.indexOf(":"),
-                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
-
-            if (isCustomEvent) {
-                event.initCustomEvent(eventType, true, false, detail);
-            } else {
-                event.initEvent(eventType, true, true);
-            }
-            
-            this._node.dispatchEvent(event);
-
-            return this;
-        },
         call: function(name) {
             if (arguments.length === 1) {
                 return this._node[name]();
@@ -428,6 +333,134 @@
             return result;
         }
     });
+
+    // EVENTS
+    
+    (function() {
+        var createEventHandler = function(thisPtr, callback, selector) {
+                if (!selector) {
+                    return function(e) {
+                        callback.call(thisPtr, DOMEvent(e));
+                    };
+                }
+
+                var matcher = new SelectorMatcher(selector);
+
+                return function(e) {
+                    for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
+                        if (matcher.test(elem)) {
+                            return callback.call(thisPtr, DOMEvent(e));
+                        }
+                    }
+                };
+            },
+            eventHooks = {},
+            // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
+            isEventSupported = function(tagName, eventName) {
+                var el = document.createElement(tagName);
+                
+                eventName = 'on' + eventName;
+
+                var isSupported = (eventName in el);
+                if (!isSupported) {
+                    el.setAttribute(eventName, 'return;');
+                    isSupported = typeof el[eventName] === 'function';
+                }
+                
+                return isSupported;
+            };
+
+        // firefox doesn't support focusin/focusout events
+        if (isEventSupported("input", "focusin")) {
+            eventHooks.focus = {
+                name: "focusin"
+            };
+
+            eventHooks.blur = {
+                name: "focusout"
+            };
+        } else {
+            eventHooks.focus = {
+                capturing: true
+            };
+
+            eventHooks.blur = {
+                capturing: true
+            };
+        }
+
+        DOMNode.prototype.on = function(event, selector, callback) {
+            var eventType = typeof event;
+
+            if (eventType === "string") {
+                if (typeof selector === "function") {
+                    callback = selector;
+                    selector = null;
+                }
+
+                _.forWord(event, function(event) {
+                    var eventEntry = _.mixin({name: event, callback: callback, capturing: false}, eventHooks[event]);
+
+                    if (!eventEntry.handler) {
+                        eventEntry.handler = createEventHandler(this, callback, selector);
+                    }
+
+                    // attach event listener
+                    this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
+                    // store event entry
+                    this._events.push(eventEntry);
+                }, this);
+            } else if (eventType === "object") {
+                _.forIn(event, function(key) {
+                    this.on(key, event[key]);
+                }, this);
+            } else {
+                throw _.error("on");
+            }
+
+            return this;
+        };
+
+        DOMNode.prototype.off = function(eventType, callback) {
+            if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
+                throw new _.error("off");
+            }
+
+            var hook = eventHooks[eventType];
+
+            if (hook && hook.name) eventType = hook.name;
+
+            _.forEach(this._events, function(entry) {
+                if (eventType === entry.name && (!callback || callback === entry.callback)) {
+                    this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                }
+            }, this);
+
+            return this;
+        };
+
+        DOMNode.prototype.fire = function(eventType, detail) {
+            if (typeof eventType !== "string") {
+                throw new _.error("fire");
+            }
+
+            var isCustomEvent = ~eventType.indexOf(":"),
+                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event"),
+                hook = eventHooks[eventType];
+
+            if (hook && hook.name) eventType = hook.name;
+
+            if (isCustomEvent) {
+                event.initCustomEvent(eventType, true, false, detail);
+            } else { 
+                event.initEvent(eventType, true, true);
+            }
+            
+            this._node.dispatchEvent(event);
+
+            return this;
+        };
+    })();
 
     DOMElement.prototype = _.mixin(new DOMNode(), {
         matches: function(selector) {
