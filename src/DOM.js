@@ -8,6 +8,7 @@
     "use strict";
 
     // VARIABLES
+    // ---------
 
     var htmlEl = document.documentElement,
         headEl = document.head,
@@ -15,9 +16,7 @@
         // helpers
         sandbox = (function() {
             var el = document.createElement("body"),
-                appendTo = function(el) { 
-                    this.appendChild(el); 
-                };
+                appendTo = function(el) { this.appendChild(el); };
 
             return {
                 parse: function(html) {
@@ -34,205 +33,152 @@
                     return fragment;
                 }
             };
-        })(),
-        // types
-        DOMNode = function(node) {
-            if (!(this instanceof DOMNode)) {
-                return node ? node.__dom__ || new DOMNode(node) : new DOMNullNode();
-            }
+        })();
+        
+    // TYPES
+    // -----
+    
+    /**
+     * @private
+     * @constructor
+     * @param node native object
+     */
+    function DOMNode(node) {
+        if (!(this instanceof DOMNode)) {
+            return node ? node.__dom__ || new DOMNode(node) : new DOMNullNode();
+        }
 
-            this._node = node;
-            this._data = {};
-            this._events = [];
-        },
-        DOMElement = function(el) {
-            if (!(this instanceof DOMElement)) {
-                return el ? el.__dom__ || new DOMElement(el) : new DOMNullElement();
-            }
+        this._node = node;
+        this._data = {};
+        this._events = [];
+    }
+    
+    /**
+     * @private
+     * @constructor
+     * @param element native element
+     * @extends DOMNode 
+     */
+    function DOMElement(element) {
+        if (!(this instanceof DOMElement)) {
+            return element ? element.__dom__ || new DOMElement(element) : new DOMNullElement();
+        }
 
-            DOMNode.call(this, el);
-        },
-        DOMNullNode = function() { this._node = null; },
-        DOMNullElement = function() { this._node = null; },
-        DOMElementCollection = (function() {
-            // Create clean copy of Array prototype. Inspired by
-            // http://dean.edwards.name/weblog/2006/11/hooray/
-            var ref = scripts[0],
-                iframe = document.createElement("iframe"),
-                ctr, proto;
-                
-            iframe.src = "about:blank";
-            iframe.style.display = "none";
-                
-            ref.parentNode.insertBefore(iframe, ref);
-            // store reference to clean Array
-            ctr = iframe.contentWindow.Array;
-            // cleanup DOM
-            ref.parentNode.removeChild(iframe);
+        DOMNode.call(this, element);
+    }
+    
+    function DOMNullNode() { 
+        this._node = null; 
+    }
+    
+    function DOMNullElement() { 
+        this._node = null; 
+    }
+    
+    /**
+     * @private
+     * @constructor
+     * @param event Native event
+     */
+    function DOMEvent(event) {
+        if (!(this instanceof DOMEvent)) {
+            return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
+        }
 
-            proto = ctr.prototype;
-            
-            // cleanup collection prototype
-            Object.getOwnPropertyNames(proto).forEach(function(methodName) {
-                if (methodName !== "length") delete proto[methodName];
-            });
-            
-            return ctr;
-        })(),
-        SelectorMatcher = (function() {
-            // Quick matching inspired by
-            // https://github.com/jquery/jquery
-            var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-                ctr =  function(selector, quickOnly) {
-                    this.selector = selector;
-                    this.quickOnly = !!quickOnly;
+        this._event = event;
+    }
 
-                    var quick = rquickIs.exec(selector);
-                    // TODO: support attribute value check
-                    if (this.quick = quick) {
-                        //   0  1    2   3          4
-                        // [ _, tag, id, attribute, class ]
-                        quick[1] && (quick[1] = quick[1].toLowerCase());
-                        quick[4] && (quick[4] = " " + quick[4] + " ");
-                    } else if (quickOnly) {
-                        throw _.error("quick");
-                    }
-                },
-                matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
-                    var propertyName = prefix + "atchesSelector";
+    /**
+     * @private
+     * @type DOMElementCollection
+     */
+    var DOMElementCollection = (function() {
+        // Create clean copy of Array prototype. Inspired by
+        // http://dean.edwards.name/weblog/2006/11/hooray/
+        var ref = scripts[0],
+            iframe = document.createElement("iframe"),
+            ctr;
+       
+        iframe.src = "about:blank";
+        iframe.style.display = "none";
+       
+        ref.parentNode.insertBefore(iframe, ref);
+        // store reference to clean Array
+        ctr = iframe.contentWindow.Array;
+        // cleanup DOM
+        ref.parentNode.removeChild(iframe);
+        
+        // cleanup collection prototype
+        _.forEach(Object.getOwnPropertyNames(ctr.prototype), function(methodName) {
+           if (methodName !== "length") delete ctr.prototype[methodName];
+        });
+        
+        return ctr;
+    })(),
 
-                    return result || htmlEl[propertyName] && propertyName;
-                }, null);
+    /**
+     * @private
+     * @type SelectorMatcher
+     */
+    SelectorMatcher = (function() {
+        // Quick matching inspired by
+        // https://github.com/jquery/jquery
+        var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
+            ctr =  function(selector, quickOnly) {
+                this.selector = selector;
+                this.quickOnly = !!quickOnly;
 
-            ctr.prototype = {
-                test: function(el) {
-                    if (this.quick) {
-                        return (
-                            (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
-                            (!this.quick[2] || el.id === this.quick[2]) &&
-                            (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                            (!this.quick[4] || !!~((" " + el.className  + " ").indexOf(this.quick[4])))
-                        );
-                    }
-
-                    return !this.quickOnly && el[matchesProp](this.selector);
+                var quick = rquickIs.exec(selector);
+                // TODO: support attribute value check
+                if (this.quick = quick) {
+                    //   0  1    2   3          4
+                    // [ _, tag, id, attribute, class ]
+                    quick[1] && (quick[1] = quick[1].toLowerCase());
+                    quick[4] && (quick[4] = " " + quick[4] + " ");
+                } else if (quickOnly) {
+                    throw _.error("quick");
                 }
-            };
+            },
+            matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
+                var propertyName = prefix + "atchesSelector";
 
-            return ctr;
-        })(),
-        DOMEvent = function(event) {
-            if (!(this instanceof DOMEvent)) {
-                return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
+                return result || htmlEl[propertyName] && propertyName;
+            }, null);
+
+        ctr.prototype = {
+            test: function(el) {
+                if (this.quick) {
+                    return (
+                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
+                        (!this.quick[2] || el.id === this.quick[2]) &&
+                        (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
+                        (!this.quick[4] || !!~((" " + el.className  + " ").indexOf(this.quick[4])))
+                    );
+                }
+
+                return !this.quickOnly && el[matchesProp](this.selector);
             }
-
-            this._event = event;
         };
 
-    DOMNode.prototype = _.mixin({}, {
-        find: (function() {
-            // big part of code inspired by Sizzle:
-            // https://github.com/jquery/sizzle/blob/master/sizzle.js
+        return ctr;
+    })();
 
-            // TODO: disallow to use buggy selectors?
-            var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
-                rsibling = /[\x20\t\r\n\f]*[+~>]/,
-                rescape = /'|\\/g,
-                tmpId = "DOM" + new Date().getTime();
+    DOMNode.prototype = {
 
-            return function(selector, /*INTERNAL*/multiple) {
-                if (typeof selector !== "string") {
-                    throw _.error("find");
-                }
-
-                var node = this._node,
-                    quickMatch, m, elem, elements;
-
-                if (quickMatch = rquickExpr.exec(selector)) {
-                    // Speed-up: "#ID"
-                    if (m = quickMatch[1]) {
-                        elem = document.getElementById(m);
-                        // Handle the case where IE, Opera, and Webkit return items
-                        // by name instead of ID
-                        if ( elem && elem.parentNode && elem.id === m && (node === document || this.contains(elem)) ) {
-                            elements = [elem];
-                        }
-                    // Speed-up: "TAG"
-                    } else if (quickMatch[2]) {
-                        elements = node.getElementsByTagName(selector);
-                    // Speed-up: ".CLASS"
-                    } else if (m = quickMatch[3]) {
-                        elements = node.getElementsByClassName(m);
-                    }
-
-                    if (elements && !multiple) {
-                        elements = elements[0];
-                    }
-                } else {
-                    var old = true,
-                        nid = tmpId,
-                        context = node;
-
-                    if (node !== document) {
-                        // qSA works strangely on Element-rooted queries
-                        // We can work around this by specifying an extra ID on the root
-                        // and working up from there (Thanks to Andrew Dupont for the technique)
-                        if ( (old = node.getAttribute("id")) ) {
-                            nid = old.replace(rescape, "\\$&");
-                        } else {
-                            node.setAttribute("id", nid);
-                        }
-
-                        nid = "[id='" + nid + "'] ";
-
-                        context = rsibling.test(selector) && node.parentNode || node;
-                        selector = nid + selector.replace(/","/g, "," + nid);
-                    }
-
-                    try {
-                        elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
-                    } finally {
-                        if ( !old ) {
-                            node.removeAttribute("id");
-                        }
-                    }
-                }
-
-                return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
-            };
-        })(),
+        /**
+         * Finds all elements by selector
+         * @param  {String} selector css selector
+         * @return {DOMElementCollection} elements collection
+         */
         findAll: function(selector) {
             return this.find(selector, true);
         },
-        contains: (function() {
-            var containsElement = Node.prototype.contains ?
-                function(parent, child) {
-                    return parent.contains(child);
-                } :
-                function(parent, child) {
-                    return !!(parent.compareDocumentPosition(child) & 16);
-                };
 
-            return function(element, /*INTERNAL*/reverse) {
-                var node = this._node;
-
-                if (element instanceof Element) {
-                    return containsElement(reverse ? element : node, reverse ? node : element);
-                } else if (element instanceof DOMElement) {
-                    return element.contains(node, true);
-                } else if (Array.isArray(element)) {
-                    return _.every(element, function(element) {
-                        if (element instanceof DOMElement) {
-                            return element.contains(node, true);
-                        }
-                        
-                        throw _.error("contains");
-                    });
-                } else {
-                    throw _.error("contains");
-                }
-            };
-        })(),
+        /**
+         * Calls a method of native object
+         * @param  {String} name method name
+         * @return {Object} result of native method call
+         */
         call: function(name) {
             if (arguments.length === 1) {
                 return this._node[name]();
@@ -260,12 +206,128 @@
 
             return result;
         }
-    });
+    };
+
+    (function() {
+        var containsElement = Node.prototype.contains ?
+            function(parent, child) {
+                return parent.contains(child);
+            } :
+            function(parent, child) {
+                return !!(parent.compareDocumentPosition(child) & 16);
+            };
+
+        /**
+         * Check if element is inside of context
+         * @param  {DOMElement} element element to check
+         * @param  {Boolean} [reverse] internal parameter
+         * @return {Boolean} true if succes
+         */
+        DOMNode.prototype.contains = function(element, /*INTERNAL*/reverse) {
+            var node = this._node;
+
+            if (element instanceof Element) {
+                return containsElement(reverse ? element : node, reverse ? node : element);
+            } else if (element instanceof DOMElement) {
+                return element.contains(node, true);
+            } else if (Array.isArray(element)) {
+                return _.every(element, function(element) {
+                    if (element instanceof DOMElement) {
+                        return element.contains(node, true);
+                    }
+                    
+                    throw _.error("contains");
+                });
+            } else {
+                throw _.error("contains");
+            }
+        };
+    })();
+
+    (function() {
+        // big part of code inspired by Sizzle:
+        // https://github.com/jquery/sizzle/blob/master/sizzle.js
+
+        // TODO: disallow to use buggy selectors?
+        var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
+            rsibling = /[\x20\t\r\n\f]*[+~>]/,
+            rescape = /'|\\/g,
+            tmpId = "DOM" + new Date().getTime();
+
+        /**
+         * Finds element by selector
+         * @param  {String} selector css selector
+         * @param  {Boolean} [multiple] internal param
+         * @return {DOMElement} element or null if nothing was found
+         */
+        DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
+            if (typeof selector !== "string") {
+                throw _.error("find");
+            }
+
+            var node = this._node,
+                quickMatch, m, elem, elements;
+
+            if (quickMatch = rquickExpr.exec(selector)) {
+                // Speed-up: "#ID"
+                if (m = quickMatch[1]) {
+                    elem = document.getElementById(m);
+                    // Handle the case where IE, Opera, and Webkit return items
+                    // by name instead of ID
+                    if ( elem && elem.parentNode && elem.id === m && (node === document || this.contains(elem)) ) {
+                        elements = [elem];
+                    }
+                // Speed-up: "TAG"
+                } else if (quickMatch[2]) {
+                    elements = node.getElementsByTagName(selector);
+                // Speed-up: ".CLASS"
+                } else if (m = quickMatch[3]) {
+                    elements = node.getElementsByClassName(m);
+                }
+
+                if (elements && !multiple) {
+                    elements = elements[0];
+                }
+            } else {
+                var old = true,
+                    nid = tmpId,
+                    context = node;
+
+                if (node !== document) {
+                    // qSA works strangely on Element-rooted queries
+                    // We can work around this by specifying an extra ID on the root
+                    // and working up from there (Thanks to Andrew Dupont for the technique)
+                    if ( (old = node.getAttribute("id")) ) {
+                        nid = old.replace(rescape, "\\$&");
+                    } else {
+                        node.setAttribute("id", nid);
+                    }
+
+                    nid = "[id='" + nid + "'] ";
+
+                    context = rsibling.test(selector) && node.parentNode || node;
+                    selector = nid + selector.replace(/","/g, "," + nid);
+                }
+
+                try {
+                    elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
+                } finally {
+                    if ( !old ) {
+                        node.removeAttribute("id");
+                    }
+                }
+            }
+
+            return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
+        };
+    })()
 
     // EVENTS
+    // ------
     
     (function() {
-        var createEventHandler = function(thisPtr, callback, selector) {
+        var eventHooks = {},
+            createEventHandler = function(thisPtr, callback, selector) {
                 if (!selector) {
                     return function(e) {
                         callback.call(thisPtr, DOMEvent(e));
@@ -282,17 +344,16 @@
                     }
                 };
             },
-            eventHooks = {},
             // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
             isEventSupported = function(tagName, eventName) {
                 var el = document.createElement(tagName);
                 
-                eventName = 'on' + eventName;
+                eventName = "on" + eventName;
 
                 var isSupported = (eventName in el);
                 if (!isSupported) {
-                    el.setAttribute(eventName, 'return;');
-                    isSupported = typeof el[eventName] === 'function';
+                    el.setAttribute(eventName, "return;");
+                    isSupported = typeof el[eventName] === "function";
                 }
                 
                 return isSupported;
@@ -317,6 +378,13 @@
             };
         }
 
+        /**
+         * Bind a DOM event to the context
+         * @param  {String}   event    event type
+         * @param  {String}   [selector] css selector to filter
+         * @param  {Function} callback event handler
+         * @return {DOMNode} current context
+         */
         DOMNode.prototype.on = function(event, selector, callback) {
             var eventType = typeof event;
 
@@ -349,6 +417,12 @@
             return this;
         };
 
+        /**
+         * Unbind a DOM event from the context
+         * @param  {String}   eventType event type
+         * @param  {Function} callback  event handler
+         * @return {DOMNode} current context
+         */
         DOMNode.prototype.off = function(eventType, callback) {
             if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
                 throw new _.error("off");
@@ -367,6 +441,12 @@
             return this;
         };
 
+        /**
+         * Triggers an event of specific type
+         * @param  {String} eventType type of event
+         * @param  {Object} detail data to attach
+         * @return {DOMNode} current context
+         */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
                 throw new _.error("fire");
@@ -390,92 +470,119 @@
         };
     })();
 
-    DOMElement.prototype = _.mixin(new DOMNode(), {
-        matches: function(selector) {
-            if (typeof selector !== "string") {
-                throw _.error("matches");
-            }
+    DOMElement.prototype = new DOMNode();
 
-            return new SelectorMatcher(selector).test(this._node);
-        },
-        clone: function() {
-            return new DOMElement(this._node.cloneNode(true));
-        },
-        offset: function() {
-            var bodyEl = document.body,
-                boundingRect = this._node.getBoundingClientRect(),
-                clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
-                clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
-                scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
-                scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
-
-            return {
-                top: boundingRect.top + scrollTop - clientTop,
-                left: boundingRect.left + scrollLeft - clientLeft,
-                right: boundingRect.right + scrollLeft - clientLeft,
-                bottom: boundingRect.bottom + scrollTop - clientTop
-            };
-        },
-        show: function() {
-            return this.set("hidden", false);
-        },
-        hide: function() {
-            return this.set("hidden", true);
-        },
-        toString: function() {
-            var el = this._node, result,
-                makePair = function(name, value) {
-                    return encodeURIComponent(name) + "=" +encodeURIComponent(value);
-                };
-
-            if (el.elements) {
-                result = _.reduce(el.elements, function(parts, field) {
-                    if (field.name) { // don't include form fields without names
-                        switch(field.type) {
-                            case "select-one":
-                            case "select-multiple":
-                                _.forEach(field.options, function(option) {
-                                    if (option.selected) {
-                                        parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
-                                    }
-                                });
-                                break; 
-            
-                            case undefined: // fieldset
-                            case "file": // file input
-                            case "submit": // submit button
-                            case "reset": // reset button
-                            case "button": // custom button
-                                break; 
-            
-                            case "radio": // radio button
-                            case "checkbox": // checkbox
-                                if (!field.checked) break;
-            
-                            default:
-                                parts.push(makePair(field.name, field.value));
-                        }
-
-                        return parts;
-                    }
-                }, []);
-
-                result = result.join("&").replace(/%20/g, "+");
-            } else if (el.form) {
-                result = el.value;
-            } else {
-                result = el.outerHTML;
-            }
-
-            return result;
+    /**
+     * Check if the element matches selector
+     * @memberOf DOMElement
+     * @param  {String} selector css selector
+     * @return {DOMElement} current context
+     */
+    DOMElement.prototype.matches = function(selector) {
+        if (typeof selector !== "string") {
+            throw _.error("matches");
         }
-    });
+
+        return new SelectorMatcher(selector).test(this._node);
+    };
+
+    /**
+     * Clone element
+     * @return {DOMElement} current context
+     */
+    DOMElement.prototype.clone = function() {
+        return new DOMElement(this._node.cloneNode(true));
+    };
+
+    /**
+     * Calculates offset of current context
+     * @return {Object} offset object
+     */
+    DOMElement.prototype.offset = function() {
+        var bodyEl = document.body,
+            boundingRect = this._node.getBoundingClientRect(),
+            clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
+            clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
+            scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
+            scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
+
+        return {
+            top: boundingRect.top + scrollTop - clientTop,
+            left: boundingRect.left + scrollLeft - clientLeft,
+            right: boundingRect.right + scrollLeft - clientLeft,
+            bottom: boundingRect.bottom + scrollTop - clientTop
+        };
+    };
+
+    /**
+     * Show element
+     * @return {DOMElement} current context
+     */
+    DOMElement.prototype.show = function() {
+        return this.set("hidden", false);
+    };
+
+    /**
+     * Hide element
+     * @return {DOMElement} current context
+     */
+    DOMElement.prototype.hide = function() {
+        return this.set("hidden", true);
+    };
+        
+    DOMElement.prototype.toString = function() {
+        var el = this._node, result,
+            makePair = function(name, value) {
+                return encodeURIComponent(name) + "=" +encodeURIComponent(value);
+            };
+
+        if (el.elements) {
+            result = _.reduce(el.elements, function(parts, field) {
+                if (field.name) { // don't include form fields without names
+                    switch(field.type) {
+                        case "select-one":
+                        case "select-multiple":
+                            _.forEach(field.options, function(option) {
+                                if (option.selected) {
+                                    parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
+                                }
+                            });
+                            break; 
+        
+                        case undefined: // fieldset
+                        case "file": // file input
+                        case "submit": // submit button
+                        case "reset": // reset button
+                        case "button": // custom button
+                            break; 
+        
+                        case "radio": // radio button
+                        case "checkbox": // checkbox
+                            if (!field.checked) break;
+        
+                        default:
+                            parts.push(makePair(field.name, field.value));
+                    }
+
+                    return parts;
+                }
+            }, []);
+
+            result = result.join("&").replace(/%20/g, "+");
+        } else if (el.form) {
+            result = el.value;
+        } else {
+            result = el.outerHTML;
+        }
+
+        return result;
+    };
 
     // getter/setter
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function(el) { 
-                throw _.error("get"); 
+            throwIllegalAccess = function(el) {
+                throw _.error("get");
             };
         // protect access to some properties
         _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
@@ -484,6 +591,7 @@
                 set: throwIllegalAccess
             };
         });
+
         // fix NoScope elements in IE9
         propHooks.innerHTML = {
             set: function(el, value) {
@@ -493,53 +601,62 @@
             }
         };
 
-        _.mixin(DOMElement.prototype, {
-            get: function(name) {
-                if (typeof name !== "string") {
-                    throw _.error("get");
-                }
-
-                var el = this._node,
-                    hook = propHooks[name];
-
-                hook && (hook = hook.get);
-
-                return hook ? hook(el) : el[name] || el.getAttribute(name);
-            },
-            set: function(name, value) {
-                var el = this._node,
-                    nameType = typeof name,
-                    valueType = typeof value;
-
-                if (nameType === "string") {
-                    if (valueType === "function") {
-                        value = value.call(this, this.get(name));
-                    }
-
-                    _.forWord(name, function(name) {
-                        var hook = propHooks[name];
-
-                        if (hook) {
-                            hook.set(el, value);
-                        } else if (value === null || value === false) {
-                            el.removeAttribute(name);
-                        } else if (name in el) {
-                            el[name] = value;
-                        } else {
-                            el.setAttribute(name, value);
-                        }
-                    });
-                } else if (nameType === "object") {
-                    _.forIn(name, function(key) {
-                        this.set(key, name[key]);
-                    }, this);
-                } else {
-                    throw _.error("set");
-                }
-
-                return this;
+        /**
+         * Get property or attribute by name
+         * @param  {String} name property/attribute name
+         * @return {String} property/attribute value
+         */
+        DOMElement.prototype.get = function(name) {
+            if (typeof name !== "string") {
+                throw _.error("get");
             }
-        });
+
+            var el = this._node,
+                hook = propHooks[name];
+
+            hook && (hook = hook.get);
+
+            return hook ? hook(el) : el[name] || el.getAttribute(name);
+        };
+
+        /**
+         * Set property/attribute value
+         * @param {String} name  property/attribute name
+         * @param {String} value property/attribute value
+         */
+        DOMElement.prototype.set = function(name, value) {
+            var el = this._node,
+                nameType = typeof name,
+                valueType = typeof value;
+
+            if (nameType === "string") {
+                if (valueType === "function") {
+                    value = value.call(this, this.get(name));
+                }
+
+                _.forWord(name, function(name) {
+                    var hook = propHooks[name];
+
+                    if (hook) {
+                        hook.set(el, value);
+                    } else if (value === null || value === false) {
+                        el.removeAttribute(name);
+                    } else if (name in el) {
+                        el[name] = value;
+                    } else {
+                        el.setAttribute(name, value);
+                    }
+                });
+            } else if (nameType === "object") {
+                _.forIn(name, function(key) {
+                    this.set(key, name[key]);
+                }, this);
+            } else {
+                throw _.error("set");
+            }
+
+            return this;
+        };
     })();
 
     // dom traversing strategies
@@ -808,6 +925,7 @@
     });
 
     // DOMElementCollection
+    // --------------------
     
     DOMElementCollection.create = function(collection) {
         var result = new DOMElementCollection(),
@@ -1052,12 +1170,13 @@
     });
 
 })(window, document, {
-	
-	// UTILITES
-	
-	slice: function(list, index) {
-		return Array.prototype.slice.call(list, index || 0);
-	},
+    
+    // UTILITES
+    // --------
+    
+    slice: function(list, index) {
+        return Array.prototype.slice.call(list, index || 0);
+    },
     keys: function(obj) {
         return Object.keys(obj);
     },
