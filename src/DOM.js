@@ -39,7 +39,8 @@
     // -----
     
     /**
-     * @private
+     * @namespace Basic type for any node in DOM
+     * @name DOMNode
      * @constructor
      * @param node native object
      */
@@ -52,116 +53,6 @@
         this._data = {};
         this._events = [];
     }
-    
-    /**
-     * @private
-     * @constructor
-     * @param element native element
-     * @extends DOMNode 
-     */
-    function DOMElement(element) {
-        if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new DOMNullElement();
-        }
-
-        DOMNode.call(this, element);
-    }
-    
-    function DOMNullNode() { 
-        this._node = null; 
-    }
-    
-    function DOMNullElement() { 
-        this._node = null; 
-    }
-    
-    /**
-     * @private
-     * @constructor
-     * @param event Native event
-     */
-    function DOMEvent(event) {
-        if (!(this instanceof DOMEvent)) {
-            return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
-        }
-
-        this._event = event;
-    }
-
-    /**
-     * @private
-     * @type DOMElementCollection
-     */
-    var DOMElementCollection = (function() {
-        // Create clean copy of Array prototype. Inspired by
-        // http://dean.edwards.name/weblog/2006/11/hooray/
-        var ref = scripts[0],
-            iframe = document.createElement("iframe"),
-            ctr;
-       
-        iframe.src = "about:blank";
-        iframe.style.display = "none";
-       
-        ref.parentNode.insertBefore(iframe, ref);
-        // store reference to clean Array
-        ctr = iframe.contentWindow.Array;
-        // cleanup DOM
-        ref.parentNode.removeChild(iframe);
-        
-        // cleanup collection prototype
-        _.forEach(Object.getOwnPropertyNames(ctr.prototype), function(methodName) {
-           if (methodName !== "length") delete ctr.prototype[methodName];
-        });
-        
-        return ctr;
-    })(),
-
-    /**
-     * @private
-     * @type SelectorMatcher
-     */
-    SelectorMatcher = (function() {
-        // Quick matching inspired by
-        // https://github.com/jquery/jquery
-        var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-            ctr =  function(selector, quickOnly) {
-                this.selector = selector;
-                this.quickOnly = !!quickOnly;
-
-                var quick = rquickIs.exec(selector);
-                // TODO: support attribute value check
-                if (this.quick = quick) {
-                    //   0  1    2   3          4
-                    // [ _, tag, id, attribute, class ]
-                    quick[1] && (quick[1] = quick[1].toLowerCase());
-                    quick[4] && (quick[4] = " " + quick[4] + " ");
-                } else if (quickOnly) {
-                    throw _.error("quick");
-                }
-            },
-            matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
-                var propertyName = prefix + "atchesSelector";
-
-                return result || htmlEl[propertyName] && propertyName;
-            }, null);
-
-        ctr.prototype = {
-            test: function(el) {
-                if (this.quick) {
-                    return (
-                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
-                        (!this.quick[2] || el.id === this.quick[2]) &&
-                        (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                        (!this.quick[4] || !!~((" " + el.className  + " ").indexOf(this.quick[4])))
-                    );
-                }
-
-                return !this.quickOnly && el[matchesProp](this.selector);
-            }
-        };
-
-        return ctr;
-    })();
 
     DOMNode.prototype = {
 
@@ -175,7 +66,7 @@
         },
 
         /**
-         * Calls a method of native object
+         * Call a method of native object
          * @param  {String} name method name
          * @return {Object} result of native method call
          */
@@ -186,25 +77,46 @@
                 return this._node[name].apply(this._node, _.slice(arguments, 1));
             }
         },
-        data: function(name, value) {
-            if (typeof name !== "string") {
-                throw _.error("data");
+
+        /**
+         * Read data entry value
+         * @param  {String} key data entry key
+         * @return {Object} data entry value
+         */
+        getData: function(key) {
+            if (typeof key !== "string") {
+                throw _.error("getData");
             }
 
-            var node = this._node, 
-                result = this;
+            var node = this._node,
+                result = this._data[key];
 
-            if (value === undefined) {
-                result = this._data[name];
-
-                if (result === undefined && node.hasAttribute("data-" + name)) {
-                    result = this._data[name] = node.getAttribute("data-" + name);
-                }
-            } else {
-                this._data[name] = value;
+            if (result === undefined && node.hasAttribute("data-" + key)) {
+                result = this._data[key] = node.getAttribute("data-" + key);
             }
 
             return result;
+        },
+
+        /**
+         * Store data entry value(s)
+         * @param {String|Object} key data entry key | key/value pairs
+         * @param {Object} value data to store
+         */
+        setData: function(key, value) {
+            var keyType = typeof key;
+
+            if (keyType === "string") {
+                this._data[key] = value;
+            } else if (keyType === "object") {
+                _.forIn(key, function(dataKey) {
+                    this.setData(dataKey, key[dataKey]);
+                }, this);
+            } else {
+                throw _.error("setData");
+            }
+
+            return this;
         }
     };
 
@@ -242,6 +154,7 @@
                 throw _.error("contains");
             }
         };
+        
     })();
 
     (function() {
@@ -257,7 +170,7 @@
         /**
          * Finds element by selector
          * @param  {String} selector css selector
-         * @param  {Boolean} [multiple] internal param
+         * @param  {Boolean} [multiple] internal parameter
          * @return {DOMElement} element or null if nothing was found
          */
         DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
@@ -320,10 +233,10 @@
 
             return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
         };
-    })()
+
+    })();
 
     // EVENTS
-    // ------
     
     (function() {
         var eventHooks = {},
@@ -468,13 +381,123 @@
 
             return this;
         };
+
+    })();
+
+    /**
+     * @name DOMElement
+     * @constructor
+     * @param element native element
+     * @extends DOMNode 
+     */
+    function DOMElement(element) {
+        if (!(this instanceof DOMElement)) {
+            return element ? element.__dom__ || new DOMElement(element) : new DOMNullElement();
+        }
+
+        DOMNode.call(this, element);
+    }
+    
+    function DOMNullNode() { 
+        this._node = null; 
+    }
+    
+    function DOMNullElement() { 
+        this._node = null; 
+    }
+    
+    /**
+     * @name DOMEvent
+     * @constructor
+     * @param event native event
+     */
+    function DOMEvent(event) {
+        if (!(this instanceof DOMEvent)) {
+            return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
+        }
+
+        this._event = event;
+    }
+
+    /**
+     * @name DOMElementCollection
+     * @constructor
+     */
+    var DOMElementCollection = (function() {
+        // Create clean copy of Array prototype. Inspired by
+        // http://dean.edwards.name/weblog/2006/11/hooray/
+        var ref = scripts[0],
+            iframe = document.createElement("iframe"),
+            ctr;
+       
+        iframe.src = "about:blank";
+        iframe.style.display = "none";
+       
+        ref.parentNode.insertBefore(iframe, ref);
+        // store reference to clean Array
+        ctr = iframe.contentWindow.Array;
+        // cleanup DOM
+        ref.parentNode.removeChild(iframe);
+        
+        // cleanup collection prototype
+        _.forEach(Object.getOwnPropertyNames(ctr.prototype), function(methodName) {
+           if (methodName !== "length") delete ctr.prototype[methodName];
+        });
+        
+        return ctr;
+    })(),
+
+    /**
+     * @private
+     * @constructor
+     */
+    SelectorMatcher = (function() {
+        // Quick matching inspired by
+        // https://github.com/jquery/jquery
+        var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
+            ctr =  function(selector, quickOnly) {
+                this.selector = selector;
+                this.quickOnly = !!quickOnly;
+
+                var quick = rquickIs.exec(selector);
+                // TODO: support attribute value check
+                if (this.quick = quick) {
+                    //   0  1    2   3          4
+                    // [ _, tag, id, attribute, class ]
+                    quick[1] && (quick[1] = quick[1].toLowerCase());
+                    quick[4] && (quick[4] = " " + quick[4] + " ");
+                } else if (quickOnly) {
+                    throw _.error("quick");
+                }
+            },
+            matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
+                var propertyName = prefix + "atchesSelector";
+
+                return result || htmlEl[propertyName] && propertyName;
+            }, null);
+
+        ctr.prototype = {
+            test: function(el) {
+                if (this.quick) {
+                    return (
+                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
+                        (!this.quick[2] || el.id === this.quick[2]) &&
+                        (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
+                        (!this.quick[4] || !!~((" " + el.className  + " ").indexOf(this.quick[4])))
+                    );
+                }
+
+                return !this.quickOnly && el[matchesProp](this.selector);
+            }
+        };
+
+        return ctr;
     })();
 
     DOMElement.prototype = new DOMNode();
 
     /**
      * Check if the element matches selector
-     * @memberOf DOMElement
      * @param  {String} selector css selector
      * @return {DOMElement} current context
      */

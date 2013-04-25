@@ -10,21 +10,21 @@ describe("data", function() {
     it("should store any kind of object", function() {
         var obj = {}, nmb = 123, func = function() {};
 
-        expect(input.data("obj", obj).data("obj")).toEqual(obj);
-        expect(input.data("nmb", nmb).data("nmb")).toEqual(nmb);
-        expect(input.data("func", func).data("func")).toEqual(func);
+        expect(input.setData("obj", obj).getData("obj")).toEqual(obj);
+        expect(input.setData("nmb", nmb).getData("nmb")).toEqual(nmb);
+        expect(input.setData("func", func).getData("func")).toEqual(func);
     });
 
     it("should read an appropriate data-* attribute if it exists", function() {
-        expect(input.data("test")).toEqual("x");
+        expect(input.getData("test")).toEqual("x");
     });
 
     it("should return reference to 'this' when called with 2 arguments", function() {
-        expect(input.data("test", 123)).toEqual(input);
+        expect(input.setData("test", 123)).toEqual(input);
     });
 
     it("should throw error if arguments a invalid", function() {
-        expect(function() { link.data(123); }).toThrow();
+        expect(function() { link.getData(123); }).toThrow();
     });
 
 });
