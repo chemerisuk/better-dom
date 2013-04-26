@@ -35,8 +35,8 @@
             };
         })();
         
-    // TYPES
-    // -----
+    // DOMNode
+    // -------
     
     /**
      * @namespace Basic type for any node in DOM
@@ -154,7 +154,7 @@
                 throw _.error("contains");
             }
         };
-        
+
     })();
 
     (function() {
@@ -384,11 +384,15 @@
 
     })();
 
+    // DOMElement
+    // ----------
+
     /**
      * @name DOMElement
      * @constructor
      * @param element native element
-     * @extends DOMNode 
+     * @extends DOMNode
+     * @namespace Base type for any DOM element
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
@@ -397,6 +401,541 @@
 
         DOMNode.call(this, element);
     }
+
+    DOMElement.prototype = new DOMNode();
+
+    /**
+     * Check if the element matches selector
+     * @param  {String} selector css selector
+     * @return {DOMElement} reference to this
+     */
+    DOMElement.prototype.matches = function(selector) {
+        if (typeof selector !== "string") {
+            throw _.error("matches");
+        }
+
+        return new SelectorMatcher(selector).test(this._node);
+    };
+
+    /**
+     * Clone element
+     * @return {DOMElement} reference to this
+     */
+    DOMElement.prototype.clone = function() {
+        return new DOMElement(this._node.cloneNode(true));
+    };
+
+    /**
+     * Calculates offset of current context
+     * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
+     */
+    DOMElement.prototype.offset = function() {
+        var bodyEl = document.body,
+            boundingRect = this._node.getBoundingClientRect(),
+            clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
+            clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
+            scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
+            scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
+
+        return {
+            top: boundingRect.top + scrollTop - clientTop,
+            left: boundingRect.left + scrollLeft - clientLeft,
+            right: boundingRect.right + scrollLeft - clientLeft,
+            bottom: boundingRect.bottom + scrollTop - clientTop
+        };
+    };
+
+    /**
+     * Show element
+     * @return {DOMElement} reference to this
+     */
+    DOMElement.prototype.show = function() {
+        return this.set("hidden", false);
+    };
+
+    /**
+     * Hide element
+     * @return {DOMElement} reference to this
+     */
+    DOMElement.prototype.hide = function() {
+        return this.set("hidden", true);
+    };
+        
+    DOMElement.prototype.toString = function() {
+        var el = this._node, result,
+            makePair = function(name, value) {
+                return encodeURIComponent(name) + "=" +encodeURIComponent(value);
+            };
+
+        if (el.elements) {
+            result = _.reduce(el.elements, function(parts, field) {
+                if (field.name) { // don't include form fields without names
+                    switch(field.type) {
+                        case "select-one":
+                        case "select-multiple":
+                            _.forEach(field.options, function(option) {
+                                if (option.selected) {
+                                    parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
+                                }
+                            });
+                            break; 
+        
+                        case undefined: // fieldset
+                        case "file": // file input
+                        case "submit": // submit button
+                        case "reset": // reset button
+                        case "button": // custom button
+                            break; 
+        
+                        case "radio": // radio button
+                        case "checkbox": // checkbox
+                            if (!field.checked) break;
+        
+                        default:
+                            parts.push(makePair(field.name, field.value));
+                    }
+
+                    return parts;
+                }
+            }, []);
+
+            result = result.join("&").replace(/%20/g, "+");
+        } else if (el.form) {
+            result = el.value;
+        } else {
+            result = el.outerHTML;
+        }
+
+        return result;
+    };
+
+    // GETTER / SETTER
+
+    (function() {
+        var propHooks = {},
+            throwIllegalAccess = function(el) {
+                throw _.error("get");
+            };
+        // protect access to some properties
+        _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
+            propHooks[key] = propHooks[key.replace("Element", "")] = {
+                get: throwIllegalAccess,
+                set: throwIllegalAccess
+            };
+        });
+
+        // fix NoScope elements in IE9
+        propHooks.innerHTML = {
+            set: function(el, value) {
+                el.innerHTML = "&shy;" + value;
+                el.removeChild(el.firstChild);
+                // TODO: evaluate script elements?
+            }
+        };
+
+        /**
+         * Get property or attribute by name
+         * @param  {String} name property/attribute name
+         * @return {String} property/attribute value
+         */
+        DOMElement.prototype.get = function(name) {
+            if (typeof name !== "string") {
+                throw _.error("get");
+            }
+
+            var el = this._node,
+                hook = propHooks[name];
+
+            hook && (hook = hook.get);
+
+            return hook ? hook(el) : el[name] || el.getAttribute(name);
+        };
+
+        /**
+         * Set property/attribute value
+         * @param {String} name  property/attribute name
+         * @param {String} value property/attribute value
+         */
+        DOMElement.prototype.set = function(name, value) {
+            var el = this._node,
+                nameType = typeof name,
+                valueType = typeof value;
+
+            if (nameType === "string") {
+                if (valueType === "function") {
+                    value = value.call(this, this.get(name));
+                }
+
+                _.forWord(name, function(name) {
+                    var hook = propHooks[name];
+
+                    if (hook) {
+                        hook.set(el, value);
+                    } else if (value === null || value === false) {
+                        el.removeAttribute(name);
+                    } else if (name in el) {
+                        el[name] = value;
+                    } else {
+                        el.setAttribute(name, value);
+                    }
+                });
+            } else if (nameType === "object") {
+                _.forIn(name, function(key) {
+                    this.set(key, name[key]);
+                }, this);
+            } else {
+                throw _.error("set");
+            }
+
+            return this;
+        };
+
+    })();
+
+    // TRAVERSING
+    
+    (function() {
+        function makeTraversingMethod(propertyName, multiple) {
+            return function(selector) {
+                var matcher = selector ? new SelectorMatcher(selector) : null,
+                    nodes = multiple ? [] : null,
+                    it = this._node;
+
+                while (it = it[propertyName]) {
+                    if (!matcher || matcher.test(it)) {
+                        if (!multiple) break;
+
+                        nodes.push(it);
+                    }
+                }
+
+                return multiple ? DOMElementCollection.create(nodes) : DOMElement(it);
+            };
+        }
+
+        /**
+         * Find next sibling element filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElement} matched element
+         * @function
+         */
+        DOMElement.prototype.next = makeTraversingMethod("nextElementSibling");
+
+        /**
+         * Find previous sibling element filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElement} matched element
+         * @function
+         */
+        DOMElement.prototype.prev = makeTraversingMethod("previousElementSibling");
+
+        /**
+         * Find parent element filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElement} matched element
+         * @function
+         */
+        DOMElement.prototype.parent = makeTraversingMethod("parentNode");
+
+        /**
+         * Find first child element filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElement} matched element
+         * @function
+         */
+        DOMElement.prototype.firstChild = makeTraversingMethod("firstElementChild");
+
+        /**
+         * Find last child element filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElement} matched element
+         * @function
+         */
+        DOMElement.prototype.lastChild = makeTraversingMethod("lastElementChild");
+
+        /**
+         * Find all next sibling elements filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElementCollection} matched elements
+         * @function
+         */
+        DOMElement.prototype.nextAll = makeTraversingMethod("nextElementSibling", true);
+
+        /**
+         * Find all previous sibling elements filtered by optional selector
+         * @param {String} [selector] css selector
+         * @return {DOMElementCollection} matched elements
+         * @function
+         */
+        DOMElement.prototype.prevAll = makeTraversingMethod("previousElementSibling", true);
+
+        /**
+         * Fetch children elements filtered by optional selector
+         * @param  {String} selector css selector
+         * @return {DOMElementCollection} matched elements
+         */
+        DOMElement.prototype.children = function(selector) {
+            var children = this._node.children,
+                matcher = selector ? new SelectorMatcher(selector) : null;
+
+            return DOMElementCollection.create(!matcher ? children : 
+                _.filter(children, matcher.test, matcher));
+        };
+
+    })();
+
+    // MANIPULATION
+    // http://www.w3.org/TR/domcore/
+    // 5.2.2 Mutation methods
+    
+    (function() {
+        function makeManipulationMethod(methodName, fasterMethodName, strategy) {
+            return function(element, /*INTERNAL*/reverse) {
+                var el = this._node,
+                    relatedNode = el.parentNode;
+
+                if (typeof element === "string") {
+                    relatedNode = fasterMethodName ? null : sandbox.fragment(element);
+                } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
+                    relatedNode = element;
+                } else if (element !== undefined) {
+                    throw _.error(methodName);
+                }
+
+                if (relatedNode) {
+                    strategy(el, relatedNode);
+                } else {
+                    el.insertAdjacentHTML(fasterMethodName, element);
+                }
+
+                return this;
+            };
+        }
+
+        /**
+         * Insert html string or native element after the current
+         * @param {String|Element} content HTML string or Element
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
+            node.parentNode.insertBefore(relatedNode, node.nextSibling);
+        });
+
+        /**
+         * Insert html string or native element before the current
+         * @param {String|Element} content HTML string or Element
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
+            node.parentNode.insertBefore(relatedNode, node);
+        });
+
+        /**
+         * Prepend html string or native element to the current
+         * @param {String|Element} content HTML string or Element
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
+            node.insertBefore(relatedNode, node.firstChild);
+        });
+
+        /**
+         * Append html string or native element to the current
+         * @param {String|Element} content HTML string or Element
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
+            node.appendChild(relatedNode);
+        });
+
+        /**
+         * Replace current element with html string or native element
+         * @param {String|Element} content HTML string or Element
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
+            node.parentNode.replaceChild(relatedNode, node);
+        });
+
+        /**
+         * Remove current element from DOM
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
+            parentNode.removeChild(node);
+        });
+
+    })();
+
+    // classes manipulation
+    (function() {
+        var rclass = /[\n\t\r]/g,
+            makeClassesMethod = function(nativeStrategyName, strategy) {
+                var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach";
+
+                if (htmlEl.classList) {
+                    strategy = function(className) {
+                        return this._node.classList[nativeStrategyName](className);
+                    };
+                }
+
+                return function(classNames) {
+                    if (typeof classNames !== "string") {
+                        throw _.error(name);
+                    }
+
+                    var result = _[arrayMethod](classNames.split(" "), strategy, this);
+
+                    return result === undefined ? this : result;
+                };
+            };
+
+        /**
+         * Check if element contains class name(s)
+         * @param  {String} classNames space-separated class name(s)
+         * @return {Boolean} true if the element contains all classes
+         * @function
+         */
+        DOMElement.prototype.hasClass = makeClassesMethod("contains", function(className) {
+            return !!~((" " + this._node.className + " ")
+                        .replace(rclass, " ")).indexOf(" " + className + " ");
+        });
+
+        /**
+         * Add class(es) to element
+         * @param  {String} classNames space-separated class name(s)
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.addClass = makeClassesMethod("add", function(className) {
+            if (!this.hasClass(className)) {
+                this._node.className += " " + className;
+            }
+        });
+
+        /**
+         * Remove class(es) from element
+         * @param  {String} classNames space-separated class name(s)
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
+            this._node.className = (" " + this._node.className + " ")
+                    .replace(rclass, " ").replace(" " + className + " ", " ").trim();
+        });
+
+        /**
+         * Toggle class(es) on element
+         * @param  {String} classNames space-separated class name(s)
+         * @return {DOMElement} reference to this
+         * @function
+         */
+        DOMElement.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
+            var oldClassName = this._node.className;
+
+            this.addClass(className);
+
+            if (oldClassName === this._node.className) {
+                this.removeClass(className);
+            }
+        });
+
+    })();
+
+    // style manipulation
+    (function() {
+        var cssHooks = {},
+            rdash = /\-./g,
+            rcamel = /[A-Z]/g,
+            dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
+            camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
+            computed = window.getComputedStyle(htmlEl, ""),
+            props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
+
+        // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
+        _.forEach(props, function(propName) {
+            var prefix = propName.charAt(0) === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
+                unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
+                stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
+
+            // some browsers start vendor specific props in lowecase
+            if (!(stylePropName in computed)) {
+                stylePropName = stylePropName.charAt(0).toLowerCase() + stylePropName.substr(1);
+            }
+
+            if (stylePropName !== propName) {
+                cssHooks[unprefixedName] = {
+                    get: function(style) {
+                        return style[stylePropName];
+                    },
+                    set: function(style, value) {
+                        style[stylePropName] = value;
+                    }
+                };
+            }
+        });
+
+        // TODO: additional hooks to convert integers into appropriate strings
+
+        /**
+         * Get css style from element
+         * @param  {String} name property name
+         * @return {String} property value
+         */
+        DOMElement.prototype.getStyle = function(name) {
+            var style = this._node.style,
+                hook, result;
+
+            if (typeof name !== "string") {
+                throw _.error("getStyle"); 
+            }
+
+            hook = cssHooks[name];
+            hook = hook && hook.get;
+
+            result = hook ? hook(style) : style[name];
+
+            if (!result) {
+                style = window.getComputedStyle(this._node);
+
+                result = hook ? hook(style) : style[name];
+            }
+
+            return result;
+        };
+
+        /**
+         * Set css style for element
+         * @param {String} name  property name
+         * @param {String} value property value
+         */
+        DOMElement.prototype.setStyle = function(name, value) {
+            var style = this._node.style,
+                nameType = typeof name,
+                hook;
+
+            if (nameType === "string") {
+                hook = cssHooks[name];
+                hook = hook && hook.set;
+
+                hook ? hook(style, value) : style[name] = value;
+            } else if (nameType === "object") {
+                _.forIn(name, function(key) {
+                    this.setStyle(key, name[key]);
+                }, this);
+            } else {
+                throw _.error("setStyle");
+            }
+
+            return this;
+        };
+    })();
     
     function DOMNullNode() { 
         this._node = null; 
@@ -492,434 +1031,6 @@
         };
 
         return ctr;
-    })();
-
-    DOMElement.prototype = new DOMNode();
-
-    /**
-     * Check if the element matches selector
-     * @param  {String} selector css selector
-     * @return {DOMElement} current context
-     */
-    DOMElement.prototype.matches = function(selector) {
-        if (typeof selector !== "string") {
-            throw _.error("matches");
-        }
-
-        return new SelectorMatcher(selector).test(this._node);
-    };
-
-    /**
-     * Clone element
-     * @return {DOMElement} current context
-     */
-    DOMElement.prototype.clone = function() {
-        return new DOMElement(this._node.cloneNode(true));
-    };
-
-    /**
-     * Calculates offset of current context
-     * @return {Object} offset object
-     */
-    DOMElement.prototype.offset = function() {
-        var bodyEl = document.body,
-            boundingRect = this._node.getBoundingClientRect(),
-            clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
-            clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
-            scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
-            scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
-
-        return {
-            top: boundingRect.top + scrollTop - clientTop,
-            left: boundingRect.left + scrollLeft - clientLeft,
-            right: boundingRect.right + scrollLeft - clientLeft,
-            bottom: boundingRect.bottom + scrollTop - clientTop
-        };
-    };
-
-    /**
-     * Show element
-     * @return {DOMElement} current context
-     */
-    DOMElement.prototype.show = function() {
-        return this.set("hidden", false);
-    };
-
-    /**
-     * Hide element
-     * @return {DOMElement} current context
-     */
-    DOMElement.prototype.hide = function() {
-        return this.set("hidden", true);
-    };
-        
-    DOMElement.prototype.toString = function() {
-        var el = this._node, result,
-            makePair = function(name, value) {
-                return encodeURIComponent(name) + "=" +encodeURIComponent(value);
-            };
-
-        if (el.elements) {
-            result = _.reduce(el.elements, function(parts, field) {
-                if (field.name) { // don't include form fields without names
-                    switch(field.type) {
-                        case "select-one":
-                        case "select-multiple":
-                            _.forEach(field.options, function(option) {
-                                if (option.selected) {
-                                    parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
-                                }
-                            });
-                            break; 
-        
-                        case undefined: // fieldset
-                        case "file": // file input
-                        case "submit": // submit button
-                        case "reset": // reset button
-                        case "button": // custom button
-                            break; 
-        
-                        case "radio": // radio button
-                        case "checkbox": // checkbox
-                            if (!field.checked) break;
-        
-                        default:
-                            parts.push(makePair(field.name, field.value));
-                    }
-
-                    return parts;
-                }
-            }, []);
-
-            result = result.join("&").replace(/%20/g, "+");
-        } else if (el.form) {
-            result = el.value;
-        } else {
-            result = el.outerHTML;
-        }
-
-        return result;
-    };
-
-    // getter/setter
-    (function() {
-        var propHooks = {},
-            throwIllegalAccess = function(el) {
-                throw _.error("get");
-            };
-        // protect access to some properties
-        _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
-            propHooks[key] = propHooks[key.replace("Element", "")] = {
-                get: throwIllegalAccess,
-                set: throwIllegalAccess
-            };
-        });
-
-        // fix NoScope elements in IE9
-        propHooks.innerHTML = {
-            set: function(el, value) {
-                el.innerHTML = "&shy;" + value;
-                el.removeChild(el.firstChild);
-                // TODO: evaluate script elements?
-            }
-        };
-
-        /**
-         * Get property or attribute by name
-         * @param  {String} name property/attribute name
-         * @return {String} property/attribute value
-         */
-        DOMElement.prototype.get = function(name) {
-            if (typeof name !== "string") {
-                throw _.error("get");
-            }
-
-            var el = this._node,
-                hook = propHooks[name];
-
-            hook && (hook = hook.get);
-
-            return hook ? hook(el) : el[name] || el.getAttribute(name);
-        };
-
-        /**
-         * Set property/attribute value
-         * @param {String} name  property/attribute name
-         * @param {String} value property/attribute value
-         */
-        DOMElement.prototype.set = function(name, value) {
-            var el = this._node,
-                nameType = typeof name,
-                valueType = typeof value;
-
-            if (nameType === "string") {
-                if (valueType === "function") {
-                    value = value.call(this, this.get(name));
-                }
-
-                _.forWord(name, function(name) {
-                    var hook = propHooks[name];
-
-                    if (hook) {
-                        hook.set(el, value);
-                    } else if (value === null || value === false) {
-                        el.removeAttribute(name);
-                    } else if (name in el) {
-                        el[name] = value;
-                    } else {
-                        el.setAttribute(name, value);
-                    }
-                });
-            } else if (nameType === "object") {
-                _.forIn(name, function(key) {
-                    this.set(key, name[key]);
-                }, this);
-            } else {
-                throw _.error("set");
-            }
-
-            return this;
-        };
-    })();
-
-    // dom traversing strategies
-    (function() {
-        var traversingProps = {
-                nextAll: "nextElementSibling",
-                prevAll: "previousElementSibling",
-                children: "children",
-                firstChild: "firstElementChild",
-                lastChild: "lastElementChild",
-                next: "nextElementSibling",
-                prev: "previousElementSibling",
-                parent: "parentNode"
-            };
-
-        _.forIn(traversingProps, function(methodName) {
-            var propertyName = traversingProps[methodName];
-
-            if (methodName === "children") {
-                _.mixin(DOMElement.prototype, methodName, function(selector) {
-                    var children = this._node.children,
-                        matcher = selector ? new SelectorMatcher(selector) : null;
-
-                    return DOMElementCollection.create(!matcher ? children : 
-                        _.filter(children, matcher.test, matcher));
-                });                
-            } else {
-                _.mixin(DOMElement.prototype, methodName, function(selector) {
-                    var matcher = selector ? new SelectorMatcher(selector) : null,
-                        nodes = ~methodName.lastIndexOf("All") ? [] : null,
-                        it = this._node;
-
-                    while (it = it[propertyName]) {
-                        if (!matcher || matcher.test(it)) {
-                            if (!nodes) {
-                                return DOMElement(it);
-                            }
-
-                            nodes.push(it);
-                        }
-                    }
-
-                    return !nodes ? new DOMNullElement() : DOMElementCollection.create(nodes);
-                });
-            }
-        });
-    })();
-
-    // dom manipulation strategies
-    (function() {
-        // http://www.w3.org/TR/domcore/
-        // 5.2.2 Mutation methods
-        var manipulationStrategies = {
-            after: function(node, relatedNode) {
-                node.parentNode.insertBefore(relatedNode, node.nextSibling);
-            },
-            before: function(node, relatedNode) {
-                node.parentNode.insertBefore(relatedNode, node);
-            },
-            append: function(node, relatedNode) {
-                node.appendChild(relatedNode);
-            },
-            prepend: function(node, relatedNode) {
-                node.insertBefore(relatedNode, node.firstChild);
-            },
-            replace: function(node, relatedNode) {
-                node.parentNode.replaceChild(relatedNode, node);
-            },
-            remove: function(node, parentNode) {
-                parentNode.removeChild(node);
-            }
-        },
-        optimizedManipulationStrategies = {
-            after: "afterend",
-            before: "beforebegin",
-            append: "beforeend",
-            prepend: "afterbegin"
-        };
-
-        _.forIn(manipulationStrategies, function(methodName) {
-            var process = manipulationStrategies[methodName],
-                adjStrategy = optimizedManipulationStrategies[methodName];
-
-            _.mixin(DOMElement.prototype, methodName, function(element, /*INTERNAL*/reverse) {
-                var el = this._node,
-                    relatedNode = el.parentNode;
-
-                if (typeof element === "string") {
-                    relatedNode = adjStrategy ? null : sandbox.fragment(element);
-                } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
-                    relatedNode = element;
-                } else if (element !== undefined) {
-                    throw _.error(methodName);
-                }
-
-                if (relatedNode) {
-                    process(el, relatedNode);
-                } else {
-                    el.insertAdjacentHTML(adjStrategy, element);
-                }
-
-                return this;
-            });
-        });
-    })();
-
-    // classes manipulation
-    (function() {
-        var rclass = /[\n\t\r]/g,
-            classStrategies = htmlEl.classList ? {
-                hasClass: function(className) {
-                    return this._node.classList.contains(className);
-                },
-                addClass: function(className) {
-                    this._node.classList.add(className);
-                },
-                removeClass: function(className) {
-                    this._node.classList.remove(className);
-                },
-                toggleClass: function(className) {
-                    this._node.classList.toggle(className);
-                }
-            } : {
-                hasClass: function(className) {
-                    return !!~((" " + this._node.className + " ")
-                            .replace(rclass, " ")).indexOf(" " + className + " ");
-                },
-                addClass: function(className) {
-                    if (!classStrategies.hasClass.call(this, className)) {
-                        this._node.className += " " + className;
-                    }
-                },
-                removeClass: function(className) {
-                    this._node.className = (" " + this._node.className + " ")
-                        .replace(rclass, " ").replace(" " + className + " ", " ").trim();
-                },
-                toggleClass: function(className) {
-                    var oldClassName = this._node.className;
-
-                    classStrategies.addClass.call(this, className);
-
-                    if (oldClassName === this._node.className) {
-                        classStrategies.removeClass.call(this, className);
-                    }
-                }
-            };
-
-        _.forIn(classStrategies, function(methodName) {
-            var process = classStrategies[methodName],
-                arrayMethod = methodName === "hasClass" ? "every" : "forEach";
-
-            _.mixin(DOMElement.prototype, methodName, function(classNames) {
-                if (typeof classNames !== "string") {
-                    throw _.error(name);
-                }
-
-                var result = _[arrayMethod](classNames.split(" "), process, this);
-
-                return result === undefined ? this : result;
-            });
-        });
-    })();
-
-    // style manipulation
-    (function() {
-        var cssHooks = {},
-            rdash = /\-./g,
-            rcamel = /[A-Z]/g,
-            dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
-            camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = window.getComputedStyle(htmlEl, ""),
-            props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
-
-        // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
-        _.forEach(props, function(propName) {
-            var prefix = propName.charAt(0) === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
-                unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-                stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
-
-            // some browsers start vendor specific props in lowecase
-            if (!(stylePropName in computed)) {
-                stylePropName = stylePropName.charAt(0).toLowerCase() + stylePropName.substr(1);
-            }
-
-            if (stylePropName !== propName) {
-                cssHooks[unprefixedName] = {
-                    get: function(style) {
-                        return style[stylePropName];
-                    },
-                    set: function(style, value) {
-                        style[stylePropName] = value;
-                    }
-                };
-            }
-        });
-
-        // TODO: additional hooks to convert integers into appropriate strings
-
-        DOMElement.prototype.getStyle = function(name) {
-            var style = this._node.style,
-                hook, result;
-
-            if (typeof name !== "string") {
-                throw _.error("getStyle"); 
-            }
-
-            hook = cssHooks[name];
-            hook = hook && hook.get;
-
-            result = hook ? hook(style) : style[name];
-
-            if (!result) {
-                style = window.getComputedStyle(this._node);
-
-                result = hook ? hook(style) : style[name];
-            }
-
-            return result;
-        };
-
-        DOMElement.prototype.setStyle = function(name, value) {
-            var style = this._node.style,
-                nameType = typeof name,
-                hook;
-
-            if (nameType === "string") {
-                hook = cssHooks[name];
-                hook = hook && hook.set;
-
-                hook ? hook(style, value) : style[name] = value;
-            } else if (nameType === "object") {
-                _.forIn(name, function(key) {
-                    this.setStyle(key, name[key]);
-                }, this);
-            } else {
-                throw _.error("setStyle");
-            }
-
-            return this;
-        };
     })();
 
     DOMEvent.prototype = _.mixin({}, {
