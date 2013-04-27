@@ -490,7 +490,7 @@
                         case "radio": // radio button
                         case "checkbox": // checkbox
                             if (!field.checked) break;
-        
+                            /* falls through */
                         default:
                             parts.push(makePair(field.name, field.value));
                     }
