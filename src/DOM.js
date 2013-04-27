@@ -39,7 +39,6 @@
     // -------
     
     /**
-     * @namespace Basic type for any node in DOM
      * @name DOMNode
      * @constructor
      * @param node native object
@@ -58,6 +57,7 @@
 
         /**
          * Finds all elements by selector
+         * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMElementCollection} elements collection
          */
@@ -67,6 +67,7 @@
 
         /**
          * Call a method of native object
+         * @memberOf DOMNode.prototype
          * @param  {String} name method name
          * @return {Object} result of native method call
          */
@@ -80,6 +81,7 @@
 
         /**
          * Read data entry value
+         * @memberOf DOMNode.prototype
          * @param  {String} key data entry key
          * @return {Object} data entry value
          */
@@ -100,6 +102,7 @@
 
         /**
          * Store data entry value(s)
+         * @memberOf DOMNode.prototype
          * @param {String|Object} key data entry key | key/value pairs
          * @param {Object} value data to store
          */
@@ -131,6 +134,7 @@
 
         /**
          * Check if element is inside of context
+         * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
          * @param  {Boolean} [reverse] internal parameter
          * @return {Boolean} true if succes
@@ -169,6 +173,7 @@
 
         /**
          * Finds element by selector
+         * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @param  {Boolean} [multiple] internal parameter
          * @return {DOMElement} element or null if nothing was found
@@ -293,6 +298,7 @@
 
         /**
          * Bind a DOM event to the context
+         * @memberOf DOMNode.prototype
          * @param  {String}   event    event type
          * @param  {String}   [selector] css selector to filter
          * @param  {Function} callback event handler
@@ -332,6 +338,7 @@
 
         /**
          * Unbind a DOM event from the context
+         * @memberOf DOMNode.prototype
          * @param  {String}   eventType event type
          * @param  {Function} callback  event handler
          * @return {DOMNode} current context
@@ -356,6 +363,7 @@
 
         /**
          * Triggers an event of specific type
+         * @memberOf DOMNode.prototype
          * @param  {String} eventType type of event
          * @param  {Object} detail data to attach
          * @return {DOMNode} current context
@@ -392,7 +400,6 @@
      * @constructor
      * @param element native element
      * @extends DOMNode
-     * @namespace Base type for any DOM element
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
@@ -406,6 +413,7 @@
 
     /**
      * Check if the element matches selector
+     * @memberOf DOMElement.prototype
      * @param  {String} selector css selector
      * @return {DOMElement} reference to this
      */
@@ -419,6 +427,7 @@
 
     /**
      * Clone element
+     * @memberOf DOMElement.prototype
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.clone = function() {
@@ -427,6 +436,7 @@
 
     /**
      * Calculates offset of current context
+     * @memberOf DOMElement.prototype
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     DOMElement.prototype.offset = function() {
@@ -447,6 +457,7 @@
 
     /**
      * Show element
+     * @memberOf DOMElement.prototype
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.show = function() {
@@ -455,6 +466,7 @@
 
     /**
      * Hide element
+     * @memberOf DOMElement.prototype
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.hide = function() {
@@ -535,6 +547,7 @@
 
         /**
          * Get property or attribute by name
+         * @memberOf DOMElement.prototype
          * @param  {String} name property/attribute name
          * @return {String} property/attribute value
          */
@@ -553,6 +566,7 @@
 
         /**
          * Set property/attribute value
+         * @memberOf DOMElement.prototype
          * @param {String} name  property/attribute name
          * @param {String} value property/attribute value
          */
@@ -615,6 +629,7 @@
 
         /**
          * Find next sibling element filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -623,6 +638,7 @@
 
         /**
          * Find previous sibling element filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -631,6 +647,7 @@
 
         /**
          * Find parent element filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -639,6 +656,7 @@
 
         /**
          * Find first child element filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -647,6 +665,7 @@
 
         /**
          * Find last child element filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -655,6 +674,7 @@
 
         /**
          * Find all next sibling elements filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElementCollection} matched elements
          * @function
@@ -663,6 +683,7 @@
 
         /**
          * Find all previous sibling elements filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElementCollection} matched elements
          * @function
@@ -671,6 +692,7 @@
 
         /**
          * Fetch children elements filtered by optional selector
+         * @memberOf DOMElement.prototype
          * @param  {String} selector css selector
          * @return {DOMElementCollection} matched elements
          */
@@ -714,6 +736,7 @@
 
         /**
          * Insert html string or native element after the current
+         * @memberOf DOMElement.prototype
          * @param {String|Element} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
@@ -724,6 +747,7 @@
 
         /**
          * Insert html string or native element before the current
+         * @memberOf DOMElement.prototype
          * @param {String|Element} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
@@ -734,6 +758,7 @@
 
         /**
          * Prepend html string or native element to the current
+         * @memberOf DOMElement.prototype
          * @param {String|Element} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
@@ -744,6 +769,7 @@
 
         /**
          * Append html string or native element to the current
+         * @memberOf DOMElement.prototype
          * @param {String|Element} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
@@ -754,6 +780,7 @@
 
         /**
          * Replace current element with html string or native element
+         * @memberOf DOMElement.prototype
          * @param {String|Element} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
@@ -764,6 +791,7 @@
 
         /**
          * Remove current element from DOM
+         * @memberOf DOMElement.prototype
          * @return {DOMElement} reference to this
          * @function
          */
@@ -798,6 +826,7 @@
 
         /**
          * Check if element contains class name(s)
+         * @memberOf DOMElement.prototype
          * @param  {String} classNames space-separated class name(s)
          * @return {Boolean} true if the element contains all classes
          * @function
@@ -809,6 +838,7 @@
 
         /**
          * Add class(es) to element
+         * @memberOf DOMElement.prototype
          * @param  {String} classNames space-separated class name(s)
          * @return {DOMElement} reference to this
          * @function
@@ -821,6 +851,7 @@
 
         /**
          * Remove class(es) from element
+         * @memberOf DOMElement.prototype
          * @param  {String} classNames space-separated class name(s)
          * @return {DOMElement} reference to this
          * @function
@@ -832,6 +863,7 @@
 
         /**
          * Toggle class(es) on element
+         * @memberOf DOMElement.prototype
          * @param  {String} classNames space-separated class name(s)
          * @return {DOMElement} reference to this
          * @function
@@ -885,6 +917,7 @@
 
         /**
          * Get css style from element
+         * @memberOf DOMElement.prototype
          * @param  {String} name property name
          * @return {String} property value
          */
@@ -912,6 +945,7 @@
 
         /**
          * Set css style for element
+         * @memberOf DOMElement.prototype
          * @param {String} name  property name
          * @param {String} value property value
          */
@@ -979,6 +1013,7 @@
     DOMEvent.prototype = {
         /**
          * Read event property by name
+         * @memberOf DOMEvent.prototype
          * @param  {String} name property name
          * @return {Object} property value
          */
@@ -1008,18 +1043,21 @@
 
         /**
          * Prevent default event action
+         * @memberOf DOMEvent.prototype
          * @function
          */
         DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault");
 
         /**
          * Stop event propagation
+         * @memberOf DOMEvent.prototype
          * @function
          */
         DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation");
 
         /**
          * Stop event propagation immidiately
+         * @memberOf DOMEvent.prototype
          * @function
          */
         DOMEvent.prototype.stopImmediatePropagation = makeFuncMethod("stopImmediatePropagation");
@@ -1034,7 +1072,6 @@
     // --------------------
 
     /**
-     * @namespace Type for collection of <a href="DOMElement.html">DOMElement</a>s
      * @name DOMElementCollection
      * @constructor
      */
@@ -1064,6 +1101,7 @@
 
     /**
      * Create DOMElementCollection from native collection/array of elements
+     * @memberOf DOMElementCollection
      * @param  {Array|HTMLCollection} collection native collection/array of elements
      * @return {DOMElementCollection} collection
      * @static
@@ -1081,6 +1119,7 @@
 
     /**
      * Execute callback for each element in collection
+     * @memberOf DOMElementCollection.prototype
      * @param  {Function} callback action to execute
      * @return {DOMElementCollection} reference to this
      */
@@ -1105,65 +1144,73 @@
 
         /**
          * Shortcut to DOMNode.prototype.on method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMNode.html#on">DOMNode.prototype.on</a>
+         * @see DOMElement#on
          */
         DOMElementCollection.prototype.on = makeCollectionMethod("on");
 
         /**
          * Shortcut to DOMNode.prototype.off method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMNode.html#off">DOMNode.prototype.off</a>
+         * @see DOMElement#off
          */
         DOMElementCollection.prototype.off = makeCollectionMethod("off");
 
         /**
          * Shortcut to DOMNode.prototype.fire method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMNode.html#fire">DOMNode.prototype.fire</a>
+         * @see DOMElement#fire
          */
         DOMElementCollection.prototype.fire = makeCollectionMethod("fire");
 
         /**
          * Shortcut to DOMNode.prototype.setData method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMNode.html#setData">DOMNode.prototype.setData</a>
+         * @see DOMElement#setData
          */
         DOMElementCollection.prototype.setData = makeCollectionMethod("setData");
 
         /**
          * Shortcut to DOMElement.prototype.set method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMElement.html#set">DOMNode.prototype.set</a>
+         * @see DOMElement#set
          */
         DOMElementCollection.prototype.set = makeCollectionMethod("set");
 
         /**
          * Shortcut to DOMElement.prototype.addClass method
+         * @memberOf DOMElementCollection
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMElement.html#addClass">DOMElement.prototype.addClass</a>
+         * @see DOMElement#addClass
          */
         DOMElementCollection.prototype.addClass = makeCollectionMethod("addClass");
 
         /**
          * Shortcut to DOMElement.prototype.removeClass method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMElement.html#removeClass">DOMElement.prototype.removeClass</a>
+         * @see DOMElement#removeClass
          */
         DOMElementCollection.prototype.removeClass = makeCollectionMethod("removeClass");
 
         /**
          * Shortcut to DOMElement.prototype.toggleClass method
+         * @memberOf DOMElementCollection.prototype
          * @return {DOMElementCollection} reference to this
          * @function
-         * @see <a href="DOMElement.html#toggleClass">DOMElement.prototype.toggleClass</a>
+         * @see DOMElement#toggleClass
          */
         DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
     })();
@@ -1223,16 +1270,17 @@
     });
 
     /**
-     * @namespace Public API
-     * @name DOM
-     * @extends DOMNode
+     * @global
+     * @type DOMNode
      */
     var DOM = new DOMNode(document);
 
     /**
      * Create DOMElement or DOMElementCollection
+     * @memberOf DOM
      * @param  {String|Element|HTMLCollection} content native element / collection
-     * @return {DOMElement|DOMElementColleciton} element / collection
+     * @return {DOMElement|DOMElementCollection} element / collection
+     * @global
      */
     DOM.create = function(content) {
         var elem = content;
@@ -1252,8 +1300,10 @@
 
     /**
      * Register callback on dom ready
+     * @memberOf DOM
      * @param {Function} callback event handler
      * @function
+     * @global
      */
     DOM.ready = (function() {
         var readyCallbacks = null,
@@ -1296,9 +1346,11 @@
 
     /**
      * Import css styles on page
+     * @memberOf DOM
      * @param  {String|Object} selector css selector or object with selector/rules pairs
      * @return {String} css rules
      * @function
+     * @global
      */
     DOM.importStyles = (function() {
         var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
@@ -1342,9 +1394,11 @@
 
     /**
      * Watches when element with a spefified selector will be inserted on page
+     * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
      * @function
+     * @global
      */
     DOM.watch = (function() {
         DOM._watchers = {};
@@ -1411,8 +1465,10 @@
 
     /**
      * Extend DOM with custom widget
+     * @memberOf DOM
      * @param  {String} selector widget css selector
      * @param  {Object} options  widget options
+     * @global
      */
     DOM.extend = function(selector, options) {
         if (!options || typeof options !== "object") {
