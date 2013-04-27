@@ -806,7 +806,8 @@
     (function() {
         var rclass = /[\n\t\r]/g,
             makeClassesMethod = function(nativeStrategyName, strategy) {
-                var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach";
+                var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach",
+                    methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
                 if (htmlEl.classList) {
                     strategy = function(className) {
@@ -816,7 +817,7 @@
 
                 return function(classNames) {
                     if (typeof classNames !== "string") {
-                        throw _.error(name);
+                        throw _.error(methodName);
                     }
 
                     var result = _[arrayMethod](classNames.split(" "), strategy, this);
@@ -1319,7 +1320,7 @@
                 elem = document.createElement(content);
             }
         } else if (!(content instanceof Element)) {
-            throw _.error("create");
+            throw _.error("create", "DOM");
         }
 
         return DOMElement(elem);
@@ -1360,7 +1361,7 @@
         // return implementation
         return function(callback) {
             if (typeof callback !== "function") {
-                throw _.error("ready");
+                throw _.error("ready", "DOM");
             }
 
             if (readyCallbacks) {
@@ -1392,7 +1393,7 @@
                 } else if (typeof styles === "string") {
                     ruleText += styles;
                 } else {
-                    throw _.error("importStyles");
+                    throw _.error("importStyles", "DOM");
                 }
 
                 styleEl.appendChild(document.createTextNode(ruleText + "}"));
@@ -1414,7 +1415,7 @@
                     process(selector, rule[selector]);
                 });
             } else {
-                throw _.error("importStyles");
+                throw _.error("importStyles", "DOM");
             }
         };
     })();
@@ -1499,7 +1500,7 @@
      */
     DOM.extend = function(selector, options) {
         if (!options || typeof options !== "object") {
-            throw _.error("extend");
+            throw _.error("extend", "DOM");
         }
 
         var template = options.template,
@@ -1612,8 +1613,9 @@
 
         return obj; 
     },
-    error: function(methodName, type) {
-        // http://domjs.net/doc/{objectName}/{methodName}[#{hashName}]
-        return "Error: '" + (type ? type + "." : "") + methodName + "' method called with illegal arguments";
+    error: function(method, type) {
+        type = type || "DOMElement";
+
+        return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
     }
 });
