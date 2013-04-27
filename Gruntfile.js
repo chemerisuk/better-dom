@@ -63,4 +63,9 @@ module.exports = function(grunt) {
         "karma:server", // start karma server
         "watch" // watch for a file changes
     ]);
+
+    grunt.registerTask("publish-docs", [
+        "jsdoc",
+        "build_gh_pages:jsdoc"
+    ]);
 };
