@@ -1081,7 +1081,8 @@
 
     /**
      * Execute callback for each element in collection
-     * @param  {Function} callback actions to execute
+     * @param  {Function} callback action to execute
+     * @return {DOMElementCollection} reference to this
      */
     DOMElementCollection.prototype.each = function(callback) {
         _.forEach(this, callback);
@@ -1104,57 +1105,65 @@
 
         /**
          * Shortcut to DOMNode.prototype.on method
-         * @see <a href="DOMNode.html#on">DOMNode.prototype.on</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMNode.html#on">DOMNode.prototype.on</a>
          */
         DOMElementCollection.prototype.on = makeCollectionMethod("on");
 
         /**
          * Shortcut to DOMNode.prototype.off method
-         * @see <a href="DOMNode.html#off">DOMNode.prototype.off</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMNode.html#off">DOMNode.prototype.off</a>
          */
         DOMElementCollection.prototype.off = makeCollectionMethod("off");
 
         /**
          * Shortcut to DOMNode.prototype.fire method
-         * @see <a href="DOMNode.html#fire">DOMNode.prototype.fire</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMNode.html#fire">DOMNode.prototype.fire</a>
          */
         DOMElementCollection.prototype.fire = makeCollectionMethod("fire");
 
         /**
          * Shortcut to DOMNode.prototype.setData method
-         * @see <a href="DOMNode.html#setData">DOMNode.prototype.setData</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMNode.html#setData">DOMNode.prototype.setData</a>
          */
         DOMElementCollection.prototype.setData = makeCollectionMethod("setData");
 
         /**
          * Shortcut to DOMElement.prototype.set method
-         * @see <a href="DOMElement.html#set">DOMNode.prototype.set</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMElement.html#set">DOMNode.prototype.set</a>
          */
         DOMElementCollection.prototype.set = makeCollectionMethod("set");
 
         /**
          * Shortcut to DOMElement.prototype.addClass method
-         * @see <a href="DOMElement.html#addClass">DOMElement.prototype.addClass</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMElement.html#addClass">DOMElement.prototype.addClass</a>
          */
         DOMElementCollection.prototype.addClass = makeCollectionMethod("addClass");
 
         /**
          * Shortcut to DOMElement.prototype.removeClass method
-         * @see <a href="DOMElement.html#removeClass">DOMElement.prototype.removeClass</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMElement.html#removeClass">DOMElement.prototype.removeClass</a>
          */
         DOMElementCollection.prototype.removeClass = makeCollectionMethod("removeClass");
 
         /**
          * Shortcut to DOMElement.prototype.toggleClass method
-         * @see <a href="DOMElement.html#toggleClass">DOMElement.prototype.toggleClass</a>
+         * @return {DOMElementCollection} reference to this
          * @function
+         * @see <a href="DOMElement.html#toggleClass">DOMElement.prototype.toggleClass</a>
          */
         DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
     })();
