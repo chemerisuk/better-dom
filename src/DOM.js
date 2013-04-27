@@ -935,8 +935,11 @@
 
             return this;
         };
+
     })();
     
+    // NULL OBJECTS
+
     function DOMNullNode() { 
         this._node = null; 
     }
@@ -944,6 +947,21 @@
     function DOMNullElement() { 
         this._node = null; 
     }
+
+    DOMNullNode.prototype = new DOMNode();
+    DOMNullElement.prototype = new DOMElement();
+
+    _.forIn(DOMNode.prototype, function(key) {
+        _.mixin(DOMNullNode.prototype, key, function() {});
+        _.mixin(DOMNullElement.prototype, key, function() {});
+    });
+
+    _.forIn(DOMElement.prototype, function(key) {
+        _.mixin(DOMNullElement.prototype, key, function() {});
+    });
+
+    // DOMEvent
+    // --------
     
     /**
      * @name DOMEvent
@@ -957,6 +975,77 @@
 
         this._event = event;
     }
+
+    DOMEvent.prototype = {
+        /**
+         * Read event property by name
+         * @param  {String} name property name
+         * @return {Object} property value
+         */
+        get: function(name) {
+            if (typeof name !== "string" || name in DOMEvent.prototype) {
+                throw _.error("get", "DOMEvent");
+            }
+
+            return this._event[name];
+        }
+    };
+
+    (function() {
+        var makeFuncMethod = function(name) {
+                return function() {
+                    this._event[name]();
+                };
+            },
+            makeGetterMethod = function(name) {
+                Object.defineProperty(DOMEvent.prototype, name, {
+                    enumerable: true,
+                    get: function() {
+                        return DOMElement(this._event[name]);
+                    }
+                });
+            };
+
+        /**
+         * Prevent default event action
+         * @function
+         */
+        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault");
+
+        /**
+         * Stop event propagation
+         * @function
+         */
+        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation");
+
+        /**
+         * Stop event propagation immidiately
+         * @function
+         */
+        DOMEvent.prototype.stopImmediatePropagation = makeFuncMethod("stopImmediatePropagation");
+
+        /**
+         * Return target
+         * @type {DOMElement}
+         */
+        DOMEvent.prototype.target = makeGetterMethod("target");
+
+        /**
+         * Return current target
+         * @type {DOMElement}
+         */
+        DOMEvent.prototype.currentTarget = makeGetterMethod("currentTarget");
+
+        /**
+         * Return related target
+         * @type {DOMElement}
+         */
+        DOMEvent.prototype.relatedTarget = makeGetterMethod("relatedTarget");
+
+    })();
+
+    // DOMElementCollection
+    // --------------------
 
     /**
      * @name DOMElementCollection
@@ -984,13 +1073,49 @@
         });
         
         return ctr;
-    })(),
+    })();
+
+    /**
+     * Create DOMElementCollection from native collection/array of elements
+     * @param  {Array|HTMLCollection} collection native collection/array of elements
+     * @return {DOMElementCollection} collection
+     * @static
+     */
+    DOMElementCollection.create = function(collection) {
+        var result = new DOMElementCollection(),
+            i = 0, n = collection.length;
+
+        while (i < n) {
+            Array.prototype.push.call(result, DOMElement(collection[i++]));
+        }
+
+        return result;
+    };
+
+    DOMElementCollection.prototype.each = function(callback) {
+        _.forEach(this, callback);
+
+        return this;
+    };
+
+    // shortcuts
+    _.forWord("set on off fire data addClass removeClass toggleClass", function(methodName) {
+        var process = DOMElement.prototype[methodName];
+
+        _.mixin(DOMElementCollection.prototype, methodName, function() {
+            for (var i = 0, n = this.length; i < n; ++i) {
+                process.apply(this[i], _.slice(arguments));
+            }
+
+            return this;
+        });
+    });
 
     /**
      * @private
      * @constructor
      */
-    SelectorMatcher = (function() {
+    var SelectorMatcher = (function() {
         // Quick matching inspired by
         // https://github.com/jquery/jquery
         var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
@@ -1033,275 +1158,252 @@
         return ctr;
     })();
 
-    DOMEvent.prototype = _.mixin({}, {
-        get: function(name) {
-            if (typeof name !== "string" || ~name.indexOf("arget") || ~name.indexOf("lement")) {
-                throw _.error("get", "DOMEvent");
-            }
-
-            return this._event[name];
-        }
-    });
-    // methods
-    _.forWord("preventDefault stopPropagation stopImmediatePropagation", function(key) {
-        _.mixin(DOMEvent.prototype, key, function() {
-            this._event[key]();
-        });
-    });
-    // getters
-    _.forWord("target currentTarget relatedTarget", function(key) {
-        Object.defineProperty(DOMEvent.prototype, key, {
-            enumerable: true,
-            get: function() {
-                return DOMElement(this._event[key]);
-            }
-        });
-    });
-
-    // DOMElementCollection
-    // --------------------
-    
-    DOMElementCollection.create = function(collection) {
-        var result = new DOMElementCollection(),
-            i = 0, n = collection.length;
-
-        while (i < n) {
-            Array.prototype.push.call(result, DOMElement(collection[i++]));
-        }
-
-        return result;
-    };
-
-    DOMElementCollection.prototype.each = function(callback) {
-        _.forEach(this, callback);
-
-        return this;
-    };
-
-    // shortcuts
-    _.forWord("set on off fire data addClass removeClass toggleClass", function(methodName) {
-        var process = DOMElement.prototype[methodName];
-
-        _.mixin(DOMElementCollection.prototype, methodName, function() {
-            for (var i = 0, n = this.length; i < n; ++i) {
-                process.apply(this[i], _.slice(arguments));
-            }
-
-            return this;
-        });
-    });
-
     // finish prototypes
-    DOMNullNode.prototype = new DOMNode();
-    DOMNullElement.prototype = new DOMElement();
-
-    _.forIn(DOMNode.prototype, function(key) {
-        _.mixin(DOMNullNode.prototype, key, function() {});
-        _.mixin(DOMNullElement.prototype, key, function() {});
-    });
-
-    _.forIn(DOMElement.prototype, function(key) {
-        _.mixin(DOMNullElement.prototype, key, function() {});
-    });
-
+    
     // fix constructor property
     _.forEach([DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement], function(ctr) {
         ctr.prototype.constructor = ctr;
     });
 
-    // public API
-    window.DOM = _.mixin(new DOMNode(document), {
-        create: function(content) {
-            var elem = content;
+    /**
+     * @namespace Public API
+     * @name DOM
+     * @extends DOMNode
+     */
+    var DOM = new DOMNode(document);
 
-            if (typeof content === "string") {
-                if (content.charAt(0) === "<") {
-                    return DOMElementCollection.create(sandbox.parse(content));
-                } else {
-                    elem = document.createElement(content);
-                }
-            } else if (!(content instanceof Element)) {
-                throw _.error("create");
+    /**
+     * Create DOMElement or DOMElementCollection
+     * @param  {String|Element|HTMLCollection} content native element / collection
+     * @return {DOMElement|DOMElementColleciton} element / collection
+     */
+    DOM.create = function(content) {
+        var elem = content;
+
+        if (typeof content === "string") {
+            if (content.charAt(0) === "<") {
+                return DOMElementCollection.create(sandbox.parse(content));
+            } else {
+                elem = document.createElement(content);
             }
+        } else if (!(content instanceof Element)) {
+            throw _.error("create");
+        }
 
-            return DOMElement(elem);
-        },
-        ready: (function() {
-            var readyCallbacks = null,
-                readyProcess = function() {
-                    if (readyCallbacks) {
-                        // trigger callbacks
-                        _.forEach(readyCallbacks, function(callback) {
-                            callback();
-                        });
-                        // cleanup
-                        readyCallbacks = null;
-                    }
-                };
+        return DOMElement(elem);
+    };
 
-            // Catch cases where ready is called after the browser event has already occurred.
-            // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
-            // hey, at least it's not a UA sniff
-            // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-            if ( document.attachEvent ? document.readyState !== "complete" : document.readyState === "loading") {
-                readyCallbacks = [];
-
-                document.addEventListener("DOMContentLoaded", readyProcess, false);
-                // additional handler for complex cases
-                window.addEventListener("load", readyProcess, false);
-            }
-
-            // return implementation
-            return function(callback) {
-                if (typeof callback !== "function") {
-                    throw _.error("ready");
-                }
-
+    /**
+     * Register callback on dom ready
+     * @param {Function} callback event handler
+     * @function
+     */
+    DOM.ready = (function() {
+        var readyCallbacks = null,
+            readyProcess = function() {
                 if (readyCallbacks) {
-                    readyCallbacks.push(callback);
-                } else {
-                    callback();
+                    // trigger callbacks
+                    _.forEach(readyCallbacks, function(callback) {
+                        callback();
+                    });
+                    // cleanup
+                    readyCallbacks = null;
                 }
             };
-        })(),
-        importStyles: (function() {
-            var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
-                process = function(selector, styles) {
-                    var ruleText = selector + " { ";
 
-                    if (typeof styles === "object") {
-                        _.forIn(styles, function(propName) {
-                            // append vendor prefix if it's required
-                            ruleText += propName + ":" + styles[propName] + "; ";
-                        });
-                    } else if (typeof styles === "string") {
-                        ruleText += styles;
-                    } else {
-                        throw _.error("importStyles");
-                    }
+        // Catch cases where ready is called after the browser event has already occurred.
+        // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
+        // hey, at least it's not a UA sniff
+        // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+        if ( document.attachEvent ? document.readyState !== "complete" : document.readyState === "loading") {
+            readyCallbacks = [];
 
-                    styleEl.appendChild(document.createTextNode(ruleText + "}"));
-                };
+            document.addEventListener("DOMContentLoaded", readyProcess, false);
+            // additional handler for complex cases
+            window.addEventListener("load", readyProcess, false);
+        }
 
-            if (!("hidden" in htmlEl)) {
-                process("[hidden]", "display:none");    
+        // return implementation
+        return function(callback) {
+            if (typeof callback !== "function") {
+                throw _.error("ready");
             }
-                        
-            return function(selector, styles) {
-                var selectorType = typeof selector;
 
-                if (selectorType === "string") {
-                    process(selector, styles);
-                } else if (selectorType === "object") {
-                    _.forEach(_.slice(arguments), function(rule) {
-                        var selector = _.keys(rule)[0];
+            if (readyCallbacks) {
+                readyCallbacks.push(callback);
+            } else {
+                callback();
+            }
+        };
+    })();
 
-                        process(selector, rule[selector]);
+    /**
+     * Import css styles on page
+     * @param  {String|Object} selector css selector or object with selector/rules pairs
+     * @return {String} css rules
+     * @function
+     */
+    DOM.importStyles = (function() {
+        var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
+            process = function(selector, styles) {
+                var ruleText = selector + " { ";
+
+                if (typeof styles === "object") {
+                    _.forIn(styles, function(propName) {
+                        // append vendor prefix if it's required
+                        ruleText += propName + ":" + styles[propName] + "; ";
                     });
+                } else if (typeof styles === "string") {
+                    ruleText += styles;
                 } else {
                     throw _.error("importStyles");
                 }
+
+                styleEl.appendChild(document.createTextNode(ruleText + "}"));
             };
-        })(),
-        _watchers: {},
-        watch: htmlEl.addBehavior ? (function() {
-            var behavior = scripts[scripts.length - 1].getAttribute("data-htc");
 
-            return function(selector, callback) {
-                var entry = this._watchers[selector];
+        if (!("hidden" in htmlEl)) {
+            process("[hidden]", "display:none");    
+        }
+                    
+        return function(selector, styles) {
+            var selectorType = typeof selector;
 
-                if (entry) {
-                    entry.push(callback);
-                } else {
-                    this._watchers[selector] = [callback];
-                    // append style rule at the last step
-                    this.importStyles(selector, { behavior: "url(" + behavior + ")" });
-                }
-            };
-        })() : (function() {
-            // use trick discovered by Daniel Buchner: 
-            // https://github.com/csuwldcat/SelectorListener
-            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = window.getComputedStyle(htmlEl, ""),
-                cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            if (selectorType === "string") {
+                process(selector, styles);
+            } else if (selectorType === "object") {
+                _.forEach(_.slice(arguments), function(rule) {
+                    var selector = _.keys(rule)[0];
 
-            return function(selector, callback) {
-                var animationName = "DOM" + new Date().getTime(),
-                    allAnimationNames = this._watchers[selector] || animationName,
-                    cancelBubbling = function(e) {
-                        if (e.animationName === animationName) {
-                            e.stopPropagation();
-                        }
-                    };
-
-                this.importStyles(
-                    "@" + cssPrefix + "keyframes " + animationName,
-                    "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
-                );
-
-                // use comma separated animation names in case of multiple
-                if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
-
-                this.importStyles(
-                    selector, 
-                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
-                );
-
-                _.forEach(startNames, function(name) {
-                    document.addEventListener(name, function(e) {
-                        var el = e.target;
-
-                        if (e.animationName === animationName) {
-                            callback(DOMElement(el));
-                            // prevent double initialization
-                            el.addEventListener(name, cancelBubbling, false);
-                        }
-                    }, false);
+                    process(selector, rule[selector]);
                 });
-
-                this._watchers[selector] = allAnimationNames;
-            };
-        })(),
-        extend: function(selector, options) {
-            if (!options || typeof options !== "object") {
-                throw _.error("extend");
+            } else {
+                throw _.error("importStyles");
             }
+        };
+    })();
 
-            var template = options.template,
-                css = options.css,
-                ctr;
+    /**
+     * Watches when element with a spefified selector will be inserted on page
+     * @param {String} selector css selector
+     * @param {Fuction} callback event handler
+     * @function
+     */
+    DOM.watch = (function() {
+        DOM._watchers = {};
 
-            if (template) {
-                _.forIn(template, function(key) {
-                    template[key] = sandbox.fragment(template[key]);
-                });
+        if (htmlEl.addBehavior) {
+            return (function() {
+                var behavior = scripts[scripts.length - 1].getAttribute("data-htc");
 
-                delete options.template;
-            }
+                return function(selector, callback) {
+                    var entry = this._watchers[selector];
 
-            if (css) {
-                this.importStyles.apply(this, css);
+                    if (entry) {
+                        entry.push(callback);
+                    } else {
+                        this._watchers[selector] = [callback];
+                        // append style rule at the last step
+                        this.importStyles(selector, { behavior: "url(" + behavior + ")" });
+                    }
+                };
+            })();
+        } else {
+            return (function() {
+                // use trick discovered by Daniel Buchner: 
+                // https://github.com/csuwldcat/SelectorListener
+                var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+                    computed = window.getComputedStyle(htmlEl, ""),
+                    cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
-                delete options.css;
-            }
+                return function(selector, callback) {
+                    var animationName = "DOM" + new Date().getTime(),
+                        allAnimationNames = this._watchers[selector] || animationName,
+                        cancelBubbling = function(e) {
+                            if (e.animationName === animationName) {
+                                e.stopPropagation();
+                            }
+                        };
 
-            if (options.hasOwnProperty("constructor")) {
-                ctr = options.constructor;
+                    this.importStyles(
+                        "@" + cssPrefix + "keyframes " + animationName,
+                        "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                    );
 
-                delete options.constructor;
-            }
+                    // use comma separated animation names in case of multiple
+                    if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
 
-            this.watch(selector, function(el) {
-                _.mixin(el, options);
+                    this.importStyles(
+                        selector, 
+                        cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
+                    );
 
-                template && _.forIn(template, function(key) {
-                    el[key](template[key].cloneNode(true));
-                });
+                    _.forEach(startNames, function(name) {
+                        document.addEventListener(name, function(e) {
+                            var el = e.target;
 
-                if (ctr) ctr.call(el);
-            });
+                            if (e.animationName === animationName) {
+                                callback(DOMElement(el));
+                                // prevent double initialization
+                                el.addEventListener(name, cancelBubbling, false);
+                            }
+                        }, false);
+                    });
+
+                    this._watchers[selector] = allAnimationNames;
+                };
+            })();
         }
     });
+
+    /**
+     * Extend DOM with custom widget
+     * @param  {String} selector widget css selector
+     * @param  {Object} options  widget options
+     */
+    DOM.extend = function(selector, options) {
+        if (!options || typeof options !== "object") {
+            throw _.error("extend");
+        }
+
+        var template = options.template,
+            css = options.css,
+            ctr;
+
+        if (template) {
+            _.forIn(template, function(key) {
+                template[key] = sandbox.fragment(template[key]);
+            });
+
+            delete options.template;
+        }
+
+        if (css) {
+            this.importStyles.apply(this, css);
+
+            delete options.css;
+        }
+
+        if (options.hasOwnProperty("constructor")) {
+            ctr = options.constructor;
+
+            delete options.constructor;
+        }
+
+        this.watch(selector, function(el) {
+            _.mixin(el, options);
+
+            template && _.forIn(template, function(key) {
+                el[key](template[key].cloneNode(true));
+            });
+
+            if (ctr) ctr.call(el);
+        });
+    };
+
+    // REGISTRATION
+    
+    window.DOM = DOM;
 
 })(window, document, {
     
