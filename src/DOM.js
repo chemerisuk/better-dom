@@ -997,7 +997,7 @@
                     this._event[name]();
                 };
             },
-            makeGetterMethod = function(name) {
+            defineProperty = function(name) {
                 Object.defineProperty(DOMEvent.prototype, name, {
                     enumerable: true,
                     get: function() {
@@ -1024,23 +1024,9 @@
          */
         DOMEvent.prototype.stopImmediatePropagation = makeFuncMethod("stopImmediatePropagation");
 
-        /**
-         * Return target
-         * @type {DOMElement}
-         */
-        DOMEvent.prototype.target = makeGetterMethod("target");
-
-        /**
-         * Return current target
-         * @type {DOMElement}
-         */
-        DOMEvent.prototype.currentTarget = makeGetterMethod("currentTarget");
-
-        /**
-         * Return related target
-         * @type {DOMElement}
-         */
-        DOMEvent.prototype.relatedTarget = makeGetterMethod("relatedTarget");
+        defineProperty("target");
+        defineProperty("currentTarget");
+        defineProperty("relatedTarget");
 
     })();
 
@@ -1103,8 +1089,8 @@
         var process = DOMElement.prototype[methodName];
 
         _.mixin(DOMElementCollection.prototype, methodName, function() {
-            for (var i = 0, n = this.length; i < n; ++i) {
-                process.apply(this[i], _.slice(arguments));
+            for (var i = 0, n = this.length, args = _.slice(arguments); i < n; ++i) {
+                process.apply(this[i], args);
             }
 
             return this;
