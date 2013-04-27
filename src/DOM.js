@@ -1034,6 +1034,7 @@
     // --------------------
 
     /**
+     * @namespace Type for collection of <a href="DOMElement.html">DOMElement</a>s
      * @name DOMElementCollection
      * @constructor
      */
@@ -1078,24 +1079,85 @@
         return result;
     };
 
+    /**
+     * Execute callback for each element in collection
+     * @param  {Function} callback actions to execute
+     */
     DOMElementCollection.prototype.each = function(callback) {
         _.forEach(this, callback);
 
         return this;
     };
 
-    // shortcuts
-    _.forWord("set on off fire data addClass removeClass toggleClass", function(methodName) {
-        var process = DOMElement.prototype[methodName];
+    (function() {
+        var makeCollectionMethod = function(name) {
+                var process = DOMElement.prototype[name];
 
-        _.mixin(DOMElementCollection.prototype, methodName, function() {
-            for (var i = 0, n = this.length, args = _.slice(arguments); i < n; ++i) {
-                process.apply(this[i], args);
-            }
+                return function() {
+                    for (var i = 0, n = this.length, args = _.slice(arguments); i < n; ++i) {
+                        process.apply(this[i], args);
+                    }
 
-            return this;
-        });
-    });
+                    return this;
+                };
+            };
+
+        /**
+         * Shortcut to DOMNode.prototype.on method
+         * @see <a href="DOMNode.html#on">DOMNode.prototype.on</a>
+         * @function
+         */
+        DOMElementCollection.prototype.on = makeCollectionMethod("on");
+
+        /**
+         * Shortcut to DOMNode.prototype.off method
+         * @see <a href="DOMNode.html#off">DOMNode.prototype.off</a>
+         * @function
+         */
+        DOMElementCollection.prototype.off = makeCollectionMethod("off");
+
+        /**
+         * Shortcut to DOMNode.prototype.fire method
+         * @see <a href="DOMNode.html#fire">DOMNode.prototype.fire</a>
+         * @function
+         */
+        DOMElementCollection.prototype.fire = makeCollectionMethod("fire");
+
+        /**
+         * Shortcut to DOMNode.prototype.setData method
+         * @see <a href="DOMNode.html#setData">DOMNode.prototype.setData</a>
+         * @function
+         */
+        DOMElementCollection.prototype.setData = makeCollectionMethod("setData");
+
+        /**
+         * Shortcut to DOMElement.prototype.set method
+         * @see <a href="DOMElement.html#set">DOMNode.prototype.set</a>
+         * @function
+         */
+        DOMElementCollection.prototype.set = makeCollectionMethod("set");
+
+        /**
+         * Shortcut to DOMElement.prototype.addClass method
+         * @see <a href="DOMElement.html#addClass">DOMElement.prototype.addClass</a>
+         * @function
+         */
+        DOMElementCollection.prototype.addClass = makeCollectionMethod("addClass");
+
+        /**
+         * Shortcut to DOMElement.prototype.removeClass method
+         * @see <a href="DOMElement.html#removeClass">DOMElement.prototype.removeClass</a>
+         * @function
+         */
+        DOMElementCollection.prototype.removeClass = makeCollectionMethod("removeClass");
+
+        /**
+         * Shortcut to DOMElement.prototype.toggleClass method
+         * @see <a href="DOMElement.html#toggleClass">DOMElement.prototype.toggleClass</a>
+         * @function
+         */
+        DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
+    })();
 
     /**
      * @private
@@ -1279,68 +1341,64 @@
         DOM._watchers = {};
 
         if (htmlEl.addBehavior) {
-            return (function() {
-                var behavior = scripts[scripts.length - 1].getAttribute("data-htc");
+            var behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
-                return function(selector, callback) {
-                    var entry = this._watchers[selector];
+            return function(selector, callback) {
+                var entry = DOM._watchers[selector];
 
-                    if (entry) {
-                        entry.push(callback);
-                    } else {
-                        this._watchers[selector] = [callback];
-                        // append style rule at the last step
-                        this.importStyles(selector, { behavior: "url(" + behavior + ")" });
-                    }
-                };
-            })();
+                if (entry) {
+                    entry.push(callback);
+                } else {
+                    DOM._watchers[selector] = [callback];
+                    // append style rule at the last step
+                    DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
+                }
+            };
         } else {
-            return (function() {
-                // use trick discovered by Daniel Buchner: 
-                // https://github.com/csuwldcat/SelectorListener
-                var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                    computed = window.getComputedStyle(htmlEl, ""),
-                    cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            // use trick discovered by Daniel Buchner: 
+            // https://github.com/csuwldcat/SelectorListener
+            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+                computed = window.getComputedStyle(htmlEl, ""),
+                cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
-                return function(selector, callback) {
-                    var animationName = "DOM" + new Date().getTime(),
-                        allAnimationNames = this._watchers[selector] || animationName,
-                        cancelBubbling = function(e) {
-                            if (e.animationName === animationName) {
-                                e.stopPropagation();
-                            }
-                        };
+            return function(selector, callback) {
+                var animationName = "DOM" + new Date().getTime(),
+                    allAnimationNames = DOM._watchers[selector] || animationName,
+                    cancelBubbling = function(e) {
+                        if (e.animationName === animationName) {
+                            e.stopPropagation();
+                        }
+                    };
 
-                    this.importStyles(
-                        "@" + cssPrefix + "keyframes " + animationName,
-                        "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
-                    );
+                DOM.importStyles(
+                    "@" + cssPrefix + "keyframes " + animationName,
+                    "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                );
 
-                    // use comma separated animation names in case of multiple
-                    if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
+                // use comma separated animation names in case of multiple
+                if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
 
-                    this.importStyles(
-                        selector, 
-                        cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
-                    );
+                DOM.importStyles(
+                    selector, 
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
+                );
 
-                    _.forEach(startNames, function(name) {
-                        document.addEventListener(name, function(e) {
-                            var el = e.target;
+                _.forEach(startNames, function(name) {
+                    document.addEventListener(name, function(e) {
+                        var el = e.target;
 
-                            if (e.animationName === animationName) {
-                                callback(DOMElement(el));
-                                // prevent double initialization
-                                el.addEventListener(name, cancelBubbling, false);
-                            }
-                        }, false);
-                    });
+                        if (e.animationName === animationName) {
+                            callback(DOMElement(el));
+                            // prevent double initialization
+                            el.addEventListener(name, cancelBubbling, false);
+                        }
+                    }, false);
+                });
 
-                    this._watchers[selector] = allAnimationNames;
-                };
-            })();
+                DOM._watchers[selector] = allAnimationNames;
+            };
         }
-    });
+    })();
 
     /**
      * Extend DOM with custom widget
@@ -1365,7 +1423,7 @@
         }
 
         if (css) {
-            this.importStyles.apply(this, css);
+            DOM.importStyles.apply(DOM, css);
 
             delete options.css;
         }
@@ -1376,7 +1434,7 @@
             delete options.constructor;
         }
 
-        this.watch(selector, function(el) {
+        DOM.watch(selector, function(el) {
             _.mixin(el, options);
 
             template && _.forIn(template, function(key) {
