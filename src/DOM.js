@@ -340,7 +340,7 @@
          * Unbind a DOM event from the context
          * @memberOf DOMNode.prototype
          * @param  {String}   eventType event type
-         * @param  {Function} callback  event handler
+         * @param  {Function} [callback]  event handler
          * @return {DOMNode} current context
          */
         DOMNode.prototype.off = function(eventType, callback) {
@@ -365,7 +365,7 @@
          * Triggers an event of specific type
          * @memberOf DOMNode.prototype
          * @param  {String} eventType type of event
-         * @param  {Object} detail data to attach
+         * @param  {Object} [detail] data to attach
          * @return {DOMNode} current context
          */
         DOMNode.prototype.fire = function(eventType, detail) {
@@ -569,6 +569,7 @@
          * @memberOf DOMElement.prototype
          * @param {String} name  property/attribute name
          * @param {String} value property/attribute value
+         * @return {DOMElement} reference to this
          */
         DOMElement.prototype.set = function(name, value) {
             var el = this._node,
@@ -948,6 +949,7 @@
          * @memberOf DOMElement.prototype
          * @param {String} name  property name
          * @param {String} value property value
+         * @return {DOMElement} reference to this
          */
         DOMElement.prototype.setStyle = function(name, value) {
             var style = this._node.style,
@@ -1143,8 +1145,11 @@
             };
 
         /**
-         * Shortcut to DOMNode.prototype.on method
+         * Shortcut to {@link DOMNode#on} method
          * @memberOf DOMElementCollection.prototype
+         * @param  {String}   event    event type
+         * @param  {String}   [selector] css selector to filter
+         * @param  {Function} callback event handler
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#on
@@ -1152,8 +1157,10 @@
         DOMElementCollection.prototype.on = makeCollectionMethod("on");
 
         /**
-         * Shortcut to DOMNode.prototype.off method
+         * Shortcut to {@link DOMNode#off} method
          * @memberOf DOMElementCollection.prototype
+         * @param  {String}   eventType event type
+         * @param  {Function} [callback]  event handler
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#off
@@ -1161,8 +1168,10 @@
         DOMElementCollection.prototype.off = makeCollectionMethod("off");
 
         /**
-         * Shortcut to DOMNode.prototype.fire method
+         * Shortcut to {@link DOMNode#fire} method
          * @memberOf DOMElementCollection.prototype
+         * @param  {String} eventType type of event
+         * @param  {Object} [detail] data to attach
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#fire
@@ -1170,8 +1179,10 @@
         DOMElementCollection.prototype.fire = makeCollectionMethod("fire");
 
         /**
-         * Shortcut to DOMNode.prototype.setData method
+         * Shortcut to {@link DOMNode#setData} method
          * @memberOf DOMElementCollection.prototype
+         * @param {String|Object} key data entry key | key/value pairs
+         * @param {Object} value data to store
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#setData
@@ -1179,8 +1190,10 @@
         DOMElementCollection.prototype.setData = makeCollectionMethod("setData");
 
         /**
-         * Shortcut to DOMElement.prototype.set method
+         * Shortcut to {@link DOMElement#set} method
          * @memberOf DOMElementCollection.prototype
+         * @param {String} name  property/attribute name
+         * @param {String} value property/attribute value
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#set
@@ -1188,8 +1201,20 @@
         DOMElementCollection.prototype.set = makeCollectionMethod("set");
 
         /**
-         * Shortcut to DOMElement.prototype.addClass method
+         * Shortcut to {@link DOMElement#setStyle} method
+         * @memberOf DOMElementCollection.prototype
+         * @param {String} name  property name
+         * @param {String} value property value
+         * @return {DOMElementCollection} reference to this
+         * @function
+         * @see DOMElement#setStyle
+         */
+        DOMElementCollection.prototype.setStyle = makeCollectionMethod("setStyle");
+
+        /**
+         * Shortcut to {@link DOMElement#addClass} method
          * @memberOf DOMElementCollection
+         * @param {String} classNames space-separated class name(s)
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#addClass
@@ -1197,8 +1222,9 @@
         DOMElementCollection.prototype.addClass = makeCollectionMethod("addClass");
 
         /**
-         * Shortcut to DOMElement.prototype.removeClass method
+         * Shortcut to {@link DOMElement#removeClass} method
          * @memberOf DOMElementCollection.prototype
+         * @param {String} classNames space-separated class name(s)
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#removeClass
@@ -1206,8 +1232,9 @@
         DOMElementCollection.prototype.removeClass = makeCollectionMethod("removeClass");
 
         /**
-         * Shortcut to DOMElement.prototype.toggleClass method
+         * Shortcut to {@link DOMElement#toggleClass} method
          * @memberOf DOMElementCollection.prototype
+         * @param {String} classNames space-separated class name(s)
          * @return {DOMElementCollection} reference to this
          * @function
          * @see DOMElement#toggleClass
@@ -1347,8 +1374,8 @@
     /**
      * Import css styles on page
      * @memberOf DOM
-     * @param  {String|Object} selector css selector or object with selector/rules pairs
-     * @return {String} css rules
+     * @param {String|Object} selector css selector or object with selector/rules pairs
+     * @param {String} styles css rules
      * @function
      * @global
      */
