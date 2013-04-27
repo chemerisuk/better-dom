@@ -36,6 +36,12 @@ module.exports = function(grunt) {
                 browsers: ["Chrome"],
                 singleRun: true
             }
+        },
+
+        build_gh_pages: {
+            options: {
+                dist: "docs"
+            }
         }
     });
 
@@ -43,6 +49,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-karma");
     grunt.loadNpmTasks("grunt-contrib-watch");
+    grunt.loadNpmTasks('grunt-build-gh-pages');
 
     // FIXME: need to get rid of several karma tasks
 
