@@ -16,6 +16,7 @@
         "grunt-jsdoc": "0.3.2",
         "grunt-contrib-jshint": "0.4.3",
         "grunt-karma": "0.4.4",
-        "grunt-build-gh-pages": "0.0.1"
+        "grunt-build-gh-pages": "0.0.1",
+        "grunt-shell": "0.2.2"
     }
 }

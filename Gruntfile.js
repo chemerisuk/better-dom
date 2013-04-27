@@ -39,8 +39,11 @@ module.exports = function(grunt) {
         },
 
         build_gh_pages: {
-            options: {
-                dist: "docs"
+            jsdoc: {
+                options: {
+                    dist: "docs",
+                    pull: false
+                }
             }
         }
     });
@@ -50,6 +53,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-karma");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks('grunt-build-gh-pages');
+    grunt.loadNpmTasks('grunt-shell');
 
     // FIXME: need to get rid of several karma tasks
 
