@@ -54,6 +54,92 @@
     }
 
     DOMNode.prototype = {
+        /**
+         * Finds element by selector
+         * @memberOf DOMNode.prototype
+         * @param  {String} selector css selector
+         * @return {DOMElement} element or null if nothing was found
+         * @function
+         * @example
+         * var domBody = DOM.find("body");
+         *
+         * domBody.find("#element");
+         * // returns DOMElement with id="element"
+         * domBody.find(".link");
+         * // returns first element with class="link"
+         */
+        find: (function() {
+            // big part of code inspired by Sizzle:
+            // https://github.com/jquery/sizzle/blob/master/sizzle.js
+
+            // TODO: disallow to use buggy selectors?
+            var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
+                rsibling = /[\x20\t\r\n\f]*[+~>]/,
+                rescape = /'|\\/g,
+                tmpId = "DOM" + new Date().getTime();
+
+            
+            return function(selector, /*INTERNAL*/multiple) {
+                if (typeof selector !== "string") {
+                    throw _.error("find");
+                }
+
+                var node = this._node,
+                    quickMatch, m, elem, elements;
+
+                if (quickMatch = rquickExpr.exec(selector)) {
+                    // Speed-up: "#ID"
+                    if (m = quickMatch[1]) {
+                        elem = document.getElementById(m);
+                        // Handle the case where IE, Opera, and Webkit return items
+                        // by name instead of ID
+                        if ( elem && elem.parentNode && elem.id === m && (node === document || this.contains(elem)) ) {
+                            elements = [elem];
+                        }
+                    // Speed-up: "TAG"
+                    } else if (quickMatch[2]) {
+                        elements = node.getElementsByTagName(selector);
+                    // Speed-up: ".CLASS"
+                    } else if (m = quickMatch[3]) {
+                        elements = node.getElementsByClassName(m);
+                    }
+
+                    if (elements && !multiple) {
+                        elements = elements[0];
+                    }
+                } else {
+                    var old = true,
+                        nid = tmpId,
+                        context = node;
+
+                    if (node !== document) {
+                        // qSA works strangely on Element-rooted queries
+                        // We can work around this by specifying an extra ID on the root
+                        // and working up from there (Thanks to Andrew Dupont for the technique)
+                        if ( (old = node.getAttribute("id")) ) {
+                            nid = old.replace(rescape, "\\$&");
+                        } else {
+                            node.setAttribute("id", nid);
+                        }
+
+                        nid = "[id='" + nid + "'] ";
+
+                        context = rsibling.test(selector) && node.parentNode || node;
+                        selector = nid + selector.replace(/","/g, "," + nid);
+                    }
+
+                    try {
+                        elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
+                    } finally {
+                        if ( !old ) {
+                            node.removeAttribute("id");
+                        }
+                    }
+                }
+
+                return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
+            };
+        })(),
 
         /**
          * Finds all elements by selector
@@ -70,6 +156,13 @@
          * @memberOf DOMNode.prototype
          * @param  {String} name method name
          * @return {Object} result of native method call
+         * @example
+         * var domLink = DOM.find(".link");
+         *
+         * domLink.call("focus");
+         * // receive focus to the element
+         * domLink.call("click");
+         * // make a click on the element
          */
         call: function(name) {
             if (arguments.length === 1) {
@@ -84,6 +177,12 @@
          * @memberOf DOMNode.prototype
          * @param  {String} key data entry key
          * @return {Object} data entry value
+         * @example
+         * var domLink = DOM.find(".link");
+         *
+         * domLink.setData("test", "message");
+         * domLink.getData("test");
+         * // returns string "message"
          */
         getData: function(key) {
             if (typeof key !== "string") {
@@ -105,6 +204,11 @@
          * @memberOf DOMNode.prototype
          * @param {String|Object} key data entry key | key/value pairs
          * @param {Object} value data to store
+         * @example
+         * var domLink = DOM.find(".link");
+         * 
+         * domLink.setData("test", "message");
+         * domLink.setData({a: "b", c: "d"});
          */
         setData: function(key, value) {
             var keyType = typeof key;
@@ -120,126 +224,49 @@
             }
 
             return this;
-        }
-    };
-
-    (function() {
-        var containsElement = Node.prototype.contains ?
-            function(parent, child) {
-                return parent.contains(child);
-            } :
-            function(parent, child) {
-                return !!(parent.compareDocumentPosition(child) & 16);
-            };
+        },
 
         /**
          * Check if element is inside of context
          * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
-         * @param  {Boolean} [reverse] internal parameter
-         * @return {Boolean} true if succes
+         * @return {Boolean} true if success
+         * @function
+         * @example
+         * DOM.find("html").contains(DOM.find("body"));
+         * // returns true
          */
-        DOMNode.prototype.contains = function(element, /*INTERNAL*/reverse) {
-            var node = this._node;
+        contains: (function() {
+            var containsElement = Node.prototype.contains ?
+                function(parent, child) {
+                    return parent.contains(child);
+                } :
+                function(parent, child) {
+                    return !!(parent.compareDocumentPosition(child) & 16);
+                };
 
-            if (element instanceof Element) {
-                return containsElement(reverse ? element : node, reverse ? node : element);
-            } else if (element instanceof DOMElement) {
-                return element.contains(node, true);
-            } else if (Array.isArray(element)) {
-                return _.every(element, function(element) {
-                    if (element instanceof DOMElement) {
-                        return element.contains(node, true);
-                    }
-                    
+            
+            return function(element, /*INTERNAL*/reverse) {
+                var node = this._node;
+
+                if (element instanceof Element) {
+                    return containsElement(reverse ? element : node, reverse ? node : element);
+                } else if (element instanceof DOMElement) {
+                    return element.contains(node, true);
+                } else if (Array.isArray(element)) {
+                    return _.every(element, function(element) {
+                        if (element instanceof DOMElement) {
+                            return element.contains(node, true);
+                        }
+                        
+                        throw _.error("contains");
+                    });
+                } else {
                     throw _.error("contains");
-                });
-            } else {
-                throw _.error("contains");
-            }
-        };
-
-    })();
-
-    (function() {
-        // big part of code inspired by Sizzle:
-        // https://github.com/jquery/sizzle/blob/master/sizzle.js
-
-        // TODO: disallow to use buggy selectors?
-        var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
-            rsibling = /[\x20\t\r\n\f]*[+~>]/,
-            rescape = /'|\\/g,
-            tmpId = "DOM" + new Date().getTime();
-
-        /**
-         * Finds element by selector
-         * @memberOf DOMNode.prototype
-         * @param  {String} selector css selector
-         * @param  {Boolean} [multiple] internal parameter
-         * @return {DOMElement} element or null if nothing was found
-         */
-        DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
-            if (typeof selector !== "string") {
-                throw _.error("find");
-            }
-
-            var node = this._node,
-                quickMatch, m, elem, elements;
-
-            if (quickMatch = rquickExpr.exec(selector)) {
-                // Speed-up: "#ID"
-                if (m = quickMatch[1]) {
-                    elem = document.getElementById(m);
-                    // Handle the case where IE, Opera, and Webkit return items
-                    // by name instead of ID
-                    if ( elem && elem.parentNode && elem.id === m && (node === document || this.contains(elem)) ) {
-                        elements = [elem];
-                    }
-                // Speed-up: "TAG"
-                } else if (quickMatch[2]) {
-                    elements = node.getElementsByTagName(selector);
-                // Speed-up: ".CLASS"
-                } else if (m = quickMatch[3]) {
-                    elements = node.getElementsByClassName(m);
                 }
-
-                if (elements && !multiple) {
-                    elements = elements[0];
-                }
-            } else {
-                var old = true,
-                    nid = tmpId,
-                    context = node;
-
-                if (node !== document) {
-                    // qSA works strangely on Element-rooted queries
-                    // We can work around this by specifying an extra ID on the root
-                    // and working up from there (Thanks to Andrew Dupont for the technique)
-                    if ( (old = node.getAttribute("id")) ) {
-                        nid = old.replace(rescape, "\\$&");
-                    } else {
-                        node.setAttribute("id", nid);
-                    }
-
-                    nid = "[id='" + nid + "'] ";
-
-                    context = rsibling.test(selector) && node.parentNode || node;
-                    selector = nid + selector.replace(/","/g, "," + nid);
-                }
-
-                try {
-                    elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
-                } finally {
-                    if ( !old ) {
-                        node.removeAttribute("id");
-                    }
-                }
-            }
-
-            return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
-        };
-
-    })();
+            };
+        })()
+    };
 
     // EVENTS
     
