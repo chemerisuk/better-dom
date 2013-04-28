@@ -1,6 +1,12 @@
 Better-DOM
-==============
+==========
 Modern javascript library for working with DOM
+
+Overview
+--------
+Everybody who manipulated DOM via vanilla javascript knows that it is an awful API. Current specification has bugs, browser behavior varies etc. The library tries to fix that: it introduces it's own more friednly prototypes for document nodes with developer-fiendly APIs.
+
+Important to note that it doesn't cover everything, for instance there are no methods for AJAX.
 
 Goals
 -----
@@ -9,15 +15,13 @@ Goals
 * the smallest size
 * safety
 
-Overview
---------
-Everybody who manipulated DOM in vanilla javascript knows that it is an awful API. Current specification has bugs, browser behaviors varies etc. The library tries to fix that: it introduces it's own more friednly prototypes for document nodes.
+Ajax-friendly extensions
+------------------------
+Creating widgets has never been so simple. Just use `DOM.extend` to declare a new extension and it starts to work for all current and for any future content. No initialization calls required!
 
-Important to note that it doesn't cover everything, for instance there are no methods for AJAX.
-
-Extensibility
--------------
-Creating widgets never have been so simple. Just use DOM.extend to declare a new extension and it starts to work for current and any future content. No initialization calls required!
+As fast as possible
+-------------------
+DOM is usually the main bottleneck of javascript programs. That's why performance question should be on the top for any library that works with it.
 
 Browser support
 ---------------
