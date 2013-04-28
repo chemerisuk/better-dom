@@ -250,7 +250,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 74
+        <a href="DOM.js.html">DOM.js</a>, line 167
     </li></ul></dd>
     
     
@@ -291,12 +291,22 @@
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var domLink = DOM.find(".link");
+
+domLink.call("focus");
+// receive focus to the element
+domLink.call("click");
+// make a click on the element</code></pre>
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="signature">(element, <span class="optional">reverse</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="signature">(element)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -326,8 +336,6 @@
 		<th>Type</th>
 		
 		
-		<th>Argument</th>
-		
 		
 		
 		
@@ -353,51 +361,10 @@
             </td>
             
             
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                </td>
-            
             
             
             
             <td class="description last">element to check</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>reverse</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">internal parameter</td>
         </tr>
 	
 	
@@ -428,7 +395,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 142
+        <a href="DOM.js.html">DOM.js</a>, line 239
     </li></ul></dd>
     
     
@@ -449,7 +416,7 @@
     
             
 <div class="param-desc">
-    true if succes
+    true if success
 </div>
 
 
@@ -469,12 +436,18 @@
         
     
     
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>DOM.find("html").contains(DOM.find("body"));
+// returns true</code></pre>
+
+    
 </dd>
 
         
             
 <dt>
-    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="signature">(selector, <span class="optional">multiple</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
+    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
     
     
 </dt>
@@ -504,8 +477,6 @@
 		<th>Type</th>
 		
 		
-		<th>Argument</th>
-		
 		
 		
 		
@@ -531,51 +502,10 @@
             </td>
             
             
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                </td>
-            
             
             
             
             <td class="description last">css selector</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>multiple</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">internal parameter</td>
         </tr>
 	
 	
@@ -606,7 +536,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 181
+        <a href="DOM.js.html">DOM.js</a>, line 71
     </li></ul></dd>
     
     
@@ -646,6 +576,16 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var domBody = DOM.find("body");
+
+domBody.find("#element");
+// returns DOMElement with id="element"
+domBody.find(".link");
+// returns first element with class="link"</code></pre>
+
     
 </dd>
 
@@ -741,7 +681,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 64
+        <a href="DOM.js.html">DOM.js</a>, line 150
     </li></ul></dd>
     
     
@@ -919,7 +859,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 371
+        <a href="DOM.js.html">DOM.js</a>, line 398
     </li></ul></dd>
     
     
@@ -1054,7 +994,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 88
+        <a href="DOM.js.html">DOM.js</a>, line 187
     </li></ul></dd>
     
     
@@ -1094,6 +1034,15 @@
 
         
     
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var domLink = DOM.find(".link");
+
+domLink.setData("test", "message");
+domLink.getData("test");
+// returns string "message"</code></pre>
+
     
 </dd>
 
@@ -1232,7 +1181,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 346
+        <a href="DOM.js.html">DOM.js</a>, line 373
     </li></ul></dd>
     
     
@@ -1441,7 +1390,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 307
+        <a href="DOM.js.html">DOM.js</a>, line 334
     </li></ul></dd>
     
     
@@ -1602,7 +1551,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 109
+        <a href="DOM.js.html">DOM.js</a>, line 213
     </li></ul></dd>
     
     
@@ -1620,6 +1569,14 @@
     
     
     
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var domLink = DOM.find(".link");
+
+domLink.setData("test", "message");
+domLink.setData({a: "b", c: "d"});</code></pre>
+
     
 </dd>
 
@@ -1645,7 +1602,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Apr 27 2013 18:50:17 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Apr 28 2013 12:17:51 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
