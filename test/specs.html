@@ -1,60 +1,60 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>DOM.js specs</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
+    <title>DOM.js specs</title>
 
-  <script src="lib/jasmine-1.3.1/jasmine.js"></script>
-  <script src="lib/jasmine-1.3.1/jasmine-html.js"></script>
+    <link rel="stylesheet" type="text/css" href="lib/jasmine-1.3.1/jasmine.css">
 
-  <script src="lib/jasmine-dom/jasmine-dom-fixtures.js"></script>
-  <script src="lib/jasmine-dom/jasmine-dom-matchers.js"></script>
+    <script src="lib/jasmine-1.3.1/jasmine.js"></script>
+    <script src="lib/jasmine-1.3.1/jasmine-html.js"></script>
 
-  <!-- include source files here... -->
-  <script src="../src/DOM.js" data-htc="../src/DOM.htc"></script>
+    <script src="lib/jasmine-dom/jasmine-dom-fixtures.js"></script>
+    <script src="lib/jasmine-dom/jasmine-dom-matchers.js"></script>
 
-  <!-- include spec files here... -->
-  <script src="spec/find.spec.js"></script>
-  <script src="spec/contains.spec.js"></script>
-  <script src="spec/call.spec.js"></script>
-  <script src="spec/on.spec.js"></script>
-  <script src="spec/off.spec.js"></script>
-  <script src="spec/fire.spec.js"></script>
-  <script src="spec/data.spec.js"></script>
-  <script src="spec/get.spec.js"></script>
-  <script src="spec/set.spec.js"></script>
-  <script src="spec/traversing.spec.js"></script>
-  <script src="spec/classes.spec.js"></script>
-  <script src="spec/matches.spec.js"></script>
-  <script src="spec/offset.spec.js"></script>
-  <script src="spec/watch.spec.js"></script>
-  <script src="spec/create.spec.js"></script>
-  <script src="spec/manipulation.spec.js"></script>
-  <script src="spec/style.spec.js"></script>
-  <script src="spec/extend.spec.js"></script>
+    <!-- include source files here... -->
+    <script src="../src/DOM.js" data-htc="../src/DOM.htc"></script>
+
+    <!-- include spec files here... -->
+    <script src="spec/find.spec.js"></script>
+    <script src="spec/contains.spec.js"></script>
+    <script src="spec/call.spec.js"></script>
+    <script src="spec/on.spec.js"></script>
+    <script src="spec/off.spec.js"></script>
+    <script src="spec/fire.spec.js"></script>
+    <script src="spec/data.spec.js"></script>
+    <script src="spec/get.spec.js"></script>
+    <script src="spec/set.spec.js"></script>
+    <script src="spec/traversing.spec.js"></script>
+    <script src="spec/classes.spec.js"></script>
+    <script src="spec/matches.spec.js"></script>
+    <script src="spec/offset.spec.js"></script>
+    <script src="spec/watch.spec.js"></script>
+    <script src="spec/create.spec.js"></script>
+    <script src="spec/manipulation.spec.js"></script>
+    <script src="spec/style.spec.js"></script>
+    <script src="spec/extend.spec.js"></script>
 
 </head>
-
 <body>
-  <script type="text/javascript">
+    <script type="text/javascript">
     (function() {
-      var jasmineEnv = jasmine.getEnv(),
-          currentWindowOnload = window.onload;
-      
-      jasmineEnv.updateInterval = 250;
-      jasmineEnv.addReporter(new jasmine.HtmlReporter());
+        var jasmineEnv = jasmine.getEnv(),
+        currentWindowOnload = window.onload;
 
-      window.onload = function() {
-        if (currentWindowOnload) {
-          currentWindowOnload();
-        }
+        jasmineEnv.updateInterval = 250;
+        jasmineEnv.addReporter(new jasmine.HtmlReporter());
 
-        jasmineEnv.execute();
-      };
+        window.onload = function() {
+            if (currentWindowOnload) {
+              currentWindowOnload();
+            }
+
+            jasmineEnv.execute();
+        };
     })();
-  </script>
-
+    </script>
 </body>
 </html>

@@ -237,14 +237,17 @@
          * // returns true
          */
         contains: (function() {
-            var containsElement = Node.prototype.contains ?
-                function(parent, child) {
+            var containsElement;
+
+            if (htmlEl.contains) {
+                containsElement = function(parent, child) {
                     return parent.contains(child);
-                } :
-                function(parent, child) {
+                };
+            } else {
+                containsElement = function(parent, child) {
                     return !!(parent.compareDocumentPosition(child) & 16);
                 };
-
+            }
             
             return function(element, /*INTERNAL*/reverse) {
                 var node = this._node;
@@ -916,7 +919,7 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = window.getComputedStyle(htmlEl, ""),
+            computed = window.getComputedStyle ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
 
         // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
@@ -1063,12 +1066,13 @@
                 };
             },
             defineProperty = function(name) {
-                Object.defineProperty(DOMEvent.prototype, name, {
+                // FIXME: ie8
+                /*Object.defineProperty(DOMEvent.prototype, name, {
                     enumerable: true,
                     get: function() {
                         return DOMElement(this._event[name]);
                     }
-                });
+                });*/
             };
 
         /**
@@ -1117,13 +1121,15 @@
        
         ref.parentNode.insertBefore(iframe, ref);
         // store reference to clean Array
-        ctr = iframe.contentWindow.Array;
+        iframe.contentDocument.write("<script>ctr = Array<\/script>");
+        ctr = iframe.contentWindow.ctr;
+        //ctr = iframe.contentWindow.Array;
         // cleanup DOM
         ref.parentNode.removeChild(iframe);
         
         // cleanup collection prototype
-        _.forEach(Object.getOwnPropertyNames(ctr.prototype), function(methodName) {
-           if (methodName !== "length") delete ctr.prototype[methodName];
+        _.forWord("pop push reverse shift sort splice unshift concat join slice toSource indexOf lastIndexOf forEach every some filter map reduce reduceRight", function(methodName) {
+           delete ctr.prototype[methodName];
         });
         
         return ctr;
@@ -1362,7 +1368,7 @@
      */
     DOM.ready = (function() {
         var readyCallbacks = null,
-            readyProcess = function() {
+            pageLoaded = function() {
                 if (readyCallbacks) {
                     // trigger callbacks
                     _.forEach(readyCallbacks, function(callback) {
@@ -1371,18 +1377,43 @@
                     // cleanup
                     readyCallbacks = null;
                 }
-            };
+            },
+            testDiv, isTop, scrollIntervalId;
+
+        // https://raw.github.com/requirejs/domReady/latest/domReady.js
+        
+        if (document.addEventListener) {
+            //Standards. Hooray! Assumption here that if standards based,
+            //it knows about DOMContentLoaded.
+            document.addEventListener("DOMContentLoaded", pageLoaded, false);
+            window.addEventListener("load", pageLoaded, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onload", pageLoaded);
+
+            testDiv = document.createElement('div');
+            try {
+                isTop = window.frameElement === null;
+            } catch (e) {}
+
+            //DOMContentLoaded approximation that uses a doScroll, as found by
+            //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+            //but modified by other contributors, including jdalton
+            if (testDiv.doScroll && isTop && window.external) {
+                scrollIntervalId = setInterval(function () {
+                    try {
+                        testDiv.doScroll();
+                        pageLoaded();
+                    } catch (e) {}
+                }, 30);
+            }
+        }
 
         // Catch cases where ready is called after the browser event has already occurred.
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // hey, at least it's not a UA sniff
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( document.attachEvent ? document.readyState !== "complete" : document.readyState === "loading") {
-            readyCallbacks = [];
-
-            document.addEventListener("DOMContentLoaded", readyProcess, false);
-            // additional handler for complex cases
-            window.addEventListener("load", readyProcess, false);
+        if ( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+            pageLoaded();
         }
 
         // return implementation
@@ -1408,7 +1439,8 @@
      * @global
      */
     DOM.importStyles = (function() {
-        var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
+        var ref = scripts[0],
+            styleEl = ref.parentNode.insertBefore(document.createElement("style"), ref.parentNode.firstChild),
             process = function(selector, styles) {
                 var ruleText = selector + " { ";
 
@@ -1427,7 +1459,8 @@
             };
 
         if (!("hidden" in htmlEl)) {
-            process("[hidden]", "display:none");    
+            // FIXME: http://jquery.10927.n7.nabble.com/append-into-style-element-causes-error-in-IE-only-td88967.html
+            //process("[hidden]", "display:none");    
         }
                     
         return function(selector, styles) {
@@ -1577,9 +1610,37 @@
     slice: function(list, index) {
         return Array.prototype.slice.call(list, index || 0);
     },
-    keys: function(obj) {
-        return Object.keys(obj);
-    },
+    keys: Object.keys ? Object.keys : (function () {
+        var hasOwnProp = Object.prototype.hasOwnProperty,
+            hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
+            dontEnums = [
+              'toString',
+              'toLocaleString',
+              'valueOf',
+              'hasOwnProperty',
+              'isPrototypeOf',
+              'propertyIsEnumerable',
+              'constructor'
+            ],
+            dontEnumsLength = dontEnums.length;
+     
+        return function (obj) {
+          if (typeof obj !== 'object' && typeof obj !== 'function' || obj === null) throw new TypeError('Object.keys called on non-object');
+     
+          var result = [];
+     
+          for (var prop in obj) {
+            if (hasOwnProp.call(obj, prop)) result.push(prop);
+          }
+     
+          if (hasDontEnumBug) {
+            for (var i=0; i < dontEnumsLength; i++) {
+              if (hasOwnProp.call(obj, dontEnums[i])) result.push(dontEnums[i]);
+            }
+          }
+          return result;
+        };
+    })(),
     forIn: function(obj, callback, thisPtr) {
         this.forEach(this.keys(obj), callback, thisPtr);
     },

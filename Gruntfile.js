@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         watch: {
             karma: {
                 files: ["src/*.js", "test/spec/*.js"],
-                tasks: ["jshint", "karma:server:run"] 
+                tasks: [/*"jshint", */"karma:server:run"] 
             }
         },
 
@@ -55,11 +55,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-build-gh-pages');
     grunt.loadNpmTasks('grunt-shell');
 
-    // FIXME: need to get rid of several karma tasks
-
     grunt.registerTask("dev", [
         "jshint", // run jshint first
-        "karma:unit", // start karma server
         "karma:server", // start karma server
         "watch" // watch for a file changes
     ]);
