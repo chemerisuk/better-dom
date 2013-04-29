@@ -10,9 +10,9 @@ describe("call", function() {
     });
 
     it("should call native object method", function() {
-        input.on("click", callback).call("click");
+        input.call("focus");
 
-        expect(callback).toHaveBeenCalled();
+        expect(input._node).toBe(document.activeElement);
     });
 
     it("should pass parameters into native method", function() {

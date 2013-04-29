@@ -278,14 +278,16 @@
             createEventHandler = function(thisPtr, callback, selector) {
                 if (!selector) {
                     return function(e) {
-                        callback.call(thisPtr, DOMEvent(e));
+                        callback.call(thisPtr, DOMEvent(e || window.event));
                     };
                 }
 
                 var matcher = new SelectorMatcher(selector);
 
                 return function(e) {
-                    for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
+                    e = e || window.event;
+
+                    for (var elem = (e.target || e.srcElement), root = thisPtr._node; elem && elem !== root; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
                             return callback.call(thisPtr, DOMEvent(e));
                         }
@@ -350,8 +352,16 @@
                         eventEntry.handler = createEventHandler(this, callback, selector);
                     }
 
-                    // attach event listener
-                    this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
+                    if (window.addEventListener) {
+                        // attach event listener
+                        this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
+                    } else if (window.attachEvent) {
+                        // attach event listener
+                        this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
+                    } else {
+                        throw _.error("on");
+                    }
+                    
                     // store event entry
                     this._events.push(eventEntry);
                 }, this);
@@ -384,7 +394,13 @@
 
             _.forEach(this._events, function(entry) {
                 if (eventType === entry.name && (!callback || callback === entry.callback)) {
-                    this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                    if (window.addEventListener) {
+                        this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                    } else if (window.detachEvent) {
+                        this._node.detachEvent("on" + eventType, entry.handler);
+                    } else {
+                        throw _.error("off");
+                    }
                 }
             }, this);
 
@@ -404,18 +420,29 @@
             }
 
             var isCustomEvent = ~eventType.indexOf(":"),
-                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event"),
-                hook = eventHooks[eventType];
+                hook = eventHooks[eventType],
+                event;
 
             if (hook && hook.name) eventType = hook.name;
 
-            if (isCustomEvent) {
-                event.initCustomEvent(eventType, true, false, detail);
-            } else { 
-                event.initEvent(eventType, true, true);
+            if (window.addEventListener) {
+                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+
+                if (isCustomEvent) {
+                    event.initCustomEvent(eventType, true, false, detail);
+                } else { 
+                    event.initEvent(eventType, true, true);
+                }
+                
+                this._node.dispatchEvent(event);
+            } else if (window.attachEvent) {
+                event = document.createEventObject();
+
+                event.detail = detail;
+
+                this._node.fireEvent("on" + eventType, event);
             }
             
-            this._node.dispatchEvent(event);
 
             return this;
         };

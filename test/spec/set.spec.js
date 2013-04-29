@@ -42,23 +42,29 @@ describe("set", function() {
     });
 
     it("should not allow to access to legacy objects", function() {
-        Object.keys({
-            children: true,
-            childNodes: true,
-            firstChild: true,
-            lastChild: true,
-            nextSibling: true,
-            previousSibling: true,
-            firstElementChild: true,
-            lastElementChild: true,
-            nextElementSibling: true,
-            previousElementSibling: true,
-            parentNode: true,
-            elements: true
-        })
-        .forEach(function(propName) {
-            expect(function() { link.set(propName, "t"); }).toThrow();
-        });
+        var protectedProps = {
+                children: true,
+                childNodes: true,
+                firstChild: true,
+                lastChild: true,
+                nextSibling: true,
+                previousSibling: true,
+                firstElementChild: true,
+                lastElementChild: true,
+                nextElementSibling: true,
+                previousElementSibling: true,
+                parentNode: true,
+                elements: true
+            },
+            setProp = function(propName) {
+                return function() {
+                    link.set(propName, "t");
+                };
+            };
+
+        for (var propName in protectedProps) {
+            expect(setProp(propName)).toThrow();
+        }
     });
 
     it("should throw error if argument is invalid", function() {
