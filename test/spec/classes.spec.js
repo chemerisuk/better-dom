@@ -22,9 +22,9 @@ describe("classes manipulation", function() {
 
     describe("addClass, removeClass, toggleClass", function() {
         it("should return reference to 'this'", function() {
-            "addClass removeClass toggleClass".split(" ").forEach(function(methodName) {
-                expect(link[methodName]("test2")).toBe(link);
-            });
+            expect(link.addClass("test2")).toBe(link);
+            expect(link.removeClass("test2")).toBe(link);
+            expect(link.toggleClass("test2")).toBe(link);
         });
 
         it("should make appropriate changes with single class", function() {

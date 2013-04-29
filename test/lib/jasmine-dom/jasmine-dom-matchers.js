@@ -87,8 +87,10 @@ jasmine.DOM.matchers = {};
   
     toHaveClass: function(className)
     {
-      var classes= jasmine.DOM.trim(this.actual.className).split(" ");
-      return -1!==classes.indexOf(className);
+      // var classes= jasmine.DOM.trim(this.actual.className).split(" ");
+      // return -1!==classes.indexOf(className);
+      return !!~((" " + this.actual.className + " ")
+          .replace(/[\n\t\r]/g, " ")).indexOf(" " + className + " ");
     },
 
     toBeVisible: function()

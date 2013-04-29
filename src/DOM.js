@@ -889,8 +889,8 @@
          * @function
          */
         DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
-            this._node.className = (" " + this._node.className + " ")
-                    .replace(rclass, " ").replace(" " + className + " ", " ").trim();
+            this._node.className = _.trim((" " + this._node.className + " ")
+                    .replace(rclass, " ").replace(" " + className + " ", " "));
         });
 
         /**
@@ -967,7 +967,7 @@
             result = hook ? hook(style) : style[name];
 
             if (!result) {
-                style = window.getComputedStyle(this._node);
+                style = window.getComputedStyle ? window.getComputedStyle(this._node) : this._node.currentStyle;
 
                 result = hook ? hook(style) : style[name];
             }
@@ -1610,7 +1610,7 @@
     slice: function(list, index) {
         return Array.prototype.slice.call(list, index || 0);
     },
-    keys: Object.keys ? Object.keys : (function () {
+    keys: Object.keys || (function() {
         var hasOwnProp = Object.prototype.hasOwnProperty,
             hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
             dontEnums = [
@@ -1705,5 +1705,8 @@
         type = type || "DOMElement";
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
+    },
+    trim: function(str) {
+        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,"");
     }
 });

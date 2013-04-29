@@ -7,9 +7,9 @@ describe("find", function() {
     });
 
     it("should find an element by selector", function() {
-        setFixtures("<a class='test'>test</a>");
-
-        expect(DOM.find("a.test")._node).toMatchSelector("a.test");
+        setFixtures("<a class='test123'>test</a>");
+        // FIXME: add right toMatchSelector helper
+        expect(DOM.find("a.test123")._node).toHaveClass("test123");
     });
 
     it("should throw error if the first argument is not a string", function() {
