@@ -76,8 +76,8 @@
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
-                tmpId = "DOM" + new Date().getTime();
-
+                tmpId = "DOM" + new Date().getTime(),
+                supportsClassMethod = !!document.getElementsByClassName;
             
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
@@ -100,7 +100,7 @@
                     } else if (quickMatch[2]) {
                         elements = node.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
-                    } else if (m = quickMatch[3]) {
+                    } else if (supportsClassMethod && (m = quickMatch[3])) {
                         elements = node.getElementsByClassName(m);
                     }
 
@@ -674,7 +674,7 @@
                     it = this._node;
 
                 while (it = it[propertyName]) {
-                    if (!matcher || matcher.test(it)) {
+                    if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
                         if (!multiple) break;
 
                         nodes.push(it);
@@ -692,7 +692,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.next = makeTraversingMethod("nextElementSibling");
+        DOMElement.prototype.next = makeTraversingMethod("nextSibling");
 
         /**
          * Find previous sibling element filtered by optional selector
@@ -701,7 +701,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.prev = makeTraversingMethod("previousElementSibling");
+        DOMElement.prototype.prev = makeTraversingMethod("previousSibling");
 
         /**
          * Find parent element filtered by optional selector
@@ -719,7 +719,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.firstChild = makeTraversingMethod("firstElementChild");
+        DOMElement.prototype.firstChild = makeTraversingMethod("firstChild");
 
         /**
          * Find last child element filtered by optional selector
@@ -728,7 +728,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.lastChild = makeTraversingMethod("lastElementChild");
+        DOMElement.prototype.lastChild = makeTraversingMethod("lastChild");
 
         /**
          * Find all next sibling elements filtered by optional selector
@@ -737,7 +737,7 @@
          * @return {DOMElementCollection} matched elements
          * @function
          */
-        DOMElement.prototype.nextAll = makeTraversingMethod("nextElementSibling", true);
+        DOMElement.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 
         /**
          * Find all previous sibling elements filtered by optional selector
@@ -746,7 +746,7 @@
          * @return {DOMElementCollection} matched elements
          * @function
          */
-        DOMElement.prototype.prevAll = makeTraversingMethod("previousElementSibling", true);
+        DOMElement.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
         /**
          * Fetch children elements filtered by optional selector
@@ -1330,7 +1330,16 @@
                 var propertyName = prefix + "atchesSelector";
 
                 return result || htmlEl[propertyName] && propertyName;
-            }, null);
+            }, null),
+            matches = function(el, selector) {
+                var nodeList = document.querySelectorAll(selector);
+
+                for (var i = 0, n = nodeList.length; i < n; ++i) {
+                    if (nodeList[i] === el) return true;
+                }
+
+                return false; 
+            };
 
         ctr.prototype = {
             test: function(el) {
@@ -1343,7 +1352,7 @@
                     );
                 }
 
-                return !this.quickOnly && el[matchesProp](this.selector);
+                return !this.quickOnly && ( matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector) );
             }
         };
 

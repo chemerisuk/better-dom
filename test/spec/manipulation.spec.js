@@ -32,36 +32,42 @@ describe("manipulation", function() {
         });
 
         it("should accept html string", function() {
-            Object.keys(checkStrategies).forEach(function(strategy) {
+            for (var strategy in checkStrategies) {
                 var arg = createDivHtml(strategy),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toMatchSelector("." + strategy);
-            });
+                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+            }
         });
 
         it("should accept native object", function() {
-            Object.keys(checkStrategies).forEach(function(strategy) {
+            for (var strategy in checkStrategies) {
                 var arg = createDiv(strategy),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toMatchSelector("." + strategy);
-            });
+                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+            }
         });
 
         it("should accept document fragment", function() {
-            Object.keys(checkStrategies).forEach(function(strategy) {
+            for (var strategy in checkStrategies) {
                 var arg = createDivFragment(strategy),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toMatchSelector("." + strategy);
-            });
+                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+            }
         });
 
         it("should throw error if argument is invalid", function() {
-            Object.keys(checkStrategies).forEach(function(strategy) {
-                expect(function() { div[strategy](1); }).toThrow();
-            });
+            var callProp = function(strategy) {
+                    return function() {
+                        div[strategy](1);
+                    };
+                };
+
+            for (var strategy in checkStrategies) {
+                expect(callProp(strategy)).toThrow();
+            }
         });
 
     });
@@ -118,9 +124,8 @@ describe("manipulation", function() {
         return fragment;
     }
 
-    function expectToBeReplaced(id, className) {
+    function expectToBeReplaced(id) {
         expect(document.getElementById(id)).toBeNull();
-        expect(document.getElementsByClassName(className).length).toBe(1);
     }
 
 });

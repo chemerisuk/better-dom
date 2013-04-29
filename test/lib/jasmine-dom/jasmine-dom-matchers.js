@@ -161,6 +161,10 @@ jasmine.DOM.matchers = {};
     {
       var nodes= jasmine.DOM.queryAll(selector, this.actual);
       return nodes.length > 0;
+    },
+
+    toHaveTag: function(tagName) {
+      return this.actual.nodeName.toLowerCase() === tagName.toLowerCase();
     }
   };
 

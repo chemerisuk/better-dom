@@ -5,7 +5,7 @@ describe("create", function() {
 
         setFixtures(link._node);
 
-        expect(link._node).toMatchSelector("a");
+        expect(link._node).toHaveTag("a");
     });
 
     it("should return DOM collection when the first argument is a HTML string", function() {
@@ -26,7 +26,7 @@ describe("create", function() {
 
         setFixtures(el._node);
 
-        expect(el._node).toMatchSelector("em"); 
+        expect(el._node).toHaveTag("em"); 
     });
 
     it("should throw error if argument is invalid", function() {
