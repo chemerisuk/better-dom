@@ -11,7 +11,6 @@
     // ---------
 
     var htmlEl = document.documentElement,
-        headEl = document.head,
         scripts = document.scripts,
         // helpers
         sandbox = (function() {
@@ -76,8 +75,12 @@
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
-                tmpId = "DOM" + new Date().getTime(),
-                supportsClassMethod = !!document.getElementsByClassName;
+                tmpId = "DOM" + new Date().getTime();
+
+            if (!document.getElementsByClassName) {
+                // ie8 doesn't support getElementsByClassName
+                rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
+            }
             
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
@@ -100,7 +103,7 @@
                     } else if (quickMatch[2]) {
                         elements = node.getElementsByTagName(selector);
                     // Speed-up: ".CLASS"
-                    } else if (supportsClassMethod && (m = quickMatch[3])) {
+                    } else if (m = quickMatch[3]) {
                         elements = node.getElementsByClassName(m);
                     }
 
@@ -1452,10 +1455,12 @@
      * @global
      */
     DOM.importStyles = (function() {
-        var ref = scripts[0],
-            styleEl = ref.parentNode.insertBefore(document.createElement("style"), ref.parentNode.firstChild),
+        var headEl = scripts[0].parentNode,
+            styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
+            styleSheet = document.styleSheets[0],
             process = function(selector, styles) {
-                var ruleText = selector + " { ";
+                var ruleText = selector + " { ",
+                    ruleIndex = (styleSheet.cssRules || styleSheet.rules).length;
 
                 if (typeof styles === "object") {
                     _.forIn(styles, function(propName) {
@@ -1468,12 +1473,22 @@
                     throw _.error("importStyles", "DOM");
                 }
 
-                styleEl.appendChild(document.createTextNode(ruleText + "}"));
+                ruleText += "}";
+
+                if (styleSheet.cssRules) {
+                    // w3c browser
+                    styleSheet.insertRule(ruleText, ruleIndex);
+                } else {
+                    var entries = ruleText.substr(0, ruleText.length - 1).split('{');
+                    // ie doesn't support multiple selectors in addRule 
+                    _.forEach(entries[0].split(','), function(ruleText) {
+                        styleSheet.addRule(ruleText, entries[1], ruleIndex);
+                    });
+                }
             };
 
         if (!("hidden" in htmlEl)) {
-            // FIXME: http://jquery.10927.n7.nabble.com/append-into-style-element-causes-error-in-IE-only-td88967.html
-            //process("[hidden]", "display:none");    
+            process("[hidden]", "display:none");    
         }
                     
         return function(selector, styles) {
@@ -1512,6 +1527,9 @@
 
                 if (entry) {
                     entry.push(callback);
+                    // need to call callback manually for each element 
+                    // because behaviour is already attached to the DOM
+                    DOM.findAll(selector).each(callback);
                 } else {
                     DOM._watchers[selector] = [callback];
                     // append style rule at the last step

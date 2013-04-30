@@ -1,18 +1,20 @@
 <PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent()" />  
+    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(window.DOM)" />  
     <script type="text/javascript">
-    var DOM = window.DOM,
-        triggerCallback = function(callback) { callback(this); };
+    function handleEvent(DOM) {
+        var watchers = DOM._watchers,
+            domEl = DOM.create(element),
+            selector, callbacks, i, n;
 
-    function handleEvent() {
-        Object.keys(listeners).forEach(function(selector) {
-            var callbacks = DOM._watchers[selector],
-                domEl = DOM.create(element);
+        for (selector in watchers) {
+            callbacks = watchers[selector];
             
             if (domEl.matches(selector)) {
-                callbacks.forEach(triggerCallback, domEl);
+                for (i = 0, n = callbacks.length; i < n; ++i) {
+                    callbacks[i](domEl);
+                }
             }
-        });
+        }
     }
     </script>
     <!-- 

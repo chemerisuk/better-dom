@@ -6,10 +6,19 @@ describe("find", function() {
         expect(DOM.find("#test")._node).toHaveId("test");
     });
 
+    it("should find an element by class", function() {
+        setFixtures("<a class='test321'>test</a>");
+        
+        expect(DOM.find(".test321")._node).toHaveClass("test321");
+    });
+
     it("should find an element by selector", function() {
         setFixtures("<a class='test123'>test</a>");
-        // FIXME: add right toMatchSelector helper
-        expect(DOM.find("a.test123")._node).toHaveClass("test123");
+
+        var domLink = DOM.find("a.test123");
+        
+        expect(domLink._node).toHaveTag("a");
+        expect(domLink._node).toHaveClass("test123");
     });
 
     it("should throw error if the first argument is not a string", function() {
