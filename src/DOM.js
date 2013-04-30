@@ -137,7 +137,7 @@
                     }
                 }
 
-                return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
+                return multiple ? new DOMElementCollection(elements) : DOMElement(elements);
             };
         })(),
 
@@ -250,23 +250,21 @@
             }
             
             return function(element, /*INTERNAL*/reverse) {
-                var node = this._node;
+                var node = this._node, result = true;
 
                 if (element instanceof Element) {
-                    return containsElement(reverse ? element : node, reverse ? node : element);
+                    result = containsElement(reverse ? element : node, reverse ? node : element);
                 } else if (element instanceof DOMElement) {
-                    return element.contains(node, true);
-                } else if (Array.isArray(element)) {
-                    return _.every(element, function(element) {
-                        if (element instanceof DOMElement) {
-                            return element.contains(node, true);
-                        }
-                        
-                        throw _.error("contains");
+                    result = element.contains(node, true);
+                } else if (element instanceof DOMElementCollection) {
+                    element.each(function(element) {
+                        result = result && element.contains(node, true);
                     });
                 } else {
                     throw _.error("contains");
                 }
+
+                return result;
             };
         })()
     };
@@ -697,7 +695,7 @@
                     }
                 }
 
-                return multiple ? DOMElementCollection.create(nodes) : DOMElement(it);
+                return multiple ? new DOMElementCollection(nodes) : DOMElement(it);
             };
         }
 
@@ -774,7 +772,7 @@
             var children = this._node.children,
                 matcher = selector ? new SelectorMatcher(selector) : null;
 
-            return DOMElementCollection.create(!matcher ? children : 
+            return new DOMElementCollection(!matcher ? children : 
                 _.filter(children, matcher.test, matcher));
         };
 
@@ -1152,60 +1150,23 @@
      * @name DOMElementCollection
      * @constructor
      */
-    var DOMElementCollection = (function() {
-        // Create clean copy of Array prototype. Inspired by
-        // http://dean.edwards.name/weblog/2006/11/hooray/
-        var ref = scripts[0],
-            iframe = document.createElement("iframe"),
-            ctr;
-       
-        iframe.src = "about:blank";
-        iframe.style.display = "none";
-       
-        ref.parentNode.insertBefore(iframe, ref);
-        // store reference to clean Array
-        iframe.contentDocument.write("<script>ctr = Array<\/script>");
-        ctr = iframe.contentWindow.ctr;
-        //ctr = iframe.contentWindow.Array;
-        // cleanup DOM
-        ref.parentNode.removeChild(iframe);
-        
-        // cleanup collection prototype
-        _.forWord("pop push reverse shift sort splice unshift concat join slice toSource indexOf lastIndexOf forEach every some filter map reduce reduceRight", function(methodName) {
-           delete ctr.prototype[methodName];
-        });
-        
-        return ctr;
-    })();
+    function DOMElementCollection(elements) {
+        this._nodes = _.map(elements, DOMElement);
+        this.length = this._nodes.length;
+    }
 
-    /**
-     * Create DOMElementCollection from native collection/array of elements
-     * @memberOf DOMElementCollection
-     * @param  {Array|HTMLCollection} collection native collection/array of elements
-     * @return {DOMElementCollection} collection
-     * @static
-     */
-    DOMElementCollection.create = function(collection) {
-        var result = new DOMElementCollection(),
-            i = 0, n = collection.length;
+    DOMElementCollection.prototype = {
+        /**
+         * Execute callback for each element in collection
+         * @memberOf DOMElementCollection.prototype
+         * @param  {Function} callback action to execute
+         * @return {DOMElementCollection} reference to this
+         */
+        each: function(callback) {
+            _.forEach(this._nodes, callback, this);
 
-        while (i < n) {
-            Array.prototype.push.call(result, DOMElement(collection[i++]));
+            return this;
         }
-
-        return result;
-    };
-
-    /**
-     * Execute callback for each element in collection
-     * @memberOf DOMElementCollection.prototype
-     * @param  {Function} callback action to execute
-     * @return {DOMElementCollection} reference to this
-     */
-    DOMElementCollection.prototype.each = function(callback) {
-        _.forEach(this, callback);
-
-        return this;
     };
 
     (function() {
@@ -1213,11 +1174,11 @@
                 var process = DOMElement.prototype[name];
 
                 return function() {
-                    for (var i = 0, n = this.length, args = _.slice(arguments); i < n; ++i) {
-                        process.apply(this[i], args);
-                    }
+                    var args = _.slice(arguments);
 
-                    return this;
+                    return this.each(function(elem) {
+                        process.apply(elem, args);
+                    });
                 };
             };
 
@@ -1400,7 +1361,7 @@
 
         if (typeof content === "string") {
             if (content.charAt(0) === "<") {
-                return DOMElementCollection.create(sandbox.parse(content));
+                return new DOMElementCollection(sandbox.parse(content));
             } else {
                 elem = document.createElement(content);
             }

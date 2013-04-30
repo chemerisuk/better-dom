@@ -10,14 +10,14 @@ describe("create", function() {
 
     it("should return DOM collection when the first argument is a HTML string", function() {
         var elements = DOM.create("<ul class='test'><li><li></ul><a href='#'></a>"),
-            expectedSelectors = ["ul.test", "a[href]"];
+            expectedSelectors = ["ul", "a"];
 
         expect(elements.length).toBe(2);
 
         elements.each(function(el, index) {
             setFixtures(el._node);
 
-            expect(el._node).toMatchSelector(expectedSelectors[index]);
+            expect(el._node).toHaveTag(expectedSelectors[index]);
         });
     });
 
