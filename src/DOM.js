@@ -275,21 +275,18 @@
     
     (function() {
         var eventHooks = {},
-            createEventHandler = function(thisPtr, callback, selector) {
-                if (!selector) {
-                    return function(e) {
-                        callback.call(thisPtr, DOMEvent(e || window.event));
+            createEventHandler = function(thisPtr, callback, selector, eventType) {
+                var matcher = selector ? new SelectorMatcher(selector) : null,
+                    simpleEventHandler = function(e) {
+                        callback.call(thisPtr, DOMEvent(e));
                     };
-                }
 
-                var matcher = new SelectorMatcher(selector);
-
-                return function(e) {
+                return !selector ? simpleEventHandler : function(e) {
                     e = e || window.event;
 
                     for (var elem = (e.target || e.srcElement), root = thisPtr._node; elem && elem !== root; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
-                            return callback.call(thisPtr, DOMEvent(e));
+                            return simpleEventHandler(e);
                         }
                     }
                 };
@@ -345,7 +342,7 @@
                     selector = null;
                 }
 
-                _.forWord(event, function(event) {
+                _.forEach(event.split(" "), function(event) {
                     var eventEntry = _.mixin({name: event, callback: callback, capturing: false}, eventHooks[event]);
 
                     if (!eventEntry.handler) {
@@ -356,6 +353,20 @@
                         // attach event listener
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
                     } else if (window.attachEvent) {
+                        if (~event.indexOf(":")) {
+                            // custom events for ie8
+                            eventEntry.name = "dataavailable";
+                            eventEntry._handler = eventEntry.handler;
+
+                            eventEntry.handler = function(e) {
+                                e = window.event;
+
+                                if (e.srcUrn === event) {
+                                    eventEntry._handler(e);
+                                }
+                            };
+                        }
+
                         // attach event listener
                         this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
                     } else {
@@ -437,6 +448,11 @@
                 this._node.dispatchEvent(event);
             } else if (window.attachEvent) {
                 event = document.createEventObject();
+
+                if (isCustomEvent) {
+                    event.srcUrn = eventType;
+                    eventType = "dataavailable";
+                }
 
                 event.detail = detail;
 
