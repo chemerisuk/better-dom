@@ -32,7 +32,12 @@
                     return fragment;
                 }
             };
-        })();
+        })(),
+        makeError = function(method, type) {
+            type = type || "DOMElement";
+
+            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
+        };
         
     // DOMNode
     // -------
@@ -84,7 +89,7 @@
             
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
-                    throw _.error("find");
+                    throw makeError("find");
                 }
 
                 var node = this._node,
@@ -189,7 +194,7 @@
          */
         getData: function(key) {
             if (typeof key !== "string") {
-                throw _.error("getData");
+                throw makeError("getData");
             }
 
             var node = this._node,
@@ -223,7 +228,7 @@
                     this.setData(dataKey, key[dataKey]);
                 }, this);
             } else {
-                throw _.error("setData");
+                throw makeError("setData");
             }
 
             return this;
@@ -264,7 +269,7 @@
                         result = result && element.contains(node, true);
                     });
                 } else {
-                    throw _.error("contains");
+                    throw makeError("contains");
                 }
 
                 return result;
@@ -371,7 +376,7 @@
                         // attach event listener
                         this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
                     } else {
-                        throw _.error("on");
+                        throw makeError("on");
                     }
                     
                     // store event entry
@@ -382,7 +387,7 @@
                     this.on(key, event[key]);
                 }, this);
             } else {
-                throw _.error("on");
+                throw makeError("on");
             }
 
             return this;
@@ -397,7 +402,7 @@
          */
         DOMNode.prototype.off = function(eventType, callback) {
             if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new _.error("off");
+                throw new makeError("off");
             }
 
             var hook = eventHooks[eventType];
@@ -411,7 +416,7 @@
                     } else if (window.detachEvent) {
                         this._node.detachEvent("on" + eventType, entry.handler);
                     } else {
-                        throw _.error("off");
+                        throw makeError("off");
                     }
                 }
             }, this);
@@ -428,7 +433,7 @@
          */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new _.error("fire");
+                throw new makeError("fire");
             }
 
             var isCustomEvent = ~eventType.indexOf(":"),
@@ -493,7 +498,7 @@
      */
     DOMElement.prototype.matches = function(selector) {
         if (typeof selector !== "string") {
-            throw _.error("matches");
+            throw makeError("matches");
         }
 
         return new SelectorMatcher(selector).test(this._node);
@@ -600,7 +605,7 @@
     (function() {
         var propHooks = {},
             throwIllegalAccess = function(el) {
-                throw _.error("get");
+                throw makeError("get");
             };
         // protect access to some properties
         _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
@@ -627,7 +632,7 @@
          */
         DOMElement.prototype.get = function(name) {
             if (typeof name !== "string") {
-                throw _.error("get");
+                throw makeError("get");
             }
 
             var el = this._node,
@@ -673,7 +678,7 @@
                     this.set(key, name[key]);
                 }, this);
             } else {
-                throw _.error("set");
+                throw makeError("set");
             }
 
             return this;
@@ -796,7 +801,7 @@
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
                 } else if (element !== undefined) {
-                    throw _.error(methodName);
+                    throw makeError(methodName);
                 }
 
                 if (relatedNode) {
@@ -891,7 +896,7 @@
 
                 return function(classNames) {
                     if (typeof classNames !== "string") {
-                        throw _.error(methodName);
+                        throw makeError(methodName);
                     }
 
                     var result = _[arrayMethod](classNames.split(" "), strategy, this);
@@ -1002,7 +1007,7 @@
                 hook, result;
 
             if (typeof name !== "string") {
-                throw _.error("getStyle"); 
+                throw makeError("getStyle"); 
             }
 
             hook = cssHooks[name];
@@ -1041,7 +1046,7 @@
                     this.setStyle(key, name[key]);
                 }, this);
             } else {
-                throw _.error("setStyle");
+                throw makeError("setStyle");
             }
 
             return this;
@@ -1096,7 +1101,7 @@
          */
         get: function(name) {
             if (typeof name !== "string" || name in DOMEvent.prototype) {
-                throw _.error("get", "DOMEvent");
+                throw makeError("get", "DOMEvent");
             }
 
             return this._event[name];
@@ -1303,7 +1308,7 @@
                     quick[1] && (quick[1] = quick[1].toLowerCase());
                     quick[4] && (quick[4] = " " + quick[4] + " ");
                 } else if (quickOnly) {
-                    throw _.error("quick");
+                    throw makeError("quick");
                 }
             },
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
@@ -1369,7 +1374,7 @@
                 elem = document.createElement(content);
             }
         } else if (!(content instanceof Element)) {
-            throw _.error("create", "DOM");
+            throw makeError("create", "DOM");
         }
 
         return DOMElement(elem);
@@ -1435,7 +1440,7 @@
         // return implementation
         return function(callback) {
             if (typeof callback !== "function") {
-                throw _.error("ready", "DOM");
+                throw makeError("ready", "DOM");
             }
 
             if (readyCallbacks) {
@@ -1470,7 +1475,7 @@
                 } else if (typeof styles === "string") {
                     ruleText += styles;
                 } else {
-                    throw _.error("importStyles", "DOM");
+                    throw makeError("importStyles", "DOM");
                 }
 
                 ruleText += "}";
@@ -1503,7 +1508,7 @@
                     process(selector, rule[selector]);
                 });
             } else {
-                throw _.error("importStyles", "DOM");
+                throw makeError("importStyles", "DOM");
             }
         };
     })();
@@ -1591,7 +1596,7 @@
      */
     DOM.extend = function(selector, options) {
         if (!options || typeof options !== "object") {
-            throw _.error("extend", "DOM");
+            throw makeError("extend", "DOM");
         }
 
         var template = options.template,
@@ -1731,11 +1736,6 @@
         }
 
         return obj; 
-    },
-    error: function(method, type) {
-        type = type || "DOMElement";
-
-        return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
     },
     trim: function(str) {
         return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,"");
