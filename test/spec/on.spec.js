@@ -15,7 +15,7 @@ describe("on", function() {
     it("should accept single callback", function() {
         spyOn(obj, "test");
 
-        link.on("click", obj.test).call("click");
+        link.on("click", obj.test).fire("click");
 
         expect(obj.test).toHaveBeenCalled();
     });
@@ -25,11 +25,11 @@ describe("on", function() {
 
         DOM.on("click", "input", obj.test);
 
-        link.call("click");
+        link.fire("click");
 
         expect(obj.test).not.toHaveBeenCalled();
 
-        input.call("click");
+        input.fire("click");
 
         expect(obj.test).toHaveBeenCalled();
     });
@@ -37,11 +37,11 @@ describe("on", function() {
     it("should accept space-separated event names", function() {
         spyOn(obj, "test");
 
-        input.on("focus click", obj.test).call("focus");
+        input.on("focus click", obj.test).fire("focus");
 
         expect(obj.test).toHaveBeenCalled();
 
-        input.call("click");
+        input.fire("click");
 
         expect(obj.test.callCount).toEqual(2);
     });
@@ -50,13 +50,11 @@ describe("on", function() {
         spyOn(obj, "test");
         spyOn(obj, "test2");
 
-        input.on({focus: obj.test, click: obj.test2});
-
-        input.call("focus");
+        input.on({focus: obj.test, click: obj.test2}).fire("focus");
 
         expect(obj.test).toHaveBeenCalled();
 
-        input.call("click");
+        input.fire("click");
 
         expect(obj.test2).toHaveBeenCalled();
     });
@@ -66,7 +64,7 @@ describe("on", function() {
             expect(this).toEqual(input);
         });
 
-        input.on("click", obj.test).call("click");
+        input.on("click", obj.test).fire("click");
     });
 
     it("should not stop to call handlers if any of them throws an error inside", function() {
@@ -77,7 +75,7 @@ describe("on", function() {
         spyOn(obj, "test").andCallFake(function() { throw "test"; });
         spyOn(obj, "test2");
 
-        input.on("click", obj.test).on("click", obj.test2).call("click");
+        input.on("click", obj.test).on("click", obj.test2).fire("click");
 
         expect(obj.test2).toHaveBeenCalled();
 
@@ -89,7 +87,7 @@ describe("on", function() {
 
         DOM.on("focus", obj.test);
 
-        input.call("focus");
+        input.fire("focus");
 
         expect(obj.test).toHaveBeenCalled();
     });

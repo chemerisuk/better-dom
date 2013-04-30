@@ -45,9 +45,9 @@ describe("extend", function() {
                 before: "prev"
             };
 
-        Object.keys(checkStrategies).forEach(function(key) {
+        for (var key in checkStrategies) {
             template[key] = '<i class="' + key + '"></i>';
-        });
+        }
 
         DOM.extend(".extend", {
             template: template
@@ -57,9 +57,9 @@ describe("extend", function() {
 
         runs(function() {
             DOM.findAll(".extend").each(function(domEl) {
-                Object.keys(checkStrategies).forEach(function(key) {
+                for (var key in checkStrategies) {
                     expect(domEl[checkStrategies[key]]("." + key)).toBeDefined();
-                });
+                }
             });
         });
     });
