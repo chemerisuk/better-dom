@@ -1,8 +1,8 @@
-Better-DOM
+better-dom
 ==========
 Modern javascript library for working with DOM. 
 
-JSDoc - http://chemerisuk.github.io/Better-DOM/
+JSDoc - http://chemerisuk.github.io/better-dom/
 
 Overview
 --------

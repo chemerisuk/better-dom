@@ -1,5 +1,5 @@
 /*!
- * DOM.js (https://github.com/chemerisuk/Better-DOM.js)
+ * better-dom (https://github.com/chemerisuk/better-dom)
  * Modern javascript library for working with DOM
  *
  * Copyright (c) 2013 Maksim Chemerisuk
