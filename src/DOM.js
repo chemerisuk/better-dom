@@ -224,7 +224,7 @@
             if (keyType === "string") {
                 this._data[key] = value;
             } else if (keyType === "object") {
-                _.forIn(key, function(dataKey) {
+                _.forOwn(key, function(dataKey) {
                     this.setData(dataKey, key[dataKey]);
                 }, this);
             } else {
@@ -383,7 +383,7 @@
                     this._events.push(eventEntry);
                 }, this);
             } else if (eventType === "object") {
-                _.forIn(event, function(key) {
+                _.forOwn(event, function(key) {
                     this.on(key, event[key]);
                 }, this);
             } else {
@@ -608,7 +608,7 @@
                 throw makeError("get");
             };
         // protect access to some properties
-        _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
+        _.forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
                 get: throwIllegalAccess,
                 set: throwIllegalAccess
@@ -660,7 +660,7 @@
                     value = value.call(this, this.get(name));
                 }
 
-                _.forWord(name, function(name) {
+                _.forEach(name.split(" "), function(name) {
                     var hook = propHooks[name];
 
                     if (hook) {
@@ -674,7 +674,7 @@
                     }
                 });
             } else if (nameType === "object") {
-                _.forIn(name, function(key) {
+                _.forOwn(name, function(key) {
                     this.set(key, name[key]);
                 }, this);
             } else {
@@ -1042,7 +1042,7 @@
 
                 hook ? hook(style, value) : style[name] = value;
             } else if (nameType === "object") {
-                _.forIn(name, function(key) {
+                _.forOwn(name, function(key) {
                     this.setStyle(key, name[key]);
                 }, this);
             } else {
@@ -1067,12 +1067,12 @@
     DOMNullNode.prototype = new DOMNode();
     DOMNullElement.prototype = new DOMElement();
 
-    _.forIn(DOMNode.prototype, function(key) {
+    _.forOwn(DOMNode.prototype, function(key) {
         _.mixin(DOMNullNode.prototype, key, function() {});
         _.mixin(DOMNullElement.prototype, key, function() {});
     });
 
-    _.forIn(DOMElement.prototype, function(key) {
+    _.forOwn(DOMElement.prototype, function(key) {
         _.mixin(DOMNullElement.prototype, key, function() {});
     });
 
@@ -1464,12 +1464,10 @@
             styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
             styleSheet = document.styleSheets[0],
             process = function(selector, styles) {
-                var ruleText = selector + " { ",
-                    ruleIndex = (styleSheet.cssRules || styleSheet.rules).length;
+                var ruleText = "";
 
                 if (typeof styles === "object") {
-                    _.forIn(styles, function(propName) {
-                        // append vendor prefix if it's required
+                    _.forOwn(styles, function(propName) {
                         ruleText += propName + ":" + styles[propName] + "; ";
                     });
                 } else if (typeof styles === "string") {
@@ -1478,16 +1476,13 @@
                     throw makeError("importStyles", "DOM");
                 }
 
-                ruleText += "}";
-
                 if (styleSheet.cssRules) {
                     // w3c browser
-                    styleSheet.insertRule(ruleText, ruleIndex);
+                    styleSheet.insertRule(selector + " {" + ruleText + "}", styleSheet.cssRules.length);
                 } else {
-                    var entries = ruleText.substr(0, ruleText.length - 1).split('{');
                     // ie doesn't support multiple selectors in addRule 
-                    _.forEach(entries[0].split(','), function(ruleText) {
-                        styleSheet.addRule(ruleText, entries[1], ruleIndex);
+                    _.forEach(selector.split(","), function(selector) {
+                        styleSheet.addRule(selector, ruleText);
                     });
                 }
             };
@@ -1604,7 +1599,7 @@
             ctr;
 
         if (template) {
-            _.forIn(template, function(key) {
+            _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
 
@@ -1626,7 +1621,7 @@
         DOM.watch(selector, function(el) {
             _.mixin(el, options);
 
-            template && _.forIn(template, function(key) {
+            template && _.forOwn(template, function(key) {
                 el[key](template[key].cloneNode(true));
             });
 
@@ -1646,47 +1641,28 @@
     slice: function(list, index) {
         return Array.prototype.slice.call(list, index || 0);
     },
-    keys: Object.keys || (function() {
-        var hasOwnProp = Object.prototype.hasOwnProperty,
-            hasDontEnumBug = !({toString: null}).propertyIsEnumerable('toString'),
-            dontEnums = [
-              'toString',
-              'toLocaleString',
-              'valueOf',
-              'hasOwnProperty',
-              'isPrototypeOf',
-              'propertyIsEnumerable',
-              'constructor'
-            ],
-            dontEnumsLength = dontEnums.length;
-     
-        return function (obj) {
-          if (typeof obj !== 'object' && typeof obj !== 'function' || obj === null) throw new TypeError('Object.keys called on non-object');
-     
-          var result = [];
-     
-          for (var prop in obj) {
-            if (hasOwnProp.call(obj, prop)) result.push(prop);
-          }
-     
-          if (hasDontEnumBug) {
-            for (var i=0; i < dontEnumsLength; i++) {
-              if (hasOwnProp.call(obj, dontEnums[i])) result.push(dontEnums[i]);
-            }
-          }
-          return result;
-        };
-    })(),
-    forIn: function(obj, callback, thisPtr) {
+    keys: Object.keys || function(obj) {
+        var objType = typeof obj,
+            result = [], 
+            prop;
+
+        if (objType !== "object" && objType !== "function" || obj === null) {
+            throw new TypeError('Object.keys called on non-object');
+        }
+ 
+        for (prop in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
+        }
+
+        return result;
+    },
+    forOwn: function(obj, callback, thisPtr) {
         this.forEach(this.keys(obj), callback, thisPtr);
     },
     forEach: function(list, callback, thisPtr) {
         for (var i = 0, n = list.length; i < n; ++i) {
             callback.call(thisPtr, list[i], i, list);
         }
-    },
-    forWord: function(str, callback, thisPtr) {
-        this.forEach(str.split(" "), callback, thisPtr);
     },
     filter: function(list, testFn, thisPtr) {
         var result = [];
@@ -1730,14 +1706,25 @@
         if (arguments.length === 3) {
             obj[name] = value;
         } else if (name) {
-            this.forIn(name, function(key) {
+            this.forOwn(name, function(key) {
                 this.mixin(obj, key, name[key]);
             }, this);
         }
 
         return obj; 
     },
-    trim: function(str) {
-        return str.trim ? str.trim() : str.replace(/^\s+|\s+$/g,"");
-    }
+    trim: (function() {
+        if (String.prototype.trim) {
+            return function(str) {
+                return str.trim();
+            };
+        } else {
+            var rwsleft = /^\s\s*/,
+                rwsright = /\s\s*$/;
+
+            return function(str) {
+                return str.replace(rwsleft, "").replace(rwsright, "");
+            };
+        }
+    })()
 });

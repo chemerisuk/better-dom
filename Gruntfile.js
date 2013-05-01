@@ -33,7 +33,7 @@ module.exports = function(grunt) {
             },
             unit: {
                 configFile: "test/lib/karma.conf.js",
-                browsers: ["Chrome"],
+                browsers: ["Chrome", "Opera", "Safari", "Firefox"],
                 singleRun: true
             }
         },
