@@ -282,15 +282,16 @@
     (function() {
         var eventHooks = {},
             createEventHandler = function(thisPtr, callback, selector, eventType) {
-                var matcher = selector ? new SelectorMatcher(selector) : null,
+                var currentTarget = thisPtr._node,
+                    matcher = selector ? new SelectorMatcher(selector) : null,
                     simpleEventHandler = function(e) {
-                        callback.call(thisPtr, DOMEvent(e));
+                        callback.call(thisPtr, DOMEvent(e, currentTarget));
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
                     e = e || window.event;
 
-                    for (var elem = (e.target || e.srcElement), root = thisPtr._node; elem && elem !== root; elem = elem.parentNode) {
+                    for (var elem = ( e.target || e.srcElement ); elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
                             return simpleEventHandler(e);
                         }
@@ -1084,12 +1085,18 @@
      * @constructor
      * @param event native event
      */
-    function DOMEvent(event) {
+    function DOMEvent(event, currentTarget) {
         if (!(this instanceof DOMEvent)) {
-            return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
+            return event.__dom__ || ( event.__dom__ = new DOMEvent(event, currentTarget) );
         }
 
         this._event = event;
+
+        if (!document.addEventListener) {
+            this.target = DOMElement(event.srcElement);
+            this.currentTarget = DOMElement(currentTarget);
+            this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
+        }
     }
 
     DOMEvent.prototype = {
@@ -1109,19 +1116,18 @@
     };
 
     (function() {
-        var makeFuncMethod = function(name) {
-                return function() {
+        var makeFuncMethod = function(name, ieHandler) {
+                return !document.addEventListener ? ieHandler : function() {
                     this._event[name]();
                 };
             },
             defineProperty = function(name) {
-                // FIXME: ie8
-                /*Object.defineProperty(DOMEvent.prototype, name, {
+                Object.defineProperty(DOMEvent.prototype, name, {
                     enumerable: true,
                     get: function() {
                         return DOMElement(this._event[name]);
                     }
-                });*/
+                });
             };
 
         /**
@@ -1129,26 +1135,25 @@
          * @memberOf DOMEvent.prototype
          * @function
          */
-        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault");
+        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault", function() {
+            this._event.returnValue = false;
+        });
 
         /**
          * Stop event propagation
          * @memberOf DOMEvent.prototype
          * @function
          */
-        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation");
+        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", function() {
+            this._event.cancelBubble = true;
+        });
 
-        /**
-         * Stop event propagation immidiately
-         * @memberOf DOMEvent.prototype
-         * @function
-         */
-        DOMEvent.prototype.stopImmediatePropagation = makeFuncMethod("stopImmediatePropagation");
-
-        defineProperty("target");
-        defineProperty("currentTarget");
-        defineProperty("relatedTarget");
-
+        if (document.addEventListener) {
+            // in ie we will set these properties in constructor
+            defineProperty("target");
+            defineProperty("currentTarget");
+            defineProperty("relatedTarget");
+        }
     })();
 
     // DOMElementCollection
