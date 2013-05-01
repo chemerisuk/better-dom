@@ -12,6 +12,8 @@
 
     var htmlEl = document.documentElement,
         scripts = document.scripts,
+        isW3Compliant = !!document.addEventListener,
+        isIECompliant = !!document.attachEvent,
         // helpers
         sandbox = (function() {
             var el = document.createElement("body"),
@@ -38,6 +40,10 @@
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         };
+
+    if (!isW3Compliant && !isIECompliant) {
+        throw "Your browser is not supported by library!";
+    }
         
     // DOMNode
     // -------
@@ -285,13 +291,13 @@
                 var currentTarget = thisPtr._node,
                     matcher = selector ? new SelectorMatcher(selector) : null,
                     simpleEventHandler = function(e) {
-                        callback.call(thisPtr, DOMEvent(e, currentTarget));
+                        callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
-                    e = e || window.event;
+                    var elem = isW3Compliant ? e.target : window.event.srcElement;
 
-                    for (var elem = ( e.target || e.srcElement ); elem && elem !== currentTarget; elem = elem.parentNode) {
+                    for (; elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
                             return simpleEventHandler(e);
                         }
@@ -356,10 +362,9 @@
                         eventEntry.handler = createEventHandler(this, callback, selector);
                     }
 
-                    if (window.addEventListener) {
-                        // attach event listener
+                    if (isW3Compliant) {
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
-                    } else if (window.attachEvent) {
+                    } else {
                         if (~event.indexOf(":")) {
                             // custom events for ie8
                             eventEntry.name = "dataavailable";
@@ -374,10 +379,7 @@
                             };
                         }
 
-                        // attach event listener
                         this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
-                    } else {
-                        throw makeError("on");
                     }
                     
                     // store event entry
@@ -412,12 +414,10 @@
 
             _.forEach(this._events, function(entry) {
                 if (eventType === entry.name && (!callback || callback === entry.callback)) {
-                    if (window.addEventListener) {
+                    if (isW3Compliant) {
                         this._node.removeEventListener(eventType, entry.handler, entry.capturing);
-                    } else if (window.detachEvent) {
-                        this._node.detachEvent("on" + eventType, entry.handler);
                     } else {
-                        throw makeError("off");
+                        this._node.detachEvent("on" + eventType, entry.handler);
                     }
                 }
             }, this);
@@ -434,7 +434,7 @@
          */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new makeError("fire");
+                throw makeError("fire");
             }
 
             var isCustomEvent = ~eventType.indexOf(":"),
@@ -443,7 +443,7 @@
 
             if (hook && hook.name) eventType = hook.name;
 
-            if (window.addEventListener) {
+            if (isW3Compliant) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
@@ -453,10 +453,11 @@
                 }
                 
                 this._node.dispatchEvent(event);
-            } else if (window.attachEvent) {
+            } else {
                 event = document.createEventObject();
 
                 if (isCustomEvent) {
+                    // use IE-specific attribute to store custom event name
                     event.srcUrn = eventType;
                     eventType = "dataavailable";
                 }
@@ -465,11 +466,9 @@
 
                 this._node.fireEvent("on" + eventType, event);
             }
-            
 
             return this;
         };
-
     })();
 
     // DOMElement
@@ -616,14 +615,15 @@
             };
         });
 
-        // fix NoScope elements in IE9
-        propHooks.innerHTML = {
-            set: function(el, value) {
-                el.innerHTML = "&shy;" + value;
-                el.removeChild(el.firstChild);
-                // TODO: evaluate script elements?
-            }
-        };
+        if (isIECompliant) {
+            // fix NoScope elements in IE < 10
+            propHooks.innerHTML = {
+                set: function(el, value) {
+                    el.innerHTML = "&shy;" + value;
+                    el.removeChild(el.firstChild);
+                }
+            };
+        }
 
         /**
          * Get property or attribute by name
@@ -781,10 +781,16 @@
             var children = this._node.children,
                 matcher = selector ? new SelectorMatcher(selector) : null;
 
+            if (!isW3Compliant) {
+                // fix IE8 bug with children collection
+                children = _.filter(children, function(result, elem) {
+                    return elem.nodeType === 1;
+                });
+            }
+
             return new DOMElementCollection(!matcher ? children : 
                 _.filter(children, matcher.test, matcher));
         };
-
     })();
 
     // MANIPULATION
@@ -879,7 +885,6 @@
         DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
             parentNode.removeChild(node);
         });
-
     })();
 
     // classes manipulation
@@ -959,7 +964,6 @@
                 this.removeClass(className);
             }
         });
-
     })();
 
     // style manipulation
@@ -969,10 +973,10 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = window.getComputedStyle ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
+            computed = isW3Compliant ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
+            // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
-
-        // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
+        
         _.forEach(props, function(propName) {
             var prefix = propName.charAt(0) === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
@@ -1052,7 +1056,6 @@
 
             return this;
         };
-
     })();
     
     // NULL OBJECTS
@@ -1092,7 +1095,7 @@
 
         this._event = event;
 
-        if (!document.addEventListener) {
+        if (!isW3Compliant) {
             this.target = DOMElement(event.srcElement);
             this.currentTarget = DOMElement(currentTarget);
             this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
@@ -1116,8 +1119,8 @@
     };
 
     (function() {
-        var makeFuncMethod = function(name, ieHandler) {
-                return !document.addEventListener ? ieHandler : function() {
+        var makeFuncMethod = function(name, legacyHandler) {
+                return !isW3Compliant ? legacyHandler : function() {
                     this._event[name]();
                 };
             },
@@ -1148,7 +1151,7 @@
             this._event.cancelBubble = true;
         });
 
-        if (document.addEventListener) {
+        if (isW3Compliant) {
             // in ie we will set these properties in constructor
             defineProperty("target");
             defineProperty("currentTarget");
