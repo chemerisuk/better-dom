@@ -55,6 +55,20 @@ body > footer {
 [data-i18n="button.save"]:before { content: "Save changes" }
 [data-i18n="button.cancel"]:before { content: "Cancel" }
 </style>
+<script type="text/javascript">
+    DOM.ready(function() {
+        console.log("ready1");
+    });
+
+    DOM.ready(function() {
+        console.log("ready2");
+        throw "exception!";
+    });
+
+    DOM.ready(function() {
+        console.log("ready3");
+    });
+</script>
 </head>
 <body>
     <header>

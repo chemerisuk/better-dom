@@ -1396,52 +1396,62 @@
      * @global
      */
     DOM.ready = (function() {
-        var readyCallbacks = null,
+        var readyCallbacks = [],
+            scrollIntervalId,
+            safeExecution = function(callback) {
+                // wrap callback with setTimeout to protect from unexpected exceptions
+                setTimeout(callback, 0);
+            },
             pageLoaded = function() {
+                if (scrollIntervalId) {
+                   clearInterval(scrollIntervalId);
+                }
+
                 if (readyCallbacks) {
                     // trigger callbacks
-                    _.forEach(readyCallbacks, function(callback) {
-                        callback();
-                    });
+                    _.forEach(readyCallbacks, safeExecution);
                     // cleanup
                     readyCallbacks = null;
                 }
-            },
-            testDiv, isTop, scrollIntervalId;
+            };
 
         // https://raw.github.com/requirejs/domReady/latest/domReady.js
         
-        if (document.addEventListener) {
+        if (isW3Compliant) {
             //Standards. Hooray! Assumption here that if standards based,
             //it knows about DOMContentLoaded.
             document.addEventListener("DOMContentLoaded", pageLoaded, false);
             window.addEventListener("load", pageLoaded, false);
-        } else if (window.attachEvent) {
+        } else {
             window.attachEvent("onload", pageLoaded);
 
-            testDiv = document.createElement('div');
-            try {
-                isTop = window.frameElement === null;
-            } catch (e) {}
+            (function() {
+                var testDiv = document.createElement('div'), 
+                    isTop;
+                
+                try {
+                    isTop = window.frameElement === null;
+                } catch (e) {}
 
-            //DOMContentLoaded approximation that uses a doScroll, as found by
-            //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-            //but modified by other contributors, including jdalton
-            if (testDiv.doScroll && isTop && window.external) {
-                scrollIntervalId = setInterval(function () {
-                    try {
-                        testDiv.doScroll();
-                        pageLoaded();
-                    } catch (e) {}
-                }, 30);
-            }
+                //DOMContentLoaded approximation that uses a doScroll, as found by
+                //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+                //but modified by other contributors, including jdalton
+                if (testDiv.doScroll && isTop && window.external) {
+                    scrollIntervalId = setInterval(function () {
+                        try {
+                            testDiv.doScroll();
+                            pageLoaded();
+                        } catch (e) {}
+                    }, 30);
+                }
+            })();
         }
 
         // Catch cases where ready is called after the browser event has already occurred.
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // hey, at least it's not a UA sniff
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        if ( isIECompliant ? document.readyState === "complete" : document.readyState !== "loading") {
             pageLoaded();
         }
 
@@ -1454,7 +1464,7 @@
             if (readyCallbacks) {
                 readyCallbacks.push(callback);
             } else {
-                callback();
+                safeExecution(callback);
             }
         };
     })();
