@@ -38,7 +38,6 @@
     // ---------
 
     var htmlEl = document.documentElement,
-        headEl = document.head,
         scripts = document.scripts,
         // helpers
         sandbox = (function() {
@@ -60,7 +59,12 @@
                     return fragment;
                 }
             };
-        })();
+        })(),
+        makeError = function(method, type) {
+            type = type || "DOMElement";
+
+            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
+        };
         
     // DOMNode
     // -------
@@ -105,10 +109,14 @@
                 rescape = /'|\\/g,
                 tmpId = "DOM" + new Date().getTime();
 
+            if (!document.getElementsByClassName) {
+                // ie8 doesn't support getElementsByClassName
+                rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
+            }
             
             return function(selector, /*INTERNAL*/multiple) {
                 if (typeof selector !== "string") {
-                    throw _.error("find");
+                    throw makeError("find");
                 }
 
                 var node = this._node,
@@ -164,7 +172,7 @@
                     }
                 }
 
-                return multiple ? DOMElementCollection.create(elements) : DOMElement(elements);
+                return multiple ? new DOMElementCollection(elements) : DOMElement(elements);
             };
         })(),
 
@@ -213,7 +221,7 @@
          */
         getData: function(key) {
             if (typeof key !== "string") {
-                throw _.error("getData");
+                throw makeError("getData");
             }
 
             var node = this._node,
@@ -243,11 +251,11 @@
             if (keyType === "string") {
                 this._data[key] = value;
             } else if (keyType === "object") {
-                _.forIn(key, function(dataKey) {
+                _.forOwn(key, function(dataKey) {
                     this.setData(dataKey, key[dataKey]);
                 }, this);
             } else {
-                throw _.error("setData");
+                throw makeError("setData");
             }
 
             return this;
@@ -264,33 +272,34 @@
          * // returns true
          */
         contains: (function() {
-            var containsElement = Node.prototype.contains ?
-                function(parent, child) {
+            var containsElement;
+
+            if (htmlEl.contains) {
+                containsElement = function(parent, child) {
                     return parent.contains(child);
-                } :
-                function(parent, child) {
+                };
+            } else {
+                containsElement = function(parent, child) {
                     return !!(parent.compareDocumentPosition(child) & 16);
                 };
-
+            }
             
             return function(element, /*INTERNAL*/reverse) {
-                var node = this._node;
+                var node = this._node, result = true;
 
                 if (element instanceof Element) {
-                    return containsElement(reverse ? element : node, reverse ? node : element);
+                    result = containsElement(reverse ? element : node, reverse ? node : element);
                 } else if (element instanceof DOMElement) {
-                    return element.contains(node, true);
-                } else if (Array.isArray(element)) {
-                    return _.every(element, function(element) {
-                        if (element instanceof DOMElement) {
-                            return element.contains(node, true);
-                        }
-                        
-                        throw _.error("contains");
+                    result = element.contains(node, true);
+                } else if (element instanceof DOMElementCollection) {
+                    element.each(function(element) {
+                        result = result && element.contains(node, true);
                     });
                 } else {
-                    throw _.error("contains");
+                    throw makeError("contains");
                 }
+
+                return result;
             };
         })()
     };
@@ -299,19 +308,19 @@
     
     (function() {
         var eventHooks = {},
-            createEventHandler = function(thisPtr, callback, selector) {
-                if (!selector) {
-                    return function(e) {
-                        callback.call(thisPtr, DOMEvent(e));
+            createEventHandler = function(thisPtr, callback, selector, eventType) {
+                var currentTarget = thisPtr._node,
+                    matcher = selector ? new SelectorMatcher(selector) : null,
+                    simpleEventHandler = function(e) {
+                        callback.call(thisPtr, DOMEvent(e, currentTarget));
                     };
-                }
 
-                var matcher = new SelectorMatcher(selector);
+                return !selector ? simpleEventHandler : function(e) {
+                    e = e || window.event;
 
-                return function(e) {
-                    for (var elem = e.target, root = e.currentTarget; elem && elem !== root; elem = elem.parentNode) {
+                    for (var elem = ( e.target || e.srcElement ); elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
-                            return callback.call(thisPtr, DOMEvent(e));
+                            return simpleEventHandler(e);
                         }
                     }
                 };
@@ -367,24 +376,46 @@
                     selector = null;
                 }
 
-                _.forWord(event, function(event) {
+                _.forEach(event.split(" "), function(event) {
                     var eventEntry = _.mixin({name: event, callback: callback, capturing: false}, eventHooks[event]);
 
                     if (!eventEntry.handler) {
                         eventEntry.handler = createEventHandler(this, callback, selector);
                     }
 
-                    // attach event listener
-                    this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
+                    if (window.addEventListener) {
+                        // attach event listener
+                        this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
+                    } else if (window.attachEvent) {
+                        if (~event.indexOf(":")) {
+                            // custom events for ie8
+                            eventEntry.name = "dataavailable";
+                            eventEntry._handler = eventEntry.handler;
+
+                            eventEntry.handler = function(e) {
+                                e = window.event;
+
+                                if (e.srcUrn === event) {
+                                    eventEntry._handler(e);
+                                }
+                            };
+                        }
+
+                        // attach event listener
+                        this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
+                    } else {
+                        throw makeError("on");
+                    }
+                    
                     // store event entry
                     this._events.push(eventEntry);
                 }, this);
             } else if (eventType === "object") {
-                _.forIn(event, function(key) {
+                _.forOwn(event, function(key) {
                     this.on(key, event[key]);
                 }, this);
             } else {
-                throw _.error("on");
+                throw makeError("on");
             }
 
             return this;
@@ -399,7 +430,7 @@
          */
         DOMNode.prototype.off = function(eventType, callback) {
             if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new _.error("off");
+                throw new makeError("off");
             }
 
             var hook = eventHooks[eventType];
@@ -408,7 +439,13 @@
 
             _.forEach(this._events, function(entry) {
                 if (eventType === entry.name && (!callback || callback === entry.callback)) {
-                    this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                    if (window.addEventListener) {
+                        this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                    } else if (window.detachEvent) {
+                        this._node.detachEvent("on" + eventType, entry.handler);
+                    } else {
+                        throw makeError("off");
+                    }
                 }
             }, this);
 
@@ -424,22 +461,38 @@
          */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
-                throw new _.error("fire");
+                throw new makeError("fire");
             }
 
             var isCustomEvent = ~eventType.indexOf(":"),
-                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event"),
-                hook = eventHooks[eventType];
+                hook = eventHooks[eventType],
+                event;
 
             if (hook && hook.name) eventType = hook.name;
 
-            if (isCustomEvent) {
-                event.initCustomEvent(eventType, true, false, detail);
-            } else { 
-                event.initEvent(eventType, true, true);
+            if (window.addEventListener) {
+                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+
+                if (isCustomEvent) {
+                    event.initCustomEvent(eventType, true, false, detail);
+                } else { 
+                    event.initEvent(eventType, true, true);
+                }
+                
+                this._node.dispatchEvent(event);
+            } else if (window.attachEvent) {
+                event = document.createEventObject();
+
+                if (isCustomEvent) {
+                    event.srcUrn = eventType;
+                    eventType = "dataavailable";
+                }
+
+                event.detail = detail;
+
+                this._node.fireEvent("on" + eventType, event);
             }
             
-            this._node.dispatchEvent(event);
 
             return this;
         };
@@ -473,7 +526,7 @@
      */
     DOMElement.prototype.matches = function(selector) {
         if (typeof selector !== "string") {
-            throw _.error("matches");
+            throw makeError("matches");
         }
 
         return new SelectorMatcher(selector).test(this._node);
@@ -580,10 +633,10 @@
     (function() {
         var propHooks = {},
             throwIllegalAccess = function(el) {
-                throw _.error("get");
+                throw makeError("get");
             };
         // protect access to some properties
-        _.forWord("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling", function(key) {
+        _.forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
                 get: throwIllegalAccess,
                 set: throwIllegalAccess
@@ -607,7 +660,7 @@
          */
         DOMElement.prototype.get = function(name) {
             if (typeof name !== "string") {
-                throw _.error("get");
+                throw makeError("get");
             }
 
             var el = this._node,
@@ -635,7 +688,7 @@
                     value = value.call(this, this.get(name));
                 }
 
-                _.forWord(name, function(name) {
+                _.forEach(name.split(" "), function(name) {
                     var hook = propHooks[name];
 
                     if (hook) {
@@ -649,11 +702,11 @@
                     }
                 });
             } else if (nameType === "object") {
-                _.forIn(name, function(key) {
+                _.forOwn(name, function(key) {
                     this.set(key, name[key]);
                 }, this);
             } else {
-                throw _.error("set");
+                throw makeError("set");
             }
 
             return this;
@@ -671,14 +724,14 @@
                     it = this._node;
 
                 while (it = it[propertyName]) {
-                    if (!matcher || matcher.test(it)) {
+                    if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
                         if (!multiple) break;
 
                         nodes.push(it);
                     }
                 }
 
-                return multiple ? DOMElementCollection.create(nodes) : DOMElement(it);
+                return multiple ? new DOMElementCollection(nodes) : DOMElement(it);
             };
         }
 
@@ -689,7 +742,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.next = makeTraversingMethod("nextElementSibling");
+        DOMElement.prototype.next = makeTraversingMethod("nextSibling");
 
         /**
          * Find previous sibling element filtered by optional selector
@@ -698,7 +751,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.prev = makeTraversingMethod("previousElementSibling");
+        DOMElement.prototype.prev = makeTraversingMethod("previousSibling");
 
         /**
          * Find parent element filtered by optional selector
@@ -716,7 +769,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.firstChild = makeTraversingMethod("firstElementChild");
+        DOMElement.prototype.firstChild = makeTraversingMethod("firstChild");
 
         /**
          * Find last child element filtered by optional selector
@@ -725,7 +778,7 @@
          * @return {DOMElement} matched element
          * @function
          */
-        DOMElement.prototype.lastChild = makeTraversingMethod("lastElementChild");
+        DOMElement.prototype.lastChild = makeTraversingMethod("lastChild");
 
         /**
          * Find all next sibling elements filtered by optional selector
@@ -734,7 +787,7 @@
          * @return {DOMElementCollection} matched elements
          * @function
          */
-        DOMElement.prototype.nextAll = makeTraversingMethod("nextElementSibling", true);
+        DOMElement.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 
         /**
          * Find all previous sibling elements filtered by optional selector
@@ -743,7 +796,7 @@
          * @return {DOMElementCollection} matched elements
          * @function
          */
-        DOMElement.prototype.prevAll = makeTraversingMethod("previousElementSibling", true);
+        DOMElement.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
         /**
          * Fetch children elements filtered by optional selector
@@ -755,7 +808,7 @@
             var children = this._node.children,
                 matcher = selector ? new SelectorMatcher(selector) : null;
 
-            return DOMElementCollection.create(!matcher ? children : 
+            return new DOMElementCollection(!matcher ? children : 
                 _.filter(children, matcher.test, matcher));
         };
 
@@ -776,7 +829,7 @@
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
                 } else if (element !== undefined) {
-                    throw _.error(methodName);
+                    throw makeError(methodName);
                 }
 
                 if (relatedNode) {
@@ -871,7 +924,7 @@
 
                 return function(classNames) {
                     if (typeof classNames !== "string") {
-                        throw _.error(methodName);
+                        throw makeError(methodName);
                     }
 
                     var result = _[arrayMethod](classNames.split(" "), strategy, this);
@@ -913,8 +966,8 @@
          * @function
          */
         DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
-            this._node.className = (" " + this._node.className + " ")
-                    .replace(rclass, " ").replace(" " + className + " ", " ").trim();
+            this._node.className = _.trim((" " + this._node.className + " ")
+                    .replace(rclass, " ").replace(" " + className + " ", " "));
         });
 
         /**
@@ -943,7 +996,7 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = window.getComputedStyle(htmlEl, ""),
+            computed = window.getComputedStyle ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
 
         // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
@@ -982,7 +1035,7 @@
                 hook, result;
 
             if (typeof name !== "string") {
-                throw _.error("getStyle"); 
+                throw makeError("getStyle"); 
             }
 
             hook = cssHooks[name];
@@ -991,7 +1044,7 @@
             result = hook ? hook(style) : style[name];
 
             if (!result) {
-                style = window.getComputedStyle(this._node);
+                style = window.getComputedStyle ? window.getComputedStyle(this._node) : this._node.currentStyle;
 
                 result = hook ? hook(style) : style[name];
             }
@@ -1017,11 +1070,11 @@
 
                 hook ? hook(style, value) : style[name] = value;
             } else if (nameType === "object") {
-                _.forIn(name, function(key) {
+                _.forOwn(name, function(key) {
                     this.setStyle(key, name[key]);
                 }, this);
             } else {
-                throw _.error("setStyle");
+                throw makeError("setStyle");
             }
 
             return this;
@@ -1042,12 +1095,12 @@
     DOMNullNode.prototype = new DOMNode();
     DOMNullElement.prototype = new DOMElement();
 
-    _.forIn(DOMNode.prototype, function(key) {
+    _.forOwn(DOMNode.prototype, function(key) {
         _.mixin(DOMNullNode.prototype, key, function() {});
         _.mixin(DOMNullElement.prototype, key, function() {});
     });
 
-    _.forIn(DOMElement.prototype, function(key) {
+    _.forOwn(DOMElement.prototype, function(key) {
         _.mixin(DOMNullElement.prototype, key, function() {});
     });
 
@@ -1059,12 +1112,18 @@
      * @constructor
      * @param event native event
      */
-    function DOMEvent(event) {
+    function DOMEvent(event, currentTarget) {
         if (!(this instanceof DOMEvent)) {
-            return event.__dom__ || ( event.__dom__ = new DOMEvent(event) );
+            return event.__dom__ || ( event.__dom__ = new DOMEvent(event, currentTarget) );
         }
 
         this._event = event;
+
+        if (!document.addEventListener) {
+            this.target = DOMElement(event.srcElement);
+            this.currentTarget = DOMElement(currentTarget);
+            this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
+        }
     }
 
     DOMEvent.prototype = {
@@ -1076,7 +1135,7 @@
          */
         get: function(name) {
             if (typeof name !== "string" || name in DOMEvent.prototype) {
-                throw _.error("get", "DOMEvent");
+                throw makeError("get", "DOMEvent");
             }
 
             return this._event[name];
@@ -1084,8 +1143,8 @@
     };
 
     (function() {
-        var makeFuncMethod = function(name) {
-                return function() {
+        var makeFuncMethod = function(name, ieHandler) {
+                return !document.addEventListener ? ieHandler : function() {
                     this._event[name]();
                 };
             },
@@ -1103,26 +1162,25 @@
          * @memberOf DOMEvent.prototype
          * @function
          */
-        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault");
+        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault", function() {
+            this._event.returnValue = false;
+        });
 
         /**
          * Stop event propagation
          * @memberOf DOMEvent.prototype
          * @function
          */
-        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation");
+        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", function() {
+            this._event.cancelBubble = true;
+        });
 
-        /**
-         * Stop event propagation immidiately
-         * @memberOf DOMEvent.prototype
-         * @function
-         */
-        DOMEvent.prototype.stopImmediatePropagation = makeFuncMethod("stopImmediatePropagation");
-
-        defineProperty("target");
-        defineProperty("currentTarget");
-        defineProperty("relatedTarget");
-
+        if (document.addEventListener) {
+            // in ie we will set these properties in constructor
+            defineProperty("target");
+            defineProperty("currentTarget");
+            defineProperty("relatedTarget");
+        }
     })();
 
     // DOMElementCollection
@@ -1132,58 +1190,23 @@
      * @name DOMElementCollection
      * @constructor
      */
-    var DOMElementCollection = (function() {
-        // Create clean copy of Array prototype. Inspired by
-        // http://dean.edwards.name/weblog/2006/11/hooray/
-        var ref = scripts[0],
-            iframe = document.createElement("iframe"),
-            ctr;
-       
-        iframe.src = "about:blank";
-        iframe.style.display = "none";
-       
-        ref.parentNode.insertBefore(iframe, ref);
-        // store reference to clean Array
-        ctr = iframe.contentWindow.Array;
-        // cleanup DOM
-        ref.parentNode.removeChild(iframe);
-        
-        // cleanup collection prototype
-        _.forEach(Object.getOwnPropertyNames(ctr.prototype), function(methodName) {
-           if (methodName !== "length") delete ctr.prototype[methodName];
-        });
-        
-        return ctr;
-    })();
+    function DOMElementCollection(elements) {
+        this._nodes = _.map(elements, DOMElement);
+        this.length = this._nodes.length;
+    }
 
-    /**
-     * Create DOMElementCollection from native collection/array of elements
-     * @memberOf DOMElementCollection
-     * @param  {Array|HTMLCollection} collection native collection/array of elements
-     * @return {DOMElementCollection} collection
-     * @static
-     */
-    DOMElementCollection.create = function(collection) {
-        var result = new DOMElementCollection(),
-            i = 0, n = collection.length;
+    DOMElementCollection.prototype = {
+        /**
+         * Execute callback for each element in collection
+         * @memberOf DOMElementCollection.prototype
+         * @param  {Function} callback action to execute
+         * @return {DOMElementCollection} reference to this
+         */
+        each: function(callback) {
+            _.forEach(this._nodes, callback, this);
 
-        while (i &lt; n) {
-            Array.prototype.push.call(result, DOMElement(collection[i++]));
+            return this;
         }
-
-        return result;
-    };
-
-    /**
-     * Execute callback for each element in collection
-     * @memberOf DOMElementCollection.prototype
-     * @param  {Function} callback action to execute
-     * @return {DOMElementCollection} reference to this
-     */
-    DOMElementCollection.prototype.each = function(callback) {
-        _.forEach(this, callback);
-
-        return this;
     };
 
     (function() {
@@ -1191,11 +1214,11 @@
                 var process = DOMElement.prototype[name];
 
                 return function() {
-                    for (var i = 0, n = this.length, args = _.slice(arguments); i &lt; n; ++i) {
-                        process.apply(this[i], args);
-                    }
+                    var args = _.slice(arguments);
 
-                    return this;
+                    return this.each(function(elem) {
+                        process.apply(elem, args);
+                    });
                 };
             };
 
@@ -1317,14 +1340,23 @@
                     quick[1] && (quick[1] = quick[1].toLowerCase());
                     quick[4] && (quick[4] = " " + quick[4] + " ");
                 } else if (quickOnly) {
-                    throw _.error("quick");
+                    throw makeError("quick");
                 }
             },
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
                 return result || htmlEl[propertyName] && propertyName;
-            }, null);
+            }, null),
+            matches = function(el, selector) {
+                var nodeList = document.querySelectorAll(selector);
+
+                for (var i = 0, n = nodeList.length; i &lt; n; ++i) {
+                    if (nodeList[i] === el) return true;
+                }
+
+                return false; 
+            };
 
         ctr.prototype = {
             test: function(el) {
@@ -1337,7 +1369,7 @@
                     );
                 }
 
-                return !this.quickOnly && el[matchesProp](this.selector);
+                return !this.quickOnly && ( matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector) );
             }
         };
 
@@ -1369,12 +1401,12 @@
 
         if (typeof content === "string") {
             if (content.charAt(0) === "&lt;") {
-                return DOMElementCollection.create(sandbox.parse(content));
+                return new DOMElementCollection(sandbox.parse(content));
             } else {
                 elem = document.createElement(content);
             }
         } else if (!(content instanceof Element)) {
-            throw _.error("create", "DOM");
+            throw makeError("create", "DOM");
         }
 
         return DOMElement(elem);
@@ -1389,7 +1421,7 @@
      */
     DOM.ready = (function() {
         var readyCallbacks = null,
-            readyProcess = function() {
+            pageLoaded = function() {
                 if (readyCallbacks) {
                     // trigger callbacks
                     _.forEach(readyCallbacks, function(callback) {
@@ -1398,24 +1430,49 @@
                     // cleanup
                     readyCallbacks = null;
                 }
-            };
+            },
+            testDiv, isTop, scrollIntervalId;
+
+        // https://raw.github.com/requirejs/domReady/latest/domReady.js
+        
+        if (document.addEventListener) {
+            //Standards. Hooray! Assumption here that if standards based,
+            //it knows about DOMContentLoaded.
+            document.addEventListener("DOMContentLoaded", pageLoaded, false);
+            window.addEventListener("load", pageLoaded, false);
+        } else if (window.attachEvent) {
+            window.attachEvent("onload", pageLoaded);
+
+            testDiv = document.createElement('div');
+            try {
+                isTop = window.frameElement === null;
+            } catch (e) {}
+
+            //DOMContentLoaded approximation that uses a doScroll, as found by
+            //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+            //but modified by other contributors, including jdalton
+            if (testDiv.doScroll && isTop && window.external) {
+                scrollIntervalId = setInterval(function () {
+                    try {
+                        testDiv.doScroll();
+                        pageLoaded();
+                    } catch (e) {}
+                }, 30);
+            }
+        }
 
         // Catch cases where ready is called after the browser event has already occurred.
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // hey, at least it's not a UA sniff
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( document.attachEvent ? document.readyState !== "complete" : document.readyState === "loading") {
-            readyCallbacks = [];
-
-            document.addEventListener("DOMContentLoaded", readyProcess, false);
-            // additional handler for complex cases
-            window.addEventListener("load", readyProcess, false);
+        if ( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+            pageLoaded();
         }
 
         // return implementation
         return function(callback) {
             if (typeof callback !== "function") {
-                throw _.error("ready", "DOM");
+                throw makeError("ready", "DOM");
             }
 
             if (readyCallbacks) {
@@ -1435,22 +1492,31 @@
      * @global
      */
     DOM.importStyles = (function() {
-        var styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
+        var headEl = scripts[0].parentNode,
+            styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
+            styleSheet = document.styleSheets[0],
             process = function(selector, styles) {
-                var ruleText = selector + " { ";
+                var ruleText = "";
 
                 if (typeof styles === "object") {
-                    _.forIn(styles, function(propName) {
-                        // append vendor prefix if it's required
+                    _.forOwn(styles, function(propName) {
                         ruleText += propName + ":" + styles[propName] + "; ";
                     });
                 } else if (typeof styles === "string") {
                     ruleText += styles;
                 } else {
-                    throw _.error("importStyles", "DOM");
+                    throw makeError("importStyles", "DOM");
                 }
 
-                styleEl.appendChild(document.createTextNode(ruleText + "}"));
+                if (styleSheet.cssRules) {
+                    // w3c browser
+                    styleSheet.insertRule(selector + " {" + ruleText + "}", styleSheet.cssRules.length);
+                } else {
+                    // ie doesn't support multiple selectors in addRule 
+                    _.forEach(selector.split(","), function(selector) {
+                        styleSheet.addRule(selector, ruleText);
+                    });
+                }
             };
 
         if (!("hidden" in htmlEl)) {
@@ -1469,7 +1535,7 @@
                     process(selector, rule[selector]);
                 });
             } else {
-                throw _.error("importStyles", "DOM");
+                throw makeError("importStyles", "DOM");
             }
         };
     })();
@@ -1493,6 +1559,9 @@
 
                 if (entry) {
                     entry.push(callback);
+                    // need to call callback manually for each element 
+                    // because behaviour is already attached to the DOM
+                    DOM.findAll(selector).each(callback);
                 } else {
                     DOM._watchers[selector] = [callback];
                     // append style rule at the last step
@@ -1554,7 +1623,7 @@
      */
     DOM.extend = function(selector, options) {
         if (!options || typeof options !== "object") {
-            throw _.error("extend", "DOM");
+            throw makeError("extend", "DOM");
         }
 
         var template = options.template,
@@ -1562,7 +1631,7 @@
             ctr;
 
         if (template) {
-            _.forIn(template, function(key) {
+            _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
 
@@ -1584,7 +1653,7 @@
         DOM.watch(selector, function(el) {
             _.mixin(el, options);
 
-            template && _.forIn(template, function(key) {
+            template && _.forOwn(template, function(key) {
                 el[key](template[key].cloneNode(true));
             });
 
@@ -1604,19 +1673,28 @@
     slice: function(list, index) {
         return Array.prototype.slice.call(list, index || 0);
     },
-    keys: function(obj) {
-        return Object.keys(obj);
+    keys: Object.keys || function(obj) {
+        var objType = typeof obj,
+            result = [], 
+            prop;
+
+        if (objType !== "object" && objType !== "function" || obj === null) {
+            throw new TypeError('Object.keys called on non-object');
+        }
+ 
+        for (prop in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
+        }
+
+        return result;
     },
-    forIn: function(obj, callback, thisPtr) {
+    forOwn: function(obj, callback, thisPtr) {
         this.forEach(this.keys(obj), callback, thisPtr);
     },
     forEach: function(list, callback, thisPtr) {
         for (var i = 0, n = list.length; i &lt; n; ++i) {
             callback.call(thisPtr, list[i], i, list);
         }
-    },
-    forWord: function(str, callback, thisPtr) {
-        this.forEach(str.split(" "), callback, thisPtr);
     },
     filter: function(list, testFn, thisPtr) {
         var result = [];
@@ -1660,18 +1738,27 @@
         if (arguments.length === 3) {
             obj[name] = value;
         } else if (name) {
-            this.forIn(name, function(key) {
+            this.forOwn(name, function(key) {
                 this.mixin(obj, key, name[key]);
             }, this);
         }
 
         return obj; 
     },
-    error: function(method, type) {
-        type = type || "DOMElement";
+    trim: (function() {
+        if (String.prototype.trim) {
+            return function(str) {
+                return str.trim();
+            };
+        } else {
+            var rwsleft = /^\s\s*/,
+                rwsright = /\s\s*$/;
 
-        return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
-    }
+            return function(str) {
+                return str.replace(rwsleft, "").replace(rwsright, "");
+            };
+        }
+    })()
 });
 </code></pre>
         </article>
@@ -1689,7 +1776,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Apr 28 2013 12:17:50 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 01 2013 12:22:18 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
