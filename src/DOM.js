@@ -36,7 +36,7 @@
         makeError = function(method, type) {
             type = type || "DOMElement";
 
-            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/Better-DOM/" + type + ".html#" + method + " to verify the function call";
+            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         };
         
     // DOMNode
