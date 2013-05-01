@@ -1,19 +1,21 @@
 Better-DOM
 ==========
-Modern javascript library for working with DOM
+Modern javascript library for working with DOM. 
+
+JSDoc - http://chemerisuk.github.io/Better-DOM/
 
 Overview
 --------
 Everybody who manipulated DOM via vanilla javascript knows that it is an awful API. Current specification has bugs, browser behavior varies etc. The library tries to fix that: it introduces it's own more friednly prototypes for document nodes with developer-fiendly APIs.
 
-Important to note that it doesn't cover everything, for instance there are no methods for AJAX.
+Important to note that it doesn't cover everything, for instance there are no methods for working with AJAX.
 
 Goals
 -----
 * ajax-friendly extensions
 * as fast as possible
+* clear, safe and useful APIs
 * the smallest size
-* safety
 
 Ajax-friendly extensions
 ------------------------
@@ -28,8 +30,4 @@ Browser support
 * Chrome
 * Firefox
 * Opera
-* IE9+
-
-TODO
-----
-1. IE8 support - it definetely requires a lot of additional work
+* IE8+
