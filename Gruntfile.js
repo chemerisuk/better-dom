@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         watch: {
             karma: {
                 files: ["src/*.js", "test/spec/*.js"],
-                tasks: [/*"jshint", */"karma:server:run"] 
+                tasks: [/*"jshint", */"karma:watch:run"] 
             }
         },
 
@@ -26,7 +26,7 @@ module.exports = function(grunt) {
         },
 
         karma: {
-            server: {
+            watch: {
                 configFile: "test/lib/karma.conf.js",
                 browsers: ["Chrome"],
                 background: true
@@ -57,7 +57,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("dev", [
         "jshint", // run jshint first
-        "karma:server", // start karma server
+        "karma:watch", // start karma server
         "watch" // watch for a file changes
     ]);
 

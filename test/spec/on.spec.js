@@ -1,95 +1,93 @@
 describe("on", function() {
-    var link, input, obj = {test: function() { }, test2: function() {}};
+    var link, input, obj = {test: function() { }, test2: function() {}}, spy;
 
     beforeEach(function() {
         setFixtures("<a id='test'>test element</a><input id='input'/>");
 
         link = DOM.find("#test");
         input = DOM.find("#input");
+
+        spy = jasmine.createSpy("callback");
     });
 
     it("should return reference to 'this'", function() {
-        expect(input.on("click", obj.test)).toEqual(input);
+        expect(input.on("click", spy)).toEqual(input);
     });
 
     it("should accept single callback", function() {
-        spyOn(obj, "test");
+        link.on("click", spy).fire("click");
 
-        link.on("click", obj.test).fire("click");
-
-        expect(obj.test).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 
     it("should accept optional event filter", function() {
-        spyOn(obj, "test");
-
-        DOM.on("click", "input", obj.test);
+        DOM.on("click", "input", spy);
 
         link.fire("click");
 
-        expect(obj.test).not.toHaveBeenCalled();
+        expect(spy).not.toHaveBeenCalled();
 
         input.fire("click");
 
-        expect(obj.test).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 
     it("should accept space-separated event names", function() {
-        spyOn(obj, "test");
+        input.on("focus click", spy).fire("focus");
 
-        input.on("focus click", obj.test).fire("focus");
-
-        expect(obj.test).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
 
         input.fire("click");
 
-        expect(obj.test.callCount).toEqual(2);
+        expect(spy.callCount).toEqual(2);
     });
 
     it("should accept event object", function() {
-        spyOn(obj, "test");
-        spyOn(obj, "test2");
+        var otherSpy = jasmine.createSpy("callback2");
 
-        input.on({focus: obj.test, click: obj.test2}).fire("focus");
+        input.on({focus: spy, click: otherSpy}).fire("focus");
 
-        expect(obj.test).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
 
         input.fire("click");
 
-        expect(obj.test2).toHaveBeenCalled();
+        expect(otherSpy).toHaveBeenCalled();
     });
 
     it("should have target element as 'this' by default", function() {
-        spyOn(obj, "test").andCallFake(function() {
+        spy.andCallFake(function() {
             expect(this).toEqual(input);
         });
 
-        input.on("click", obj.test).fire("click");
+        input.on("click", spy).fire("click");
     });
 
     it("should not stop to call handlers if any of them throws an error inside", function() {
+        var otherSpy = jasmine.createSpy("callback2");
+
+        spy.andCallFake(function() { throw "test"; });
+
         window.onerror = function() {
             return true; // suppress displaying expected error for this test
         };
 
-        spyOn(obj, "test").andCallFake(function() { throw "test"; });
-        spyOn(obj, "test2");
+        input.on("click", spy).on("click", otherSpy).fire("click");
 
-        input.on("click", obj.test).on("click", obj.test2).fire("click");
-
-        expect(obj.test2).toHaveBeenCalled();
+        expect(otherSpy).toHaveBeenCalled();
 
         window.onerror = null; // restore default error handling
     });
 
     it("should fix some non-bubbling events", function() {
-        spyOn(obj, "test");
-
-        DOM.on("focus", obj.test);
+        DOM.on("focus", spy);
 
         input.fire("focus");
 
-        expect(obj.test).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it("should not prevent default action if callback returns false", function() {
+
     });
 
     it("should throw error if arguments are invalid", function() {

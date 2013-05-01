@@ -133,7 +133,7 @@
                         nid = "[id='" + nid + "'] ";
 
                         context = rsibling.test(selector) && node.parentNode || node;
-                        selector = nid + selector.replace(/","/g, "," + nid);
+                        selector = nid + selector.split(",").join("," + nid);
                     }
 
                     try {
@@ -1672,8 +1672,8 @@
     filter: function(list, testFn, thisPtr) {
         var result = [];
 
-        this.forEach(list, function(el) {
-            if (testFn.call(thisPtr, el, list)) result.push(el);
+        this.forEach(list, function(el, index) {
+            if (testFn.call(thisPtr, el, index, list)) result.push(el);
         });
 
         return result;
