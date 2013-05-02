@@ -166,27 +166,6 @@
         },
 
         /**
-         * Call a method of native object
-         * @memberOf DOMNode.prototype
-         * @param  {String} name method name
-         * @return {Object} result of native method call
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.call("focus");
-         * // receive focus to the element
-         * domLink.call("click");
-         * // make a click on the element
-         */
-        call: function(name) {
-            if (arguments.length === 1) {
-                return this._node[name]();
-            } else {
-                return this._node[name].apply(this._node, _.slice(arguments, 1));
-            }
-        },
-
-        /**
          * Read data entry value
          * @memberOf DOMNode.prototype
          * @param  {String} key data entry key
@@ -431,6 +410,13 @@
          * @param  {String} eventType type of event
          * @param  {Object} [detail] data to attach
          * @return {DOMNode} current context
+         * @example
+         * var domLink = DOM.find(".link");
+         *
+         * domLink.fire("focus");
+         * // receive focus to the element
+         * domLink.fire("click");
+         * // make a click on the element
          */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
@@ -440,6 +426,12 @@
             var isCustomEvent = ~eventType.indexOf(":"),
                 hook = eventHooks[eventType],
                 event;
+
+            if (typeof this._node[eventType] === "fuction") {
+                this._node[eventType]();
+
+                return this;
+            }
 
             if (hook && hook.name) eventType = hook.name;
 

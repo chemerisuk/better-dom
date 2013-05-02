@@ -11,7 +11,7 @@ describe("off", function() {
     it("should remove event handler", function() {
         spyOn(obj, "test");
 
-        input.on("click", obj.test).off("click").call("click");
+        input.on("click", obj.test).off("click").fire("click");
 
         expect(obj.test).not.toHaveBeenCalled();
     });
@@ -21,7 +21,7 @@ describe("off", function() {
         spyOn(obj, "test2");
 
         link.on("click", obj.test).on("click input", obj.test2).off("click");
-        input.call("click");
+        input.fire("click");
 
         expect(obj.test).not.toHaveBeenCalled();
         expect(obj.test2).not.toHaveBeenCalled();
