@@ -621,6 +621,27 @@
             };
         }
 
+        if (!("hidden" in htmlEl)) {
+            propHooks.hidden = {
+                set: function(el, value) {
+                    if (typeof value !== "boolean") {
+                        throw makeError("set");
+                    }
+
+                    el.hidden = value;
+
+                    if (value) {
+                        el.setAttribute("hidden", "hidden");
+                    } else {
+                        el.removeAttribute("hidden");
+                    }
+
+                    // trigger reflow in IE
+                    el.style.zoom = value ? "1" : "0";
+                }
+            };
+        }
+
         /**
          * Get property or attribute by name
          * @memberOf DOMElement.prototype
@@ -662,7 +683,7 @@
 
                     if (hook) {
                         hook.set(el, value);
-                    } else if (value === null || value === false) {
+                    } else if (value === null) {
                         el.removeAttribute(name);
                     } else if (name in el) {
                         el[name] = value;
@@ -995,7 +1016,13 @@
             }
         });
 
-        // TODO: additional hooks to convert integers into appropriate strings
+        _.forEach("width height padding margin".split(" "), function(propName) {
+            cssHooks[propName] = {
+                set: function(style, value) {
+                    style[propName] = typeof value === "number" ? value + "px" : value; 
+                }
+            };
+        });
 
         /**
          * Get css style from element
