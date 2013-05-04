@@ -22,9 +22,9 @@ describe("set", function() {
         expect(link._node.href).not.toEqual("#");
     });
 
-    it("should remove attribute if value is null or false", function() {
+    it("should remove attribute if value is null", function() {
         expect(link.set("id", null)._node).not.toHaveAttr("id");
-        expect(link.set("href", false)._node).not.toHaveAttr("href");
+        expect(link.set("href", null)._node).not.toHaveAttr("href");
     });
 
     it("should accept space-separated property names", function() {

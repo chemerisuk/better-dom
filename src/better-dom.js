@@ -12,8 +12,6 @@
 
     var htmlEl = document.documentElement,
         scripts = document.scripts,
-        isW3Compliant = !!document.addEventListener,
-        isIECompliant = !!document.attachEvent,
         // helpers
         sandbox = (function() {
             var el = document.createElement("body"),
@@ -35,13 +33,26 @@
                 }
             };
         })(),
+        supports = function(prop, tag) {
+            var el = tag ? document.createElement(tag) : window,
+                isSupported = prop in el;
+
+            if (!isSupported && !prop.indexOf("on")) {
+                // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
+                
+                el.setAttribute(prop, "return;");
+                isSupported = typeof el[prop] === "function";
+            }
+                
+            return isSupported;
+        },
         makeError = function(method, type) {
             type = type || "DOMElement";
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         };
 
-    if (!isW3Compliant && !isIECompliant) {
+    if (!supports("addEventListener") && !supports("attachEvent")) {
         throw "Your browser is not supported by library!";
     }
         
@@ -88,8 +99,8 @@
                 rescape = /'|\\/g,
                 tmpId = "DOM" + new Date().getTime();
 
-            if (!document.getElementsByClassName) {
-                // ie8 doesn't support getElementsByClassName
+            if (!supports("getElementsByClassName")) {
+                // exclude getElementsByClassName from pattern
                 rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
             }
             
@@ -232,7 +243,7 @@
         contains: (function() {
             var containsElement;
 
-            if (htmlEl.contains) {
+            if (supports("contains")) {
                 containsElement = function(parent, child) {
                     return parent.contains(child);
                 };
@@ -274,7 +285,7 @@
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
-                    var elem = isW3Compliant ? e.target : window.event.srcElement;
+                    var elem = supports("addEventListener") ? e.target : window.event.srcElement;
 
                     for (; elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
@@ -282,24 +293,10 @@
                         }
                     }
                 };
-            },
-            // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
-            isEventSupported = function(tagName, eventName) {
-                var el = document.createElement(tagName);
-                
-                eventName = "on" + eventName;
-
-                var isSupported = (eventName in el);
-                if (!isSupported) {
-                    el.setAttribute(eventName, "return;");
-                    isSupported = typeof el[eventName] === "function";
-                }
-                
-                return isSupported;
             };
 
         // firefox doesn't support focusin/focusout events
-        if (isEventSupported("input", "focusin")) {
+        if (supports("onfocusin", "input")) {
             eventHooks.focus = {
                 name: "focusin"
             };
@@ -317,9 +314,11 @@
             };
         }
 
-        eventHooks.invalid = {
-            capturing: true
-        };
+        if (supports("invalid", "input")) {
+            eventHooks.invalid = {
+                capturing: true
+            };
+        }
 
         /**
          * Bind a DOM event to the context
@@ -345,7 +344,7 @@
                         eventEntry.handler = createEventHandler(this, callback, selector);
                     }
 
-                    if (isW3Compliant) {
+                    if (supports("addEventListener")) {
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
                     } else {
                         if (~event.indexOf(":")) {
@@ -397,7 +396,7 @@
 
             _.forEach(this._events, function(entry) {
                 if (eventType === entry.name && (!callback || callback === entry.callback)) {
-                    if (isW3Compliant) {
+                    if (supports("removeEventListener")) {
                         this._node.removeEventListener(eventType, entry.handler, entry.capturing);
                     } else {
                         this._node.detachEvent("on" + eventType, entry.handler);
@@ -439,7 +438,7 @@
 
             if (hook && hook.name) eventType = hook.name;
 
-            if (isW3Compliant) {
+            if (supports("dispatchEvent")) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
@@ -611,7 +610,7 @@
             };
         });
 
-        if (isIECompliant) {
+        if (supports("attachEvent")) {
             // fix NoScope elements in IE < 10
             propHooks.innerHTML = {
                 set: function(el, value) {
@@ -798,7 +797,7 @@
             var children = this._node.children,
                 matcher = selector ? new SelectorMatcher(selector) : null;
 
-            if (!isW3Compliant) {
+            if (!supports("addEventListener")) {
                 // fix IE8 bug with children collection
                 children = _.filter(children, function(result, elem) {
                     return elem.nodeType === 1;
@@ -990,7 +989,7 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = isW3Compliant ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
+            computed = supports("getComputedStyle") ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
             // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
@@ -1044,7 +1043,7 @@
             result = hook ? hook(style) : style[name];
 
             if (!result) {
-                style = window.getComputedStyle ? window.getComputedStyle(this._node) : this._node.currentStyle;
+                style = supports("getComputedStyle") ? window.getComputedStyle(this._node) : this._node.currentStyle;
 
                 result = hook ? hook(style) : style[name];
             }
@@ -1122,7 +1121,7 @@
 
         this._event = event;
 
-        if (!isW3Compliant) {
+        if (!supports("addEventListener")) {
             this.target = DOMElement(event.srcElement);
             this.currentTarget = DOMElement(currentTarget);
             this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
@@ -1147,7 +1146,7 @@
 
     (function() {
         var makeFuncMethod = function(name, legacyHandler) {
-                return !isW3Compliant ? legacyHandler : function() {
+                return !supports("addEventListener") ? legacyHandler : function() {
                     this._event[name]();
                 };
             },
@@ -1178,7 +1177,7 @@
             this._event.cancelBubble = true;
         });
 
-        if (isW3Compliant) {
+        if (supports("addEventListener")) {
             // in ie we will set these properties in constructor
             defineProperty("target");
             defineProperty("currentTarget");
@@ -1444,7 +1443,7 @@
 
         // https://raw.github.com/requirejs/domReady/latest/domReady.js
         
-        if (isW3Compliant) {
+        if (supports("addEventListener")) {
             document.addEventListener("DOMContentLoaded", pageLoaded, false);
             window.addEventListener("load", pageLoaded, false);
         } else {
@@ -1476,7 +1475,7 @@
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // hey, at least it's not a UA sniff
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( isIECompliant ? document.readyState === "complete" : document.readyState !== "loading") {
+        if ( supports("attachEvent") ? document.readyState === "complete" : document.readyState !== "loading") {
             pageLoaded();
         }
 
@@ -1674,7 +1673,31 @@
         });
     };
 
-    // REGISTRATION
+    /**
+     * Check DOM capability
+     * @param {String} prop property to check
+     * @param {String} [tag] name of element to check
+     * @function
+     * @global
+     * @example
+     * DOM.supports("placeholder", "input");
+     * // => true if browser supports placeholders
+     * DOM.supports("getComputedStyle");
+     * // => true if browser supports window.getComputedStyle
+     * DOM.supports("oninvalid", "input");
+     * // => true if browser supports `invalid` event
+     */
+    DOM.supports = (function() {
+        var cache = {};
+
+        return function(prop, tag) {
+            var key = prop + (tag ? tag : "");
+
+            return cache[key] || ( cache[key] = supports(prop, tag) );
+        };
+    })();
+
+    // REGISTER GLOBALS
     
     window.DOM = DOM;
 
