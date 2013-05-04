@@ -243,7 +243,7 @@
         contains: (function() {
             var containsElement;
 
-            if (supports("contains")) {
+            if (supports("contains", "a")) {
                 containsElement = function(parent, child) {
                     return parent.contains(child);
                 };
@@ -277,11 +277,12 @@
     
     (function() {
         var eventHooks = {},
+            veto = false,
             createEventHandler = function(thisPtr, callback, selector, eventType) {
                 var currentTarget = thisPtr._node,
                     matcher = selector ? new SelectorMatcher(selector) : null,
                     simpleEventHandler = function(e) {
-                        callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
+                        if (veto !== eventType) callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
@@ -340,9 +341,7 @@
                 _.forEach(event.split(" "), function(event) {
                     var eventEntry = _.mixin({name: event, callback: callback, capturing: false}, eventHooks[event]);
 
-                    if (!eventEntry.handler) {
-                        eventEntry.handler = createEventHandler(this, callback, selector);
-                    }
+                    eventEntry.handler = createEventHandler(this, callback, selector, eventEntry.name);
 
                     if (supports("addEventListener")) {
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
@@ -418,8 +417,8 @@
          *
          * domLink.fire("focus");
          * // receive focus to the element
-         * domLink.fire("click");
-         * // make a click on the element
+         * domLink.fire("custom:event", {x: 1, y: 2});
+         * // trigger a custom:event on the element
          */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
@@ -430,11 +429,16 @@
                 hook = eventHooks[eventType],
                 event;
 
-            // if (this._node[eventType]) {
-            //     this._node[eventType]();
+            // Call a native DOM method on the target with the same name name as the event
+            // IE<9 dies on focus/blur to hidden element
+            if (this._node[eventType] && ((eventType !== "focus" && eventType !== "blur") || this._node.offsetWidth !== 0)) {
+                // Prevent re-triggering of the same event
+                veto = (hook ? hook.name : "") || eventType;
+                
+                this._node[eventType]();
 
-            //     return this;
-            // }
+                veto = false;
+            }
 
             if (hook && hook.name) eventType = hook.name;
 
@@ -620,7 +624,7 @@
             };
         }
 
-        if (!("hidden" in htmlEl)) {
+        if (!supports("hidden", "a")) {
             propHooks.hidden = {
                 set: function(el, value) {
                     if (typeof value !== "boolean") {
@@ -1450,7 +1454,7 @@
             window.attachEvent("onload", pageLoaded);
 
             (function() {
-                var testDiv = document.createElement('div'), 
+                var testDiv = document.createElement("div"), 
                     isTop;
                 
                 try {
@@ -1529,7 +1533,7 @@
                 }
             };
 
-        if (!("hidden" in htmlEl)) {
+        if (!supports("hidden", "a")) {
             process("[hidden]", "display:none");    
         }
                     
