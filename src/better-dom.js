@@ -286,12 +286,21 @@
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
-                    var elem = supports("addEventListener") ? e.target : window.event.srcElement;
+                    var elem = DOM.supports.addEventListener ? e.target : window.event.srcElement;
 
                     for (; elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
                             return simpleEventHandler(e);
                         }
+                    }
+                };
+            },
+            createCustomEventHandler = function(type, handler) {
+                return function() {
+                    var e = window.event;
+
+                    if (e.srcUrn === type) {
+                        handler(e);
                     }
                 };
             };
@@ -330,7 +339,8 @@
          * @return {DOMNode} current context
          */
         DOMNode.prototype.on = function(event, selector, callback) {
-            var eventType = typeof event;
+            var eventType = typeof event, 
+                eventTypes, eventEntry, hook;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
@@ -338,26 +348,23 @@
                     selector = null;
                 }
 
-                _.forEach(event.split(" "), function(event) {
-                    var eventEntry = _.mixin({name: event, callback: callback, capturing: false}, eventHooks[event]);
+                eventTypes = event.split(" ");
 
-                    eventEntry.handler = createEventHandler(this, callback, selector, eventEntry.name);
+                if (eventTypes.length > 1) {
+                    _.forEach(eventTypes, function(event) {
+                        this.on(event, selector, callback);
+                    }, this);
+                } else {
+                    eventEntry = {name: event, callback: callback, capturing: false, handler: createEventHandler(this, callback, selector, event)};
 
-                    if (supports("addEventListener")) {
+                    if (hook = eventHooks[event]) eventEntry = _.mixin(eventEntry, hook);
+
+                    if (DOM.supports("addEventListener")) {
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
                     } else {
                         if (~event.indexOf(":")) {
-                            // custom events for ie8
-                            eventEntry.name = "dataavailable";
-                            eventEntry._handler = eventEntry.handler;
-
-                            eventEntry.handler = function(e) {
-                                e = window.event;
-
-                                if (e.srcUrn === event) {
-                                    eventEntry._handler(e);
-                                }
-                            };
+                            // handle custom events for IE8
+                            _.mixin(eventEntry, {name: "dataavailable", handler: createCustomEventHandler(event, eventEntry.handler)});
                         }
 
                         this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
@@ -365,7 +372,7 @@
                     
                     // store event entry
                     this._events.push(eventEntry);
-                }, this);
+                }
             } else if (eventType === "object") {
                 _.forOwn(event, function(key) {
                     this.on(key, event[key]);
@@ -429,11 +436,11 @@
                 hook = eventHooks[eventType],
                 event;
 
-            // Call a native DOM method on the target with the same name name as the event
+            // Call a native DOM method on the target with the same name as the event
             // IE<9 dies on focus/blur to hidden element
             if (this._node[eventType] && ((eventType !== "focus" && eventType !== "blur") || this._node.offsetWidth !== 0)) {
                 // Prevent re-triggering of the same event
-                veto = (hook ? hook.name : "") || eventType;
+                veto = eventType;
                 
                 this._node[eventType]();
 
@@ -1678,15 +1685,12 @@
      * DOM.supports("oninvalid", "input");
      * // => true if browser supports `invalid` event
      */
-    DOM.supports = (function() {
-        var cache = {};
+    DOM.supports = function(prop, tag) {
+        var cache = DOM.supports,
+            key = prop + (tag ? tag : "");
 
-        return function(prop, tag) {
-            var key = prop + (tag ? tag : "");
-
-            return cache[key] || ( cache[key] = supports(prop, tag) );
-        };
-    })();
+        return cache[key] || ( cache[key] = supports(prop, tag) );
+    };
 
     // REGISTER GLOBALS
     
