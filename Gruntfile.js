@@ -61,6 +61,11 @@ module.exports = function(grunt) {
         "watch" // watch for a file changes
     ]);
 
+    grunt.registerTask("test", [
+        "jshint",
+        "karma:unit"
+    ]);
+
     grunt.registerTask("publish-docs", [
         "jsdoc",
         "build_gh_pages:jsdoc"

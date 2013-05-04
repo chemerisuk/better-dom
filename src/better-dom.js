@@ -317,6 +317,10 @@
             };
         }
 
+        eventHooks.invalid = {
+            capturing: true
+        };
+
         /**
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
@@ -384,7 +388,7 @@
          */
         DOMNode.prototype.off = function(eventType, callback) {
             if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new makeError("off");
+                throw makeError("off");
             }
 
             var hook = eventHooks[eventType];
@@ -427,11 +431,11 @@
                 hook = eventHooks[eventType],
                 event;
 
-            if (typeof this._node[eventType] === "fuction") {
-                this._node[eventType]();
+            // if (this._node[eventType]) {
+            //     this._node[eventType]();
 
-                return this;
-            }
+            //     return this;
+            // }
 
             if (hook && hook.name) eventType = hook.name;
 
@@ -631,7 +635,7 @@
             var el = this._node,
                 hook = propHooks[name];
 
-            hook && (hook = hook.get);
+            if (hook) hook = hook.get;
 
             return hook ? hook(el) : el[name] || el.getAttribute(name);
         };
@@ -1037,7 +1041,11 @@
                 hook = cssHooks[name];
                 hook = hook && hook.set;
 
-                hook ? hook(style, value) : style[name] = value;
+                if (hook) {
+                    hook(style, value);
+                } else {
+                    style[name] = value;
+                }
             } else if (nameType === "object") {
                 _.forOwn(name, function(key) {
                     this.setStyle(key, name[key]);
@@ -1305,8 +1313,8 @@
                 if (this.quick = quick) {
                     //   0  1    2   3          4
                     // [ _, tag, id, attribute, class ]
-                    quick[1] && (quick[1] = quick[1].toLowerCase());
-                    quick[4] && (quick[4] = " " + quick[4] + " ");
+                    if (quick[1]) quick[1] = quick[1].toLowerCase();
+                    if (quick[4]) quick[4] = " " + quick[4] + " ";
                 } else if (quickOnly) {
                     throw makeError("quick");
                 }
@@ -1359,9 +1367,9 @@
 
     /**
      * Create DOMElement or DOMElementCollection
-     * @memberOf DOM
      * @param  {String|Element|HTMLCollection} content native element / collection
      * @return {DOMElement|DOMElementCollection} element / collection
+     * @static
      * @global
      */
     DOM.create = function(content) {
@@ -1382,8 +1390,8 @@
 
     /**
      * Register callback on dom ready
-     * @memberOf DOM
      * @param {Function} callback event handler
+     * @static
      * @function
      * @global
      */
@@ -1410,8 +1418,6 @@
         // https://raw.github.com/requirejs/domReady/latest/domReady.js
         
         if (isW3Compliant) {
-            //Standards. Hooray! Assumption here that if standards based,
-            //it knows about DOMContentLoaded.
             document.addEventListener("DOMContentLoaded", pageLoaded, false);
             window.addEventListener("load", pageLoaded, false);
         } else {
@@ -1463,10 +1469,10 @@
 
     /**
      * Import css styles on page
-     * @memberOf DOM
      * @param {String|Object} selector css selector or object with selector/rules pairs
      * @param {String} styles css rules
      * @function
+     * @static
      * @global
      */
     DOM.importStyles = (function() {
@@ -1520,10 +1526,10 @@
 
     /**
      * Watches when element with a spefified selector will be inserted on page
-     * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
      * @function
+     * @static
      * @global
      */
     DOM.watch = (function() {
@@ -1594,9 +1600,9 @@
 
     /**
      * Extend DOM with custom widget
-     * @memberOf DOM
      * @param  {String} selector widget css selector
      * @param  {Object} options  widget options
+     * @static
      * @global
      */
     DOM.extend = function(selector, options) {
@@ -1631,9 +1637,11 @@
         DOM.watch(selector, function(el) {
             _.mixin(el, options);
 
-            template && _.forOwn(template, function(key) {
-                el[key](template[key].cloneNode(true));
-            });
+            if (template) {
+                _.forOwn(template, function(key) {
+                    el[key](template[key].cloneNode(true));
+                });
+            }
 
             if (ctr) ctr.call(el);
         });

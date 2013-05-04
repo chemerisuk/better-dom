@@ -1,13 +1,8 @@
 {
-	"browser": true,
-	"boss": true,
+    "browser": true,
+    "boss": true,
     "newcap": false,
-    "evil": true,
-    "expr": true,
-	"globals": {
-		"define": true,
-		"CustomEvent": true,
-        "Element": true,
-        "NodeList": true
-	}
+    "globals": { 
+        "Element": true
+    }
 }

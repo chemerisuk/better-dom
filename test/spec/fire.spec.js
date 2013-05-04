@@ -10,9 +10,13 @@ describe("fire", function() {
     });
 
     it("should trigger event handler", function() {
-        input.on("click", callback).fire("click");
+        var events = ["click", "focus", "blur", "change"], i;
 
-        expect(callback).toHaveBeenCalled();
+        for (i = 0; i < 3; ++i) {
+            input.on(events[i], callback).fire(events[i]);
+
+            expect(callback.callCount).toBe(i + 1);
+        }
     });
 
     it("should trigger native handlers", function() {
