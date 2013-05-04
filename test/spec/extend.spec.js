@@ -20,22 +20,6 @@ describe("extend", function() {
         });
     });
 
-    it("should append css properties", function() {
-        DOM.extend(".extend", {
-            css: [{
-                ".extend": "position: relative"
-            }]
-        });
-
-        waits(WAIT_FOR_WATCH_TIME);
-
-        runs(function() {
-            DOM.findAll(".extend").each(function(domEl) {
-                expect(domEl.getStyle("position")).toBe("relative");
-            });
-        });
-    });
-
     it("should append template", function() {
         var template = {},
             checkStrategies = {
@@ -49,9 +33,7 @@ describe("extend", function() {
             template[key] = '<i class="' + key + '"></i>';
         }
 
-        DOM.extend(".extend", {
-            template: template
-        });
+        DOM.extend(".extend", {}, template);
 
         waits(WAIT_FOR_WATCH_TIME);
 

@@ -1631,41 +1631,26 @@
     /**
      * Extend DOM with custom widget
      * @param  {String} selector widget css selector
-     * @param  {Object} options  widget options
+     * @param  {Object} mixins  widget mixins
+     * @param  {Object} [template] widget template
      * @static
      * @global
      */
-    DOM.extend = function(selector, options) {
-        if (!options || typeof options !== "object") {
+    DOM.extend = function(selector, mixins, template) {
+        if (!mixins || typeof mixins !== "object") {
             throw makeError("extend", "DOM");
         }
-
-        var template = options.template,
-            css = options.css,
-            ctr;
 
         if (template) {
             _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
-
-            delete options.template;
-        }
-
-        if (css) {
-            DOM.importStyles.apply(DOM, css);
-
-            delete options.css;
-        }
-
-        if (options.hasOwnProperty("constructor")) {
-            ctr = options.constructor;
-
-            delete options.constructor;
         }
 
         DOM.watch(selector, function(el) {
-            _.mixin(el, options);
+            _.mixin(el, mixins);
+
+            el.constructor = DOMElement;
 
             if (template) {
                 _.forOwn(template, function(key) {
@@ -1673,7 +1658,9 @@
                 });
             }
 
-            if (ctr) ctr.call(el);
+            if (mixins.hasOwnProperty("constructor")) {
+                mixins.constructor.call(el);
+            }
         });
     };
 

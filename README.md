@@ -13,17 +13,22 @@ Important to note that it doesn't cover everything, for instance there are no me
 Goals
 -----
 * ajax-friendly extensions
-* as fast as possible
-* clear, safe and useful APIs
+* performance
+* compatability
+* clear and safe APIs
 * the smallest size
 
 Ajax-friendly extensions
 ------------------------
 Creating widgets has never been so simple. Just use `DOM.extend` to declare a new extension and it starts to work for all current and for any future content. No initialization calls required!
 
-As fast as possible
--------------------
-DOM is usually the main bottleneck of javascript programs. That's why performance question should be on the top for any library that works with it.
+Performance
+-----------
+DOM is usually the main bottleneck of javascript programs. Therefore performance question should be on the top for any library that works with it.
+
+Compatability
+-------------
+The library intoduces it's own objects for describing access to DOM. It doesn't modify any native object prototype. `DOM` is actually the only one global variable.
 
 Browser support
 ---------------

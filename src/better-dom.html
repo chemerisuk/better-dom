@@ -148,17 +148,12 @@ DOM.ready(function(){
 });
 
 // editable plugin example
+DOM.importStyles(
+    {".editable": "cursor:text; white-space:pre-wrap"},
+    {".editable:hover": "background:#FFFFD3"}
+);
 
 DOM.extend(".editable", {
-    template: {
-        after: '<form class="editable-form" hidden><textarea class="editable-textarea"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">'
-    },
-    css: [
-        {".editable": "cursor:text; white-space:pre-wrap"},
-        {".editable:hover": "background:#FFFFD3"},
-        {".editable-form": "position:relative"},
-        {".editable-textarea": "background:#FFFFD3; border:0; padding:0; display:block"}
-    ],
     constructor: function() {
         var editable = this,
             formEl = editable.next(),
@@ -175,7 +170,7 @@ DOM.extend(".editable", {
         formEl.on("submit", function(e) {
             textareaEl.set("defaultValue", textareaEl.get("value"));
 
-            formEl.call("reset");
+            formEl.fire("reset");
 
             editable.fire("editable:changed");
 
@@ -194,9 +189,11 @@ DOM.extend(".editable", {
                 height: (offset.bottom - offset.top) + "px"
             });
 
-            textareaEl.set("value defaultValue", editable.get("textContent")).call("focus");
+            textareaEl.set("value defaultValue", editable.get("textContent")).fire("focus");
         });
     }
+}, {
+    after: '<form class="editable-form" style="position:relative" hidden><textarea style="background:#FFFFD3; border:0; padding:0; display:block"></textarea><button type="submit" data-i18n="button.save"><button type="reset" data-i18n="button.cancel">'
 });
 </script>
 </body>
