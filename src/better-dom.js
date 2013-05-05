@@ -50,6 +50,13 @@
             type = type || "DOMElement";
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
+        },
+        handleObjectParam = function(name) {
+            var cache = {};
+
+            return cache[name] || (cache[name] = function(key, index, obj) {
+                this[name](key, obj[key]);
+            });
         };
 
     if (!supports("addEventListener") && !supports("attachEvent")) {
@@ -220,9 +227,7 @@
             if (keyType === "string") {
                 this._data[key] = value;
             } else if (keyType === "object") {
-                _.forOwn(key, function(dataKey) {
-                    this.setData(dataKey, key[dataKey]);
-                }, this);
+                _.forOwn(key, handleObjectParam("setData"), this);
             } else {
                 throw makeError("setData");
             }
@@ -374,9 +379,7 @@
                     this._events.push(eventEntry);
                 }
             } else if (eventType === "object") {
-                _.forOwn(event, function(key) {
-                    this.on(key, event[key]);
-                }, this);
+                _.forOwn(event, handleObjectParam("on"), this);
             } else {
                 throw makeError("on");
             }
@@ -702,9 +705,7 @@
                     }
                 });
             } else if (nameType === "object") {
-                _.forOwn(name, function(key) {
-                    this.set(key, name[key]);
-                }, this);
+                _.forOwn(name, handleObjectParam("set"), this);
             } else {
                 throw makeError("set");
             }
@@ -1090,9 +1091,7 @@
                     style[name] = value;
                 }
             } else if (nameType === "object") {
-                _.forOwn(name, function(key) {
-                    this.setStyle(key, name[key]);
-                }, this);
+                _.forOwn(name, handleObjectParam("setStyle"), this);
             } else {
                 throw makeError("setStyle");
             }
@@ -1727,7 +1726,9 @@
         return result;
     },
     forOwn: function(obj, callback, thisPtr) {
-        this.forEach(this.keys(obj), callback, thisPtr);
+        for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
+            callback.call(thisPtr, list[i], i, obj);
+        }
     },
     forEach: function(list, callback, thisPtr) {
         for (var i = 0, n = list.length; i < n; ++i) {
