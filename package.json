@@ -1,13 +1,13 @@
 {
     "name": "better-dom",
     "title": "Better DOM",
-    "version": "0.5.0",
+    "version": "0.8.0",
     "author": "Maksim Chemerisuk",
     "description": "Modern javascript library for working with DOM",
     "license": "MIT",
     "respository": {
         "type": "git",
-        "url": "https://github.com/chemerisuk/Better-DOM"
+        "url": "https://github.com/chemerisuk/better-dom"
     },
     "dependencies": {},
     "devDependencies": {
@@ -17,6 +17,9 @@
         "grunt-contrib-jshint": "0.4.3",
         "grunt-karma": "0.4.4",
         "grunt-build-gh-pages": "0.0.1",
-        "grunt-shell": "0.2.2"
+        "grunt-shell": "0.2.2",
+        "grunt-contrib-uglify": "0.2.0",
+        "grunt-contrib-copy": "0.4.1",
+        "grunt-contrib-clean": "0.4.1"
     }
 }

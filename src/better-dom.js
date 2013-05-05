@@ -340,7 +340,7 @@
          */
         DOMNode.prototype.on = function(event, selector, callback) {
             var eventType = typeof event, 
-                eventTypes, eventEntry, hook;
+                eventNames, eventEntry, hook;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
@@ -348,10 +348,10 @@
                     selector = null;
                 }
 
-                eventTypes = event.split(" ");
+                eventNames = event.split(" ");
 
-                if (eventTypes.length > 1) {
-                    _.forEach(eventTypes, function(event) {
+                if (eventNames.length > 1) {
+                    _.forEach(eventNames, function(event) {
                         this.on(event, selector, callback);
                     }, this);
                 } else {

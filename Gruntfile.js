@@ -45,6 +45,31 @@ module.exports = function(grunt) {
                     pull: false
                 }
             }
+        },
+
+        clean: {
+            dist: ["dist/"]
+        },
+
+        copy: {
+            dist: {
+                files: {
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["src/*.htc"],
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["src/*.js"]
+                }
+            }
+        },
+
+        uglify: {
+            dist: {
+                options: {
+                    preserveComments: "some",
+                    report: "min"
+                },
+                files: {
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["src/*.js"] 
+                }
+            }
         }
     });
 
@@ -52,8 +77,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-jshint");
     grunt.loadNpmTasks("grunt-karma");
     grunt.loadNpmTasks("grunt-contrib-watch");
-    grunt.loadNpmTasks('grunt-build-gh-pages');
-    grunt.loadNpmTasks('grunt-shell');
+    grunt.loadNpmTasks("grunt-build-gh-pages");
+    grunt.loadNpmTasks("grunt-shell");
+    grunt.loadNpmTasks("grunt-contrib-uglify");
+    grunt.loadNpmTasks("grunt-contrib-copy");
+    grunt.loadNpmTasks('grunt-contrib-clean');
 
     grunt.registerTask("dev", [
         "jshint", // run jshint first
@@ -69,5 +97,11 @@ module.exports = function(grunt) {
     grunt.registerTask("publish-docs", [
         "jsdoc",
         "build_gh_pages:jsdoc"
+    ]);
+
+    grunt.registerTask("default", [
+        "clean",
+        "copy:dist",
+        "uglify:dist"
     ]);
 };
