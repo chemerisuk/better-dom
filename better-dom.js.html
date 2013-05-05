@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: DOM.js</title>
+    <title>JSDoc: Source: better-dom.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: DOM.js</h1>
+    <h1 class="page-title">Source: better-dom.js</h1>
     
     
 
@@ -39,8 +39,6 @@
 
     var htmlEl = document.documentElement,
         scripts = document.scripts,
-        isW3Compliant = !!document.addEventListener,
-        isIECompliant = !!document.attachEvent,
         // helpers
         sandbox = (function() {
             var el = document.createElement("body"),
@@ -62,13 +60,26 @@
                 }
             };
         })(),
+        supports = function(prop, tag) {
+            var el = tag ? document.createElement(tag) : window,
+                isSupported = prop in el;
+
+            if (!isSupported && !prop.indexOf("on")) {
+                // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
+                
+                el.setAttribute(prop, "return;");
+                isSupported = typeof el[prop] === "function";
+            }
+                
+            return isSupported;
+        },
         makeError = function(method, type) {
             type = type || "DOMElement";
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         };
 
-    if (!isW3Compliant && !isIECompliant) {
+    if (!supports("addEventListener") && !supports("attachEvent")) {
         throw "Your browser is not supported by library!";
     }
         
@@ -115,8 +126,8 @@
                 rescape = /'|\\/g,
                 tmpId = "DOM" + new Date().getTime();
 
-            if (!document.getElementsByClassName) {
-                // ie8 doesn't support getElementsByClassName
+            if (!supports("getElementsByClassName")) {
+                // exclude getElementsByClassName from pattern
                 rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
             }
             
@@ -259,7 +270,7 @@
         contains: (function() {
             var containsElement;
 
-            if (htmlEl.contains) {
+            if (supports("contains", "a")) {
                 containsElement = function(parent, child) {
                     return parent.contains(child);
                 };
@@ -293,15 +304,16 @@
     
     (function() {
         var eventHooks = {},
+            veto = false,
             createEventHandler = function(thisPtr, callback, selector, eventType) {
                 var currentTarget = thisPtr._node,
-                    matcher = selector ? new SelectorMatcher(selector) : null,
+                    matcher = SelectorMatcher(selector),
                     simpleEventHandler = function(e) {
-                        callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
+                        if (veto !== eventType) callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
-                    var elem = isW3Compliant ? e.target : window.event.srcElement;
+                    var elem = DOM.supports.addEventListener ? e.target : window.event.srcElement;
 
                     for (; elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
@@ -310,23 +322,18 @@
                     }
                 };
             },
-            // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
-            isEventSupported = function(tagName, eventName) {
-                var el = document.createElement(tagName);
-                
-                eventName = "on" + eventName;
+            createCustomEventHandler = function(type, handler) {
+                return function() {
+                    var e = window.event;
 
-                var isSupported = (eventName in el);
-                if (!isSupported) {
-                    el.setAttribute(eventName, "return;");
-                    isSupported = typeof el[eventName] === "function";
-                }
-                
-                return isSupported;
+                    if (e.srcUrn === type) {
+                        handler(e);
+                    }
+                };
             };
 
         // firefox doesn't support focusin/focusout events
-        if (isEventSupported("input", "focusin")) {
+        if (supports("onfocusin", "input")) {
             eventHooks.focus = {
                 name: "focusin"
             };
@@ -344,6 +351,12 @@
             };
         }
 
+        if (supports("invalid", "input")) {
+            eventHooks.invalid = {
+                capturing: true
+            };
+        }
+
         /**
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
@@ -353,7 +366,8 @@
          * @return {DOMNode} current context
          */
         DOMNode.prototype.on = function(event, selector, callback) {
-            var eventType = typeof event;
+            var eventType = typeof event, 
+                eventNames, eventEntry, hook;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
@@ -361,28 +375,23 @@
                     selector = null;
                 }
 
-                _.forEach(event.split(" "), function(event) {
-                    var eventEntry = _.mixin({name: event, callback: callback, capturing: false}, eventHooks[event]);
+                eventNames = event.split(" ");
 
-                    if (!eventEntry.handler) {
-                        eventEntry.handler = createEventHandler(this, callback, selector);
-                    }
+                if (eventNames.length > 1) {
+                    _.forEach(eventNames, function(event) {
+                        this.on(event, selector, callback);
+                    }, this);
+                } else {
+                    eventEntry = {name: event, callback: callback, capturing: false, handler: createEventHandler(this, callback, selector, event)};
 
-                    if (isW3Compliant) {
+                    if (hook = eventHooks[event]) _.mixin(eventEntry, hook);
+
+                    if (DOM.supports("addEventListener")) {
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
                     } else {
                         if (~event.indexOf(":")) {
-                            // custom events for ie8
-                            eventEntry.name = "dataavailable";
-                            eventEntry._handler = eventEntry.handler;
-
-                            eventEntry.handler = function(e) {
-                                e = window.event;
-
-                                if (e.srcUrn === event) {
-                                    eventEntry._handler(e);
-                                }
-                            };
+                            // handle custom events for IE8
+                            _.mixin(eventEntry, {name: "dataavailable", handler: createCustomEventHandler(event, eventEntry.handler)});
                         }
 
                         this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
@@ -390,7 +399,7 @@
                     
                     // store event entry
                     this._events.push(eventEntry);
-                }, this);
+                }
             } else if (eventType === "object") {
                 _.forOwn(event, function(key) {
                     this.on(key, event[key]);
@@ -411,7 +420,7 @@
          */
         DOMNode.prototype.off = function(eventType, callback) {
             if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw new makeError("off");
+                throw makeError("off");
             }
 
             var hook = eventHooks[eventType];
@@ -420,7 +429,7 @@
 
             _.forEach(this._events, function(entry) {
                 if (eventType === entry.name && (!callback || callback === entry.callback)) {
-                    if (isW3Compliant) {
+                    if (supports("removeEventListener")) {
                         this._node.removeEventListener(eventType, entry.handler, entry.capturing);
                     } else {
                         this._node.detachEvent("on" + eventType, entry.handler);
@@ -442,8 +451,8 @@
          *
          * domLink.fire("focus");
          * // receive focus to the element
-         * domLink.fire("click");
-         * // make a click on the element
+         * domLink.fire("custom:event", {x: 1, y: 2});
+         * // trigger a custom:event on the element
          */
         DOMNode.prototype.fire = function(eventType, detail) {
             if (typeof eventType !== "string") {
@@ -454,15 +463,20 @@
                 hook = eventHooks[eventType],
                 event;
 
-            if (typeof this._node[eventType] === "function") {
+            // Call a native DOM method on the target with the same name as the event
+            // IE&lt;9 dies on focus/blur to hidden element
+            if (this._node[eventType] && ((eventType !== "focus" && eventType !== "blur") || this._node.offsetWidth !== 0)) {
+                // Prevent re-triggering of the same event
+                veto = eventType;
+                
                 this._node[eventType]();
 
-                return this;
+                veto = false;
             }
 
             if (hook && hook.name) eventType = hook.name;
 
-            if (isW3Compliant) {
+            if (supports("dispatchEvent")) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
@@ -516,7 +530,7 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.matches = function(selector) {
-        if (typeof selector !== "string") {
+        if (!selector || typeof selector !== "string") {
             throw makeError("matches");
         }
 
@@ -634,12 +648,33 @@
             };
         });
 
-        if (isIECompliant) {
+        if (supports("attachEvent")) {
             // fix NoScope elements in IE &lt; 10
             propHooks.innerHTML = {
                 set: function(el, value) {
                     el.innerHTML = "&shy;" + value;
                     el.removeChild(el.firstChild);
+                }
+            };
+        }
+
+        if (!supports("hidden", "a")) {
+            propHooks.hidden = {
+                set: function(el, value) {
+                    if (typeof value !== "boolean") {
+                        throw makeError("set");
+                    }
+
+                    el.hidden = value;
+
+                    if (value) {
+                        el.setAttribute("hidden", "hidden");
+                    } else {
+                        el.removeAttribute("hidden");
+                    }
+
+                    // trigger reflow in IE
+                    el.style.zoom = value ? "1" : "0";
                 }
             };
         }
@@ -658,7 +693,7 @@
             var el = this._node,
                 hook = propHooks[name];
 
-            hook && (hook = hook.get);
+            if (hook) hook = hook.get;
 
             return hook ? hook(el) : el[name] || el.getAttribute(name);
         };
@@ -685,7 +720,7 @@
 
                     if (hook) {
                         hook.set(el, value);
-                    } else if (value === null || value === false) {
+                    } else if (value === null) {
                         el.removeAttribute(name);
                     } else if (name in el) {
                         el[name] = value;
@@ -711,7 +746,7 @@
     (function() {
         function makeTraversingMethod(propertyName, multiple) {
             return function(selector) {
-                var matcher = selector ? new SelectorMatcher(selector) : null,
+                var matcher = SelectorMatcher(selector),
                     nodes = multiple ? [] : null,
                     it = this._node;
 
@@ -798,9 +833,9 @@
          */
         DOMElement.prototype.children = function(selector) {
             var children = this._node.children,
-                matcher = selector ? new SelectorMatcher(selector) : null;
+                matcher = SelectorMatcher(selector);
 
-            if (!isW3Compliant) {
+            if (!supports("addEventListener")) {
                 // fix IE8 bug with children collection
                 children = _.filter(children, function(result, elem) {
                     return elem.nodeType === 1;
@@ -819,13 +854,19 @@
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             return function(element, /*INTERNAL*/reverse) {
-                var el = this._node,
+                var el = reverse ? element : this._node,
                     relatedNode = el.parentNode;
+
+                if (reverse) element = this._node;
 
                 if (typeof element === "string") {
                     relatedNode = fasterMethodName ? null : sandbox.fragment(element);
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
+                } else if (element instanceof DOMElement) {
+                    element[methodName](el, true);
+
+                    return this;
                 } else if (element !== undefined) {
                     throw makeError(methodName);
                 }
@@ -843,7 +884,7 @@
         /**
          * Insert html string or native element after the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -854,7 +895,7 @@
         /**
          * Insert html string or native element before the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -865,7 +906,7 @@
         /**
          * Prepend html string or native element to the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -876,7 +917,7 @@
         /**
          * Append html string or native element to the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -887,7 +928,7 @@
         /**
          * Replace current element with html string or native element
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -992,7 +1033,7 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = isW3Compliant ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
+            computed = supports("getComputedStyle") ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
             // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
@@ -1018,7 +1059,13 @@
             }
         });
 
-        // TODO: additional hooks to convert integers into appropriate strings
+        _.forEach("width height padding margin".split(" "), function(propName) {
+            cssHooks[propName] = {
+                set: function(style, value) {
+                    style[propName] = typeof value === "number" ? value + "px" : value; 
+                }
+            };
+        });
 
         /**
          * Get css style from element
@@ -1040,7 +1087,7 @@
             result = hook ? hook(style) : style[name];
 
             if (!result) {
-                style = window.getComputedStyle ? window.getComputedStyle(this._node) : this._node.currentStyle;
+                style = supports("getComputedStyle") ? window.getComputedStyle(this._node) : this._node.currentStyle;
 
                 result = hook ? hook(style) : style[name];
             }
@@ -1064,7 +1111,11 @@
                 hook = cssHooks[name];
                 hook = hook && hook.set;
 
-                hook ? hook(style, value) : style[name] = value;
+                if (hook) {
+                    hook(style, value);
+                } else {
+                    style[name] = value;
+                }
             } else if (nameType === "object") {
                 _.forOwn(name, function(key) {
                     this.setStyle(key, name[key]);
@@ -1114,7 +1165,7 @@
 
         this._event = event;
 
-        if (!isW3Compliant) {
+        if (!supports("addEventListener")) {
             this.target = DOMElement(event.srcElement);
             this.currentTarget = DOMElement(currentTarget);
             this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
@@ -1139,7 +1190,7 @@
 
     (function() {
         var makeFuncMethod = function(name, legacyHandler) {
-                return !isW3Compliant ? legacyHandler : function() {
+                return !supports("addEventListener") ? legacyHandler : function() {
                     this._event[name]();
                 };
             },
@@ -1170,7 +1221,7 @@
             this._event.cancelBubble = true;
         });
 
-        if (isW3Compliant) {
+        if (supports("addEventListener")) {
             // in ie we will set these properties in constructor
             defineProperty("target");
             defineProperty("currentTarget");
@@ -1323,20 +1374,21 @@
         // Quick matching inspired by
         // https://github.com/jquery/jquery
         var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-            ctr =  function(selector, quickOnly) {
-                this.selector = selector;
-                this.quickOnly = !!quickOnly;
+            ctor =  function(selector) {
+                if (this instanceof SelectorMatcher) {
+                    this.selector = selector;
 
-                var quick = rquickIs.exec(selector);
-                // TODO: support attribute value check
-                if (this.quick = quick) {
-                    //   0  1    2   3          4
-                    // [ _, tag, id, attribute, class ]
-                    quick[1] && (quick[1] = quick[1].toLowerCase());
-                    quick[4] && (quick[4] = " " + quick[4] + " ");
-                } else if (quickOnly) {
-                    throw makeError("quick");
-                }
+                    var quick = rquickIs.exec(selector);
+                    // TODO: support attribute value check
+                    if (this.quick = quick) {
+                        //   0  1    2   3          4
+                        // [ _, tag, id, attribute, class ]
+                        if (quick[1]) quick[1] = quick[1].toLowerCase();
+                        if (quick[4]) quick[4] = " " + quick[4] + " ";
+                    }    
+                } else {
+                    return selector ? new SelectorMatcher(selector) : null;
+                }                
             },
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
@@ -1353,7 +1405,7 @@
                 return false; 
             };
 
-        ctr.prototype = {
+        ctor.prototype = {
             test: function(el) {
                 if (this.quick) {
                     return (
@@ -1364,11 +1416,11 @@
                     );
                 }
 
-                return !this.quickOnly && ( matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector) );
+                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
             }
         };
 
-        return ctr;
+        return ctor;
     })();
 
     // finish prototypes
@@ -1436,14 +1488,14 @@
 
         // https://raw.github.com/requirejs/domReady/latest/domReady.js
         
-        if (isW3Compliant) {
+        if (supports("addEventListener")) {
             document.addEventListener("DOMContentLoaded", pageLoaded, false);
             window.addEventListener("load", pageLoaded, false);
         } else {
             window.attachEvent("onload", pageLoaded);
 
             (function() {
-                var testDiv = document.createElement('div'), 
+                var testDiv = document.createElement("div"), 
                     isTop;
                 
                 try {
@@ -1468,7 +1520,7 @@
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // hey, at least it's not a UA sniff
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( isIECompliant ? document.readyState === "complete" : document.readyState !== "loading") {
+        if ( supports("attachEvent") ? document.readyState === "complete" : document.readyState !== "loading") {
             pageLoaded();
         }
 
@@ -1522,7 +1574,7 @@
                 }
             };
 
-        if (!("hidden" in htmlEl)) {
+        if (!supports("hidden", "a")) {
             process("[hidden]", "display:none");    
         }
                     
@@ -1620,51 +1672,61 @@
     /**
      * Extend DOM with custom widget
      * @param  {String} selector widget css selector
-     * @param  {Object} options  widget options
+     * @param  {Object} mixins  widget mixins
+     * @param  {Object} [template] widget template
      * @static
      * @global
      */
-    DOM.extend = function(selector, options) {
-        if (!options || typeof options !== "object") {
+    DOM.extend = function(selector, mixins, template) {
+        if (!mixins || typeof mixins !== "object") {
             throw makeError("extend", "DOM");
         }
-
-        var template = options.template,
-            css = options.css,
-            ctr;
 
         if (template) {
             _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
-
-            delete options.template;
-        }
-
-        if (css) {
-            DOM.importStyles.apply(DOM, css);
-
-            delete options.css;
-        }
-
-        if (options.hasOwnProperty("constructor")) {
-            ctr = options.constructor;
-
-            delete options.constructor;
         }
 
         DOM.watch(selector, function(el) {
-            _.mixin(el, options);
+            _.mixin(el, mixins);
 
-            template && _.forOwn(template, function(key) {
-                el[key](template[key].cloneNode(true));
-            });
+            el.constructor = DOMElement;
 
-            if (ctr) ctr.call(el);
+            if (template) {
+                _.forOwn(template, function(key) {
+                    el[key](template[key].cloneNode(true));
+                });
+            }
+
+            if (mixins.hasOwnProperty("constructor")) {
+                mixins.constructor.call(el);
+            }
         });
     };
 
-    // REGISTRATION
+    /**
+     * Check DOM capability
+     * @param {String} prop property to check
+     * @param {String} [tag] name of element to check
+     * @function
+     * @global
+     * @example
+     * DOM.supports("placeholder", "input");
+     * // => true if browser supports placeholders
+     * DOM.supports("getComputedStyle");
+     * // => true if browser supports window.getComputedStyle
+     * DOM.supports("oninvalid", "input");
+     * // => true if browser supports `invalid` event
+     */
+    DOM.supports = function(prop, tag) {
+        var cache = DOM.supports,
+            key = prop + (tag ? tag : "");
+
+        return cache[key] || ( cache[key] = supports(prop, tag) );
+    };
+
+    // REGISTER GLOBALS
     
     window.DOM = DOM;
 
@@ -1773,13 +1835,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#create">create</a></li><li><a href="global.html#DOM">DOM</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#importStyles">importStyles</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#watch">watch</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#create">create</a></li><li><a href="global.html#DOM">DOM</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#importStyles">importStyles</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#supports">supports</a></li><li><a href="global.html#watch">watch</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri May 03 2013 10:51:40 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 06 2013 00:28:35 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

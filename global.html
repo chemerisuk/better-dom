@@ -119,7 +119,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 1363
+        <a href="better-dom.js.html">better-dom.js</a>, line 1410
     </li></ul></dd>
     
     
@@ -238,7 +238,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 1372
+        <a href="better-dom.js.html">better-dom.js</a>, line 1419
     </li></ul></dd>
     
     
@@ -287,7 +287,7 @@
         
             
 <dt>
-    <h4 class="name" id="extend"><span class="type-signature"></span>extend<span class="signature">(selector, options)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="extend"><span class="type-signature"></span>extend<span class="signature">(selector, mixins, <span class="optional">template</span>)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -317,6 +317,8 @@
 		<th>Type</th>
 		
 		
+		<th>Argument</th>
+		
 		
 		
 		
@@ -342,6 +344,14 @@
             </td>
             
             
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
             
             
             
@@ -352,7 +362,7 @@
 	
         <tr>
             
-                <td class="name"><code>options</code></td>
+                <td class="name"><code>mixins</code></td>
             
             
             <td class="type">
@@ -365,10 +375,51 @@
             </td>
             
             
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
             
             
             
-            <td class="description last">widget options</td>
+            
+            <td class="description last">widget mixins</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>template</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">widget template</td>
         </tr>
 	
 	
@@ -399,7 +450,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 1597
+        <a href="better-dom.js.html">better-dom.js</a>, line 1653
     </li></ul></dd>
     
     
@@ -538,7 +589,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 1467
+        <a href="better-dom.js.html">better-dom.js</a>, line 1522
     </li></ul></dd>
     
     
@@ -651,7 +702,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 1395
+        <a href="better-dom.js.html">better-dom.js</a>, line 1442
     </li></ul></dd>
     
     
@@ -669,6 +720,172 @@
     
     
     
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="supports"><span class="type-signature"></span>supports<span class="signature">(prop, <span class="optional">tag</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Check DOM capability
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>prop</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">property to check</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">name of element to check</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 1695
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>DOM.supports("placeholder", "input");
+// => true if browser supports placeholders
+DOM.supports("getComputedStyle");
+// => true if browser supports window.getComputedStyle
+DOM.supports("oninvalid", "input");
+// => true if browser supports `invalid` event</code></pre>
+
     
 </dd>
 
@@ -787,7 +1004,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.js.html">DOM.js</a>, line 1524
+        <a href="better-dom.js.html">better-dom.js</a>, line 1579
     </li></ul></dd>
     
     
@@ -824,13 +1041,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#create">create</a></li><li><a href="global.html#DOM">DOM</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#importStyles">importStyles</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#watch">watch</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#create">create</a></li><li><a href="global.html#DOM">DOM</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#importStyles">importStyles</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#supports">supports</a></li><li><a href="global.html#watch">watch</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed May 01 2013 12:22:19 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 06 2013 00:28:35 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
