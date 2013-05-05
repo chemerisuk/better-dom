@@ -357,7 +357,7 @@
                 } else {
                     eventEntry = {name: event, callback: callback, capturing: false, handler: createEventHandler(this, callback, selector, event)};
 
-                    if (hook = eventHooks[event]) eventEntry = _.mixin(eventEntry, hook);
+                    if (hook = eventHooks[event]) _.mixin(eventEntry, hook);
 
                     if (DOM.supports("addEventListener")) {
                         this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
@@ -827,13 +827,19 @@
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             return function(element, /*INTERNAL*/reverse) {
-                var el = this._node,
+                var el = reverse ? element : this._node,
                     relatedNode = el.parentNode;
+
+                if (reverse) element = this._node;
 
                 if (typeof element === "string") {
                     relatedNode = fasterMethodName ? null : sandbox.fragment(element);
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
+                } else if (element instanceof DOMElement) {
+                    element[methodName](el, true);
+
+                    return this;
                 } else if (element !== undefined) {
                     throw makeError(methodName);
                 }
@@ -851,7 +857,7 @@
         /**
          * Insert html string or native element after the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -862,7 +868,7 @@
         /**
          * Insert html string or native element before the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -873,7 +879,7 @@
         /**
          * Prepend html string or native element to the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -884,7 +890,7 @@
         /**
          * Append html string or native element to the current
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
@@ -895,7 +901,7 @@
         /**
          * Replace current element with html string or native element
          * @memberOf DOMElement.prototype
-         * @param {String|Element} content HTML string or Element
+         * @param {String|Element|DOMElement} content HTML string or Element
          * @return {DOMElement} reference to this
          * @function
          */
