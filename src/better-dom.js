@@ -280,7 +280,7 @@
             veto = false,
             createEventHandler = function(thisPtr, callback, selector, eventType) {
                 var currentTarget = thisPtr._node,
-                    matcher = selector ? new SelectorMatcher(selector) : null,
+                    matcher = SelectorMatcher(selector),
                     simpleEventHandler = function(e) {
                         if (veto !== eventType) callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
                     };
@@ -503,7 +503,7 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.matches = function(selector) {
-        if (typeof selector !== "string") {
+        if (!selector || typeof selector !== "string") {
             throw makeError("matches");
         }
 
@@ -719,7 +719,7 @@
     (function() {
         function makeTraversingMethod(propertyName, multiple) {
             return function(selector) {
-                var matcher = selector ? new SelectorMatcher(selector) : null,
+                var matcher = SelectorMatcher(selector),
                     nodes = multiple ? [] : null,
                     it = this._node;
 
@@ -806,7 +806,7 @@
          */
         DOMElement.prototype.children = function(selector) {
             var children = this._node.children,
-                matcher = selector ? new SelectorMatcher(selector) : null;
+                matcher = SelectorMatcher(selector);
 
             if (!supports("addEventListener")) {
                 // fix IE8 bug with children collection
@@ -1341,20 +1341,21 @@
         // Quick matching inspired by
         // https://github.com/jquery/jquery
         var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-            ctr =  function(selector, quickOnly) {
-                this.selector = selector;
-                this.quickOnly = !!quickOnly;
+            ctor =  function(selector) {
+                if (this instanceof SelectorMatcher) {
+                    this.selector = selector;
 
-                var quick = rquickIs.exec(selector);
-                // TODO: support attribute value check
-                if (this.quick = quick) {
-                    //   0  1    2   3          4
-                    // [ _, tag, id, attribute, class ]
-                    if (quick[1]) quick[1] = quick[1].toLowerCase();
-                    if (quick[4]) quick[4] = " " + quick[4] + " ";
-                } else if (quickOnly) {
-                    throw makeError("quick");
-                }
+                    var quick = rquickIs.exec(selector);
+                    // TODO: support attribute value check
+                    if (this.quick = quick) {
+                        //   0  1    2   3          4
+                        // [ _, tag, id, attribute, class ]
+                        if (quick[1]) quick[1] = quick[1].toLowerCase();
+                        if (quick[4]) quick[4] = " " + quick[4] + " ";
+                    }    
+                } else {
+                    return selector ? new SelectorMatcher(selector) : null;
+                }                
             },
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
@@ -1371,7 +1372,7 @@
                 return false; 
             };
 
-        ctr.prototype = {
+        ctor.prototype = {
             test: function(el) {
                 if (this.quick) {
                     return (
@@ -1382,11 +1383,11 @@
                     );
                 }
 
-                return !this.quickOnly && ( matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector) );
+                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
             }
         };
 
-        return ctr;
+        return ctor;
     })();
 
     // finish prototypes
