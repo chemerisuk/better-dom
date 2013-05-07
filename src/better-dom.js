@@ -13,26 +13,6 @@
     var htmlEl = document.documentElement,
         scripts = document.scripts,
         // helpers
-        sandbox = (function() {
-            var el = document.createElement("body"),
-                appendTo = function(el) { this.appendChild(el); };
-
-            return {
-                parse: function(html) {
-                    el.innerHTML = "shy;" + html;
-                    el.removeChild(el.firstChild);
-
-                    return el.children;
-                },
-                fragment: function(html) {
-                    var fragment = document.createDocumentFragment();
-
-                    _.forEach(this.parse(html), appendTo, fragment);
-
-                    return fragment;
-                }
-            };
-        })(),
         supports = function(prop, tag) {
             var el = tag ? document.createElement(tag) : window,
                 isSupported = prop in el;
@@ -46,6 +26,85 @@
                 
             return isSupported;
         },
+        sandbox = (function() {
+            var parser = document.createElement("body"),
+                appendTo = function(el) { this.appendChild(el); },
+                createElem, createFrag;
+
+            if (supports("addEventListener")) {
+                createElem = function(tagName) {
+                    return document.createElement(tagName);
+                };
+                createFrag = function() {
+                    return document.createDocumentFragment();
+                };
+            } else {
+                // Add html5 elements support via:
+                // https://github.com/aFarkas/html5shiv
+                (function(){
+                    var elements = "abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",
+                        // Used to skip problem elements
+                        reSkip = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,
+                        // Not all elements can be cloned in IE
+                        saveClones = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,
+                        create = document.createElement,
+                        frag = document.createDocumentFragment(),
+                        cache = {};
+
+                    frag.appendChild(parser);
+
+                    createElem = function(nodeName) {
+                        var node;
+
+                        if (cache[nodeName]) {
+                            node = cache[nodeName].cloneNode();
+                        } else if (saveClones.test(nodeName)) {
+                            node = (cache[nodeName] = create(nodeName)).cloneNode();
+                        } else {
+                            node = create(nodeName);
+                        }
+
+                        // Avoid adding some elements to fragments in IE < 9 because
+                        // * Attributes like `name` or `type` cannot be set/changed once an element
+                        //   is inserted into a document/fragment
+                        // * Link elements with `src` attributes that are inaccessible, as with
+                        //   a 403 response, will cause the tab/window to crash
+                        // * Script elements appended to fragments will execute when their `src`
+                        //   or `text` property is set
+                        return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
+                    };
+
+                    createFrag = Function('f', 'return function(){' +
+                      'var n=f.cloneNode(),c=n.createElement;' +
+                      '(' +
+                        // unroll the `createElement` calls
+                        elements.split(" ").join().replace(/\w+/g, function(nodeName) {
+                          create(nodeName);
+                          frag.createElement(nodeName);
+                          return 'c("' + nodeName + '")';
+                        }) +
+                      ');return n}'
+                    )(frag);
+                })();
+            }
+
+            return {
+                create: createElem,
+                parse: function(html) {
+                    // fix NoScope bug
+                    parser.innerHTML = "shy;" + html;
+
+                    return parser.children;
+                },
+                fragment: function(html) {
+                    var fragment = createFrag();
+
+                    _.forEach(this.parse(html), appendTo, fragment);
+
+                    return fragment;
+                }
+            };
+        })(),
         makeError = function(method, type) {
             type = type || "DOMElement";
 
@@ -561,7 +620,7 @@
         return this.set("hidden", true);
     };
         
-    DOMElement.prototype.toString = function() {
+    DOMElement.prototype.serialize = function() {
         var el = this._node, result,
             makePair = function(name, value) {
                 return encodeURIComponent(name) + "=" +encodeURIComponent(value);
@@ -827,6 +886,10 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
+            // always use sandbox.fragment because of HTML5 elements bug 
+            // and NoScope bugs in IE
+            if (supports("attachEvent")) fasterMethodName = null;
+
             return function(element, /*INTERNAL*/reverse) {
                 var el = reverse ? element : this._node,
                     relatedNode = el.parentNode;
@@ -1066,7 +1129,7 @@
                 result = hook ? hook(style) : style[name];
             }
 
-            return result;
+            return result || "";
         };
 
         /**
@@ -1422,7 +1485,7 @@
             if (content.charAt(0) === "<") {
                 return new DOMElementCollection(sandbox.parse(content));
             } else {
-                elem = document.createElement(content);
+                elem = sandbox.create(content);
             }
         } else if (!(content instanceof Element)) {
             throw makeError("create", "DOM");
@@ -1547,7 +1610,12 @@
             };
 
         if (!supports("hidden", "a")) {
-            process("[hidden]", "display:none");    
+            // corrects block display not defined in IE6/7/8/9
+            process("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
+            // adds styling not present in IE6/7/8/9
+            process("mark", "background:#FF0;color:#000");
+            // hides non-rendered elements
+            process("template,[hidden]", "display:none");
         }
                     
         return function(selector, styles) {

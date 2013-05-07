@@ -67,6 +67,18 @@ describe("manipulation", function() {
             }
         });
 
+        it("should fix html5 elements", function() {
+            for (var strategy in checkStrategies) {
+                var checkMethod = checkStrategies[strategy],
+                    otherDiv = DOM.create("div");
+
+                otherDiv.set("innerHTML", "<section>This native javascript sentence is in a green box <mark>with these words highlighted</mark>?</section>");
+
+                expect(div[strategy](otherDiv)[checkMethod]()._node).toHaveTag("div");
+                expect(otherDiv.find("section").getStyle("display")).toBe("block");
+            }
+        });
+
         it("should throw error if argument is invalid", function() {
             var callProp = function(strategy) {
                     return function() {

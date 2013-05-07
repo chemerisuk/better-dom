@@ -157,9 +157,10 @@ DOM.extend(".editable", {
     constructor: function() {
         var editable = this,
             formEl = editable.next(),
-            textareaEl = formEl.find("textarea");
+            textareaEl = formEl.find("textarea"),
+            font = editable.getStyle("font");
 
-        textareaEl.setStyle("font", editable.getStyle("font"));
+        if (font) textareaEl.setStyle("font", font);
 
         formEl.on("reset", function() {
             formEl.hide();
