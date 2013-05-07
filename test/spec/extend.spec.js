@@ -33,7 +33,7 @@ describe("extend", function() {
             template[key] = '<i class="' + key + '"></i>';
         }
 
-        DOM.extend(".extend", {}, template);
+        DOM.extend(".extend", {template: template});
 
         waits(WAIT_FOR_WATCH_TIME);
 

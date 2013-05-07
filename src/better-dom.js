@@ -1654,7 +1654,7 @@
 
                 if (entry) {
                     entry.push(callback);
-                    // need to call callback manually for each element 
+                    // need to call the callback manually for each element 
                     // because behaviour is already attached to the DOM
                     DOM.findAll(selector).each(callback);
                 } else {
@@ -1717,19 +1717,24 @@
      * @static
      * @global
      */
-    DOM.extend = function(selector, mixins, template) {
-        if (!mixins || typeof mixins !== "object") {
+    DOM.extend = function(selector, options) {
+        if (!options || typeof options !== "object") {
             throw makeError("extend", "DOM");
         }
+
+        var ctor = options.hasOwnProperty("constructor") && options.constructor,
+            template = options.template;
 
         if (template) {
             _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
+
+            delete options.template;
         }
 
         DOM.watch(selector, function(el) {
-            _.mixin(el, mixins);
+            _.mixin(el, options);
 
             el.constructor = DOMElement;
 
@@ -1739,9 +1744,7 @@
                 });
             }
 
-            if (mixins.hasOwnProperty("constructor")) {
-                mixins.constructor.call(el);
-            }
+            if (ctor) ctor.call(el);
         });
     };
 
