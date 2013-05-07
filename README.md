@@ -24,14 +24,15 @@ Creating widgets has never been so simple. `DOM.extend` is used to declare a new
 
 Performance
 -----------
-DOM is usually the main bottleneck of javascript programs. Therefore performance question should be on the top for any library that works with it.
+DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.
 
 Compatability
 -------------
-The library intoduces it's own objects for describing access to DOM. It doesn't modify any native object prototype. `DOM` is actually the only one global variable.
+The library intoduces it's own objects for describing access to DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
 
-Polyfill example: placeholder
------------------------------
+Code example: placeholder polyfill
+----------------------------------
+Now it's pretty simple to write your own polyfill:
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     template: {
@@ -67,6 +68,7 @@ See it in action http://chemerisuk.github.io/better-placeholder-polyfill/
 Browser support
 ---------------
 * Chrome
+* Safari
 * Firefox
 * Opera
 * IE8+
