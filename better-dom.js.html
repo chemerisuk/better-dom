@@ -40,26 +40,6 @@
     var htmlEl = document.documentElement,
         scripts = document.scripts,
         // helpers
-        sandbox = (function() {
-            var el = document.createElement("body"),
-                appendTo = function(el) { this.appendChild(el); };
-
-            return {
-                parse: function(html) {
-                    el.innerHTML = "shy;" + html;
-                    el.removeChild(el.firstChild);
-
-                    return el.children;
-                },
-                fragment: function(html) {
-                    var fragment = document.createDocumentFragment();
-
-                    _.forEach(this.parse(html), appendTo, fragment);
-
-                    return fragment;
-                }
-            };
-        })(),
         supports = function(prop, tag) {
             var el = tag ? document.createElement(tag) : window,
                 isSupported = prop in el;
@@ -73,10 +53,96 @@
                 
             return isSupported;
         },
+        sandbox = (function() {
+            var parser = document.createElement("body"),
+                appendTo = function(el) { this.appendChild(el); },
+                createElem, createFrag;
+
+            if (supports("addEventListener")) {
+                createElem = function(tagName) {
+                    return document.createElement(tagName);
+                };
+                createFrag = function() {
+                    return document.createDocumentFragment();
+                };
+            } else {
+                // Add html5 elements support via:
+                // https://github.com/aFarkas/html5shiv
+                (function(){
+                    var elements = "abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",
+                        // Used to skip problem elements
+                        reSkip = /^&lt;|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,
+                        // Not all elements can be cloned in IE
+                        saveClones = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,
+                        create = document.createElement,
+                        frag = document.createDocumentFragment(),
+                        cache = {};
+
+                    frag.appendChild(parser);
+
+                    createElem = function(nodeName) {
+                        var node;
+
+                        if (cache[nodeName]) {
+                            node = cache[nodeName].cloneNode();
+                        } else if (saveClones.test(nodeName)) {
+                            node = (cache[nodeName] = create(nodeName)).cloneNode();
+                        } else {
+                            node = create(nodeName);
+                        }
+
+                        // Avoid adding some elements to fragments in IE &lt; 9 because
+                        // * Attributes like `name` or `type` cannot be set/changed once an element
+                        //   is inserted into a document/fragment
+                        // * Link elements with `src` attributes that are inaccessible, as with
+                        //   a 403 response, will cause the tab/window to crash
+                        // * Script elements appended to fragments will execute when their `src`
+                        //   or `text` property is set
+                        return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
+                    };
+
+                    createFrag = Function('f', 'return function(){' +
+                      'var n=f.cloneNode(),c=n.createElement;' +
+                      '(' +
+                        // unroll the `createElement` calls
+                        elements.split(" ").join().replace(/\w+/g, function(nodeName) {
+                          create(nodeName);
+                          frag.createElement(nodeName);
+                          return 'c("' + nodeName + '")';
+                        }) +
+                      ');return n}'
+                    )(frag);
+                })();
+            }
+
+            return {
+                create: createElem,
+                parse: function(html) {
+                    // fix NoScope bug
+                    parser.innerHTML = "shy;" + html;
+
+                    return parser.children;
+                },
+                fragment: function(html) {
+                    var fragment = createFrag();
+
+                    _.forEach(this.parse(html), appendTo, fragment);
+
+                    return fragment;
+                }
+            };
+        })(),
         makeError = function(method, type) {
             type = type || "DOMElement";
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
+        },
+        handleObjectParam = function(name) {
+            var cache = {};
+
+            return cache[name] || (cache[name] = function(key, index, obj) {
+                this[name](key, obj[key]);
+            });
         };
 
     if (!supports("addEventListener") && !supports("attachEvent")) {
@@ -247,9 +313,7 @@
             if (keyType === "string") {
                 this._data[key] = value;
             } else if (keyType === "object") {
-                _.forOwn(key, function(dataKey) {
-                    this.setData(dataKey, key[dataKey]);
-                }, this);
+                _.forOwn(key, handleObjectParam("setData"), this);
             } else {
                 throw makeError("setData");
             }
@@ -401,9 +465,7 @@
                     this._events.push(eventEntry);
                 }
             } else if (eventType === "object") {
-                _.forOwn(event, function(key) {
-                    this.on(key, event[key]);
-                }, this);
+                _.forOwn(event, handleObjectParam("on"), this);
             } else {
                 throw makeError("on");
             }
@@ -585,7 +647,7 @@
         return this.set("hidden", true);
     };
         
-    DOMElement.prototype.toString = function() {
+    DOMElement.prototype.serialize = function() {
         var el = this._node, result,
             makePair = function(name, value) {
                 return encodeURIComponent(name) + "=" +encodeURIComponent(value);
@@ -682,11 +744,13 @@
         /**
          * Get property or attribute by name
          * @memberOf DOMElement.prototype
-         * @param  {String} name property/attribute name
+         * @param  {String} [name="innerHTML"] property/attribute name
          * @return {String} property/attribute value
          */
         DOMElement.prototype.get = function(name) {
-            if (typeof name !== "string") {
+            if (name === undefined) {
+                name = "innerHTML";
+            } else if (typeof name !== "string") {
                 throw makeError("get");
             }
 
@@ -701,7 +765,7 @@
         /**
          * Set property/attribute value
          * @memberOf DOMElement.prototype
-         * @param {String} name  property/attribute name
+         * @param {String} [name="innerHTML"] property/attribute name
          * @param {String} value property/attribute value
          * @return {DOMElement} reference to this
          */
@@ -710,30 +774,38 @@
                 nameType = typeof name,
                 valueType = typeof value;
 
-            if (nameType === "string") {
-                if (valueType === "function") {
-                    value = value.call(this, this.get(name));
+            if (nameType === "object") {
+                _.forOwn(name, handleObjectParam("set"), this);
+            } else {
+                if (value === undefined) {
+                    valueType = nameType;
+                    value = name;
+                    name = "innerHTML";
+                    nameType = "string";
                 }
 
-                _.forEach(name.split(" "), function(name) {
-                    var hook = propHooks[name];
+                if (valueType === "function") {
+                    value = value.call(this, this.get(name));
+                    valueType = typeof value;
+                }
 
-                    if (hook) {
-                        hook.set(el, value);
-                    } else if (value === null) {
-                        el.removeAttribute(name);
-                    } else if (name in el) {
-                        el[name] = value;
-                    } else {
-                        el.setAttribute(name, value);
-                    }
-                });
-            } else if (nameType === "object") {
-                _.forOwn(name, function(key) {
-                    this.set(key, name[key]);
-                }, this);
-            } else {
-                throw makeError("set");
+                if (nameType === "string") {
+                    _.forEach(name.split(" "), function(name) {
+                        var hook = propHooks[name];
+
+                        if (hook) {
+                            hook.set(el, value);
+                        } else if (value === null) {
+                            el.removeAttribute(name);
+                        } else if (name in el) {
+                            el[name] = value;
+                        } else {
+                            el.setAttribute(name, value);
+                        }
+                    });
+                } else {
+                    throw makeError("set");
+                }
             }
 
             return this;
@@ -853,6 +925,10 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
+            // always use sandbox.fragment because of HTML5 elements bug 
+            // and NoScope bugs in IE
+            if (supports("attachEvent")) fasterMethodName = null;
+
             return function(element, /*INTERNAL*/reverse) {
                 var el = reverse ? element : this._node,
                     relatedNode = el.parentNode;
@@ -1092,7 +1168,7 @@
                 result = hook ? hook(style) : style[name];
             }
 
-            return result;
+            return result || "";
         };
 
         /**
@@ -1117,9 +1193,7 @@
                     style[name] = value;
                 }
             } else if (nameType === "object") {
-                _.forOwn(name, function(key) {
-                    this.setStyle(key, name[key]);
-                }, this);
+                _.forOwn(name, handleObjectParam("setStyle"), this);
             } else {
                 throw makeError("setStyle");
             }
@@ -1450,7 +1524,7 @@
             if (content.charAt(0) === "&lt;") {
                 return new DOMElementCollection(sandbox.parse(content));
             } else {
-                elem = document.createElement(content);
+                elem = sandbox.create(content);
             }
         } else if (!(content instanceof Element)) {
             throw makeError("create", "DOM");
@@ -1575,7 +1649,12 @@
             };
 
         if (!supports("hidden", "a")) {
-            process("[hidden]", "display:none");    
+            // corrects block display not defined in IE6/7/8/9
+            process("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
+            // adds styling not present in IE6/7/8/9
+            process("mark", "background:#FF0;color:#000");
+            // hides non-rendered elements
+            process("template,[hidden]", "display:none");
         }
                     
         return function(selector, styles) {
@@ -1614,7 +1693,7 @@
 
                 if (entry) {
                     entry.push(callback);
-                    // need to call callback manually for each element 
+                    // need to call the callback manually for each element 
                     // because behaviour is already attached to the DOM
                     DOM.findAll(selector).each(callback);
                 } else {
@@ -1677,19 +1756,24 @@
      * @static
      * @global
      */
-    DOM.extend = function(selector, mixins, template) {
-        if (!mixins || typeof mixins !== "object") {
+    DOM.extend = function(selector, options) {
+        if (!options || typeof options !== "object") {
             throw makeError("extend", "DOM");
         }
+
+        var ctor = options.hasOwnProperty("constructor") && options.constructor,
+            template = options.template;
 
         if (template) {
             _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
+
+            delete options.template;
         }
 
         DOM.watch(selector, function(el) {
-            _.mixin(el, mixins);
+            _.mixin(el, options);
 
             el.constructor = DOMElement;
 
@@ -1699,9 +1783,7 @@
                 });
             }
 
-            if (mixins.hasOwnProperty("constructor")) {
-                mixins.constructor.call(el);
-            }
+            if (ctor) ctor.call(el);
         });
     };
 
@@ -1754,7 +1836,9 @@
         return result;
     },
     forOwn: function(obj, callback, thisPtr) {
-        this.forEach(this.keys(obj), callback, thisPtr);
+        for (var list = this.keys(obj), i = 0, n = list.length; i &lt; n; ++i) {
+            callback.call(thisPtr, list[i], i, obj);
+        }
     },
     forEach: function(list, callback, thisPtr) {
         for (var i = 0, n = list.length; i &lt; n; ++i) {
@@ -1841,7 +1925,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 06 2013 00:28:35 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 09 2013 01:21:29 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
