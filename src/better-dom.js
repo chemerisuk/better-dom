@@ -458,17 +458,20 @@
                 throw makeError("off");
             }
 
-            var hook = eventHooks[eventType];
+            var hook = eventHooks[eventType],
+                events = this._events;
 
             if (hook && hook.name) eventType = hook.name;
 
-            _.forEach(this._events, function(entry) {
-                if (eventType === entry.name && (!callback || callback === entry.callback)) {
+            _.forEach(events, function(entry, index) {
+                if (entry && eventType === entry.name && (!callback || callback === entry.callback)) {
                     if (supports("removeEventListener")) {
                         this._node.removeEventListener(eventType, entry.handler, entry.capturing);
                     } else {
                         this._node.detachEvent("on" + eventType, entry.handler);
                     }
+
+                    delete events[index];
                 }
             }, this);
 
