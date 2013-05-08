@@ -2,7 +2,7 @@ describe("set", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#'>test</a>");
+        setFixtures("<a id='test' href='#'>set-test</a>");
 
         link = DOM.find("#test");
     });
@@ -67,8 +67,18 @@ describe("set", function() {
         }
     });
 
+    it("should use 'innerHTML' if name argument is undefined", function() {
+        var value = "set-test-changed";
+
+        link.set(value);
+
+        expect(link._node.innerHTML).toBe(value);
+    });
+
     it("should throw error if argument is invalid", function() {
-        expect(function() { link.set(1); }).toThrow();
+        expect(function() { link.set(1, ""); }).toThrow();
+        expect(function() { link.set(true, ""); }).toThrow();
+        expect(function() { link.set(function() {}, ""); }).toThrow();
     });
     
 });

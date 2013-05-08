@@ -717,11 +717,13 @@
         /**
          * Get property or attribute by name
          * @memberOf DOMElement.prototype
-         * @param  {String} name property/attribute name
+         * @param  {String} [name="innerHTML"] property/attribute name
          * @return {String} property/attribute value
          */
         DOMElement.prototype.get = function(name) {
-            if (typeof name !== "string") {
+            if (name === undefined) {
+                name = "innerHTML";
+            } else if (typeof name !== "string") {
                 throw makeError("get");
             }
 
@@ -736,7 +738,7 @@
         /**
          * Set property/attribute value
          * @memberOf DOMElement.prototype
-         * @param {String} name  property/attribute name
+         * @param {String} [name="innerHTML"] property/attribute name
          * @param {String} value property/attribute value
          * @return {DOMElement} reference to this
          */
@@ -745,28 +747,38 @@
                 nameType = typeof name,
                 valueType = typeof value;
 
-            if (nameType === "string") {
-                if (valueType === "function") {
-                    value = value.call(this, this.get(name));
-                }
-
-                _.forEach(name.split(" "), function(name) {
-                    var hook = propHooks[name];
-
-                    if (hook) {
-                        hook.set(el, value);
-                    } else if (value === null) {
-                        el.removeAttribute(name);
-                    } else if (name in el) {
-                        el[name] = value;
-                    } else {
-                        el.setAttribute(name, value);
-                    }
-                });
-            } else if (nameType === "object") {
+            if (nameType === "object") {
                 _.forOwn(name, handleObjectParam("set"), this);
             } else {
-                throw makeError("set");
+                if (value === undefined) {
+                    valueType = nameType;
+                    value = name;
+                    name = "innerHTML";
+                    nameType = "string";
+                }
+
+                if (valueType === "function") {
+                    value = value.call(this, this.get(name));
+                    valueType = typeof value;
+                }
+
+                if (nameType === "string") {
+                    _.forEach(name.split(" "), function(name) {
+                        var hook = propHooks[name];
+
+                        if (hook) {
+                            hook.set(el, value);
+                        } else if (value === null) {
+                            el.removeAttribute(name);
+                        } else if (name in el) {
+                            el[name] = value;
+                        } else {
+                            el.setAttribute(name, value);
+                        }
+                    });
+                } else {
+                    throw makeError("set");
+                }
             }
 
             return this;

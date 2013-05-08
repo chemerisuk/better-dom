@@ -2,7 +2,7 @@ describe("get", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html'>test</a>");
+        setFixtures("<a id='test' href='test.html'>get-test</a>");
 
         link = DOM.find("#test");
     });
@@ -41,8 +41,15 @@ describe("get", function() {
         }
     });
 
+    it("should use 'innerHTML' if name argument is undefined", function() {
+        expect(link.get()).toBe("get-test");
+    });
+
     it("should throw error if argument is invalid", function() {
         expect(function() { link.get(1); }).toThrow();
+        expect(function() { link.get(true); }).toThrow();
+        expect(function() { link.get({}); }).toThrow();
+        expect(function() { link.get(function() {}); }).toThrow();
     });
 
 });

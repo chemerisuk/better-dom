@@ -52,14 +52,15 @@ describe("watch", function() {
     });
 
     it("should not initialize twise after hide/show", function() {
-        setFixtures("<a id='test'></a>");
+        setFixtures("<a class='watch3'></a>");
 
-        var link;
+        var link = DOM.find(".watch3");
 
-        DOM.watch("#test", callback.andCallFake(function(el) {
+        DOM.watch(".watch3", callback.andCallFake(function(el) {
             expect(el).toBeDefined();
+            expect(el._node).toBe(link._node);
 
-            link = el.hide();
+            link.hide();
         }));
 
         waits(WAIT_FOR_WATCH_TIME);
@@ -76,10 +77,10 @@ describe("watch", function() {
     });
 
     it("should accept several watchers of the same selector", function() {
-        setFixtures("<a class='watch3'></a><b class='watch3'></b>");
+        setFixtures("<a class='watch4'></a><b class='watch4'></b>");
 
-        DOM.watch(".watch3", callback);
-        DOM.watch(".watch3", callback);
+        DOM.watch(".watch4", callback);
+        DOM.watch(".watch4", callback);
 
         waits(WAIT_FOR_WATCH_TIME);
 

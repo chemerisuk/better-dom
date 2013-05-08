@@ -63,7 +63,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     }
 });
 ```
-See it in action http://chemerisuk.github.io/better-placeholder-polyfill/
+See it in action (open in IE < 10) http://chemerisuk.github.io/better-placeholder-polyfill/
 
 Browser support
 ---------------
