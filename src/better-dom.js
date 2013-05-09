@@ -126,6 +126,7 @@
     // -------
     
     /**
+     * Prototype for limited/protected elements in better-dom
      * @name DOMNode
      * @constructor
      * @param node native object
@@ -399,7 +400,7 @@
          * @memberOf DOMNode.prototype
          * @param  {String}   type    event type
          * @param  {String}   [selector] css selector to filter
-         * @param  {Function} callback event handler
+         * @param  {DOMNode#eventCallback} callback event handler
          * @return {DOMNode} current context
          */
         DOMNode.prototype.on = function(type, selector, callback) {
@@ -450,8 +451,8 @@
         /**
          * Unbind a DOM event from the context
          * @memberOf DOMNode.prototype
-         * @param  {String}   type event type
-         * @param  {Function} [callback]  event handler
+         * @param  {String} type event type
+         * @param  {DOMNode#eventCallback} [callback]  event handler
          * @return {DOMNode} current context
          */
         DOMNode.prototype.off = function(type, callback) {
@@ -476,6 +477,12 @@
 
             return this;
         };
+
+        /**
+         * Event handler definition
+         * @callback DOMNode#eventCallback
+         * @param {DOMEvent} event instance of event
+         */
 
         /**
          * Triggers an event of specific type
@@ -543,6 +550,7 @@
     // ----------
 
     /**
+     * Prototype for elements in better-dom
      * @name DOMElement
      * @constructor
      * @param element native element
@@ -1208,6 +1216,7 @@
     // --------
     
     /**
+     * Prototype for events in better-dom
      * @name DOMEvent
      * @constructor
      * @param event native event
@@ -1287,6 +1296,7 @@
     // --------------------
 
     /**
+     * Prototype for collection of elements in better-dom
      * @name DOMElementCollection
      * @constructor
      */
@@ -1485,8 +1495,8 @@
     });
 
     /**
+     * Global object to access DOM. Contains all methods of the {@link DOMNode}
      * @namespace DOM
-     * @type DOMNode
      */
     var DOM = new DOMNode(document);
 
