@@ -10,6 +10,17 @@ Everybody who manipulated DOM via vanilla javascript knows that it is an awful A
 
 Important to note that it doesn't cover everything, for instance there are no methods for working with AJAX.
 
+Installation
+------------
+`bower install better-dom --save-dev`
+
+This will clone the latest version of the better-dom into the `components` directory at the root of your project.
+
+Append the following script on your page:
+
+```html
+<script src="components/better-dom/better-dom.js" data-htc="components/better-dom/better-dom.htc"></script>
+```
 Goals
 -----
 * ajax-friendly
@@ -33,6 +44,7 @@ The library intoduces it's own objects for describing access to DOM. It doesn't 
 Code example: placeholder polyfill
 ----------------------------------
 Now it's pretty simple to write your own polyfill:
+
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     template: {
@@ -63,6 +75,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     }
 });
 ```
+
 See it in action (open in IE < 10) http://chemerisuk.github.io/better-placeholder-polyfill/
 
 Browser support

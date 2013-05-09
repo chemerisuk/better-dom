@@ -1,0 +1,12 @@
+{
+    "name": "better-dom",
+    "version": "0.8.0",
+    "main": [
+        "src/better-dom.js",
+        "src/better-dom.htc"
+    ],
+    "ignore": [
+        "*.*",
+        "test"
+    ]
+}
