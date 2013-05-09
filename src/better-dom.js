@@ -691,6 +691,14 @@
                     el.removeChild(el.firstChild);
                 }
             };
+
+            if (!supports("addEventListener")) {
+                propHooks.tagName = propHooks.nodeName = {
+                    get: function(el) {
+                        return el.nodeName.toUpperCase();
+                    }
+                };
+            }
         }
 
         if (!supports("hidden", "a")) {
@@ -1477,17 +1485,16 @@
     });
 
     /**
-     * @global
+     * @namespace DOM
      * @type DOMNode
      */
     var DOM = new DOMNode(document);
 
     /**
      * Create DOMElement or DOMElementCollection
-     * @param  {String|Element|HTMLCollection} content native element / collection
-     * @return {DOMElement|DOMElementCollection} element / collection
-     * @static
-     * @global
+     * @memberOf DOM
+     * @param  {String|Element} content native element
+     * @return {DOMElemen} element
      */
     DOM.create = function(content) {
         var elem = content;
@@ -1503,10 +1510,9 @@
 
     /**
      * Register callback on dom ready
+     * @memberOf DOM
      * @param {Function} callback event handler
-     * @static
      * @function
-     * @global
      */
     DOM.ready = (function() {
         var readyCallbacks = [],
@@ -1582,11 +1588,10 @@
 
     /**
      * Import css styles on page
+     * @memberOf DOM
      * @param {String|Object} selector css selector or object with selector/rules pairs
      * @param {String} styles css rules
      * @function
-     * @static
-     * @global
      */
     DOM.importStyles = (function() {
         var headEl = scripts[0].parentNode,
@@ -1644,11 +1649,10 @@
 
     /**
      * Watches when element with a spefified selector will be inserted on page
+     * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
      * @function
-     * @static
-     * @global
      */
     DOM.watch = (function() {
         DOM._watchers = {};
@@ -1718,11 +1722,10 @@
 
     /**
      * Extend DOM with custom widget
+     * @memberOf DOM
      * @param  {String} selector widget css selector
      * @param  {Object} mixins  widget mixins
      * @param  {Object} [template] widget template
-     * @static
-     * @global
      */
     DOM.extend = function(selector, options) {
         if (!options || typeof options !== "object") {
@@ -1757,10 +1760,10 @@
 
     /**
      * Check DOM capability
+     * @memberOf DOM
      * @param {String} prop property to check
-     * @param {String} [tag] name of element to check
+     * @param {String} [tag] name of element to test
      * @function
-     * @global
      * @example
      * DOM.supports("placeholder", "input");
      * // => true if browser supports placeholders
