@@ -3,6 +3,7 @@
     "boss": true,
     "newcap": false,
     "evil": true,
+    "quotmark": "double",
     "globals": { 
         "Element": true
     }

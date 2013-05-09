@@ -30,7 +30,7 @@ describe("extend", function() {
             };
 
         for (var key in checkStrategies) {
-            template[key] = '<i class="' + key + '"></i>';
+            template[key] = "<i class='" + key + "'></i>";
         }
 
         DOM.extend(".extend", {template: template});

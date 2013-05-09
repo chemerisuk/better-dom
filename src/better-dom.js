@@ -73,16 +73,16 @@
                         return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
                     };
 
-                    createFrag = Function('f', 'return function(){' +
-                      'var n=f.cloneNode(),c=n.createElement;' +
-                      '(' +
+                    createFrag = Function("f", "return function(){" +
+                      "var n=f.cloneNode(),c=n.createElement;" +
+                      "(" +
                         // unroll the `createElement` calls
                         elements.split(" ").join().replace(/\w+/g, function(nodeName) {
                           create(nodeName);
                           frag.createElement(nodeName);
-                          return 'c("' + nodeName + '")';
+                          return "c('" + nodeName + "')";
                         }) +
-                      ');return n}'
+                      ");return n}"
                     )(frag);
                 })();
             }
@@ -1807,7 +1807,7 @@
             prop;
 
         if (objType !== "object" && objType !== "function" || obj === null) {
-            throw new TypeError('Object.keys called on non-object');
+            throw new TypeError("Object.keys called on non-object");
         }
  
         for (prop in obj) {
