@@ -33,7 +33,12 @@ module.exports = function(grunt) {
             },
             unit: {
                 configFile: "test/lib/karma.conf.js",
-                browsers: ["Chrome", "Opera", "Safari", "Firefox"],
+                browsers: ["Chrome", "Opera", "Safari", "Firefox", "PhantomJS"],
+                singleRun: true
+            },
+            travis: {
+                configFile: "test/lib/karma.conf.js",
+                browsers: ["PhantomJS"],
                 singleRun: true
             }
         },
@@ -103,5 +108,10 @@ module.exports = function(grunt) {
         "clean",
         "copy:dist",
         "uglify:dist"
+    ]);
+
+    grunt.registerTask("travis", [
+        "jshint",
+        "karma:travis"
     ]);
 };
