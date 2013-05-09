@@ -20,7 +20,7 @@ Goals
 
 Ajax-friendly
 -------------
-Creating widgets has never been so simple. `DOM.extend` is used to declare a new extension so it starts to work for all current and for any future content.
+The idea is to write plugins in declarative way. `DOM.extend` is used to implement a new extension which starts to work for all current and for any future content. As result it's much simpler to write [polyfills](#code-example-placeholder-polyfill) or to create your own web components.
 
 Performance
 -----------
