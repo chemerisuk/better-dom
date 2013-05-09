@@ -28,7 +28,6 @@
         },
         sandbox = (function() {
             var parser = document.createElement("body"),
-                appendTo = function(el) { this.appendChild(el); },
                 createElem, createFrag;
 
             if (supports("addEventListener")) {
@@ -90,18 +89,19 @@
 
             return {
                 create: createElem,
-                parse: function(html) {
-                    // fix NoScope bug
-                    parser.innerHTML = "shy;" + html;
-
-                    return parser.children;
-                },
                 fragment: function(html) {
                     var fragment = createFrag();
 
-                    _.forEach(this.parse(html), appendTo, fragment);
+                    // fix NoScope bug
+                    parser.innerHTML = "<br/>" + html;
+                    parser.removeChild(parser.firstChild);
+
+                    _.forEach(parser.childNodes, this.appendTo, fragment);
 
                     return fragment;
+                },
+                appendTo: function(el) {
+                    this.appendChild(el);
                 }
             };
         })(),
@@ -363,7 +363,7 @@
                 return function() {
                     var e = window.event;
 
-                    if (e.srcUrn === type) {
+                    if (e.customType === type) {
                         handler(e);
                     }
                 };
@@ -371,40 +371,40 @@
 
         // firefox doesn't support focusin/focusout events
         if (supports("onfocusin", "input")) {
-            eventHooks.focus = {
-                name: "focusin"
+            eventHooks.focus = function(entry) {
+                entry._type = "focusin";
             };
 
-            eventHooks.blur = {
-                name: "focusout"
+            eventHooks.blur = function(entry) {
+                entry._type = "focusout";
             };
         } else {
-            eventHooks.focus = {
-                capturing: true
+            eventHooks.focus = function(entry) {
+                entry._capturing = true;
             };
 
-            eventHooks.blur = {
-                capturing: true
+            eventHooks.blur = function(entry) {
+                entry._capturing = true;
             };
         }
 
         if (supports("invalid", "input")) {
-            eventHooks.invalid = {
-                capturing: true
+            eventHooks.invalid = function(entry) {
+                entry._capturing = true;
             };
         }
 
         /**
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
-         * @param  {String}   event    event type
+         * @param  {String}   type    event type
          * @param  {String}   [selector] css selector to filter
          * @param  {Function} callback event handler
          * @return {DOMNode} current context
          */
-        DOMNode.prototype.on = function(event, selector, callback) {
-            var eventType = typeof event, 
-                eventNames, eventEntry, hook;
+        DOMNode.prototype.on = function(type, selector, callback) {
+            var eventType = typeof type, 
+                eventNames, entry, hook;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
@@ -412,33 +412,34 @@
                     selector = null;
                 }
 
-                eventNames = event.split(" ");
+                eventNames = type.split(" ");
 
                 if (eventNames.length > 1) {
-                    _.forEach(eventNames, function(event) {
-                        this.on(event, selector, callback);
+                    _.forEach(eventNames, function(type) {
+                        this.on(type, selector, callback);
                     }, this);
                 } else {
-                    eventEntry = {name: event, callback: callback, capturing: false, handler: createEventHandler(this, callback, selector, event)};
+                    entry = {type: type, callback: callback, _callback: createEventHandler(this, callback, selector, type)};
 
-                    if (hook = eventHooks[event]) _.mixin(eventEntry, hook);
+                    if (hook = eventHooks[type]) hook(entry);
 
                     if (DOM.supports("addEventListener")) {
-                        this._node.addEventListener(eventEntry.name, eventEntry.handler, eventEntry.capturing);
+                        this._node.addEventListener(entry._type || type, entry._callback, !!entry._capturing);
                     } else {
-                        if (~event.indexOf(":")) {
+                        if (~type.indexOf(":")) {
                             // handle custom events for IE8
-                            _.mixin(eventEntry, {name: "dataavailable", handler: createCustomEventHandler(event, eventEntry.handler)});
+                            entry._type = "dataavailable";
+                            entry._callback = createCustomEventHandler(type, entry._callback);
                         }
 
-                        this._node.attachEvent("on" + eventEntry.name, eventEntry.handler);
+                        this._node.attachEvent("on" + (entry._type || type), entry._callback);
                     }
                     
                     // store event entry
-                    this._events.push(eventEntry);
+                    this._events.push(entry);
                 }
             } else if (eventType === "object") {
-                _.forOwn(event, handleObjectParam("on"), this);
+                _.forOwn(type, handleObjectParam("on"), this);
             } else {
                 throw makeError("on");
             }
@@ -449,26 +450,24 @@
         /**
          * Unbind a DOM event from the context
          * @memberOf DOMNode.prototype
-         * @param  {String}   eventType event type
+         * @param  {String}   type event type
          * @param  {Function} [callback]  event handler
          * @return {DOMNode} current context
          */
-        DOMNode.prototype.off = function(eventType, callback) {
-            if (typeof eventType !== "string" || callback !== undefined && typeof callback !== "function") {
+        DOMNode.prototype.off = function(type, callback) {
+            if (typeof type !== "string" || callback !== undefined && typeof callback !== "function") {
                 throw makeError("off");
             }
 
-            var hook = eventHooks[eventType],
+            var hook = eventHooks[type],
                 events = this._events;
 
-            if (hook && hook.name) eventType = hook.name;
-
             _.forEach(events, function(entry, index) {
-                if (entry && eventType === entry.name && (!callback || callback === entry.callback)) {
+                if (entry && type === entry.type && (!callback || callback === entry.callback)) {
                     if (supports("removeEventListener")) {
-                        this._node.removeEventListener(eventType, entry.handler, entry.capturing);
+                        this._node.removeEventListener(entry._type || type, entry._callback, !!entry._capturing);
                     } else {
-                        this._node.detachEvent("on" + eventType, entry.handler);
+                        this._node.detachEvent("on" + (entry._type || type), entry._callback);
                     }
 
                     delete events[index];
@@ -492,35 +491,35 @@
          * domLink.fire("custom:event", {x: 1, y: 2});
          * // trigger a custom:event on the element
          */
-        DOMNode.prototype.fire = function(eventType, detail) {
-            if (typeof eventType !== "string") {
+        DOMNode.prototype.fire = function(type, detail) {
+            if (typeof type !== "string") {
                 throw makeError("fire");
             }
 
-            var isCustomEvent = ~eventType.indexOf(":"),
-                hook = eventHooks[eventType],
-                event;
+            var isCustomEvent = ~type.indexOf(":"),
+                hook = eventHooks[type],
+                event, entry = {};
 
             // Call a native DOM method on the target with the same name as the event
             // IE<9 dies on focus/blur to hidden element
-            if (this._node[eventType] && ((eventType !== "focus" && eventType !== "blur") || this._node.offsetWidth !== 0)) {
+            if (this._node[type] && ((type !== "focus" && type !== "blur") || this._node.offsetWidth !== 0)) {
                 // Prevent re-triggering of the same event
-                veto = eventType;
+                veto = type;
                 
-                this._node[eventType]();
+                this._node[type]();
 
                 veto = false;
             }
 
-            if (hook && hook.name) eventType = hook.name;
+            if (hook) hook(entry);
 
             if (supports("dispatchEvent")) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
-                    event.initCustomEvent(eventType, true, false, detail);
+                    event.initCustomEvent(entry._type || type, true, false, detail);
                 } else { 
-                    event.initEvent(eventType, true, true);
+                    event.initEvent(entry._type || type, true, true);
                 }
                 
                 this._node.dispatchEvent(event);
@@ -529,13 +528,11 @@
 
                 if (isCustomEvent) {
                     // use IE-specific attribute to store custom event name
-                    event.srcUrn = eventType;
-                    eventType = "dataavailable";
+                    event.customType = type;
+                    event.detail = detail;
                 }
 
-                event.detail = detail;
-
-                this._node.fireEvent("on" + eventType, event);
+                this._node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry._type || type), event);
             }
 
             return this;
@@ -690,7 +687,7 @@
             // fix NoScope elements in IE < 10
             propHooks.innerHTML = {
                 set: function(el, value) {
-                    el.innerHTML = "&shy;" + value;
+                    el.innerHTML = "<br/>" + value;
                     el.removeChild(el.firstChild);
                 }
             };
@@ -786,7 +783,6 @@
 
             return this;
         };
-
     })();
 
     // TRAVERSING
@@ -1497,11 +1493,7 @@
         var elem = content;
 
         if (typeof content === "string") {
-            if (content.charAt(0) === "<") {
-                return new DOMElementCollection(sandbox.parse(content));
-            } else {
-                elem = sandbox.create(content);
-            }
+            elem = sandbox.create(content);
         } else if (!(content instanceof Element)) {
             throw makeError("create", "DOM");
         }
