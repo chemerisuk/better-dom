@@ -46,6 +46,10 @@
 <dd>
     
     
+    <div class="description">
+        Prototype for limited/protected elements in better-dom
+    </div>
+    
 
     
     
@@ -250,7 +254,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 307
+        <a href="better-dom.js.html">better-dom.js</a>, line 308
     </li></ul></dd>
     
     
@@ -391,7 +395,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 158
+        <a href="better-dom.js.html">better-dom.js</a>, line 159
     </li></ul></dd>
     
     
@@ -536,7 +540,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 241
+        <a href="better-dom.js.html">better-dom.js</a>, line 242
     </li></ul></dd>
     
     
@@ -714,7 +718,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 492
+        <a href="better-dom.js.html">better-dom.js</a>, line 501
     </li></ul></dd>
     
     
@@ -859,7 +863,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 257
+        <a href="better-dom.js.html">better-dom.js</a>, line 258
     </li></ul></dd>
     
     
@@ -914,7 +918,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(eventType, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="DOMNode.html">DOMNode</a>}</span></h4>
+    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(type, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="DOMNode.html">DOMNode</a>}</span></h4>
     
     
 </dt>
@@ -958,7 +962,7 @@ domLink.getData("test");
 	
         <tr>
             
-                <td class="name"><code>eventType</code></td>
+                <td class="name"><code>type</code></td>
             
             
             <td class="type">
@@ -995,7 +999,7 @@ domLink.getData("test");
             <td class="type">
             
                 
-<span class="param-type">Function</span>
+<span class="param-type"><a href="DOMNode.html#eventCallback">DOMNode#eventCallback</a></span>
 
 
             
@@ -1046,7 +1050,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 456
+        <a href="better-dom.js.html">better-dom.js</a>, line 458
     </li></ul></dd>
     
     
@@ -1092,7 +1096,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(event, <span class="optional">selector</span>, callback)</span><span class="type-signature"> &rarr; {<a href="DOMNode.html">DOMNode</a>}</span></h4>
+    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(type, <span class="optional">selector</span>, callback)</span><span class="type-signature"> &rarr; {<a href="DOMNode.html">DOMNode</a>}</span></h4>
     
     
 </dt>
@@ -1136,7 +1140,7 @@ domLink.getData("test");
 	
         <tr>
             
-                <td class="name"><code>event</code></td>
+                <td class="name"><code>type</code></td>
             
             
             <td class="type">
@@ -1206,7 +1210,7 @@ domLink.getData("test");
             <td class="type">
             
                 
-<span class="param-type">Function</span>
+<span class="param-type"><a href="DOMNode.html#eventCallback">DOMNode#eventCallback</a></span>
 
 
             
@@ -1255,7 +1259,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 405
+        <a href="better-dom.js.html">better-dom.js</a>, line 406
     </li></ul></dd>
     
     
@@ -1416,7 +1420,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 283
+        <a href="better-dom.js.html">better-dom.js</a>, line 284
     </li></ul></dd>
     
     
@@ -1449,6 +1453,123 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     
     
+        <h3 class="subsection-title">Type Definitions</h3>
+        
+        <dl>
+                
+<dt>
+    <h4 class="name" id="eventCallback"><span class="type-signature"></span>eventCallback<span class="signature">(event)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Event handler definition
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type"><a href="DOMEvent.html">DOMEvent</a></span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">instance of event</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 481
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+            </dl>
+    
     
     
 </article>
@@ -1461,13 +1582,13 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Global</h3><ul><li><a href="global.html#create">create</a></li><li><a href="global.html#DOM">DOM</a></li><li><a href="global.html#extend">extend</a></li><li><a href="global.html#importStyles">importStyles</a></li><li><a href="global.html#ready">ready</a></li><li><a href="global.html#supports">supports</a></li><li><a href="global.html#watch">watch</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 09 2013 01:21:29 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Thu May 09 2013 12:01:24 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
