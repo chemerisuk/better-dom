@@ -19,7 +19,7 @@ This will clone the latest version of the better-dom into the `components` direc
 Append the following script on your page:
 
 ```html
-<script src="components/better-dom/better-dom.js" data-htc="components/better-dom/better-dom.htc"></script>
+<script src="components/better-dom/src/better-dom.js" data-htc="components/better-dom/src/better-dom.htc"></script>
 ```
 Goals
 -----

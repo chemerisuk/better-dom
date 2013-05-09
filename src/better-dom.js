@@ -695,8 +695,8 @@
             // fix NoScope elements in IE < 10
             propHooks.innerHTML = {
                 set: function(el, value) {
-                    el.innerHTML = "<br/>" + value;
-                    el.removeChild(el.firstChild);
+                    el.innerHTML = "";
+                    el.appendChild(sandbox.fragment(value));
                 }
             };
 
