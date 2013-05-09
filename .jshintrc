@@ -4,7 +4,18 @@
     "newcap": false,
     "evil": true,
     "quotmark": "double",
-    "globals": { 
-        "Element": true
+    "indent": 4,
+    "eqeqeq": true,
+    "strict": true,
+    "globals": {
+        "DOM": true,
+        "Element": true,
+
+        "beforeEach": true,
+        "describe": true,
+        "it": true,
+        "expect": true,
+        "setFixtures": true,
+        "jasmine": true
     }
 }

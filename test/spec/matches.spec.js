@@ -1,4 +1,6 @@
 describe("matches", function() {
+    "use strict";
+    
     var link;
 
     beforeEach(function() {

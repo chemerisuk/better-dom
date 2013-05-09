@@ -1,4 +1,6 @@
 describe("watch", function() {
+    "use strict";
+    
     var WAIT_FOR_WATCH_TIME = 50,
         callback;
 

@@ -1,4 +1,6 @@
 describe("off", function() {
+    "use strict";
+    
     var input, link, obj = {test: function() {}, test2: function() {}};
 
     beforeEach(function() {

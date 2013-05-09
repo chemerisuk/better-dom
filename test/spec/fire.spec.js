@@ -1,4 +1,6 @@
 describe("fire", function() {
+    "use strict";
+    
     var input, callback;
 
     beforeEach(function() {

@@ -1,4 +1,6 @@
 describe("data", function() {
+    "use strict";
+    
     var input;
 
     beforeEach(function() {

@@ -1,5 +1,6 @@
 describe("create", function() {
-
+    "use strict";
+    
     it("should create single DOM element if parameter is not an HTML string", function() {
         var link = DOM.create("a");
 

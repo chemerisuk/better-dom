@@ -1,4 +1,6 @@
 describe("contains", function() {
+    "use strict";
+    
     var testEl;
 
     beforeEach(function() {

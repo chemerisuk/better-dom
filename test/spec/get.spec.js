@@ -1,4 +1,6 @@
 describe("get", function() {
+    "use strict";
+    
     var link;
 
     beforeEach(function() {

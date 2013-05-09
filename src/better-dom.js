@@ -74,15 +74,15 @@
                     };
 
                     createFrag = Function("f", "return function(){" +
-                      "var n=f.cloneNode(),c=n.createElement;" +
-                      "(" +
-                        // unroll the `createElement` calls
-                        elements.split(" ").join().replace(/\w+/g, function(nodeName) {
-                          create(nodeName);
-                          frag.createElement(nodeName);
-                          return "c('" + nodeName + "')";
-                        }) +
-                      ");return n}"
+                        "var n=f.cloneNode(),c=n.createElement;" +
+                        "(" +
+                            // unroll the `createElement` calls
+                            elements.split(" ").join().replace(/\w+/g, function(nodeName) {
+                                create(nodeName);
+                                frag.createElement(nodeName);
+                                return "c('" + nodeName + "')";
+                            }) +
+                        ");return n}"
                     )(frag);
                 })();
             }
@@ -638,28 +638,28 @@
             result = _.reduce(el.elements, function(parts, field) {
                 if (field.name) { // don't include form fields without names
                     switch(field.type) {
-                        case "select-one":
-                        case "select-multiple":
-                            _.forEach(field.options, function(option) {
-                                if (option.selected) {
-                                    parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
-                                }
-                            });
-                            break; 
-        
-                        case undefined: // fieldset
-                        case "file": // file input
-                        case "submit": // submit button
-                        case "reset": // reset button
-                        case "button": // custom button
-                            break; 
-        
-                        case "radio": // radio button
-                        case "checkbox": // checkbox
-                            if (!field.checked) break;
-                            /* falls through */
-                        default:
-                            parts.push(makePair(field.name, field.value));
+                    case "select-one":
+                    case "select-multiple":
+                        _.forEach(field.options, function(option) {
+                            if (option.selected) {
+                                parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
+                            }
+                        });
+                        break; 
+    
+                    case undefined: // fieldset
+                    case "file": // file input
+                    case "submit": // submit button
+                    case "reset": // reset button
+                    case "button": // custom button
+                        break; 
+    
+                    case "radio": // radio button
+                    case "checkbox": // checkbox
+                        if (!field.checked) break;
+                        /* falls through */
+                    default:
+                        parts.push(makePair(field.name, field.value));
                     }
 
                     return parts;
@@ -1533,7 +1533,7 @@
             },
             pageLoaded = function() {
                 if (scrollIntervalId) {
-                   clearInterval(scrollIntervalId);
+                    clearInterval(scrollIntervalId);
                 }
 
                 if (readyCallbacks) {
@@ -1793,100 +1793,104 @@
     
     window.DOM = DOM;
 
-})(window, document, {
-    
-    // UTILITES
-    // --------
-    
-    slice: function(list, index) {
-        return Array.prototype.slice.call(list, index || 0);
-    },
-    keys: Object.keys || function(obj) {
-        var objType = typeof obj,
-            result = [], 
-            prop;
+})(window, document, (function(undefined) {
+    "use strict";
 
-        if (objType !== "object" && objType !== "function" || obj === null) {
-            throw new TypeError("Object.keys called on non-object");
-        }
- 
-        for (prop in obj) {
-            if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
-        }
+    return {
+        
+        // UTILITES
+        // --------
+        
+        slice: function(list, index) {
+            return Array.prototype.slice.call(list, index || 0);
+        },
+        keys: Object.keys || function(obj) {
+            var objType = typeof obj,
+                result = [], 
+                prop;
 
-        return result;
-    },
-    forOwn: function(obj, callback, thisPtr) {
-        for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
-            callback.call(thisPtr, list[i], i, obj);
-        }
-    },
-    forEach: function(list, callback, thisPtr) {
-        for (var i = 0, n = list.length; i < n; ++i) {
-            callback.call(thisPtr, list[i], i, list);
-        }
-    },
-    filter: function(list, testFn, thisPtr) {
-        var result = [];
-
-        this.forEach(list, function(el, index) {
-            if (testFn.call(thisPtr, el, index, list)) result.push(el);
-        });
-
-        return result;
-    },
-    every: function(list, testFn, thisPtr) {
-        var result = true;
-
-        this.forEach(list, function(el) {
-            result = result && testFn.call(thisPtr, el, list);
-        });
-
-        return result;
-    },
-    reduce: function(list, callback, result) {
-        this.forEach(list, function(el, index) {
-            if (!index && result === undefined) {
-                result = el;
-            } else {
-                result = callback(result, el, index, list);
+            if (objType !== "object" && objType !== "function" || obj === null) {
+                throw new TypeError("Object.keys called on non-object");
             }
-        });
+     
+            for (prop in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
+            }
 
-        return result;
-    },
-    map: function(list, callback, thisPtr) {
-        var result = [];
+            return result;
+        },
+        forOwn: function(obj, callback, thisPtr) {
+            for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
+                callback.call(thisPtr, list[i], i, obj);
+            }
+        },
+        forEach: function(list, callback, thisPtr) {
+            for (var i = 0, n = list.length; i < n; ++i) {
+                callback.call(thisPtr, list[i], i, list);
+            }
+        },
+        filter: function(list, testFn, thisPtr) {
+            var result = [];
 
-        this.forEach(list, function(el, index) {
-            result.push(callback.call(thisPtr, el, index, list));
-        });
+            this.forEach(list, function(el, index) {
+                if (testFn.call(thisPtr, el, index, list)) result.push(el);
+            });
 
-        return result;
-    },
-    mixin: function(obj, name, value) {
-        if (arguments.length === 3) {
-            obj[name] = value;
-        } else if (name) {
-            this.forOwn(name, function(key) {
-                this.mixin(obj, key, name[key]);
-            }, this);
-        }
+            return result;
+        },
+        every: function(list, testFn, thisPtr) {
+            var result = true;
 
-        return obj; 
-    },
-    trim: (function() {
-        if (String.prototype.trim) {
-            return function(str) {
-                return str.trim();
-            };
-        } else {
-            var rwsleft = /^\s\s*/,
-                rwsright = /\s\s*$/;
+            this.forEach(list, function(el) {
+                result = result && testFn.call(thisPtr, el, list);
+            });
 
-            return function(str) {
-                return str.replace(rwsleft, "").replace(rwsright, "");
-            };
-        }
-    })()
-});
+            return result;
+        },
+        reduce: function(list, callback, result) {
+            this.forEach(list, function(el, index) {
+                if (!index && result === undefined) {
+                    result = el;
+                } else {
+                    result = callback(result, el, index, list);
+                }
+            });
+
+            return result;
+        },
+        map: function(list, callback, thisPtr) {
+            var result = [];
+
+            this.forEach(list, function(el, index) {
+                result.push(callback.call(thisPtr, el, index, list));
+            });
+
+            return result;
+        },
+        mixin: function(obj, name, value) {
+            if (arguments.length === 3) {
+                obj[name] = value;
+            } else if (name) {
+                this.forOwn(name, function(key) {
+                    this.mixin(obj, key, name[key]);
+                }, this);
+            }
+
+            return obj; 
+        },
+        trim: (function() {
+            if (String.prototype.trim) {
+                return function(str) {
+                    return str.trim();
+                };
+            } else {
+                var rwsleft = /^\s\s*/,
+                    rwsright = /\s\s*$/;
+
+                return function(str) {
+                    return str.replace(rwsleft, "").replace(rwsright, "");
+                };
+            }
+        })()
+    }; 
+})());

@@ -1,4 +1,6 @@
 describe("event", function() {
+    "use strict";
+    
     var link, input, spy;
 
     beforeEach(function() {

@@ -1,4 +1,6 @@
 describe("style", function() {
+    "use strict";
+    
     var link;
 
     beforeEach(function() {

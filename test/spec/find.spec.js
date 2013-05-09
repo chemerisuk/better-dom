@@ -1,5 +1,6 @@
 describe("find", function() {
-
+    "use strict";
+    
     it("should find an element by id", function() {
         setFixtures("<a id='test'>test</a>");
 

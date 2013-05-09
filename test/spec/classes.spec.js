@@ -1,4 +1,6 @@
 describe("classes manipulation", function() {
+    "use strict";
+
     var link;
 
     beforeEach(function() {

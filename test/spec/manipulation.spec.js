@@ -1,6 +1,14 @@
 describe("manipulation", function() {
+    "use strict";
 
     describe("remove", function() {
+        var div;
+        
+        beforeEach(function() {
+            setFixtures("<div id='test'><a></a></div>");
+
+            div = DOM.find("#test");
+        });
 
         it("should remove element from DOM", function() {
             setFixtures("<div id='test'></div>");

@@ -1,4 +1,6 @@
 describe("on", function() {
+    "use strict";
+    
     var link, input, obj = {test: function() { }, test2: function() {}}, spy;
 
     beforeEach(function() {
