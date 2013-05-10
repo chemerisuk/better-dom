@@ -1298,6 +1298,11 @@
             this._event.cancelBubble = true;
         });
 
+        /**
+         * Check if default event handler is prevented
+         * @memberOf DOMEvent.prototype
+         * @return {Boolean} true, if default event handler is prevented
+         */
         DOMEvent.prototype.isDefaultPrevented = function() {
             return this._event.defaultPrevented || !this._event.returnValue;
         };
