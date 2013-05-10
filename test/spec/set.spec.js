@@ -1,12 +1,13 @@
 describe("set", function() {
     "use strict";
     
-    var link;
+    var link, input;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#'>set-test</a>");
+        setFixtures("<a id='test' href='#'>set-test</a><input id='set_input'/>");
 
         link = DOM.find("#test");
+        input = DOM.find("#set_input");
     });
 
     it("should return reference to 'this'", function() {
@@ -69,12 +70,14 @@ describe("set", function() {
         }
     });
 
-    it("should use 'innerHTML' if name argument is undefined", function() {
+    it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
         var value = "set-test-changed";
 
         link.set(value);
+        input.set(value);
 
         expect(link._node.innerHTML).toBe(value);
+        expect(input._node.value).toBe(value);
     });
 
     it("should throw error if argument is invalid", function() {

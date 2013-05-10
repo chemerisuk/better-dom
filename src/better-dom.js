@@ -751,14 +751,14 @@
          * @return {String} property/attribute value
          */
         DOMElement.prototype.get = function(name) {
+            var el = this._node,
+                hook = propHooks[name];
+
             if (name === undefined) {
-                name = "innerHTML";
+                name = el.type && "value" in el ? "value" : "innerHTML";
             } else if (typeof name !== "string") {
                 throw makeError("get");
             }
-
-            var el = this._node,
-                hook = propHooks[name];
 
             if (hook) hook = hook.get;
 
@@ -783,7 +783,7 @@
                 if (value === undefined) {
                     valueType = nameType;
                     value = name;
-                    name = "innerHTML";
+                    name = el.type && "value" in el ? "value" : "innerHTML";
                     nameType = "string";
                 }
 
