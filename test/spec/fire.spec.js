@@ -60,7 +60,7 @@ describe("fire", function() {
     });
 
     it("should throw error if arguments are invalid", function() {
-        expect(function() { link.fire(1); }).toThrow();
+        expect(function() { input.fire(1); }).toThrow();
     });
 
 });

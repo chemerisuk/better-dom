@@ -11,11 +11,12 @@ describe("get", function() {
     });
 
     it("should read an attribute value", function() {
-        expect(link.get("id")).toEqual("test");
+        expect(link.get("id")).toBe("test");
     });
 
     it("should try to read property value first", function() {
-        expect(link.get("href")).not.toEqual("test.html");
+        expect(link.get("href")).not.toBe("test.html");
+        expect(input.get("tabIndex")).toBe(0);
     });
 
     it("should not allow to access to legacy objects", function() {

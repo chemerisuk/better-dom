@@ -762,7 +762,7 @@
 
             if (hook) hook = hook.get;
 
-            return hook ? hook(el) : el[name] || el.getAttribute(name);
+            return hook ? hook(el) : name in el ? el[name] : el.getAttribute(name);
         };
 
         /**
@@ -1757,27 +1757,27 @@
      * Extend DOM with custom widget
      * @memberOf DOM
      * @param  {String} selector widget css selector
-     * @param  {Object} mixins  widget mixins
      * @param  {Object} [template] widget template
+     * @param  {Object} mixins widget mixins
      */
-    DOM.extend = function(selector, options) {
-        if (!options || typeof options !== "object") {
-            throw makeError("extend", "DOM");
+    DOM.extend = function(selector, template, mixins) {
+        if (mixins === undefined) {
+            mixins = template;
+            template = undefined;
         }
 
-        var ctor = options.hasOwnProperty("constructor") && options.constructor,
-            template = options.template;
+        if (!mixins || typeof mixins !== "object") {
+            throw makeError("extend", "DOM");
+        }
 
         if (template) {
             _.forOwn(template, function(key) {
                 template[key] = sandbox.fragment(template[key]);
             });
-
-            delete options.template;
         }
 
         DOM.watch(selector, function(el) {
-            _.mixin(el, options);
+            _.mixin(el, mixins);
 
             el.constructor = DOMElement;
 
@@ -1787,7 +1787,7 @@
                 });
             }
 
-            if (ctor) ctor.call(el);
+            if (mixins.hasOwnProperty("constructor")) mixins.constructor.call(el);
         });
     };
 

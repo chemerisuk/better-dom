@@ -22,7 +22,7 @@ describe("extend", function() {
         });
     });
 
-    it("should append template", function() {
+    it("should append optional template", function() {
         var template = {},
             checkStrategies = {
                 prepend: "firstChild",
@@ -35,7 +35,7 @@ describe("extend", function() {
             template[key] = "<i class='" + key + "'></i>";
         }
 
-        DOM.extend(".extend", {template: template});
+        DOM.extend(".extend", template, {});
 
         waits(WAIT_FOR_WATCH_TIME);
 

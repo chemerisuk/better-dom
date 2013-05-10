@@ -26,7 +26,7 @@ describe("data", function() {
     });
 
     it("should throw error if arguments a invalid", function() {
-        expect(function() { link.getData(123); }).toThrow();
+        expect(function() { input.getData(123); }).toThrow();
     });
 
 });
