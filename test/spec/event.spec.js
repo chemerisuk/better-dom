@@ -12,12 +12,13 @@ describe("event", function() {
         spy = jasmine.createSpy("callback");
     });
 
-    it("should have get/preventDefault/stopPropagation methods", function() {
+    it("should have get/preventDefault/stopPropagation/isDefaultPrevented methods", function() {
         spy.andCallFake(function(e) {
             expect(e).toBeDefined();
             expect(typeof e.get).toBe("function");
             expect(typeof e.preventDefault).toBe("function");
             expect(typeof e.stopPropagation).toBe("function");
+            expect(typeof e.isDefaultPrevented).toBe("function");
         });
 
         link.on("focus", spy).fire("focus");
@@ -57,6 +58,20 @@ describe("event", function() {
 
         expect(spy).toHaveBeenCalled();
         expect(otherSpy).not.toHaveBeenCalled();
+    });
+
+    it("should return true for isDefaultPrevented if preventDefault was called", function() {
+        spy.andCallFake(function(e) {
+            expect(e.isDefaultPrevented()).toBe(false);
+
+            e.preventDefault();
+
+            expect(e.isDefaultPrevented()).toBe(true);
+        });
+
+        link.on("click", spy).fire("click");
+
+        expect(spy).toHaveBeenCalled();
     });
 
 });

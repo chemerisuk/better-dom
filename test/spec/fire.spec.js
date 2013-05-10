@@ -29,6 +29,12 @@ describe("fire", function() {
         expect(callback).toHaveBeenCalled();
     });
 
+    it("should trigget native methods if they exist", function() {
+        input.fire("focus");
+
+        expect(input._node).toBe(document.activeElement);
+    });
+
     it("should trigger custom events", function() {
         input.on("my:click", callback).fire("my:click");
 

@@ -533,7 +533,7 @@
 
                 node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry._type || type), event);
 
-                isDefaultPrevented = !event.returnValue;
+                isDefaultPrevented = event.returnValue === false;
             }
 
             // Call a native DOM method on the target with the same name as the event
@@ -1304,7 +1304,7 @@
          * @return {Boolean} true, if default event handler is prevented
          */
         DOMEvent.prototype.isDefaultPrevented = function() {
-            return this._event.defaultPrevented || !this._event.returnValue;
+            return this._event.defaultPrevented || this._event.returnValue === false;
         };
 
         if (supports("addEventListener")) {

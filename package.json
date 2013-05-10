@@ -1,7 +1,7 @@
 {
     "name": "better-dom",
-    "title": "Better DOM",
-    "version": "0.8.1",
+    "title": "better-dom",
+    "version": "0.8.3",
     "author": "Maksim Chemerisuk",
     "description": "Modern javascript library for working with DOM",
     "license": "MIT",

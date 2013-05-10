@@ -45,7 +45,7 @@ Now it's pretty simple to write your own polyfill:
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     template: {
-        before: '<input type="text" style="box-sizing: border-box; position: absolute; color: graytext; background: transparent; border-color: transparent"/>'
+        before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: transparent; border-color: transparent'/>"
     },
     constructor: function() {
         var input = this,
@@ -55,7 +55,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
         placeholder
             .set(input.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
-            .on("focus", function() {
+            .on("focus", function(e) {
                 input.fire("focus");
             });
 
@@ -68,7 +68,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
             }
         });
 
-        if (input.get()) placeholder.hide();
+        if (input.get() || input.isFocused()) placeholder.hide();
     }
 });
 ```
