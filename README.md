@@ -1,4 +1,4 @@
-better-dom
+better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 ==========
 Modern javascript library for working with DOM. 
 
@@ -16,18 +16,11 @@ Installation
 
 This will clone the latest version of the better-dom into the `components` directory at the root of your project.
 
-Append the following script on your page:
+Then append the following script on your page:
 
 ```html
 <script src="components/better-dom/src/better-dom.js" data-htc="components/better-dom/src/better-dom.htc"></script>
 ```
-Goals
------
-* ajax-friendly
-* performance
-* compatability
-* clear and safe APIs
-* the smallest size
 
 Ajax-friendly
 -------------
@@ -40,6 +33,10 @@ DOM is usually the main bottleneck of javascript applications. Therefore perform
 Compatability
 -------------
 The library intoduces it's own objects for describing access to DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
+
+Clear and safe APIs
+-------------------
+TODO
 
 Code example: placeholder polyfill
 ----------------------------------
@@ -56,7 +53,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
             placeholder = input.prev();
 
         placeholder
-            .set("value", input.get("placeholder"))
+            .set(input.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
             .on("focus", function() {
                 input.fire("focus");
@@ -67,11 +64,11 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
                 placeholder.hide();
             },
             blur: function() {
-                if (!input.get("value")) placeholder.show();
+                if (!input.get()) placeholder.show();
             }
         });
 
-        if (input.get("value")) placeholder.hide();
+        if (input.get()) placeholder.hide();
     }
 });
 ```
