@@ -503,20 +503,10 @@
                 throw makeError("fire");
             }
 
-            var isCustomEvent = ~type.indexOf(":"),
+            var node = this._node,
+                isCustomEvent = ~type.indexOf(":"),
                 hook = eventHooks[type],
-                event, entry = {};
-
-            // Call a native DOM method on the target with the same name as the event
-            // IE<9 dies on focus/blur to hidden element
-            if (this._node[type] && ((type !== "focus" && type !== "blur") || this._node.offsetWidth !== 0)) {
-                // Prevent re-triggering of the same event
-                veto = type;
-                
-                this._node[type]();
-
-                veto = false;
-            }
+                event, isDefaultPrevented, entry = {};
 
             if (hook) hook(entry);
 
@@ -529,7 +519,9 @@
                     event.initEvent(entry._type || type, true, true);
                 }
                 
-                this._node.dispatchEvent(event);
+                node.dispatchEvent(event);
+
+                isDefaultPrevented = event.defaultPrevented;
             } else {
                 event = document.createEventObject();
 
@@ -539,7 +531,20 @@
                     event.detail = detail;
                 }
 
-                this._node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry._type || type), event);
+                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry._type || type), event);
+
+                isDefaultPrevented = !event.returnValue;
+            }
+
+            // Call a native DOM method on the target with the same name as the event
+            // IE<9 dies on focus/blur to hidden element
+            if (!isDefaultPrevented && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+                // Prevent re-triggering of the same event
+                veto = type;
+                
+                node[type]();
+
+                veto = false;
             }
 
             return this;
@@ -626,6 +631,15 @@
      */
     DOMElement.prototype.hide = function() {
         return this.set("hidden", true);
+    };
+
+    /**
+     * Determine if element has focus
+     * @memberOf DOMElement.prototype
+     * @return {Boolean} true if current element is focused
+     */
+    DOMElement.prototype.isFocused = function() {
+        return this._node === document.activeElement;
     };
         
     DOMElement.prototype.serialize = function() {
@@ -1283,6 +1297,10 @@
         DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", function() {
             this._event.cancelBubble = true;
         });
+
+        DOMEvent.prototype.isDefaultPrevented = function() {
+            return this._event.defaultPrevented || !this._event.returnValue;
+        };
 
         if (supports("addEventListener")) {
             // in ie we will set these properties in constructor
