@@ -556,6 +556,7 @@
 
     /**
      * Check is element is hidden
+     * @memberOf DOMElement.prototype
      * @return {Boolean} true if element is hidden
      */
     DOMElement.prototype.isHidden = function() {
@@ -563,7 +564,7 @@
     };
 
     /**
-     * Determine if element has focus
+     * Check if element has focus
      * @memberOf DOMElement.prototype
      * @return {Boolean} true if current element is focused
      */
@@ -1758,9 +1759,9 @@
     };
 
     /**
-     * Return an element mock for optional selector
+     * Return an {@link DOMElement} mock specified for optional selector
      * @memberOf DOM
-     * @param  {String} selector element's selector
+     * @param  {String} [selector] selector of mock
      * @return {DOMElement} mock instance
      */
     DOM.mock = function(selector) {
