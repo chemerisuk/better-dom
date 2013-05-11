@@ -1445,9 +1445,9 @@
     var DOM = new DOMNode(document);
 
     /**
-     * Create DOMElement or DOMElementCollection
+     * Create DOMElement instance
      * @memberOf DOM
-     * @param  {String|Element} content native element
+     * @param  {String|Element} content native element or string
      * @return {DOMElemen} element
      */
     DOM.create = function(content) {
@@ -1602,7 +1602,7 @@
     })();
 
     /**
-     * Watches when element with a spefified selector will be inserted on page
+     * Executes callback function when element with a spefified selector is inserted on page
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
@@ -1678,9 +1678,9 @@
      * Extend DOM with custom widget. Templates support limited edition of emmet-like 
      * syntax - see html section in http://docs.emmet.io/cheat-sheet/
      * @memberOf DOM
-     * @param  {String} selector widget css selector
-     * @param  {{after: String, before: String, append: String, prepend: String}} [template] widget template
-     * @param  {Object} mixins widget mixins
+     * @param  {String} selector extension css selector
+     * @param  {{after: String, before: String, append: String, prepend: String}} [template] extension templates
+     * @param  {Object} mixins extension mixins
      * @example
      * // simple example
      * DOM.extend(".myplugin", {

@@ -24,7 +24,7 @@ Then append the following script on your page:
 
 Ajax-friendly
 -------------
-The idea is to write plugins in declarative way. `DOM.extend` is used to implement a new extension which starts to work for all current and for any future content. As result it's much simpler to write [polyfills](#code-example-placeholder-polyfill) or to create your own web components.
+The idea is to write plugins in declarative way. `DOM.extend` is used to implement a new extension which starts to work for all current and for any future content. As result it's much simpler to write [polyfills](#quick-example-placeholder-polyfill) or to create your own web components.
 
 Performance
 -----------
@@ -38,7 +38,7 @@ Clear and safe APIs
 -------------------
 TODO
 
-Code example: placeholder polyfill
+Quick example: placeholder polyfill
 ----------------------------------
 Now it's pretty simple to write your own polyfill:
 
