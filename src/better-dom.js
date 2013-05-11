@@ -1675,11 +1675,36 @@
     })();
 
     /**
-     * Extend DOM with custom widget
+     * Extend DOM with custom widget. Templates support limited edition of emmet-like 
+     * syntax - see html section in http://docs.emmet.io/cheat-sheet/
      * @memberOf DOM
      * @param  {String} selector widget css selector
-     * @param  {Object} [template] widget template
+     * @param  {{after: String, before: String, append: String, prepend: String}} [template] widget template
      * @param  {Object} mixins widget mixins
+     * @example
+     * // simple example
+     * DOM.extend(".myplugin", {
+     *     append: "&#60;span&#62;myplugin text&#60;/span&#62;"
+     * }, {
+     *     constructor: function() {
+     *         // initialize extension
+     *     }
+     * });
+     *
+     * // emmet-like syntax example
+     * DOM.extend(".mycalendar", {
+     *     after: "table>(tr>th*7)+(tr>td*7)*6"
+     * }, {
+     *     constructor: function() {
+     *         // initialize extension
+     *     },
+     *     method1: function() {
+     *         // this method will be mixed into every instance
+     *     },
+     *     method2: function() {
+     *         // this method will be mixed into evety instance
+     *     }
+     * });
      */
     DOM.extend = function(selector, template, mixins) {
         if (mixins === undefined) {
@@ -1948,6 +1973,9 @@
             return fragment;
         },
         parseTemplate: function(expr) {
+            // use emmet-like syntax to describe html templates:
+            // http://docs.emmet.io/cheat-sheet/
+
             var stack = [],
                 output = [],
                 term = "", 
