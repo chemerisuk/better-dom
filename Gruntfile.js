@@ -60,7 +60,7 @@ module.exports = function(grunt) {
                     "git add -A",
 
                     // commit all files using the version number as the commit message
-                    "git commit -am 'Build: <%= grunt.file.read(\".build\") %> Branch: master Version: <%= pkg.version %>'",
+                    "git commit -am 'Build: <%= grunt.file.read(\".build\") %>'",
 
                     // switch back to the previous branch we started from
                     "git checkout -"
@@ -143,10 +143,6 @@ module.exports = function(grunt) {
             command: "git commit -am 'Version " + version + "'"
         });
 
-        grunt.config.set("shell.pushNewVersion", {
-            command: "git push origin " + version + " && git push origin master"
-        });
-
         grunt.registerTask("updateFileVersion", function(filename) {
             var json = grunt.file.readJSON(filename);
 
@@ -172,8 +168,7 @@ module.exports = function(grunt) {
             "shell:checkoutDocs",
             "bumpDocsBuild",
             "shell:updateDocs",
-            "shell:updateVersionTag",
-            "shell:pushNewVersion"
+            "shell:updateVersionTag"
         ]);
     });
 };
