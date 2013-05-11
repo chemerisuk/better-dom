@@ -64,7 +64,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1520
+        <a href="better-dom.js.html">better-dom.js</a>, line 1441
     </li></ul></dd>
     
     
@@ -190,7 +190,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1532
+        <a href="better-dom.js.html">better-dom.js</a>, line 1453
     </li></ul></dd>
     
     
@@ -236,7 +236,7 @@
         
             
 <dt>
-    <h4 class="name" id="extend"><span class="type-signature">&lt;static> </span>extend<span class="signature">(selector, mixins, <span class="optional">template</span>)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="extend"><span class="type-signature">&lt;static> </span>extend<span class="signature">(selector, <span class="optional">template</span>, mixins)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -244,7 +244,8 @@
     
     
     <div class="description">
-        Extend DOM with custom widget
+        Extend DOM with custom widget. Templates support limited edition of emmet-like 
+syntax - see html section in http://docs.emmet.io/cheat-sheet/
     </div>
     
 
@@ -311,37 +312,6 @@
 	
         <tr>
             
-                <td class="name"><code>mixins</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">widget mixins</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
                 <td class="name"><code>template</code></td>
             
             
@@ -372,6 +342,37 @@
         </tr>
 	
 	
+	
+        <tr>
+            
+                <td class="name"><code>mixins</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">widget mixins</td>
+        </tr>
+	
+	
 	</tbody>
 </table>
     
@@ -399,7 +400,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1763
+        <a href="better-dom.js.html">better-dom.js</a>, line 1709
     </li></ul></dd>
     
     
@@ -417,6 +418,33 @@
     
     
     
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>// simple example
+DOM.extend(".myplugin", {
+    append: "&#60;span&#62;myplugin text&#60;/span&#62;"
+}, {
+    constructor: function() {
+        // initialize extension
+    }
+});
+
+// emmet-like syntax example
+DOM.extend(".mycalendar", {
+    after: "table>(tr>th*7)+(tr>td*7)*6"
+}, {
+    constructor: function() {
+        // initialize extension
+    },
+    method1: function() {
+        // this method will be mixed into every instance
+    },
+    method2: function() {
+        // this method will be mixed into evety instance
+    }
+});</code></pre>
+
     
 </dd>
 
@@ -538,7 +566,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1629
+        <a href="better-dom.js.html">better-dom.js</a>, line 1550
     </li></ul></dd>
     
     
@@ -651,7 +679,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1550
+        <a href="better-dom.js.html">better-dom.js</a>, line 1471
     </li></ul></dd>
     
     
@@ -807,7 +835,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1808
+        <a href="better-dom.js.html">better-dom.js</a>, line 1762
     </li></ul></dd>
     
     
@@ -953,7 +981,7 @@ DOM.supports("oninvalid", "input");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1690
+        <a href="better-dom.js.html">better-dom.js</a>, line 1611
     </li></ul></dd>
     
     
@@ -996,7 +1024,7 @@ DOM.supports("oninvalid", "input");
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Fri May 10 2013 17:11:15 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 11 2013 13:12:11 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
