@@ -20,6 +20,9 @@
         "jasmine": true,
         "waits": true,
         "runs": true,
-        "spyOn": true
+        "spyOn": true,
+
+        "module": true,
+        "require": true
     }
 }
