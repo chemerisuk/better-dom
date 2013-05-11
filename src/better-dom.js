@@ -1750,10 +1750,10 @@
 
             _.mixin(el, mixins);
 
-            if (el.hasOwnProperty("constructor")) {
-                el.constructor();
+            if (mixins.hasOwnProperty("constructor")) {
+                el.constructor = DOMElement;
 
-                delete el.constructor;
+                mixins.constructor.call(el);
             }
         });
     };
@@ -1765,15 +1765,17 @@
      * @return {DOMElement} mock instance
      */
     DOM.mock = function(selector) {
-        var el = DOMElement();
+        var el = DOMElement(), mixins;
 
         if (selector) {
-            _.mixin(el, extensions[selector]);
+            mixins = extensions[selector];
 
-            if (el.hasOwnProperty("constructor")) {
-                el.constructor();
+            _.mixin(el, mixins);
 
-                delete el.constructor;
+            if (mixins.hasOwnProperty("constructor")) {
+                el.constructor = DOMNullElement;
+
+                mixins.constructor.call(el);
             }
         }
 
