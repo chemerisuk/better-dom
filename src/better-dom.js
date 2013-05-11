@@ -1139,12 +1139,12 @@
     DOMNullElement.prototype = new DOMElement();
 
     _.forOwn(DOMNode.prototype, function(key) {
-        _.mixin(DOMNullNode.prototype, key, function() {});
-        _.mixin(DOMNullElement.prototype, key, function() {});
+        _.mixin(DOMNullNode.prototype, key, function() { return this; });
+        _.mixin(DOMNullElement.prototype, key, function() { return this; });
     });
 
     _.forOwn(DOMElement.prototype, function(key) {
-        _.mixin(DOMNullElement.prototype, key, function() {});
+        _.mixin(DOMNullElement.prototype, key, function() { return this; });
     });
 
     // DOMEvent
@@ -1442,7 +1442,7 @@
      * Global object to access DOM. Contains all methods of the {@link DOMNode}
      * @namespace DOM
      */
-    var DOM = new DOMNode(document);
+    var DOM = new DOMNode(document), extensions = {};
 
     /**
      * Create DOMElement instance
@@ -1730,20 +1730,40 @@
             });
         }
 
+        extensions[selector] = mixins;
+
         DOM.watch(selector, function(el) {
-            _.mixin(el, mixins);
-
-            el.constructor = DOMElement;
-
             if (template) {
                 _.forOwn(template, function(key) {
                     el[key](template[key].cloneNode(true));
                 });
             }
 
-            if (mixins.hasOwnProperty("constructor")) mixins.constructor.call(el);
+            _.mixin(el, mixins);
+
+            if (el.hasOwnProperty("constructor")) {
+                el.constructor();
+
+                delete el.constructor;
+            }
         });
     };
+
+    DOM.mock = function(selector) {
+        var el = DOMElement();
+
+        if (selector) {
+            _.mixin(el, extensions[selector]);
+
+            if (el.hasOwnProperty("constructor")) {
+                el.constructor();
+
+                delete el.constructor;
+            }
+        }
+
+        return el;
+    } 
 
     /**
      * Check DOM capability
