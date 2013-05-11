@@ -555,6 +555,14 @@
     };
 
     /**
+     * Check is element is hidden
+     * @return {Boolean} true if element is hidden
+     */
+    DOMElement.prototype.isHidden = function() {
+        return !!this.get("hidden");
+    };
+
+    /**
      * Determine if element has focus
      * @memberOf DOMElement.prototype
      * @return {Boolean} true if current element is focused
@@ -1749,6 +1757,12 @@
         });
     };
 
+    /**
+     * Return an element mock for optional selector
+     * @memberOf DOM
+     * @param  {String} selector element's selector
+     * @return {DOMElement} mock instance
+     */
     DOM.mock = function(selector) {
         var el = DOMElement();
 
@@ -1763,7 +1777,7 @@
         }
 
         return el;
-    } 
+    };
 
     /**
      * Check DOM capability
