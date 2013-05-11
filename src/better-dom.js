@@ -26,219 +26,6 @@
                 
             return isSupported;
         },
-        sandbox = (function() {
-            var parser = document.createElement("body"),
-                operators = {
-                    "+": 1,
-                    ".": 4,
-                    "#": 3,
-                    ">": 1,
-                    "[": 6,
-                    "]": 5,
-                    "*": 2,
-                    "(": 0,
-                    ")": 0
-                },
-                createElem, createFrag;
-
-            if (supports("addEventListener")) {
-                createElem = function(tagName) {
-                    return document.createElement(tagName);
-                };
-                createFrag = function() {
-                    return document.createDocumentFragment();
-                };
-            } else {
-                // Add html5 elements support via:
-                // https://github.com/aFarkas/html5shiv
-                (function(){
-                    var elements = "abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",
-                        // Used to skip problem elements
-                        reSkip = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,
-                        // Not all elements can be cloned in IE
-                        saveClones = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,
-                        create = document.createElement,
-                        frag = document.createDocumentFragment(),
-                        cache = {};
-
-                    frag.appendChild(parser);
-
-                    createElem = function(nodeName) {
-                        var node;
-
-                        if (cache[nodeName]) {
-                            node = cache[nodeName].cloneNode();
-                        } else if (saveClones.test(nodeName)) {
-                            node = (cache[nodeName] = create(nodeName)).cloneNode();
-                        } else {
-                            node = create(nodeName);
-                        }
-
-                        // Avoid adding some elements to fragments in IE < 9 because
-                        // * Attributes like `name` or `type` cannot be set/changed once an element
-                        //   is inserted into a document/fragment
-                        // * Link elements with `src` attributes that are inaccessible, as with
-                        //   a 403 response, will cause the tab/window to crash
-                        // * Script elements appended to fragments will execute when their `src`
-                        //   or `text` property is set
-                        return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
-                    };
-
-                    createFrag = Function("f", "return function(){" +
-                        "var n=f.cloneNode(),c=n.createElement;" +
-                        "(" +
-                            // unroll the `createElement` calls
-                            elements.split(" ").join().replace(/\w+/g, function(nodeName) {
-                                create(nodeName);
-                                frag.createElement(nodeName);
-                                return "c('" + nodeName + "')";
-                            }) +
-                        ");return n}"
-                    )(frag);
-                })();
-            }
-
-            return {
-                create: createElem,
-                fragment: function(html) {
-                    var fragment = createFrag();
-
-                    // fix NoScope bug
-                    parser.innerHTML = "<br/>" + html;
-                    parser.removeChild(parser.firstChild);
-
-                    _.forEach(parser.childNodes, this.appendTo, fragment);
-
-                    return fragment;
-                },
-                appendTo: function(el) {
-                    this.appendChild(el);
-                },
-                template: function(expr) {
-                    var stack = [],
-                        output = [],
-                        term = "", 
-                        result = createFrag(),
-                        rindex = /\$/g,
-                        modifyAttr = function(attr) {
-                            if (attr.specified) {
-                                // changing attribute name doesn't work in IE
-                                // attr.name = attr.name.replace(rindex, this);
-                                if (attr.value) attr.value = attr.value.replace(rindex, this);
-                            }
-                        };
-
-                    // parse exrpression
-                    _.forEach(expr, function(str) {
-                        if (str in operators && (stack[0] !== "[" || str === "]")) {
-                            if (term) {
-                                output.push(term);
-                                term = "";
-                            }
-
-                            if (str === "(") {
-                                stack.unshift(str);
-                            } else if (str === ")") {
-                                while (str = stack.shift()) {
-                                    if (str === "(") break;
-
-                                    output.push(str);
-                                }
-                            } else {
-                                while (operators[stack[0]] > operators[str]) {
-                                    output.push(stack.shift());
-                                }
-
-                                if (str !== "]") {
-                                    stack.unshift(str);
-                                }
-                            }
-                        } else {
-                            term += str;
-                        }
-                    });
-
-                    if (term) output.push(term);
-
-                    output = output.concat(stack);
-                    stack = [];
-
-                    // create result
-                    _.forEach(output, function(str) {
-                        var first, second, i, n, el;
-
-                        if (str in operators) {
-                            first = stack.shift();
-                            second = stack.shift();
-
-                            if (typeof second === "string") {
-                                second = createElem(second);
-                            }
-
-                            switch(str) {
-                            case ">": 
-                                if (typeof first === "string") {
-                                    first = createElem(first);
-                                }
-
-                                second.appendChild(first);
-                                str = second;
-                                break;
-
-                            case "+":
-                                if (typeof first === "string") {
-                                    first = createElem(first);
-                                }
-
-                                str = createFrag();
-                                str.appendChild(second);
-                                str.appendChild(first);
-                                break;
-
-                            case ".":
-                                second.className = first;
-                                str = second;
-                                break;
-
-                            case "#":
-                                second.id = first;
-                                str = second;
-                                break;
-
-                            case "*":
-                                str = createFrag();
-
-                                for (i = 0, n = parseInt(first, 10); i < n; ++i) {
-                                    el = second.cloneNode(true);
-
-                                    _.forEach(el.attributes, modifyAttr, i);
-
-                                    str.appendChild(el);
-                                }
-                                break;
-
-                            case "[":
-                                first = first.split("=");
-                                if (first.length === 2) {
-                                    if (first[1][0] === "'" || first[1][0] === "\"") first[1] = first[1].substr(1, first[1].length - 2);
-                                }
-                                second.setAttribute(first[0], first[1] || "");
-                                str = second;
-                                break;
-                            }
-                        }
-
-                        stack.unshift(str);
-                    });
-
-                    _.forEach(stack, function(term) {
-                        result.appendChild(term);
-                    });
-
-                    return result;
-                }
-            };
-        })(),
         makeError = function(method, type) {
             type = type || "DOMElement";
 
@@ -844,7 +631,7 @@
             propHooks.innerHTML = {
                 set: function(el, value) {
                     el.innerHTML = "";
-                    el.appendChild(sandbox.fragment(value));
+                    el.appendChild(_.parseFragment(value));
                 }
             };
 
@@ -1061,7 +848,7 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use sandbox.fragment because of HTML5 elements bug 
+            // always use _.parseFragment because of HTML5 elements bug 
             // and NoScope bugs in IE
             if (supports("attachEvent")) fasterMethodName = null;
 
@@ -1072,7 +859,7 @@
                 if (reverse) element = this._node;
 
                 if (typeof element === "string") {
-                    relatedNode = fasterMethodName ? null : sandbox.fragment(element);
+                    relatedNode = fasterMethodName ? null : _.parseFragment(element);
                 } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
                     relatedNode = element;
                 } else if (element instanceof DOMElement) {
@@ -1243,20 +1030,20 @@
         var cssHooks = {},
             rdash = /\-./g,
             rcamel = /[A-Z]/g,
-            dashSeparatedToCamelCase = function(str) { return str.charAt(1).toUpperCase(); },
+            dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = supports("getComputedStyle") ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
             // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
         _.forEach(props, function(propName) {
-            var prefix = propName.charAt(0) === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
+            var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
                 stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
 
             // some browsers start vendor specific props in lowecase
             if (!(stylePropName in computed)) {
-                stylePropName = stylePropName.charAt(0).toLowerCase() + stylePropName.substr(1);
+                stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
             }
 
             if (stylePropName !== propName) {
@@ -1667,7 +1454,7 @@
         var elem = content;
 
         if (typeof content === "string") {
-            elem = sandbox.create(content);
+            elem = _.createElement(content);
         } else if (!(content instanceof Element)) {
             throw makeError("create", "DOM");
         }
@@ -1908,10 +1695,10 @@
             _.forOwn(template, function(key) {
                 var tpl = template[key];
 
-                if (tpl.charAt(0) !== "<") {
-                    tpl = sandbox.template(tpl);
+                if (tpl[0] !== "<") {
+                    tpl = _.parseTemplate(tpl);
                 } else {
-                    tpl = sandbox.fragment(tpl);
+                    tpl = _.parseFragment(tpl);
                 }
 
                 template[key] = tpl;
@@ -1961,33 +1748,90 @@
 })(window, document, (function(undefined) {
     "use strict";
 
+    // UTILITES
+    // --------
+
+    var parser = document.createElement("body"),
+        operators = {
+            "+": 1,
+            ".": 4,
+            "#": 3,
+            ">": 1,
+            "[": 6,
+            "]": 5,
+            "*": 2,
+            "(": 0,
+            ")": 0
+        },
+        rindex = /\$/g,
+        modifyAttr = function(attr, index, items) {
+            if (attr.specified) {
+                // changing attribute name doesn't work in IE
+                // attr.name = attr.name.replace(rindex, this);
+                if (attr.value) attr.value = attr.value.replace(rindex, this);
+            }
+        },
+        appendTo = function(el) {
+            this.appendChild(el);
+        },
+        createElem, createFrag;
+
+    if (document.addEventListener) {
+        createElem = function(tagName) {
+            return document.createElement(tagName);
+        };
+        createFrag = function() {
+            return document.createDocumentFragment();
+        };
+    } else {
+        // Add html5 elements support via:
+        // https://github.com/aFarkas/html5shiv
+        (function(){
+            var elements = "abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",
+                // Used to skip problem elements
+                reSkip = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,
+                // Not all elements can be cloned in IE
+                saveClones = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,
+                create = document.createElement,
+                frag = document.createDocumentFragment(),
+                cache = {};
+
+            frag.appendChild(parser);
+
+            createElem = function(nodeName) {
+                var node;
+
+                if (cache[nodeName]) {
+                    node = cache[nodeName].cloneNode();
+                } else if (saveClones.test(nodeName)) {
+                    node = (cache[nodeName] = create(nodeName)).cloneNode();
+                } else {
+                    node = create(nodeName);
+                }
+
+                return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
+            };
+
+            createFrag = Function("f", "return function(){" +
+                "var n=f.cloneNode(),c=n.createElement;" +
+                "(" +
+                    // unroll the `createElement` calls
+                    elements.split(" ").join().replace(/\w+/g, function(nodeName) {
+                        create(nodeName);
+                        frag.createElement(nodeName);
+                        return "c('" + nodeName + "')";
+                    }) +
+                ");return n}"
+            )(frag);
+        })();
+    }
+
     return {
         
-        // UTILITES
-        // --------
+        // Collection utilites
         
         slice: function(list, index) {
             return Array.prototype.slice.call(list, index || 0);
-        },
-        keys: Object.keys || function(obj) {
-            var objType = typeof obj,
-                result = [], 
-                prop;
-
-            if (objType !== "object" && objType !== "function" || obj === null) {
-                throw new TypeError("Object.keys called on non-object");
-            }
-     
-            for (prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
-            }
-
-            return result;
-        },
-        forOwn: function(obj, callback, thisPtr) {
-            for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
-                callback.call(thisPtr, list[i], i, obj);
-            }
         },
         forEach: function(list, callback, thisPtr) {
             for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
@@ -2032,6 +1876,34 @@
 
             return result;
         },
+        times: function(n, callback, thisArg) {
+            for (var i = 0; i < n; ++i) {
+                callback.call(thisArg, i);
+            }
+        },
+
+        // Object utilites
+
+        keys: Object.keys || function(obj) {
+            var objType = typeof obj,
+                result = [], 
+                prop;
+
+            if (objType !== "object" && objType !== "function" || obj === null) {
+                throw new TypeError("Object.keys called on non-object");
+            }
+     
+            for (prop in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
+            }
+
+            return result;
+        },
+        forOwn: function(obj, callback, thisPtr) {
+            for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
+                callback.call(thisPtr, list[i], i, obj);
+            }
+        },
         mixin: function(obj, name, value) {
             if (arguments.length === 3) {
                 obj[name] = value;
@@ -2043,6 +1915,9 @@
 
             return obj; 
         },
+
+        // String utilites
+
         trim: (function() {
             if (String.prototype.trim) {
                 return function(str) {
@@ -2056,6 +1931,131 @@
                     return str.replace(rwsleft, "").replace(rwsright, "");
                 };
             }
-        })()
+        })(),
+
+        // DOM utilites
+
+        createElement: createElem,
+        parseFragment: function(html) {
+            var fragment = createFrag();
+
+            // fix NoScope bug
+            parser.innerHTML = "<br/>" + html;
+            parser.removeChild(parser.firstChild);
+
+            this.forEach(parser.childNodes, appendTo, fragment);
+
+            return fragment;
+        },
+        parseTemplate: function(expr) {
+            var stack = [],
+                output = [],
+                term = "", 
+                result = createFrag();
+
+            // parse exrpression
+            this.forEach(expr, function(str) {
+                if (str in operators && (stack[0] !== "[" || str === "]")) {
+                    if (term) {
+                        output.push(term);
+                        term = "";
+                    }
+
+                    if (str === "(") {
+                        stack.unshift(str);
+                    } else if (str === ")") {
+                        while (str = stack.shift()) {
+                            if (str === "(") break;
+
+                            output.push(str);
+                        }
+                    } else {
+                        while (operators[stack[0]] > operators[str]) {
+                            output.push(stack.shift());
+                        }
+
+                        if (str !== "]") {
+                            stack.unshift(str);
+                        }
+                    }
+                } else {
+                    term += str;
+                }
+            });
+
+            if (term) output.push(term);
+
+            output = output.concat(stack);
+            stack = [];
+
+            // create result
+            this.forEach(output, function(str) {
+                var first, second, value;
+
+                if (str in operators) {
+                    first = stack.shift();
+                    second = stack.shift();
+
+                    if (typeof second === "string") {
+                        second = createElem(second);
+                    }
+
+                    switch(str) {
+                    case ">": 
+                        if (typeof first === "string") {
+                            first = createElem(first);
+                        }
+
+                        second.appendChild(first);
+                        str = second;
+                        break;
+
+                    case "+":
+                        if (typeof first === "string") {
+                            first = createElem(first);
+                        }
+
+                        str = createFrag();
+                        str.appendChild(second);
+                        str.appendChild(first);
+                        break;
+
+                    case ".":
+                        second.className = first;
+                        str = second;
+                        break;
+
+                    case "#":
+                        second.id = first;
+                        str = second;
+                        break;
+
+                    case "*":
+                        str = createFrag();
+
+                        this.times(parseInt(first, 10), function(i) {
+                            var el = str.appendChild(second.cloneNode(true));
+
+                            this.forEach(el.attributes, modifyAttr, i);
+                        }, this);
+                        break;
+
+                    case "[":
+                        first = first.split("=");
+                        value = first[1] || "";
+                        if (value && value[0] === "'" || value[0] === "\"") value = value.substr(1, value.length - 2);
+                        second.setAttribute(first[0], value);
+                        str = second;
+                        break;
+                    }
+                }
+
+                stack.unshift(str);
+            }, this);
+
+            this.forEach(stack, appendTo, result);
+
+            return result;
+        }
     }; 
 })());

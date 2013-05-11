@@ -47,6 +47,10 @@ describe("extend", function() {
             });
         });
     });
+    
+    it("should throw error if arguments are invalid", function() {
+        expect(function() { DOM.extend(1); }).toThrow();
+    });
 
     describe("template expressions", function() {
         it("should accept ul>li>a", 
@@ -79,8 +83,11 @@ describe("extend", function() {
         it("should accept a[data-i18n='test.key']",
             checkExpression("a[data-i18n='test.key']", "<a data-i18n=\"test.key\"></a>"));
 
-        it("should accept a#x$.t$[data-i18n='key$']*3",
-            checkExpression("a[data-i18n='key$'].t$#x$*3", "<a data-i18n=\"key0\" class=\"t0\" id=\"x0\"></a><a data-i18n=\"key1\" class=\"t1\" id=\"x1\"></a><a data-i18n=\"key2\" class=\"t2\" id=\"x2\"></a>"));
+        it("should accept a#x$*3",
+            checkExpression("a#x$*3", "<a id=\"x0\"></a><a id=\"x1\"></a><a id=\"x2\"></a>"));
+
+        it("should accept a.t$*3",
+            checkExpression("a.t$*3", "<a class=\"t0\"></a><a class=\"t1\"></a><a class=\"t2\"></a>"));
 
         it("should accept complex",
             checkExpression("div.b>p.header+a.prev+a.next+table.days>(tr>th[data-i18n='c$']*3)+(tr>td*7)*2", 
@@ -108,10 +115,6 @@ describe("extend", function() {
                 });
             };
         }
-    });
-
-    it("should throw error if arguments are invalid", function() {
-        expect(function() { DOM.extend(1); }).toThrow();
     });
 
 });
