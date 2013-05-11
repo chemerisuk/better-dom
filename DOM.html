@@ -64,7 +64,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1441
+        <a href="better-dom.js.html">better-dom.js</a>, line 1450
     </li></ul></dd>
     
     
@@ -106,7 +106,7 @@
     
     
     <div class="description">
-        Create DOMElement or DOMElementCollection
+        Create DOMElement instance
     </div>
     
 
@@ -159,7 +159,7 @@
             
             
             
-            <td class="description last">native element</td>
+            <td class="description last">native element or string</td>
         </tr>
 	
 	
@@ -190,7 +190,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1453
+        <a href="better-dom.js.html">better-dom.js</a>, line 1462
     </li></ul></dd>
     
     
@@ -305,7 +305,7 @@ syntax - see html section in http://docs.emmet.io/cheat-sheet/
             
             
             
-            <td class="description last">widget css selector</td>
+            <td class="description last">extension css selector</td>
         </tr>
 	
 	
@@ -338,7 +338,7 @@ syntax - see html section in http://docs.emmet.io/cheat-sheet/
             
             
             
-            <td class="description last">widget template</td>
+            <td class="description last">extension templates</td>
         </tr>
 	
 	
@@ -369,7 +369,7 @@ syntax - see html section in http://docs.emmet.io/cheat-sheet/
             
             
             
-            <td class="description last">widget mixins</td>
+            <td class="description last">extension mixins</td>
         </tr>
 	
 	
@@ -400,7 +400,7 @@ syntax - see html section in http://docs.emmet.io/cheat-sheet/
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1709
+        <a href="better-dom.js.html">better-dom.js</a>, line 1718
     </li></ul></dd>
     
     
@@ -566,7 +566,7 @@ DOM.extend(".mycalendar", {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1550
+        <a href="better-dom.js.html">better-dom.js</a>, line 1559
     </li></ul></dd>
     
     
@@ -583,6 +583,153 @@ DOM.extend(".mycalendar", {
     
     
     
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="mock"><span class="type-signature">&lt;static> </span>mock<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Return an <a href="DOMElement.html">DOMElement</a> mock specified for optional selector
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>selector</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">selector of mock</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 1767
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    mock instance
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
+
+
+	</dd>
+</dl>
+
+        
     
     
 </dd>
@@ -679,7 +826,7 @@ DOM.extend(".mycalendar", {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1471
+        <a href="better-dom.js.html">better-dom.js</a>, line 1480
     </li></ul></dd>
     
     
@@ -835,7 +982,7 @@ DOM.extend(".mycalendar", {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1762
+        <a href="better-dom.js.html">better-dom.js</a>, line 1799
     </li></ul></dd>
     
     
@@ -877,7 +1024,7 @@ DOM.supports("oninvalid", "input");
     
     
     <div class="description">
-        Watches when element with a spefified selector will be inserted on page
+        Executes callback function when element with a spefified selector is inserted on page
     </div>
     
 
@@ -981,7 +1128,7 @@ DOM.supports("oninvalid", "input");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1611
+        <a href="better-dom.js.html">better-dom.js</a>, line 1620
     </li></ul></dd>
     
     
@@ -1024,7 +1171,7 @@ DOM.supports("oninvalid", "input");
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 11 2013 16:00:46 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 11 2013 23:17:34 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
