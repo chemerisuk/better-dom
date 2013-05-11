@@ -1463,7 +1463,13 @@
         var elem = content;
 
         if (typeof content === "string") {
-            elem = _.createElement(content);
+            if (content[0] === "<") {
+                elem = _.parseFragment(content).firstChild;
+
+                while (elem.nodeType !== 1) elem = elem.nextSibling;
+            } else {
+                elem = _.createElement(content);
+            }
         } else if (!(content instanceof Element)) {
             throw makeError("create", "DOM");
         }

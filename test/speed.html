@@ -164,7 +164,7 @@
             $(document.createElement("a"));
         })
         .add("jquery#create(String...)", function() {
-            $("<div><a></a></div><b></b>");
+            $("<a><span></span><i></i></a>");
         })
         .add("DOM#create(String)", function() {
             DOM.create("a");
@@ -173,7 +173,7 @@
             DOM.create(document.createElement("a"));
         })
         .add("DOM#create(String...)", function() {
-            DOM.create("<div><a></a></div><b></b>");
+            DOM.create("<a><span></span><i></i></a>");
         })
         .add("native", function() {
             document.createElement("a");

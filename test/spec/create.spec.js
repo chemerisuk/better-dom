@@ -9,6 +9,15 @@ describe("create", function() {
         expect(link._node).toHaveTag("a");
     });
 
+    it("should accept html strings", function() {
+        var link = DOM.create("<a><span></span></a>");
+
+        setFixtures(link._node);
+
+        expect(link._node).toHaveTag("a");
+        expect(link.firstChild()._node).toHaveTag("span");
+    });
+
     // it("should return DOM collection when the first argument is a HTML string", function() {
     //     var elements = DOM.create("<ul class='test'><li><li></ul><a href='#'></a>"),
     //         expectedSelectors = ["ul", "a"];
