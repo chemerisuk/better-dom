@@ -22,7 +22,7 @@ describe("fire", function() {
     });
 
     it("should trigger native handlers", function() {
-        input._node.onclick = callback;
+        input._node.onclick = callback.andReturn(false);
 
         input.fire("click");
 
@@ -56,7 +56,7 @@ describe("fire", function() {
     });
 
     it("should return reference to 'this'", function() {
-        expect(input.fire("click")).toEqual(input);
+        expect(input.fire("focus")).toBe(input);
     });
 
     it("should throw error if arguments are invalid", function() {

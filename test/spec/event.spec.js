@@ -51,6 +51,7 @@ describe("event", function() {
 
         spy.andCallFake(function(e) {
             e.stopPropagation();
+            e.preventDefault();
         });
 
         DOM.on("click", otherSpy);

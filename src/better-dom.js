@@ -28,6 +28,17 @@
         },
         sandbox = (function() {
             var parser = document.createElement("body"),
+                operators = {
+                    "+": 1,
+                    ".": 4,
+                    "#": 3,
+                    ">": 1,
+                    "[": 6,
+                    "]": 5,
+                    "*": 2,
+                    "(": 0,
+                    ")": 0
+                },
                 createElem, createFrag;
 
             if (supports("addEventListener")) {
@@ -102,6 +113,129 @@
                 },
                 appendTo: function(el) {
                     this.appendChild(el);
+                },
+                template: function(expr) {
+                    var stack = [],
+                        output = [],
+                        term = "", 
+                        result = createFrag(),
+                        rindex = /\$/g,
+                        modifyAttr = function(attr) {
+                            if (attr.specified) {
+                                // changing attribute name doesn't work in IE
+                                // attr.name = attr.name.replace(rindex, this);
+                                if (attr.value) attr.value = attr.value.replace(rindex, this);
+                            }
+                        };
+
+                    // parse exrpression
+                    _.forEach(expr, function(str) {
+                        if (str in operators && (stack[0] !== "[" || str === "]")) {
+                            if (term) {
+                                output.push(term);
+                                term = "";
+                            }
+
+                            if (str === "(") {
+                                stack.unshift(str);
+                            } else if (str === ")") {
+                                while (str = stack.shift()) {
+                                    if (str === "(") break;
+
+                                    output.push(str);
+                                }
+                            } else {
+                                while (operators[stack[0]] > operators[str]) {
+                                    output.push(stack.shift());
+                                }
+
+                                if (str !== "]") {
+                                    stack.unshift(str);
+                                }
+                            }
+                        } else {
+                            term += str;
+                        }
+                    });
+
+                    if (term) output.push(term);
+
+                    output = output.concat(stack);
+                    stack = [];
+
+                    // create result
+                    _.forEach(output, function(str) {
+                        var first, second, i, n, el;
+
+                        if (str in operators) {
+                            first = stack.shift();
+                            second = stack.shift();
+
+                            if (typeof second === "string") {
+                                second = createElem(second);
+                            }
+
+                            switch(str) {
+                            case ">": 
+                                if (typeof first === "string") {
+                                    first = createElem(first);
+                                }
+
+                                second.appendChild(first);
+                                str = second;
+                                break;
+
+                            case "+":
+                                if (typeof first === "string") {
+                                    first = createElem(first);
+                                }
+
+                                str = createFrag();
+                                str.appendChild(second);
+                                str.appendChild(first);
+                                break;
+
+                            case ".":
+                                second.className = first;
+                                str = second;
+                                break;
+
+                            case "#":
+                                second.id = first;
+                                str = second;
+                                break;
+
+                            case "*":
+                                str = createFrag();
+
+                                for (i = 0, n = parseInt(first, 10); i < n; ++i) {
+                                    el = second.cloneNode(true);
+
+                                    _.forEach(el.attributes, modifyAttr, i);
+
+                                    str.appendChild(el);
+                                }
+                                break;
+
+                            case "[":
+                                first = first.split("=");
+                                if (first.length === 2) {
+                                    if (first[1][0] === "'" || first[1][0] === "\"") first[1] = first[1].substr(1, first[1].length - 2);
+                                }
+                                second.setAttribute(first[0], first[1] || "");
+                                str = second;
+                                break;
+                            }
+                        }
+
+                        stack.unshift(str);
+                    });
+
+                    _.forEach(stack, function(term) {
+                        result.appendChild(term);
+                    });
+
+                    return result;
                 }
             };
         })(),
@@ -1772,7 +1906,15 @@
 
         if (template) {
             _.forOwn(template, function(key) {
-                template[key] = sandbox.fragment(template[key]);
+                var tpl = template[key];
+
+                if (tpl.charAt(0) !== "<") {
+                    tpl = sandbox.template(tpl);
+                } else {
+                    tpl = sandbox.fragment(tpl);
+                }
+
+                template[key] = tpl;
             });
         }
 
@@ -1848,7 +1990,7 @@
             }
         },
         forEach: function(list, callback, thisPtr) {
-            for (var i = 0, n = list.length; i < n; ++i) {
+            for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
                 callback.call(thisPtr, list[i], i, list);
             }
         },
