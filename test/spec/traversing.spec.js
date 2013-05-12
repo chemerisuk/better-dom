@@ -58,7 +58,7 @@ describe("traversing", function() {
                     prevAll: "i"
                 },
                 haveTag = function(tagName) {
-                    return function(el, index) {
+                    return function(el) {
                         expect(el._node).toHaveTag(tagName);
                     };
                 };

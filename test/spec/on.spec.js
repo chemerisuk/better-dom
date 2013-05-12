@@ -1,7 +1,7 @@
 describe("on", function() {
     "use strict";
     
-    var link, input, obj = {test: function() { }, test2: function() {}}, spy;
+    var link, input, spy;
 
     beforeEach(function() {
         setFixtures("<a id='test'>test element</a><input id='input'/>");

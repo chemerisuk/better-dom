@@ -8,6 +8,7 @@
     "eqeqeq": true,
     "strict": true,
     "undef": true,
+    "unused": true,
     "globals": {
         "DOM": true,
         "Element": true,

@@ -94,7 +94,7 @@ describe("extend", function() {
                 "<div class=\"b\"><p class=\"header\"></p><a class=\"prev\"></a><a class=\"next\"></a><table class=\"days\"><tr><th data-i18n=\"c0\"></th><th data-i18n=\"c1\"></th><th data-i18n=\"c2\"></th></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>"));
 
         function normalizeHTML(str) {
-            return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-]+)([ >])/g, function(str, $n, $v, $e, offset, s) {
+            return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-]+)([ >])/g, function(str, $n, $v, $e) {
                 return $n + "=\"" + $v + "\"" + $e;
             });
         }

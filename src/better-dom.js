@@ -381,8 +381,7 @@
                 throw makeError("off");
             }
 
-            var hook = eventHooks[type],
-                events = this._events;
+            var events = this._events;
 
             _.forEach(events, function(entry, index) {
                 if (entry && type === entry.type && (!callback || callback === entry.callback)) {
@@ -624,9 +623,7 @@
 
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function(el) {
-                throw makeError("get");
-            };
+            throwIllegalAccess = function() { throw makeError("get"); };
         // protect access to some properties
         _.forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
@@ -1563,9 +1560,7 @@
      * @function
      */
     DOM.importStyles = (function() {
-        var headEl = scripts[0].parentNode,
-            styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
-            styleSheet = document.styleSheets[0],
+        var styleSheet, headEl = scripts[0].parentNode,
             process = function(selector, styles) {
                 var ruleText = "";
 
@@ -1589,6 +1584,9 @@
                     });
                 }
             };
+
+        headEl.insertBefore(document.createElement("style"), headEl.firstChild);
+        styleSheet = document.styleSheets[0];
 
         if (!supports("hidden", "a")) {
             // corrects block display not defined in IE6/7/8/9
@@ -1922,7 +1920,7 @@
             "]": 5
         },
         rindex = /\$/g,
-        modifyAttr = function(attr, index, items) {
+        modifyAttr = function(attr) {
             if (attr.specified) {
                 // changing attribute name doesn't work in IE
                 // attr.name = attr.name.replace(rindex, this);
@@ -2005,6 +2003,14 @@
             }
         })(),
 
+        unquote: (function() {
+            var rquotes = /^["']|["']$/g;
+
+            return function(str) {
+                return str ? str.replace(rquotes, "") : "";
+            };
+        })(),
+
         // DOM utilites
 
         createElement: createElement,
@@ -2061,7 +2067,7 @@
             // transform RPN into html nodes
             
             _.forEach(output, function(str) {
-                var term, node, value;
+                var term, node;
 
                 if (str in operators) {
                     term = stack.shift();
@@ -2104,9 +2110,7 @@
 
                     case "[":
                         term = term.split("=");
-                        value = term[1] || "";
-                        if (value && value[0] === "'" || value[0] === "\"") value = value.substr(1, value.length - 2);
-                        node.setAttribute(term[0], value);
+                        node.setAttribute(term[0], _.unquote(term[1]));
                         str = node;
                         break;
                     }
