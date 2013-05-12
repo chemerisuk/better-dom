@@ -81,7 +81,7 @@
      */
     function DOMNode(node) {
         if (!(this instanceof DOMNode)) {
-            return node ? node.__dom__ || new DOMNode(node) : new DOMNullNode();
+            return new DOMNode(node);
         }
 
         this._node = node;
@@ -408,8 +408,7 @@
                 throw makeError("off");
             }
 
-            var hook = eventHooks[type],
-                events = this._events;
+            var events = this._events;
 
             _.forEach(events, function(entry, index) {
                 if (entry && type === entry.type && (!callback || callback === entry.callback)) {
@@ -511,7 +510,7 @@
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new DOMNullElement();
+            return element ? element.__dom__ || new DOMElement(element) : new MockElement();
         }
 
         DOMNode.call(this, element);
@@ -651,9 +650,7 @@
 
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function(el) {
-                throw makeError("get");
-            };
+            throwIllegalAccess = function() { throw makeError("get"); };
         // protect access to some properties
         _.forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
@@ -1160,28 +1157,6 @@
             return this;
         };
     })();
-    
-    // NULL OBJECTS
-
-    function DOMNullNode() { 
-        this._node = null; 
-    }
-    
-    function DOMNullElement() { 
-        this._node = null; 
-    }
-
-    DOMNullNode.prototype = new DOMNode();
-    DOMNullElement.prototype = new DOMElement();
-
-    _.forOwn(DOMNode.prototype, function(key) {
-        _.mixin(DOMNullNode.prototype, key, function() { return this; });
-        _.mixin(DOMNullElement.prototype, key, function() { return this; });
-    });
-
-    _.forOwn(DOMElement.prototype, function(key) {
-        _.mixin(DOMNullElement.prototype, key, function() { return this; });
-    });
 
     // DOMEvent
     // --------
@@ -1410,6 +1385,28 @@
         DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
     })();
 
+    // NULL OBJECTS
+
+    function MockElement() {
+        DOMNode.call(this, null);
+    }
+
+    MockElement.prototype = new DOMElement();
+
+    _.forIn(DOMElement.prototype, function(functor, key) {
+        var isSetter = key in DOMElementCollection.prototype;
+
+        MockElement.prototype[key] = isSetter ? function() { return this; } : function() { };
+    });
+
+    _.forEach("next prev find firstChild lastChild".split(" "), function(key) {
+        MockElement.prototype[key] = function() { return new MockElement(); };
+    });
+
+    _.forEach("nextAll prevAll children findAll".split(" "), function(key) {
+        MockElement.prototype[key] = function() { return new DOMElementCollection([]); };
+    });
+
     /**
      * @private
      * @constructor
@@ -1470,7 +1467,7 @@
     // finish prototypes
     
     // fix constructor property
-    _.forEach([DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement], function(ctr) {
+    _.forEach([DOMNode, DOMElement, DOMEvent, MockElement], function(ctr) {
         ctr.prototype.constructor = ctr;
     });
 
@@ -1483,14 +1480,20 @@
     /**
      * Create DOMElement instance
      * @memberOf DOM
-     * @param  {String|Element} content native element or string
+     * @param  {String|Element} content native element, element name or html string
      * @return {DOMElemen} element
      */
     DOM.create = function(content) {
         var elem = content;
 
         if (typeof content === "string") {
-            elem = _.createElement(content);
+            if (content[0] === "&lt;") {
+                elem = _.parseFragment(content).firstChild;
+
+                while (elem.nodeType !== 1) elem = elem.nextSibling;
+            } else {
+                elem = _.createElement(content);
+            }
         } else if (!(content instanceof Element)) {
             throw makeError("create", "DOM");
         }
@@ -1584,9 +1587,7 @@
      * @function
      */
     DOM.importStyles = (function() {
-        var headEl = scripts[0].parentNode,
-            styleEl = headEl.insertBefore(document.createElement("style"), headEl.firstChild),
-            styleSheet = document.styleSheets[0],
+        var styleSheet, headEl = scripts[0].parentNode,
             process = function(selector, styles) {
                 var ruleText = "";
 
@@ -1610,6 +1611,9 @@
                     });
                 }
             };
+
+        headEl.insertBefore(document.createElement("style"), headEl.firstChild);
+        styleSheet = document.styleSheets[0];
 
         if (!supports("hidden", "a")) {
             // corrects block display not defined in IE6/7/8/9
@@ -1800,7 +1804,7 @@
             _.mixin(el, mixins);
 
             if (mixins.hasOwnProperty("constructor")) {
-                el.constructor = DOMNullElement;
+                el.constructor = MockElement;
 
                 mixins.constructor.call(el);
             }
@@ -1840,36 +1844,133 @@
     // UTILITES
     // --------
 
-    var parser = document.createElement("body"),
-        operators = {
-            "+": 1,
-            ".": 4,
-            "#": 3,
-            ">": 1,
-            "[": 6,
-            "]": 5,
-            "*": 2,
+    var _ = {
+        
+            // Collection utilites
+            
+            slice: function(list, index) {
+                return Array.prototype.slice.call(list, index || 0);
+            },
+            forEach: function(list, callback, thisPtr) {
+                for (var i = 0, n = list ? list.length : 0; i &lt; n; ++i) {
+                    callback.call(thisPtr, list[i], i, list);
+                }
+            },
+            filter: function(list, testFn, thisPtr) {
+                var result = [];
+
+                _.forEach(list, function(el, index) {
+                    if (testFn.call(thisPtr, el, index, list)) result.push(el);
+                });
+
+                return result;
+            },
+            every: function(list, testFn, thisPtr) {
+                var result = true;
+
+                _.forEach(list, function(el) {
+                    result = result && testFn.call(thisPtr, el, list);
+                });
+
+                return result;
+            },
+            reduce: function(list, callback, result) {
+                _.forEach(list, function(el, index) {
+                    if (!index && result === undefined) {
+                        result = el;
+                    } else {
+                        result = callback(result, el, index, list);
+                    }
+                });
+
+                return result;
+            },
+            map: function(list, callback, thisPtr) {
+                var result = [];
+
+                _.forEach(list, function(el, index) {
+                    result.push(callback.call(thisPtr, el, index, list));
+                });
+
+                return result;
+            },
+            times: function(n, callback, thisArg) {
+                for (var i = 0; i &lt; n; ++i) {
+                    callback.call(thisArg, i);
+                }
+            },
+
+            // Object utilites
+
+            keys: Object.keys || function(obj) {
+                var objType = typeof obj,
+                    result = [], 
+                    prop;
+
+                if (objType !== "object" && objType !== "function" || obj === null) {
+                    throw new TypeError("Object.keys called on non-object");
+                }
+         
+                for (prop in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
+                }
+
+                return result;
+            },
+            forOwn: function(obj, callback, thisPtr) {
+                for (var list = this.keys(obj), i = 0, n = list.length; i &lt; n; ++i) {
+                    callback.call(thisPtr, list[i], i, obj);
+                }
+            },
+            forIn: function(obj, callback, thisPtr) {
+                for (var key in obj) {
+                    callback.call(thisPtr, obj[key], key, obj);
+                }
+            },
+            mixin: function(obj, name, value) {
+                if (arguments.length === 3) {
+                    obj[name] = value;
+                } else if (name) {
+                    _.forOwn(name, function(key) {
+                        _.mixin(obj, key, name[key]);
+                    });
+                }
+
+                return obj; 
+            }
+        },
+        parser = document.createElement("body"),
+        operators = { // operatorName / operatorPriority object
             "(": 0,
-            ")": 0
+            ")": 0,
+            "+": 1,
+            ">": 1,
+            "*": 2,
+            "#": 3,
+            ".": 4,
+            "[": 6,
+            "]": 5
         },
         rindex = /\$/g,
-        modifyAttr = function(attr, index, items) {
+        modifyAttr = function(attr) {
             if (attr.specified) {
                 // changing attribute name doesn't work in IE
                 // attr.name = attr.name.replace(rindex, this);
                 if (attr.value) attr.value = attr.value.replace(rindex, this);
             }
         },
-        appendTo = function(el) {
-            this.appendChild(el);
+        appendTo = function(fragment, node) {
+            fragment.appendChild(node);
+
+            return fragment;
         },
-        createElem, createFrag;
+        createElement, createFragment;
 
     if (document.addEventListener) {
-        createElem = function(tagName) {
+        createElement = function(tagName) {
             return document.createElement(tagName);
         };
-        createFrag = function() {
+        createFragment = function() {
             return document.createDocumentFragment();
         };
     } else {
@@ -1887,7 +1988,7 @@
 
             frag.appendChild(parser);
 
-            createElem = function(nodeName) {
+            createElement = function(nodeName) {
                 var node;
 
                 if (cache[nodeName]) {
@@ -1901,7 +2002,7 @@
                 return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
             };
 
-            createFrag = Function("f", "return function(){" +
+            createFragment = Function("f", "return function(){" +
                 "var n=f.cloneNode(),c=n.createElement;" +
                 "(" +
                     // unroll the `createElement` calls
@@ -1915,95 +2016,7 @@
         })();
     }
 
-    return {
-        
-        // Collection utilites
-        
-        slice: function(list, index) {
-            return Array.prototype.slice.call(list, index || 0);
-        },
-        forEach: function(list, callback, thisPtr) {
-            for (var i = 0, n = list ? list.length : 0; i &lt; n; ++i) {
-                callback.call(thisPtr, list[i], i, list);
-            }
-        },
-        filter: function(list, testFn, thisPtr) {
-            var result = [];
-
-            this.forEach(list, function(el, index) {
-                if (testFn.call(thisPtr, el, index, list)) result.push(el);
-            });
-
-            return result;
-        },
-        every: function(list, testFn, thisPtr) {
-            var result = true;
-
-            this.forEach(list, function(el) {
-                result = result && testFn.call(thisPtr, el, list);
-            });
-
-            return result;
-        },
-        reduce: function(list, callback, result) {
-            this.forEach(list, function(el, index) {
-                if (!index && result === undefined) {
-                    result = el;
-                } else {
-                    result = callback(result, el, index, list);
-                }
-            });
-
-            return result;
-        },
-        map: function(list, callback, thisPtr) {
-            var result = [];
-
-            this.forEach(list, function(el, index) {
-                result.push(callback.call(thisPtr, el, index, list));
-            });
-
-            return result;
-        },
-        times: function(n, callback, thisArg) {
-            for (var i = 0; i &lt; n; ++i) {
-                callback.call(thisArg, i);
-            }
-        },
-
-        // Object utilites
-
-        keys: Object.keys || function(obj) {
-            var objType = typeof obj,
-                result = [], 
-                prop;
-
-            if (objType !== "object" && objType !== "function" || obj === null) {
-                throw new TypeError("Object.keys called on non-object");
-            }
-     
-            for (prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
-            }
-
-            return result;
-        },
-        forOwn: function(obj, callback, thisPtr) {
-            for (var list = this.keys(obj), i = 0, n = list.length; i &lt; n; ++i) {
-                callback.call(thisPtr, list[i], i, obj);
-            }
-        },
-        mixin: function(obj, name, value) {
-            if (arguments.length === 3) {
-                obj[name] = value;
-            } else if (name) {
-                this.forOwn(name, function(key) {
-                    this.mixin(obj, key, name[key]);
-                }, this);
-            }
-
-            return obj; 
-        },
+    return _.mixin(_, {
 
         // String utilites
 
@@ -2022,19 +2035,25 @@
             }
         })(),
 
+        unquote: (function() {
+            var rquotes = /^["']|["']$/g;
+
+            return function(str) {
+                return str ? str.replace(rquotes, "") : "";
+            };
+        })(),
+
         // DOM utilites
 
-        createElement: createElem,
+        createElement: createElement,
         parseFragment: function(html) {
-            var fragment = createFrag();
+            var fragment = createFragment();
 
             // fix NoScope bug
             parser.innerHTML = "&lt;br/>" + html;
             parser.removeChild(parser.firstChild);
 
-            this.forEach(parser.childNodes, appendTo, fragment);
-
-            return fragment;
+            return _.reduce(parser.childNodes, appendTo, fragment);
         },
         parseTemplate: function(expr) {
             // use emmet-like syntax to describe html templates:
@@ -2042,11 +2061,11 @@
 
             var stack = [],
                 output = [],
-                term = "", 
-                result = createFrag();
+                term = "";
 
-            // parse exrpression
-            this.forEach(expr, function(str) {
+            // parse exrpression into RPN
+        
+            _.forEach(expr, function(str) {
                 if (str in operators && (stack[0] !== "[" || str === "]")) {
                     if (term) {
                         output.push(term);
@@ -2055,19 +2074,15 @@
 
                     if (str === "(") {
                         stack.unshift(str);
-                    } else if (str === ")") {
-                        while (str = stack.shift()) {
-                            if (str === "(") break;
-
-                            output.push(str);
-                        }
                     } else {
                         while (operators[stack[0]] > operators[str]) {
                             output.push(stack.shift());
                         }
 
-                        if (str !== "]") {
-                            stack.unshift(str);
+                        if (str === ")") {
+                            stack.shift(); // remove "(" symbol from stack
+                        } else if (str !== "]") {
+                            stack.unshift(str); // don't need to have "]" in stack
                         }
                     }
                 } else {
@@ -2075,81 +2090,70 @@
                 }
             });
 
-            if (term) output.push(term);
+            if (term) stack.unshift(term);
 
-            output = output.concat(stack);
+            output.push.apply(output, stack);
+
             stack = [];
 
-            // create result
-            this.forEach(output, function(str) {
-                var first, second, value;
+            // transform RPN into html nodes
+            
+            _.forEach(output, function(str) {
+                var term, node;
 
                 if (str in operators) {
-                    first = stack.shift();
-                    second = stack.shift();
+                    term = stack.shift();
+                    node = stack.shift();
 
-                    if (typeof second === "string") {
-                        second = createElem(second);
+                    if (typeof node === "string") {
+                        node = createElement(node);
                     }
 
                     switch(str) {
-                    case ">": 
-                        if (typeof first === "string") {
-                            first = createElem(first);
-                        }
-
-                        second.appendChild(first);
-                        str = second;
-                        break;
-
                     case "+":
-                        if (typeof first === "string") {
-                            first = createElem(first);
-                        }
-
-                        str = createFrag();
-                        str.appendChild(second);
-                        str.appendChild(first);
+                        str = createFragment();
+                        str.appendChild(node);
+                        node = str;
+                        /* falls through */
+                    case ">":
+                        node.appendChild(typeof term === "string" ? createElement(term) : term);
+                        str = node;
                         break;
 
                     case ".":
-                        second.className = first;
-                        str = second;
+                        node.className = term;
+                        str = node;
                         break;
 
                     case "#":
-                        second.id = first;
-                        str = second;
+                        node.id = term;
+                        str = node;
                         break;
 
                     case "*":
-                        str = createFrag();
+                        str = createFragment();
 
-                        this.times(parseInt(first, 10), function(i) {
-                            var el = str.appendChild(second.cloneNode(true));
+                        _.times(parseInt(term, 10), function(i) {
+                            var el = str.appendChild(node.cloneNode(true));
 
-                            this.forEach(el.attributes, modifyAttr, i);
-                        }, this);
+                            _.forEach(el.attributes, modifyAttr, i);
+                        });
                         break;
 
                     case "[":
-                        first = first.split("=");
-                        value = first[1] || "";
-                        if (value && value[0] === "'" || value[0] === "\"") value = value.substr(1, value.length - 2);
-                        second.setAttribute(first[0], value);
-                        str = second;
+                        term = term.split("=");
+                        node.setAttribute(term[0], _.unquote(term[1]));
+                        str = node;
                         break;
                     }
                 }
 
                 stack.unshift(str);
-            }, this);
+            });
 
-            this.forEach(stack, appendTo, result);
-
-            return result;
+            return _.reduce(stack, appendTo, createFragment());
         }
-    }; 
+    }); 
 })());
 </code></pre>
         </article>
@@ -2167,7 +2171,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 11 2013 23:17:34 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun May 12 2013 17:14:11 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
