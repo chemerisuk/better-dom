@@ -36,19 +36,16 @@ Compatability
 -------------
 The library intoduces it's own objects for describing access to DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
 
-Clear and safe APIs
--------------------
-TODO
+You can write DOM extentions and use your own library to modify content on page: any matched element will be automatically initialized.
 
 Quick example: placeholder polyfill
-----------------------------------
+-----------------------------------
 Now it's pretty simple to write your own polyfill:
 
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
-    template: {
-        before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: transparent; border-color: transparent'/>"
-    },
+    before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: transparent; border-color: transparent'/>"
+}, {
     constructor: function() {
         var input = this,
             offset = input.offset(),
@@ -57,7 +54,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
         placeholder
             .set(input.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
-            .on("focus", function(e) {
+            .on("focus", function() {
                 input.fire("focus");
             });
 
@@ -75,7 +72,79 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
 });
 ```
 
-See it in action (open in IE < 10) http://chemerisuk.github.io/better-placeholder-polyfill/
+See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open in IE < 10)
+
+Another example: dateinput polyfill
+-----------------------------------
+See the extension repository at https://github.com/chemerisuk/better-dateinput-polyfill.
+
+Specs example (using jasmine):
+
+```js
+describe("better-dateinput-polyfill", function() {
+    var calendar, dateinput;
+
+    beforeEach(function() {
+        calendar = DOM.mock();
+        dateinput = DOM.mock("input[type=date]");
+
+        spyOn(dateinput, "_refreshCalendar");
+    });
+    
+    ...
+
+    it("should hide calendar on escape or tab key", function() {
+        var spy = spyOn(calendar, "hide");
+
+        dateinput._handleDateInputKeys(9, false, calendar);
+
+        expect(spy).toHaveBeenCalled();
+
+        dateinput._handleDateInputKeys(27, false, calendar);
+
+        expect(spy.callCount).toBe(2);
+    });
+
+    it("should reset calendar value on backspace or delete keys", function() {
+        var spy = spyOn(dateinput, "set");
+
+        spy.andCallFake(function(value) {
+            expect(value).toBe("");
+        });
+
+        dateinput._handleDateInputKeys(8, false, calendar);
+
+        expect(spy).toHaveBeenCalled();
+
+        dateinput._handleDateInputKeys(46, false, calendar);
+
+        expect(spy.callCount).toBe(2);
+    });
+
+    it("should handle arrow keys", function() {
+        var now = new Date(),
+            getSpy = spyOn(dateinput, "getCalendarDate"),
+            setSpy = spyOn(dateinput, "setCalendarDate"),
+            expectKey = function(key, altKey, expected) {
+                getSpy.andReturn(new Date(now.getTime()));
+
+                dateinput._handleDateInputKeys(key, altKey, calendar);
+
+                expect(setSpy).toHaveBeenCalledWith(expected);
+            }
+
+        expectKey(74, false, new Date(now.getTime() + 604800000));
+        expectKey(40, false, new Date(now.getTime() + 604800000));
+        expectKey(75, false, new Date(now.getTime() - 604800000));
+        expectKey(38, false, new Date(now.getTime() - 604800000));
+        expectKey(76, false, new Date(now.getTime() + 86400000));
+        expectKey(39, false, new Date(now.getTime() + 86400000));
+        expectKey(72, false, new Date(now.getTime() - 86400000));
+        expectKey(37, false, new Date(now.getTime() - 86400000));
+    });
+
+});
+```
 
 Browser support
 ---------------
