@@ -12,7 +12,9 @@ Important to note that it doesn't cover everything, for instance there are no me
 
 Installation
 ------------
-`bower install better-dom --save-dev`
+Use [bower](http://bower.io/) to download this extension with all required dependencies:
+
+    bower install better-dom
 
 This will clone the latest version of the better-dom into the `components` directory at the root of your project.
 
