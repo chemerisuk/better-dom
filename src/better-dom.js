@@ -54,7 +54,7 @@
      */
     function DOMNode(node) {
         if (!(this instanceof DOMNode)) {
-            return node ? node.__dom__ || new DOMNode(node) : new DOMNullNode();
+            return new DOMNode(node);
         }
 
         this._node = node;
@@ -483,7 +483,7 @@
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new DOMNullElement();
+            return element ? element.__dom__ || new DOMElement(element) : new MockElement();
         }
 
         DOMNode.call(this, element);
@@ -1130,28 +1130,6 @@
             return this;
         };
     })();
-    
-    // NULL OBJECTS
-
-    function DOMNullNode() { 
-        this._node = null; 
-    }
-    
-    function DOMNullElement() { 
-        this._node = null; 
-    }
-
-    DOMNullNode.prototype = new DOMNode();
-    DOMNullElement.prototype = new DOMElement();
-
-    _.forOwn(DOMNode.prototype, function(key) {
-        _.mixin(DOMNullNode.prototype, key, function() { return this; });
-        _.mixin(DOMNullElement.prototype, key, function() { return this; });
-    });
-
-    _.forOwn(DOMElement.prototype, function(key) {
-        _.mixin(DOMNullElement.prototype, key, function() { return this; });
-    });
 
     // DOMEvent
     // --------
@@ -1380,6 +1358,28 @@
         DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
     })();
 
+    // NULL OBJECTS
+
+    function MockElement() {
+        DOMNode.call(this, null);
+    }
+
+    MockElement.prototype = new DOMElement();
+
+    _.forIn(DOMElement.prototype, function(functor, key) {
+        var isSetter = key in DOMElementCollection.prototype;
+
+        MockElement.prototype[key] = isSetter ? function() { return this; } : function() { };
+    });
+
+    _.forEach("next prev find firstChild lastChild".split(" "), function(key) {
+        MockElement.prototype[key] = function() { return new MockElement(); };
+    });
+
+    _.forEach("nextAll prevAll children findAll".split(" "), function(key) {
+        MockElement.prototype[key] = function() { return new DOMElementCollection([]); };
+    });
+
     /**
      * @private
      * @constructor
@@ -1440,7 +1440,7 @@
     // finish prototypes
     
     // fix constructor property
-    _.forEach([DOMNode, DOMElement, DOMEvent, DOMNullNode, DOMNullElement], function(ctr) {
+    _.forEach([DOMNode, DOMElement, DOMEvent, MockElement], function(ctr) {
         ctr.prototype.constructor = ctr;
     });
 
@@ -1777,7 +1777,7 @@
             _.mixin(el, mixins);
 
             if (mixins.hasOwnProperty("constructor")) {
-                el.constructor = DOMNullElement;
+                el.constructor = MockElement;
 
                 mixins.constructor.call(el);
             }
@@ -1893,6 +1893,11 @@
             forOwn: function(obj, callback, thisPtr) {
                 for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
                     callback.call(thisPtr, list[i], i, obj);
+                }
+            },
+            forIn: function(obj, callback, thisPtr) {
+                for (var key in obj) {
+                    callback.call(thisPtr, obj[key], key, obj);
                 }
             },
             mixin: function(obj, name, value) {
