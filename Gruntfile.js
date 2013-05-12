@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         },
 
         jshint: {
-            all: ["src/*.js", "test/spec/*.js"],
+            all: ["src/*.js", "test/spec/*.js", "Gruntfile.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
@@ -130,17 +130,19 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
+        var commitMessage = "'version " + version + "'";
+
         grunt.config.set("shell.checkVersionTag", {
             command: "git tag -a " + version + " -m ''",
             options: { failOnError: true }
         });
 
         grunt.config.set("shell.updateVersionTag", {
-            command: "git tag -af " + version + " -m 'Version " + version + "'"
+            command: "git tag -af " + version + " -m " + commitMessage
         });
 
         grunt.config.set("shell.commitNewVersion", {
-            command: "git commit -am 'Version " + version + "'"
+            command: "git commit -am " + commitMessage
         });
 
         grunt.registerTask("updateFileVersion", function(filename) {
