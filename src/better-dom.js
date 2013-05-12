@@ -1456,7 +1456,7 @@
     /**
      * Create DOMElement instance
      * @memberOf DOM
-     * @param  {String|Element} content native element or string
+     * @param  {String|Element} content native element, element name or html string
      * @return {DOMElemen} element
      */
     DOM.create = function(content) {
@@ -1819,17 +1819,107 @@
     // UTILITES
     // --------
 
-    var parser = document.createElement("body"),
-        operators = {
-            "+": 1,
-            ".": 4,
-            "#": 3,
-            ">": 1,
-            "[": 6,
-            "]": 5,
-            "*": 2,
+    var _ = {
+        
+            // Collection utilites
+            
+            slice: function(list, index) {
+                return Array.prototype.slice.call(list, index || 0);
+            },
+            forEach: function(list, callback, thisPtr) {
+                for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
+                    callback.call(thisPtr, list[i], i, list);
+                }
+            },
+            filter: function(list, testFn, thisPtr) {
+                var result = [];
+
+                _.forEach(list, function(el, index) {
+                    if (testFn.call(thisPtr, el, index, list)) result.push(el);
+                });
+
+                return result;
+            },
+            every: function(list, testFn, thisPtr) {
+                var result = true;
+
+                _.forEach(list, function(el) {
+                    result = result && testFn.call(thisPtr, el, list);
+                });
+
+                return result;
+            },
+            reduce: function(list, callback, result) {
+                _.forEach(list, function(el, index) {
+                    if (!index && result === undefined) {
+                        result = el;
+                    } else {
+                        result = callback(result, el, index, list);
+                    }
+                });
+
+                return result;
+            },
+            map: function(list, callback, thisPtr) {
+                var result = [];
+
+                _.forEach(list, function(el, index) {
+                    result.push(callback.call(thisPtr, el, index, list));
+                });
+
+                return result;
+            },
+            times: function(n, callback, thisArg) {
+                for (var i = 0; i < n; ++i) {
+                    callback.call(thisArg, i);
+                }
+            },
+
+            // Object utilites
+
+            keys: Object.keys || function(obj) {
+                var objType = typeof obj,
+                    result = [], 
+                    prop;
+
+                if (objType !== "object" && objType !== "function" || obj === null) {
+                    throw new TypeError("Object.keys called on non-object");
+                }
+         
+                for (prop in obj) {
+                    if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
+                }
+
+                return result;
+            },
+            forOwn: function(obj, callback, thisPtr) {
+                for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
+                    callback.call(thisPtr, list[i], i, obj);
+                }
+            },
+            mixin: function(obj, name, value) {
+                if (arguments.length === 3) {
+                    obj[name] = value;
+                } else if (name) {
+                    _.forOwn(name, function(key) {
+                        _.mixin(obj, key, name[key]);
+                    });
+                }
+
+                return obj; 
+            }
+        },
+        parser = document.createElement("body"),
+        operators = { // operatorName / operatorPriority object
             "(": 0,
-            ")": 0
+            ")": 0,
+            "+": 1,
+            ">": 1,
+            "*": 2,
+            "#": 3,
+            ".": 4,
+            "[": 6,
+            "]": 5
         },
         rindex = /\$/g,
         modifyAttr = function(attr, index, items) {
@@ -1839,16 +1929,18 @@
                 if (attr.value) attr.value = attr.value.replace(rindex, this);
             }
         },
-        appendTo = function(el) {
-            this.appendChild(el);
+        appendTo = function(fragment, node) {
+            fragment.appendChild(node);
+
+            return fragment;
         },
-        createElem, createFrag;
+        createElement, createFragment;
 
     if (document.addEventListener) {
-        createElem = function(tagName) {
+        createElement = function(tagName) {
             return document.createElement(tagName);
         };
-        createFrag = function() {
+        createFragment = function() {
             return document.createDocumentFragment();
         };
     } else {
@@ -1866,7 +1958,7 @@
 
             frag.appendChild(parser);
 
-            createElem = function(nodeName) {
+            createElement = function(nodeName) {
                 var node;
 
                 if (cache[nodeName]) {
@@ -1880,7 +1972,7 @@
                 return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
             };
 
-            createFrag = Function("f", "return function(){" +
+            createFragment = Function("f", "return function(){" +
                 "var n=f.cloneNode(),c=n.createElement;" +
                 "(" +
                     // unroll the `createElement` calls
@@ -1894,95 +1986,7 @@
         })();
     }
 
-    return {
-        
-        // Collection utilites
-        
-        slice: function(list, index) {
-            return Array.prototype.slice.call(list, index || 0);
-        },
-        forEach: function(list, callback, thisPtr) {
-            for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
-                callback.call(thisPtr, list[i], i, list);
-            }
-        },
-        filter: function(list, testFn, thisPtr) {
-            var result = [];
-
-            this.forEach(list, function(el, index) {
-                if (testFn.call(thisPtr, el, index, list)) result.push(el);
-            });
-
-            return result;
-        },
-        every: function(list, testFn, thisPtr) {
-            var result = true;
-
-            this.forEach(list, function(el) {
-                result = result && testFn.call(thisPtr, el, list);
-            });
-
-            return result;
-        },
-        reduce: function(list, callback, result) {
-            this.forEach(list, function(el, index) {
-                if (!index && result === undefined) {
-                    result = el;
-                } else {
-                    result = callback(result, el, index, list);
-                }
-            });
-
-            return result;
-        },
-        map: function(list, callback, thisPtr) {
-            var result = [];
-
-            this.forEach(list, function(el, index) {
-                result.push(callback.call(thisPtr, el, index, list));
-            });
-
-            return result;
-        },
-        times: function(n, callback, thisArg) {
-            for (var i = 0; i < n; ++i) {
-                callback.call(thisArg, i);
-            }
-        },
-
-        // Object utilites
-
-        keys: Object.keys || function(obj) {
-            var objType = typeof obj,
-                result = [], 
-                prop;
-
-            if (objType !== "object" && objType !== "function" || obj === null) {
-                throw new TypeError("Object.keys called on non-object");
-            }
-     
-            for (prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
-            }
-
-            return result;
-        },
-        forOwn: function(obj, callback, thisPtr) {
-            for (var list = this.keys(obj), i = 0, n = list.length; i < n; ++i) {
-                callback.call(thisPtr, list[i], i, obj);
-            }
-        },
-        mixin: function(obj, name, value) {
-            if (arguments.length === 3) {
-                obj[name] = value;
-            } else if (name) {
-                this.forOwn(name, function(key) {
-                    this.mixin(obj, key, name[key]);
-                }, this);
-            }
-
-            return obj; 
-        },
+    return _.mixin(_, {
 
         // String utilites
 
@@ -2003,17 +2007,15 @@
 
         // DOM utilites
 
-        createElement: createElem,
+        createElement: createElement,
         parseFragment: function(html) {
-            var fragment = createFrag();
+            var fragment = createFragment();
 
             // fix NoScope bug
             parser.innerHTML = "<br/>" + html;
             parser.removeChild(parser.firstChild);
 
-            this.forEach(parser.childNodes, appendTo, fragment);
-
-            return fragment;
+            return _.reduce(parser.childNodes, appendTo, fragment);
         },
         parseTemplate: function(expr) {
             // use emmet-like syntax to describe html templates:
@@ -2021,11 +2023,11 @@
 
             var stack = [],
                 output = [],
-                term = "", 
-                result = createFrag();
+                term = "";
 
-            // parse exrpression
-            this.forEach(expr, function(str) {
+            // parse exrpression into RPN
+        
+            _.forEach(expr, function(str) {
                 if (str in operators && (stack[0] !== "[" || str === "]")) {
                     if (term) {
                         output.push(term);
@@ -2034,19 +2036,15 @@
 
                     if (str === "(") {
                         stack.unshift(str);
-                    } else if (str === ")") {
-                        while (str = stack.shift()) {
-                            if (str === "(") break;
-
-                            output.push(str);
-                        }
                     } else {
                         while (operators[stack[0]] > operators[str]) {
                             output.push(stack.shift());
                         }
 
-                        if (str !== "]") {
-                            stack.unshift(str);
+                        if (str === ")") {
+                            stack.shift(); // remove "(" symbol from stack
+                        } else if (str !== "]") {
+                            stack.unshift(str); // don't need to have "]" in stack
                         }
                     }
                 } else {
@@ -2054,79 +2052,70 @@
                 }
             });
 
-            if (term) output.push(term);
+            if (term) stack.unshift(term);
 
-            output = output.concat(stack);
+            output.push.apply(output, stack);
+
             stack = [];
 
-            // create result
-            this.forEach(output, function(str) {
-                var first, second, value;
+            // transform RPN into html nodes
+            
+            _.forEach(output, function(str) {
+                var term, node, value;
 
                 if (str in operators) {
-                    first = stack.shift();
-                    second = stack.shift();
+                    term = stack.shift();
+                    node = stack.shift();
 
-                    if (typeof second === "string") {
-                        second = createElem(second);
+                    if (typeof node === "string") {
+                        node = createElement(node);
                     }
 
                     switch(str) {
-                    case ">": 
-                        if (typeof first === "string") {
-                            first = createElem(first);
-                        }
-
-                        second.appendChild(first);
-                        str = second;
-                        break;
-
                     case "+":
-                        if (typeof first === "string") {
-                            first = createElem(first);
-                        }
-
-                        str = createFrag();
-                        str.appendChild(second);
-                        str.appendChild(first);
+                        str = createFragment();
+                        str.appendChild(node);
+                        node = str;
+                        /* falls through */
+                    case ">":
+                        node.appendChild(typeof term === "string" ? createElement(term) : term);
+                        str = node;
                         break;
 
                     case ".":
-                        second.className = first;
-                        str = second;
+                        node.className = term;
+                        str = node;
                         break;
 
                     case "#":
-                        second.id = first;
-                        str = second;
+                        node.id = term;
+                        str = node;
                         break;
 
                     case "*":
-                        str = createFrag();
+                        str = createFragment();
 
-                        this.times(parseInt(first, 10), function(i) {
-                            var el = str.appendChild(second.cloneNode(true));
+                        _.times(parseInt(term, 10), function(i) {
+                            var el = str.appendChild(node.cloneNode(true));
 
-                            this.forEach(el.attributes, modifyAttr, i);
-                        }, this);
+                            _.forEach(el.attributes, modifyAttr, i);
+                        });
                         break;
 
                     case "[":
-                        first = first.split("=");
-                        value = first[1] || "";
+                        term = term.split("=");
+                        value = term[1] || "";
                         if (value && value[0] === "'" || value[0] === "\"") value = value.substr(1, value.length - 2);
-                        second.setAttribute(first[0], value);
-                        str = second;
+                        node.setAttribute(term[0], value);
+                        str = node;
                         break;
                     }
                 }
 
                 stack.unshift(str);
-            }, this);
+            });
 
-            this.forEach(stack, appendTo, result);
-
-            return result;
+            return _.reduce(stack, appendTo, createFragment());
         }
-    }; 
+    }); 
 })());
