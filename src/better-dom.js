@@ -1932,6 +1932,13 @@
                 if (attr.value) attr.value = attr.value.replace(rindex, this);
             }
         },
+        parseAttrs = function(str) {
+            var attrParts = str.split("="),
+                key = attrParts[0],
+                value = attrParts[1];
+
+            this.setAttribute(key, _.unquote(value));
+        },
         appendTo = function(fragment, node) {
             fragment.appendChild(node);
 
@@ -2039,7 +2046,15 @@
             // parse exrpression into RPN
         
             _.forEach(expr, function(str) {
-                if (str in operators && (stack[0] !== "[" || str === "]")) {
+                var top = stack[0];
+
+                if (str in operators && (top !== "[" || str === "]")) {
+                    if (top === "." && str === ".") {
+                        term += " "; // handle .class1.class2
+
+                        return;
+                    }
+
                     if (term) {
                         output.push(term);
                         term = "";
@@ -2070,7 +2085,7 @@
             stack = [];
 
             // transform RPN into html nodes
-            
+
             _.forEach(output, function(str) {
                 var term, node;
 
@@ -2090,17 +2105,14 @@
                         /* falls through */
                     case ">":
                         node.appendChild(typeof term === "string" ? createElement(term) : term);
-                        str = node;
                         break;
 
                     case ".":
                         node.className = term;
-                        str = node;
                         break;
 
                     case "#":
                         node.id = term;
-                        str = node;
                         break;
 
                     case "*":
@@ -2111,14 +2123,17 @@
 
                             _.forEach(el.attributes, modifyAttr, i);
                         });
+
+                        node = str;
                         break;
 
                     case "[":
-                        term = term.split("=");
-                        node.setAttribute(term[0], _.unquote(term[1]));
-                        str = node;
+                        _.forEach(term.split(" "), parseAttrs, node);
+
                         break;
                     }
+
+                    str = node;
                 }
 
                 stack.unshift(str);

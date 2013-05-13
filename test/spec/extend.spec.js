@@ -93,6 +93,15 @@ describe("extend", function() {
             checkExpression("div.b>p.header+a.prev+a.next+table.days>(tr>th[data-i18n='c$']*3)+(tr>td*7)*2", 
                 "<div class=\"b\"><p class=\"header\"></p><a class=\"prev\"></a><a class=\"next\"></a><table class=\"days\"><tr><th data-i18n=\"c0\"></th><th data-i18n=\"c1\"></th><th data-i18n=\"c2\"></th></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>"));
 
+        it("should accept b[c d e=f]",
+            checkExpression("b[c d e=f]", "<b c=\"\" d=\"\" e=\"f\"></b>"));
+
+        it("should accept b.c1.c2",
+            checkExpression("b.c1.c2", "<b class=\"c1 c2\"></b>"));
+
+        // it("should accept ul>li*3>b",
+        //     checkExpression("ul>li*3>b", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>"));
+
         function normalizeHTML(str) {
             return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-]+)([ >])/g, function(str, $n, $v, $e) {
                 return $n + "=\"" + $v + "\"" + $e;
