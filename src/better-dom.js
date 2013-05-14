@@ -511,7 +511,7 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.clone = function() {
-        return new DOMElement(this._node.cloneNode(true));
+        return new DOMElement(_.cloneNode(this._node));
     };
 
     /**
@@ -1748,7 +1748,7 @@
         DOM.watch(selector, function(el) {
             if (template) {
                 _.forOwn(template, function(key) {
-                    el[key](template[key].cloneNode(true));
+                    el[key](_.cloneNode(template[key]));
                 });
             }
 
@@ -1915,16 +1915,17 @@
         parser = document.createElement("body"),
         operators = { // operatorName / operatorPriority object
             "(": 0,
-            ")": 0,
-            "+": 1,
+            ")": 1,
             ">": 1,
-            "*": 2,
-            "#": 3,
-            ".": 4,
-            "[": 6,
+            "+": 3,
+            "*": 4,
+            "#": 5,
+            ".": 5,
+            "[": 5,
             "]": 5
         },
         rindex = /\$/g,
+        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
         modifyAttr = function(attr) {
             if (attr.specified) {
                 // changing attribute name doesn't work in IE
@@ -1944,11 +1945,14 @@
 
             return fragment;
         },
-        createElement, createFragment;
+        createElement, cloneNode, createFragment;
 
     if (document.addEventListener) {
         createElement = function(tagName) {
             return document.createElement(tagName);
+        };
+        cloneNode = function(node) {
+            return node.cloneNode(true);
         };
         createFragment = function() {
             return document.createDocumentFragment();
@@ -1993,6 +1997,19 @@
                     }) +
                 ");return n}"
             )(frag);
+
+            // IE<=8 does not properly clone detached, unknown element nodes
+            cloneNode = function(node) {
+                if (node.nodeType === 1) {
+                    parser.innerHTML = node.outerHTML;
+                    return parser.firstChild;    
+                } else if (node.nodeType === 11) {
+                    parser.innerHTML = "";
+                    parser.appendChild(node);
+
+                    return _.parseFragment(parser.innerHTML);
+                }
+            };
         })();
     }
 
@@ -2026,6 +2043,7 @@
         // DOM utilites
 
         createElement: createElement,
+        cloneNode: cloneNode,
         parseFragment: function(html) {
             var fragment = createFragment();
 
@@ -2033,7 +2051,11 @@
             parser.innerHTML = "<br/>" + html;
             parser.removeChild(parser.firstChild);
 
-            return _.reduce(parser.childNodes, appendTo, fragment);
+            while (parser.firstChild) {
+                fragment.appendChild(parser.firstChild);
+            }
+
+            return fragment;
         },
         parseTemplate: function(expr) {
             // use emmet-like syntax to describe html templates:
@@ -2046,11 +2068,17 @@
             // parse exrpression into RPN
         
             _.forEach(expr, function(str) {
-                var top = stack[0];
+                var top = stack[0], priority;
 
-                if (str in operators && (top !== "[" || str === "]")) {
+                if (str in operators) {
+                    if (top === "[" && str !== "]") {
+                        term += str;
+
+                        return;
+                    }
+
                     if (top === "." && str === ".") {
-                        term += " "; // handle .class1.class2
+                        term += " "; // concat .c1.c2 into single space separated class string
 
                         return;
                     }
@@ -2063,14 +2091,16 @@
                     if (str === "(") {
                         stack.unshift(str);
                     } else {
-                        while (operators[stack[0]] > operators[str]) {
+                        priority = operators[str];
+                        if (str === ">") ++priority; // nested > operator has higher priority
+                        while (operators[stack[0]] >= priority) {
                             output.push(stack.shift());
                         }
 
                         if (str === ")") {
                             stack.shift(); // remove "(" symbol from stack
-                        } else if (str !== "]") {
-                            stack.unshift(str); // don't need to have "]" in stack
+                        } else if (str !== "]") { // don't need to have "]" in stack
+                            stack.unshift(str); 
                         }
                     }
                 } else {
@@ -2091,7 +2121,7 @@
 
                 if (str in operators) {
                     term = stack.shift();
-                    node = stack.shift();
+                    node = stack.shift() || "div";
 
                     if (typeof node === "string") {
                         node = createElement(node);
@@ -2119,16 +2149,16 @@
                         str = createFragment();
 
                         _.times(parseInt(term, 10), function(i) {
-                            var el = str.appendChild(node.cloneNode(true));
+                            var el = str.appendChild(cloneNode(node));
 
-                            _.forEach(el.attributes, modifyAttr, i);
+                            _.forEach(el.attributes, modifyAttr, i + 1);
                         });
 
                         node = str;
                         break;
 
                     case "[":
-                        _.forEach(term.split(" "), parseAttrs, node);
+                        _.forEach(term.match(rattr), parseAttrs, node);
 
                         break;
                     }

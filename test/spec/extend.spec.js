@@ -5,7 +5,7 @@ describe("extend", function() {
         callback;
 
     beforeEach(function() {
-        setFixtures("<div class='expr'></div><a class='extend'></a><span class='extend'></span><b class='extend'></b>");
+        setFixtures("<div id='expr'></div><a class='extend'></a><span class='extend'></span><b class='extend'></b>");
 
         callback = jasmine.createSpy("callback");
     });
@@ -53,57 +53,94 @@ describe("extend", function() {
     });
 
     describe("template expressions", function() {
-        it("should accept ul>li>a", 
-            checkExpression("ul>li>a", "<ul><li><a></a></li></ul>"));
+        var step = 0;
 
-        it("should accept a+b+i", 
-            checkExpression("a+b+i", "<a></a><b></b><i></i>"));
+        beforeEach(function() {
+            DOM.find("#expr").append("<div class='expr" + step + "'></div>");
+        });
 
-        it("should accept ul.cc>li", 
-            checkExpression("ul.cc>li", "<ul class=\"cc\"><li></li></ul>"));
+        afterEach(function() {
+            ++step;
+        });
 
-        it("should accept a#aa+b#bb", 
-            checkExpression("a#aa+b#bb", "<a id=\"aa\"></a><b id=\"bb\"></b>"));
+        // IE8 always put id and class attributes at the beginning of innerHTML string 
+        // so in tests always put id before classes/attributes and classes before attributes
+        // also IE doesn't put empty value for unknown attributes so use only valid attributes
 
-        it("should accept ul>li*3", 
-            checkExpression("ul>li*3", "<ul><li></li><li></li><li></li></ul>"));
+        it("should accept p+p",
+            checkExpression("p+p", "<p></p><p></p>"));
+        it("should accept p.name+p+p",
+            checkExpression("p.name+p+p", "<p class=\"name\"></p><p></p><p></p>"));
+        
+        it("should accept p>em",
+            checkExpression("p>em", "<p><em></em></p>"));
+        it("should accept p.hello>em.world>span",
+            checkExpression("p.hello>em.world>span", "<p class=\"hello\"><em class=\"world\"><span></span></em></p>"));
+        
+        // classes
 
-        it("should accept a[href]", 
-            checkExpression("a[href]", "<a href=\"\"></a>"));
+        it("should accept p.name",
+            checkExpression("p.name", "<p class=\"name\"></p>"));
+        it("should accept p.one.two.three",
+            checkExpression("p.one.two.three", "<p class=\"one two three\"></p>"));
+        it("should accept p.one.two-three",
+            checkExpression("p.one.two-three", "<p class=\"one two-three\"></p>"));
+        
+        // id
 
-        it("should accept a[href='a']>span[title=\"t\"]", 
-            checkExpression("a[href='a']>span[title=\"t\"]", "<a href=\"a\"><span title=\"t\"></span></a>"));
+        it("should accept p#myid",
+            checkExpression("p#myid", "<p id=\"myid\"></p>"));
+        it("should accept p#myid.name_with-dash32.otherclass",
+            checkExpression("p#myid.name_with-dash32.otherclass", "<p id=\"myid\" class=\"name_with-dash32 otherclass\"></p>"));
+        it("should accept span#three.one.two",
+            checkExpression("span#three.one.two", "<span id=\"three\" class=\"one two\"></span>"));
+        
+        // attributes
 
-        it("should accept a[href=test]+b", 
-            checkExpression("a[href=test]+b", "<a href=\"test\"></a><b></b>"));
+        it("should accept a[title]",
+            checkExpression("a[title]", "<a title=\"\"></a>"));
+        it("should accept a[title href]",
+            checkExpression("a[title href]", "<a title=\"\" href=\"\"></a>"));
+        it("should accept a.test[title href]",
+            checkExpression("a.test[title href]", "<a class=\"test\" title=\"\" href=\"\"></a>"));
+        it("should accept a.test[title href]",
+            checkExpression("a.test[title href]", "<a class=\"test\" title=\"\" href=\"\"></a>"));
+        it("should accept a#one.two[title href]",
+            checkExpression("a#one.two[title href]", "<a id=\"one\" class=\"two\" title=\"\" href=\"\"></a>"));
+        it("should accept a[title=hello]",
+            checkExpression("a[title=hello]", "<a title=\"hello\"></a>"));
+        it("should accept a[title=\"hello world\"]",
+            checkExpression("a[title=\"hello world\"]", "<a title=\"hello world\"></a>"));
+        it("should accept a[title='hello world']",
+            checkExpression("a[title='hello world']", "<a title=\"hello world\"></a>"));
+        it("should accept a[title='hello world' href=other]",
+            checkExpression("a[title='hello world' href=other]", "<a title=\"hello world\" href=\"other\"></a>"));
+        it("should accept a[title='hello world' href=other name]",
+            checkExpression("a[title='hello world' href=other name]", "<a title=\"hello world\" href=\"other\" name=\"\"></a>"));
+        it("should accept a[title='hello world' href=other name]>em",
+            checkExpression("a[title='hello world' href=other name]>em", "<a title=\"hello world\" href=\"other\" name=\"\"><em></em></a>"));
+        it("should accept section[id=javascript.files]",
+            checkExpression("section[id=javascript.files]", "<section id=\"javascript.files\"></section>"));
 
-        it("should accept (a*2+b)*2", 
-            checkExpression("(a*2+b)*2", "<a></a><a></a><b></b><a></a><a></a><b></b>"));
+        // counters
 
-        it("should accept a[data-i18n='test.key']",
-            checkExpression("a[data-i18n='test.key']", "<a data-i18n=\"test.key\"></a>"));
+        it("should accept ul#nav>li.item$*3",
+            checkExpression("ul#nav>li.item$*3", "<ul id=\"nav\"><li class=\"item1\"></li><li class=\"item2\"></li><li class=\"item3\"></li></ul>"));
+        it("should accept ul>(li>b)*3",
+            checkExpression("ul>(li>b)*3", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>"));
+        it("should accept ul#nav>li.pre$*3+li.post$*3",
+            checkExpression("ul#nav>li.pre$*3+li.post$*3", "<ul id=\"nav\"><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"pre3\"></li><li class=\"post1\"></li><li class=\"post2\"></li><li class=\"post3\"></li></ul>"));
+        it("should accept .sample$*3",
+            checkExpression(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>"));
 
-        it("should accept a#x$*3",
-            checkExpression("a#x$*3", "<a id=\"x0\"></a><a id=\"x1\"></a><a id=\"x2\"></a>"));
-
-        it("should accept a.t$*3",
-            checkExpression("a.t$*3", "<a class=\"t0\"></a><a class=\"t1\"></a><a class=\"t2\"></a>"));
-
-        it("should accept complex",
-            checkExpression("div.b>p.header+a.prev+a.next+table.days>(tr>th[data-i18n='c$']*3)+(tr>td*7)*2", 
-                "<div class=\"b\"><p class=\"header\"></p><a class=\"prev\"></a><a class=\"next\"></a><table class=\"days\"><tr><th data-i18n=\"c0\"></th><th data-i18n=\"c1\"></th><th data-i18n=\"c2\"></th></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table></div>"));
-
-        it("should accept b[c d e=f]",
-            checkExpression("b[c d e=f]", "<b c=\"\" d=\"\" e=\"f\"></b>"));
-
-        it("should accept b.c1.c2",
-            checkExpression("b.c1.c2", "<b class=\"c1 c2\"></b>"));
-
-        // it("should accept ul>li*3>b",
-        //     checkExpression("ul>li*3>b", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>"));
+        // shortcuts
+        // it("should accept input:checkbox",
+        //     checkExpression("input:checkbox", "<input type=\"checkbox\"/>"));
 
         function normalizeHTML(str) {
-            return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-]+)([ >])/g, function(str, $n, $v, $e) {
+            // convert string to lowercase, remove extra spaces and 
+            // wrap attribute names with quotes because of IE
+            return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-.]+)([ >])/g, function(str, $n, $v, $e) {
                 return $n + "=\"" + $v + "\"" + $e;
             });
         }
@@ -111,11 +148,9 @@ describe("extend", function() {
             return function() {
                 callback.andCallFake(function() {
                     expect(normalizeHTML(this.get())).toBe(result);
-
-                    this.set("");
                 });
 
-                DOM.extend(".expr", { append: template }, { constructor: callback });
+                DOM.extend(".expr" + step, { append: template }, { constructor: callback });
 
                 waits(WAIT_FOR_WATCH_TIME);
 
