@@ -1940,11 +1940,6 @@
 
             this.setAttribute(key, _.unquote(value));
         },
-        appendTo = function(fragment, node) {
-            fragment.appendChild(node);
-
-            return fragment;
-        },
         createElement, cloneNode, createFragment;
 
     if (document.addEventListener) {
@@ -2097,7 +2092,7 @@
                         stack.unshift(str);
                     } else {
                         priority = operators[str];
-                        
+                        if (str === ">") ++priority; // nested ">" should have higher priority
                         while (operators[stack[0]] >= priority) {
                             output.push(stack.shift());
                         }
@@ -2122,7 +2117,7 @@
             // transform RPN into html nodes
 
             _.forEach(output, function(str) {
-                var term, node;
+                var term, node, proto;
 
                 if (str in operators) {
                     term = stack.shift();
@@ -2133,18 +2128,6 @@
                     }
 
                     switch(str) {
-                    case "+":
-                        if (node.nodeType === 1) node = node.parentNode;
-                        /* falls through */
-                    case ">":
-                        if (typeof term === "string") {
-                            term = createElement(term);
-                        }
-
-                        node.appendChild(term);
-                        if (term.nodeType === 1) node = node.lastChild;
-                        break;
-
                     case ".":
                         node.className = term;
                         break;
@@ -2153,19 +2136,32 @@
                         node.id = term;
                         break;
 
+                    case "[":
+                        _.forEach(term.match(rattr), parseAttrs, node);
+                        break;
+
+                    case "+":
+                        node = node.parentNode || node;
+                        /* falls through */
+                    case ">":
+                        if (typeof term === "string") {
+                            term = createElement(term);
+                        }
+
+                        node.appendChild(term);
+                        break;
+
                     case "*":
-                        str = node.parentNode;
+                        proto = node.parentNode || node;
                         node = createFragment();
 
                         _.times(parseInt(term, 10), function(i) {
-                            node.appendChild(cloneNode(str));
+                            node.appendChild(cloneNode(proto));
 
-                            _.forEach(node.lastChild.attributes, modifyAttr, i + 1);
+                            _.forEach(node.childNodes, function(child) {
+                                _.forEach(child.attributes, modifyAttr, i + 1);
+                            });
                         });
-                        break;
-
-                    case "[":
-                        _.forEach(term.match(rattr), parseAttrs, node);
                         break;
                     }
 
@@ -2175,9 +2171,7 @@
                 stack.unshift(str);
             });
 
-            output = stack[0];
-
-            while (output.parentNode) output = output.parentNode;
+            for (output = stack[0]; output.parentNode; output = output.parentNode);
 
             return output;
         }

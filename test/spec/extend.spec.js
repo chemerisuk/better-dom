@@ -74,6 +74,8 @@ describe("extend", function() {
         
         it("should accept p>em",
             checkExpression("p>em", "<p><em></em></p>"));
+        it("should accept ul>li>a",
+            checkExpression("ul>li>a", "<ul><li><a></a></li></ul>"));
         it("should accept p.hello>em.world>span",
             checkExpression("p.hello>em.world>span", "<p class=\"hello\"><em class=\"world\"><span></span></em></p>"));
         
@@ -132,6 +134,28 @@ describe("extend", function() {
             checkExpression("ul#nav>li.pre$*3+li.post$*3", "<ul id=\"nav\"><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"pre3\"></li><li class=\"post1\"></li><li class=\"post2\"></li><li class=\"post3\"></li></ul>"));
         it("should accept .sample$*3",
             checkExpression(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>"));
+        it("should accept li#id$.class$*3",
+            checkExpression("li#id$.class$*3", "<li id=\"id1\" class=\"class1\"></li><li id=\"id2\" class=\"class2\"></li><li id=\"id3\" class=\"class3\"></li>"));
+
+        // groups
+        
+        it("should accept div#head+(p>span)+div#footer",
+            checkExpression("div#head+(p>span)+div#footer", "<div id=\"head\"></div><p><span></span></p><div id=\"footer\"></div>"));
+        it("should accept div#head>((ul#nav>li*3)+(div.subnav>p)+(div.othernav))+div#footer",
+            checkExpression("div#head>((ul#nav>li*3)+(div.subnav>p)+(div.othernav))+div#footer", "<div id=\"head\"><ul id=\"nav\"><li></li><li></li><li></li></ul><div class=\"subnav\"><p></p></div><div class=\"othernav\"></div><div id=\"footer\"></div></div>"));
+        // it("should accept div#head>(ul#nav>li*3>(div.subnav>p)+(div.othernav))+div#footer",
+        //     checkExpression("div#head>(ul#nav>li*3>(div.subnav>p)+(div.othernav))+div#footer", "<div id=\"head\"><ul id=\"nav\"><li><div class=\"subnav\"><p></p></div><div class=\"othernav\"></div></li><li><div class=\"subnav\"><p></p></div><div class=\"othernav\"></div></li><li><div class=\"subnav\"><p></p></div><div class=\"othernav\"></div></li></ul><div id=\"footer\"></div></div>"));
+        // it("should accept ul>li.pre$*2+(li.item$*4>a)+li.post$*2",
+        //     checkExpression("ul>li.pre$*2+(li.item$*4>a)+li.post$*2", "<ul><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"item1\"><a href=\"\"></a></li><li class=\"item2\"><a href=\"\"></a></li><li class=\"item3\"><a href=\"\"></a></li><li class=\"item4\"><a href=\"\"></a></li><li class=\"post1\"></li><li class=\"post2\"></li></ul>"));
+        it("should accept div>(i+b)*2+(span+em)*3",
+            checkExpression("div>(i+b)*2+(span+em)*3", "<div><i></i><b></b><i></i><b></b><span></span><em></em><span></span><em></em><span></span><em></em></div>"));
+        
+        // group multiplication
+        it("should accept (span.i$)*3",
+            checkExpression("(span.i$)*3", "<span class=\"i1\"></span><span class=\"i2\"></span><span class=\"i3\"></span>"));
+        // it("should accept p.p$*2>(i.i$+b.b$)*3",
+        //     checkExpression("p.p$*2>(i.i$+b.b$)*3", "<p class=\"p1\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p><p class=\"p2\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p>"));
+        
 
         // shortcuts
         // it("should accept input:checkbox",
