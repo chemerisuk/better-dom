@@ -1916,7 +1916,7 @@
         operators = { // operatorName / operatorPriority object
             "(": 0,
             ")": 1,
-            ">": 1,
+            ">": 2,
             "+": 3,
             "*": 4,
             "#": 5,
@@ -2004,11 +2004,16 @@
                     parser.innerHTML = node.outerHTML;
                     return parser.firstChild;    
                 } else if (node.nodeType === 11) {
-                    parser.innerHTML = "";
-                    parser.appendChild(node);
+                    var result = "", el;
 
-                    return _.parseFragment(parser.innerHTML);
+                    for (el = node.firstChild; el; el = el.nextSibling) {
+                        result += el.outerHTML;
+                    }
+
+                    return _.parseFragment(result);
                 }
+
+                return node.cloneNode(true);
             };
         })();
     }
@@ -2092,7 +2097,7 @@
                         stack.unshift(str);
                     } else {
                         priority = operators[str];
-                        if (str === ">") ++priority; // nested > operator has higher priority
+                        
                         while (operators[stack[0]] >= priority) {
                             output.push(stack.shift());
                         }
@@ -2124,17 +2129,20 @@
                     node = stack.shift() || "div";
 
                     if (typeof node === "string") {
-                        node = createElement(node);
+                        createFragment().appendChild( node = createElement(node) );
                     }
 
                     switch(str) {
                     case "+":
-                        str = createFragment();
-                        str.appendChild(node);
-                        node = str;
+                        if (node.nodeType === 1) node = node.parentNode;
                         /* falls through */
                     case ">":
-                        node.appendChild(typeof term === "string" ? createElement(term) : term);
+                        if (typeof term === "string") {
+                            term = createElement(term);
+                        }
+
+                        node.appendChild(term);
+                        if (term.nodeType === 1) node = node.lastChild;
                         break;
 
                     case ".":
@@ -2146,20 +2154,18 @@
                         break;
 
                     case "*":
-                        str = createFragment();
+                        str = node.parentNode;
+                        node = createFragment();
 
                         _.times(parseInt(term, 10), function(i) {
-                            var el = str.appendChild(cloneNode(node));
+                            node.appendChild(cloneNode(str));
 
-                            _.forEach(el.attributes, modifyAttr, i + 1);
+                            _.forEach(node.lastChild.attributes, modifyAttr, i + 1);
                         });
-
-                        node = str;
                         break;
 
                     case "[":
                         _.forEach(term.match(rattr), parseAttrs, node);
-
                         break;
                     }
 
@@ -2169,7 +2175,11 @@
                 stack.unshift(str);
             });
 
-            return _.reduce(stack, appendTo, createFragment());
+            output = stack[0];
+
+            while (output.parentNode) output = output.parentNode;
+
+            return output;
         }
     }); 
 })());
