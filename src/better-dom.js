@@ -1229,7 +1229,7 @@
      * @constructor
      */
     function DOMElementCollection(elements) {
-        this._nodes = _.map(elements, DOMElement);
+        this._nodes = _.map(elements || [], DOMElement);
         this.length = this._nodes.length;
     }
 
@@ -1358,7 +1358,8 @@
         DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
     })();
 
-    // NULL OBJECTS
+    // Mock Element
+    // ------------
 
     function MockElement() {
         DOMNode.call(this, null);
@@ -1377,7 +1378,7 @@
     });
 
     _.forEach("nextAll prevAll children findAll".split(" "), function(key) {
-        MockElement.prototype[key] = function() { return new DOMElementCollection([]); };
+        MockElement.prototype[key] = function() { return new DOMElementCollection(); };
     });
 
     /**
@@ -2070,13 +2071,7 @@
             _.forEach(expr, function(str) {
                 var top = stack[0], priority;
 
-                if (str in operators) {
-                    if (top === "[" && str !== "]") {
-                        term += str;
-
-                        return;
-                    }
-
+                if (str in operators && (top !== "[" || str === "]")) {
                     if (top === "." && str === ".") {
                         term += " "; // concat .c1.c2 into single space separated class string
 
@@ -2148,7 +2143,13 @@
                             term = createElement(term);
                         }
 
-                        node.appendChild(term);
+                        if (!node.parentNode && str === ">") {
+                            _.forEach(node.childNodes, function(child) {
+                                child.appendChild(cloneNode(term));
+                            });
+                        } else {
+                            node.appendChild(term);
+                        }
                         break;
 
                     case "*":

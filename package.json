@@ -19,7 +19,10 @@
         "grunt-shell": "0.2.2",
         "grunt-contrib-uglify": "0.2.0",
         "grunt-contrib-copy": "0.4.1",
-        "grunt-contrib-clean": "0.4.1"
+        "grunt-contrib-clean": "0.4.1",
+
+        "platform": "1.0.0",
+        "benchmark": "1.0.0"
     },
     "scripts": {
         "test": "grunt travis"
