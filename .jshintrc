@@ -25,6 +25,10 @@
         "spyOn": true,
 
         "module": true,
-        "require": true
+        "require": true,
+
+        "suite": true,
+        "benchmark": true.
+        "jQuery": true
     }
 }

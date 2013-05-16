@@ -255,3 +255,7 @@ a:hover, a:active, a:focus {
 #benchmine .chart .tickval {
   text-anchor: middle;
 }
+
+pre.prettyprint {
+  border: 0;
+}

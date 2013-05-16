@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Benchmark Runner</title>
+
+    <!-- Prettify -->
+    <link href="../components/google-code-prettify/src/prettify.css" rel="stylesheet">
+    <script src="../components/google-code-prettify/src/prettify.js"></script>
+    <!-- D3.js -->
+    <script src="../components/d3/d3.js"></script>
+    <!-- Platform.js -->
+    <script src="../node_modules/platform/platform.js"></script>
+    <!-- Benchmark.js -->
+    <script src="../node_modules/benchmark/benchmark.js"></script>
+
+    <!-- Benchmine -->
+    <link href="lib/benchmine/benchmine.css" rel="stylesheet">
+    <script src="lib/benchmine/benchmine-env.js"></script>
+    <script src="lib/benchmine/benchmine-html.js"></script>
+    <script src="lib/benchmine/benchmine-report-table.js"></script>
+    <script src="lib/benchmine/benchmine-report-chart.js"></script>
+
+    <!-- libs -->
+    <script src="../components/jquery/jquery.js"></script>
+    <script src="../src/better-dom.js" data-htc="better-dom.htc"></script>
+  </head>
+
+  <body>
+    <a href="#" id="test1" data-test="t1"></a>
+    <a href="#" id="test2" data-test="t2"></a>
+    <a href="#" id="test3" data-test="t3"></a>
+
+    <!-- speeds -->
+    <script src="speed/get.suite.js"></script>
+    <script>
+      (function() {
+        var execBenchmine = function () {
+          var benchmineEnv = Benchmine.getEnv();
+          benchmineEnv.show();
+
+          var tableReporter   = new Benchmine.TableReporter();
+          var chartReporter   = new Benchmine.ChartReporter();
+          
+          benchmineEnv.addReporter(tableReporter);
+          benchmineEnv.addReporter(chartReporter);
+        }
+
+        var currentWindowOnload = window.onload;
+        window.onload = function() {
+          if (currentWindowOnload) {
+            currentWindowOnload();
+          }
+          execBenchmine();
+          prettyPrint();
+        };
+      })();
+    </script>
+  </body>
+</html>
