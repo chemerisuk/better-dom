@@ -78,17 +78,17 @@
   };
 
   // Adds a suite to the benchmark environment.
-  Env.prototype.addSuite = function (name, defs) {
+  Env.prototype.addSuite = function (name, defs, settings) {
     var me = this;
 
     // The current suite will be the parent of the new one.
     var parentSuite = me.currentSuite;
 
     // Create a new suite, ...
-    var suiteOpts = {
-      nextSuite     : me.suites.length + 1,
-      nextBenchmark : 1
-    };
+    var suiteOpts = settings;
+
+    suiteOpts.nextSuite = me.suites.length + 1;
+    suiteOpts.nextBenchmark = 1;
     suiteOpts.id   = String(suiteOpts.nextSuite);
     suiteOpts.name = (parentSuite == null ? '' : parentSuite.name + ' :: ') + name;
     var suite = new Benchmark.Suite(suiteOpts);
@@ -165,8 +165,8 @@
   // ---------------------------------------------------------------------------
 
   // Adds a suite to the benchmark environment.
-  function suite(name, defs) {
-     getEnv().addSuite(name, defs);
+  function suite(name, defs, settings) {
+     getEnv().addSuite(name, defs, settings || {});
   }
 
   // Adds a test to the current suite.

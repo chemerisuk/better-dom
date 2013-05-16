@@ -28,7 +28,7 @@
         "require": true,
 
         "suite": true,
-        "benchmark": true.
+        "benchmark": true,
         "jQuery": true
     }
 }
