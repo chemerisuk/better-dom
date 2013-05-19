@@ -1064,18 +1064,24 @@
             }
         });
 
-        _.forEach("padding- margin- border-Width border-Style".split(" "), function(propName) {
-            var hookName = _.reduce(propName.split("-"), function(hookName, word) {
-                    return hookName + (word ? ("-" + word[0].toLowerCase() + word.substr(1)) : "");
-                }),
-                props = _.map("Left Top Right Bottom".split(" "), function(prop) {
-                    return propName.replace("-", prop);
-                });
+        // shortcuts
+        _.forOwn({
+            font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
+            padding: ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"],
+            margin: ["marginTop", "marginRight", "marginBottom", "marginLeft"],
+            "border-width": ["borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth"],
+            "border-style": ["borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle"]
+        }, function(key, index, obj) {
+            getStyleHooks[key] = function(style) {
+                var props = obj[key],
+                    result = [],
+                    hasEmptyStyleValue = function(prop, index) {
+                        result.push(prop === "/" ? prop : style[prop]);
 
-            getStyleHooks[hookName] = function(style) {
-                return _.trim(_.reduce(props, function(result, value) {
-                    return result + " " + style[value];
-                }, ""));
+                        return !result[index];
+                    };
+
+                return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
             };
         });
 
@@ -1874,6 +1880,15 @@
                 });
 
                 return result;
+            },
+            some: function(list, testFn, thisPtr) {
+                for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
+                    if (testFn.call(thisPtr, list[i], i, list) === true) {
+                        return true;
+                    }
+                }
+
+                return false;
             },
             reduce: function(list, callback, result) {
                 _.forEach(list, function(el, index) {
