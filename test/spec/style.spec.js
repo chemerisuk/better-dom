@@ -4,7 +4,7 @@ describe("style", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid'></a>");
+        setFixtures("<a id='test' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left'></a>");
 
         link = DOM.find("#test");
     });
@@ -31,6 +31,10 @@ describe("style", function() {
 
         it("should read runtime style property if style doesn't contain any value", function() {
             expect(link.getStyle("font-size")).toBeTruthy();
+        });
+
+        it("should fix float property name", function() {
+            expect(link.getStyle("float")).toBe("left");
         });
 
         it("should throw error if arguments are invalid", function() {
@@ -63,6 +67,16 @@ describe("style", function() {
             expect(link.getStyle("border-top-width")).toBe(value);
             expect(link.getStyle("border-bottom-width")).toBe(value);
             expect(link.getStyle("border-right-width")).toBe(value);
+        });
+
+        it("should support number values", function() {
+            link.setStyle("line-height", 7);
+
+            expect(link.getStyle("line-height")).toBe("7");
+
+            link.setStyle("width", 50);
+
+            expect(link.getStyle("width")).toBe("50px");
         });
 
         it("should throw error if arguments are invalid", function() {

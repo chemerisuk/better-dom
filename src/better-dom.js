@@ -1033,7 +1033,8 @@
 
     // style manipulation
     (function() {
-        var cssHooks = {},
+        var getStyleHooks = {},
+            setStyleHooks = {},
             rdash = /\-./g,
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
@@ -1053,23 +1054,10 @@
             }
 
             if (stylePropName !== propName) {
-                cssHooks[unprefixedName] = {
-                    get: function(style) {
-                        return style[stylePropName];
-                    },
-                    set: function(style, value) {
-                        style[stylePropName] = value;
-                    }
+                getStyleHooks[unprefixedName] = function(style) {
+                    return style[stylePropName];
                 };
             }
-        });
-
-        _.forEach("width height padding margin".split(" "), function(propName) {
-            cssHooks[propName] = {
-                set: function(style, value) {
-                    style[propName] = typeof value === "number" ? value + "px" : value; 
-                }
-            };
         });
 
         _.forEach("padding- margin- border-Width border-Style".split(" "), function(propName) {
@@ -1080,12 +1068,28 @@
                     return propName.replace("-", prop);
                 });
 
-            cssHooks[hookName] = {
-                get: function(style) {
-                    return _.trim(_.reduce(props, function(result, value) {
-                        return result + " " + style[value];
-                    }, ""));
-                }
+            getStyleHooks[hookName] = function(style) {
+                return _.trim(_.reduce(props, function(result, value) {
+                    return result + " " + style[value];
+                }, ""));
+            };
+        });
+
+        // normalize float css property
+        if ("cssFloat" in htmlEl.style) {
+            getStyleHooks.float = function(style) {
+                return style.cssFloat; 
+            };
+        } else {
+            getStyleHooks.float = function(style) {
+                return style.styleFloat; 
+            };
+        }
+
+        _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
+            // Exclude the following css properties to add px
+            setStyleHooks[propName] = function(name, value) {
+                return name + ":" + value;
             };
         });
 
@@ -1103,8 +1107,7 @@
                 throw makeError("getStyle"); 
             }
 
-            hook = cssHooks[name];
-            hook = hook && hook.get;
+            hook = getStyleHooks[name];
 
             result = hook ? hook(style) : style[name];
 
@@ -1125,24 +1128,25 @@
          * @return {DOMElement} reference to this
          */
         DOMElement.prototype.setStyle = function(name, value) {
-            var style = this._node.style,
-                nameType = typeof name,
-                hook;
+            var nameType = typeof name,
+                hook, cssText;
 
             if (nameType === "string") {
-                hook = cssHooks[name];
-                hook = hook && hook.set;
+                hook = setStyleHooks[name];
 
-                if (hook) {
-                    hook(style, value);
-                } else {
-                    style.cssText += ";" + name + ":" + value;
-                }
+                cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
             } else if (nameType === "object") {
-                _.forOwn(name, handleObjectParam("setStyle"), this);
+                cssText = _.reduce(_.keys(name), function(cssText, key) {
+                    value = name[key];
+                    hook = setStyleHooks[key];
+
+                    return cssText + ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
+                }, "");
             } else {
                 throw makeError("setStyle");
             }
+
+            this._node.style.cssText += cssText;
 
             return this;
         };
