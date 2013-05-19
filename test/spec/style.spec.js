@@ -4,7 +4,7 @@ describe("style", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' style='line-height: 2; color: red'></a>");
+        setFixtures("<a id='test' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid'></a>");
 
         link = DOM.find("#test");
     });
@@ -20,6 +20,13 @@ describe("style", function() {
 
         it("should handle vendor-prefixed properties", function() {
 
+        });
+
+        it("should handle composite properties", function() {
+            expect(link.getStyle("padding")).toBe("5px 5px 5px 5px");
+            expect(link.getStyle("margin")).toBe("2px 2px 2px 2px");
+            expect(link.getStyle("border-width")).toBe("1px 1px 1px 1px");
+            expect(link.getStyle("border-style")).toBe("solid solid solid solid");
         });
 
         it("should read runtime style property if style doesn't contain any value", function() {
@@ -45,6 +52,17 @@ describe("style", function() {
 
             expect(link._node.style.color).toBe("white");
             expect(link._node.style.padding).toBe("5px");
+        });
+
+        it("should support setting of composite properties", function() {
+            var value = "7px";
+
+            link.setStyle("border-width", value);
+
+            expect(link.getStyle("border-left-width")).toBe(value);
+            expect(link.getStyle("border-top-width")).toBe(value);
+            expect(link.getStyle("border-bottom-width")).toBe(value);
+            expect(link.getStyle("border-right-width")).toBe(value);
         });
 
         it("should throw error if arguments are invalid", function() {

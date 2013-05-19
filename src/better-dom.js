@@ -1072,6 +1072,23 @@
             };
         });
 
+        _.forEach("padding- margin- border-Width border-Style".split(" "), function(propName) {
+            var hookName = _.reduce(propName.split("-"), function(hookName, word) {
+                    return hookName + (word ? ("-" + word[0].toLowerCase() + word.substr(1)) : "");
+                }),
+                props = _.map("Left Top Right Bottom".split(" "), function(prop) {
+                    return propName.replace("-", prop);
+                });
+
+            cssHooks[hookName] = {
+                get: function(style) {
+                    return _.trim(_.reduce(props, function(result, value) {
+                        return result + " " + style[value];
+                    }, ""));
+                }
+            };
+        });
+
         /**
          * Get css style from element
          * @memberOf DOMElement.prototype
@@ -1119,7 +1136,7 @@
                 if (hook) {
                     hook(style, value);
                 } else {
-                    style[name] = value;
+                    style.cssText += ";" + name + ":" + value;
                 }
             } else if (nameType === "object") {
                 _.forOwn(name, handleObjectParam("setStyle"), this);
@@ -1676,9 +1693,11 @@
                         var el = e.target;
 
                         if (e.animationName === animationName) {
-                            callback(DOMElement(el));
-                            // prevent double initialization
+                            // MUST cancelBubbling first otherwise may
+                            // have unexpected double initialization in firefox
                             el.addEventListener(name, cancelBubbling, false);
+
+                            callback(DOMElement(el));
                         }
                     }, false);
                 });
