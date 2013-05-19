@@ -4,7 +4,7 @@ describe("style", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left'></a>");
+        setFixtures("<a id='test' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a>");
 
         link = DOM.find("#test");
     });
@@ -19,7 +19,7 @@ describe("style", function() {
         });
 
         it("should handle vendor-prefixed properties", function() {
-
+            // TODO
         });
 
         it("should handle composite properties", function() {
@@ -49,6 +49,7 @@ describe("style", function() {
 
         it("should set style properties", function() {
             expect(link.setStyle("color", "white")._node.style.color).toBe("white");
+            expect(link.setStyle("float", "right").getStyle("float")).toBe("right");
         });
 
         it("should support styles object", function() {
@@ -77,6 +78,14 @@ describe("style", function() {
             link.setStyle("width", 50);
 
             expect(link.getStyle("width")).toBe("50px");
+        });
+
+        it("should handle vendor-prefixed properties", function() {
+            var offset = link.offset();
+
+            link.setStyle("box-sizing", "border-box");
+
+            expect(link.offset()).not.toEqual(offset);
         });
 
         it("should throw error if arguments are invalid", function() {

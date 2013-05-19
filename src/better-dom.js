@@ -1057,6 +1057,10 @@
                 getStyleHooks[unprefixedName] = function(style) {
                     return style[stylePropName];
                 };
+
+                setStyleHooks[unprefixedName] = function(name, value) {
+                    return propName + ":" + value;
+                };
             }
         });
 
