@@ -538,7 +538,7 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.clone = function() {
-        return new DOMElement(this._node.cloneNode(true));
+        return new DOMElement(_.cloneNode(this._node));
     };
 
     /**
@@ -1060,7 +1060,8 @@
 
     // style manipulation
     (function() {
-        var cssHooks = {},
+        var getStyleHooks = {},
+            setStyleHooks = {},
             rdash = /\-./g,
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
@@ -1080,22 +1081,51 @@
             }
 
             if (stylePropName !== propName) {
-                cssHooks[unprefixedName] = {
-                    get: function(style) {
-                        return style[stylePropName];
-                    },
-                    set: function(style, value) {
-                        style[stylePropName] = value;
-                    }
+                getStyleHooks[unprefixedName] = function(style) {
+                    return style[stylePropName];
+                };
+
+                setStyleHooks[unprefixedName] = function(name, value) {
+                    return propName + ":" + value;
                 };
             }
         });
 
-        _.forEach("width height padding margin".split(" "), function(propName) {
-            cssHooks[propName] = {
-                set: function(style, value) {
-                    style[propName] = typeof value === "number" ? value + "px" : value; 
-                }
+        // shortcuts
+        _.forOwn({
+            font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
+            padding: ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"],
+            margin: ["marginTop", "marginRight", "marginBottom", "marginLeft"],
+            "border-width": ["borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth"],
+            "border-style": ["borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle"]
+        }, function(key, index, obj) {
+            getStyleHooks[key] = function(style) {
+                var result = [],
+                    hasEmptyStyleValue = function(prop, index) {
+                        result.push(prop === "/" ? prop : style[prop]);
+
+                        return !result[index];
+                    };
+
+                return _.some(obj[key], hasEmptyStyleValue) ? "" : result.join(" ");
+            };
+        });
+
+        // normalize float css property
+        if ("cssFloat" in htmlEl.style) {
+            getStyleHooks.float = function(style) {
+                return style.cssFloat; 
+            };
+        } else {
+            getStyleHooks.float = function(style) {
+                return style.styleFloat; 
+            };
+        }
+
+        _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
+            // Exclude the following css properties to add px
+            setStyleHooks[propName] = function(name, value) {
+                return name + ":" + value;
             };
         });
 
@@ -1113,8 +1143,7 @@
                 throw makeError("getStyle"); 
             }
 
-            hook = cssHooks[name];
-            hook = hook && hook.get;
+            hook = getStyleHooks[name];
 
             result = hook ? hook(style) : style[name];
 
@@ -1135,24 +1164,25 @@
          * @return {DOMElement} reference to this
          */
         DOMElement.prototype.setStyle = function(name, value) {
-            var style = this._node.style,
-                nameType = typeof name,
-                hook;
+            var nameType = typeof name,
+                hook, cssText;
 
             if (nameType === "string") {
-                hook = cssHooks[name];
-                hook = hook && hook.set;
+                hook = setStyleHooks[name];
 
-                if (hook) {
-                    hook(style, value);
-                } else {
-                    style[name] = value;
-                }
+                cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
             } else if (nameType === "object") {
-                _.forOwn(name, handleObjectParam("setStyle"), this);
+                cssText = _.reduce(_.keys(name), function(cssText, key) {
+                    value = name[key];
+                    hook = setStyleHooks[key];
+
+                    return cssText + ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
+                }, "");
             } else {
                 throw makeError("setStyle");
             }
+
+            this._node.style.cssText += cssText;
 
             return this;
         };
@@ -1256,7 +1286,7 @@
      * @constructor
      */
     function DOMElementCollection(elements) {
-        this._nodes = _.map(elements, DOMElement);
+        this._nodes = _.map(elements || [], DOMElement);
         this.length = this._nodes.length;
     }
 
@@ -1385,7 +1415,8 @@
         DOMElementCollection.prototype.toggleClass = makeCollectionMethod("toggleClass");
     })();
 
-    // NULL OBJECTS
+    // Mock Element
+    // ------------
 
     function MockElement() {
         DOMNode.call(this, null);
@@ -1404,7 +1435,7 @@
     });
 
     _.forEach("nextAll prevAll children findAll".split(" "), function(key) {
-        MockElement.prototype[key] = function() { return new DOMElementCollection([]); };
+        MockElement.prototype[key] = function() { return new DOMElementCollection(); };
     });
 
     /**
@@ -1587,56 +1618,34 @@
      * @function
      */
     DOM.importStyles = (function() {
-        var styleSheet, headEl = scripts[0].parentNode,
-            process = function(selector, styles) {
-                var ruleText = "";
+        var styleSheet = (function() {
+                var headEl = scripts[0].parentNode;
 
-                if (typeof styles === "object") {
-                    _.forOwn(styles, function(propName) {
-                        ruleText += propName + ":" + styles[propName] + "; ";
-                    });
-                } else if (typeof styles === "string") {
-                    ruleText += styles;
-                } else {
-                    throw makeError("importStyles", "DOM");
-                }
+                headEl.insertBefore(_.createElement("style"), headEl.firstChild);
 
-                if (styleSheet.cssRules) {
-                    // w3c browser
-                    styleSheet.insertRule(selector + " {" + ruleText + "}", styleSheet.cssRules.length);
-                } else {
-                    // ie doesn't support multiple selectors in addRule 
-                    _.forEach(selector.split(","), function(selector) {
-                        styleSheet.addRule(selector, ruleText);
-                    });
-                }
-            };
+                return document.styleSheets[0];
+            })(),
+            obj = {_node: {style: {cssText: ""}}};
 
-        headEl.insertBefore(document.createElement("style"), headEl.firstChild);
-        styleSheet = document.styleSheets[0];
-
-        if (!supports("hidden", "a")) {
-            // corrects block display not defined in IE6/7/8/9
-            process("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
-            // adds styling not present in IE6/7/8/9
-            process("mark", "background:#FF0;color:#000");
-            // hides non-rendered elements
-            process("template,[hidden]", "display:none");
-        }
-                    
         return function(selector, styles) {
-            var selectorType = typeof selector;
+            if (typeof styles === "object") {
+                DOMElement.prototype.setStyle.call(obj, styles);
 
-            if (selectorType === "string") {
-                process(selector, styles);
-            } else if (selectorType === "object") {
-                _.forEach(_.slice(arguments), function(rule) {
-                    var selector = _.keys(rule)[0];
+                styles = obj._node.style.cssText.substr(1); // remove leading comma
+            }
 
-                    process(selector, rule[selector]);
-                });
-            } else {
+            if (typeof selector !== "string" || typeof styles !== "string") {
                 throw makeError("importStyles", "DOM");
+            }
+
+            if (styleSheet.cssRules) {
+                // w3c browser
+                styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
+            } else {
+                // ie doesn't support multiple selectors in addRule 
+                _.forEach(selector.split(","), function(selector) {
+                    styleSheet.addRule(selector, styles);
+                });
             }
         };
     })();
@@ -1693,7 +1702,7 @@
                 if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
 
                 DOM.importStyles(
-                    selector, 
+                    selector,
                     cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
                 );
 
@@ -1702,9 +1711,11 @@
                         var el = e.target;
 
                         if (e.animationName === animationName) {
-                            callback(DOMElement(el));
-                            // prevent double initialization
+                            // MUST cancelBubbling first otherwise may
+                            // have unexpected double initialization in firefox
                             el.addEventListener(name, cancelBubbling, false);
+
+                            callback(DOMElement(el));
                         }
                     }, false);
                 });
@@ -1775,7 +1786,7 @@
         DOM.watch(selector, function(el) {
             if (template) {
                 _.forOwn(template, function(key) {
-                    el[key](template[key].cloneNode(true));
+                    el[key](_.cloneNode(template[key]));
                 });
             }
 
@@ -1834,6 +1845,15 @@
         return cache[key] || ( cache[key] = supports(prop, tag) );
     };
 
+    if (!supports("hidden", "a")) {
+        // corrects block display not defined in IE8/9
+        DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
+        // adds styling not present in IE6/7/8/9
+        DOM.importStyles("mark", "background:#FF0;color:#000");
+        // hides non-rendered elements
+        DOM.importStyles("template,[hidden]", "display:none");
+    }
+
     // REGISTER GLOBALS
     
     window.DOM = DOM;
@@ -1873,6 +1893,15 @@
                 });
 
                 return result;
+            },
+            some: function(list, testFn, thisPtr) {
+                for (var i = 0, n = list ? list.length : 0; i &lt; n; ++i) {
+                    if (testFn.call(thisPtr, list[i], i, list) === true) {
+                        return true;
+                    }
+                }
+
+                return false;
             },
             reduce: function(list, callback, result) {
                 _.forEach(list, function(el, index) {
@@ -1942,16 +1971,17 @@
         parser = document.createElement("body"),
         operators = { // operatorName / operatorPriority object
             "(": 0,
-            ")": 0,
-            "+": 1,
-            ">": 1,
-            "*": 2,
-            "#": 3,
-            ".": 4,
-            "[": 6,
+            ")": 1,
+            ">": 2,
+            "+": 3,
+            "*": 4,
+            "#": 5,
+            ".": 5,
+            "[": 5,
             "]": 5
         },
         rindex = /\$/g,
+        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
         modifyAttr = function(attr) {
             if (attr.specified) {
                 // changing attribute name doesn't work in IE
@@ -1959,16 +1989,21 @@
                 if (attr.value) attr.value = attr.value.replace(rindex, this);
             }
         },
-        appendTo = function(fragment, node) {
-            fragment.appendChild(node);
+        parseAttrs = function(str) {
+            var attrParts = str.split("="),
+                key = attrParts[0],
+                value = attrParts[1];
 
-            return fragment;
+            this.setAttribute(key, _.unquote(value));
         },
-        createElement, createFragment;
+        createElement, cloneNode, createFragment;
 
     if (document.addEventListener) {
         createElement = function(tagName) {
             return document.createElement(tagName);
+        };
+        cloneNode = function(node) {
+            return node.cloneNode(true);
         };
         createFragment = function() {
             return document.createDocumentFragment();
@@ -2013,6 +2048,24 @@
                     }) +
                 ");return n}"
             )(frag);
+
+            // IE&lt;=8 does not properly clone detached, unknown element nodes
+            cloneNode = function(node) {
+                if (node.nodeType === 1) {
+                    parser.innerHTML = node.outerHTML;
+                    return parser.firstChild;    
+                } else if (node.nodeType === 11) {
+                    var result = "", el;
+
+                    for (el = node.firstChild; el; el = el.nextSibling) {
+                        result += el.outerHTML;
+                    }
+
+                    return _.parseFragment(result);
+                }
+
+                return node.cloneNode(true);
+            };
         })();
     }
 
@@ -2046,6 +2099,7 @@
         // DOM utilites
 
         createElement: createElement,
+        cloneNode: cloneNode,
         parseFragment: function(html) {
             var fragment = createFragment();
 
@@ -2053,7 +2107,11 @@
             parser.innerHTML = "&lt;br/>" + html;
             parser.removeChild(parser.firstChild);
 
-            return _.reduce(parser.childNodes, appendTo, fragment);
+            while (parser.firstChild) {
+                fragment.appendChild(parser.firstChild);
+            }
+
+            return fragment;
         },
         parseTemplate: function(expr) {
             // use emmet-like syntax to describe html templates:
@@ -2066,7 +2124,15 @@
             // parse exrpression into RPN
         
             _.forEach(expr, function(str) {
-                if (str in operators && (stack[0] !== "[" || str === "]")) {
+                var top = stack[0], priority;
+
+                if (str in operators && (top !== "[" || str === "]")) {
+                    if (top === "." && str === ".") {
+                        term += " "; // concat .c1.c2 into single space separated class string
+
+                        return;
+                    }
+
                     if (term) {
                         output.push(term);
                         term = "";
@@ -2075,14 +2141,16 @@
                     if (str === "(") {
                         stack.unshift(str);
                     } else {
-                        while (operators[stack[0]] > operators[str]) {
+                        priority = operators[str];
+                        if (str === ">") ++priority; // nested ">" should have higher priority
+                        while (operators[stack[0]] >= priority) {
                             output.push(stack.shift());
                         }
 
                         if (str === ")") {
                             stack.shift(); // remove "(" symbol from stack
-                        } else if (str !== "]") {
-                            stack.unshift(str); // don't need to have "]" in stack
+                        } else if (str !== "]") { // don't need to have "]" in stack
+                            stack.unshift(str); 
                         }
                     }
                 } else {
@@ -2097,61 +2165,71 @@
             stack = [];
 
             // transform RPN into html nodes
-            
+
             _.forEach(output, function(str) {
-                var term, node;
+                var term, node, proto;
 
                 if (str in operators) {
                     term = stack.shift();
-                    node = stack.shift();
+                    node = stack.shift() || "div";
 
                     if (typeof node === "string") {
-                        node = createElement(node);
+                        createFragment().appendChild( node = createElement(node) );
                     }
 
                     switch(str) {
-                    case "+":
-                        str = createFragment();
-                        str.appendChild(node);
-                        node = str;
-                        /* falls through */
-                    case ">":
-                        node.appendChild(typeof term === "string" ? createElement(term) : term);
-                        str = node;
-                        break;
-
                     case ".":
                         node.className = term;
-                        str = node;
                         break;
 
                     case "#":
                         node.id = term;
-                        str = node;
-                        break;
-
-                    case "*":
-                        str = createFragment();
-
-                        _.times(parseInt(term, 10), function(i) {
-                            var el = str.appendChild(node.cloneNode(true));
-
-                            _.forEach(el.attributes, modifyAttr, i);
-                        });
                         break;
 
                     case "[":
-                        term = term.split("=");
-                        node.setAttribute(term[0], _.unquote(term[1]));
-                        str = node;
+                        _.forEach(term.match(rattr), parseAttrs, node);
+                        break;
+
+                    case "+":
+                        node = node.parentNode || node;
+                        /* falls through */
+                    case ">":
+                        if (typeof term === "string") {
+                            term = createElement(term);
+                        }
+
+                        if (!node.parentNode && str === ">") {
+                            _.forEach(node.childNodes, function(child) {
+                                child.appendChild(cloneNode(term));
+                            });
+                        } else {
+                            node.appendChild(term);
+                        }
+                        break;
+
+                    case "*":
+                        proto = node.parentNode || node;
+                        node = createFragment();
+
+                        _.times(parseInt(term, 10), function(i) {
+                            node.appendChild(cloneNode(proto));
+
+                            _.forEach(node.childNodes, function(child) {
+                                _.forEach(child.attributes, modifyAttr, i + 1);
+                            });
+                        });
                         break;
                     }
+
+                    str = node;
                 }
 
                 stack.unshift(str);
             });
 
-            return _.reduce(stack, appendTo, createFragment());
+            for (output = stack[0]; output.parentNode; output = output.parentNode);
+
+            return output;
         }
     }); 
 })());
@@ -2171,7 +2249,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun May 12 2013 17:14:11 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue May 21 2013 00:13:19 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
