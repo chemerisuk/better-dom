@@ -1,7 +1,7 @@
 {
     "name": "better-dom",
     "title": "better-dom",
-    "version": "0.9.3",
+    "version": "0.9.4",
     "author": "Maksim Chemerisuk",
     "description": "Modern javascript library for working with DOM",
     "license": "MIT",
@@ -20,7 +20,6 @@
         "grunt-contrib-uglify": "0.2.0",
         "grunt-contrib-copy": "0.4.1",
         "grunt-contrib-clean": "0.4.1",
-
         "platform": "1.0.0",
         "benchmark": "1.0.0"
     },
