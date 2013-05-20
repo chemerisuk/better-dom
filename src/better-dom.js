@@ -1073,15 +1073,14 @@
             "border-style": ["borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle"]
         }, function(key, index, obj) {
             getStyleHooks[key] = function(style) {
-                var props = obj[key],
-                    result = [],
+                var result = [],
                     hasEmptyStyleValue = function(prop, index) {
                         result.push(prop === "/" ? prop : style[prop]);
 
                         return !result[index];
                     };
 
-                return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
+                return _.some(obj[key], hasEmptyStyleValue) ? "" : result.join(" ").replace(" / ", "/");
             };
         });
 
@@ -1592,56 +1591,34 @@
      * @function
      */
     DOM.importStyles = (function() {
-        var styleSheet, headEl = scripts[0].parentNode,
-            process = function(selector, styles) {
-                var ruleText = "";
+        var styleSheet = (function() {
+                var headEl = scripts[0].parentNode;
 
-                if (typeof styles === "object") {
-                    _.forOwn(styles, function(propName) {
-                        ruleText += propName + ":" + styles[propName] + "; ";
-                    });
-                } else if (typeof styles === "string") {
-                    ruleText += styles;
-                } else {
-                    throw makeError("importStyles", "DOM");
-                }
+                headEl.insertBefore(_.createElement("style"), headEl.firstChild);
 
-                if (styleSheet.cssRules) {
-                    // w3c browser
-                    styleSheet.insertRule(selector + " {" + ruleText + "}", styleSheet.cssRules.length);
-                } else {
-                    // ie doesn't support multiple selectors in addRule 
-                    _.forEach(selector.split(","), function(selector) {
-                        styleSheet.addRule(selector, ruleText);
-                    });
-                }
-            };
+                return document.styleSheets[0];
+            })(),
+            obj = {_node: {style: {cssText: ""}}};
 
-        headEl.insertBefore(document.createElement("style"), headEl.firstChild);
-        styleSheet = document.styleSheets[0];
-
-        if (!supports("hidden", "a")) {
-            // corrects block display not defined in IE6/7/8/9
-            process("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
-            // adds styling not present in IE6/7/8/9
-            process("mark", "background:#FF0;color:#000");
-            // hides non-rendered elements
-            process("template,[hidden]", "display:none");
-        }
-                    
         return function(selector, styles) {
-            var selectorType = typeof selector;
+            if (typeof styles === "object") {
+                DOMElement.prototype.setStyle.call(obj, styles);
 
-            if (selectorType === "string") {
-                process(selector, styles);
-            } else if (selectorType === "object") {
-                _.forEach(_.slice(arguments), function(rule) {
-                    var selector = _.keys(rule)[0];
+                styles = obj._node.style.cssText.substr(1); // remove leading comma
+            }
 
-                    process(selector, rule[selector]);
-                });
-            } else {
+            if (typeof selector !== "string" || typeof styles !== "string") {
                 throw makeError("importStyles", "DOM");
+            }
+
+            if (styleSheet.cssRules) {
+                // w3c browser
+                styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
+            } else {
+                // ie doesn't support multiple selectors in addRule 
+                _.forEach(selector.split(","), function(selector) {
+                    styleSheet.addRule(selector, styles);
+                });
             }
         };
     })();
@@ -1698,7 +1675,7 @@
                 if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
 
                 DOM.importStyles(
-                    selector, 
+                    selector,
                     cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
                 );
 
@@ -1840,6 +1817,15 @@
 
         return cache[key] || ( cache[key] = supports(prop, tag) );
     };
+
+    if (!supports("hidden", "a")) {
+        // corrects block display not defined in IE8/9
+        DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
+        // adds styling not present in IE6/7/8/9
+        DOM.importStyles("mark", "background:#FF0;color:#000");
+        // hides non-rendered elements
+        DOM.importStyles("template,[hidden]", "display:none");
+    }
 
     // REGISTER GLOBALS
     
