@@ -1080,7 +1080,7 @@
                         return !result[index];
                     };
 
-                return _.some(obj[key], hasEmptyStyleValue) ? "" : result.join(" ").replace(" / ", "/");
+                return _.some(obj[key], hasEmptyStyleValue) ? "" : result.join(" ");
             };
         });
 
