@@ -8,11 +8,11 @@ Overview
 --------
 Everybody who manipulated DOM via vanilla javascript knows that it is an awful API. Current specification has bugs, browser behavior incosistences etc. The library tries to fix that: it introduces it's own more friednly types for document nodes with developer-fiendly APIs.
 
-Important to note that it doesn't cover everything, for instance there are no methods for working with AJAX.
+Important to note that it covers only DOM so, for instance, there are no methods for working with AJAX.
 
 Installation
 ------------
-Use [bower](http://bower.io/) to download this extension with all required dependencies:
+Use [bower](http://bower.io/) to download the library:
 
     bower install better-dom
 
@@ -24,6 +24,14 @@ Then append the following script on your page:
 <script src="components/better-dom/src/better-dom.js" data-htc="components/better-dom/src/better-dom.htc"></script>
 ```
 
+Unobtrusive
+-----------
+No dependencies on other scripts.
+
+Also the library intoduces it's own objects for describing access to DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
+
+You can write DOM extentions and use your own library to modify content on page: any matched element will be automatically initialized.
+
 Ajax-friendly
 -------------
 The idea is to write plugins in declarative way. `DOM.extend` is used to implement a new extension which starts to work for all current and for any future content. As result it's much simpler to write [polyfills](#quick-example-placeholder-polyfill) or to create your own web components.
@@ -31,12 +39,6 @@ The idea is to write plugins in declarative way. `DOM.extend` is used to impleme
 Performance
 -----------
 DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.
-
-Compatability
--------------
-The library intoduces it's own objects for describing access to DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
-
-You can write DOM extentions and use your own library to modify content on page: any matched element will be automatically initialized.
 
 Quick example: placeholder polyfill
 -----------------------------------
