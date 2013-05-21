@@ -53,31 +53,6 @@ describe("watch", function() {
         });
     });
 
-    it("should not initialize twise after hide/show", function() {
-        setFixtures("<a class='watch3'></a>");
-
-        var link = DOM.find(".watch3");
-
-        DOM.watch(".watch3", callback.andCallFake(function(el) {
-            expect(el).toBeDefined();
-            expect(el._node).toBe(link._node);
-
-            link.hide();
-        }));
-
-        waits(WAIT_FOR_WATCH_TIME);
-
-        runs(function() {
-            link.show();
-        });
-
-        waits(WAIT_FOR_WATCH_TIME);
-
-        runs(function() {
-            expect(callback.callCount).toBe(1);
-        });
-    });
-
     it("should accept several watchers of the same selector", function() {
         setFixtures("<a class='watch4'></a><b class='watch4'></b>");
 

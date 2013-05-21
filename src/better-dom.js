@@ -60,6 +60,7 @@
         this._node = node;
         this._data = {};
         this._events = [];
+        this._extends = {};
     }
 
     DOMNode.prototype = {
@@ -487,6 +488,8 @@
         }
 
         DOMNode.call(this, element);
+
+        if (element) element.__dom__ = this;
     }
 
     DOMElement.prototype = new DOMNode();
@@ -609,14 +612,14 @@
                 }
             }, []);
 
-            result = result.join("&").replace(/%20/g, "+");
+            result = result.join("&");
         } else if (el.form) {
-            result = el.value;
+            result = makePair(el.name, el.value);
         } else {
-            result = el.outerHTML;
+            return el.outerHTML;
         }
 
-        return result;
+        return result.replace(/%20/g, "+");
     };
 
     // GETTER / SETTER
@@ -1659,12 +1662,7 @@
 
             return function(selector, callback) {
                 var animationName = "DOM" + new Date().getTime(),
-                    allAnimationNames = DOM._watchers[selector] || animationName,
-                    cancelBubbling = function(e) {
-                        if (e.animationName === animationName) {
-                            e.stopPropagation();
-                        }
-                    };
+                    allAnimationNames = DOM._watchers[selector] || animationName;
 
                 DOM.importStyles(
                     "@" + cssPrefix + "keyframes " + animationName,
@@ -1684,10 +1682,6 @@
                         var el = e.target;
 
                         if (e.animationName === animationName) {
-                            // MUST cancelBubbling first otherwise may
-                            // have unexpected double initialization in firefox
-                            el.addEventListener(name, cancelBubbling, false);
-
                             callback(DOMElement(el));
                         }
                     }, false);
@@ -1736,6 +1730,10 @@
             template = undefined;
         }
 
+        if (typeof mixins === "function") {
+            mixins = {constructor: mixins};
+        }
+
         if (!mixins || typeof mixins !== "object") {
             throw makeError("extend", "DOM");
         }
@@ -1757,19 +1755,23 @@
         extensions[selector] = mixins;
 
         DOM.watch(selector, function(el) {
+            if (el._extends[selector]) return;
+
             if (template) {
                 _.forOwn(template, function(key) {
-                    el[key](_.cloneNode(template[key]));
+                    if (key !== "constructor") {
+                        el[key](_.cloneNode(template[key]));    
+                    }
                 });
             }
 
             _.mixin(el, mixins);
 
             if (mixins.hasOwnProperty("constructor")) {
-                el.constructor = DOMElement;
-
                 mixins.constructor.call(el);
             }
+
+            el._extends[selector] = true;
         });
     };
 

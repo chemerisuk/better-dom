@@ -22,6 +22,56 @@ describe("extend", function() {
         });
     });
 
+    it("should not initialize twise after hide/show", function() {
+        setFixtures("<a class='extend01'></a>");
+
+        var link = DOM.find(".extend01");
+
+        DOM.extend(".extend01", callback.andCallFake(function() {
+            expect(this).toBe(link);
+
+            link.hide();
+        }));
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback).toHaveBeenCalled();
+
+            link.show();
+        });
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback.callCount).toBe(1);
+        });
+    });
+
+    it("should not initialize twise after removing element from DOM", function() {
+        setFixtures("<a class='extend02'></a>");
+
+        var link = DOM.find(".extend02");
+
+        DOM.extend(".extend02", callback.andCallFake(function() {
+            link.remove();
+        }));
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback).toHaveBeenCalled();
+
+            setFixtures(link._node);
+        });
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback.callCount).toBe(1);
+        });
+    });
+
     it("should append optional template", function() {
         var template = {},
             checkStrategies = {

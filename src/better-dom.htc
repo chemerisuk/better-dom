@@ -13,7 +13,7 @@
         for (selector in watchers) {
             callbacks = watchers[selector];
             
-            if (domEl.matches(selector)) {
+            if (!domEl._extends[selector] && domEl.matches(selector)) {
                 for (i = 0, n = callbacks.length; i < n; ++i) {
                     setTimeout(makeHandler(callbacks[i], domEl), 0);
                 }
