@@ -305,38 +305,34 @@
                     }
                 };
             },
-            createCustomEventHandler = function(type, handler) {
+            createCustomEventHandler = function(handler) {
                 return function() {
-                    var e = window.event;
-
-                    if (e.customType === type) {
-                        handler(e);
-                    }
+                    if (window.event.customType === handler.type) handler();
                 };
             };
 
         // firefox doesn't support focusin/focusout events
         if (supports("onfocusin", "input")) {
-            eventHooks.focus = function(entry) {
-                entry._type = "focusin";
+            eventHooks.focus = function(handler) {
+                handler.type = "focusin";
             };
 
-            eventHooks.blur = function(entry) {
-                entry._type = "focusout";
+            eventHooks.blur = function(handler) {
+                handler.type = "focusout";
             };
         } else {
-            eventHooks.focus = function(entry) {
-                entry._capturing = true;
+            eventHooks.focus = function(handler) {
+                handler.capturing = true;
             };
 
-            eventHooks.blur = function(entry) {
-                entry._capturing = true;
+            eventHooks.blur = function(handler) {
+                handler.capturing = true;
             };
         }
 
         if (supports("oninvalid", "input")) {
-            eventHooks.invalid = function(entry) {
-                entry._capturing = true;
+            eventHooks.invalid = function(handler) {
+                handler.capturing = true;
             };
         }
 
@@ -350,7 +346,7 @@
          */
         DOMNode.prototype.on = function(type, selector, callback) {
             var eventType = typeof type, 
-                eventNames, entry, hook;
+                hook, handler;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
@@ -358,31 +354,32 @@
                     selector = null;
                 }
 
-                eventNames = type.split(" ");
+                if (!~type.indexOf(" ")) {
+                    handler = createEventHandler(this, callback, selector, type);
+                    handler.type = type;
+                    handler.callback = callback;
 
-                if (eventNames.length > 1) {
-                    _.forEach(eventNames, function(type) {
-                        this.on(type, selector, callback);
-                    }, this);
-                } else {
-                    entry = {type: type, callback: callback, _callback: createEventHandler(this, callback, selector, type)};
-
-                    if (hook = eventHooks[type]) hook(entry);
+                    if (hook = eventHooks[type]) hook(handler);
 
                     if (document.addEventListener) {
-                        this._node.addEventListener(entry._type || type, entry._callback, !!entry._capturing);
+                        this._node.addEventListener(handler.type, handler, !!handler.capturing);
                     } else {
                         if (~type.indexOf(":")) {
                             // handle custom events for IE8
-                            entry._type = "dataavailable";
-                            entry._callback = createCustomEventHandler(type, entry._callback);
+                            handler = createCustomEventHandler(handler);
+                            handler.type = "dataavailable";
+                            handler.callback = callback;
                         }
 
-                        this._node.attachEvent("on" + (entry._type || type), entry._callback);
+                        this._node.attachEvent("on" + handler.type, handler);
                     }
                     
                     // store event entry
-                    this._events.push(entry);
+                    this._events.push(handler);
+                } else {
+                    _.forEach(type.split(" "), function(type) {
+                        this.on(type, selector, callback);
+                    }, this);
                 }
             } else if (eventType === "object") {
                 _.forOwn(type, handleObjectParam("on"), this);
@@ -405,14 +402,12 @@
                 throw makeError("off");
             }
 
-            var events = this._events;
-
-            _.forEach(events, function(entry, index) {
+            _.forEach(this._events, function(entry, index, events) {
                 if (entry && type === entry.type && (!callback || callback === entry.callback)) {
                     if (document.removeEventListener) {
-                        this._node.removeEventListener(entry._type || type, entry._callback, !!entry._capturing);
+                        this._node.removeEventListener(entry.type, entry, !!entry.capturing);
                     } else {
-                        this._node.detachEvent("on" + (entry._type || type), entry._callback);
+                        this._node.detachEvent("on" + entry.type, entry);
                     }
 
                     delete events[index];
@@ -458,9 +453,9 @@
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
-                    event.initCustomEvent(entry._type || type, true, false, detail);
+                    event.initCustomEvent(entry.type || type, true, false, detail);
                 } else { 
-                    event.initEvent(entry._type || type, true, true);
+                    event.initEvent(entry.type || type, true, true);
                 }
                 
                 node.dispatchEvent(event);
@@ -475,7 +470,7 @@
                     event.detail = detail;
                 }
 
-                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry._type || type), event);
+                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry.type || type), event);
 
                 isDefaultPrevented = event.returnValue === false;
             }
