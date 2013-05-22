@@ -14,7 +14,7 @@
         scripts = document.scripts,
         // helpers
         supports = function(prop, tag) {
-            var el = tag ? document.createElement(tag) : window,
+            var el = typeof tag === "string" ? document.createElement(tag) : tag || document,
                 isSupported = prop in el;
 
             if (!isSupported && !prop.indexOf("on")) {
@@ -37,11 +37,10 @@
             return cache[name] || (cache[name] = function(key, index, obj) {
                 this[name](key, obj[key]);
             });
+        },
+        getComputedStyle = window.getComputedStyle || function(el) {
+            return el.currentStyle;
         };
-
-    if (!supports("addEventListener") && !supports("attachEvent")) {
-        throw "Your browser is not supported by library!";
-    }
         
     // DOMNode
     // -------
@@ -256,6 +255,30 @@
                 }
 
                 return result;
+            };
+        })(),
+
+        /**
+         * Check element capability
+         * @memberOf DOMNode.prototype
+         * @param {String} prop property to check
+         * @param {String} [tag] name of element to test
+         * @function
+         * @example
+         * input.supports("placeholder");
+         * // => true if an input supports placeholders
+         * DOM.supports("addEventListener");
+         * // => true if browser supports document.addEventListener
+         * DOM.supports("oninvalid", "input");
+         * // => true if browser supports `invalid` event
+         */
+        supports: (function() {
+            var cache = {};
+
+            return function(prop, tag) {
+                var key = prop + ":" + (tag || this._node.nodeName.toLowerCase());
+
+                return cache[key] || ( cache[key] = supports(prop, tag || this._node) );
             };
         })()
     };
@@ -1042,7 +1065,7 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = supports("getComputedStyle") ? window.getComputedStyle(htmlEl, "") : htmlEl.currentStyle,
+            computed = getComputedStyle(htmlEl),
             // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
@@ -1124,7 +1147,7 @@
             result = hook ? hook(style) : style[name];
 
             if (!result) {
-                style = supports("getComputedStyle") ? window.getComputedStyle(this._node) : this._node.currentStyle;
+                style = getComputedStyle(this._node);
 
                 result = hook ? hook(style) : style[name];
             }
@@ -1627,7 +1650,7 @@
     })();
 
     /**
-     * Executes callback function when element with a spefified selector is inserted on page
+     * Execute callback when element with specified selector matches
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
@@ -1657,7 +1680,7 @@
             // use trick discovered by Daniel Buchner: 
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = window.getComputedStyle(htmlEl, ""),
+                computed = getComputedStyle(htmlEl),
                 cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback) {
@@ -1797,27 +1820,6 @@
         }
 
         return el;
-    };
-
-    /**
-     * Check DOM capability
-     * @memberOf DOM
-     * @param {String} prop property to check
-     * @param {String} [tag] name of element to test
-     * @function
-     * @example
-     * DOM.supports("placeholder", "input");
-     * // => true if browser supports placeholders
-     * DOM.supports("getComputedStyle");
-     * // => true if browser supports window.getComputedStyle
-     * DOM.supports("oninvalid", "input");
-     * // => true if browser supports `invalid` event
-     */
-    DOM.supports = function(prop, tag) {
-        var cache = DOM.supports,
-            key = prop + (tag ? tag : "");
-
-        return cache[key] || ( cache[key] = supports(prop, tag) );
     };
 
     if (!supports("hidden", "a")) {
