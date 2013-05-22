@@ -296,7 +296,7 @@
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
-                    var elem = DOM.supports.addEventListener ? e.target : window.event.srcElement;
+                    var elem = window.event ? window.event.srcElement : e.target;
 
                     for (; elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
@@ -369,7 +369,7 @@
 
                     if (hook = eventHooks[type]) hook(entry);
 
-                    if (DOM.supports("addEventListener")) {
+                    if (document.addEventListener) {
                         this._node.addEventListener(entry._type || type, entry._callback, !!entry._capturing);
                     } else {
                         if (~type.indexOf(":")) {
@@ -409,7 +409,7 @@
 
             _.forEach(events, function(entry, index) {
                 if (entry && type === entry.type && (!callback || callback === entry.callback)) {
-                    if (supports("removeEventListener")) {
+                    if (document.removeEventListener) {
                         this._node.removeEventListener(entry._type || type, entry._callback, !!entry._capturing);
                     } else {
                         this._node.detachEvent("on" + (entry._type || type), entry._callback);
@@ -454,7 +454,7 @@
 
             if (hook) hook(entry);
 
-            if (supports("dispatchEvent")) {
+            if (document.dispatchEvent) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
@@ -658,7 +658,7 @@
             };
         });
 
-        if (supports("attachEvent")) {
+        if (document.attachEvent) {
             // fix NoScope elements in IE < 10
             propHooks.innerHTML = {
                 set: function(el, value) {
@@ -667,7 +667,7 @@
                 }
             };
 
-            if (!supports("addEventListener")) {
+            if (!document.addEventListener) {
                 propHooks.tagName = propHooks.nodeName = {
                     get: function(el) {
                         return el.nodeName.toUpperCase();
@@ -862,7 +862,7 @@
             var children = this._node.children,
                 matcher = SelectorMatcher(selector);
 
-            if (!supports("addEventListener")) {
+            if (!document.addEventListener) {
                 // fix IE8 bug with children collection
                 children = _.filter(children, function(result, elem) {
                     return elem.nodeType === 1;
@@ -882,7 +882,7 @@
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             // always use _.parseFragment because of HTML5 elements bug 
             // and NoScope bugs in IE
-            if (supports("attachEvent")) fasterMethodName = null;
+            if (document.attachEvent) fasterMethodName = null;
 
             return function(element, /*INTERNAL*/reverse) {
                 var el = reverse ? element : this._node,
@@ -1203,7 +1203,7 @@
 
         this._event = event;
 
-        if (!supports("addEventListener")) {
+        if (!document.addEventListener) {
             this.target = DOMElement(event.srcElement);
             this.currentTarget = DOMElement(currentTarget);
             this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
@@ -1228,7 +1228,7 @@
 
     (function() {
         var makeFuncMethod = function(name, legacyHandler) {
-                return !supports("addEventListener") ? legacyHandler : function() {
+                return !document.addEventListener ? legacyHandler : function() {
                     this._event[name]();
                 };
             },
@@ -1268,7 +1268,7 @@
             return this._event.defaultPrevented || this._event.returnValue === false;
         };
 
-        if (supports("addEventListener")) {
+        if (document.addEventListener) {
             // in ie we will set these properties in constructor
             defineProperty("target");
             defineProperty("currentTarget");
@@ -1559,7 +1559,7 @@
 
         // https://raw.github.com/requirejs/domReady/latest/domReady.js
         
-        if (supports("addEventListener")) {
+        if (document.addEventListener) {
             document.addEventListener("DOMContentLoaded", pageLoaded, false);
             window.addEventListener("load", pageLoaded, false);
         } else {
@@ -1589,9 +1589,8 @@
 
         // Catch cases where ready is called after the browser event has already occurred.
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
-        // hey, at least it's not a UA sniff
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( supports("attachEvent") ? document.readyState === "complete" : document.readyState !== "loading") {
+        if ( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
             pageLoaded();
         }
 
