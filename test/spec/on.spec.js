@@ -4,7 +4,7 @@ describe("on", function() {
     var link, input, spy;
 
     beforeEach(function() {
-        setFixtures("<a id='test'>test element</a><input id='input'/>");
+        setFixtures("<a id='test'>test element</a><input id='input' required='required'/>");
 
         link = DOM.find("#test");
         input = DOM.find("#input");
@@ -86,6 +86,14 @@ describe("on", function() {
         input.fire("focus");
 
         expect(spy).toHaveBeenCalled();
+
+        DOM.on("invalid", spy);
+
+        if (input._node.checkValidity) {
+            input._node.checkValidity();
+        }
+
+        expect(spy.callCount).toBe(2);
     });
 
     it("should not prevent default action if callback returns false", function() {

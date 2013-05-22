@@ -334,7 +334,7 @@
             };
         }
 
-        if (supports("invalid", "input")) {
+        if (supports("oninvalid", "input")) {
             eventHooks.invalid = function(entry) {
                 entry._capturing = true;
             };
