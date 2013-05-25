@@ -221,20 +221,33 @@ describe("extend", function() {
         // it("should accept input:checkbox",
         //     checkExpression("input:checkbox", "<input type=\"checkbox\"/>"));
 
-        function normalizeHTML(str) {
-            // convert string to lowercase, remove extra spaces and 
-            // wrap attribute names with quotes because of IE
-            return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-.]+)([ >])/g, function(str, $n, $v, $e) {
-                return $n + "=\"" + $v + "\"" + $e;
-            });
-        }
         function checkExpression(template, result) {
+            function normalizeHTML(str) {
+                // convert string to lowercase, remove extra spaces and 
+                // wrap attribute names with quotes
+                return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-.]+)([ >])/g, function(str, $n, $v, $e) {
+                    return $n + "=\"" + $v + "\"" + $e;
+                });
+            }
+
             return function() {
+                var className = "expr" + step;
+
                 callback.andCallFake(function() {
-                    expect(normalizeHTML(this.get())).toBe(result);
+                    if (this._node.isEqualNode) {
+                        var resultDiv = document.createElement("div");
+
+                        resultDiv.innerHTML = result;
+                        resultDiv.className = className;
+
+                        expect(this._node.isEqualNode(resultDiv)).toBe(true);
+                    } else {
+                        // for IE8 use string comparation
+                        expect(normalizeHTML(this._node.innerHTML)).toBe(result);
+                    }
                 });
 
-                DOM.extend(".expr" + step, { append: template }, { constructor: callback });
+                DOM.extend("." + className, { append: template }, { constructor: callback });
 
                 waits(WAIT_FOR_WATCH_TIME);
 

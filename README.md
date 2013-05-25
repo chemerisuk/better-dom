@@ -76,9 +76,9 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
 
 See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open in IE < 10)
 
-More complex example: elastic textarea extension
------------------------------------------
-Textarea extension which autoextends textarea to contain all text:
+More complex example: elastic textarea
+--------------------------------------
+This is a textarea extension which autoresizes textarea to contain all text:
 
 ```js
 DOM.extend("textarea.elastic", {
@@ -87,8 +87,8 @@ DOM.extend("textarea.elastic", {
     constructor: function() {
         var textarea = this,
             wrapper = textarea.next(),
-            holder = wrapper.firstChild(),
-            span = holder.firstChild();
+            holder = wrapper.child(0),
+            span = holder.child(0);
 
         wrapper.append(textarea);
 

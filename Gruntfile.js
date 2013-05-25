@@ -133,12 +133,12 @@ module.exports = function(grunt) {
         var commitMessage = "'version " + version + "'";
 
         grunt.config.set("shell.checkVersionTag", {
-            command: "git tag -a " + version + " -m ''",
+            command: "git tag -a v" + version + " -m ''",
             options: { failOnError: true }
         });
 
         grunt.config.set("shell.updateVersionTag", {
-            command: "git tag -af " + version + " -m " + commitMessage
+            command: "git tag -af v" + version + " -m " + commitMessage
         });
 
         grunt.config.set("shell.commitNewVersion", {
