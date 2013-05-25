@@ -1,13 +1,14 @@
 describe("on", function() {
     "use strict";
     
-    var link, input, spy;
+    var link, input, form, spy;
 
     beforeEach(function() {
-        setFixtures("<a id='test'>test element</a><input id='input' required='required'/>");
+        setFixtures("<a id='test'>test element</a><form id='form'><input id='input' required='required'/></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#input");
+        form = DOM.find("#form");
 
         spy = jasmine.createSpy("callback");
     });
@@ -110,6 +111,30 @@ describe("on", function() {
         DOM.on("input", "input", spy);
 
         input.fire("input");
+
+        expect(spy.callCount).toBe(4);
+    });
+
+    it("should fix submit event", function() {
+        spy.andCallFake(function(e) {
+            e.preventDefault();
+        });
+
+        form.on("submit", spy).fire("submit");
+
+        expect(spy).toHaveBeenCalled();
+
+
+        DOM.on("submit", "a", spy);
+
+        form.fire("submit");
+
+        expect(spy.callCount).toBe(2);
+
+
+        DOM.on("submit", "form", spy);
+
+        form.fire("submit");
 
         expect(spy.callCount).toBe(4);
     });

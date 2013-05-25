@@ -334,8 +334,8 @@
             };
         }
 
-        if (!supports("oninput", "input")) {
-            // emulate oninput via propertychange in IE8
+        if (!document.addEventListener) {
+            // input event fix via propertychange
             document.attachEvent("onfocusin", function() {
                 var propertyChangeEventHandler = function() {
                         var e = window.event;
@@ -365,7 +365,40 @@
                 };
             }());
 
-            eventHooks.input = function(handler) {
+            // submit event bubbling fix
+            document.attachEvent("onkeydown", function() {
+                var target = window.event.srcElement,
+                    form = target.form;
+
+                if (form && target.type !== "textarea" && window.event.keyCode === 13) {
+                    DOMElement(form).fire("submit");
+
+                    return false;
+                }
+            });
+
+            document.attachEvent("onclick", function() {
+                var handleSubmit = function() {
+                        var form = window.event.srcElement;
+
+                        form.detachEvent("onsubmit", handleSubmit);
+
+                        DOMElement(form).fire("submit");
+
+                        return false;
+                    };
+
+                return function() {
+                    var target = window.event.srcElement,
+                        form = target.form;
+
+                    if (form && target.type === "submit") {
+                        form.attachEvent("onsubmit", handleSubmit);
+                    }
+                };
+            }());
+
+            eventHooks.submit = eventHooks.input = function(handler) {
                 handler.custom = true;
             };
         }
