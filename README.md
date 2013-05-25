@@ -56,7 +56,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
         placeholder
             .set(input.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
-            .on("focus", function() {
+            .on("click", function() {
                 input.fire("focus");
             });
 
