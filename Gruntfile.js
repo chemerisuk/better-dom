@@ -7,7 +7,7 @@ module.exports = function(grunt) {
         watch: {
             karma: {
                 files: ["src/*.js", "test/spec/*.js"],
-                tasks: ["karma:watch:run"] 
+                tasks: ["karma:watch:run"]
             }
         },
 
@@ -22,7 +22,8 @@ module.exports = function(grunt) {
             dist: {
                 src: ["src/*.js"],
                 options: {
-                    destination: "jsdoc"
+                    destination: "jsdoc",
+                    tutorials: "docs"
                 }
             }
         },
@@ -128,7 +129,7 @@ module.exports = function(grunt) {
                     report: "min"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["src/*.js"] 
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["src/*.js"]
                 }
             }
         },

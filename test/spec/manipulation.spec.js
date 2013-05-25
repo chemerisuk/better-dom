@@ -110,19 +110,19 @@ describe("manipulation", function() {
             div = DOM.find("#test");
         });
 
-        it("should accept html string", function() {         
+        it("should accept html string", function() {
             div.replace(createDivHtml("replace"));
 
             expectToBeReplaced("test", "replace");
         });
 
-        it("should accept native object", function() {         
+        it("should accept native object", function() {
             div.replace(createDiv("replace"));
 
             expectToBeReplaced("test", "replace");
         });
 
-        it("should accept document fragment", function() {         
+        it("should accept document fragment", function() {
             div.replace(createDivFragment("replace"));
 
             expectToBeReplaced("test", "replace");

@@ -199,7 +199,7 @@
          * @param {Object} value data to store
          * @example
          * var domLink = DOM.find(".link");
-         * 
+         *
          * domLink.setData("test", "message");
          * domLink.setData({a: "b", c: "d"});
          */
@@ -679,14 +679,14 @@
                                 parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
                             }
                         });
-                        break; 
+                        break;
     
                     case undefined: // fieldset
                     case "file": // file input
                     case "submit": // submit button
                     case "reset": // reset button
                     case "button": // custom button
-                        break; 
+                        break;
     
                     case "radio": // radio button
                     case "checkbox": // checkbox
@@ -874,7 +874,7 @@
                 }
 
                 if (multiple) {
-                    return new DOMElementCollection(!matcher ? children : 
+                    return new DOMElementCollection(!matcher ? children :
                         _.filter(children, matcher.test, matcher));
                 }
 
@@ -962,7 +962,7 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use _.parseFragment because of HTML5 elements bug 
+            // always use _.parseFragment because of HTML5 elements bug
             // and NoScope bugs in IE
             if (document.attachEvent) fasterMethodName = null;
 
@@ -1196,11 +1196,11 @@
         // normalize float css property
         if ("cssFloat" in htmlEl.style) {
             getStyleHooks.float = function(style) {
-                return style.cssFloat; 
+                return style.cssFloat;
             };
         } else {
             getStyleHooks.float = function(style) {
-                return style.styleFloat; 
+                return style.styleFloat;
             };
         }
 
@@ -1222,7 +1222,7 @@
                 hook, result;
 
             if (typeof name !== "string") {
-                throw makeError("getStyle"); 
+                throw makeError("getStyle");
             }
 
             hook = getStyleHooks[name];
@@ -1539,10 +1539,10 @@
                         // [ _, tag, id, attribute, class ]
                         if (quick[1]) quick[1] = quick[1].toLowerCase();
                         if (quick[4]) quick[4] = " " + quick[4] + " ";
-                    }    
+                    }
                 } else {
                     return selector ? new SelectorMatcher(selector) : null;
-                }                
+                }
             },
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
@@ -1556,7 +1556,7 @@
                     if (nodeList[i] === el) return true;
                 }
 
-                return false; 
+                return false;
             };
 
         ctor.prototype = {
@@ -1648,7 +1648,7 @@
             window.attachEvent("onload", pageLoaded);
 
             (function() {
-                var testDiv = document.createElement("div"), 
+                var testDiv = document.createElement("div"),
                     isTop;
                 
                 try {
@@ -1721,7 +1721,7 @@
                 // w3c browser
                 styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
             } else {
-                // ie doesn't support multiple selectors in addRule 
+                // ie doesn't support multiple selectors in addRule
                 _.forEach(selector.split(","), function(selector) {
                     styleSheet.addRule(selector, styles);
                 });
@@ -1746,7 +1746,7 @@
 
                 if (entry) {
                     entry.push(callback);
-                    // need to call the callback manually for each element 
+                    // need to call the callback manually for each element
                     // because behaviour is already attached to the DOM
                     DOM.findAll(selector).each(callback);
                 } else {
@@ -1756,7 +1756,7 @@
                 }
             };
         } else {
-            // use trick discovered by Daniel Buchner: 
+            // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
                 computed = getComputedStyle(htmlEl),
@@ -1795,7 +1795,7 @@
     }();
 
     /**
-     * Extend DOM with custom widget. Templates support limited edition of emmet-like 
+     * Extend DOM with custom widget. Templates support limited edition of emmet-like
      * syntax - see html section in http://docs.emmet.io/cheat-sheet/
      * @memberOf DOM
      * @param  {String} selector extension css selector
@@ -1862,7 +1862,7 @@
             if (template) {
                 _.forOwn(template, function(key) {
                     if (key !== "constructor") {
-                        el[key](_.cloneNode(template[key]));    
+                        el[key](_.cloneNode(template[key]));
                     }
                 });
             }
@@ -1989,7 +1989,7 @@
 
             keys: Object.keys || function(obj) {
                 var objType = typeof obj,
-                    result = [], 
+                    result = [],
                     prop;
 
                 if (objType !== "object" && objType !== "function" || obj === null) {
@@ -2021,7 +2021,7 @@
                     });
                 }
 
-                return obj; 
+                return obj;
             }
         },
         parser = document.createElement("body"),
@@ -2109,7 +2109,7 @@
             cloneNode = function(node) {
                 if (node.nodeType === 1) {
                     parser.innerHTML = node.outerHTML;
-                    return parser.firstChild;    
+                    return parser.firstChild;
                 } else if (node.nodeType === 11) {
                     var result = "", el;
 
@@ -2206,7 +2206,7 @@
                         if (str === ")") {
                             stack.shift(); // remove "(" symbol from stack
                         } else if (str !== "]") { // don't need to have "]" in stack
-                            stack.unshift(str); 
+                            stack.unshift(str);
                         }
                     }
                 } else {
@@ -2287,5 +2287,5 @@
 
             return output;
         }
-    }); 
+    });
 })());

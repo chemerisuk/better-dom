@@ -8,7 +8,7 @@ describe("fire", function() {
 
         input = DOM.find("#input");
 
-        callback = jasmine.createSpy("callback"); 
+        callback = jasmine.createSpy("callback");
     });
 
     it("should trigger event handler", function() {

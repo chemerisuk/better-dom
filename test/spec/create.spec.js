@@ -36,7 +36,7 @@ describe("create", function() {
 
         setFixtures(el._node);
 
-        expect(el._node).toHaveTag("em"); 
+        expect(el._node).toHaveTag("em");
     });
 
     it("should throw error if argument is invalid", function() {

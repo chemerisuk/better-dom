@@ -1,7 +1,7 @@
 describe("extend", function() {
     "use strict";
     
-    var WAIT_FOR_WATCH_TIME = 50, 
+    var WAIT_FOR_WATCH_TIME = 50,
         callback;
 
     beforeEach(function() {
@@ -119,7 +119,7 @@ describe("extend", function() {
             ++step;
         });
 
-        // IE8 always put id and class attributes at the beginning of innerHTML string 
+        // IE8 always put id and class attributes at the beginning of innerHTML string
         // so in tests always put id before classes/attributes and classes before attributes
         // also IE doesn't put empty value for unknown attributes so use only valid attributes
 
@@ -223,7 +223,7 @@ describe("extend", function() {
 
         function checkExpression(template, result) {
             function normalizeHTML(str) {
-                // convert string to lowercase, remove extra spaces and 
+                // convert string to lowercase, remove extra spaces and
                 // wrap attribute names with quotes
                 return str.toLowerCase().replace(/>\s+</g,"><").replace(/([\w\-]+)=([\w\-.]+)([ >])/g, function(str, $n, $v, $e) {
                     return $n + "=\"" + $v + "\"" + $e;

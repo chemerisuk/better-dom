@@ -1,14 +1,22 @@
 {
     "browser": true,
+
     "boss": true,
     "newcap": false,
     "evil": true,
+
     "quotmark": "double",
     "indent": 4,
     "eqeqeq": true,
     "strict": true,
     "undef": true,
     "unused": true,
+    "noarg": true,
+    "noempty": true,
+    "trailing": true,
+    "maxparams": 4,
+    "maxdepth": 4,
+    
     "globals": {
         "DOM": true,
         "Element": true,

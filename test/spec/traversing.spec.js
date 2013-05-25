@@ -64,7 +64,7 @@ describe("traversing", function() {
                 
                 link[methodName](tagName).each(haveTag(tagName));
             }
-        });  
+        });
     });
 
 });
