@@ -103,7 +103,7 @@ DOM.extend("textarea.elastic", {
         });
 
         textarea.parent("form").on("reset", function() {
-            textarea._syncTextarea(span, textarea.get("defaultValue"));
+            textarea._syncWithHolder(span, textarea.get("defaultValue"));
         });
 
         textarea._syncWithHolder(span);
