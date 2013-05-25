@@ -754,7 +754,7 @@
                         el.removeAttribute("hidden");
                     }
 
-                    // trigger reflow in IE
+                    // trigger redraw in IE
                     el.style.zoom = value ? "1" : "0";
                 }
             };
@@ -763,7 +763,7 @@
         /**
          * Get property or attribute by name
          * @memberOf DOMElement.prototype
-         * @param  {String} [name="innerHTML"] property/attribute name
+         * @param  {String} [name] property/attribute name
          * @return {String} property/attribute value
          */
         DOMElement.prototype.get = function(name) {
@@ -784,7 +784,7 @@
         /**
          * Set property/attribute value
          * @memberOf DOMElement.prototype
-         * @param {String} [name="innerHTML"] property/attribute name
+         * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
          * @return {DOMElement} reference to this
          */
@@ -930,12 +930,17 @@
         DOMElement.prototype.parent = makeTraversingMethod("parentNode");
 
         /**
-         * Return child by index filtered by optional selector
+         * Return child element by index filtered by optional selector
          * @memberOf DOMElement.prototype
          * @param  {Number} index child index
          * @param  {String} [selector] css selector
          * @return {DOMElement} matched child
          * @function
+         * @example
+         * var body = DOM.find("body");
+         *
+         * body.child(0); // => first child
+         * body.child(-1); // => last child
          */
         DOMElement.prototype.child = makeChildTraversingMethod(false);
 
@@ -1055,27 +1060,28 @@
 
     // classes manipulation
     (function() {
-        var rclass = /[\n\t\r]/g,
-            makeClassesMethod = function(nativeStrategyName, strategy) {
-                var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach",
-                    methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+        var rclass = /[\n\t\r]/g;
 
-                if (htmlEl.classList) {
-                    strategy = function(className) {
-                        return this._node.classList[nativeStrategyName](className);
-                    };
+        function makeClassesMethod(nativeStrategyName, strategy) {
+            var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach",
+                methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+
+            if (htmlEl.classList) {
+                strategy = function(className) {
+                    return this._node.classList[nativeStrategyName](className);
+                };
+            }
+
+            return function(classNames) {
+                if (typeof classNames !== "string") {
+                    throw makeError(methodName);
                 }
 
-                return function(classNames) {
-                    if (typeof classNames !== "string") {
-                        throw makeError(methodName);
-                    }
+                var result = _[arrayMethod](classNames.split(" "), strategy, this);
 
-                    var result = _[arrayMethod](classNames.split(" "), strategy, this);
-
-                    return result === undefined ? this : result;
-                };
+                return result === undefined ? this : result;
             };
+        }
 
         /**
          * Check if element contains class name(s)
@@ -1379,17 +1385,17 @@
     };
 
     (function() {
-        var makeCollectionMethod = function(name) {
-                var process = DOMElement.prototype[name];
+        function makeCollectionMethod(name) {
+            var process = DOMElement.prototype[name];
 
-                return function() {
-                    var args = _.slice(arguments);
+            return function() {
+                var args = _.slice(arguments);
 
-                    return this.each(function(elem) {
-                        process.apply(elem, args);
-                    });
-                };
+                return this.each(function(elem) {
+                    process.apply(elem, args);
+                });
             };
+        }
 
         /**
          * Shortcut to {@link DOMNode#on} method
