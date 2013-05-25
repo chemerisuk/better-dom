@@ -29,7 +29,7 @@ describe("fire", function() {
         expect(callback).toHaveBeenCalled();
     });
 
-    it("should trigget native methods if they exist", function() {
+    it("should trigger native methods if they exist", function() {
         input.fire("focus");
 
         expect(input._node).toBe(document.activeElement);

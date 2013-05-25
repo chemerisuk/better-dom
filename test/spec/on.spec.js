@@ -91,9 +91,27 @@ describe("on", function() {
 
         if (input._node.checkValidity) {
             input._node.checkValidity();
+
+            expect(spy.callCount).toBe(2);
         }
+    });
+
+    it("should fix input event", function() {
+        input.on("input", spy).fire("input");
+
+        expect(spy).toHaveBeenCalled();
+
+        DOM.on("input", "a", spy);
+
+        input.fire("input");
 
         expect(spy.callCount).toBe(2);
+
+        DOM.on("input", "input", spy);
+
+        input.fire("input");
+
+        expect(spy.callCount).toBe(4);
     });
 
     it("should not prevent default action if callback returns false", function() {

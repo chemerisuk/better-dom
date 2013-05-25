@@ -305,27 +305,25 @@
                     }
                 };
             },
-            createCustomEventHandler = function(handler) {
-                return function() {
-                    if (window.event.customType === handler.type) handler();
-                };
+            createCustomEventHandler = function(originalHandler) {
+                var handler = function() {
+                        if (window.event._type === originalHandler.type) originalHandler();
+                    };
+
+                handler.type = originalHandler.type;
+                handler._type = "dataavailable";
+                handler.callback = originalHandler.callback;
+
+                return handler;
             };
 
         // firefox doesn't support focusin/focusout events
         if (supports("onfocusin", "input")) {
-            eventHooks.focus = function(handler) {
-                handler.type = "focusin";
-            };
-
-            eventHooks.blur = function(handler) {
-                handler.type = "focusout";
-            };
+            _.forOwn({focus: "focusin", blur: "focusout"}, function(prop, index, obj) {
+                eventHooks[prop] = function(handler) { handler._type = obj[prop]; };
+            });
         } else {
-            eventHooks.focus = function(handler) {
-                handler.capturing = true;
-            };
-
-            eventHooks.blur = function(handler) {
+            eventHooks.focus = eventHooks.blur = function(handler) {
                 handler.capturing = true;
             };
         }
@@ -333,6 +331,42 @@
         if (supports("oninvalid", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
+            };
+        }
+
+        if (!supports("oninput", "input")) {
+            // emulate oninput via propertychange in IE8
+            document.attachEvent("onfocusin", function() {
+                var propertyChangeEventHandler = function() {
+                        var e = window.event;
+
+                        if (e.propertyName === "value") {
+                            var event = document.createEventObject();
+
+                            event._type = "input";
+
+                            // trigger special event that bubbles
+                            e.srcElement.fireEvent("ondataavailable", event);
+                        }
+                    },
+                    capturedEl;
+
+                return function() {
+                    var target = window.event.srcElement;
+
+                    if (capturedEl) {
+                        capturedEl.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedEl = null;
+                    }
+
+                    if (target.type === "input" || target.type === "textarea") {
+                        (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
+                    }
+                };
+            }());
+
+            eventHooks.input = function(handler) {
+                handler.custom = true;
             };
         }
 
@@ -345,7 +379,7 @@
          * @return {DOMNode} current context
          */
         DOMNode.prototype.on = function(type, selector, callback) {
-            var eventType = typeof type, 
+            var eventType = typeof type,
                 hook, handler;
 
             if (eventType === "string") {
@@ -362,16 +396,14 @@
                     if (hook = eventHooks[type]) hook(handler);
 
                     if (document.addEventListener) {
-                        this._node.addEventListener(handler.type, handler, !!handler.capturing);
+                        this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                     } else {
-                        if (~type.indexOf(":")) {
+                        if (~type.indexOf(":") || handler.custom) {
                             // handle custom events for IE8
                             handler = createCustomEventHandler(handler);
-                            handler.type = "dataavailable";
-                            handler.callback = callback;
                         }
 
-                        this._node.attachEvent("on" + handler.type, handler);
+                        this._node.attachEvent("on" + (handler._type || type), handler);
                     }
                     
                     // store event entry
@@ -402,12 +434,16 @@
                 throw makeError("off");
             }
 
-            _.forEach(this._events, function(entry, index, events) {
-                if (entry && type === entry.type && (!callback || callback === entry.callback)) {
+            _.forEach(this._events, function(handler, index, events) {
+                var node = this._node;
+
+                if (handler && type === handler.type && (!callback || callback === handler.callback)) {
+                    type = handler._type || handler.type;
+
                     if (document.removeEventListener) {
-                        this._node.removeEventListener(entry.type, entry, !!entry.capturing);
+                        node.removeEventListener(type, handler, !!handler.capturing);
                     } else {
-                        this._node.detachEvent("on" + entry.type, entry);
+                        node.detachEvent("on" + type, handler);
                     }
 
                     delete events[index];
@@ -445,17 +481,17 @@
             var node = this._node,
                 isCustomEvent = ~type.indexOf(":"),
                 hook = eventHooks[type],
-                event, isDefaultPrevented, entry = {};
+                event, isDefaultPrevented, handler = {};
 
-            if (hook) hook(entry);
+            if (hook) hook(handler);
 
             if (document.dispatchEvent) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
-                    event.initCustomEvent(entry.type || type, true, false, detail);
-                } else { 
-                    event.initEvent(entry.type || type, true, true);
+                    event.initCustomEvent(handler._type || type, true, false, detail);
+                } else {
+                    event.initEvent(handler._type || type, true, true);
                 }
                 
                 node.dispatchEvent(event);
@@ -464,13 +500,15 @@
             } else {
                 event = document.createEventObject();
 
+                isCustomEvent = isCustomEvent || handler.custom;
+
                 if (isCustomEvent) {
-                    // use IE-specific attribute to store custom event name
-                    event.customType = type;
+                    // use private attribute to store custom event name
+                    event._type = type;
                     event.detail = detail;
                 }
 
-                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : entry.type || type), event);
+                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
 
                 isDefaultPrevented = event.returnValue === false;
             }
