@@ -123,7 +123,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 477
+        <a href="better-dom.js.html">better-dom.js</a>, line 564
     </li></ul></dd>
     
     
@@ -163,6 +163,207 @@
     
     
     
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Check if element is inside of context
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="DOMNode.html#contains">DOMNode#contains</a>
+    </li></dd>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 227
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>DOM.find("html").contains(DOM.find("body"));
+// returns true</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Finds element by selector
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="DOMNode.html#find">DOMNode#find</a>
+    </li></dd>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 79
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var domBody = DOM.find("body");
+
+domBody.find("#element");
+// returns DOMElement with id="element"
+domBody.find(".link");
+// returns first element with class="link"</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="supports"><span class="type-signature"></span>supports<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Check element capability
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="DOMNode.html#supports">DOMNode#supports</a>
+    </li></dd>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 272
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>input.supports("placeholder");
+// => true if an input supports placeholders
+DOM.supports("addEventListener");
+// => true if browser supports document.addEventListener
+DOM.supports("oninvalid", "input");
+// => true if browser supports `invalid` event</code></pre>
+
+    
+</dd>
+
+        </dl>
     
     
     
@@ -260,7 +461,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 998
+        <a href="better-dom.js.html">better-dom.js</a>, line 1105
     </li></ul></dd>
     
     
@@ -401,7 +602,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 896
+        <a href="better-dom.js.html">better-dom.js</a>, line 1002
     </li></ul></dd>
     
     
@@ -542,7 +743,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 929
+        <a href="better-dom.js.html">better-dom.js</a>, line 1035
     </li></ul></dd>
     
     
@@ -683,7 +884,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 907
+        <a href="better-dom.js.html">better-dom.js</a>, line 1013
     </li></ul></dd>
     
     
@@ -729,7 +930,7 @@
         
             
 <dt>
-    <h4 class="name" id="children"><span class="type-signature"></span>children<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
+    <h4 class="name" id="child"><span class="type-signature"></span>child<span class="signature">(index, <span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
     
     
 </dt>
@@ -737,7 +938,7 @@
     
     
     <div class="description">
-        Fetch children elements filtered by optional selector
+        Return child element by index filtered by optional selector
     </div>
     
 
@@ -759,6 +960,8 @@
 		<th>Type</th>
 		
 		
+		<th>Argument</th>
+		
 		
 		
 		
@@ -767,6 +970,37 @@
 	</thead>
 	
 	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">child index</td>
+        </tr>
+	
 	
 	
         <tr>
@@ -783,6 +1017,16 @@
             
             </td>
             
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
             
             
             
@@ -818,7 +1062,162 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 835
+        <a href="better-dom.js.html">better-dom.js</a>, line 945
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    matched child
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>var body = DOM.find("body");
+
+body.child(0); // => first child
+body.child(-1); // => last child</code></pre>
+
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="children"><span class="type-signature"></span>children<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Fetch children elements filtered by optional selector
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>selector</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">css selector</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 954
     </li></ul></dd>
     
     
@@ -905,7 +1304,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 513
+        <a href="better-dom.js.html">better-dom.js</a>, line 602
     </li></ul></dd>
     
     
@@ -945,302 +1344,6 @@
 
         
     
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="signature">(element)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Check if element is inside of context
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>element</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">element to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="DOMNode.html#contains">DOMNode#contains</a>
-    </li></dd>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 229
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    true if success
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="prettyprint"><code>DOM.find("html").contains(DOM.find("body"));
-// returns true</code></pre>
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Finds element by selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    <dt class="inherited-from">Inherited From:</dt>
-    <dd class="inherited-from"><ul class="dummy"><li>
-        <a href="DOMNode.html#find">DOMNode#find</a>
-    </li></dd>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 80
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    element or null if nothing was found
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="prettyprint"><code>var domBody = DOM.find("body");
-
-domBody.find("#element");
-// returns DOMElement with id="element"
-domBody.find(".link");
-// returns first element with class="link"</code></pre>
-
     
 </dd>
 
@@ -1341,7 +1444,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 163
+        <a href="better-dom.js.html">better-dom.js</a>, line 162
     </li></ul></dd>
     
     
@@ -1524,7 +1627,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 421
+        <a href="better-dom.js.html">better-dom.js</a>, line 506
     </li></ul></dd>
     
     
@@ -1580,153 +1683,6 @@ domLink.fire("custom:event", {x: 1, y: 2});
         
             
 <dt>
-    <h4 class="name" id="firstChild"><span class="type-signature"></span>firstChild<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Find first child element filtered by optional selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Argument</th>
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 800
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    matched element
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
     <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(<span class="optional">name</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
     
     
@@ -1760,8 +1716,6 @@ domLink.fire("custom:event", {x: 1, y: 2});
 		<th>Argument</th>
 		
 		
-		
-		<th>Default</th>
 		
 		
 		<th class="last">Description</th>
@@ -1798,12 +1752,6 @@ domLink.fire("custom:event", {x: 1, y: 2});
             
             
             
-                <td class="default">
-                
-                    "innerHTML"
-                
-                </td>
-            
             
             <td class="description last">property/attribute name</td>
         </tr>
@@ -1836,7 +1784,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 680
+        <a href="better-dom.js.html">better-dom.js</a>, line 769
     </li></ul></dd>
     
     
@@ -1976,7 +1924,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 179
+        <a href="better-dom.js.html">better-dom.js</a>, line 178
     </li></ul></dd>
     
     
@@ -2120,7 +2068,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1111
+        <a href="better-dom.js.html">better-dom.js</a>, line 1218
     </li></ul></dd>
     
     
@@ -2255,7 +2203,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 986
+        <a href="better-dom.js.html">better-dom.js</a>, line 1093
     </li></ul></dd>
     
     
@@ -2342,7 +2290,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 552
+        <a href="better-dom.js.html">better-dom.js</a>, line 641
     </li></ul></dd>
     
     
@@ -2429,7 +2377,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 570
+        <a href="better-dom.js.html">better-dom.js</a>, line 659
     </li></ul></dd>
     
     
@@ -2516,7 +2464,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 561
+        <a href="better-dom.js.html">better-dom.js</a>, line 650
     </li></ul></dd>
     
     
@@ -2549,153 +2497,6 @@ domLink.getData("test");
 	<dd>
 		
 <span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="lastChild"><span class="type-signature"></span>lastChild<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Find last child element filtered by optional selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Argument</th>
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 809
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    matched element
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
 
 
 	</dd>
@@ -2798,7 +2599,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 500
+        <a href="better-dom.js.html">better-dom.js</a>, line 589
     </li></ul></dd>
     
     
@@ -2945,7 +2746,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 773
+        <a href="better-dom.js.html">better-dom.js</a>, line 894
     </li></ul></dd>
     
     
@@ -3092,7 +2893,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 818
+        <a href="better-dom.js.html">better-dom.js</a>, line 912
     </li></ul></dd>
     
     
@@ -3275,7 +3076,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 379
+        <a href="better-dom.js.html">better-dom.js</a>, line 462
     </li></ul></dd>
     
     
@@ -3362,7 +3163,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 522
+        <a href="better-dom.js.html">better-dom.js</a>, line 611
     </li></ul></dd>
     
     
@@ -3576,7 +3377,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 327
+        <a href="better-dom.js.html">better-dom.js</a>, line 411
     </li></ul></dd>
     
     
@@ -3723,7 +3524,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 791
+        <a href="better-dom.js.html">better-dom.js</a>, line 930
     </li></ul></dd>
     
     
@@ -3864,7 +3665,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 918
+        <a href="better-dom.js.html">better-dom.js</a>, line 1024
     </li></ul></dd>
     
     
@@ -4011,7 +3812,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 782
+        <a href="better-dom.js.html">better-dom.js</a>, line 903
     </li></ul></dd>
     
     
@@ -4158,7 +3959,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 827
+        <a href="better-dom.js.html">better-dom.js</a>, line 921
     </li></ul></dd>
     
     
@@ -4245,7 +4046,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 950
+        <a href="better-dom.js.html">better-dom.js</a>, line 1056
     </li></ul></dd>
     
     
@@ -4380,7 +4181,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1011
+        <a href="better-dom.js.html">better-dom.js</a>, line 1118
     </li></ul></dd>
     
     
@@ -4521,7 +4322,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 940
+        <a href="better-dom.js.html">better-dom.js</a>, line 1046
     </li></ul></dd>
     
     
@@ -4601,8 +4402,6 @@ domLink.getData("test");
 		
 		
 		
-		<th>Default</th>
-		
 		
 		<th class="last">Description</th>
 	</tr>
@@ -4638,12 +4437,6 @@ domLink.getData("test");
             
             
             
-                <td class="default">
-                
-                    "innerHTML"
-                
-                </td>
-            
             
             <td class="description last">property/attribute name</td>
         </tr>
@@ -4674,10 +4467,6 @@ domLink.getData("test");
                 </td>
             
             
-            
-                <td class="default">
-                
-                </td>
             
             
             <td class="description last">property/attribute value</td>
@@ -4711,7 +4500,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 702
+        <a href="better-dom.js.html">better-dom.js</a>, line 791
     </li></ul></dd>
     
     
@@ -4877,7 +4666,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 205
+        <a href="better-dom.js.html">better-dom.js</a>, line 204
     </li></ul></dd>
     
     
@@ -5021,7 +4810,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1139
+        <a href="better-dom.js.html">better-dom.js</a>, line 1246
     </li></ul></dd>
     
     
@@ -5108,7 +4897,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 543
+        <a href="better-dom.js.html">better-dom.js</a>, line 632
     </li></ul></dd>
     
     
@@ -5243,7 +5032,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1023
+        <a href="better-dom.js.html">better-dom.js</a>, line 1130
     </li></ul></dd>
     
     
@@ -5389,7 +5178,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 401
+        <a href="better-dom.js.html">better-dom.js</a>, line 486
     </li></ul></dd>
     
     
@@ -5430,7 +5219,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue May 21 2013 00:13:19 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 25 2013 18:11:25 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

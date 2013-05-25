@@ -123,7 +123,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 49
+        <a href="better-dom.js.html">better-dom.js</a>, line 48
     </li></ul></dd>
     
     
@@ -158,77 +158,20 @@
     
     
     
-    
-    
-        <h3 class="subsection-title">Methods</h3>
+        <h3 class="subsection-title">Members</h3>
         
         <dl>
             
 <dt>
-    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="signature">(element)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="contains"><span class="type-signature"></span>contains<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
-    
     <div class="description">
         Check if element is inside of context
     </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>element</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">element to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -254,7 +197,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 229
+        <a href="better-dom.js.html">better-dom.js</a>, line 227
     </li></ul></dd>
     
     
@@ -265,34 +208,6 @@
     
 </dl>
 
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    true if success
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Boolean</span>
-
-
-	</dd>
-</dl>
-
-        
     
     
         <h5>Example</h5>
@@ -306,70 +221,15 @@
         
             
 <dt>
-    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
+    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
-    
     <div class="description">
         Finds element by selector
     </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
     
     
     
@@ -395,7 +255,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 80
+        <a href="better-dom.js.html">better-dom.js</a>, line 79
     </li></ul></dd>
     
     
@@ -406,34 +266,6 @@
     
 </dl>
 
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    element or null if nothing was found
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
-
-
-	</dd>
-</dl>
-
-        
     
     
         <h5>Example</h5>
@@ -449,6 +281,74 @@ domBody.find(".link");
 </dd>
 
         
+            
+<dt>
+    <h4 class="name" id="supports"><span class="type-signature"></span>supports<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Check element capability
+    </div>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="better-dom.js.html">better-dom.js</a>, line 272
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+        <h5>Example</h5>
+        
+    <pre class="prettyprint"><code>input.supports("placeholder");
+// => true if an input supports placeholders
+DOM.supports("addEventListener");
+// => true if browser supports document.addEventListener
+DOM.supports("oninvalid", "input");
+// => true if browser supports `invalid` event</code></pre>
+
+    
+</dd>
+
+        </dl>
+    
+    
+    
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
             
 <dt>
     <h4 class="name" id="findAll"><span class="type-signature"></span>findAll<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
@@ -540,7 +440,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 163
+        <a href="better-dom.js.html">better-dom.js</a>, line 162
     </li></ul></dd>
     
     
@@ -718,7 +618,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 421
+        <a href="better-dom.js.html">better-dom.js</a>, line 506
     </li></ul></dd>
     
     
@@ -863,7 +763,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 179
+        <a href="better-dom.js.html">better-dom.js</a>, line 178
     </li></ul></dd>
     
     
@@ -1050,7 +950,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 379
+        <a href="better-dom.js.html">better-dom.js</a>, line 462
     </li></ul></dd>
     
     
@@ -1259,7 +1159,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 327
+        <a href="better-dom.js.html">better-dom.js</a>, line 411
     </li></ul></dd>
     
     
@@ -1420,7 +1320,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 205
+        <a href="better-dom.js.html">better-dom.js</a>, line 204
     </li></ul></dd>
     
     
@@ -1547,7 +1447,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 401
+        <a href="better-dom.js.html">better-dom.js</a>, line 486
     </li></ul></dd>
     
     
@@ -1588,7 +1488,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Tue May 21 2013 00:13:19 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 25 2013 18:11:26 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
