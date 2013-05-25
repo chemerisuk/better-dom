@@ -20,8 +20,10 @@ module.exports = function(grunt) {
 
         jsdoc: {
             dist: {
-                src: ["src/*.js"], 
-                dest: "docs"
+                src: ["src/*.js"],
+                options: {
+                    destination: "jsdoc"
+                }
             }
         },
 
@@ -40,6 +42,15 @@ module.exports = function(grunt) {
                 configFile: "test/lib/karma.conf.js",
                 browsers: ["PhantomJS"],
                 singleRun: true
+            },
+            coverage: {
+                configFile: "test/lib/karma.conf.js",
+                reporters: ["coverage"],
+                browsers: ["PhantomJS"],
+                singleRun: true,
+                preprocessors: {
+                    "src/*.js": "coverage"
+                }
             }
         },
 
@@ -48,23 +59,23 @@ module.exports = function(grunt) {
                 command: "git tag -a v<%= pkg.version %> -m ''",
                 options: { failOnError: true }
             },
-            updateVersionTag: {
-                command: "git tag -af v<%= pkg.version %> -m 'version <%= pkg.version %>'"
-            },
-            commitNewVersion: {
-                command: "git commit -am 'version <%= pkg.version %>'"
-            },
             checkoutDocs: {
-                command: "git checkout gh-pages"
+                command: [
+                    // commit all changes
+                    "git commit -am 'version <%= pkg.version %>'",
+
+                    // checkout jsdoc branch
+                    "git checkout gh-pages"
+                ].join(" && ")
             },
             updateDocs: {
                 command: [
                     // get a list of all files in stage and delete everything except for targets, node_modules, cache, temp, and logs
                     // rm does not delete root level hidden files
-                    "ls | grep -v ^docs$ | grep -v ^node_modules$ | xargs rm -r ",
+                    "ls | grep -v ^jsdoc$ | grep -v ^node_modules$ | xargs rm -r ",
 
                     // copy from the stage folder to the current (root) folder
-                    "cp -r docs/* . && rm -r docs",
+                    "cp -r jsdoc/* . && rm -r jsdoc",
 
                     // add any files that may have been created
                     "git add -A",
@@ -73,15 +84,27 @@ module.exports = function(grunt) {
                     "git commit -am 'Build: <%= grunt.file.read(\".build\") %>'",
 
                     // switch back to the previous branch we started from
-                    "git checkout -"
+                    "git checkout -",
+
+                    // update version tag
+                    "git tag -af v<%= pkg.version %> -m 'version <%= pkg.version %>'",
+
+                    // push file changed
+                    "git push origin --all",
+
+                    // push new tag
+                    "git push --tags v<%= pkg.version %>"
                 ].join(" && "),
                 options: {
                     stdout: true,
                     stderr: true
                 }
             },
-            pushTag: {
-                command: "git push origin -all && git push --tags v<%= pkg.version %>"
+            openCoverage: {
+                command: "open coverage/PhantomJS\\ 1.9\\ \\(Mac\\)/index.html"
+            },
+            openJsdoc: {
+                command: "open jsdoc/index.html"
             }
         },
 
@@ -164,6 +187,16 @@ module.exports = function(grunt) {
         "karma:travis"
     ]);
 
+    grunt.registerTask("coverage", [
+        "karma:coverage",
+        "shell:openCoverage"
+    ]);
+
+    grunt.registerTask("docs", [
+        "jsdoc",
+        "shell:openJsdoc"
+    ]);
+
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
 
@@ -188,13 +221,10 @@ module.exports = function(grunt) {
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "concat:publish",
-            "shell:commitNewVersion",
             "jsdoc",
             "shell:checkoutDocs",
             "bumpDocsBuild",
-            "shell:updateDocs",
-            "shell:updateVersionTag",
-            "shell:pushTag"
+            "shell:updateDocs"
         ]);
     });
 };
