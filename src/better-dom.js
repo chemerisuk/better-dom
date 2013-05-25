@@ -68,7 +68,6 @@
          * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMElement} element or null if nothing was found
-         * @function
          * @example
          * var domBody = DOM.find("body");
          *
@@ -77,7 +76,7 @@
          * domBody.find(".link");
          * // returns first element with class="link"
          */
-        find: (function() {
+        find: function() {
             // big part of code inspired by Sizzle:
             // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
@@ -152,7 +151,7 @@
 
                 return multiple ? new DOMElementCollection(elements) : DOMElement(elements);
             };
-        })(),
+        }(),
 
         /**
          * Finds all elements by selector
@@ -221,12 +220,11 @@
          * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
          * @return {Boolean} true if success
-         * @function
          * @example
          * DOM.find("html").contains(DOM.find("body"));
          * // returns true
          */
-        contains: (function() {
+        contains: function() {
             var containsElement;
 
             if (supports("contains", "a")) {
@@ -256,14 +254,13 @@
 
                 return result;
             };
-        })(),
+        }(),
 
         /**
          * Check element capability
          * @memberOf DOMNode.prototype
          * @param {String} prop property to check
          * @param {String} [tag] name of element to test
-         * @function
          * @example
          * input.supports("placeholder");
          * // => true if an input supports placeholders
@@ -272,7 +269,7 @@
          * DOM.supports("oninvalid", "input");
          * // => true if browser supports `invalid` event
          */
-        supports: (function() {
+        supports: function() {
             var cache = {};
 
             return function(prop, tag) {
@@ -280,7 +277,7 @@
 
                 return cache[key] || ( cache[key] = supports(prop, tag || this._node) );
             };
-        })()
+        }()
     };
 
     // EVENTS
@@ -1601,9 +1598,8 @@
      * Register callback on dom ready
      * @memberOf DOM
      * @param {Function} callback event handler
-     * @function
      */
-    DOM.ready = (function() {
+    DOM.ready = function() {
         var readyCallbacks = [],
             scrollIntervalId,
             safeExecution = function(callback) {
@@ -1672,16 +1668,15 @@
                 safeExecution(callback);
             }
         };
-    })();
+    }();
 
     /**
      * Import css styles on page
      * @memberOf DOM
      * @param {String|Object} selector css selector or object with selector/rules pairs
      * @param {String} styles css rules
-     * @function
      */
-    DOM.importStyles = (function() {
+    DOM.importStyles = function() {
         var styleSheet = (function() {
                 var headEl = scripts[0].parentNode;
 
@@ -1712,16 +1707,15 @@
                 });
             }
         };
-    })();
+    }();
 
     /**
      * Execute callback when element with specified selector matches
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
-     * @function
      */
-    DOM.watch = (function() {
+    DOM.watch = function() {
         DOM._watchers = {};
 
         if (htmlEl.addBehavior) {
@@ -1778,7 +1772,7 @@
                 DOM._watchers[selector] = allAnimationNames;
             };
         }
-    })();
+    }();
 
     /**
      * Extend DOM with custom widget. Templates support limited edition of emmet-like 
@@ -2115,7 +2109,7 @@
 
         // String utilites
 
-        trim: (function() {
+        trim: function() {
             if (String.prototype.trim) {
                 return function(str) {
                     return str.trim();
@@ -2128,15 +2122,15 @@
                     return str.replace(rwsleft, "").replace(rwsright, "");
                 };
             }
-        })(),
+        }(),
 
-        unquote: (function() {
+        unquote: function() {
             var rquotes = /^["']|["']$/g;
 
             return function(str) {
                 return str ? str.replace(rquotes, "") : "";
             };
-        })(),
+        }(),
 
         // DOM utilites
 
