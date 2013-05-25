@@ -44,6 +44,16 @@ module.exports = function(grunt) {
         },
 
         shell: {
+            checkVersionTag: {
+                command: "git tag -a v<%= pkg.version %> -m ''",
+                options: { failOnError: true }
+            },
+            updateVersionTag: {
+                command: "git tag -af v<%= pkg.version %> -m 'version <%= pkg.version %>'"
+            },
+            commitNewVersion: {
+                command: "git commit -am 'version <%= pkg.version %>'"
+            },
             checkoutDocs: {
                 command: "git checkout gh-pages"
             },
@@ -69,6 +79,9 @@ module.exports = function(grunt) {
                     stdout: true,
                     stderr: true
                 }
+            },
+            pushTag: {
+                command: "git push origin -all && git push --tags v<%= pkg.version %>"
             }
         },
 
@@ -95,6 +108,26 @@ module.exports = function(grunt) {
                     "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["src/*.js"] 
                 }
             }
+        },
+
+        concat: {
+            options: {
+                banner: [
+                    "/**",
+                    " * @file <%= pkg.name %>",
+                    " * @version <%= pkg.version %>",
+                    " * @overview <%= pkg.description %>",
+                    " * @copyright <%= pkg.author %> 2013",
+                    " * @license MIT",
+                    " * @see <%= pkg.repository.url %>",
+                    " */\n"
+                ].join("\n"),
+                stripBanners: true
+            },
+            publish: {
+                src: "src/<%= pkg.name %>.js",
+                dest: "src/<%= pkg.name %>.js"
+            }
         }
     });
 
@@ -106,6 +139,8 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-clean");
+    grunt.loadNpmTasks("grunt-contrib-concat");
+
 
     grunt.registerTask("dev", [
         "jshint", // run jshint first
@@ -130,20 +165,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
-        var commitMessage = "'version " + version + "'";
-
-        grunt.config.set("shell.checkVersionTag", {
-            command: "git tag -a v" + version + " -m ''",
-            options: { failOnError: true }
-        });
-
-        grunt.config.set("shell.updateVersionTag", {
-            command: "git tag -af v" + version + " -m " + commitMessage
-        });
-
-        grunt.config.set("shell.commitNewVersion", {
-            command: "git commit -am " + commitMessage
-        });
+        grunt.config.set("pkg.version", version);
 
         grunt.registerTask("updateFileVersion", function(filename) {
             var json = grunt.file.readJSON(filename);
@@ -165,12 +187,14 @@ module.exports = function(grunt) {
             "test",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
+            "concat:publish",
             "shell:commitNewVersion",
             "jsdoc",
             "shell:checkoutDocs",
             "bumpDocsBuild",
             "shell:updateDocs",
-            "shell:updateVersionTag"
+            "shell:updateVersionTag",
+            "shell:pushTag"
         ]);
     });
 };

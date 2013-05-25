@@ -1,8 +1,10 @@
-/*!
- * better-dom (https://github.com/chemerisuk/better-dom)
- * Modern javascript library for working with DOM
- *
- * Copyright (c) 2013 Maksim Chemerisuk
+/**
+ * @file better-dom
+ * @version 0.9.5
+ * @overview Modern javascript library for working with DOM
+ * @copyright Maksim Chemerisuk 2013
+ * @license MIT
+ * @see https://github.com/chemerisuk/better-dom
  */
 (function(window, document, _, undefined) {
     "use strict";
