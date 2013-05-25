@@ -15,7 +15,7 @@ describe("create", function() {
         setFixtures(link._node);
 
         expect(link._node).toHaveTag("a");
-        expect(link.firstChild()._node).toHaveTag("span");
+        expect(link.child(0)._node).toHaveTag("span");
     });
 
     // it("should return DOM collection when the first argument is a HTML string", function() {

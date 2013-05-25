@@ -75,26 +75,32 @@ describe("extend", function() {
     it("should append optional template", function() {
         var template = {},
             checkStrategies = {
-                prepend: "firstChild",
-                append: "lastChild",
-                after: "next",
-                before: "prev"
+                prepend: function(el) { return el.child(0); },
+                append: function(el) { return el.child(-1); },
+                after: function(el) { return el.next(); },
+                before: function(el) { return el.prev(); }
             };
 
         for (var key in checkStrategies) {
             template[key] = "<i class='" + key + "'></i>";
         }
 
-        DOM.extend(".extend", template, {});
+        callback.andCallFake(function() {
+            var strategy, key;
+
+            for (key in checkStrategies) {
+                strategy = checkStrategies[key];
+
+                expect(strategy(this)._node).toHaveClass(key);
+            }
+        });
+
+        DOM.extend("#expr", template, callback);
 
         waits(WAIT_FOR_WATCH_TIME);
 
         runs(function() {
-            DOM.findAll(".extend").each(function(domEl) {
-                for (var key in checkStrategies) {
-                    expect(domEl[checkStrategies[key]]("." + key)).toBeDefined();
-                }
-            });
+            expect(callback).toHaveBeenCalled();
         });
     });
     

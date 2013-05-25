@@ -852,6 +852,38 @@
             };
         }
 
+        function makeChildTraversingMethod(multiple) {
+            return function(index, selector) {
+                if (multiple) {
+                    selector = index;
+                } else if (typeof index !== "number") {
+                    throw makeError("child");
+                }
+
+                var children = this._node.children,
+                    matcher = SelectorMatcher(selector),
+                    el;
+
+                if (!document.addEventListener) {
+                    // fix IE8 bug with children collection
+                    children = _.filter(children, function(el) {
+                        return el.nodeType === 1;
+                    });
+                }
+
+                if (multiple) {
+                    return new DOMElementCollection(!matcher ? children : 
+                        _.filter(children, matcher.test, matcher));
+                }
+
+                if (index < 0) index = children.length + index;
+
+                el = children[index];
+
+                return DOMElement(!matcher || matcher.test(el) ? el : null);
+            };
+        }
+
         /**
          * Find next sibling element filtered by optional selector
          * @memberOf DOMElement.prototype
@@ -869,33 +901,6 @@
          * @function
          */
         DOMElement.prototype.prev = makeTraversingMethod("previousSibling");
-
-        /**
-         * Find parent element filtered by optional selector
-         * @memberOf DOMElement.prototype
-         * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
-         * @function
-         */
-        DOMElement.prototype.parent = makeTraversingMethod("parentNode");
-
-        /**
-         * Find first child element filtered by optional selector
-         * @memberOf DOMElement.prototype
-         * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
-         * @function
-         */
-        DOMElement.prototype.firstChild = makeTraversingMethod("firstChild");
-
-        /**
-         * Find last child element filtered by optional selector
-         * @memberOf DOMElement.prototype
-         * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
-         * @function
-         */
-        DOMElement.prototype.lastChild = makeTraversingMethod("lastChild");
 
         /**
          * Find all next sibling elements filtered by optional selector
@@ -916,25 +921,32 @@
         DOMElement.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
         /**
+         * Find parent element filtered by optional selector
+         * @memberOf DOMElement.prototype
+         * @param {String} [selector] css selector
+         * @return {DOMElement} matched element
+         * @function
+         */
+        DOMElement.prototype.parent = makeTraversingMethod("parentNode");
+
+        /**
+         * Return child by index filtered by optional selector
+         * @memberOf DOMElement.prototype
+         * @param  {Number} index child index
+         * @param  {String} [selector] css selector
+         * @return {DOMElement} matched child
+         * @function
+         */
+        DOMElement.prototype.child = makeChildTraversingMethod(false);
+
+        /**
          * Fetch children elements filtered by optional selector
          * @memberOf DOMElement.prototype
-         * @param  {String} selector css selector
+         * @param  {String} [selector] css selector
          * @return {DOMElementCollection} matched elements
+         * @function
          */
-        DOMElement.prototype.children = function(selector) {
-            var children = this._node.children,
-                matcher = SelectorMatcher(selector);
-
-            if (!document.addEventListener) {
-                // fix IE8 bug with children collection
-                children = _.filter(children, function(result, elem) {
-                    return elem.nodeType === 1;
-                });
-            }
-
-            return new DOMElementCollection(!matcher ? children : 
-                _.filter(children, matcher.test, matcher));
-        };
+        DOMElement.prototype.children = makeChildTraversingMethod(true);
     })();
 
     // MANIPULATION

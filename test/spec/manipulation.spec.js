@@ -26,10 +26,10 @@ describe("manipulation", function() {
 
     describe("append, prepend, after, before", function() {
         var checkStrategies = {
-                prepend: "firstChild",
-                append: "lastChild",
-                after: "next",
-                before: "prev"
+                prepend: function(el) { return el.child(0); },
+                append: function(el) { return el.child(-1); },
+                after: function(el) { return el.next(); },
+                before: function(el) { return el.prev(); }
             },
             div;
 
@@ -44,7 +44,7 @@ describe("manipulation", function() {
                 var arg = createDivHtml(strategy),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
             }
         });
 
@@ -53,7 +53,7 @@ describe("manipulation", function() {
                 var arg = createDiv(strategy),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
             }
         });
 
@@ -62,7 +62,7 @@ describe("manipulation", function() {
                 var arg = createDivFragment(strategy),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
             }
         });
 
@@ -71,7 +71,7 @@ describe("manipulation", function() {
                 var arg = DOM.create(createDiv(strategy)),
                     checkMethod = checkStrategies[strategy];
 
-                expect(div[strategy](arg)[checkMethod]()._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
             }
         });
 
@@ -82,7 +82,7 @@ describe("manipulation", function() {
 
                 otherDiv.set("innerHTML", "<section>This native javascript sentence is in a green box <mark>with these words highlighted</mark>?</section>");
 
-                expect(div[strategy](otherDiv)[checkMethod]()._node).toHaveTag("div");
+                expect(checkMethod(div[strategy](otherDiv))._node).toHaveTag("div");
                 expect(otherDiv.find("section").getStyle("display")).toBe("block");
             }
         });

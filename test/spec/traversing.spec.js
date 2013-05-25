@@ -9,11 +9,9 @@ describe("traversing", function() {
         link = DOM.find("#test");
     });
 
-    describe("firstChild, lastChild, next, prev, parent", function() {
+    describe("next, prev, parent", function() {
         it("should return an appropriate element", function() {
             var expectedResults = {
-                firstChild: "strong",
-                lastChild: "em",
                 next: "b",
                 prev: "i",
                 parent: "div"
@@ -27,8 +25,6 @@ describe("traversing", function() {
         it("should search for the first matching element if selector exists", function() {
             expect(link.next("i")._node).toHaveTag("i");
             expect(link.prev("b")._node).toHaveTag("b");
-            expect(link.firstChild("b")._node).toBeNull();
-            expect(link.lastChild("em")._node).toHaveTag("em");
             expect(link.parent("body")._node).toHaveTag("body");
         });
     });
