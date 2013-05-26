@@ -13,10 +13,6 @@ describe("off", function() {
     });
 
     it("should remove event handler", function() {
-        spy.andCallFake(function(e) {
-            e.preventDefault();
-        });
-
         input.on("click", spy).off("click").fire("click");
 
         expect(spy).not.toHaveBeenCalled();

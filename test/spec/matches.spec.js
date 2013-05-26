@@ -4,9 +4,9 @@ describe("matches", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#test' class='test1'></a>");
+        setFixtures("<a id='matches' href='#matches' class='test1'></a>");
 
-        link = DOM.find("#test");
+        link = DOM.find("#matches");
     });
 
     it("should match element by a simple selector", function() {
@@ -15,12 +15,12 @@ describe("matches", function() {
         expect(link.matches(".test1")).toBe(true);
         expect(link.matches("a.test1")).toBe(true);
         expect(link.matches("a[href]")).toBe(true);
-        expect(link.matches("a#test")).toBe(true);
+        expect(link.matches("a#matches")).toBe(true);
         expect(link.matches("div")).toBe(false);
     });
 
     it("should match element by a complex selector", function() {
-        expect(link.matches("a[href='#test']")).toBe(true);
+        expect(link.matches("a[href='#matches']")).toBe(true);
         expect(link.matches("div a")).toBe(true);
     });
 

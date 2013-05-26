@@ -296,7 +296,7 @@
                     defaultEventHandler = function(e) {
                         if (veto !== expr[2]) {
                             var event = DOMEvent(e || window.event, currentTarget),
-                                args = [event],
+                                args = [],
                                 modifiers = expr[1],
                                 props = expr[3];
 

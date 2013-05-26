@@ -44,11 +44,11 @@ describe("fire", function() {
     it("should accept optional data object into custom events", function() {
         var detail = {x: 1, y: 2};
 
-        callback.andCallFake(function(e) {
-            expect(e.get("detail")).toBe(detail);
+        callback.andCallFake(function(detail) {
+            expect(detail).toBe(detail);
         });
 
-        input.on("my:click", callback);
+        input.on("my:click(detail)", callback);
 
         input.fire("my:click", detail);
 

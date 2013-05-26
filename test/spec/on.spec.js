@@ -4,7 +4,7 @@ describe("on", function() {
     var link, input, form, spy;
 
     beforeEach(function() {
-        setFixtures("<a id='test'>test element</a><form id='form'><input id='input' required='required'/></form>");
+        setFixtures("<a id='test' href='#test'>test element</a><form id='form'><input id='input' required='required'/></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#input");
@@ -18,19 +18,19 @@ describe("on", function() {
     });
 
     it("should accept single callback", function() {
-        link.on("click", spy).fire("click");
+        input.on("focus", spy).fire("focus");
 
         expect(spy).toHaveBeenCalled();
     });
 
     it("should accept optional event filter", function() {
-        DOM.on("click", "input", spy);
+        DOM.on("focus", "input", spy);
 
-        link.fire("click");
+        link.fire("focus");
 
         expect(spy).not.toHaveBeenCalled();
 
-        input.fire("click");
+        input.fire("focus");
 
         expect(spy).toHaveBeenCalled();
     });
@@ -63,6 +63,47 @@ describe("on", function() {
         });
 
         input.on("click", spy).fire("click");
+    });
+
+    describe("event expression", function() {
+        it("should call preventDefault if it starts with !", function() {
+            input.on("!click", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+            expect(location.hash).not.toBe("#test");
+        });
+
+        it("should call stopPropagation if it starts with ?", function() {
+            var callback = jasmine.createSpy("callback");
+
+            DOM.on("click", callback);
+            input.on("?click", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+            expect(callback).not.toHaveBeenCalled();
+        });
+
+        it("should call preventDefault and stopPropagation if it starts with ?!", function() {
+            var callback = jasmine.createSpy("callback");
+
+            DOM.on("click", callback);
+            input.on("?!click", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+            expect(callback).not.toHaveBeenCalled();
+            expect(location.hash).not.toBe("#test");
+        });
+
+        it("should pass optional event arguments", function() {
+            spy.andCallFake(function(type) {
+                expect(type).toBe("click");
+            });
+
+            input.on("click(type)", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+        });
+
     });
 
     it("should not stop to call handlers if any of them throws an error inside", function() {
@@ -116,23 +157,17 @@ describe("on", function() {
     });
 
     it("should fix submit event", function() {
-        spy.andCallFake(function(e) {
-            e.preventDefault();
-        });
-
-        form.on("submit", spy).fire("submit");
+        form.on("!submit", spy).fire("submit");
 
         expect(spy).toHaveBeenCalled();
 
-
-        DOM.on("submit", "a", spy);
+        DOM.on("!submit", "a", spy);
 
         form.fire("submit");
 
         expect(spy.callCount).toBe(2);
 
-
-        DOM.on("submit", "form", spy);
+        DOM.on("!submit", "form", spy);
 
         form.fire("submit");
 
@@ -140,17 +175,22 @@ describe("on", function() {
     });
 
     it("should not prevent default action if callback returns false", function() {
+        spy.andReturn(false);
 
+        input.on("click", spy).fire("click");
+
+        expect(spy).toHaveBeenCalled();
+        expect(location.hash).not.toBe("#test");
     });
 
     it("should optionally support extra handler arguments", function() {
-        var obj = {};
+        var a = {}, b = {};
 
-        spy.andCallFake(function(e, arg) {
-            expect(arg).toBe(obj);
+        spy.andCallFake(function(arg) {
+            expect(arg).toBe(a, b);
         });
 
-        input.on("click", spy, [obj]).fire("click");
+        input.on("click", spy, [a, b]).fire("click");
 
         expect(spy).toHaveBeenCalled();
     });
@@ -169,51 +209,6 @@ describe("on", function() {
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
-    });
-
-    describe("event expression", function() {
-
-        it("should call preventDefault if value starts with !", function() {
-            spy.andCallFake(function(e) {
-                expect(e.isDefaultPrevented()).toBe(true);
-            });
-
-            input.on("!click", spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it("should call stopPropagation if value starts with ?", function() {
-            spy.andCallFake(function(e) {
-                expect(e.isBubbleCanceled()).toBe(true);
-            });
-
-            input.on("?click", spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it("should call preventDefault and stopPropagation if value starts with ?!", function() {
-            spy.andCallFake(function(e) {
-                expect(e.isBubbleCanceled()).toBe(true);
-                expect(e.isDefaultPrevented()).toBe(true);
-            });
-
-            input.on("?!click", spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-        });
-
-        it("should pass optional event arguments", function() {
-            spy.andCallFake(function(e, type) {
-                expect(type).toBe("click");
-            });
-
-            input.on("click(type)", spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-        });
-
     });
 
 });
