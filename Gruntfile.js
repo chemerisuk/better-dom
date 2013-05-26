@@ -30,9 +30,8 @@ module.exports = function(grunt) {
         karma: {
             watch: {
                 configFile: "test/lib/karma.conf.js",
-                browsers: ["PhantomJS"],
                 background: true,
-                reporters: ["coverage"],
+                reporters: ["coverage", "progress"],
                 preprocessors: {
                     "src/*.js": "coverage"
                 }
@@ -44,7 +43,6 @@ module.exports = function(grunt) {
             },
             travis: {
                 configFile: "test/lib/karma.conf.js",
-                browsers: ["PhantomJS"],
                 singleRun: true
             }
         },

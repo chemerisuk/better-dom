@@ -143,6 +143,16 @@ describe("on", function() {
 
     });
 
+    it("should optionally support extra handler arguments", function() {
+        var obj = {};
+
+        spy.andCallFake(function(e, arg) {
+            expect(arg).toBe(obj);
+        });
+
+        input.on("click", spy, [obj]).fire("click");
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });

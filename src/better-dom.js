@@ -287,11 +287,17 @@
     (function() {
         var eventHooks = {},
             veto = false,
-            createEventHandler = function(thisPtr, callback, selector, eventType) {
+            createEventHandler = function(eventType, selector, callback, data, thisPtr) {
                 var currentTarget = thisPtr._node,
                     matcher = SelectorMatcher(selector),
                     simpleEventHandler = function(e) {
-                        if (veto !== eventType) callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
+                        if (veto !== eventType) {
+                            var args = [DOMEvent(e || window.event, currentTarget)];
+
+                            if (data) args.push.apply(args, data);
+
+                            callback.apply(thisPtr, args);
+                        }
                     };
 
                 return !selector ? simpleEventHandler : function(e) {
@@ -316,112 +322,32 @@
                 return handler;
             };
 
-        // firefox doesn't support focusin/focusout events
-        if (supports("onfocusin", "input")) {
-            _.forOwn({focus: "focusin", blur: "focusout"}, function(prop, index, obj) {
-                eventHooks[prop] = function(handler) { handler._type = obj[prop]; };
-            });
-        } else {
-            eventHooks.focus = eventHooks.blur = function(handler) {
-                handler.capturing = true;
-            };
-        }
-
-        if (supports("oninvalid", "input")) {
-            eventHooks.invalid = function(handler) {
-                handler.capturing = true;
-            };
-        }
-
-        if (!document.addEventListener) {
-            // input event fix via propertychange
-            document.attachEvent("onfocusin", function() {
-                var propertyChangeEventHandler = function() {
-                        var e = window.event;
-
-                        if (e.propertyName === "value") {
-                            var event = document.createEventObject();
-
-                            event._type = "input";
-
-                            // trigger special event that bubbles
-                            e.srcElement.fireEvent("ondataavailable", event);
-                        }
-                    },
-                    capturedEl;
-
-                return function() {
-                    var target = window.event.srcElement;
-
-                    if (capturedEl) {
-                        capturedEl.detachEvent("onpropertychange", propertyChangeEventHandler);
-                        capturedEl = null;
-                    }
-
-                    if (target.type === "input" || target.type === "textarea") {
-                        (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
-                    }
-                };
-            }());
-
-            // submit event bubbling fix
-            document.attachEvent("onkeydown", function() {
-                var target = window.event.srcElement,
-                    form = target.form;
-
-                if (form && target.type !== "textarea" && window.event.keyCode === 13) {
-                    DOMElement(form).fire("submit");
-
-                    return false;
-                }
-            });
-
-            document.attachEvent("onclick", function() {
-                var handleSubmit = function() {
-                        var form = window.event.srcElement;
-
-                        form.detachEvent("onsubmit", handleSubmit);
-
-                        DOMElement(form).fire("submit");
-
-                        return false;
-                    };
-
-                return function() {
-                    var target = window.event.srcElement,
-                        form = target.form;
-
-                    if (form && target.type === "submit") {
-                        form.attachEvent("onsubmit", handleSubmit);
-                    }
-                };
-            }());
-
-            eventHooks.submit = eventHooks.input = function(handler) {
-                handler.custom = true;
-            };
-        }
-
         /**
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
          * @param  {String}   type    event type
          * @param  {String}   [selector] css selector to filter
          * @param  {DOMNode#eventCallback} callback event handler
+         * @param  {Array} [args] extra arguments
          * @return {DOMNode} current context
          */
-        DOMNode.prototype.on = function(type, selector, callback) {
+        DOMNode.prototype.on = function(type, selector, callback, args) {
             var eventType = typeof type,
                 hook, handler;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
+                    args = callback;
                     callback = selector;
                     selector = null;
                 }
 
                 if (!~type.indexOf(" ")) {
-                    handler = createEventHandler(this, callback, selector, type);
+                    if (args !== undefined && !_.isArray(args)) {
+                        throw makeError("on");
+                    }
+
+                    handler = createEventHandler(type, selector, callback, args, this);
                     handler.type = type;
                     handler.callback = callback;
 
@@ -554,6 +480,92 @@
 
             return this;
         };
+
+        // firefox doesn't support focusin/focusout events
+        if (supports("onfocusin", "input")) {
+            _.forOwn({focus: "focusin", blur: "focusout"}, function(prop, index, obj) {
+                eventHooks[prop] = function(handler) { handler._type = obj[prop]; };
+            });
+        } else {
+            eventHooks.focus = eventHooks.blur = function(handler) {
+                handler.capturing = true;
+            };
+        }
+
+        if (supports("oninvalid", "input")) {
+            eventHooks.invalid = function(handler) {
+                handler.capturing = true;
+            };
+        }
+
+        if (!document.addEventListener) {
+            // input event fix via propertychange
+            document.attachEvent("onfocusin", function() {
+                var propertyChangeEventHandler = function() {
+                        var e = window.event;
+
+                        if (e.propertyName === "value") {
+                            var event = document.createEventObject();
+
+                            event._type = "input";
+
+                            // trigger special event that bubbles
+                            e.srcElement.fireEvent("ondataavailable", event);
+                        }
+                    },
+                    capturedEl;
+
+                return function() {
+                    var target = window.event.srcElement;
+
+                    if (capturedEl) {
+                        capturedEl.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedEl = null;
+                    }
+
+                    if (target.type === "input" || target.type === "textarea") {
+                        (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
+                    }
+                };
+            }());
+
+            // submit event bubbling fix
+            document.attachEvent("onkeydown", function() {
+                var target = window.event.srcElement,
+                    form = target.form;
+
+                if (form && target.type !== "textarea" && window.event.keyCode === 13) {
+                    DOMElement(form).fire("submit");
+
+                    return false;
+                }
+            });
+
+            document.attachEvent("onclick", function() {
+                var handleSubmit = function() {
+                        var form = window.event.srcElement;
+
+                        form.detachEvent("onsubmit", handleSubmit);
+
+                        DOMElement(form).fire("submit");
+
+                        return false;
+                    };
+
+                return function() {
+                    var target = window.event.srcElement,
+                        form = target.form;
+
+                    if (form && target.type === "submit") {
+                        form.attachEvent("onsubmit", handleSubmit);
+                    }
+                };
+            }());
+
+            eventHooks.submit = eventHooks.input = function(handler) {
+                handler.custom = true;
+            };
+        }
     })();
 
     // DOMElement
@@ -1991,6 +2003,9 @@
                 for (var i = 0; i < n; ++i) {
                     callback.call(thisArg, i);
                 }
+            },
+            isArray: Array.isArray || function(obj) {
+                return Object.prototype.toString.call(obj) === "[object Array]";
             },
 
             // Object utilites
