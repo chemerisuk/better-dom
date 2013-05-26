@@ -151,6 +151,8 @@ describe("on", function() {
         });
 
         input.on("click", spy, [obj]).fire("click");
+
+        expect(spy).toHaveBeenCalled();
     });
 
     it("should optionally support extra context", function() {
@@ -161,10 +163,57 @@ describe("on", function() {
         });
 
         input.on("click", spy, [], obj).fire("click");
+
+        expect(spy).toHaveBeenCalled();
     });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
+    });
+
+    describe("event expression", function() {
+
+        it("should call preventDefault if value starts with !", function() {
+            spy.andCallFake(function(e) {
+                expect(e.isDefaultPrevented()).toBe(true);
+            });
+
+            input.on("!click", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it("should call stopPropagation if value starts with ?", function() {
+            spy.andCallFake(function(e) {
+                expect(e.isBubbleCanceled()).toBe(true);
+            });
+
+            input.on("?click", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it("should call preventDefault and stopPropagation if value starts with ?!", function() {
+            spy.andCallFake(function(e) {
+                expect(e.isBubbleCanceled()).toBe(true);
+                expect(e.isDefaultPrevented()).toBe(true);
+            });
+
+            input.on("?!click", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+        });
+
+        it("should pass optional event arguments", function() {
+            spy.andCallFake(function(e, type) {
+                expect(type).toBe("click");
+            });
+
+            input.on("click(type)", spy).fire("click");
+
+            expect(spy).toHaveBeenCalled();
+        });
+
     });
 
 });

@@ -287,13 +287,31 @@
     (function() {
         var eventHooks = {},
             veto = false,
-            createEventHandler = function(eventType, selector, callback, data, context, thisArg) {
+            //   0  1          2     3
+            // [ _, modifiers, type, args ]
+            rtypexpr = /^([\?\!]{0,2})([^(\s]+)(?:\(([^)]+)\))?$/,
+            createEventHandler = function(expr, selector, callback, data, context, thisArg) {
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
-                        if (veto !== eventType) {
-                            var args = [DOMEvent(e || window.event, currentTarget)];
+                        if (veto !== expr[2]) {
+                            var event = DOMEvent(e || window.event, currentTarget),
+                                args = [event],
+                                modifiers = expr[1],
+                                props = expr[3];
 
+                            // handle modifiers
+                            if (~modifiers.indexOf("!")) event.preventDefault();
+                            if (~modifiers.indexOf("?")) event.stopPropagation();
+
+                            // populate extra event arguments
+                            if (props) {
+                                _.forEach(props.split(","), function(prop) {
+                                    args.push(event.get(prop));
+                                });
+                            }
+
+                            // populate extra data
                             if (data) args.push.apply(args, data);
 
                             callback.apply(context || thisArg, args);
@@ -334,7 +352,7 @@
          */
         DOMNode.prototype.on = function(type, selector, callback, args, context) {
             var eventType = typeof type,
-                hook, handler;
+                hook, handler, expr;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
@@ -344,12 +362,14 @@
                     selector = null;
                 }
 
-                if (!~type.indexOf(" ")) {
+                if (expr = rtypexpr.exec(type)) {
                     if (args !== undefined && !_.isArray(args)) {
                         throw makeError("on");
                     }
 
-                    handler = createEventHandler(type, selector, callback, args, context, this);
+                    type = expr[2];
+
+                    handler = createEventHandler(expr, selector, callback, args, context, this);
                     handler.type = type;
                     handler.callback = callback;
 
@@ -1309,10 +1329,6 @@
          * @return {Object} property value
          */
         get: function(name) {
-            if (typeof name !== "string" || name in DOMEvent.prototype) {
-                throw makeError("get", "DOMEvent");
-            }
-
             return this._event[name];
         }
     };
