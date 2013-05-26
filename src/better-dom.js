@@ -719,6 +719,12 @@
             };
         });
 
+        propHooks.tagName = propHooks.nodeName = {
+            get: function(el) {
+                return el.nodeName.toLowerCase();
+            }
+        };
+
         if (document.attachEvent) {
             // fix NoScope elements in IE < 10
             propHooks.innerHTML = {
@@ -727,14 +733,6 @@
                     el.appendChild(_.parseFragment(value));
                 }
             };
-
-            if (!document.addEventListener) {
-                propHooks.tagName = propHooks.nodeName = {
-                    get: function(el) {
-                        return el.nodeName.toUpperCase();
-                    }
-                };
-            }
         }
 
         if (!supports("hidden", "a")) {

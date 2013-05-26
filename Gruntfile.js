@@ -30,8 +30,12 @@ module.exports = function(grunt) {
         karma: {
             watch: {
                 configFile: "test/lib/karma.conf.js",
-                browsers: ["Chrome"],
-                background: true
+                browsers: ["PhantomJS"],
+                background: true,
+                reporters: ["coverage"],
+                preprocessors: {
+                    "src/*.js": "coverage"
+                }
             },
             unit: {
                 configFile: "test/lib/karma.conf.js",
@@ -42,15 +46,6 @@ module.exports = function(grunt) {
                 configFile: "test/lib/karma.conf.js",
                 browsers: ["PhantomJS"],
                 singleRun: true
-            },
-            coverage: {
-                configFile: "test/lib/karma.conf.js",
-                reporters: ["coverage"],
-                browsers: ["PhantomJS"],
-                singleRun: true,
-                preprocessors: {
-                    "src/*.js": "coverage"
-                }
             }
         },
 
@@ -167,6 +162,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("dev", [
         "jshint", // run jshint first
+        "shell:openCoverage", // open coverage page
         "karma:watch", // start karma server
         "watch" // watch for a file changes
     ]);
@@ -185,11 +181,6 @@ module.exports = function(grunt) {
     grunt.registerTask("travis", [
         "jshint",
         "karma:travis"
-    ]);
-
-    grunt.registerTask("coverage", [
-        "karma:coverage",
-        "shell:openCoverage"
     ]);
 
     grunt.registerTask("docs", [

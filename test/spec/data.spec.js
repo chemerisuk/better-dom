@@ -17,6 +17,15 @@ describe("data", function() {
         expect(input.setData("func", func).getData("func")).toEqual(func);
     });
 
+    it("should accept object argument", function() {
+        var param = {a: "b", c: 1};
+
+        input.setData(param);
+
+        expect(input.getData("a")).toBe("b");
+        expect(input.getData("c")).toBe(1);
+    });
+
     it("should read an appropriate data-* attribute if it exists", function() {
         expect(input.getData("test")).toEqual("x");
     });
@@ -27,6 +36,7 @@ describe("data", function() {
 
     it("should throw error if arguments a invalid", function() {
         expect(function() { input.getData(123); }).toThrow();
+        expect(function() { input.setData(123); }).toThrow();
     });
 
 });
