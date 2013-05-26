@@ -287,25 +287,25 @@
     (function() {
         var eventHooks = {},
             veto = false,
-            createEventHandler = function(eventType, selector, callback, data, thisPtr) {
-                var currentTarget = thisPtr._node,
+            createEventHandler = function(eventType, selector, callback, data, context, thisArg) {
+                var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
-                    simpleEventHandler = function(e) {
+                    defaultEventHandler = function(e) {
                         if (veto !== eventType) {
                             var args = [DOMEvent(e || window.event, currentTarget)];
 
                             if (data) args.push.apply(args, data);
 
-                            callback.apply(thisPtr, args);
+                            callback.apply(context || thisArg, args);
                         }
                     };
 
-                return !selector ? simpleEventHandler : function(e) {
+                return !selector ? defaultEventHandler : function(e) {
                     var elem = window.event ? window.event.srcElement : e.target;
 
                     for (; elem && elem !== currentTarget; elem = elem.parentNode) {
                         if (matcher.test(elem)) {
-                            return simpleEventHandler(e);
+                            return defaultEventHandler(e);
                         }
                     }
                 };
@@ -329,14 +329,16 @@
          * @param  {String}   [selector] css selector to filter
          * @param  {DOMNode#eventCallback} callback event handler
          * @param  {Array} [args] extra arguments
+         * @param  {Object} [context] callback context
          * @return {DOMNode} current context
          */
-        DOMNode.prototype.on = function(type, selector, callback, args) {
+        DOMNode.prototype.on = function(type, selector, callback, args, context) {
             var eventType = typeof type,
                 hook, handler;
 
             if (eventType === "string") {
                 if (typeof selector === "function") {
+                    context = args;
                     args = callback;
                     callback = selector;
                     selector = null;
@@ -347,7 +349,7 @@
                         throw makeError("on");
                     }
 
-                    handler = createEventHandler(type, selector, callback, args, this);
+                    handler = createEventHandler(type, selector, callback, args, context, this);
                     handler.type = type;
                     handler.callback = callback;
 

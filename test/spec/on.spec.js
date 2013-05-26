@@ -153,6 +153,16 @@ describe("on", function() {
         input.on("click", spy, [obj]).fire("click");
     });
 
+    it("should optionally support extra context", function() {
+        var obj = {};
+
+        spy.andCallFake(function() {
+            expect(this).toBe(obj);
+        });
+
+        input.on("click", spy, [], obj).fire("click");
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });
