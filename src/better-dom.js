@@ -513,7 +513,7 @@
             var node = this._node,
                 isCustomEvent = ~type.indexOf(":"),
                 hook = eventHooks[type],
-                event, isDefaultPrevented, handler = {};
+                event, handler = {};
 
             if (hook) hook(handler);
 
@@ -527,8 +527,6 @@
                 }
                 
                 node.dispatchEvent(event);
-
-                isDefaultPrevented = event.defaultPrevented;
             } else {
                 event = document.createEventObject();
 
@@ -541,13 +539,11 @@
                 }
 
                 node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
-
-                isDefaultPrevented = event.returnValue === false;
             }
 
             // Call a native DOM method on the target with the same name as the event
             // IE<9 dies on focus/blur to hidden element
-            if (!isDefaultPrevented && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+            if (!DOMEvent(event).isDefaultPrevented() && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
                 // Prevent re-triggering of the same event
                 veto = type;
                 
@@ -1310,9 +1306,14 @@
     };
 
     (function() {
-        var makeFuncMethod = function(name, legacyHandler) {
+        var returnTrue = function() { return true; },
+            makeFuncMethod = function(name, propName, legacyHandler) {
                 return !document.addEventListener ? legacyHandler : function() {
                     this._event[name]();
+
+                    // IE9 behaves strangely with defaultPrevented so
+                    // it's safer manually overwrite getter
+                    this[propName] = returnTrue;
                 };
             },
             defineProperty = function(name) {
@@ -1329,7 +1330,7 @@
          * @memberOf DOMEvent.prototype
          * @function
          */
-        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault", function() {
+        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
             this._event.returnValue = false;
         });
 
@@ -1338,17 +1339,26 @@
          * @memberOf DOMEvent.prototype
          * @function
          */
-        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", function() {
+        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
             this._event.cancelBubble = true;
         });
 
         /**
          * Check if default event handler is prevented
          * @memberOf DOMEvent.prototype
-         * @return {Boolean} true, if default event handler is prevented
+         * @return {Boolean} true, if there was a preventDefault call
          */
         DOMEvent.prototype.isDefaultPrevented = function() {
             return this._event.defaultPrevented || this._event.returnValue === false;
+        };
+
+        /**
+         * Check if event bubbling is canceled
+         * @memberOf DOMEvent.prototype
+         * @return {Boolean} true, if there was a stopPropagation call
+         */
+        DOMEvent.prototype.isBubbleCanceled = function() {
+            return this._event.bubbleCanceled || this._event.cancelBubble === true;
         };
 
         if (document.addEventListener) {
