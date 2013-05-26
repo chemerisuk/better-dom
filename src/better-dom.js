@@ -2036,33 +2036,6 @@
             }
         },
         parser = document.createElement("body"),
-        operators = { // operatorName / operatorPriority object
-            "(": 0,
-            ")": 1,
-            ">": 2,
-            "+": 3,
-            "*": 4,
-            "#": 5,
-            ".": 5,
-            "[": 5,
-            "]": 5
-        },
-        rindex = /\$/g,
-        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
-        modifyAttr = function(attr) {
-            if (attr.specified) {
-                // changing attribute name doesn't work in IE
-                // attr.name = attr.name.replace(rindex, this);
-                if (attr.value) attr.value = attr.value.replace(rindex, this);
-            }
-        },
-        parseAttrs = function(str) {
-            var attrParts = str.split("="),
-                key = attrParts[0],
-                value = attrParts[1];
-
-            this.setAttribute(key, _.unquote(value));
-        },
         createElement, cloneNode, createFragment;
 
     if (document.addEventListener) {
@@ -2180,38 +2153,66 @@
 
             return fragment;
         },
-        parseTemplate: function(expr) {
-            // use emmet-like syntax to describe html templates:
-            // http://docs.emmet.io/cheat-sheet/
+        parseTemplate: (function() {
+            var operators = { // name / priority object
+                "(": 0,
+                ")": 1,
+                ">": 2,
+                "+": 2,
+                "*": 3,
+                "]": 3,
+                "[": 4,
+                ".": 5,
+                "#": 6
+            },
+            rindex = /\$/g,
+            rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
+            modifyAttr = function(attr) {
+                if (attr.specified) {
+                    // changing attribute name doesn't work in IE
+                    // attr.name = attr.name.replace(rindex, this);
+                    if (attr.value) attr.value = attr.value.replace(rindex, this);
+                }
+            },
+            parseAttrs = function(str) {
+                var attrParts = str.split("="),
+                    key = attrParts[0],
+                    value = attrParts[1];
 
-            var stack = [],
-                output = [],
-                term = "";
+                this.setAttribute(key, _.unquote(value));
+            };
 
-            // parse exrpression into RPN
-        
-            _.forEach(expr, function(str) {
-                var top = stack[0], priority;
+            return function(expr) {
+                // use emmet-like syntax to describe html templates:
+                // http://docs.emmet.io/cheat-sheet/
 
-                if (str in operators && (top !== "[" || str === "]")) {
-                    if (top === "." && str === ".") {
-                        term += " "; // concat .c1.c2 into single space separated class string
+                var stack = [],
+                    output = [],
+                    term = "";
 
-                        return;
-                    }
+                // parse exrpression into RPN
+            
+                _.forEach(expr, function(str) {
+                    var top = stack[0], priority;
 
-                    if (term) {
-                        output.push(term);
-                        term = "";
-                    }
+                    if (str in operators && (top !== "[" || str === "]")) {
+                        if (top === "." && str === ".") {
+                            term += " "; // concat .c1.c2 into single space separated class string
 
-                    if (str === "(") {
-                        stack.unshift(str);
-                    } else {
-                        priority = operators[str];
-                        if (str === ">") ++priority; // nested ">" should have higher priority
-                        while (operators[stack[0]] >= priority) {
-                            output.push(stack.shift());
+                            return;
+                        }
+
+                        if (term) {
+                            output.push(term);
+                            term = "";
+                        }
+
+                        if (str !== "(") {
+                            priority = operators[str];
+
+                            while (operators[stack[0]] > priority) {
+                                output.push(stack.shift());
+                            }
                         }
 
                         if (str === ")") {
@@ -2219,84 +2220,84 @@
                         } else if (str !== "]") { // don't need to have "]" in stack
                             stack.unshift(str);
                         }
+                    } else {
+                        term += str;
                     }
-                } else {
-                    term += str;
-                }
-            });
+                });
 
-            if (term) stack.unshift(term);
+                if (term) stack.unshift(term);
 
-            output.push.apply(output, stack);
+                output.push.apply(output, stack);
 
-            stack = [];
+                stack = [];
 
-            // transform RPN into html nodes
+                // transform RPN into html nodes
 
-            _.forEach(output, function(str) {
-                var term, node, proto;
+                _.forEach(output, function(str) {
+                    var term, node, proto;
 
-                if (str in operators) {
-                    term = stack.shift();
-                    node = stack.shift() || "div";
+                    if (str in operators) {
+                        term = stack.shift();
+                        node = stack.shift() || "div";
 
-                    if (typeof node === "string") {
-                        createFragment().appendChild( node = createElement(node) );
-                    }
-
-                    switch(str) {
-                    case ".":
-                        node.className = term;
-                        break;
-
-                    case "#":
-                        node.id = term;
-                        break;
-
-                    case "[":
-                        _.forEach(term.match(rattr), parseAttrs, node);
-                        break;
-
-                    case "+":
-                        node = node.parentNode || node;
-                        /* falls through */
-                    case ">":
-                        if (typeof term === "string") {
-                            term = createElement(term);
+                        if (typeof node === "string") {
+                            createFragment().appendChild( node = createElement(node) );
                         }
 
-                        if (!node.parentNode && str === ">") {
-                            _.forEach(node.childNodes, function(child) {
-                                child.appendChild(cloneNode(term));
+                        switch(str) {
+                        case ".":
+                            node.className = term;
+                            break;
+
+                        case "#":
+                            node.id = term;
+                            break;
+
+                        case "[":
+                            _.forEach(term.match(rattr), parseAttrs, node);
+                            break;
+
+                        case "+":
+                            node = node.parentNode || node;
+                            /* falls through */
+                        case ">":
+                            if (typeof term === "string") {
+                                term = createElement(term);
+                            }
+
+                            if (!node.parentNode && str === ">") {
+                                _.forEach(node.childNodes, function(child) {
+                                    child.appendChild(cloneNode(term));
+                                });
+                            } else {
+                                node.appendChild(term);
+                            }
+                            break;
+
+                        case "*":
+                            proto = node.parentNode || node;
+                            node = createFragment();
+
+                            _.times(parseInt(term, 10), function(i) {
+                                node.appendChild(cloneNode(proto));
+
+                                _.forEach(node.childNodes, function(child) {
+                                    _.forEach(child.attributes, modifyAttr, i + 1);
+                                });
                             });
-                        } else {
-                            node.appendChild(term);
+                            break;
                         }
-                        break;
 
-                    case "*":
-                        proto = node.parentNode || node;
-                        node = createFragment();
-
-                        _.times(parseInt(term, 10), function(i) {
-                            node.appendChild(cloneNode(proto));
-
-                            _.forEach(node.childNodes, function(child) {
-                                _.forEach(child.attributes, modifyAttr, i + 1);
-                            });
-                        });
-                        break;
+                        str = node;
                     }
 
-                    str = node;
-                }
+                    stack.unshift(str);
+                });
 
-                stack.unshift(str);
-            });
+                for (output = stack[0]; output.parentNode; output = output.parentNode);
 
-            for (output = stack[0]; output.parentNode; output = output.parentNode);
-
-            return output;
-        }
+                return output;
+            };
+        })()
     });
 })());

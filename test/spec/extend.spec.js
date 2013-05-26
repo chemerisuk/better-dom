@@ -134,7 +134,9 @@ describe("extend", function() {
             checkExpression("ul>li>a", "<ul><li><a></a></li></ul>"));
         it("should accept p.hello>em.world>span",
             checkExpression("p.hello>em.world>span", "<p class=\"hello\"><em class=\"world\"><span></span></em></p>"));
-        
+        it("should accept a>b+i>span",
+            checkExpression("a>b+i>span", "<a><b></b><i><span></span></i></a>"));
+
         // classes
 
         it("should accept p.name",
