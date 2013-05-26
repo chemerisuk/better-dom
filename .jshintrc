@@ -14,7 +14,6 @@
     "noarg": true,
     "noempty": true,
     "trailing": true,
-    "maxparams": 4,
     "maxdepth": 4,
     
     "globals": {
