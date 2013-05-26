@@ -283,7 +283,7 @@
     };
 
     // EVENTS
-    
+
     (function() {
         var eventHooks = {},
             veto = false,
@@ -295,34 +295,33 @@
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
                         if (veto !== expr[2]) {
-                            var event = DOMEvent(e || window.event, currentTarget),
-                                args = [],
+                            var eventHelper = new EventHelper(e || window.event, currentTarget),
                                 modifiers = expr[1],
-                                props = expr[3];
+                                props = expr[3],
+                                args;
 
                             // handle modifiers
-                            if (~modifiers.indexOf("!")) event.preventDefault();
-                            if (~modifiers.indexOf("?")) event.stopPropagation();
+                            if (~modifiers.indexOf("!")) eventHelper.preventDefault();
+                            if (~modifiers.indexOf("?")) eventHelper.stopPropagation();
 
                             // populate extra event arguments
                             if (props) {
-                                _.forEach(props.split(","), function(prop) {
-                                    args.push(event.get(prop));
-                                });
+                                args = _.map(props.split(","), eventHelper.get, eventHelper);
+                                
+                                if (data) args.push.apply(args, data);
+                            } else {
+                                args = data ? data.slice(0) : [];
                             }
-
-                            // populate extra data
-                            if (data) args.push.apply(args, data);
 
                             callback.apply(context || thisArg, args);
                         }
                     };
 
                 return !selector ? defaultEventHandler : function(e) {
-                    var elem = window.event ? window.event.srcElement : e.target;
+                    var target = window.event ? window.event.srcElement : e.target;
 
-                    for (; elem && elem !== currentTarget; elem = elem.parentNode) {
-                        if (matcher.test(elem)) {
+                    for (; target && target !== currentTarget; target = target.parentNode) {
+                        if (matcher.test(target)) {
                             return defaultEventHandler(e);
                         }
                     }
@@ -345,7 +344,7 @@
          * @memberOf DOMNode.prototype
          * @param  {String}   type    event type
          * @param  {String}   [selector] css selector to filter
-         * @param  {DOMNode#eventCallback} callback event handler
+         * @param  {Function} callback event handler
          * @param  {Array} [args] extra arguments
          * @param  {Object} [context] callback context
          * @return {DOMNode} current context
@@ -406,7 +405,7 @@
          * Unbind a DOM event from the context
          * @memberOf DOMNode.prototype
          * @param  {String} type event type
-         * @param  {DOMNode#eventCallback} [callback]  event handler
+         * @param  {Function} [callback] event handler
          * @return {DOMNode} current context
          */
         DOMNode.prototype.off = function(type, callback) {
@@ -432,12 +431,6 @@
 
             return this;
         };
-
-        /**
-         * Event handler definition
-         * @callback DOMNode#eventCallback
-         * @param {DOMEvent} event instance of event
-         */
 
         /**
          * Triggers an event of specific type
@@ -1300,105 +1293,6 @@
         };
     })();
 
-    // DOMEvent
-    // --------
-    
-    /**
-     * Prototype for events in better-dom
-     * @name DOMEvent
-     * @constructor
-     * @param event native event
-     */
-    function DOMEvent(event, currentTarget) {
-        if (!(this instanceof DOMEvent)) {
-            return event.__dom__ || ( event.__dom__ = new DOMEvent(event, currentTarget) );
-        }
-
-        this._event = event;
-
-        if (!document.addEventListener) {
-            this.target = DOMElement(event.srcElement);
-            this.currentTarget = DOMElement(currentTarget);
-            this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
-        }
-    }
-
-    DOMEvent.prototype = {
-        /**
-         * Read event property by name
-         * @memberOf DOMEvent.prototype
-         * @param  {String} name property name
-         * @return {Object} property value
-         */
-        get: function(name) {
-            return this._event[name];
-        }
-    };
-
-    (function() {
-        var returnTrue = function() { return true; },
-            makeFuncMethod = function(name, propName, legacyHandler) {
-                return !document.addEventListener ? legacyHandler : function() {
-                    this._event[name]();
-
-                    // IE9 behaves strangely with defaultPrevented so
-                    // it's safer manually overwrite getter
-                    this[propName] = returnTrue;
-                };
-            },
-            defineProperty = function(name) {
-                Object.defineProperty(DOMEvent.prototype, name, {
-                    enumerable: true,
-                    get: function() {
-                        return DOMElement(this._event[name]);
-                    }
-                });
-            };
-
-        /**
-         * Prevent default event action
-         * @memberOf DOMEvent.prototype
-         * @function
-         */
-        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
-            this._event.returnValue = false;
-        });
-
-        /**
-         * Stop event propagation
-         * @memberOf DOMEvent.prototype
-         * @function
-         */
-        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
-            this._event.cancelBubble = true;
-        });
-
-        /**
-         * Check if default event handler is prevented
-         * @memberOf DOMEvent.prototype
-         * @return {Boolean} true, if there was a preventDefault call
-         */
-        DOMEvent.prototype.isDefaultPrevented = function() {
-            return this._event.defaultPrevented || this._event.returnValue === false;
-        };
-
-        /**
-         * Check if event bubbling is canceled
-         * @memberOf DOMEvent.prototype
-         * @return {Boolean} true, if there was a stopPropagation call
-         */
-        DOMEvent.prototype.isBubbleCanceled = function() {
-            return this._event.bubbleCanceled || this._event.cancelBubble === true;
-        };
-
-        if (document.addEventListener) {
-            // in ie we will set these properties in constructor
-            defineProperty("target");
-            defineProperty("currentTarget");
-            defineProperty("relatedTarget");
-        }
-    })();
-
     // DOMElementCollection
     // --------------------
 
@@ -1561,6 +1455,7 @@
     });
 
     /**
+     * Helper for css selectors
      * @private
      * @constructor
      */
@@ -1617,10 +1512,83 @@
         return ctor;
     })();
 
+    // EventHelper
+    // -----------
+    
+    /**
+     * Helper for events
+     * @private
+     * @constructor
+     */
+    function EventHelper(event, currentTarget) {
+        this._event = event;
+        this._currentTarget = currentTarget;
+    }
+
+    (function() {
+        var hooks = {},
+            returnTrue = function() { return true; },
+            makeFuncMethod = function(name, propName, legacyHandler) {
+                return !document.addEventListener ? legacyHandler : function() {
+                    this._event[name]();
+
+                    // IE9 behaves strangely with defaultPrevented so
+                    // it's safer manually overwrite the getter
+                    this[propName] = returnTrue;
+                };
+            };
+
+        EventHelper.prototype = {
+            get: function(name) {
+                var hook = hooks[name];
+
+                return hook ? hook(this) : this._event[name];
+            },
+            preventDefault: makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
+                this._event.returnValue = false;
+            }),
+            stopPropagation: makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
+                this._event.cancelBubble = true;
+            }),
+            isDefaultPrevented: function() {
+                return this._event.defaultPrevented || this._event.returnValue === false;
+            },
+            isBubbleCanceled: function() {
+                return this._event.bubbleCanceled || this._event.cancelBubble === true;
+            }
+        };
+
+        hooks.currentTarget = function(thisArg) {
+            return DOMElement(thisArg._currentTarget);
+        };
+
+        if (document.addEventListener) {
+            hooks.target = function(thisArg) {
+                return DOMElement(thisArg._event.target);
+            };
+        } else {
+            hooks.target = function(thisArg) {
+                return DOMElement(thisArg._event.srcElement);
+            };
+        }
+
+        if (document.addEventListener) {
+            hooks.relatedTarget = function(thisArg) {
+                return DOMElement(thisArg._event.relatedTarget);
+            };
+        } else {
+            hooks.relatedTarget = function(thisArg) {
+                var propName = ( thisArg._event.toElement === thisArg._currentTarget ? "from" : "to" ) + "Element";
+
+                return DOMElement(thisArg._event[propName]);
+            };
+        }
+    })();
+
     // finish prototypes
     
     // fix constructor property
-    _.forEach([DOMNode, DOMElement, DOMEvent, MockElement], function(ctr) {
+    _.forEach([DOMNode, DOMElement, MockElement], function(ctr) {
         ctr.prototype.constructor = ctr;
     });
 
