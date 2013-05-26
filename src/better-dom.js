@@ -461,7 +461,7 @@
             var node = this._node,
                 isCustomEvent = ~type.indexOf(":"),
                 hook = eventHooks[type],
-                event, handler = {};
+                canContinue, event, handler = {};
 
             if (hook) hook(handler);
 
@@ -473,8 +473,8 @@
                 } else {
                     event.initEvent(handler._type || type, true, true);
                 }
-                
-                node.dispatchEvent(event);
+
+                canContinue = node.dispatchEvent(event);
             } else {
                 event = document.createEventObject();
 
@@ -487,11 +487,13 @@
                 }
 
                 node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
+
+                canContinue = event.returnValue !== false;
             }
 
             // Call a native DOM method on the target with the same name as the event
             // IE<9 dies on focus/blur to hidden element
-            if (!DOMEvent(event).isDefaultPrevented() && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+            if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
                 // Prevent re-triggering of the same event
                 veto = type;
                 
