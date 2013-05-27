@@ -46,7 +46,7 @@ It's pretty simple to write polyfills:
 
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
-    before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: transparent; border-color: transparent'/>"
+    before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
 }, {
     constructor: function() {
         var input = this,
@@ -56,20 +56,15 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
         placeholder
             .set(input.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
-            .on("click", function() {
-                input.fire("focus");
-            });
+            .on("click", input.fire, ["focus"], input);
 
-        input.on({
-            focus: function() {
-                placeholder.hide();
-            },
-            blur: function() {
-                if (!input.get()) placeholder.show();
-            }
-        });
+        input.on("focus", placeholder.hide, [], placeholder);
+        input.on("blur", input._showPlaceholder, [placeholder]);
 
         if (input.get() || input.isFocused()) placeholder.hide();
+    },
+    _showPlaceholder: function(placeholder) {
+        if (!this.get()) placeholder.show();
     }
 });
 ```
@@ -92,24 +87,19 @@ DOM.extend("textarea.elastic", {
 
         wrapper.append(textarea);
 
-        textarea.on("input", function() {
-            textarea._syncTextarea(span);
-        });
-
         holder.setStyle({
             font: textarea.getStyle("font"),
             padding: textarea.getStyle("padding"),
             "border-width": textarea.getStyle("border-width")
         });
 
-        textarea.parent("form").on("reset", function() {
-            textarea._syncWithHolder(span, textarea.get("defaultValue"));
-        });
-
+        textarea.on("input", textarea._syncWithHolder, [span]);
         textarea._syncWithHolder(span);
+
+        textarea.parent("form").on("reset", textarea._syncWithHolder, [span, true], textarea);
     },
-    _syncWithHolder: function(span, value) {
-        if (value === undefined) value = this.get();
+    _syncWithHolder: function(span, defaultValue) {
+        value = this.get(defaultValue ? "defaultValue" : "value");
 
         // use &nbsp; to fix issue with adding a new line
         if (value[value.length - 1] === "\n") value += "&nbsp;";

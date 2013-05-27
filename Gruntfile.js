@@ -86,7 +86,7 @@ module.exports = function(grunt) {
                     "git push origin --all",
 
                     // push new tag
-                    "git push --tags v<%= pkg.version %>"
+                    "git push origin v<%= pkg.version %>"
                 ].join(" && "),
                 options: {
                     stdout: true,
