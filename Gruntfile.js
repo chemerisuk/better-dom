@@ -118,7 +118,9 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     preserveComments: "some",
-                    report: "min"
+                    sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.map",
+                    sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.map",
+                    report: "gzip"
                 },
                 files: {
                     "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["src/*.js"]
