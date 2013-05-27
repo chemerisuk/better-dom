@@ -627,7 +627,17 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.clone = function() {
-        return new DOMElement(_.cloneNode(this._node));
+        var el;
+
+        if (document.addEventListener) {
+            el = this._node.cloneNode(true);
+        } else {
+            el = _.createElement("div");
+            el.innerHTML = this._node.outerHTML;
+            el = el.firstChild;
+        }
+
+        return new DOMElement(el);
     };
 
     /**
@@ -1859,9 +1869,9 @@
                     tpl = DOM.parseTemplate(tpl);
                 }
 
-                tpl = _.parseFragment(tpl);
-
-                template[key] = tpl;
+                // IE8 doesn't support HTML5 element so it fails
+                // to clone fragments that contan new tags
+                template[key] = document.addEventListener ? _.parseFragment(tpl) : tpl;
             });
         }
 
@@ -1873,7 +1883,9 @@
             if (template) {
                 _.forOwn(template, function(key) {
                     if (key !== "constructor") {
-                        el[key](_.cloneNode(template[key]));
+                        var tpl = template[key];
+
+                        el[key](document.addEventListener ? tpl.cloneNode(true) : tpl);
                     }
                 });
             }
@@ -2200,14 +2212,11 @@
             }
         },
         parser = document.createElement("body"),
-        createElement, cloneNode, createFragment;
+        createElement, createFragment;
 
     if (document.addEventListener) {
         createElement = function(tagName) {
             return document.createElement(tagName);
-        };
-        cloneNode = function(node) {
-            return node.cloneNode(true);
         };
         createFragment = function() {
             return document.createDocumentFragment();
@@ -2252,24 +2261,6 @@
                     }) +
                 ");return n}"
             )(frag);
-
-            // IE<=8 does not properly clone detached, unknown element nodes
-            cloneNode = function(node) {
-                if (node.nodeType === 1) {
-                    parser.innerHTML = node.outerHTML;
-                    return parser.firstChild;
-                } else if (node.nodeType === 11) {
-                    var result = "", el;
-
-                    for (el = node.firstChild; el; el = el.nextSibling) {
-                        result += el.outerHTML;
-                    }
-
-                    return _.parseFragment(result);
-                }
-
-                return node.cloneNode(true);
-            };
         })();
     }
 
@@ -2295,7 +2286,6 @@
         // DOM utilites
 
         createElement: createElement,
-        cloneNode: cloneNode,
         parseFragment: function(html) {
             var fragment = createFragment();
 
