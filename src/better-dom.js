@@ -1767,9 +1767,9 @@
     };
 
     /**
-     * Parse Emmet-like template to HTML string
+     * Parse emmet-like template to HTML string
      * @memberOf DOM
-     * @param  {String} template Emmet-like expression
+     * @param  {String} template emmet-like expression
      * @return {String} HTML string
      * @function
      * @see http://docs.emmet.io/cheat-sheet/
@@ -1784,10 +1784,12 @@
             "]": 3,
             "[": 4,
             ".": 5,
-            "#": 6
+            "#": 6,
+            ":": 7
         },
         rindex = /\$/g,
         rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
+        emptyElements = " area base br col hr img input link meta param command keygen source ",
         normalizeAttrs = function(term, str) {
             var index = str.indexOf("="),
                 name = ~index ? str.substr(0, index) : str,
@@ -1806,7 +1808,14 @@
 
         // helper class
         function HtmlBuilder(term, noparse) {
-            this.str = noparse ? term : "<" + term + "></" + term + ">";
+            if (noparse) this.str = term;
+            else {
+                this.str = "<" + term + ">";
+
+                if (!~emptyElements.indexOf(" " + term + " ")) {
+                    this.str += "</" + term + ">";
+                }
+            }
         }
 
         HtmlBuilder.prototype = {
@@ -1836,27 +1845,29 @@
                 if (str in operators && (top !== "[" || str === "]")) {
                     if (top === "." && str === ".") {
                         term += " "; // concat .c1.c2 into single space separated class string
-
-                        return;
-                    }
-
-                    if (term) {
-                        output.push(term);
-                        term = "";
-                    }
-
-                    if (str !== "(") {
-                        priority = operators[str];
-
-                        while (operators[stack[0]] > priority) {
-                            output.push(stack.shift());
+                    } else {
+                        if (str === ":") {
+                            output.push("input");
                         }
-                    }
 
-                    if (str === ")") {
-                        stack.shift(); // remove "(" symbol from stack
-                    } else if (str !== "]") { // don't need to have "]" in stack
-                        stack.unshift(str);
+                        if (term) {
+                            output.push(term);
+                            term = "";
+                        }
+
+                        if (str !== "(") {
+                            priority = operators[str];
+
+                            while (operators[stack[0]] > priority) {
+                                output.push(stack.shift());
+                            }
+                        }
+
+                        if (str === ")") {
+                            stack.shift(); // remove "(" symbol from stack
+                        } else if (str !== "]") { // don't need to have "]" in stack
+                            stack.unshift(str);
+                        }
                     }
                 } else {
                     term += str;
@@ -1887,6 +1898,10 @@
 
                     case "#":
                         node.insertTerm(" id=\"" + term + "\"");
+                        break;
+
+                    case ":":
+                        node.insertTerm(" type=\"" + term + "\"");
                         break;
 
                     case "[":
@@ -1921,7 +1936,7 @@
                 stack.unshift(str);
             });
 
-            return toHtmlString(stack[0]);
+            return toHtmlString(stack.shift());
         };
     })();
 
