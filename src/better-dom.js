@@ -2167,19 +2167,27 @@
             },
             rindex = /\$/g,
             rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
-            modifyAttr = function(attr) {
-                if (attr.specified) {
-                    // changing attribute name doesn't work in IE
-                    // attr.name = attr.name.replace(rindex, this);
-                    if (attr.value) attr.value = attr.value.replace(rindex, this);
+            prepareTerm = function(term, flag) {
+                if (_.isArray(term)) {
+                    if (!flag) term = term.join("");
+                } else if (term[0] !== "<") {
+                    term = "<" + term + "></" + term + ">";
                 }
-            },
-            parseAttrs = function(str) {
-                var attrParts = str.split("="),
-                    key = attrParts[0],
-                    value = attrParts[1];
 
-                this.setAttribute(key, _.unquote(value));
+                return term;
+            },
+            appendTerm = function(node) {
+                var index = node.lastIndexOf("<");
+
+                return node.substr(0, index) + this + node.substr(index);
+            },
+            prependTerm = function(node) {
+                var index = node.indexOf(">");
+
+                return node.substr(0, index) + this + node.substr(index);
+            },
+            normalizeAttrs = function(term, str) {
+                return term + " " + (~str.indexOf("=") ? str : str + "=\'\'");
             };
 
             return function(expr) {
@@ -2234,56 +2242,53 @@
                 // transform RPN into html nodes
 
                 _.forEach(output, function(str) {
-                    var term, node, proto;
+                    var term, node;
 
                     if (str in operators) {
                         term = stack.shift();
                         node = stack.shift() || "div";
 
-                        if (typeof node === "string") {
-                            createFragment().appendChild( node = createElement(node) );
-                        }
+                        node = prepareTerm(node, true);
 
                         switch(str) {
                         case ".":
-                            node.className = term;
+                            node = prependTerm.call(" class='" + term + "'", node);
                             break;
 
                         case "#":
-                            node.id = term;
+                            node = prependTerm.call(" id='" + term + "'", node);
                             break;
 
                         case "[":
-                            _.forEach(term.match(rattr), parseAttrs, node);
+                            node = prependTerm.call(_.reduce(term.match(rattr), normalizeAttrs, ""), node);
+                            break;
+                            
+                        case "+":
+                            term = prepareTerm(term);
+
+                            if (_.isArray(node)) {
+                                node.push(term);
+                            } else {
+                                node += term;
+                            }
                             break;
 
-                        case "+":
-                            node = node.parentNode || node;
-                            /* falls through */
                         case ">":
-                            if (typeof term === "string") {
-                                term = createElement(term);
-                            }
+                            term = prepareTerm(term);
 
-                            if (!node.parentNode && str === ">") {
-                                _.forEach(node.childNodes, function(child) {
-                                    child.appendChild(cloneNode(term));
-                                });
+                            if (_.isArray(node)) {
+                                node = _.map(node, appendTerm, term);
                             } else {
-                                node.appendChild(term);
+                                node = appendTerm.call(term, node);
                             }
                             break;
 
                         case "*":
-                            proto = node.parentNode || node;
-                            node = createFragment();
+                            str = node;
+                            node = [];
 
                             _.times(parseInt(term, 10), function(i) {
-                                node.appendChild(cloneNode(proto));
-
-                                _.forEach(node.childNodes, function(child) {
-                                    _.forEach(child.attributes, modifyAttr, i + 1);
-                                });
+                                node.push(str.replace(rindex, i + 1));
                             });
                             break;
                         }
@@ -2294,9 +2299,7 @@
                     stack.unshift(str);
                 });
 
-                for (output = stack[0]; output.parentNode; output = output.parentNode);
-
-                return output;
+                return _.parseFragment(_.isArray(stack[0]) ? stack[0].join("") : stack[0]);
             };
         })()
     });
