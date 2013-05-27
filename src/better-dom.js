@@ -1853,10 +1853,10 @@
                 var tpl = template[key];
 
                 if (tpl[0] !== "<") {
-                    tpl = _.parseTemplate(tpl);
-                } else {
-                    tpl = _.parseFragment(tpl);
+                    tpl = DOM.parseTemplate(tpl);
                 }
+
+                tpl = _.parseFragment(tpl);
 
                 template[key] = tpl;
             });
@@ -1884,6 +1884,166 @@
             el._extends[selector] = true;
         });
     };
+
+    /**
+     * Emmet-like syntax parsing for html strings
+     * @memberOf DOM
+     * @param {String} expr template string
+     * @return {String} HTML string
+     * @see http://docs.emmet.io/cheat-sheet/
+     */
+    DOM.parseTemplate = function() {
+        var operators = { // name / priority object
+            "(": 0,
+            ")": 1,
+            ">": 2,
+            "+": 2,
+            "*": 3,
+            "]": 3,
+            "[": 4,
+            ".": 5,
+            "#": 6
+        },
+        rindex = /\$/g,
+        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
+        prepareTerm = function(term, flag) {
+            if (_.isArray(term)) {
+                if (!flag) term = term.join("");
+            } else if (term[0] !== "<") {
+                term = "<" + term + "></" + term + ">";
+            }
+
+            return term;
+        },
+        appendTerm = function(node) {
+            var index = node.lastIndexOf("<");
+
+            return node.substr(0, index) + this + node.substr(index);
+        },
+        prependTerm = function(node) {
+            var index = node.indexOf(">");
+
+            return node.substr(0, index) + this + node.substr(index);
+        },
+        normalizeAttrs = function(term, str) {
+            var index = str.indexOf("="),
+                name = ~index ? str.substr(0, index) : str,
+                value = ~index ? str.substr(index + 1) : "";
+
+            if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
+
+            return term + " " + name + "=" + value;
+        };
+
+        return function(expr) {
+            var stack = [],
+                output = [],
+                term = "";
+
+            // parse exrpression into RPN
+        
+            _.forEach(expr, function(str) {
+                var top = stack[0], priority;
+
+                if (str in operators && (top !== "[" || str === "]")) {
+                    if (top === "." && str === ".") {
+                        term += " "; // concat .c1.c2 into single space separated class string
+
+                        return;
+                    }
+
+                    if (term) {
+                        output.push(term);
+                        term = "";
+                    }
+
+                    if (str !== "(") {
+                        priority = operators[str];
+
+                        while (operators[stack[0]] > priority) {
+                            output.push(stack.shift());
+                        }
+                    }
+
+                    if (str === ")") {
+                        stack.shift(); // remove "(" symbol from stack
+                    } else if (str !== "]") { // don't need to have "]" in stack
+                        stack.unshift(str);
+                    }
+                } else {
+                    term += str;
+                }
+            });
+
+            if (term) stack.unshift(term);
+
+            output.push.apply(output, stack);
+
+            stack = [];
+
+            // transform RPN into html nodes
+
+            _.forEach(output, function(str) {
+                var term, node;
+
+                if (str in operators) {
+                    term = stack.shift();
+                    node = stack.shift() || "div";
+
+                    node = prepareTerm(node, true);
+
+                    switch(str) {
+                    case ".":
+                        node = prependTerm.call(" class=\"" + term + "\"", node);
+                        break;
+
+                    case "#":
+                        node = prependTerm.call(" id=\"" + term + "\"", node);
+                        break;
+
+                    case "[":
+                        node = prependTerm.call(_.reduce(term.match(rattr), normalizeAttrs, ""), node);
+                        break;
+                        
+                    case "+":
+                        term = prepareTerm(term);
+
+                        if (_.isArray(node)) {
+                            node.push(term);
+                        } else {
+                            node += term;
+                        }
+                        break;
+
+                    case ">":
+                        term = prepareTerm(term);
+
+                        if (_.isArray(node)) {
+                            node = _.map(node, appendTerm, term);
+                        } else {
+                            node = appendTerm.call(term, node);
+                        }
+                        break;
+
+                    case "*":
+                        str = node;
+                        node = [];
+
+                        _.times(parseInt(term, 10), function(i) {
+                            node.push(str.replace(rindex, i + 1));
+                        });
+                        break;
+                    }
+
+                    str = node;
+                }
+
+                stack.unshift(str);
+            });
+
+            return _.isArray(stack[0]) ? stack[0].join("") : stack[0];
+        };
+    }();
 
     /**
      * Return an {@link DOMElement} mock specified for optional selector
@@ -2128,14 +2288,6 @@
             }
         }(),
 
-        unquote: function() {
-            var rquotes = /^["']|["']$/g;
-
-            return function(str) {
-                return str ? str.replace(rquotes, "") : "";
-            };
-        }(),
-
         // DOM utilites
 
         createElement: createElement,
@@ -2152,155 +2304,6 @@
             }
 
             return fragment;
-        },
-        parseTemplate: (function() {
-            var operators = { // name / priority object
-                "(": 0,
-                ")": 1,
-                ">": 2,
-                "+": 2,
-                "*": 3,
-                "]": 3,
-                "[": 4,
-                ".": 5,
-                "#": 6
-            },
-            rindex = /\$/g,
-            rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
-            prepareTerm = function(term, flag) {
-                if (_.isArray(term)) {
-                    if (!flag) term = term.join("");
-                } else if (term[0] !== "<") {
-                    term = "<" + term + "></" + term + ">";
-                }
-
-                return term;
-            },
-            appendTerm = function(node) {
-                var index = node.lastIndexOf("<");
-
-                return node.substr(0, index) + this + node.substr(index);
-            },
-            prependTerm = function(node) {
-                var index = node.indexOf(">");
-
-                return node.substr(0, index) + this + node.substr(index);
-            },
-            normalizeAttrs = function(term, str) {
-                return term + " " + (~str.indexOf("=") ? str : str + "=\'\'");
-            };
-
-            return function(expr) {
-                // use emmet-like syntax to describe html templates:
-                // http://docs.emmet.io/cheat-sheet/
-
-                var stack = [],
-                    output = [],
-                    term = "";
-
-                // parse exrpression into RPN
-            
-                _.forEach(expr, function(str) {
-                    var top = stack[0], priority;
-
-                    if (str in operators && (top !== "[" || str === "]")) {
-                        if (top === "." && str === ".") {
-                            term += " "; // concat .c1.c2 into single space separated class string
-
-                            return;
-                        }
-
-                        if (term) {
-                            output.push(term);
-                            term = "";
-                        }
-
-                        if (str !== "(") {
-                            priority = operators[str];
-
-                            while (operators[stack[0]] > priority) {
-                                output.push(stack.shift());
-                            }
-                        }
-
-                        if (str === ")") {
-                            stack.shift(); // remove "(" symbol from stack
-                        } else if (str !== "]") { // don't need to have "]" in stack
-                            stack.unshift(str);
-                        }
-                    } else {
-                        term += str;
-                    }
-                });
-
-                if (term) stack.unshift(term);
-
-                output.push.apply(output, stack);
-
-                stack = [];
-
-                // transform RPN into html nodes
-
-                _.forEach(output, function(str) {
-                    var term, node;
-
-                    if (str in operators) {
-                        term = stack.shift();
-                        node = stack.shift() || "div";
-
-                        node = prepareTerm(node, true);
-
-                        switch(str) {
-                        case ".":
-                            node = prependTerm.call(" class='" + term + "'", node);
-                            break;
-
-                        case "#":
-                            node = prependTerm.call(" id='" + term + "'", node);
-                            break;
-
-                        case "[":
-                            node = prependTerm.call(_.reduce(term.match(rattr), normalizeAttrs, ""), node);
-                            break;
-                            
-                        case "+":
-                            term = prepareTerm(term);
-
-                            if (_.isArray(node)) {
-                                node.push(term);
-                            } else {
-                                node += term;
-                            }
-                            break;
-
-                        case ">":
-                            term = prepareTerm(term);
-
-                            if (_.isArray(node)) {
-                                node = _.map(node, appendTerm, term);
-                            } else {
-                                node = appendTerm.call(term, node);
-                            }
-                            break;
-
-                        case "*":
-                            str = node;
-                            node = [];
-
-                            _.times(parseInt(term, 10), function(i) {
-                                node.push(str.replace(rindex, i + 1));
-                            });
-                            break;
-                        }
-
-                        str = node;
-                    }
-
-                    stack.unshift(str);
-                });
-
-                return _.parseFragment(_.isArray(stack[0]) ? stack[0].join("") : stack[0]);
-            };
-        })()
+        }
     });
 })());
