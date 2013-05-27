@@ -1924,25 +1924,6 @@
         },
         rindex = /\$/g,
         rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
-        prepareTerm = function(term, flag) {
-            if (_.isArray(term)) {
-                if (!flag) term = term.join("");
-            } else if (term[0] !== "<") {
-                term = "<" + term + "></" + term + ">";
-            }
-
-            return term;
-        },
-        appendTerm = function(node) {
-            var index = node.lastIndexOf("<");
-
-            return node.substr(0, index) + this + node.substr(index);
-        },
-        prependTerm = function(node) {
-            var index = node.indexOf(">");
-
-            return node.substr(0, index) + this + node.substr(index);
-        },
         normalizeAttrs = function(term, str) {
             var index = str.indexOf("="),
                 name = ~index ? str.substr(0, index) : str,
@@ -1951,6 +1932,31 @@
             if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
 
             return term + " " + name + "=" + value;
+        },
+        toHtmlString = function(obj) {
+            return _.isArray(obj) ? obj.join("") : obj.toString();
+        },
+        appendToAll = function(node) {
+            node.insertTerm(this, true);
+        };
+
+        // helper class
+        function HtmlBuilder(term, noparse) {
+            this.str = noparse ? term : "<" + term + "></" + term + ">";
+        }
+
+        HtmlBuilder.prototype.insertTerm = function(term, toend) {
+            var index = toend ? this.str.lastIndexOf("<") : this.str.indexOf(">");
+
+            this.str = this.str.substr(0, index) + term + this.str.substr(index);
+        };
+
+        HtmlBuilder.prototype.addTerm = function(term) {
+            this.str += term;
+        };
+
+        HtmlBuilder.prototype.toString = function() {
+            return this.str;
         };
 
         return function(expr) {
@@ -2008,47 +2014,39 @@
                     term = stack.shift();
                     node = stack.shift() || "div";
 
-                    node = prepareTerm(node, true);
+                    if (typeof node === "string") node = new HtmlBuilder(node);
 
                     switch(str) {
                     case ".":
-                        node = prependTerm.call(" class=\"" + term + "\"", node);
+                        node.insertTerm(" class=\"" + term + "\"");
                         break;
 
                     case "#":
-                        node = prependTerm.call(" id=\"" + term + "\"", node);
+                        node.insertTerm(" id=\"" + term + "\"");
                         break;
 
                     case "[":
-                        node = prependTerm.call(_.reduce(term.match(rattr), normalizeAttrs, ""), node);
+                        node.insertTerm(_.reduce(term.match(rattr), normalizeAttrs, ""));
                         break;
                         
                     case "+":
-                        term = prepareTerm(term);
+                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
 
-                        if (_.isArray(node)) {
-                            node.push(term);
-                        } else {
-                            node += term;
-                        }
+                        _.isArray(node) ? node.push(term) : node.addTerm(term);
                         break;
 
                     case ">":
-                        term = prepareTerm(term);
+                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
 
-                        if (_.isArray(node)) {
-                            node = _.map(node, appendTerm, term);
-                        } else {
-                            node = appendTerm.call(term, node);
-                        }
+                        _.isArray(node) ? _.forEach(node, appendToAll, term) : node.insertTerm(term, true);
                         break;
 
                     case "*":
-                        str = node;
+                        str = toHtmlString(node);
                         node = [];
 
                         _.times(parseInt(term, 10), function(i) {
-                            node.push(str.replace(rindex, i + 1));
+                            node.push(new HtmlBuilder(str.replace(rindex, i + 1), true));
                         });
                         break;
                     }
@@ -2059,7 +2057,7 @@
                 stack.unshift(str);
             });
 
-            return _.isArray(stack[0]) ? stack[0].join("") : stack[0];
+            return toHtmlString(stack[0]);
         };
     })();
 
