@@ -49,19 +49,18 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
 }, {
     constructor: function() {
-        var input = this,
-            offset = input.offset(),
-            placeholder = input.prev();
+        var offset = this.offset(),
+            placeholder = this.prev();
 
         placeholder
-            .set(input.get("placeholder"))
+            .set(this.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
-            .on("click", input.fire, ["focus"], input);
+            .on("click", this.fire, ["focus"], this);
 
-        input.on("focus", placeholder.hide, [], placeholder);
-        input.on("blur", input._showPlaceholder, [placeholder]);
+        this.on("focus", placeholder.hide, [], placeholder);
+        this.on("blur", this._showPlaceholder, [placeholder]);
 
-        if (input.get() || input.isFocused()) placeholder.hide();
+        if (this.get() || this.isFocused()) placeholder.hide();
     },
     _showPlaceholder: function(placeholder) {
         if (!this.get()) placeholder.show();
@@ -80,23 +79,22 @@ DOM.extend("textarea.elastic", {
     after: "div[style=position:relative]>pre[style=visibility:hidden;margin:0;border-style:solid]>span[style=display:inline-block;white-space:pre-wrap]"
 }, {
     constructor: function() {
-        var textarea = this,
-            wrapper = textarea.next(),
+        var wrapper = this.next(),
             holder = wrapper.child(0),
             span = holder.child(0);
 
-        wrapper.append(textarea);
+        wrapper.append(this);
 
         holder.setStyle({
-            font: textarea.getStyle("font"),
-            padding: textarea.getStyle("padding"),
-            "border-width": textarea.getStyle("border-width")
+            font: this.getStyle("font"),
+            padding: this.getStyle("padding"),
+            "border-width": this.getStyle("border-width")
         });
 
-        textarea.on("input", textarea._syncWithHolder, [span]);
-        textarea._syncWithHolder(span);
+        this.on("input", this._syncWithHolder, [span]);
+        this._syncWithHolder(span);
 
-        textarea.parent("form").on("reset", textarea._syncWithHolder, [span, true], textarea);
+        this.parent("form").on("reset", this._syncWithHolder, [span, true], this);
     },
     _syncWithHolder: function(span, defaultValue) {
         value = this.get(defaultValue ? "defaultValue" : "value");
