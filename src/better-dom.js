@@ -1151,8 +1151,10 @@
          * @function
          */
         DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
-            this._node.className = _.trim((" " + this._node.className + " ")
-                    .replace(rclass, " ").replace(" " + className + " ", " "));
+            className = (" " + this._node.className + " ")
+                    .replace(rclass, " ").replace(" " + className + " ", " ");
+
+            this._node.className = className.substr(className[0] === " " ? 1 : 0, className.length - 2);
         });
 
         /**
@@ -2265,23 +2267,6 @@
     }
 
     return _.mixin(_, {
-
-        // String utilites
-
-        trim: function() {
-            if (String.prototype.trim) {
-                return function(str) {
-                    return str.trim();
-                };
-            } else {
-                var rwsleft = /^\s\s*/,
-                    rwsright = /\s\s*$/;
-
-                return function(str) {
-                    return str.replace(rwsleft, "").replace(rwsright, "");
-                };
-            }
-        }(),
 
         // DOM utilites
 
