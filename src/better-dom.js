@@ -521,7 +521,7 @@
 
         if (!document.addEventListener) {
             // input event fix via propertychange
-            document.attachEvent("onfocusin", function() {
+            document.attachEvent("onfocusin", (function() {
                 var propertyChangeEventHandler = function() {
                         var e = window.event;
 
@@ -548,7 +548,7 @@
                         (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
                     }
                 };
-            }());
+            })());
 
             // submit event bubbling fix
             document.attachEvent("onkeydown", function() {
@@ -562,7 +562,7 @@
                 }
             });
 
-            document.attachEvent("onclick", function() {
+            document.attachEvent("onclick", (function() {
                 var handleSubmit = function() {
                         var form = window.event.srcElement;
 
@@ -581,7 +581,7 @@
                         form.attachEvent("onsubmit", handleSubmit);
                     }
                 };
-            }());
+            })());
 
             eventHooks.submit = eventHooks.input = function(handler) {
                 handler.custom = true;
@@ -1002,28 +1002,30 @@
             // always use _.parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent) fasterMethodName = false;
 
-            return function(element, /*INTERNAL*/reverse) {
-                var el = reverse ? element : this._node,
+            return function(value, /*INTERNAL*/reverse) {
+                var el = reverse ? value : this._node,
                     relatedNode = el.parentNode;
 
-                if (reverse) element = this._node;
+                if (reverse) value = this._node;
 
-                if (typeof element === "string") {
-                    relatedNode = fasterMethodName ? null : _.parseFragment(element);
-                } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
-                    relatedNode = element;
-                } else if (element instanceof DOMElement) {
-                    element[methodName](el, true);
+                if (typeof value === "string") {
+                    if (value[0] !== "<") value = DOM.parseTemplate(value);
+
+                    relatedNode = fasterMethodName ? null : _.parseFragment(value);
+                } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
+                    relatedNode = value;
+                } else if (value instanceof DOMElement) {
+                    value[methodName](el, true);
 
                     return this;
-                } else if (element !== undefined) {
+                } else if (value !== undefined) {
                     throw makeError(methodName);
                 }
 
                 if (relatedNode) {
                     strategy(el, relatedNode);
                 } else {
-                    el.insertAdjacentHTML(fasterMethodName, element);
+                    el.insertAdjacentHTML(fasterMethodName, value);
                 }
 
                 return this;
@@ -1482,27 +1484,19 @@
     var DOM = new DOMNode(document), extensions = {};
 
     /**
-     * Create DOMElement instance
+     * Create a DOMElement instance
      * @memberOf DOM
-     * @param  {String|Element} content native element, element name or html string
+     * @param  {String|Element} value native element or element tag name
      * @return {DOMElement} element
      */
-    DOM.create = function(content) {
-        var elem = content;
-
-        if (typeof content === "string") {
-            if (content[0] === "<") {
-                elem = _.parseFragment(content).firstChild;
-
-                while (elem.nodeType !== 1) elem = elem.nextSibling;
-            } else {
-                elem = _.createElement(content);
-            }
-        } else if (!(content instanceof Element)) {
+    DOM.create = function(value) {
+        if (typeof value === "string") {
+            value = _.createElement(value);
+        } else if (value.nodeType !== 1) {
             throw makeError("create", "DOM");
         }
 
-        return DOMElement(elem);
+        return DOMElement(value);
     };
 
     /**

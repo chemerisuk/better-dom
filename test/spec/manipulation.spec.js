@@ -87,6 +87,15 @@ describe("manipulation", function() {
             }
         });
 
+        it("should support emmet-like expressions", function() {
+            for (var strategy in checkStrategies) {
+                var arg = createDivEmmet(strategy),
+                    checkMethod = checkStrategies[strategy];
+
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+            }
+        });
+
         it("should throw error if argument is invalid", function() {
             var callProp = function(strategy) {
                     return function() {
@@ -135,6 +144,10 @@ describe("manipulation", function() {
 
     function createDivHtml(className) {
         return "<div class='" + className + "'>";
+    }
+
+    function createDivEmmet(className) {
+        return "div." + className;
     }
 
     function createDiv(className) {
