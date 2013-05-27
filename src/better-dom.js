@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 0.9.5
+ * @version 0.9.6
  * @overview Modern javascript library for working with DOM
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
