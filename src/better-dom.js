@@ -1475,7 +1475,7 @@
     });
 
     /**
-     * Global object to access DOM. Contains all methods of the {@link DOMNode}
+     * Global object to access DOM
      * @namespace DOM
      * @extends DOMNode
      */
@@ -1485,7 +1485,7 @@
      * Create DOMElement instance
      * @memberOf DOM
      * @param  {String|Element} content native element, element name or html string
-     * @return {DOMElemen} element
+     * @return {DOMElement} element
      */
     DOM.create = function(content) {
         var elem = content;
@@ -1506,9 +1506,9 @@
     };
 
     /**
-     * Register callback on dom ready
+     * Execute callback when DOM will be ready
      * @memberOf DOM
-     * @param {Function} callback event handler
+     * @param {Function} callback event listener
      * @function
      */
     DOM.ready = (function() {
@@ -1583,7 +1583,7 @@
     })();
 
     /**
-     * Import css styles on page
+     * Import global css styles on page
      * @memberOf DOM
      * @param {String|Object} selector css selector or object with selector/rules pairs
      * @param {String} styles css rules
@@ -1689,8 +1689,7 @@
     })();
 
     /**
-     * Extend DOM with custom widget. Templates support limited edition of emmet-like
-     * syntax - see html section in http://docs.emmet.io/cheat-sheet/
+     * Define a DOM extension
      * @memberOf DOM
      * @param  {String} selector extension css selector
      * @param  {{after: String, before: String, append: String, prepend: String}} [template] extension templates
@@ -1774,9 +1773,9 @@
     };
 
     /**
-     * Emmet-like syntax parsing for html strings
+     * Parse Emmet-like template to HTML string
      * @memberOf DOM
-     * @param {String} expr template string
+     * @param  {String} template Emmet-like expression
      * @return {String} HTML string
      * @function
      * @see http://docs.emmet.io/cheat-sheet/
@@ -1830,14 +1829,14 @@
             }
         };
 
-        return function(expr) {
+        return function(template) {
             var stack = [],
                 output = [],
                 term = "";
 
             // parse exrpression into RPN
         
-            _.forEach(expr, function(str) {
+            _.forEach(template, function(str) {
                 var top = stack[0], priority;
 
                 if (str in operators && (top !== "[" || str === "]")) {
