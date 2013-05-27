@@ -144,6 +144,14 @@ module.exports = function(grunt) {
                 src: "src/<%= pkg.name %>.js",
                 dest: "src/<%= pkg.name %>.js"
             }
+        },
+
+        connect: {
+            watch: {
+                options: {
+                    base: "../"
+                }
+            }
         }
     });
 
@@ -156,10 +164,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
+    grunt.loadNpmTasks("grunt-contrib-connect");
 
 
     grunt.registerTask("dev", [
         "jshint", // run jshint first
+        "connect", // start web server
         "shell:openCoverage", // open coverage page
         "karma:watch", // start karma server
         "watch" // watch for a file changes
@@ -179,11 +189,6 @@ module.exports = function(grunt) {
     grunt.registerTask("travis", [
         "jshint",
         "karma:travis"
-    ]);
-
-    grunt.registerTask("docs", [
-        "jsdoc",
-        "shell:openJsdoc"
     ]);
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {

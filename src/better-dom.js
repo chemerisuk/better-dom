@@ -16,7 +16,7 @@
         scripts = document.scripts,
         // helpers
         supports = function(prop, tag) {
-            var el = typeof tag === "string" ? document.createElement(tag) : tag || document,
+            var el = typeof tag === "string" ? _.createElement(tag) : tag || document,
                 isSupported = prop in el;
 
             if (!isSupported && !prop.indexOf("on")) {
@@ -1626,8 +1626,9 @@
      * Register callback on dom ready
      * @memberOf DOM
      * @param {Function} callback event handler
+     * @function
      */
-    DOM.ready = function() {
+    DOM.ready = (function() {
         var readyCallbacks = [],
             scrollIntervalId,
             safeExecution = function(callback) {
@@ -1656,7 +1657,7 @@
             window.attachEvent("onload", pageLoaded);
 
             (function() {
-                var testDiv = document.createElement("div"),
+                var testDiv = _.createElement("div"),
                     isTop;
                 
                 try {
@@ -1696,15 +1697,16 @@
                 safeExecution(callback);
             }
         };
-    }();
+    })();
 
     /**
      * Import css styles on page
      * @memberOf DOM
      * @param {String|Object} selector css selector or object with selector/rules pairs
      * @param {String} styles css rules
+     * @function
      */
-    DOM.importStyles = function() {
+    DOM.importStyles = (function() {
         var styleSheet = (function() {
                 var headEl = scripts[0].parentNode;
 
@@ -1735,15 +1737,16 @@
                 });
             }
         };
-    }();
+    })();
 
     /**
      * Execute callback when element with specified selector matches
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
+     * @function
      */
-    DOM.watch = function() {
+    DOM.watch = (function() {
         DOM._watchers = {};
 
         if (htmlEl.addBehavior) {
@@ -1800,7 +1803,7 @@
                 DOM._watchers[selector] = allAnimationNames;
             };
         }
-    }();
+    })();
 
     /**
      * Extend DOM with custom widget. Templates support limited edition of emmet-like
@@ -1890,9 +1893,10 @@
      * @memberOf DOM
      * @param {String} expr template string
      * @return {String} HTML string
+     * @function
      * @see http://docs.emmet.io/cheat-sheet/
      */
-    DOM.parseTemplate = function() {
+    DOM.parseTemplate = (function() {
         var operators = { // name / priority object
             "(": 0,
             ")": 1,
@@ -2043,7 +2047,7 @@
 
             return _.isArray(stack[0]) ? stack[0].join("") : stack[0];
         };
-    }();
+    })();
 
     /**
      * Return an {@link DOMElement} mock specified for optional selector
