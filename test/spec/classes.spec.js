@@ -15,9 +15,9 @@ describe("classes manipulation", function() {
             expect(link.hasClass("test2")).toBe(false);
         });
 
-        it("should accept space-separated class arrays", function() {
-            expect(link.hasClass("test test1")).toBe(true);
-            expect(link.hasClass("test test2")).toBe(false);
+        it("should accept multiple classes", function() {
+            expect(link.hasClass("test", "test1")).toBe(true);
+            expect(link.hasClass("test", "test2")).toBe(false);
         });
 
     });
@@ -36,18 +36,18 @@ describe("classes manipulation", function() {
             expect(link.toggleClass("test3")._node).not.toHaveClass("test3");
         });
 
-        it("should make appropriate changes with space-separated class arrays", function() {
-            link.addClass("test2 test3");
+        it("should make appropriate changes with multiple classes", function() {
+            link.addClass("test2", "test3");
 
             expect(link._node).toHaveClass("test2");
             expect(link._node).toHaveClass("test3");
 
-            link.removeClass("test2 test3");
+            link.removeClass("test2", "test3");
 
             expect(link._node).not.toHaveClass("test2");
             expect(link._node).not.toHaveClass("test3");
 
-            link.toggleClass("test1 test4");
+            link.toggleClass("test1", "test4");
 
             expect(link._node).not.toHaveClass("test1");
             expect(link._node).toHaveClass("test4");

@@ -51,6 +51,7 @@
      * Prototype for limited/protected elements in better-dom
      * @name DOMNode
      * @constructor
+     * @private
      * @param node native object
      */
     function DOMNode(node) {
@@ -70,6 +71,7 @@
          * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMElement} element or null if nothing was found
+         * @function
          * @example
          * var domBody = DOM.find("body");
          *
@@ -222,11 +224,12 @@
          * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
          * @return {Boolean} true if success
+         * @function
          * @example
          * DOM.find("html").contains(DOM.find("body"));
          * // returns true
          */
-        contains: function() {
+        contains: (function() {
             var containsElement;
 
             if (supports("contains", "a")) {
@@ -256,13 +259,14 @@
 
                 return result;
             };
-        }(),
+        })(),
 
         /**
          * Check element capability
          * @memberOf DOMNode.prototype
          * @param {String} prop property to check
          * @param {String} [tag] name of element to test
+         * @function
          * @example
          * input.supports("placeholder");
          * // => true if an input supports placeholders
@@ -271,7 +275,7 @@
          * DOM.supports("oninvalid", "input");
          * // => true if browser supports `invalid` event
          */
-        supports: function() {
+        supports: (function() {
             var cache = {};
 
             return function(prop, tag) {
@@ -279,7 +283,7 @@
 
                 return cache[key] || ( cache[key] = supports(prop, tag || this._node) );
             };
-        }()
+        })()
     };
 
     // EVENTS
@@ -995,9 +999,8 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use _.parseFragment because of HTML5 elements bug
-            // and NoScope bugs in IE
-            if (document.attachEvent) fasterMethodName = null;
+            // always use _.parseFragment because of HTML5 and NoScope bugs in IE
+            if (document.attachEvent) fasterMethodName = false;
 
             return function(element, /*INTERNAL*/reverse) {
                 var el = reverse ? element : this._node,
@@ -1101,18 +1104,16 @@
             var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach",
                 methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-            if (htmlEl.classList) {
-                strategy = function(className) {
-                    return this._node.classList[nativeStrategyName](className);
-                };
-            }
+            return function() {
+                var result = _[arrayMethod](_.slice(arguments), function(className) {
+                        if (typeof className !== "string") throw makeError(methodName);
 
-            return function(classNames) {
-                if (typeof classNames !== "string") {
-                    throw makeError(methodName);
-                }
-
-                var result = _[arrayMethod](classNames.split(" "), strategy, this);
+                        if (htmlEl.classList) {
+                            return this._node.classList[nativeStrategyName](className);
+                        } else {
+                            return strategy.call(this, className);
+                        }
+                    }, this);
 
                 return result === undefined ? this : result;
             };
@@ -1121,8 +1122,8 @@
         /**
          * Check if element contains class name(s)
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
-         * @return {Boolean} true if the element contains all classes
+         * @param  {...String} classNames class name(s)
+         * @return {Boolean}   true if the element contains all classes
          * @function
          */
         DOMElement.prototype.hasClass = makeClassesMethod("contains", function(className) {
@@ -1133,7 +1134,7 @@
         /**
          * Add class(es) to element
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
+         * @param  {...String}  classNames class name(s)
          * @return {DOMElement} reference to this
          * @function
          */
@@ -1146,7 +1147,7 @@
         /**
          * Remove class(es) from element
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
+         * @param  {...String}  classNames class name(s)
          * @return {DOMElement} reference to this
          * @function
          */
@@ -1160,7 +1161,7 @@
         /**
          * Toggle class(es) on element
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
+         * @param  {...String}  classNames class name(s)
          * @return {DOMElement} reference to this
          * @function
          */
@@ -1466,137 +1467,6 @@
         MockElement.prototype[key] = function() { return new DOMElementCollection(); };
     });
 
-    /**
-     * Helper for css selectors
-     * @private
-     * @constructor
-     */
-    var SelectorMatcher = (function() {
-        // Quick matching inspired by
-        // https://github.com/jquery/jquery
-        var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-            ctor =  function(selector) {
-                if (this instanceof SelectorMatcher) {
-                    this.selector = selector;
-
-                    var quick = rquickIs.exec(selector);
-                    // TODO: support attribute value check
-                    if (this.quick = quick) {
-                        //   0  1    2   3          4
-                        // [ _, tag, id, attribute, class ]
-                        if (quick[1]) quick[1] = quick[1].toLowerCase();
-                        if (quick[4]) quick[4] = " " + quick[4] + " ";
-                    }
-                } else {
-                    return selector ? new SelectorMatcher(selector) : null;
-                }
-            },
-            matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
-                var propertyName = prefix + "atchesSelector";
-
-                return result || htmlEl[propertyName] && propertyName;
-            }, null),
-            matches = function(el, selector) {
-                var nodeList = document.querySelectorAll(selector);
-
-                for (var i = 0, n = nodeList.length; i < n; ++i) {
-                    if (nodeList[i] === el) return true;
-                }
-
-                return false;
-            };
-
-        ctor.prototype = {
-            test: function(el) {
-                if (this.quick) {
-                    return (
-                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
-                        (!this.quick[2] || el.id === this.quick[2]) &&
-                        (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                        (!this.quick[4] || !!~((" " + el.className  + " ").indexOf(this.quick[4])))
-                    );
-                }
-
-                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
-            }
-        };
-
-        return ctor;
-    })();
-
-    // EventHelper
-    // -----------
-    
-    /**
-     * Helper for events
-     * @private
-     * @constructor
-     */
-    function EventHelper(event, currentTarget) {
-        this._event = event;
-        this._currentTarget = currentTarget;
-    }
-
-    (function() {
-        var hooks = {},
-            returnTrue = function() { return true; },
-            makeFuncMethod = function(name, propName, legacyHandler) {
-                return !document.addEventListener ? legacyHandler : function() {
-                    this._event[name]();
-
-                    // IE9 behaves strangely with defaultPrevented so
-                    // it's safer manually overwrite the getter
-                    this[propName] = returnTrue;
-                };
-            };
-
-        EventHelper.prototype = {
-            get: function(name) {
-                var hook = hooks[name];
-
-                return hook ? hook(this) : this._event[name];
-            },
-            preventDefault: makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
-                this._event.returnValue = false;
-            }),
-            stopPropagation: makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
-                this._event.cancelBubble = true;
-            }),
-            isDefaultPrevented: function() {
-                return this._event.defaultPrevented || this._event.returnValue === false;
-            },
-            isBubbleCanceled: function() {
-                return this._event.bubbleCanceled || this._event.cancelBubble === true;
-            }
-        };
-
-        hooks.currentTarget = function(thisArg) {
-            return DOMElement(thisArg._currentTarget);
-        };
-
-        if (document.addEventListener) {
-            hooks.target = function(thisArg) {
-                return DOMElement(thisArg._event.target);
-            };
-        } else {
-            hooks.target = function(thisArg) {
-                return DOMElement(thisArg._event.srcElement);
-            };
-        }
-
-        if (document.addEventListener) {
-            hooks.relatedTarget = function(thisArg) {
-                return DOMElement(thisArg._event.relatedTarget);
-            };
-        } else {
-            hooks.relatedTarget = function(thisArg) {
-                var propName = ( thisArg._event.toElement === thisArg._currentTarget ? "from" : "to" ) + "Element";
-
-                return DOMElement(thisArg._event[propName]);
-            };
-        }
-    })();
-
     // finish prototypes
     
     // fix constructor property
@@ -1607,6 +1477,7 @@
     /**
      * Global object to access DOM. Contains all methods of the {@link DOMNode}
      * @namespace DOM
+     * @extends DOMNode
      */
     var DOM = new DOMNode(document), extensions = {};
 
@@ -1945,18 +1816,18 @@
             this.str = noparse ? term : "<" + term + "></" + term + ">";
         }
 
-        HtmlBuilder.prototype.insertTerm = function(term, toend) {
-            var index = toend ? this.str.lastIndexOf("<") : this.str.indexOf(">");
+        HtmlBuilder.prototype = {
+            insertTerm: function(term, toend) {
+                var index = toend ? this.str.lastIndexOf("<") : this.str.indexOf(">");
 
-            this.str = this.str.substr(0, index) + term + this.str.substr(index);
-        };
-
-        HtmlBuilder.prototype.addTerm = function(term) {
-            this.str += term;
-        };
-
-        HtmlBuilder.prototype.toString = function() {
-            return this.str;
+                this.str = this.str.substr(0, index) + term + this.str.substr(index);
+            },
+            addTerm: function(term) {
+                this.str += term;
+            },
+            toString: function() {
+                return this.str;
+            }
         };
 
         return function(expr) {
@@ -1999,7 +1870,7 @@
                 }
             });
 
-            if (term) stack.unshift(term);
+            if (term) output.push(term);
 
             output.push.apply(output, stack);
 
@@ -2094,8 +1965,138 @@
         DOM.importStyles("template,[hidden]", "display:none");
     }
 
-    // REGISTER GLOBALS
+    // Helpers
+    // -------
+
+    /**
+     * Helper for css selectors
+     * @private
+     * @constructor
+     */
+    var SelectorMatcher = (function() {
+        // Quick matching inspired by
+        // https://github.com/jquery/jquery
+        var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
+            ctor =  function(selector) {
+                if (this instanceof SelectorMatcher) {
+                    this.selector = selector;
+
+                    var quick = rquickIs.exec(selector);
+                    // TODO: support attribute value check
+                    if (this.quick = quick) {
+                        //   0  1    2   3          4
+                        // [ _, tag, id, attribute, class ]
+                        if (quick[1]) quick[1] = quick[1].toLowerCase();
+                        if (quick[4]) quick[4] = " " + quick[4] + " ";
+                    }
+                } else {
+                    return selector ? new SelectorMatcher(selector) : null;
+                }
+            },
+            matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
+                var propertyName = prefix + "atchesSelector";
+
+                return result || htmlEl[propertyName] && propertyName;
+            }, null),
+            matches = function(el, selector) {
+                var nodeList = document.querySelectorAll(selector);
+
+                for (var i = 0, n = nodeList.length; i < n; ++i) {
+                    if (nodeList[i] === el) return true;
+                }
+
+                return false;
+            };
+
+        ctor.prototype = {
+            test: function(el) {
+                if (this.quick) {
+                    return (
+                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
+                        (!this.quick[2] || el.id === this.quick[2]) &&
+                        (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
+                        (!this.quick[4] || !!~((" " + el.className  + " ").indexOf(this.quick[4])))
+                    );
+                }
+
+                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
+            }
+        };
+
+        return ctor;
+    })();
     
+    /**
+     * Helper for events
+     * @private
+     * @constructor
+     */
+    function EventHelper(event, currentTarget) {
+        this._event = event;
+        this._currentTarget = currentTarget;
+    }
+
+    (function() {
+        var hooks = {},
+            returnTrue = function() { return true; },
+            makeFuncMethod = function(name, propName, legacyHandler) {
+                return !document.addEventListener ? legacyHandler : function() {
+                    this._event[name]();
+
+                    // IE9 behaves strangely with defaultPrevented so
+                    // it's safer manually overwrite the getter
+                    this[propName] = returnTrue;
+                };
+            };
+
+        EventHelper.prototype = {
+            get: function(name) {
+                var hook = hooks[name];
+
+                return hook ? hook(this) : this._event[name];
+            },
+            preventDefault: makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
+                this._event.returnValue = false;
+            }),
+            stopPropagation: makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
+                this._event.cancelBubble = true;
+            }),
+            isDefaultPrevented: function() {
+                return this._event.defaultPrevented || this._event.returnValue === false;
+            },
+            isBubbleCanceled: function() {
+                return this._event.bubbleCanceled || this._event.cancelBubble === true;
+            }
+        };
+
+        hooks.currentTarget = function(thisArg) {
+            return DOMElement(thisArg._currentTarget);
+        };
+
+        if (document.addEventListener) {
+            hooks.target = function(thisArg) {
+                return DOMElement(thisArg._event.target);
+            };
+        } else {
+            hooks.target = function(thisArg) {
+                return DOMElement(thisArg._event.srcElement);
+            };
+        }
+
+        if (document.addEventListener) {
+            hooks.relatedTarget = function(thisArg) {
+                return DOMElement(thisArg._event.relatedTarget);
+            };
+        } else {
+            hooks.relatedTarget = function(thisArg) {
+                var propName = ( thisArg._event.toElement === thisArg._currentTarget ? "from" : "to" ) + "Element";
+
+                return DOMElement(thisArg._event[propName]);
+            };
+        }
+    })();
+
+    // register global variable
     window.DOM = DOM;
 
 })(window, document, (function(undefined) {
