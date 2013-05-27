@@ -27,7 +27,7 @@
         <article>
             <pre class="prettyprint source"><code>/**
  * @file better-dom
- * @version 0.9.7
+ * @version 0.9.6
  * @overview Modern javascript library for working with DOM
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -226,7 +226,7 @@
          * @param {Object} value data to store
          * @example
          * var domLink = DOM.find(".link");
-         * 
+         *
          * domLink.setData("test", "message");
          * domLink.setData({a: "b", c: "d"});
          */
@@ -310,23 +310,46 @@
     };
 
     // EVENTS
-    
+
     (function() {
         var eventHooks = {},
             veto = false,
-            createEventHandler = function(thisPtr, callback, selector, eventType) {
-                var currentTarget = thisPtr._node,
+            //   0  1          2     3
+            // [ _, modifiers, type, args ]
+            rtypexpr = /^([\?\!]{0,2})([^(\s]+)(?:\(([^)]+)\))?$/,
+            createEventHandler = function(expr, selector, callback, data, context, thisArg) {
+                var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
-                    simpleEventHandler = function(e) {
-                        if (veto !== eventType) callback.call(thisPtr, DOMEvent(e || window.event, currentTarget));
+                    defaultEventHandler = function(e) {
+                        if (veto !== expr[2]) {
+                            var eventHelper = new EventHelper(e || window.event, currentTarget),
+                                modifiers = expr[1],
+                                props = expr[3],
+                                args;
+
+                            // handle modifiers
+                            if (~modifiers.indexOf("!")) eventHelper.preventDefault();
+                            if (~modifiers.indexOf("?")) eventHelper.stopPropagation();
+
+                            // populate extra event arguments
+                            if (props) {
+                                args = _.map(props.split(","), eventHelper.get, eventHelper);
+                                
+                                if (data) args.push.apply(args, data);
+                            } else {
+                                args = data ? data.slice(0) : [];
+                            }
+
+                            callback.apply(context || thisArg, args);
+                        }
                     };
 
-                return !selector ? simpleEventHandler : function(e) {
-                    var elem = window.event ? window.event.srcElement : e.target;
+                return !selector ? defaultEventHandler : function(e) {
+                    var target = window.event ? window.event.srcElement : e.target;
 
-                    for (; elem && elem !== currentTarget; elem = elem.parentNode) {
-                        if (matcher.test(elem)) {
-                            return simpleEventHandler(e);
+                    for (; target && target !== currentTarget; target = target.parentNode) {
+                        if (matcher.test(target)) {
+                            return defaultEventHandler(e);
                         }
                     }
                 };
@@ -342,6 +365,165 @@
 
                 return handler;
             };
+
+        /**
+         * Bind a DOM event to the context
+         * @memberOf DOMNode.prototype
+         * @param  {String}   type    event type
+         * @param  {String}   [selector] css selector to filter
+         * @param  {Function} callback event handler
+         * @param  {Array} [args] extra arguments
+         * @param  {Object} [context] callback context
+         * @return {DOMNode} current context
+         */
+        DOMNode.prototype.on = function(type, selector, callback, args, context) {
+            var eventType = typeof type,
+                hook, handler, expr;
+
+            if (eventType === "string") {
+                if (typeof selector === "function") {
+                    context = args;
+                    args = callback;
+                    callback = selector;
+                    selector = null;
+                }
+
+                if (expr = rtypexpr.exec(type)) {
+                    if (args !== undefined && !_.isArray(args)) {
+                        throw makeError("on");
+                    }
+
+                    type = expr[2];
+
+                    handler = createEventHandler(expr, selector, callback, args, context, this);
+                    handler.type = type;
+                    handler.callback = callback;
+
+                    if (hook = eventHooks[type]) hook(handler);
+
+                    if (document.addEventListener) {
+                        this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    } else {
+                        if (~type.indexOf(":") || handler.custom) {
+                            // handle custom events for IE8
+                            handler = createCustomEventHandler(handler);
+                        }
+
+                        this._node.attachEvent("on" + (handler._type || type), handler);
+                    }
+                    
+                    // store event entry
+                    this._events.push(handler);
+                } else {
+                    _.forEach(type.split(" "), function(type) {
+                        this.on(type, selector, callback);
+                    }, this);
+                }
+            } else if (eventType === "object") {
+                _.forOwn(type, handleObjectParam("on"), this);
+            } else {
+                throw makeError("on");
+            }
+
+            return this;
+        };
+
+        /**
+         * Unbind a DOM event from the context
+         * @memberOf DOMNode.prototype
+         * @param  {String} type event type
+         * @param  {Function} [callback] event handler
+         * @return {DOMNode} current context
+         */
+        DOMNode.prototype.off = function(type, callback) {
+            if (typeof type !== "string" || callback !== undefined && typeof callback !== "function") {
+                throw makeError("off");
+            }
+
+            _.forEach(this._events, function(handler, index, events) {
+                var node = this._node;
+
+                if (handler && type === handler.type && (!callback || callback === handler.callback)) {
+                    type = handler._type || handler.type;
+
+                    if (document.removeEventListener) {
+                        node.removeEventListener(type, handler, !!handler.capturing);
+                    } else {
+                        node.detachEvent("on" + type, handler);
+                    }
+
+                    delete events[index];
+                }
+            }, this);
+
+            return this;
+        };
+
+        /**
+         * Triggers an event of specific type
+         * @memberOf DOMNode.prototype
+         * @param  {String} eventType type of event
+         * @param  {Object} [detail] data to attach
+         * @return {DOMNode} current context
+         * @example
+         * var domLink = DOM.find(".link");
+         *
+         * domLink.fire("focus");
+         * // receive focus to the element
+         * domLink.fire("custom:event", {x: 1, y: 2});
+         * // trigger a custom:event on the element
+         */
+        DOMNode.prototype.fire = function(type, detail) {
+            if (typeof type !== "string") {
+                throw makeError("fire");
+            }
+
+            var node = this._node,
+                isCustomEvent = ~type.indexOf(":"),
+                hook = eventHooks[type],
+                canContinue, event, handler = {};
+
+            if (hook) hook(handler);
+
+            if (document.dispatchEvent) {
+                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+
+                if (isCustomEvent) {
+                    event.initCustomEvent(handler._type || type, true, false, detail);
+                } else {
+                    event.initEvent(handler._type || type, true, true);
+                }
+
+                canContinue = node.dispatchEvent(event);
+            } else {
+                event = document.createEventObject();
+
+                isCustomEvent = isCustomEvent || handler.custom;
+
+                if (isCustomEvent) {
+                    // use private attribute to store custom event name
+                    event._type = type;
+                    event.detail = detail;
+                }
+
+                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
+
+                canContinue = event.returnValue !== false;
+            }
+
+            // Call a native DOM method on the target with the same name as the event
+            // IE&lt;9 dies on focus/blur to hidden element
+            if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+                // Prevent re-triggering of the same event
+                veto = type;
+                
+                node[type]();
+
+                veto = false;
+            }
+
+            return this;
+        };
 
         // firefox doesn't support focusin/focusout events
         if (supports("onfocusin", "input")) {
@@ -428,163 +610,6 @@
                 handler.custom = true;
             };
         }
-
-        /**
-         * Bind a DOM event to the context
-         * @memberOf DOMNode.prototype
-         * @param  {String}   type    event type
-         * @param  {String}   [selector] css selector to filter
-         * @param  {DOMNode#eventCallback} callback event handler
-         * @return {DOMNode} current context
-         */
-        DOMNode.prototype.on = function(type, selector, callback) {
-            var eventType = typeof type,
-                hook, handler;
-
-            if (eventType === "string") {
-                if (typeof selector === "function") {
-                    callback = selector;
-                    selector = null;
-                }
-
-                if (!~type.indexOf(" ")) {
-                    handler = createEventHandler(this, callback, selector, type);
-                    handler.type = type;
-                    handler.callback = callback;
-
-                    if (hook = eventHooks[type]) hook(handler);
-
-                    if (document.addEventListener) {
-                        this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
-                    } else {
-                        if (~type.indexOf(":") || handler.custom) {
-                            // handle custom events for IE8
-                            handler = createCustomEventHandler(handler);
-                        }
-
-                        this._node.attachEvent("on" + (handler._type || type), handler);
-                    }
-                    
-                    // store event entry
-                    this._events.push(handler);
-                } else {
-                    _.forEach(type.split(" "), function(type) {
-                        this.on(type, selector, callback);
-                    }, this);
-                }
-            } else if (eventType === "object") {
-                _.forOwn(type, handleObjectParam("on"), this);
-            } else {
-                throw makeError("on");
-            }
-
-            return this;
-        };
-
-        /**
-         * Unbind a DOM event from the context
-         * @memberOf DOMNode.prototype
-         * @param  {String} type event type
-         * @param  {DOMNode#eventCallback} [callback]  event handler
-         * @return {DOMNode} current context
-         */
-        DOMNode.prototype.off = function(type, callback) {
-            if (typeof type !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw makeError("off");
-            }
-
-            _.forEach(this._events, function(handler, index, events) {
-                var node = this._node;
-
-                if (handler && type === handler.type && (!callback || callback === handler.callback)) {
-                    type = handler._type || handler.type;
-
-                    if (document.removeEventListener) {
-                        node.removeEventListener(type, handler, !!handler.capturing);
-                    } else {
-                        node.detachEvent("on" + type, handler);
-                    }
-
-                    delete events[index];
-                }
-            }, this);
-
-            return this;
-        };
-
-        /**
-         * Event handler definition
-         * @callback DOMNode#eventCallback
-         * @param {DOMEvent} event instance of event
-         */
-
-        /**
-         * Triggers an event of specific type
-         * @memberOf DOMNode.prototype
-         * @param  {String} eventType type of event
-         * @param  {Object} [detail] data to attach
-         * @return {DOMNode} current context
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.fire("focus");
-         * // receive focus to the element
-         * domLink.fire("custom:event", {x: 1, y: 2});
-         * // trigger a custom:event on the element
-         */
-        DOMNode.prototype.fire = function(type, detail) {
-            if (typeof type !== "string") {
-                throw makeError("fire");
-            }
-
-            var node = this._node,
-                isCustomEvent = ~type.indexOf(":"),
-                hook = eventHooks[type],
-                event, isDefaultPrevented, handler = {};
-
-            if (hook) hook(handler);
-
-            if (document.dispatchEvent) {
-                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
-
-                if (isCustomEvent) {
-                    event.initCustomEvent(handler._type || type, true, false, detail);
-                } else {
-                    event.initEvent(handler._type || type, true, true);
-                }
-                
-                node.dispatchEvent(event);
-
-                isDefaultPrevented = event.defaultPrevented;
-            } else {
-                event = document.createEventObject();
-
-                isCustomEvent = isCustomEvent || handler.custom;
-
-                if (isCustomEvent) {
-                    // use private attribute to store custom event name
-                    event._type = type;
-                    event.detail = detail;
-                }
-
-                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
-
-                isDefaultPrevented = event.returnValue === false;
-            }
-
-            // Call a native DOM method on the target with the same name as the event
-            // IE&lt;9 dies on focus/blur to hidden element
-            if (!isDefaultPrevented && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
-                // Prevent re-triggering of the same event
-                veto = type;
-                
-                node[type]();
-
-                veto = false;
-            }
-
-            return this;
-        };
     })();
 
     // DOMElement
@@ -706,14 +731,14 @@
                                 parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
                             }
                         });
-                        break; 
+                        break;
     
                     case undefined: // fieldset
                     case "file": // file input
                     case "submit": // submit button
                     case "reset": // reset button
                     case "button": // custom button
-                        break; 
+                        break;
     
                     case "radio": // radio button
                     case "checkbox": // checkbox
@@ -750,6 +775,12 @@
             };
         });
 
+        propHooks.tagName = propHooks.nodeName = {
+            get: function(el) {
+                return el.nodeName.toLowerCase();
+            }
+        };
+
         if (document.attachEvent) {
             // fix NoScope elements in IE &lt; 10
             propHooks.innerHTML = {
@@ -758,14 +789,6 @@
                     el.appendChild(_.parseFragment(value));
                 }
             };
-
-            if (!document.addEventListener) {
-                propHooks.tagName = propHooks.nodeName = {
-                    get: function(el) {
-                        return el.nodeName.toUpperCase();
-                    }
-                };
-            }
         }
 
         if (!supports("hidden", "a")) {
@@ -901,7 +924,7 @@
                 }
 
                 if (multiple) {
-                    return new DOMElementCollection(!matcher ? children : 
+                    return new DOMElementCollection(!matcher ? children :
                         _.filter(children, matcher.test, matcher));
                 }
 
@@ -989,7 +1012,7 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use _.parseFragment because of HTML5 elements bug 
+            // always use _.parseFragment because of HTML5 elements bug
             // and NoScope bugs in IE
             if (document.attachEvent) fasterMethodName = null;
 
@@ -1223,11 +1246,11 @@
         // normalize float css property
         if ("cssFloat" in htmlEl.style) {
             getStyleHooks.float = function(style) {
-                return style.cssFloat; 
+                return style.cssFloat;
             };
         } else {
             getStyleHooks.float = function(style) {
-                return style.styleFloat; 
+                return style.styleFloat;
             };
         }
 
@@ -1249,7 +1272,7 @@
                 hook, result;
 
             if (typeof name !== "string") {
-                throw makeError("getStyle"); 
+                throw makeError("getStyle");
             }
 
             hook = getStyleHooks[name];
@@ -1295,95 +1318,6 @@
 
             return this;
         };
-    })();
-
-    // DOMEvent
-    // --------
-    
-    /**
-     * Prototype for events in better-dom
-     * @name DOMEvent
-     * @constructor
-     * @param event native event
-     */
-    function DOMEvent(event, currentTarget) {
-        if (!(this instanceof DOMEvent)) {
-            return event.__dom__ || ( event.__dom__ = new DOMEvent(event, currentTarget) );
-        }
-
-        this._event = event;
-
-        if (!document.addEventListener) {
-            this.target = DOMElement(event.srcElement);
-            this.currentTarget = DOMElement(currentTarget);
-            this.relatedTarget = DOMElement(event[( event.toElement === currentTarget ? "from" : "to" ) + "Element"]);
-        }
-    }
-
-    DOMEvent.prototype = {
-        /**
-         * Read event property by name
-         * @memberOf DOMEvent.prototype
-         * @param  {String} name property name
-         * @return {Object} property value
-         */
-        get: function(name) {
-            if (typeof name !== "string" || name in DOMEvent.prototype) {
-                throw makeError("get", "DOMEvent");
-            }
-
-            return this._event[name];
-        }
-    };
-
-    (function() {
-        var makeFuncMethod = function(name, legacyHandler) {
-                return !document.addEventListener ? legacyHandler : function() {
-                    this._event[name]();
-                };
-            },
-            defineProperty = function(name) {
-                Object.defineProperty(DOMEvent.prototype, name, {
-                    enumerable: true,
-                    get: function() {
-                        return DOMElement(this._event[name]);
-                    }
-                });
-            };
-
-        /**
-         * Prevent default event action
-         * @memberOf DOMEvent.prototype
-         * @function
-         */
-        DOMEvent.prototype.preventDefault = makeFuncMethod("preventDefault", function() {
-            this._event.returnValue = false;
-        });
-
-        /**
-         * Stop event propagation
-         * @memberOf DOMEvent.prototype
-         * @function
-         */
-        DOMEvent.prototype.stopPropagation = makeFuncMethod("stopPropagation", function() {
-            this._event.cancelBubble = true;
-        });
-
-        /**
-         * Check if default event handler is prevented
-         * @memberOf DOMEvent.prototype
-         * @return {Boolean} true, if default event handler is prevented
-         */
-        DOMEvent.prototype.isDefaultPrevented = function() {
-            return this._event.defaultPrevented || this._event.returnValue === false;
-        };
-
-        if (document.addEventListener) {
-            // in ie we will set these properties in constructor
-            defineProperty("target");
-            defineProperty("currentTarget");
-            defineProperty("relatedTarget");
-        }
     })();
 
     // DOMElementCollection
@@ -1548,6 +1482,7 @@
     });
 
     /**
+     * Helper for css selectors
      * @private
      * @constructor
      */
@@ -1566,10 +1501,10 @@
                         // [ _, tag, id, attribute, class ]
                         if (quick[1]) quick[1] = quick[1].toLowerCase();
                         if (quick[4]) quick[4] = " " + quick[4] + " ";
-                    }    
+                    }
                 } else {
                     return selector ? new SelectorMatcher(selector) : null;
-                }                
+                }
             },
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
@@ -1583,7 +1518,7 @@
                     if (nodeList[i] === el) return true;
                 }
 
-                return false; 
+                return false;
             };
 
         ctor.prototype = {
@@ -1604,10 +1539,83 @@
         return ctor;
     })();
 
+    // EventHelper
+    // -----------
+    
+    /**
+     * Helper for events
+     * @private
+     * @constructor
+     */
+    function EventHelper(event, currentTarget) {
+        this._event = event;
+        this._currentTarget = currentTarget;
+    }
+
+    (function() {
+        var hooks = {},
+            returnTrue = function() { return true; },
+            makeFuncMethod = function(name, propName, legacyHandler) {
+                return !document.addEventListener ? legacyHandler : function() {
+                    this._event[name]();
+
+                    // IE9 behaves strangely with defaultPrevented so
+                    // it's safer manually overwrite the getter
+                    this[propName] = returnTrue;
+                };
+            };
+
+        EventHelper.prototype = {
+            get: function(name) {
+                var hook = hooks[name];
+
+                return hook ? hook(this) : this._event[name];
+            },
+            preventDefault: makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
+                this._event.returnValue = false;
+            }),
+            stopPropagation: makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
+                this._event.cancelBubble = true;
+            }),
+            isDefaultPrevented: function() {
+                return this._event.defaultPrevented || this._event.returnValue === false;
+            },
+            isBubbleCanceled: function() {
+                return this._event.bubbleCanceled || this._event.cancelBubble === true;
+            }
+        };
+
+        hooks.currentTarget = function(thisArg) {
+            return DOMElement(thisArg._currentTarget);
+        };
+
+        if (document.addEventListener) {
+            hooks.target = function(thisArg) {
+                return DOMElement(thisArg._event.target);
+            };
+        } else {
+            hooks.target = function(thisArg) {
+                return DOMElement(thisArg._event.srcElement);
+            };
+        }
+
+        if (document.addEventListener) {
+            hooks.relatedTarget = function(thisArg) {
+                return DOMElement(thisArg._event.relatedTarget);
+            };
+        } else {
+            hooks.relatedTarget = function(thisArg) {
+                var propName = ( thisArg._event.toElement === thisArg._currentTarget ? "from" : "to" ) + "Element";
+
+                return DOMElement(thisArg._event[propName]);
+            };
+        }
+    })();
+
     // finish prototypes
     
     // fix constructor property
-    _.forEach([DOMNode, DOMElement, DOMEvent, MockElement], function(ctr) {
+    _.forEach([DOMNode, DOMElement, MockElement], function(ctr) {
         ctr.prototype.constructor = ctr;
     });
 
@@ -1675,7 +1683,7 @@
             window.attachEvent("onload", pageLoaded);
 
             (function() {
-                var testDiv = document.createElement("div"), 
+                var testDiv = document.createElement("div"),
                     isTop;
                 
                 try {
@@ -1748,7 +1756,7 @@
                 // w3c browser
                 styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
             } else {
-                // ie doesn't support multiple selectors in addRule 
+                // ie doesn't support multiple selectors in addRule
                 _.forEach(selector.split(","), function(selector) {
                     styleSheet.addRule(selector, styles);
                 });
@@ -1773,7 +1781,7 @@
 
                 if (entry) {
                     entry.push(callback);
-                    // need to call the callback manually for each element 
+                    // need to call the callback manually for each element
                     // because behaviour is already attached to the DOM
                     DOM.findAll(selector).each(callback);
                 } else {
@@ -1783,7 +1791,7 @@
                 }
             };
         } else {
-            // use trick discovered by Daniel Buchner: 
+            // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
                 computed = getComputedStyle(htmlEl),
@@ -1822,7 +1830,7 @@
     }();
 
     /**
-     * Extend DOM with custom widget. Templates support limited edition of emmet-like 
+     * Extend DOM with custom widget. Templates support limited edition of emmet-like
      * syntax - see html section in http://docs.emmet.io/cheat-sheet/
      * @memberOf DOM
      * @param  {String} selector extension css selector
@@ -1889,7 +1897,7 @@
             if (template) {
                 _.forOwn(template, function(key) {
                     if (key !== "constructor") {
-                        el[key](_.cloneNode(template[key]));    
+                        el[key](_.cloneNode(template[key]));
                     }
                 });
             }
@@ -2011,12 +2019,15 @@
                     callback.call(thisArg, i);
                 }
             },
+            isArray: Array.isArray || function(obj) {
+                return Object.prototype.toString.call(obj) === "[object Array]";
+            },
 
             // Object utilites
 
             keys: Object.keys || function(obj) {
                 var objType = typeof obj,
-                    result = [], 
+                    result = [],
                     prop;
 
                 if (objType !== "object" && objType !== "function" || obj === null) {
@@ -2048,37 +2059,10 @@
                     });
                 }
 
-                return obj; 
+                return obj;
             }
         },
         parser = document.createElement("body"),
-        operators = { // operatorName / operatorPriority object
-            "(": 0,
-            ")": 1,
-            ">": 2,
-            "+": 3,
-            "*": 4,
-            "#": 5,
-            ".": 5,
-            "[": 5,
-            "]": 5
-        },
-        rindex = /\$/g,
-        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
-        modifyAttr = function(attr) {
-            if (attr.specified) {
-                // changing attribute name doesn't work in IE
-                // attr.name = attr.name.replace(rindex, this);
-                if (attr.value) attr.value = attr.value.replace(rindex, this);
-            }
-        },
-        parseAttrs = function(str) {
-            var attrParts = str.split("="),
-                key = attrParts[0],
-                value = attrParts[1];
-
-            this.setAttribute(key, _.unquote(value));
-        },
         createElement, cloneNode, createFragment;
 
     if (document.addEventListener) {
@@ -2136,7 +2120,7 @@
             cloneNode = function(node) {
                 if (node.nodeType === 1) {
                     parser.innerHTML = node.outerHTML;
-                    return parser.firstChild;    
+                    return parser.firstChild;
                 } else if (node.nodeType === 11) {
                     var result = "", el;
 
@@ -2196,125 +2180,156 @@
 
             return fragment;
         },
-        parseTemplate: function(expr) {
-            // use emmet-like syntax to describe html templates:
-            // http://docs.emmet.io/cheat-sheet/
+        parseTemplate: (function() {
+            var operators = { // name / priority object
+                "(": 0,
+                ")": 1,
+                ">": 2,
+                "+": 2,
+                "*": 3,
+                "]": 3,
+                "[": 4,
+                ".": 5,
+                "#": 6
+            },
+            rindex = /\$/g,
+            rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
+            prepareTerm = function(term, flag) {
+                if (_.isArray(term)) {
+                    if (!flag) term = term.join("");
+                } else if (term[0] !== "&lt;") {
+                    term = "&lt;" + term + ">&lt;/" + term + ">";
+                }
 
-            var stack = [],
-                output = [],
-                term = "";
+                return term;
+            },
+            appendTerm = function(node) {
+                var index = node.lastIndexOf("&lt;");
 
-            // parse exrpression into RPN
-        
-            _.forEach(expr, function(str) {
-                var top = stack[0], priority;
+                return node.substr(0, index) + this + node.substr(index);
+            },
+            prependTerm = function(node) {
+                var index = node.indexOf(">");
 
-                if (str in operators && (top !== "[" || str === "]")) {
-                    if (top === "." && str === ".") {
-                        term += " "; // concat .c1.c2 into single space separated class string
+                return node.substr(0, index) + this + node.substr(index);
+            },
+            normalizeAttrs = function(term, str) {
+                return term + " " + (~str.indexOf("=") ? str : str + "=\'\'");
+            };
 
-                        return;
-                    }
+            return function(expr) {
+                // use emmet-like syntax to describe html templates:
+                // http://docs.emmet.io/cheat-sheet/
 
-                    if (term) {
-                        output.push(term);
-                        term = "";
-                    }
+                var stack = [],
+                    output = [],
+                    term = "";
 
-                    if (str === "(") {
-                        stack.unshift(str);
-                    } else {
-                        priority = operators[str];
-                        if (str === ">") ++priority; // nested ">" should have higher priority
-                        while (operators[stack[0]] >= priority) {
-                            output.push(stack.shift());
+                // parse exrpression into RPN
+            
+                _.forEach(expr, function(str) {
+                    var top = stack[0], priority;
+
+                    if (str in operators && (top !== "[" || str === "]")) {
+                        if (top === "." && str === ".") {
+                            term += " "; // concat .c1.c2 into single space separated class string
+
+                            return;
+                        }
+
+                        if (term) {
+                            output.push(term);
+                            term = "";
+                        }
+
+                        if (str !== "(") {
+                            priority = operators[str];
+
+                            while (operators[stack[0]] > priority) {
+                                output.push(stack.shift());
+                            }
                         }
 
                         if (str === ")") {
                             stack.shift(); // remove "(" symbol from stack
                         } else if (str !== "]") { // don't need to have "]" in stack
-                            stack.unshift(str); 
+                            stack.unshift(str);
                         }
+                    } else {
+                        term += str;
                     }
-                } else {
-                    term += str;
-                }
-            });
+                });
 
-            if (term) stack.unshift(term);
+                if (term) stack.unshift(term);
 
-            output.push.apply(output, stack);
+                output.push.apply(output, stack);
 
-            stack = [];
+                stack = [];
 
-            // transform RPN into html nodes
+                // transform RPN into html nodes
 
-            _.forEach(output, function(str) {
-                var term, node, proto;
+                _.forEach(output, function(str) {
+                    var term, node;
 
-                if (str in operators) {
-                    term = stack.shift();
-                    node = stack.shift() || "div";
+                    if (str in operators) {
+                        term = stack.shift();
+                        node = stack.shift() || "div";
 
-                    if (typeof node === "string") {
-                        createFragment().appendChild( node = createElement(node) );
-                    }
+                        node = prepareTerm(node, true);
 
-                    switch(str) {
-                    case ".":
-                        node.className = term;
-                        break;
+                        switch(str) {
+                        case ".":
+                            node = prependTerm.call(" class='" + term + "'", node);
+                            break;
 
-                    case "#":
-                        node.id = term;
-                        break;
+                        case "#":
+                            node = prependTerm.call(" id='" + term + "'", node);
+                            break;
 
-                    case "[":
-                        _.forEach(term.match(rattr), parseAttrs, node);
-                        break;
+                        case "[":
+                            node = prependTerm.call(_.reduce(term.match(rattr), normalizeAttrs, ""), node);
+                            break;
+                            
+                        case "+":
+                            term = prepareTerm(term);
 
-                    case "+":
-                        node = node.parentNode || node;
-                        /* falls through */
-                    case ">":
-                        if (typeof term === "string") {
-                            term = createElement(term);
-                        }
+                            if (_.isArray(node)) {
+                                node.push(term);
+                            } else {
+                                node += term;
+                            }
+                            break;
 
-                        if (!node.parentNode && str === ">") {
-                            _.forEach(node.childNodes, function(child) {
-                                child.appendChild(cloneNode(term));
+                        case ">":
+                            term = prepareTerm(term);
+
+                            if (_.isArray(node)) {
+                                node = _.map(node, appendTerm, term);
+                            } else {
+                                node = appendTerm.call(term, node);
+                            }
+                            break;
+
+                        case "*":
+                            str = node;
+                            node = [];
+
+                            _.times(parseInt(term, 10), function(i) {
+                                node.push(str.replace(rindex, i + 1));
                             });
-                        } else {
-                            node.appendChild(term);
+                            break;
                         }
-                        break;
 
-                    case "*":
-                        proto = node.parentNode || node;
-                        node = createFragment();
-
-                        _.times(parseInt(term, 10), function(i) {
-                            node.appendChild(cloneNode(proto));
-
-                            _.forEach(node.childNodes, function(child) {
-                                _.forEach(child.attributes, modifyAttr, i + 1);
-                            });
-                        });
-                        break;
+                        str = node;
                     }
 
-                    str = node;
-                }
+                    stack.unshift(str);
+                });
 
-                stack.unshift(str);
-            });
-
-            for (output = stack[0]; output.parentNode; output = output.parentNode);
-
-            return output;
-        }
-    }); 
+                return _.parseFragment(_.isArray(stack[0]) ? stack[0].join("") : stack[0]);
+            };
+        })()
+    });
 })());
 </code></pre>
         </article>
@@ -2326,13 +2341,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMEvent.html">DOMEvent</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat May 25 2013 20:13:32 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 27 2013 03:32:37 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
