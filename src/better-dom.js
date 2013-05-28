@@ -9,13 +9,10 @@
 (function(window, document, _, undefined) {
     "use strict";
 
-    // VARIABLES
+    // HELPERS
     // ---------
 
-    var htmlEl = document.documentElement,
-        scripts = document.scripts,
-        // helpers
-        supports = function(prop, tag) {
+    var supports = function(prop, tag) {
             var el = typeof tag === "string" ? _.createElement(tag) : tag || document,
                 isSupported = prop in el;
 
@@ -291,30 +288,25 @@
     (function() {
         var eventHooks = {},
             veto = false,
-            //   0  1          2     3
-            // [ _, modifiers, type, args ]
-            rtypexpr = /^([\?\!]{0,2})([^(\s]+)(?:\(([^)]+)\))?$/,
-            createEventHandler = function(expr, selector, callback, data, context, thisArg) {
+            createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
-                        if (veto !== expr[2]) {
+                        if (veto !== type) {
                             var eventHelper = new EventHelper(e || window.event, currentTarget),
-                                modifiers = expr[1],
-                                props = expr[3],
                                 args;
 
                             // handle modifiers
-                            if (~modifiers.indexOf("!")) eventHelper.preventDefault();
-                            if (~modifiers.indexOf("?")) eventHelper.stopPropagation();
+                            if (options.cancel) eventHelper.preventDefault();
+                            if (options.stop) eventHelper.stopPropagation();
 
                             // populate extra event arguments
-                            if (props) {
-                                args = _.map(props.split(","), eventHelper.get, eventHelper);
+                            if (options.args) {
+                                args = _.map(options.args, eventHelper.get, eventHelper);
                                 
-                                if (data) args.push.apply(args, data);
+                                if (extras) args.push.apply(args, extras);
                             } else {
-                                args = data ? data.slice(0) : [];
+                                args = extras ? extras.slice(0) : [];
                             }
 
                             callback.apply(context || thisArg, args);
@@ -347,55 +339,51 @@
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
          * @param  {String}   type    event type
-         * @param  {String}   [selector] css selector to filter
-         * @param  {Function} callback event handler
-         * @param  {Array} [args] extra arguments
-         * @param  {Object} [context] callback context
-         * @return {DOMNode} current context
+         * @param  {Object}   [options] callback options
+         * @param  {Function} callback event callback
+         * @param  {Array}    [args] extra arguments
+         * @param  {Object}   [context] callback context
+         * @return {DOMNode}  current context
          */
-        DOMNode.prototype.on = function(type, selector, callback, args, context) {
+        DOMNode.prototype.on = function(type, options, callback, args, context) {
             var eventType = typeof type,
-                hook, handler, expr;
+                hook, handler, selector;
 
             if (eventType === "string") {
-                if (typeof selector === "function") {
+                if (typeof options === "function") {
                     context = args;
                     args = callback;
-                    callback = selector;
-                    selector = null;
+                    callback = options;
+                    options = {};
                 }
 
-                if (expr = rtypexpr.exec(type)) {
-                    if (args !== undefined && !_.isArray(args)) {
-                        throw makeError("on");
-                    }
+                selector = type.substr(type.indexOf(" ") + 1);
 
-                    type = expr[2];
-
-                    handler = createEventHandler(expr, selector, callback, args, context, this);
-                    handler.type = type;
-                    handler.callback = callback;
-
-                    if (hook = eventHooks[type]) hook(handler);
-
-                    if (document.addEventListener) {
-                        this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
-                    } else {
-                        if (~type.indexOf(":") || handler.custom) {
-                            // handle custom events for IE8
-                            handler = createCustomEventHandler(handler);
-                        }
-
-                        this._node.attachEvent("on" + (handler._type || type), handler);
-                    }
-                    
-                    // store event entry
-                    this._events.push(handler);
+                if (selector === type) {
+                    selector = undefined;
                 } else {
-                    _.forEach(type.split(" "), function(type) {
-                        this.on(type, selector, callback);
-                    }, this);
+                    type = type.substr(0, type.length - selector.length - 1);
                 }
+
+                handler = createEventHandler(type, selector, options, callback, args, context, this);
+                handler.type = selector ? type + " " + selector : type;
+                handler.callback = callback;
+
+                if (hook = eventHooks[type]) hook(handler);
+
+                if (document.addEventListener) {
+                    this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                } else {
+                    if (~type.indexOf(":") || handler.custom) {
+                        // handle custom events for IE8
+                        handler = createCustomEventHandler(handler);
+                    }
+
+                    this._node.attachEvent("on" + (handler._type || type), handler);
+                }
+                
+                // store event entry
+                this._events.push(handler);
             } else if (eventType === "object") {
                 _.forOwn(type, handleObjectParam("on"), this);
             } else {
@@ -650,7 +638,8 @@
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     DOMElement.prototype.offset = function() {
-        var bodyEl = document.body,
+        var htmlEl = document.documentElement,
+            bodyEl = document.body,
             boundingRect = this._node.getBoundingClientRect(),
             clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
             clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
@@ -1110,7 +1099,7 @@
                 var result = _[arrayMethod](_.slice(arguments), function(className) {
                         if (typeof className !== "string") throw makeError(methodName);
 
-                        if (htmlEl.classList) {
+                        if (this._node.classList) {
                             return this._node.classList[nativeStrategyName](className);
                         } else {
                             return strategy.call(this, className);
@@ -1186,7 +1175,7 @@
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = getComputedStyle(htmlEl),
+            computed = getComputedStyle(document.documentElement),
             // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
             props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
@@ -1232,7 +1221,7 @@
         });
 
         // normalize float css property
-        if ("cssFloat" in htmlEl.style) {
+        if ("cssFloat" in computed) {
             getStyleHooks.float = function(style) {
                 return style.cssFloat;
             };
@@ -1585,7 +1574,7 @@
      */
     DOM.importStyles = (function() {
         var styleSheet = (function() {
-                var headEl = scripts[0].parentNode;
+                var headEl = document.scripts[0].parentNode;
 
                 headEl.insertBefore(_.createElement("style"), headEl.firstChild);
 
@@ -1626,8 +1615,8 @@
     DOM.watch = (function() {
         DOM._watchers = {};
 
-        if (htmlEl.addBehavior) {
-            var behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+        if (supports("addBehavior", "html")) {
+            var behaviorUrl = document.scripts[document.scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback) {
                 var entry = DOM._watchers[selector];
@@ -1647,7 +1636,7 @@
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = getComputedStyle(htmlEl),
+                computed = getComputedStyle(document.documentElement),
                 cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback) {
@@ -2008,7 +1997,7 @@
             matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || htmlEl[propertyName] && propertyName;
+                return result || document.documentElement[propertyName] && propertyName;
             }, null),
             matches = function(el, selector) {
                 var nodeList = document.querySelectorAll(selector);

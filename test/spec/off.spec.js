@@ -17,8 +17,11 @@ describe("off", function() {
 
         expect(spy).not.toHaveBeenCalled();
 
-
         input.on("click", spy).off("click", spy).fire("click");
+
+        expect(spy).not.toHaveBeenCalled();
+
+        input.on("click a", spy).off("click a", spy).fire("click");
 
         expect(spy).not.toHaveBeenCalled();
     });
@@ -27,7 +30,7 @@ describe("off", function() {
         spyOn(obj, "test");
         spyOn(obj, "test2");
 
-        link.on("click", obj.test).on("click input", obj.test2).off("click");
+        link.on("click", obj.test).on("click", obj.test2).off("click");
         input.fire("click");
 
         expect(obj.test).not.toHaveBeenCalled();

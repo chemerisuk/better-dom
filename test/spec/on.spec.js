@@ -24,7 +24,7 @@ describe("on", function() {
     });
 
     it("should accept optional event filter", function() {
-        DOM.on("focus", "input", spy);
+        DOM.on("focus input", spy);
 
         link.fire("focus");
 
@@ -33,16 +33,6 @@ describe("on", function() {
         input.fire("focus");
 
         expect(spy).toHaveBeenCalled();
-    });
-
-    it("should accept space-separated event names", function() {
-        input.on("focus click", spy).fire("focus");
-
-        expect(spy).toHaveBeenCalled();
-
-        input.fire("click");
-
-        expect(spy.callCount).toEqual(2);
     });
 
     it("should accept event object", function() {
@@ -66,28 +56,28 @@ describe("on", function() {
     });
 
     describe("event expression", function() {
-        it("should call preventDefault if it starts with !", function() {
-            input.on("!click", spy).fire("click");
+        it("should call preventDefault if options have cancel:true", function() {
+            input.on("click", {cancel: true}, spy).fire("click");
 
             expect(spy).toHaveBeenCalled();
             expect(location.hash).not.toBe("#test");
         });
 
-        it("should call stopPropagation if it starts with ?", function() {
+        it("should call stopPropagation if options have stop:true", function() {
             var callback = jasmine.createSpy("callback");
 
             DOM.on("click", callback);
-            input.on("?click", spy).fire("click");
+            input.on("click", {stop: true}, spy).fire("click");
 
             expect(spy).toHaveBeenCalled();
             expect(callback).not.toHaveBeenCalled();
         });
 
-        it("should call preventDefault and stopPropagation if it starts with ?!", function() {
+        it("should call preventDefault and stopPropagation if options have cancel:true and stop:true", function() {
             var callback = jasmine.createSpy("callback");
 
             DOM.on("click", callback);
-            input.on("?!click", spy).fire("click");
+            input.on("click", {cancel: true, stop: true}, spy).fire("click");
 
             expect(spy).toHaveBeenCalled();
             expect(callback).not.toHaveBeenCalled();
@@ -99,7 +89,7 @@ describe("on", function() {
                 expect(type).toBe("click");
             });
 
-            input.on("click(type)", spy).fire("click");
+            input.on("click", {args: ["type"]}, spy).fire("click");
 
             expect(spy).toHaveBeenCalled();
         });
@@ -143,13 +133,13 @@ describe("on", function() {
 
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("input", "a", spy);
+        DOM.on("input a", spy);
 
         input.fire("input");
 
         expect(spy.callCount).toBe(2);
 
-        DOM.on("input", "input", spy);
+        DOM.on("input input", spy);
 
         input.fire("input");
 
@@ -157,17 +147,17 @@ describe("on", function() {
     });
 
     it("should fix submit event", function() {
-        form.on("!submit", spy).fire("submit");
+        form.on("submit", {cancel: true}, spy).fire("submit");
 
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("!submit", "a", spy);
+        DOM.on("submit a", {cancel: true}, spy);
 
         form.fire("submit");
 
         expect(spy.callCount).toBe(2);
 
-        DOM.on("!submit", "form", spy);
+        DOM.on("submit form", {cancel: true}, spy);
 
         form.fire("submit");
 
