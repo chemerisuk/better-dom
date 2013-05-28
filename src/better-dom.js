@@ -1723,8 +1723,15 @@
             mixins = {constructor: mixins};
         }
 
-        if (!mixins || typeof mixins !== "object") {
+        if (!mixins || typeof mixins !== "object" || (selector !== "*" && ~selector.indexOf("*"))) {
             throw makeError("extend", "DOM");
+        }
+
+        if (selector === "*") {
+            // extending element prototype
+            _.mixin(DOMElement.prototype, mixins);
+
+            return;
         }
 
         if (template) {
@@ -1842,32 +1849,29 @@
             _.forEach(template, function(str) {
                 var top = stack[0], priority;
 
+                // concat .c1.c2 into single space separated class string
+                if (top === "." && str === ".") str = " ";
+
                 if (str in operators && (top !== "[" || str === "]")) {
-                    if (top === "." && str === ".") {
-                        term += " "; // concat .c1.c2 into single space separated class string
-                    } else {
-                        if (str === ":") {
-                            output.push("input");
-                        }
+                    if (str === ":") term = "input";
 
-                        if (term) {
-                            output.push(term);
-                            term = "";
-                        }
+                    if (term) {
+                        output.push(term);
+                        term = "";
+                    }
 
-                        if (str !== "(") {
-                            priority = operators[str];
+                    if (str !== "(") {
+                        priority = operators[str];
 
-                            while (operators[stack[0]] > priority) {
-                                output.push(stack.shift());
-                            }
+                        while (operators[stack[0]] > priority) {
+                            output.push(stack.shift());
                         }
+                    }
 
-                        if (str === ")") {
-                            stack.shift(); // remove "(" symbol from stack
-                        } else if (str !== "]") { // don't need to have "]" in stack
-                            stack.unshift(str);
-                        }
+                    if (str === ")") {
+                        stack.shift(); // remove "(" symbol from stack
+                    } else if (str !== "]") { // don't need to have "]" in stack
+                        stack.unshift(str);
                     }
                 } else {
                     term += str;

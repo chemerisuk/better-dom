@@ -103,9 +103,20 @@ describe("extend", function() {
             expect(callback).toHaveBeenCalled();
         });
     });
+
+    it("should allow extending the element prototype", function() {
+        DOM.extend("*", {
+            test: function() {}
+        });
+
+        expect(DOM.create("a").test).toBeDefined();
+    });
     
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.extend(1); }).toThrow();
+        expect(function() { DOM.extend(" * ", function() {}); }).toThrow();
+        expect(function() { DOM.extend("div > *", function() {}); }).toThrow();
+        //expect(function() { DOM.extend("*", {constructor: function() {}}); }).toThrow();
     });
 
 });
