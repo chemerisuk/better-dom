@@ -52,10 +52,6 @@
      * @param node native object
      */
     function DOMNode(node) {
-        if (!(this instanceof DOMNode)) {
-            return new DOMNode(node);
-        }
-
         this._node = node;
         this._data = {};
         this._events = [];
@@ -325,7 +321,9 @@
             },
             createCustomEventHandler = function(originalHandler) {
                 var handler = function() {
-                        if (window.event._type === originalHandler.type) originalHandler();
+                        var type = originalHandler.type.split(" ")[0];
+                        
+                        if (window.event._type === type) originalHandler();
                     };
 
                 handler.type = originalHandler.type;
@@ -1480,7 +1478,21 @@
      */
     DOM.create = function(value) {
         if (typeof value === "string") {
-            value = _.createElement(value);
+            if (value[0] !== "<") value = DOM.parseTemplate(value);
+
+            value = _.parseFragment(value);
+        }
+
+        if (value.nodeType === 11) {
+            if (value.childNodes.length === 1) {
+                value = value.firstChild;
+            } else {
+                var div = _.createElement("div");
+
+                div.appendChild(value);
+
+                value = div;
+            }
         } else if (value.nodeType !== 1) {
             throw makeError("create", "DOM");
         }
@@ -1727,9 +1739,7 @@
             _.forOwn(template, function(key) {
                 var tpl = template[key];
 
-                if (tpl[0] !== "<") {
-                    tpl = DOM.parseTemplate(tpl);
-                }
+                if (tpl[0] !== "<") tpl = DOM.parseTemplate(tpl);
 
                 // IE8 doesn't support HTML5 element so it fails
                 // to clone fragments that contan new tags
@@ -1867,11 +1877,15 @@
                 }
             });
 
-            if (term) output.push(term);
+            if (term) stack.unshift(term);
 
-            output.push.apply(output, stack);
+            if (output.length) {
+                output.push.apply(output, stack);
 
-            stack = [];
+                stack = [];
+            } else {
+                stack.unshift(new HtmlBuilder(stack.shift()));
+            }
 
             // transform RPN into html nodes
 
@@ -1929,7 +1943,7 @@
                 stack.unshift(str);
             });
 
-            return toHtmlString(stack.shift());
+            return toHtmlString(stack[0]);
         };
     })();
 

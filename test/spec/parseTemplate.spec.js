@@ -7,6 +7,8 @@ describe("parseTemplate", function() {
         };
     }
 
+    it("should accept a",
+        checkExpression("a", "<a></a>"));
     it("should accept p+p",
         checkExpression("p+p", "<p></p><p></p>"));
     it("should accept p.name+p+p",
