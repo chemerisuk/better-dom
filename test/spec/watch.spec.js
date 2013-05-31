@@ -66,4 +66,24 @@ describe("watch", function() {
         });
     });
 
+    it("should not stop handle other listeners if any throws an error", function() {
+        var otherCallback = jasmine.createSpy("otherCallback");
+
+        callback.andCallFake(function() {
+            throw "watch";
+        });
+
+        DOM.watch(".watch5", callback);
+        DOM.watch(".watch5", otherCallback);
+
+        setFixtures("<a class='watch5'></a>");
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback).toHaveBeenCalled();
+            expect(otherCallback).toHaveBeenCalled();
+        });
+    });
+
 });

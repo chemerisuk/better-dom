@@ -97,17 +97,13 @@ describe("on", function() {
     });
 
     it("should not stop to call handlers if any of them throws an error inside", function() {
-        var otherSpy = jasmine.createSpy("callback2");
-
-        spy.andCallFake(function() { throw "test"; });
-
         window.onerror = function() {
             return true; // suppress displaying expected error for this test
         };
 
-        input.on("click", spy).on("click", otherSpy).fire("click");
+        input.on("click", function() { throw "test"; }).on("click", spy).fire("click");
 
-        expect(otherSpy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
 
         window.onerror = null; // restore default error handling
     });

@@ -1,10 +1,6 @@
 <PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(window.DOM)" />  
+    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(window.DOM)" />
     <script type="text/javascript">
-    function makeHandler(callback, domEl) {
-        return function() { callback(domEl); }
-    }
-
     function handleEvent(DOM) {
         var watchers = DOM._watchers,
             domEl = DOM.create(element),
@@ -15,7 +11,7 @@
             
             if (!domEl._extends[selector] && domEl.matches(selector)) {
                 for (i = 0, n = callbacks.length; i < n; ++i) {
-                    setTimeout(makeHandler(callbacks[i], domEl), 0);
+                    callbacks[i](domEl);
                 }
             }
         }
