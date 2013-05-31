@@ -54,7 +54,7 @@
     function DOMNode(node) {
         this._node = node;
         this._data = {};
-        this._events = [];
+        this._listeners = [];
         this._extends = {};
     }
 
@@ -381,7 +381,7 @@
                 }
                 
                 // store event entry
-                this._events.push(handler);
+                this._listeners.push(handler);
             } else if (eventType === "object") {
                 _.forOwn(type, handleObjectParam("on"), this);
             } else {
@@ -403,7 +403,7 @@
                 throw makeError("off");
             }
 
-            _.forEach(this._events, function(handler, index, events) {
+            _.forEach(this._listeners, function(handler, index, events) {
                 var node = this._node;
 
                 if (handler && type === handler.type && (!callback || callback === handler.callback)) {
