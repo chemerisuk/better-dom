@@ -322,7 +322,7 @@
             createCustomEventHandler = function(originalHandler) {
                 var handler = function() {
                         var type = originalHandler.type.split(" ")[0];
-                        
+
                         if (window.event._type === type) originalHandler();
                     };
 
@@ -1476,29 +1476,39 @@
      * @param  {String|Element} value native element or element tag name
      * @return {DOMElement} element
      */
-    DOM.create = function(value) {
-        if (typeof value === "string") {
-            if (value[0] !== "<") value = DOM.parseTemplate(value);
+    DOM.create = (function(){
+        var rquick = /^[a-z]+$/;
 
-            value = _.parseFragment(value);
-        }
+        return function(value) {
+            if (typeof value === "string") {
+                if (value.match(rquick)) {
+                    value = _.createElement(value);
+                } else {
+                    if (value[0] !== "<") value = DOM.parseTemplate(value);
 
-        if (value.nodeType === 11) {
-            if (value.childNodes.length === 1) {
-                value = value.firstChild;
-            } else {
-                var div = _.createElement("div");
-
-                div.appendChild(value);
-
-                value = div;
+                    value = _.parseFragment(value);
+                }
             }
-        } else if (value.nodeType !== 1) {
-            throw makeError("create", "DOM");
-        }
 
-        return DOMElement(value);
-    };
+            var nodeType = value.nodeType;
+
+            if (nodeType === 11) {
+                if (value.childNodes.length === 1) {
+                    value = value.firstChild;
+                } else {
+                    var div = _.createElement("div");
+
+                    div.appendChild(value);
+
+                    value = div;
+                }
+            } else if (nodeType !== 1) {
+                throw makeError("create", "DOM");
+            }
+
+            return DOMElement(value);
+        };
+    })();
 
     /**
      * Execute callback when DOM will be ready
