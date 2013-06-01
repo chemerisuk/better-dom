@@ -1633,6 +1633,7 @@
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
+     * @param {Boolean} [once] execute callback only at the first time
      * @function
      */
     DOM.watch = (function() {
@@ -1645,14 +1646,13 @@
             return function(selector, callback, once) {
                 var hasWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
                     isNotEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
-                    watcher = function(excludedCallbacks, el) {
-                        if (once) el.on("htc:watch", ["detail"], function(detail) {
-                            detail.push(callback); // populate excluded callbacks
-                        });
+                    cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
+                    watcher = function(canceledCallbacks, el) {
+                        if (once) el.on("htc:watch", ["detail"], cancelCallback);
 
                         // do not execute callback if it was previously excluded
-                        if (_.every(excludedCallbacks, isNotEqualToCallback)) {
-                            callback.call(this, el);
+                        if (_.every(canceledCallbacks, isNotEqualToCallback)) {
+                            callback(el);
                         }
                     };
 
@@ -1678,8 +1678,7 @@
                 cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback, once) {
-                var thisArg = this,
-                    animationName = _.uniqueId("DOM"),
+                var animationName = _.uniqueId("DOM"),
                     cancelBubbling = function(e) {
                         if (e.animationName === animationName) e.stopPropagation();
                     },
@@ -1691,7 +1690,7 @@
                             // unexpected calls in firefox
                             if (once) el.addEventListener(e.type, cancelBubbling, false);
 
-                            callback.call(thisArg, DOMElement(el));
+                            callback(DOMElement(el));
                         }
                     },
                     animationNames = _.reduce(this._watchers, function(res, watcher) {
@@ -1714,8 +1713,8 @@
                 );
 
                 _.forEach(startNames, function(name) {
-                    thisArg._node.addEventListener(name, watcher, false);
-                });
+                    this._node.addEventListener(name, watcher, false);
+                }, this);
 
                 this._watchers.push(watcher);
             };
