@@ -55,45 +55,45 @@ describe("on", function() {
         input.on("click", spy).fire("click");
     });
 
-    describe("event expression", function() {
-        it("should call preventDefault if options have cancel:true", function() {
-            input.on("click", {cancel: true}, spy).fire("click");
+    it("should call preventDefault if options have cancel:true", function() {
+        input.on("click", {cancel: true}, spy).fire("click");
 
-            expect(spy).toHaveBeenCalled();
-            expect(location.hash).not.toBe("#test");
+        expect(spy).toHaveBeenCalled();
+        expect(location.hash).not.toBe("#test");
+    });
+
+    it("should call stopPropagation if options have stop:true", function() {
+        var callback = jasmine.createSpy("callback");
+
+        DOM.on("click", callback);
+        input.on("click", {stop: true}, spy).fire("click");
+
+        expect(spy).toHaveBeenCalled();
+        expect(callback).not.toHaveBeenCalled();
+    });
+
+    it("should call preventDefault and stopPropagation if options have cancel:true and stop:true", function() {
+        var callback = jasmine.createSpy("callback");
+
+        DOM.on("click", callback);
+        input.on("click", {cancel: true, stop: true}, spy).fire("click");
+
+        expect(spy).toHaveBeenCalled();
+        expect(callback).not.toHaveBeenCalled();
+        expect(location.hash).not.toBe("#test");
+    });
+
+    it("should pass optional event arguments", function() {
+        spy.andCallFake(function(type) {
+            expect(type).toBe("click");
         });
 
-        it("should call stopPropagation if options have stop:true", function() {
-            var callback = jasmine.createSpy("callback");
+        input
+            .on("click", {args: ["type"]}, spy)
+            .on("click", ["type"], spy)
+            .fire("click");
 
-            DOM.on("click", callback);
-            input.on("click", {stop: true}, spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-            expect(callback).not.toHaveBeenCalled();
-        });
-
-        it("should call preventDefault and stopPropagation if options have cancel:true and stop:true", function() {
-            var callback = jasmine.createSpy("callback");
-
-            DOM.on("click", callback);
-            input.on("click", {cancel: true, stop: true}, spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-            expect(callback).not.toHaveBeenCalled();
-            expect(location.hash).not.toBe("#test");
-        });
-
-        it("should pass optional event arguments", function() {
-            spy.andCallFake(function(type) {
-                expect(type).toBe("click");
-            });
-
-            input.on("click", {args: ["type"]}, spy).fire("click");
-
-            expect(spy).toHaveBeenCalled();
-        });
-
+        expect(spy.callCount).toBe(2);
     });
 
     it("should not stop to call handlers if any of them throws an error inside", function() {

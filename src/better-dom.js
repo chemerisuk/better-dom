@@ -284,6 +284,8 @@
         var eventHooks = {},
             veto = false,
             createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
+                if (_.isArray(options)) options = {args: options};
+
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
@@ -1642,21 +1644,21 @@
 
             return function(selector, callback, once) {
                 var hasWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
-                    notEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
+                    isNotEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
                     watcher = function(excludedCallbacks, el) {
-                        if (once) el.on("htc:watch", {args: ["detail"]}, function(detail) {
+                        if (once) el.on("htc:watch", ["detail"], function(detail) {
                             detail.push(callback); // populate excluded callbacks
                         });
 
                         // do not execute callback if it was previously excluded
-                        if (_.every(excludedCallbacks, notEqualToCallback)) {
+                        if (_.every(excludedCallbacks, isNotEqualToCallback)) {
                             callback.call(this, el);
                         }
                     };
 
                 watcher.selector = selector;
 
-                this.on("htc:watch " + selector, {args: ["detail", "target"]}, watcher);
+                this.on("htc:watch " + selector, ["detail", "target"], watcher);
 
                 if (_.some(this._watchers, hasWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
