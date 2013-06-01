@@ -20,6 +20,7 @@
     "globals": {
         "DOM": true,
         "Element": true,
+        "_": true,
 
         "beforeEach": true,
         "afterEach": true,

@@ -28,9 +28,13 @@ describe("extend", function() {
         var link = DOM.find(".extend01");
 
         DOM.extend(".extend01", callback.andCallFake(function() {
+            expect(link.isHidden()).toBe(false);
+
             expect(this).toBe(link);
 
             link.hide();
+
+            expect(link.isHidden()).toBe(true);
         }));
 
         waits(WAIT_FOR_WATCH_TIME);

@@ -172,11 +172,13 @@ describe("on", function() {
     it("should optionally support extra handler arguments", function() {
         var a = {}, b = {};
 
-        spy.andCallFake(function(arg) {
-            expect(arg).toBe(a, b);
+        spy.andCallFake(function(type, argA, argB) {
+            expect(type).toBe("click");
+            expect(argA).toBe(a);
+            expect(argB).toBe(b);
         });
 
-        input.on("click", spy, [a, b]).fire("click");
+        input.on("click", ["type"], spy, [a, b]).fire("click");
 
         expect(spy).toHaveBeenCalled();
     });

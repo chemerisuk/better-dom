@@ -37,6 +37,18 @@ describe("set", function() {
         expect(link._node).toHaveAttr("href", "changed");
     });
 
+    it("should accept function", function() {
+        var spy = jasmine.createSpy("setter");
+
+        link.set("id", spy.andCallFake(function(value) {
+            expect(value).toBe("test");
+
+            return "test_changed";
+        }));
+
+        expect(link._node).toHaveAttr("id", "test_changed");
+    });
+
     it("should accept object with key-value pairs", function() {
         link.set({"data-test1": "test1", "data-test2": "test2"});
 

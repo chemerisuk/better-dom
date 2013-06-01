@@ -4,7 +4,7 @@ describe("get", function() {
     var link, input;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html'>get-test</a><input type='text' id='get_input' value='test'/>");
+        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><input type='text' id='get_input' value='test'/>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
@@ -12,6 +12,8 @@ describe("get", function() {
 
     it("should read an attribute value", function() {
         expect(link.get("id")).toBe("test");
+        expect(link.get("data-attr")).toBe("val");
+        expect(link.get("tagName")).toBe("a");
     });
 
     it("should try to read property value first", function() {

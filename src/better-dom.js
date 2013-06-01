@@ -688,8 +688,12 @@
     DOMElement.prototype.isFocused = function() {
         return this._node === document.activeElement;
     };
-        
-    DOMElement.prototype.serialize = function() {
+    
+    /**
+     * Serialize element into query string
+     * @return {String} query string
+     */
+    DOMElement.prototype.toQueryString = function() {
         var el = this._node, result,
             makePair = function(name, value) {
                 return encodeURIComponent(name) + "=" +encodeURIComponent(value);
@@ -731,7 +735,7 @@
         } else if (el.form) {
             result = makePair(el.name, el.value);
         } else {
-            return el.outerHTML;
+            throw makeError("toQueryString");
         }
 
         return result.replace(/%20/g, "+");

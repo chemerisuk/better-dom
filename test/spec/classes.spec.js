@@ -53,4 +53,13 @@ describe("classes manipulation", function() {
             expect(link._node).toHaveClass("test4");
         });
     });
+
+    it("should throw error if the first arg is not a string", function() {
+        _.forEach(["addClass", "hasClass", "removeClass", "toHaveClass"], function(strategy) {
+            expect(function() { link[strategy]({}); }).toThrow();
+            expect(function() { link[strategy](1); }).toThrow();
+            expect(function() { link[strategy](null); }).toThrow();
+            expect(function() { link[strategy](undefined); }).toThrow();
+        });
+    });
 });
