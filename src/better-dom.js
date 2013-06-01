@@ -55,7 +55,6 @@
         this._node = node;
         this._data = {};
         this._listeners = [];
-        this._extends = {};
     }
 
     DOMNode.prototype = {
@@ -1637,20 +1636,23 @@
     DOM.watch = (function() {
         DOM._watchers = {};
 
-        if (supports("addBehavior", "html")) {
-            var behaviorUrl = document.scripts[document.scripts.length - 1].getAttribute("data-htc");
+        if (supports("addBehavior", "a")) {
+            var scripts = document.scripts,
+                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
-            return function(selector, callback) {
-                var entry = DOM._watchers[selector];
+            return function(selector, callback, once) {
+                var entry = this._watchers[selector];
 
                 if (entry) {
+                    // call the callback manually for each matched element
+                    // because the behaviour is already attached to selector
+                    this.findAll(selector).each(callback);
+
                     entry.push(callback);
-                    // need to call the callback manually for each element
-                    // because behaviour is already attached to the DOM
-                    DOM.findAll(selector).each(callback);
                 } else {
-                    DOM._watchers[selector] = [callback];
-                    // append style rule at the last step
+                    this._watchers[selector] = [callback];
+
+                    // MUST append style rule at the last step
                     DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
                 }
             };
@@ -1661,9 +1663,13 @@
                 computed = getComputedStyle(document.documentElement),
                 cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
-            return function(selector, callback) {
-                var animationName = "DOM" + new Date().getTime(),
-                    allAnimationNames = DOM._watchers[selector] || animationName;
+            return function(selector, callback, once) {
+                var thisArg = this,
+                    animationName = "DOM" + new Date().getTime(),
+                    allAnimationNames = this._watchers[selector] || animationName,
+                    cancelBubbling = function(e) {
+                        if (e.animationName === animationName) e.stopPropagation();
+                    };
 
                 DOM.importStyles(
                     "@" + cssPrefix + "keyframes " + animationName,
@@ -1679,16 +1685,20 @@
                 );
 
                 _.forEach(startNames, function(name) {
-                    document.addEventListener(name, function(e) {
+                    thisArg._node.addEventListener(name, function(e) {
                         var el = e.target;
 
                         if (e.animationName === animationName) {
-                            callback(DOMElement(el));
+                            // MUST cancelBubbling first otherwise may have
+                            // unexpected calls in firefox
+                            if (once) el.addEventListener(name, cancelBubbling, false);
+
+                            callback.call(thisArg, DOMElement(el));
                         }
                     }, false);
                 });
 
-                DOM._watchers[selector] = allAnimationNames;
+                this._watchers[selector] = allAnimationNames;
             };
         }
     })();
@@ -1740,7 +1750,7 @@
 
         if (selector === "*") {
             // extending element prototype
-            _.mixin(DOMElement.prototype, mixins);
+            _.extend(DOMElement.prototype, mixins);
 
             return;
         }
@@ -1760,8 +1770,6 @@
         extensions[selector] = mixins;
 
         DOM.watch(selector, function(el) {
-            if (el._extends[selector]) return;
-
             if (template) {
                 _.forOwn(template, function(key) {
                     if (key !== "constructor") {
@@ -1772,14 +1780,12 @@
                 });
             }
 
-            _.mixin(el, mixins);
+            _.extend(el, mixins);
 
             if (mixins.hasOwnProperty("constructor")) {
                 mixins.constructor.call(el);
             }
-
-            el._extends[selector] = true;
-        });
+        }, true);
     };
 
     /**
@@ -1969,7 +1975,7 @@
         if (selector) {
             mixins = extensions[selector];
 
-            _.mixin(el, mixins);
+            _.extend(el, mixins);
 
             if (mixins.hasOwnProperty("constructor")) {
                 el.constructor = MockElement;
@@ -2225,12 +2231,12 @@
                     callback.call(thisPtr, obj[key], key, obj);
                 }
             },
-            mixin: function(obj, name, value) {
+            extend: function(obj, name, value) {
                 if (arguments.length === 3) {
                     obj[name] = value;
                 } else if (name) {
                     _.forOwn(name, function(key) {
-                        _.mixin(obj, key, name[key]);
+                        _.extend(obj, key, name[key]);
                     });
                 }
 
@@ -2290,7 +2296,7 @@
         })();
     }
 
-    return _.mixin(_, {
+    return _.extend(_, {
 
         // DOM utilites
 

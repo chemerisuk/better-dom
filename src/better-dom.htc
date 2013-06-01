@@ -1,6 +1,12 @@
 <PUBLIC:COMPONENT lightweight="true">
     <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(window.DOM)" />
     <script type="text/javascript">
+    function safeExecute(functor, domEl, context) {
+        return function() {
+            functor.call(context, domEl);
+        };
+    }
+
     function handleEvent(DOM) {
         var watchers = DOM._watchers,
             domEl = DOM.create(element),
@@ -9,9 +15,9 @@
         for (selector in watchers) {
             callbacks = watchers[selector];
             
-            if (!domEl._extends[selector] && domEl.matches(selector)) {
+            if (domEl.matches(selector)) {
                 for (i = 0, n = callbacks.length; i < n; ++i) {
-                    callbacks[i](domEl);
+                    setTimeout(safeExecute(callbacks[i], domEl, window.document), 0);
                 }
             }
         }
