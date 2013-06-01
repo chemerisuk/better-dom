@@ -1,26 +1,8 @@
 <PUBLIC:COMPONENT lightweight="true">
     <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(window.DOM)" />
     <script type="text/javascript">
-    function safeExecute(functor, domEl, context) {
-        return function() {
-            functor.call(context, domEl);
-        };
-    }
-
     function handleEvent(DOM) {
-        var watchers = DOM._watchers,
-            domEl = DOM.create(element),
-            selector, callbacks, i, n;
-
-        for (selector in watchers) {
-            callbacks = watchers[selector];
-            
-            if (domEl.matches(selector)) {
-                for (i = 0, n = callbacks.length; i < n; ++i) {
-                    setTimeout(safeExecute(callbacks[i], domEl, window.document), 0);
-                }
-            }
-        }
+        DOM.create(element).fire("htc:watch", []);
     }
     </script>
 </PUBLIC:COMPONENT>

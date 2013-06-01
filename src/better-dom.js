@@ -80,7 +80,7 @@
             var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
                 rsibling = /[\x20\t\r\n\f]*[+~>]/,
                 rescape = /'|\\/g,
-                tmpId = "DOM" + new Date().getTime();
+                tmpId = _.uniqueId("DOM");
 
             if (!supports("getElementsByClassName")) {
                 // exclude getElementsByClassName from pattern
@@ -1634,27 +1634,39 @@
      * @function
      */
     DOM.watch = (function() {
-        DOM._watchers = {};
+        DOM._watchers = [];
 
         if (supports("addBehavior", "a")) {
             var scripts = document.scripts,
                 behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback, once) {
-                var entry = this._watchers[selector];
+                var hasWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
+                    notEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
+                    watcher = function(excludedCallbacks, el) {
+                        if (once) el.on("htc:watch", {args: ["detail"]}, function(detail) {
+                            detail.push(callback); // populate excluded callbacks
+                        });
 
-                if (entry) {
+                        // do not execute callback if it was previously excluded
+                        if (_.every(excludedCallbacks, notEqualToCallback)) {
+                            callback.call(this, el);
+                        }
+                    };
+
+                watcher.selector = selector;
+
+                this.on("htc:watch " + selector, {args: ["detail", "target"]}, watcher);
+
+                if (_.some(this._watchers, hasWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
                     // because the behaviour is already attached to selector
                     this.findAll(selector).each(callback);
-
-                    entry.push(callback);
                 } else {
-                    this._watchers[selector] = [callback];
-
-                    // MUST append style rule at the last step
                     DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
                 }
+
+                this._watchers.push(watcher);
             };
         } else {
             // use trick discovered by Daniel Buchner:
@@ -1665,40 +1677,45 @@
 
             return function(selector, callback, once) {
                 var thisArg = this,
-                    animationName = "DOM" + new Date().getTime(),
-                    allAnimationNames = this._watchers[selector] || animationName,
+                    animationName = _.uniqueId("DOM"),
                     cancelBubbling = function(e) {
                         if (e.animationName === animationName) e.stopPropagation();
-                    };
+                    },
+                    watcher = function(e) {
+                        var el = e.target;
+
+                        if (e.animationName === animationName) {
+                            // MUST cancelBubbling first otherwise may have
+                            // unexpected calls in firefox
+                            if (once) el.addEventListener(e.type, cancelBubbling, false);
+
+                            callback.call(thisArg, DOMElement(el));
+                        }
+                    },
+                    animationNames = _.reduce(this._watchers, function(res, watcher) {
+                        if (watcher.selector === selector) res.push(watcher.animationName);
+
+                        return res;
+                    }, [animationName]);
+
+                watcher.selector = selector;
+                watcher.animationName = animationName;
 
                 DOM.importStyles(
                     "@" + cssPrefix + "keyframes " + animationName,
                     "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
                 );
 
-                // use comma separated animation names in case of multiple
-                if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
-
                 DOM.importStyles(
                     selector,
-                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
                 );
 
                 _.forEach(startNames, function(name) {
-                    thisArg._node.addEventListener(name, function(e) {
-                        var el = e.target;
-
-                        if (e.animationName === animationName) {
-                            // MUST cancelBubbling first otherwise may have
-                            // unexpected calls in firefox
-                            if (once) el.addEventListener(name, cancelBubbling, false);
-
-                            callback.call(thisArg, DOMElement(el));
-                        }
-                    }, false);
+                    thisArg._node.addEventListener(name, watcher, false);
                 });
 
-                this._watchers[selector] = allAnimationNames;
+                this._watchers.push(watcher);
             };
         }
     })();
@@ -2241,7 +2258,15 @@
                 }
 
                 return obj;
-            }
+            },
+            uniqueId: (function() {
+                var idCounter = 0;
+
+                return function(prefix) {
+                    var id = ++idCounter;
+                    return String(prefix || "") + id;
+                };
+            })()
         },
         parser = document.createElement("body"),
         createElement, createFragment;

@@ -54,26 +54,28 @@ describe("watch", function() {
     });
 
     it("should accept several watchers of the same selector", function() {
+        var spy = jasmine.createSpy("callback2");
+
         setFixtures("<a class='watch4'></a><b class='watch4'></b>");
 
         DOM.watch(".watch4", callback);
-        DOM.watch(".watch4", callback);
+        DOM.watch(".watch4", spy);
 
         waits(WAIT_FOR_WATCH_TIME);
 
         runs(function() {
-            expect(callback.callCount).toBe(4);
+            expect(callback.callCount).toBe(2);
+            expect(spy.callCount).toBe(2);
         });
     });
 
     it("should not stop handle other listeners if any throws an error", function() {
         var otherCallback = jasmine.createSpy("otherCallback");
 
-        callback.andCallFake(function() {
+        DOM.watch(".watch5", callback.andCallFake(function() {
             throw "watch";
-        });
-
-        DOM.watch(".watch5", callback);
+        }));
+        
         DOM.watch(".watch5", otherCallback);
 
         setFixtures("<a class='watch5'></a>");
@@ -83,6 +85,39 @@ describe("watch", function() {
         runs(function() {
             expect(callback).toHaveBeenCalled();
             expect(otherCallback).toHaveBeenCalled();
+        });
+    });
+
+    it("should accept callbacks with different once argument for the same selector", function() {
+        var otherCallback = jasmine.createSpy("otherCallback");
+
+        DOM.watch("#watch6", callback, true);
+        DOM.watch("#watch6", otherCallback);
+
+        setFixtures("<a id='watch6'></a>");
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback.callCount).toBe(1);
+            expect(otherCallback.callCount).toBe(1);
+        });
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            var link = DOM.find("#watch6");
+
+            link.remove();
+
+            setFixtures(link._node);
+        });
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback.callCount).toBe(1);
+            expect(otherCallback.callCount).toBe(2);
         });
     });
 
