@@ -1775,33 +1775,25 @@
 
         if (template) {
             _.forOwn(template, function(key) {
-                var tpl = template[key];
-
-                if (tpl[0] !== "<") tpl = DOM.parseTemplate(tpl);
-
-                // IE8 doesn't support HTML5 element so it fails
-                // to clone fragments that contan new tags
-                template[key] = document.addEventListener ? _.parseFragment(tpl) : tpl;
+                template[key] = DOM.create(template[key]);
             });
         }
 
         extensions[selector] = mixins;
 
         DOM.watch(selector, function(el) {
+            var tpl = {};
+
             if (template) {
                 _.forOwn(template, function(key) {
-                    if (key !== "constructor") {
-                        var tpl = template[key];
-
-                        el[key](document.addEventListener ? tpl.cloneNode(true) : tpl);
-                    }
+                    tpl[key] = template[key].clone();
                 });
             }
 
             _.extend(el, mixins);
 
             if (mixins.hasOwnProperty("constructor")) {
-                mixins.constructor.call(el);
+                mixins.constructor.call(el, tpl);
             }
         }, true);
     };

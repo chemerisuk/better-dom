@@ -72,27 +72,17 @@ describe("extend", function() {
         });
     });
 
-    it("should append optional template", function() {
-        var template = {},
-            checkStrategies = {
-                prepend: function(el) { return el.child(0); },
-                append: function(el) { return el.child(-1); },
-                after: function(el) { return el.next(); },
-                before: function(el) { return el.prev(); }
-            };
+    it("should pass optional template into constructor", function() {
+        var template = {x1: "<i class='x1'></i>", x2: "b#x2"};
 
-        for (var key in checkStrategies) {
-            template[key] = "<i class='" + key + "'></i>";
-        }
+        callback.andCallFake(function(tpl) {
+            expect(tpl.x1).toBeDefined();
+            expect(tpl.x1._node).toHaveClass("x1");
+            expect(tpl.x1._node).toHaveTag("i");
 
-        callback.andCallFake(function() {
-            var strategy, key;
-
-            for (key in checkStrategies) {
-                strategy = checkStrategies[key];
-
-                expect(strategy(this)._node).toHaveClass(key);
-            }
+            expect(tpl.x2).toBeDefined();
+            expect(tpl.x2._node).toHaveId("x2");
+            expect(tpl.x2._node).toHaveTag("b");
         });
 
         DOM.extend("#expr", template, callback);
