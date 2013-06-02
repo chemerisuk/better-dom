@@ -3,16 +3,31 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        banner: [
+            "/**",
+            " * @file <%= pkg.name %>",
+            " * @version <%= pkg.version %>",
+            " * @overview <%= pkg.description %>",
+            " * @copyright <%= pkg.author %> 2013",
+            " * @license MIT",
+            " * @see <%= pkg.repository.url %>",
+            " */\n"
+        ].join("\n"),
 
         watch: {
             karma: {
-                files: ["src/*.js", "test/spec/*.js"],
+                files: ["build/*.js", "test/spec/*.js"],
                 tasks: ["karma:watch:run"]
+            },
+            build: {
+                files: ["src/*.js"],
+                tasks: ["requirejs:compile", "jshint:build"]
             }
         },
 
         jshint: {
             all: ["src/*.js", "test/spec/*.js", "Gruntfile.js"],
+            build: ["build/*.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
@@ -33,7 +48,7 @@ module.exports = function(grunt) {
                 background: true,
                 reporters: ["coverage", "progress"],
                 preprocessors: {
-                    "src/*.js": "coverage"
+                    "build/*.js": "coverage"
                 }
             },
             unit: {
@@ -108,8 +123,8 @@ module.exports = function(grunt) {
         copy: {
             dist: {
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["src/*.htc"],
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["src/*.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["*.htc"],
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["build/*.js"]
                 }
             }
         },
@@ -130,16 +145,7 @@ module.exports = function(grunt) {
 
         concat: {
             options: {
-                banner: [
-                    "/**",
-                    " * @file <%= pkg.name %>",
-                    " * @version <%= pkg.version %>",
-                    " * @overview <%= pkg.description %>",
-                    " * @copyright <%= pkg.author %> 2013",
-                    " * @license MIT",
-                    " * @see <%= pkg.repository.url %>",
-                    " */\n"
-                ].join("\n"),
+                banner: "<%= banner %>",
                 stripBanners: true
             },
             publish: {
@@ -152,6 +158,50 @@ module.exports = function(grunt) {
             watch: {
                 options: {
                     base: "../"
+                }
+            }
+        },
+
+        requirejs: {
+            compile: {
+                options: {
+                    useStrict: true,
+                    baseUrl: "src",
+                    optimize: "none",
+                    optimizeCss: "none",
+                    name: "DOM",
+                    create: true,
+                    wrap: {
+                        start: "<%= banner %>(function(window, document, undefined){\n    \"use strict\";\n",
+                        end: "})(this, document);"
+                    },
+                    include: [
+                        "Node.find", "Node.data", "Node.supports", "Node.contains", "Node.events",
+                        "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
+                        "Element.offset", "Element.props", "Element.styles", "Element.toquerystring",
+                        "Element.traversing", "Element.visibility", "DOM.importstyles", "DOM.create",
+                        "DOM.extend","DOM.parsetemplate", "DOM.ready", "DOM.watch", "DOM.mock",
+                        "Collection", "MockElement", "SelectorMatcher", "EventHelper"
+                    ],
+                    onBuildWrite: function (id, path, contents) {
+                        if ((/define\(.*?\{/).test(contents)) {
+                            //Remove AMD ceremony for use without require.js or almond.js
+                            contents = contents.replace(/define\(.*?\{\s*"use strict";[\r\n]*/m, "");
+
+                            contents = contents.replace(/\}\);\s*$/, "");
+                        }
+
+                        return contents;
+                    },
+                    out: function(text) {
+                        grunt.file.write("build/better-dom.js", text.replace("define(\"DOM\", function(){});\n",
+                            "    if (typeof define === \"function\" && define.amd) {\n" +
+                            "        define(\"DOM\", function() { return DOM; });\n" +
+                            "    } else {\n" +
+                            "        window.DOM = DOM;\n" +
+                            "    }\n\n")
+                        );
+                    }
                 }
             }
         }
@@ -167,9 +217,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-connect");
+    grunt.loadNpmTasks("grunt-contrib-requirejs");
 
 
     grunt.registerTask("dev", [
+        "requirejs:compile",
         "jshint", // run jshint first
         "connect", // start web server
         "shell:openCoverage", // open coverage page
@@ -184,6 +236,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("default", [
         "clean",
+        "requirejs:compile",
         "copy:dist",
         "uglify:dist"
     ]);

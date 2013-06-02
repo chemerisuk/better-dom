@@ -9,6 +9,6 @@ files = [
     JASMINE_ADAPTER,
     "test/lib/jasmine-dom/*.js",
     "node_modules/lodash/lodash.js",
-    "src/*.js",
+    "build/*.js",
     "test/spec/*.spec.js"
 ];
