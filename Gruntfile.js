@@ -113,8 +113,8 @@ module.exports = function(grunt) {
         copy: {
             dist: {
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["extra/<%= pkg.name %>.htc"],
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["build/<%= pkg.name %>.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["<%= pkg.name %>.htc"],
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["<%= pkg.name %>.js"]
                 }
             },
             publish: {
@@ -129,12 +129,12 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     preserveComments: "some",
-                    sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.map",
-                    sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.map",
+                    sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.src",
+                    sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src",
                     report: "gzip"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["build/<%= pkg.name %>.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["dist/<%= pkg.name %>-<%= pkg.version %>.js"]
                 }
             }
         },
@@ -217,7 +217,6 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("default", [
-        "requirejs:compile",
         "clean",
         "copy:dist",
         "uglify:dist"

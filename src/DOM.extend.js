@@ -5,30 +5,26 @@ define(["DOM", "Element"], function(DOM, DOMElement, makeError) {
      * Define a DOM extension
      * @memberOf DOM
      * @param  {String} selector extension css selector
-     * @param  {{after: String, before: String, append: String, prepend: String}} [template] extension templates
+     * @param  {Array}  [template] extension templates
      * @param  {Object} mixins extension mixins
      * @example
-     * // simple example
-     * DOM.extend(".myplugin", {
-     *     append: "&#60;span&#62;myplugin text&#60;/span&#62;"
-     * }, {
-     *     constructor: function() {
+     * DOM.extend(".myplugin", [
+     *     "&#60;span&#62;myplugin text&#60;/span&#62;"
+     * ], {
+     *     constructor: function(tpl) {
      *         // initialize extension
      *     }
      * });
      *
      * // emmet-like syntax example
-     * DOM.extend(".mycalendar", {
-     *     after: "table>(tr>th*7)+(tr>td*7)*6"
-     * }, {
-     *     constructor: function() {
+     * DOM.extend(".mycalendar", [
+     *     "table>(tr>th*7)+(tr>td*7)*6"
+     * ], {
+     *     constructor: function(tpl) {
      *         // initialize extension
      *     },
-     *     method1: function() {
+     *     method: function() {
      *         // this method will be mixed into every instance
-     *     },
-     *     method2: function() {
-     *         // this method will be mixed into evety instance
      *     }
      * });
      */
@@ -49,33 +45,20 @@ define(["DOM", "Element"], function(DOM, DOMElement, makeError) {
         if (selector === "*") {
             // extending element prototype
             _.extend(DOMElement.prototype, mixins);
+        } else {
+            template = _.map(template || [], DOM.create);
+            // update internal element mixins
+            DOM.mock(selector, mixins);
 
-            return;
+            DOM.watch(selector, function(el) {
+                _.extend(el, mixins);
+
+                if (mixins.hasOwnProperty("constructor")) {
+                    mixins.constructor.apply(el, _.map(template, function(value) {
+                        return value.clone();
+                    }));
+                }
+            }, true);
         }
-
-        if (template) {
-            _.forOwn(template, function(value, key) {
-                template[key] = DOM.create(value);
-            });
-        }
-
-        // update internal element mixins
-        DOM.mock(selector, mixins);
-
-        DOM.watch(selector, function(el) {
-            var tpl = {};
-
-            if (template) {
-                _.forOwn(template, function(value, key) {
-                    tpl[key] = value.clone();
-                });
-            }
-
-            _.extend(el, mixins);
-
-            if (mixins.hasOwnProperty("constructor")) {
-                mixins.constructor.call(el, tpl);
-            }
-        }, true);
     };
 });

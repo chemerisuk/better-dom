@@ -77,16 +77,16 @@ describe("extend", function() {
     });
 
     it("should pass optional template into constructor", function() {
-        var template = {x1: "<i class='x1'></i>", x2: "b#x2"};
+        var template = ["<i class='x1'></i>", "b#x2"];
 
-        callback.andCallFake(function(tpl) {
-            expect(tpl.x1).toBeDefined();
-            expect(tpl.x1._node).toHaveClass("x1");
-            expect(tpl.x1._node).toHaveTag("i");
+        callback.andCallFake(function(x1, x2) {
+            expect(x1).toBeDefined();
+            expect(x1._node).toHaveClass("x1");
+            expect(x1._node).toHaveTag("i");
 
-            expect(tpl.x2).toBeDefined();
-            expect(tpl.x2._node).toHaveId("x2");
-            expect(tpl.x2._node).toHaveTag("b");
+            expect(x2).toBeDefined();
+            expect(x2._node).toHaveId("x2");
+            expect(x2._node).toHaveTag("b");
         });
 
         DOM.extend("#expr", template, callback);

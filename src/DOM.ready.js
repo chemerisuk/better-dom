@@ -4,18 +4,14 @@ define(["DOM"], function(DOM, createElement, makeError) {
     (function() {
         var readyCallbacks = [],
             scrollIntervalId,
-            safeExecution = function(callback) {
-                // wrap callback with setTimeout to protect from unexpected exceptions
-                setTimeout(callback, 0);
-            },
             pageLoaded = function() {
                 if (scrollIntervalId) {
                     clearInterval(scrollIntervalId);
                 }
 
                 if (readyCallbacks) {
-                    // trigger callbacks
-                    _.forEach(readyCallbacks, safeExecution);
+                    // safely trigger callbacks
+                    _.forEach(readyCallbacks, _.defer);
                     // cleanup
                     readyCallbacks = null;
                 }
@@ -71,7 +67,7 @@ define(["DOM"], function(DOM, createElement, makeError) {
             if (readyCallbacks) {
                 readyCallbacks.push(callback);
             } else {
-                safeExecution(callback);
+                _.defer(callback);
             }
         };
     })();

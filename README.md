@@ -25,10 +25,8 @@ Then append the following script on your page:
 <script src="components/better-dom/better-dom.js" data-htc="components/better-dom/better-dom.htc"></script>
 ```
 
-Unobtrusive
------------
-No dependencies on other scripts.
-
+Compatablity
+------------
 The library introduces it's own objects for working with DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
 
 Moreover you can use DOM extentions with any other AJAX-library because they are...
