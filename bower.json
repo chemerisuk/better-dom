@@ -2,12 +2,13 @@
     "name": "better-dom",
     "version": "0.9.7",
     "main": [
-        "src/better-dom.js",
-        "src/better-dom.htc"
+        "better-dom.js",
+        "better-dom.htc"
     ],
     "ignore": [
-        "*.*",
-        "test"
+        "test",
+        "extra",
+        "src"
     ],
     "dependencies": {
         "lodash": "1.2.1"
