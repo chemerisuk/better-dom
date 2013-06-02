@@ -26,8 +26,8 @@ define([], function() {
         handleObjectParam = function(name) {
             var cache = {};
 
-            return cache[name] || (cache[name] = function(key, index, obj) {
-                this[name](key, obj[key]);
+            return cache[name] || (cache[name] = function(value, key) {
+                this[name](key, value);
             });
         },
         getComputedStyle = window.getComputedStyle || function(el) {

@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement) {
+define(["Element"], function(DOMElement, slice) {
     "use strict";
 
     // DOMElementCollection
@@ -19,7 +19,7 @@ define(["Element"], function(DOMElement) {
             var process = DOMElement.prototype[name];
 
             return function() {
-                var args = _.slice(arguments);
+                var args = slice.call(arguments);
 
                 return this.each(function(elem) {
                     process.apply(elem, args);

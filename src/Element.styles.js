@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, makeError) {
+define(["Element"], function(DOMElement, makeError, slice) {
     "use strict";
 
     // STYLES MANIPULATION
@@ -13,7 +13,7 @@ define(["Element"], function(DOMElement, makeError) {
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = getComputedStyle(document.documentElement),
             // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
-            props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
+            props = computed.length ? slice.call(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
         _.forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
@@ -43,7 +43,7 @@ define(["Element"], function(DOMElement, makeError) {
             margin: ["marginTop", "marginRight", "marginBottom", "marginLeft"],
             "border-width": ["borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth"],
             "border-style": ["borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle"]
-        }, function(key, index, obj) {
+        }, function(value, key) {
             getStyleHooks[key] = function(style) {
                 var result = [],
                     hasEmptyStyleValue = function(prop, index) {
@@ -52,7 +52,7 @@ define(["Element"], function(DOMElement, makeError) {
                         return !result[index];
                     };
 
-                return _.some(obj[key], hasEmptyStyleValue) ? "" : result.join(" ");
+                return _.some(value, hasEmptyStyleValue) ? "" : result.join(" ");
             };
         });
 

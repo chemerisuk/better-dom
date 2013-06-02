@@ -12,7 +12,7 @@ Important to note that it covers only DOM so, for instance, there are no methods
 
 Installation
 ------------
-Use [bower](http://bower.io/) to download the library:
+Use [bower](http://bower.io/) to download the library with its dependencies:
 
     bower install better-dom
 
@@ -21,7 +21,8 @@ This will clone the latest version of the better-dom into the `components` direc
 Then append the following script on your page:
 
 ```html
-<script src="components/better-dom/src/better-dom.js" data-htc="components/better-dom/src/better-dom.htc"></script>
+<script src="components/lodash/lodash.js"></script>
+<script src="components/better-dom/better-dom.js" data-htc="components/better-dom/better-dom.htc"></script>
 ```
 
 Unobtrusive
@@ -42,28 +43,30 @@ DOM is usually the main bottleneck of javascript applications. Therefore perform
 
 Quick example: placeholder polyfill
 -----------------------------------
-It's pretty simple to write polyfills:
+It's pretty simple to write polyfills, because you do not need to worry about monitoring if an appropriate element found in DOM:
 
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
-    before: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
+    holder: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
 }, {
-    constructor: function() {
+    constructor: function(tpl) {
         var offset = this.offset(),
-            placeholder = this.prev();
+            holder = tpl.holder;
 
-        placeholder
+        holder
             .set(this.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
             .on("click", this.fire, ["focus"], this);
 
-        this.on("focus", placeholder.hide, [], placeholder);
-        this.on("blur", this._showPlaceholder, [placeholder]);
+        this.on("focus", holder.hide, [], holder);
+        this.on("blur", this._showPlaceholder, [holder]);
 
-        if (this.get() || this.isFocused()) placeholder.hide();
+        if (this.get() || this.isFocused()) holder.hide();
+
+        this.before(holder);
     },
-    _showPlaceholder: function(placeholder) {
-        if (!this.get()) placeholder.show();
+    _showPlaceholder: function(holder) {
+        if (!this.get()) holder.show();
     }
 });
 ```
@@ -76,14 +79,12 @@ This is a textarea extension which autoresizes textarea to contain all text:
 
 ```js
 DOM.extend("textarea.elastic", {
-    after: "div[style=position:relative]>pre[style=visibility:hidden;margin:0;border-style:solid]>span[style=display:inline-block;white-space:pre-wrap]"
+    wrapper: "div[style=position:relative]>pre[style=visibility:hidden;margin:0;border-style:solid]>span[style=display:inline-block;white-space:pre-wrap]"
 }, {
-    constructor: function() {
-        var wrapper = this.next(),
+    constructor: function(tpl) {
+        var wrapper = tpl.wrapper,
             holder = wrapper.child(0),
             span = holder.child(0);
-
-        wrapper.append(this);
 
         holder.setStyle({
             font: this.getStyle("font"),
@@ -95,6 +96,8 @@ DOM.extend("textarea.elastic", {
         this._syncWithHolder(span);
 
         this.parent("form").on("reset", this._syncWithHolder, [span, true], this);
+
+        wrapper.append(this.after(wrapper));
     },
     _syncWithHolder: function(span, defaultValue) {
         value = this.get(defaultValue ? "defaultValue" : "value");

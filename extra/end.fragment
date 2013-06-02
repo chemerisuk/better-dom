@@ -1,4 +1,4 @@
     // do not support AMD because need to access DOM from the htc file
     window.DOM = DOM;
     
-})(this, document);
+})(this, document, Array.prototype.slice);

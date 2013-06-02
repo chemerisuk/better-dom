@@ -9,6 +9,9 @@
         "*.*",
         "test"
     ],
+    "dependencies": {
+        "lodash": "1.2.1"
+    },
     "devDependencies": {
         "jquery": "1.9.1",
         "google-code-prettify": "1.0.0",

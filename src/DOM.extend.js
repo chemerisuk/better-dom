@@ -54,8 +54,8 @@ define(["DOM", "Element"], function(DOM, DOMElement, makeError) {
         }
 
         if (template) {
-            _.forOwn(template, function(key) {
-                template[key] = DOM.create(template[key]);
+            _.forOwn(template, function(value, key) {
+                template[key] = DOM.create(value);
             });
         }
 
@@ -66,8 +66,8 @@ define(["DOM", "Element"], function(DOM, DOMElement, makeError) {
             var tpl = {};
 
             if (template) {
-                _.forOwn(template, function(key) {
-                    tpl[key] = template[key].clone();
+                _.forOwn(template, function(value, key) {
+                    tpl[key] = value.clone();
                 });
             }
 

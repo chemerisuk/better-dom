@@ -1,4 +1,4 @@
-define(["Utils", "Helpers"], function() {
+define(["Helpers"], function() {
     "use strict";
 
     // DOMNode

@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, makeError) {
+define(["Element"], function(DOMElement, makeError, slice) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -8,21 +8,22 @@ define(["Element"], function(DOMElement, makeError) {
         var rclass = /[\n\t\r]/g;
 
         function makeClassesMethod(nativeStrategyName, strategy) {
-            var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach",
-                methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+            var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
             return function() {
-                var result = _[arrayMethod](_.slice(arguments), function(className) {
-                        if (typeof className !== "string") throw makeError(methodName);
+                var result = true;
 
-                        if (this._node.classList) {
-                            return this._node.classList[nativeStrategyName](className);
-                        } else {
-                            return strategy.call(this, className);
-                        }
-                    }, this);
+                _.forEach(slice.call(arguments), function(className) {
+                    if (typeof className !== "string") throw makeError(methodName);
 
-                return result === undefined ? this : result;
+                    if (this._node.classList) {
+                        result = this._node.classList[nativeStrategyName](className) && result;
+                    } else {
+                        result = strategy.call(this, className) && result;
+                    }
+                }, this);
+
+                return nativeStrategyName === "contains" ? result : this;
             };
         }
 

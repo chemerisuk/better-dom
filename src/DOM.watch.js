@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, supports) {
+define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
     "use strict";
 
     /**
@@ -48,7 +48,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, supports) {
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
                 computed = getComputedStyle(document.documentElement),
-                cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+                cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback, once) {
                 var animationName = _.uniqueId("DOM"),

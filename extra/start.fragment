@@ -6,5 +6,5 @@
  * @license MIT
  * @see <%= pkg.repository.url %>
  */
-(function(window, document, undefined) {
+(function(window, document, slice, undefined) {
     "use strict";
