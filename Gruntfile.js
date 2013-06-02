@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 
         watch: {
             karma: {
-                files: ["build/*.js", "test/spec/*.js"],
+                files: ["build/<%= pkg.name %>.js", "test/spec/*.js"],
                 tasks: ["karma:watch:run"]
             },
             build: {
@@ -17,7 +17,7 @@ module.exports = function(grunt) {
 
         jshint: {
             all: ["src/*.js", "test/spec/*.js", "Gruntfile.js"],
-            build: ["build/*.js"],
+            build: ["build/<%= pkg.name %>.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
@@ -113,14 +113,14 @@ module.exports = function(grunt) {
         copy: {
             dist: {
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["extra/*.htc"],
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["build/*.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["extra/<%= pkg.name %>.htc"],
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["build/<%= pkg.name %>.js"]
                 }
             },
             publish: {
                 files: {
-                    "<%= pkg.name %>.js": ["build/*.js"],
-                    "<%= pkg.name %>.htc": ["extra/*.htc"]
+                    "<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
+                    "<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
                 }
             }
         },
@@ -134,7 +134,7 @@ module.exports = function(grunt) {
                     report: "gzip"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["build/*.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["build/<%= pkg.name %>.js"]
                 }
             }
         },
@@ -183,7 +183,7 @@ module.exports = function(grunt) {
                         // replace empty define with correct declaration
                         text = text.replace("define(\"DOM\", function(){});\n", "");
                         // write file
-                        grunt.file.write("build/better-dom.js", grunt.config.process(text));
+                        grunt.file.write(grunt.config.process("build/<%= pkg.name %>.js"), grunt.config.process(text));
                     }
                 }
             }
