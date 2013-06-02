@@ -5,20 +5,7 @@ define([], function() {
     // -------
 
     // jshint unused:false
-    var supports = function(prop, tag) {
-            var el = typeof tag === "string" ? createElement(tag) : tag || document,
-                isSupported = prop in el;
-
-            if (!isSupported && !prop.indexOf("on")) {
-                // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
-                
-                el.setAttribute(prop, "return;");
-                isSupported = typeof el[prop] === "function";
-            }
-                
-            return isSupported;
-        },
-        makeError = function(method, type) {
+    var makeError = function(method, type) {
             type = type || "DOMElement";
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";

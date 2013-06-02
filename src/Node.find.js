@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, supports) {
+define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError) {
     "use strict";
 
     (function() {
@@ -11,7 +11,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, 
             rescape = /'|\\/g,
             tmpId = _.uniqueId("DOM");
 
-        if (!supports("getElementsByClassName")) {
+        if (!document.getElementsByClassName) {
             // exclude getElementsByClassName from pattern
             rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
         }

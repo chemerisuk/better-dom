@@ -1,10 +1,10 @@
-define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, supports) {
+define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError) {
     "use strict";
 
     (function() {
         var containsElement;
 
-        if (supports("contains", "a")) {
+        if (document.contains) {
             containsElement = function(parent, child) {
                 return parent.contains(child);
             };

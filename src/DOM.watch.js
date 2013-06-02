@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
+define(["DOM", "Element"], function(DOM, DOMElement, slice) {
     "use strict";
 
     /**
@@ -10,14 +10,14 @@ define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
      * @function
      */
     DOM.watch = (function() {
-        DOM._watchers = [];
+        var watchers = [];
 
-        if (supports("addBehavior", "a")) {
+        if (DOM.supports("addBehavior", "a")) {
             var scripts = document.scripts,
                 behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback, once) {
-                var hasWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
+                var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
                     isNotEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
                     cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
                     watcher = function(canceledCallbacks, el) {
@@ -31,17 +31,17 @@ define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
 
                 watcher.selector = selector;
 
-                this.on("htc:watch " + selector, ["detail", "target"], watcher);
+                DOM.on("htc:watch " + selector, ["detail", "target"], watcher);
 
-                if (_.some(this._watchers, hasWatcherWithTheSameSelector)) {
+                if (_.some(watchers, haveWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
                     // because the behaviour is already attached to selector
-                    this.findAll(selector).each(callback);
+                    DOM.findAll(selector).each(callback);
                 } else {
                     DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
                 }
 
-                this._watchers.push(watcher);
+                watchers.push(watcher);
             };
         } else {
             // use trick discovered by Daniel Buchner:
@@ -66,7 +66,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
                             callback(DOMElement(el));
                         }
                     },
-                    animationNames = _.reduce(this._watchers, function(res, watcher) {
+                    animationNames = _.reduce(watchers, function(res, watcher) {
                         if (watcher.selector === selector) res.push(watcher.animationName);
 
                         return res;
@@ -86,10 +86,10 @@ define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
                 );
 
                 _.forEach(startNames, function(name) {
-                    this._node.addEventListener(name, watcher, false);
-                }, this);
+                    document.addEventListener(name, watcher, false);
+                });
 
-                this._watchers.push(watcher);
+                watchers.push(watcher);
             };
         }
     })();

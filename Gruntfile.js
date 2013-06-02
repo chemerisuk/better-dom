@@ -158,7 +158,7 @@ module.exports = function(grunt) {
                     endFile: "extra/end.fragment"
                 },
                 include: [
-                    "Node.find", "Node.data", "Node.supports", "Node.contains", "Node.events",
+                    "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
                     "Element.offset", "Element.props", "Element.styles", "Element.toquerystring",
                     "Element.traversing", "Element.visibility", "Collection", "MockElement",

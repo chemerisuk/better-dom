@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, makeError, supports, handleObjectParam) {
+define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, makeError, handleObjectParam) {
     "use strict";
 
     (function() {
@@ -211,7 +211,7 @@ define(["Node"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, mak
         };
 
         // firefox doesn't support focusin/focusout events
-        if (supports("onfocusin", "input")) {
+        if (DOMNode.prototype.supports("onfocusin", "input")) {
             _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
@@ -221,13 +221,13 @@ define(["Node"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, mak
             };
         }
 
-        if (supports("oninvalid", "input")) {
+        if (DOMNode.prototype.supports("oninvalid", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };
         }
 
-        if (!supports("addEventListener")) {
+        if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
                 var propertyChangeEventHandler = function() {

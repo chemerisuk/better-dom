@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, makeError, parseFragment, supports, handleObjectParam) {
+define(["Node", "Element"], function(DOMNode, DOMElement, makeError, parseFragment, handleObjectParam) {
     "use strict";
 
     // GETTER / SETTER
@@ -31,7 +31,7 @@ define(["Element"], function(DOMElement, makeError, parseFragment, supports, han
             };
         }
 
-        if (!supports("hidden", "a")) {
+        if (!DOMNode.prototype.supports("hidden", "a")) {
             propHooks.hidden = {
                 set: function(el, value) {
                     if (typeof value !== "boolean") {

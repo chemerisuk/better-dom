@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, createElement, makeError, supports) {
+define(["DOM", "Element"], function(DOM, DOMElement, createElement, makeError) {
     "use strict";
 
     (function() {
@@ -39,7 +39,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement, makeError, s
             }
         };
 
-        if (!supports("hidden", "a")) {
+        if (!DOM.supports("hidden", "a")) {
             // corrects block display not defined in IE8/9
             DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
             // adds styling not present in IE6/7/8/9
