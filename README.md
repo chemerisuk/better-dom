@@ -127,7 +127,7 @@ Another example: dateinput polyfill
 -----------------------------------
 See the extension repository at https://github.com/chemerisuk/better-dateinput-polyfill.
 
-Specs example (using jasmine) is included.
+Specs examples (using jasmine) are included.
 
 Browser support
 ---------------
