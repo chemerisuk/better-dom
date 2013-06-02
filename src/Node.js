@@ -17,5 +17,12 @@ define(["Helpers"], function() {
         this._listeners = [];
     }
 
-    DOMNode.prototype = {};
+    DOMNode.prototype = {
+        toString: function() {
+            return "DOMNode";
+        },
+        makeError: function(method) {
+            return "Error: " + this + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>" + this + ".html#" + method + " to verify the function call";
+        }
+    };
 });

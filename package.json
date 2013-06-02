@@ -9,6 +9,7 @@
         "type": "git",
         "url": "https://github.com/chemerisuk/better-dom"
     },
+    "docs": "http://chemerisuk.github.io/better-dom/",
     "dependencies": {},
     "devDependencies": {
         "grunt": "0.4.1",

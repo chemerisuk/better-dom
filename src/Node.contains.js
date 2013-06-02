@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError) {
+define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
     "use strict";
 
     (function() {
@@ -35,7 +35,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError) 
                     result = result && element.contains(node, true);
                 });
             } else {
-                throw makeError("contains");
+                throw this.makeError("contains");
             }
 
             return result;

@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, makeError, handleObjectParam) {
+define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, handleObjectParam) {
     "use strict";
 
     (function() {
@@ -107,7 +107,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             } else if (eventType === "object") {
                 _.forOwn(type, handleObjectParam("on"), this);
             } else {
-                throw makeError("on");
+                throw this.makeError("on");
             }
 
             return this;
@@ -122,7 +122,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          */
         DOMNode.prototype.off = function(type, callback) {
             if (typeof type !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw makeError("off");
+                throw this.makeError("off");
             }
 
             _.forEach(this._listeners, function(handler, index, events) {
@@ -160,7 +160,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          */
         DOMNode.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {
-                throw makeError("fire");
+                throw this.makeError("fire");
             }
 
             var node = this._node,

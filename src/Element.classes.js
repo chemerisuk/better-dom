@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, makeError, slice) {
+define(["Element"], function(DOMElement, slice) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -14,7 +14,7 @@ define(["Element"], function(DOMElement, makeError, slice) {
                 var result = true;
 
                 _.forEach(slice.call(arguments), function(className) {
-                    if (typeof className !== "string") throw makeError(methodName);
+                    if (typeof className !== "string") throw this.makeError(methodName);
 
                     if (this._node.classList) {
                         result = this._node.classList[nativeStrategyName](className) && result;

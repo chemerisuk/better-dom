@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, makeError) {
+define(["DOM", "Element"], function(DOM, DOMElement) {
     "use strict";
 
     /**
@@ -39,7 +39,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, makeError) {
         }
 
         if (!mixins || typeof mixins !== "object" || (selector !== "*" && ~selector.indexOf("*"))) {
-            throw makeError("extend", "DOM");
+            throw this.makeError("extend");
         }
 
         if (selector === "*") {

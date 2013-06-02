@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, makeError, slice) {
+define(["Element"], function(DOMElement, slice) {
     "use strict";
 
     // STYLES MANIPULATION
@@ -85,7 +85,7 @@ define(["Element"], function(DOMElement, makeError, slice) {
                 hook, result;
 
             if (typeof name !== "string") {
-                throw makeError("getStyle");
+                throw this.makeError("getStyle");
             }
 
             hook = getStyleHooks[name];
@@ -124,7 +124,7 @@ define(["Element"], function(DOMElement, makeError, slice) {
                     return cssText + ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
                 }, "");
             } else {
-                throw makeError("setStyle");
+                throw this.makeError("setStyle");
             }
 
             this._node.style.cssText += cssText;

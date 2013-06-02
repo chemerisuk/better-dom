@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, createElement, makeError) {
+define(["DOM", "Element"], function(DOM, DOMElement, createElement) {
     "use strict";
 
     (function() {
@@ -25,7 +25,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement, makeError) {
             }
 
             if (typeof selector !== "string" || typeof styles !== "string") {
-                throw makeError("importStyles", "DOM");
+                throw this.makeError("importStyles");
             }
 
             if (styleSheet.cssRules) {

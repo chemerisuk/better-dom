@@ -22,4 +22,8 @@ define(["Node"], function(DOMNode, MockElement) {
     }
 
     DOMElement.prototype = new DOMNode();
+
+    DOMElement.prototype.toString = function() {
+        return "DOMElement";
+    };
 });

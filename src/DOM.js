@@ -8,4 +8,8 @@ define(["Node"], function(DOMNode) {
      */
     // jshint unused:false
     var DOM = new DOMNode(document);
+
+    DOM.toString = function() {
+        return "DOM";
+    };
 });

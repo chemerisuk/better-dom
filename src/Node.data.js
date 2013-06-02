@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, makeError, handleObjectParam) {
+define(["Node"], function(DOMNode, handleObjectParam) {
     "use strict";
     
     /**
@@ -15,7 +15,7 @@ define(["Node"], function(DOMNode, makeError, handleObjectParam) {
      */
     DOMNode.prototype.getData = function(key) {
         if (typeof key !== "string") {
-            throw makeError("getData");
+            throw this.makeError("getData");
         }
 
         var node = this._node,
@@ -47,7 +47,7 @@ define(["Node"], function(DOMNode, makeError, handleObjectParam) {
         } else if (keyType === "object") {
             _.forOwn(key, handleObjectParam("setData"), this);
         } else {
-            throw makeError("setData");
+            throw this.makeError("setData");
         }
 
         return this;

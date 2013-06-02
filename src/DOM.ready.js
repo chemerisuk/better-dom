@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM, createElement, makeError) {
+define(["DOM"], function(DOM, createElement) {
     "use strict";
 
     (function() {
@@ -61,7 +61,7 @@ define(["DOM"], function(DOM, createElement, makeError) {
          */
         DOM.ready = function(callback) {
             if (typeof callback !== "function") {
-                throw makeError("ready", "DOM");
+                throw this.makeError("ready");
             }
 
             if (readyCallbacks) {

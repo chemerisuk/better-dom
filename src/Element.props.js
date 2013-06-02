@@ -1,4 +1,4 @@
-define(["Node", "Element"], function(DOMNode, DOMElement, makeError, parseFragment, handleObjectParam) {
+define(["Node", "Element"], function(DOMNode, DOMElement, parseFragment, handleObjectParam) {
     "use strict";
 
     // GETTER / SETTER
@@ -6,7 +6,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, makeError, parseFragme
 
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function() { throw makeError("get"); };
+            throwIllegalAccess = function() { throw this.makeError("get"); };
         // protect access to some properties
         _.forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
@@ -35,7 +35,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, makeError, parseFragme
             propHooks.hidden = {
                 set: function(el, value) {
                     if (typeof value !== "boolean") {
-                        throw makeError("set");
+                        throw this.makeError("set");
                     }
 
                     el.hidden = value;
@@ -65,7 +65,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, makeError, parseFragme
             if (name === undefined) {
                 name = el.type && "value" in el ? "value" : "innerHTML";
             } else if (typeof name !== "string") {
-                throw makeError("get");
+                throw this.makeError("get");
             }
 
             if (hook) hook = hook.get;
@@ -115,7 +115,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, makeError, parseFragme
                         }
                     });
                 } else {
-                    throw makeError("set");
+                    throw this.makeError("set");
                 }
             }
 

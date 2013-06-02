@@ -5,12 +5,7 @@ define([], function() {
     // -------
 
     // jshint unused:false
-    var makeError = function(method, type) {
-            type = type || "DOMElement";
-
-            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
-        },
-        handleObjectParam = function(name) {
+    var handleObjectParam = function(name) {
             var cache = {};
 
             return cache[name] || (cache[name] = function(value, key) {

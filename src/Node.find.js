@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError) {
+define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
     "use strict";
 
     (function() {
@@ -31,7 +31,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError) 
          */
         DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
             if (typeof selector !== "string") {
-                throw makeError("find");
+                throw this.makeError("find");
             }
 
             var node = this._node,

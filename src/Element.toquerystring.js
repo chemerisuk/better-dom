@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, makeError) {
+define(["Element"], function(DOMElement) {
     "use strict";
 
     /**
@@ -47,7 +47,7 @@ define(["Element"], function(DOMElement, makeError) {
         } else if (el.form) {
             result = makePair(el.name, el.value);
         } else {
-            throw makeError("toQueryString");
+            throw this.makeError("toQueryString");
         }
 
         return result.replace(/%20/g, "+");

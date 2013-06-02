@@ -1,16 +1,16 @@
-define(["DOM", "Element"], function(DOM, DOMElement, createElement, parseFragment, makeError) {
+define(["DOM", "Element"], function(DOM, DOMElement, createElement, parseFragment) {
     "use strict";
 
-    /**
-     * Create a DOMElement instance
-     * @memberOf DOM
-     * @param  {String|Element} value native element or element tag name
-     * @return {DOMElement} element
-     */
-    DOM.create = (function(){
+    (function(){
         var rquick = /^[a-z]+$/;
 
-        return function(value) {
+        /**
+         * Create a DOMElement instance
+         * @memberOf DOM
+         * @param  {String|Element} value native element or element tag name
+         * @return {DOMElement} element
+         */
+        DOM.create = function(value) {
             if (typeof value === "string") {
                 if (value.match(rquick)) {
                     value = createElement(value);
@@ -34,7 +34,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement, parseFragmen
                     value = div;
                 }
             } else if (nodeType !== 1) {
-                throw makeError("create", "DOM");
+                this.error("create");
             }
 
             return DOMElement(value);
