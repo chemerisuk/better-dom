@@ -6,5 +6,6 @@ define(["Node"], function(DOMNode) {
      * @namespace DOM
      * @extends DOMNode
      */
+    // jshint unused:false
     var DOM = new DOMNode(document);
 });

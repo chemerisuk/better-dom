@@ -15,10 +15,10 @@
     "noempty": true,
     "trailing": true,
     "maxdepth": 4,
+    "unused": true,
     
     "globals": {
         "DOM": true,
-        "Element": true,
         "_": true,
         "define": true,
 

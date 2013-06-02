@@ -4,6 +4,7 @@ define([], function() {
     // HELPERS
     // -------
 
+    // jshint unused:false
     var supports = function(prop, tag) {
             var el = typeof tag === "string" ? createElement(tag) : tag || document,
                 isSupported = prop in el;

@@ -1,4 +1,4 @@
-define(["Utils", "Helpers"], function(createElement) {
+define(["Utils", "Helpers"], function() {
     "use strict";
 
     // DOMNode
