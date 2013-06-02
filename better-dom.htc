@@ -1,8 +1,0 @@
-<PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="handleEvent(window.DOM)" />
-    <script type="text/javascript">
-    function handleEvent(DOM) {
-        DOM.create(element).fire("htc:watch", []);
-    }
-    </script>
-</PUBLIC:COMPONENT>

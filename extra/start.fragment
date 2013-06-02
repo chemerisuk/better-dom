@@ -1,0 +1,10 @@
+/**
+ * @file <%= pkg.name %>
+ * @version <%= pkg.version %>
+ * @overview <%= pkg.description %>
+ * @copyright <%= pkg.author %> 2013
+ * @license MIT
+ * @see <%= pkg.repository.url %>
+ */
+(function(window, document, undefined) {
+    "use strict";

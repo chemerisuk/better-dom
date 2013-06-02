@@ -3,16 +3,6 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
-        banner: [
-            "/**",
-            " * @file <%= pkg.name %>",
-            " * @version <%= pkg.version %>",
-            " * @overview <%= pkg.description %>",
-            " * @copyright <%= pkg.author %> 2013",
-            " * @license MIT",
-            " * @see <%= pkg.repository.url %>",
-            " */\n"
-        ].join("\n"),
 
         watch: {
             karma: {
@@ -21,7 +11,7 @@ module.exports = function(grunt) {
             },
             build: {
                 files: ["src/*.js"],
-                tasks: ["requirejs:compile", "jshint:build"]
+                tasks: ["requirejs:compile"]
             }
         },
 
@@ -123,8 +113,14 @@ module.exports = function(grunt) {
         copy: {
             dist: {
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["*.htc"],
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["extra/*.htc"],
                     "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["build/*.js"]
+                }
+            },
+            publish: {
+                files: {
+                    "<%= pkg.name %>.js": ["build/*.js"],
+                    "<%= pkg.name %>.htc": ["extra/*.htc"]
                 }
             }
         },
@@ -138,19 +134,8 @@ module.exports = function(grunt) {
                     report: "gzip"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["src/*.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["build/*.js"]
                 }
-            }
-        },
-
-        concat: {
-            options: {
-                banner: "<%= banner %>",
-                stripBanners: true
-            },
-            publish: {
-                src: "src/<%= pkg.name %>.js",
-                dest: "src/<%= pkg.name %>.js"
             }
         },
 
@@ -163,44 +148,42 @@ module.exports = function(grunt) {
         },
 
         requirejs: {
+            options: {
+                useStrict: true,
+                baseUrl: "src",
+                name: "DOM",
+                create: true,
+                wrap: {
+                    startFile: "extra/start.fragment",
+                    endFile: "extra/end.fragment"
+                },
+                include: [
+                    "Node.find", "Node.data", "Node.supports", "Node.contains", "Node.events",
+                    "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
+                    "Element.offset", "Element.props", "Element.styles", "Element.toquerystring",
+                    "Element.traversing", "Element.visibility", "Collection", "MockElement",
+                    "DOM.importstyles", "DOM.create", "DOM.extend","DOM.parsetemplate",
+                    "DOM.ready", "DOM.watch", "DOM.mock", "SelectorMatcher", "EventHelper"
+                ],
+                onBuildWrite: function (id, path, contents) {
+                    if ((/define\(.*?\{/).test(contents)) {
+                        //Remove AMD ceremony for use without require.js or almond.js
+                        contents = contents.replace(/define\(.*?\{\s*"use strict";[\r\n]*/m, "");
+                        contents = contents.replace(/\}\);\s*$/, "");
+                    }
+
+                    return contents;
+                }
+            },
             compile: {
                 options: {
-                    useStrict: true,
-                    baseUrl: "src",
                     optimize: "none",
                     optimizeCss: "none",
-                    name: "DOM",
-                    create: true,
-                    wrap: {
-                        start: "<%= banner %>(function(window, document, undefined){\n    \"use strict\";\n",
-                        end: "})(this, document);"
-                    },
-                    include: [
-                        "Node.find", "Node.data", "Node.supports", "Node.contains", "Node.events",
-                        "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
-                        "Element.offset", "Element.props", "Element.styles", "Element.toquerystring",
-                        "Element.traversing", "Element.visibility", "DOM.importstyles", "DOM.create",
-                        "DOM.extend","DOM.parsetemplate", "DOM.ready", "DOM.watch", "DOM.mock",
-                        "Collection", "MockElement", "SelectorMatcher", "EventHelper"
-                    ],
-                    onBuildWrite: function (id, path, contents) {
-                        if ((/define\(.*?\{/).test(contents)) {
-                            //Remove AMD ceremony for use without require.js or almond.js
-                            contents = contents.replace(/define\(.*?\{\s*"use strict";[\r\n]*/m, "");
-
-                            contents = contents.replace(/\}\);\s*$/, "");
-                        }
-
-                        return contents;
-                    },
                     out: function(text) {
-                        grunt.file.write("build/better-dom.js", text.replace("define(\"DOM\", function(){});\n",
-                            "    if (typeof define === \"function\" && define.amd) {\n" +
-                            "        define(\"DOM\", function() { return DOM; });\n" +
-                            "    } else {\n" +
-                            "        window.DOM = DOM;\n" +
-                            "    }\n\n")
-                        );
+                        // replace empty define with correct declaration
+                        text = text.replace("define(\"DOM\", function(){});", "");
+                        // write file
+                        grunt.file.write("build/better-dom.js", grunt.config.process(text));
                     }
                 }
             }
@@ -215,14 +198,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-uglify");
     grunt.loadNpmTasks("grunt-contrib-copy");
     grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.loadNpmTasks("grunt-contrib-concat");
     grunt.loadNpmTasks("grunt-contrib-connect");
     grunt.loadNpmTasks("grunt-contrib-requirejs");
 
 
     grunt.registerTask("dev", [
         "requirejs:compile",
-        "jshint", // run jshint first
         "connect", // start web server
         "shell:openCoverage", // open coverage page
         "karma:watch", // start karma server
@@ -230,18 +211,20 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("test", [
+        "requirejs:compile",
         "jshint",
         "karma:unit"
     ]);
 
     grunt.registerTask("default", [
-        "clean",
         "requirejs:compile",
+        "clean",
         "copy:dist",
         "uglify:dist"
     ]);
 
     grunt.registerTask("travis", [
+        "requirejs:compile",
         "jshint",
         "karma:travis"
     ]);
@@ -269,7 +252,7 @@ module.exports = function(grunt) {
             "test",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
-            "concat:publish",
+            "copy:publish",
             "jsdoc",
             "shell:checkoutDocs",
             "bumpDocsBuild",
