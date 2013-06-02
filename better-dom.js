@@ -2074,15 +2074,9 @@
                 var el = DOMElement();
 
                 if (selector) {
-                    mixins = extensions[selector];
+                    _.extend(el, extensions[selector]);
 
-                    _.extend(el, mixins);
-
-                    if (mixins.hasOwnProperty("constructor")) {
-                        el.constructor = MockElement;
-
-                        mixins.constructor.call(el);
-                    }
+                    el.constructor = MockElement;
                 }
 
                 return el;
