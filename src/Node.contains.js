@@ -1,16 +1,6 @@
 define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, supports) {
     "use strict";
 
-    /**
-     * Check if element is inside of context
-     * @memberOf DOMNode.prototype
-     * @param  {DOMElement} element element to check
-     * @return {Boolean} true if success
-     * @function
-     * @example
-     * DOM.find("html").contains(DOM.find("body"));
-     * // returns true
-     */
     (function() {
         var containsElement;
 
@@ -24,10 +14,19 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, 
             };
         }
         
+        /**
+         * Check if element is inside of context
+         * @memberOf DOMNode.prototype
+         * @param  {DOMElement} element element to check
+         * @return {Boolean} true if success
+         * @example
+         * DOM.find("html").contains(DOM.find("body"));
+         * // returns true
+         */
         DOMNode.prototype.contains = function(element, /*INTERNAL*/reverse) {
             var node = this._node, result = true;
 
-            if (element instanceof Element) {
+            if (element.nodeType === 1) {
                 result = containsElement(reverse ? element : node, reverse ? node : element);
             } else if (element instanceof DOMElement) {
                 result = element.contains(node, true);

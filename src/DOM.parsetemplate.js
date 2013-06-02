@@ -1,15 +1,7 @@
 define(["DOM"], function(DOM) {
     "use strict";
 
-    /**
-     * Parse emmet-like template to HTML string
-     * @memberOf DOM
-     * @param  {String} template emmet-like expression
-     * @return {String} HTML string
-     * @function
-     * @see http://docs.emmet.io/cheat-sheet/
-     */
-    DOM.parseTemplate = (function() {
+    (function() {
         var operators = { // name / priority object
             "(": 0,
             ")": 1,
@@ -67,7 +59,14 @@ define(["DOM"], function(DOM) {
             }
         };
 
-        return function(template) {
+        /**
+         * Parse emmet-like template to HTML string
+         * @memberOf DOM
+         * @param  {String} template emmet-like expression
+         * @return {String} HTML string
+         * @see http://docs.emmet.io/cheat-sheet/
+         */
+        DOM.parseTemplate = function(template) {
             var stack = [],
                 output = [],
                 term = "";

@@ -1,7 +1,4 @@
-    if (typeof define === "function" && define.amd) {
-        define("DOM", function() { return DOM; });
-    } else {
-        window.DOM = DOM;
-    }
+    // do not support AMD because need to access DOM from the htc file
+    window.DOM = DOM;
     
 })(this, document);

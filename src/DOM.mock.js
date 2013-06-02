@@ -1,17 +1,16 @@
 define(["DOM", "Element", "MockElement"], function(DOM, DOMElement, MockElement, makeError) {
     "use strict";
 
-    /**
-     * Return an {@link DOMElement} mock specified for optional selector
-     * @memberOf DOM
-     * @param  {String} [selector] selector of mock
-     * @return {DOMElement} mock instance
-     * @function
-     */
-    DOM.mock = (function() {
+    (function() {
         var extensions = {};
 
-        return function(selector, mixins) {
+        /**
+         * Return an {@link DOMElement} mock specified for optional selector
+         * @memberOf DOM
+         * @param  {String} [selector] selector of mock
+         * @return {DOMElement} mock instance
+         */
+        DOM.mock = function(selector, mixins) {
             if (selector && typeof selector !== "string" || mixins && typeof mixins !== "object") {
                 throw makeError("mock", "DOM");
             }
@@ -36,5 +35,5 @@ define(["DOM", "Element", "MockElement"], function(DOM, DOMElement, MockElement,
 
             extensions[selector] = _.extend(extensions[selector] || {}, mixins);
         };
-    });
+    })();
 });

@@ -181,7 +181,7 @@ module.exports = function(grunt) {
                     optimizeCss: "none",
                     out: function(text) {
                         // replace empty define with correct declaration
-                        text = text.replace("define(\"DOM\", function(){});", "");
+                        text = text.replace("define(\"DOM\", function(){});\n", "");
                         // write file
                         grunt.file.write("build/better-dom.js", grunt.config.process(text));
                     }

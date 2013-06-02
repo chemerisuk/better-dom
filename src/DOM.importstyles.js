@@ -16,7 +16,6 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement, makeError, s
          * @memberOf DOM
          * @param {String|Object} selector css selector or object with selector/rules pairs
          * @param {String} styles css rules
-         * @function
          */
         DOM.importStyles = function(selector, styles) {
             if (typeof styles === "object") {

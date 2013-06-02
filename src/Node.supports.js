@@ -8,7 +8,6 @@ define(["Node"], function(DOMNode, supports) {
          * @memberOf DOMNode.prototype
          * @param {String} prop property to check
          * @param {String} [tag] name of element to test
-         * @function
          * @example
          * input.supports("placeholder");
          * // => true if an input supports placeholders

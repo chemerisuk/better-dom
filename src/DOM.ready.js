@@ -1,13 +1,7 @@
 define(["DOM"], function(DOM, createElement, makeError) {
     "use strict";
 
-    /**
-     * Execute callback when DOM will be ready
-     * @memberOf DOM
-     * @param {Function} callback event listener
-     * @function
-     */
-    DOM.ready = (function() {
+    (function() {
         var readyCallbacks = [],
             scrollIntervalId,
             safeExecution = function(callback) {
@@ -64,8 +58,12 @@ define(["DOM"], function(DOM, createElement, makeError) {
             pageLoaded();
         }
 
-        // return implementation
-        return function(callback) {
+        /**
+         * Execute callback when DOM will be ready
+         * @memberOf DOM
+         * @param {Function} callback event listener
+         */
+        DOM.ready = function(callback) {
             if (typeof callback !== "function") {
                 throw makeError("ready", "DOM");
             }

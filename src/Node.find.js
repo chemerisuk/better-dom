@@ -1,21 +1,7 @@
 define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, supports) {
     "use strict";
 
-    /**
-     * Finds element by selector
-     * @memberOf DOMNode.prototype
-     * @param  {String} selector css selector
-     * @return {DOMElement} element or null if nothing was found
-     * @function
-     * @example
-     * var domBody = DOM.find("body");
-     *
-     * domBody.find("#element");
-     * // returns DOMElement with id="element"
-     * domBody.find(".link");
-     * // returns first element with class="link"
-     */
-    DOMNode.prototype.find = function() {
+    (function() {
         // big part of code inspired by Sizzle:
         // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
@@ -30,7 +16,20 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, 
             rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
         }
         
-        return function(selector, /*INTERNAL*/multiple) {
+        /**
+         * Finds element by selector
+         * @memberOf DOMNode.prototype
+         * @param  {String} selector css selector
+         * @return {DOMElement} element or null if nothing was found
+         * @example
+         * var domBody = DOM.find("body");
+         *
+         * domBody.find("#element");
+         * // returns DOMElement with id="element"
+         * domBody.find(".link");
+         * // returns first element with class="link"
+         */
+        DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
             if (typeof selector !== "string") {
                 throw makeError("find");
             }
@@ -90,15 +89,15 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection, makeError, 
 
             return multiple ? new DOMElementCollection(elements) : DOMElement(elements);
         };
-    }();
 
-    /**
-     * Finds all elements by selector
-     * @memberOf DOMNode.prototype
-     * @param  {String} selector css selector
-     * @return {DOMElementCollection} elements collection
-     */
-    DOMNode.prototype.findAll = function(selector) {
-        return this.find(selector, true);
-    };
+        /**
+         * Finds all elements by selector
+         * @memberOf DOMNode.prototype
+         * @param  {String} selector css selector
+         * @return {DOMElementCollection} elements collection
+         */
+        DOMNode.prototype.findAll = function(selector) {
+            return this.find(selector, true);
+        };
+    })();
 });
