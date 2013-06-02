@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Collection.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: Collection.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>define(["Element"], function(DOMElement, slice) {
+    "use strict";
+
+    // DOMElementCollection
+    // --------------------
+
+    /**
+     * Prototype for collection of elements in better-dom
+     * @name DOMElementCollection
+     * @constructor
+     */
+    function DOMElementCollection(elements) {
+        this._nodes = _.map(elements || [], DOMElement);
+        this.length = this._nodes.length;
+    }
+
+    (function() {
+        function makeCollectionMethod(name) {
+            var process = DOMElement.prototype[name];
+
+            return function() {
+                var args = slice.call(arguments);
+
+                return this.each(function(elem) {
+                    process.apply(elem, args);
+                });
+            };
+        }
+
+        DOMElementCollection.prototype = {
+            /**
+             * Execute callback for each element in collection
+             * @memberOf DOMElementCollection.prototype
+             * @param  {Function} callback action to execute
+             * @return {DOMElementCollection} reference to this
+             */
+            each: function(callback) {
+                _.forEach(this._nodes, callback, this);
+
+                return this;
+            },
+
+            /**
+             * Shortcut to {@link DOMNode#on} method
+             * @memberOf DOMElementCollection.prototype
+             * @param  {String}   event    event type
+             * @param  {String}   [selector] css selector to filter
+             * @param  {Function} callback event handler
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#on
+             */
+            on: makeCollectionMethod("on"),
+
+            /**
+             * Shortcut to {@link DOMNode#off} method
+             * @memberOf DOMElementCollection.prototype
+             * @param  {String}   eventType event type
+             * @param  {Function} [callback]  event handler
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#off
+             */
+            off: makeCollectionMethod("off"),
+
+            /**
+             * Shortcut to {@link DOMNode#fire} method
+             * @memberOf DOMElementCollection.prototype
+             * @param  {String} eventType type of event
+             * @param  {Object} [detail] data to attach
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#fire
+             */
+            fire: makeCollectionMethod("fire"),
+
+            /**
+             * Shortcut to {@link DOMNode#setData} method
+             * @memberOf DOMElementCollection.prototype
+             * @param {String|Object} key data entry key | key/value pairs
+             * @param {Object} value data to store
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#setData
+             */
+            setData: makeCollectionMethod("setData"),
+
+            /**
+             * Shortcut to {@link DOMElement#set} method
+             * @memberOf DOMElementCollection.prototype
+             * @param {String} name  property/attribute name
+             * @param {String} value property/attribute value
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#set
+             */
+            set: makeCollectionMethod("set"),
+
+            /**
+             * Shortcut to {@link DOMElement#setStyle} method
+             * @memberOf DOMElementCollection.prototype
+             * @param {String} name  property name
+             * @param {String} value property value
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#setStyle
+             */
+            setStyle: makeCollectionMethod("setStyle"),
+
+            /**
+             * Shortcut to {@link DOMElement#addClass} method
+             * @memberOf DOMElementCollection
+             * @param {String} classNames space-separated class name(s)
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#addClass
+             */
+            addClass: makeCollectionMethod("addClass"),
+
+            /**
+             * Shortcut to {@link DOMElement#removeClass} method
+             * @memberOf DOMElementCollection.prototype
+             * @param {String} classNames space-separated class name(s)
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#removeClass
+             */
+            removeClass: makeCollectionMethod("removeClass"),
+
+            /**
+             * Shortcut to {@link DOMElement#toggleClass} method
+             * @memberOf DOMElementCollection.prototype
+             * @param {String} classNames space-separated class name(s)
+             * @return {DOMElementCollection} reference to this
+             * @function
+             * @see DOMElement#toggleClass
+             */
+            toggleClass: makeCollectionMethod("toggleClass")
+        };
+    })();
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 02 2013 16:50:43 GMT+0300 (FET)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

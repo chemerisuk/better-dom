@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: Element.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,41 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: Element.js</h1>
     
     
 
 
     
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>define(["Node"], function(DOMNode, MockElement) {
+    "use strict";
     
+    // DOMElement
+    // ----------
 
+    /**
+     * Prototype for elements in better-dom
+     * @name DOMElement
+     * @constructor
+     * @param element native element
+     * @extends DOMNode
+     */
+    function DOMElement(element) {
+        if (!(this instanceof DOMElement)) {
+            return element ? element.__dom__ || new DOMElement(element) : new MockElement();
+        }
 
+        DOMNode.call(this, element);
 
+        if (element) element.__dom__ = this;
+    }
 
-
+    DOMElement.prototype = new DOMNode();
+});</code></pre>
+        </article>
+    </section>
 
 
 

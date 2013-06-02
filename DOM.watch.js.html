@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: DOM.watch.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: DOM.watch.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
+    "use strict";
+
+    /**
+     * Execute callback when element with specified selector matches
+     * @memberOf DOM
+     * @param {String} selector css selector
+     * @param {Fuction} callback event handler
+     * @param {Boolean} [once] execute callback only at the first time
+     * @function
+     */
+    DOM.watch = (function() {
+        DOM._watchers = [];
+
+        if (supports("addBehavior", "a")) {
+            var scripts = document.scripts,
+                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+
+            return function(selector, callback, once) {
+                var hasWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
+                    isNotEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
+                    cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
+                    watcher = function(canceledCallbacks, el) {
+                        if (once) el.on("htc:watch", ["detail"], cancelCallback);
+
+                        // do not execute callback if it was previously excluded
+                        if (_.every(canceledCallbacks, isNotEqualToCallback)) {
+                            callback(el);
+                        }
+                    };
+
+                watcher.selector = selector;
+
+                this.on("htc:watch " + selector, ["detail", "target"], watcher);
+
+                if (_.some(this._watchers, hasWatcherWithTheSameSelector)) {
+                    // call the callback manually for each matched element
+                    // because the behaviour is already attached to selector
+                    this.findAll(selector).each(callback);
+                } else {
+                    DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
+                }
+
+                this._watchers.push(watcher);
+            };
+        } else {
+            // use trick discovered by Daniel Buchner:
+            // https://github.com/csuwldcat/SelectorListener
+            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+                computed = getComputedStyle(document.documentElement),
+                cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+
+            return function(selector, callback, once) {
+                var animationName = _.uniqueId("DOM"),
+                    cancelBubbling = function(e) {
+                        if (e.animationName === animationName) e.stopPropagation();
+                    },
+                    watcher = function(e) {
+                        var el = e.target;
+
+                        if (e.animationName === animationName) {
+                            // MUST cancelBubbling first otherwise may have
+                            // unexpected calls in firefox
+                            if (once) el.addEventListener(e.type, cancelBubbling, false);
+
+                            callback(DOMElement(el));
+                        }
+                    },
+                    animationNames = _.reduce(this._watchers, function(res, watcher) {
+                        if (watcher.selector === selector) res.push(watcher.animationName);
+
+                        return res;
+                    }, [animationName]);
+
+                watcher.selector = selector;
+                watcher.animationName = animationName;
+
+                DOM.importStyles(
+                    "@" + cssPrefix + "keyframes " + animationName,
+                    "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                );
+
+                DOM.importStyles(
+                    selector,
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
+                );
+
+                _.forEach(startNames, function(name) {
+                    this._node.addEventListener(name, watcher, false);
+                }, this);
+
+                this._watchers.push(watcher);
+            };
+        }
+    })();
+});</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 02 2013 16:50:43 GMT+0300 (FET)
+</footer>
+
+<script> prettyPrint(); </script>
+</body>
+</html>

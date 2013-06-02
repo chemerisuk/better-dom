@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: Element.matches.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,33 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: Element.matches.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>define(["Element"], function(DOMElement, SelectorMatcher, makeError) {
+    "use strict";
 
+    /**
+     * Check if the element matches selector
+     * @memberOf DOMElement.prototype
+     * @param  {String} selector css selector
+     * @return {DOMElement} reference to this
+     */
+    DOMElement.prototype.matches = function(selector) {
+        if (!selector || typeof selector !== "string") {
+            throw makeError("matches");
+        }
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+        return new SelectorMatcher(selector).test(this._node);
+    };
+});</code></pre>
+        </article>
+    </section>
 
 
 

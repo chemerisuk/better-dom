@@ -38,7 +38,7 @@
     
     
         
-            <div class="description">Global object to access DOM. Contains all methods of the <a href="DOMNode.html">DOMNode</a></div>
+            <div class="description">Global object to access DOM</div>
         
         
         
@@ -64,7 +64,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1595
+        <a href="DOM.js.html">DOM.js</a>, line 4
     </li></ul></dd>
     
     
@@ -80,6 +80,12 @@
     
     </div>
     
+    
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="DOMNode.html">DOMNode</a></li>
+        </ul>
     
     
     
@@ -96,14 +102,14 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="importStyles"><span class="type-signature">&lt;static> </span>importStyles<span class="type-signature"></span></h4>
+    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="type-signature"></span></h4>
     
     
 </dt>
 <dd>
     
     <div class="description">
-        Import css styles on page
+        Create a DOMElement instance
     </div>
     
     
@@ -130,111 +136,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1707
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="ready"><span class="type-signature">&lt;static> </span>ready<span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        Register callback on dom ready
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1630
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="watch"><span class="type-signature">&lt;static> </span>watch<span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        Execute callback when element with specified selector matches
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1746
+        <a href="DOM.create.js.html">DOM.create.js</a>, line 10
     </li></ul></dd>
     
     
@@ -258,144 +160,6 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="signature">(content)</span><span class="type-signature"> &rarr; {DOMElemen}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Create DOMElement instance
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>content</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Element</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">native element, element name or html string</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1607
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    element
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">DOMElemen</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
     <h4 class="name" id="extend"><span class="type-signature">&lt;static> </span>extend<span class="signature">(selector, <span class="optional">template</span>, mixins)</span><span class="type-signature"></span></h4>
     
     
@@ -404,8 +168,7 @@
     
     
     <div class="description">
-        Extend DOM with custom widget. Templates support limited edition of emmet-like
-syntax - see html section in http://docs.emmet.io/cheat-sheet/
+        Define a DOM extension
     </div>
     
 
@@ -560,7 +323,7 @@ syntax - see html section in http://docs.emmet.io/cheat-sheet/
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1837
+        <a href="DOM.extend.js.html">DOM.extend.js</a>, line 35
     </li></ul></dd>
     
     
@@ -605,6 +368,145 @@ DOM.extend(".mycalendar", {
     }
 });</code></pre>
 
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="importStyles"><span class="type-signature">&lt;static> </span>importStyles<span class="signature">(selector, styles)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Import global css styles on page
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>selector</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">css selector or object with selector/rules pairs</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>styles</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">css rules</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DOM.importstyles.js.html">DOM.importstyles.js</a>, line 20
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
     
 </dd>
 
@@ -712,7 +614,7 @@ DOM.extend(".mycalendar", {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="better-dom.js.html">better-dom.js</a>, line 1894
+        <a href="DOM.mock.js.html">DOM.mock.js</a>, line 13
     </li></ul></dd>
     
     
@@ -755,6 +657,448 @@ DOM.extend(".mycalendar", {
     
 </dd>
 
+        
+            
+<dt>
+    <h4 class="name" id="parseTemplate"><span class="type-signature">&lt;static> </span>parseTemplate<span class="signature">(template)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Parse emmet-like template to HTML string
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>template</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">emmet-like expression</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DOM.parsetemplate.js.html">DOM.parsetemplate.js</a>, line 69
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="http://docs.emmet.io/cheat-sheet/">http://docs.emmet.io/cheat-sheet/</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    HTML string
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="ready"><span class="type-signature">&lt;static> </span>ready<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Execute callback when DOM will be ready
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">event listener</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DOM.ready.js.html">DOM.ready.js</a>, line 66
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="watch"><span class="type-signature">&lt;static> </span>watch<span class="signature">(selector, callback, <span class="optional">once</span>)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Execute callback when element with specified selector matches
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>selector</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">css selector</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Fuction</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">event handler</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>once</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">execute callback only at the first time</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DOM.watch.js.html">DOM.watch.js</a>, line 12
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
         </dl>
     
     
@@ -777,7 +1121,7 @@ DOM.extend(".mycalendar", {
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 27 2013 03:32:37 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 02 2013 16:50:43 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

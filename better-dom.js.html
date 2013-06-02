@@ -43,7 +43,7 @@
         scripts = document.scripts,
         // helpers
         supports = function(prop, tag) {
-            var el = typeof tag === "string" ? document.createElement(tag) : tag || document,
+            var el = typeof tag === "string" ? _.createElement(tag) : tag || document,
                 isSupported = prop in el;
 
             if (!isSupported && !prop.indexOf("on")) {
@@ -78,6 +78,7 @@
      * Prototype for limited/protected elements in better-dom
      * @name DOMNode
      * @constructor
+     * @private
      * @param node native object
      */
     function DOMNode(node) {
@@ -97,6 +98,7 @@
          * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMElement} element or null if nothing was found
+         * @function
          * @example
          * var domBody = DOM.find("body");
          *
@@ -249,11 +251,12 @@
          * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
          * @return {Boolean} true if success
+         * @function
          * @example
          * DOM.find("html").contains(DOM.find("body"));
          * // returns true
          */
-        contains: function() {
+        contains: (function() {
             var containsElement;
 
             if (supports("contains", "a")) {
@@ -283,13 +286,14 @@
 
                 return result;
             };
-        }(),
+        })(),
 
         /**
          * Check element capability
          * @memberOf DOMNode.prototype
          * @param {String} prop property to check
          * @param {String} [tag] name of element to test
+         * @function
          * @example
          * input.supports("placeholder");
          * // => true if an input supports placeholders
@@ -298,7 +302,7 @@
          * DOM.supports("oninvalid", "input");
          * // => true if browser supports `invalid` event
          */
-        supports: function() {
+        supports: (function() {
             var cache = {};
 
             return function(prop, tag) {
@@ -306,7 +310,7 @@
 
                 return cache[key] || ( cache[key] = supports(prop, tag || this._node) );
             };
-        }()
+        })()
     };
 
     // EVENTS
@@ -544,7 +548,7 @@
 
         if (!document.addEventListener) {
             // input event fix via propertychange
-            document.attachEvent("onfocusin", function() {
+            document.attachEvent("onfocusin", (function() {
                 var propertyChangeEventHandler = function() {
                         var e = window.event;
 
@@ -571,7 +575,7 @@
                         (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
                     }
                 };
-            }());
+            })());
 
             // submit event bubbling fix
             document.attachEvent("onkeydown", function() {
@@ -585,7 +589,7 @@
                 }
             });
 
-            document.attachEvent("onclick", function() {
+            document.attachEvent("onclick", (function() {
                 var handleSubmit = function() {
                         var form = window.event.srcElement;
 
@@ -604,7 +608,7 @@
                         form.attachEvent("onsubmit", handleSubmit);
                     }
                 };
-            }());
+            })());
 
             eventHooks.submit = eventHooks.input = function(handler) {
                 handler.custom = true;
@@ -654,7 +658,17 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.clone = function() {
-        return new DOMElement(_.cloneNode(this._node));
+        var el;
+
+        if (document.addEventListener) {
+            el = this._node.cloneNode(true);
+        } else {
+            el = _.createElement("div");
+            el.innerHTML = this._node.outerHTML;
+            el = el.firstChild;
+        }
+
+        return new DOMElement(el);
     };
 
     /**
@@ -1012,32 +1026,33 @@
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use _.parseFragment because of HTML5 elements bug
-            // and NoScope bugs in IE
-            if (document.attachEvent) fasterMethodName = null;
+            // always use _.parseFragment because of HTML5 and NoScope bugs in IE
+            if (document.attachEvent) fasterMethodName = false;
 
-            return function(element, /*INTERNAL*/reverse) {
-                var el = reverse ? element : this._node,
+            return function(value, /*INTERNAL*/reverse) {
+                var el = reverse ? value : this._node,
                     relatedNode = el.parentNode;
 
-                if (reverse) element = this._node;
+                if (reverse) value = this._node;
 
-                if (typeof element === "string") {
-                    relatedNode = fasterMethodName ? null : _.parseFragment(element);
-                } else if (element && (element.nodeType === 1 || element.nodeType === 11)) {
-                    relatedNode = element;
-                } else if (element instanceof DOMElement) {
-                    element[methodName](el, true);
+                if (typeof value === "string") {
+                    if (value[0] !== "&lt;") value = DOM.parseTemplate(value);
+
+                    relatedNode = fasterMethodName ? null : _.parseFragment(value);
+                } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
+                    relatedNode = value;
+                } else if (value instanceof DOMElement) {
+                    value[methodName](el, true);
 
                     return this;
-                } else if (element !== undefined) {
+                } else if (value !== undefined) {
                     throw makeError(methodName);
                 }
 
                 if (relatedNode) {
                     strategy(el, relatedNode);
                 } else {
-                    el.insertAdjacentHTML(fasterMethodName, element);
+                    el.insertAdjacentHTML(fasterMethodName, value);
                 }
 
                 return this;
@@ -1118,18 +1133,16 @@
             var arrayMethod = nativeStrategyName === "contains" ? "every" : "forEach",
                 methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-            if (htmlEl.classList) {
-                strategy = function(className) {
-                    return this._node.classList[nativeStrategyName](className);
-                };
-            }
+            return function() {
+                var result = _[arrayMethod](_.slice(arguments), function(className) {
+                        if (typeof className !== "string") throw makeError(methodName);
 
-            return function(classNames) {
-                if (typeof classNames !== "string") {
-                    throw makeError(methodName);
-                }
-
-                var result = _[arrayMethod](classNames.split(" "), strategy, this);
+                        if (htmlEl.classList) {
+                            return this._node.classList[nativeStrategyName](className);
+                        } else {
+                            return strategy.call(this, className);
+                        }
+                    }, this);
 
                 return result === undefined ? this : result;
             };
@@ -1138,8 +1151,8 @@
         /**
          * Check if element contains class name(s)
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
-         * @return {Boolean} true if the element contains all classes
+         * @param  {...String} classNames class name(s)
+         * @return {Boolean}   true if the element contains all classes
          * @function
          */
         DOMElement.prototype.hasClass = makeClassesMethod("contains", function(className) {
@@ -1150,7 +1163,7 @@
         /**
          * Add class(es) to element
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
+         * @param  {...String}  classNames class name(s)
          * @return {DOMElement} reference to this
          * @function
          */
@@ -1163,19 +1176,21 @@
         /**
          * Remove class(es) from element
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
+         * @param  {...String}  classNames class name(s)
          * @return {DOMElement} reference to this
          * @function
          */
         DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
-            this._node.className = _.trim((" " + this._node.className + " ")
-                    .replace(rclass, " ").replace(" " + className + " ", " "));
+            className = (" " + this._node.className + " ")
+                    .replace(rclass, " ").replace(" " + className + " ", " ");
+
+            this._node.className = className.substr(className[0] === " " ? 1 : 0, className.length - 2);
         });
 
         /**
          * Toggle class(es) on element
          * @memberOf DOMElement.prototype
-         * @param  {String} classNames space-separated class name(s)
+         * @param  {...String}  classNames class name(s)
          * @return {DOMElement} reference to this
          * @function
          */
@@ -1481,6 +1496,498 @@
         MockElement.prototype[key] = function() { return new DOMElementCollection(); };
     });
 
+    // finish prototypes
+    
+    // fix constructor property
+    _.forEach([DOMNode, DOMElement, MockElement], function(ctr) {
+        ctr.prototype.constructor = ctr;
+    });
+
+    /**
+     * Global object to access DOM
+     * @namespace DOM
+     * @extends DOMNode
+     */
+    var DOM = new DOMNode(document), extensions = {};
+
+    /**
+     * Create a DOMElement instance
+     * @memberOf DOM
+     * @param  {String|Element} value native element or element tag name
+     * @return {DOMElement} element
+     */
+    DOM.create = function(value) {
+        if (typeof value === "string") {
+            value = _.createElement(value);
+        } else if (value.nodeType !== 1) {
+            throw makeError("create", "DOM");
+        }
+
+        return DOMElement(value);
+    };
+
+    /**
+     * Execute callback when DOM will be ready
+     * @memberOf DOM
+     * @param {Function} callback event listener
+     * @function
+     */
+    DOM.ready = (function() {
+        var readyCallbacks = [],
+            scrollIntervalId,
+            safeExecution = function(callback) {
+                // wrap callback with setTimeout to protect from unexpected exceptions
+                setTimeout(callback, 0);
+            },
+            pageLoaded = function() {
+                if (scrollIntervalId) {
+                    clearInterval(scrollIntervalId);
+                }
+
+                if (readyCallbacks) {
+                    // trigger callbacks
+                    _.forEach(readyCallbacks, safeExecution);
+                    // cleanup
+                    readyCallbacks = null;
+                }
+            };
+
+        // https://raw.github.com/requirejs/domReady/latest/domReady.js
+        
+        if (document.addEventListener) {
+            document.addEventListener("DOMContentLoaded", pageLoaded, false);
+            window.addEventListener("load", pageLoaded, false);
+        } else {
+            window.attachEvent("onload", pageLoaded);
+
+            (function() {
+                var testDiv = _.createElement("div"),
+                    isTop;
+                
+                try {
+                    isTop = window.frameElement === null;
+                } catch (e) {}
+
+                //DOMContentLoaded approximation that uses a doScroll, as found by
+                //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+                //but modified by other contributors, including jdalton
+                if (testDiv.doScroll && isTop && window.external) {
+                    scrollIntervalId = setInterval(function () {
+                        try {
+                            testDiv.doScroll();
+                            pageLoaded();
+                        } catch (e) {}
+                    }, 30);
+                }
+            })();
+        }
+
+        // Catch cases where ready is called after the browser event has already occurred.
+        // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
+        // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+        if ( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+            pageLoaded();
+        }
+
+        // return implementation
+        return function(callback) {
+            if (typeof callback !== "function") {
+                throw makeError("ready", "DOM");
+            }
+
+            if (readyCallbacks) {
+                readyCallbacks.push(callback);
+            } else {
+                safeExecution(callback);
+            }
+        };
+    })();
+
+    /**
+     * Import global css styles on page
+     * @memberOf DOM
+     * @param {String|Object} selector css selector or object with selector/rules pairs
+     * @param {String} styles css rules
+     * @function
+     */
+    DOM.importStyles = (function() {
+        var styleSheet = (function() {
+                var headEl = scripts[0].parentNode;
+
+                headEl.insertBefore(_.createElement("style"), headEl.firstChild);
+
+                return document.styleSheets[0];
+            })(),
+            obj = {_node: {style: {cssText: ""}}};
+
+        return function(selector, styles) {
+            if (typeof styles === "object") {
+                DOMElement.prototype.setStyle.call(obj, styles);
+
+                styles = obj._node.style.cssText.substr(1); // remove leading comma
+            }
+
+            if (typeof selector !== "string" || typeof styles !== "string") {
+                throw makeError("importStyles", "DOM");
+            }
+
+            if (styleSheet.cssRules) {
+                // w3c browser
+                styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
+            } else {
+                // ie doesn't support multiple selectors in addRule
+                _.forEach(selector.split(","), function(selector) {
+                    styleSheet.addRule(selector, styles);
+                });
+            }
+        };
+    })();
+
+    /**
+     * Execute callback when element with specified selector matches
+     * @memberOf DOM
+     * @param {String} selector css selector
+     * @param {Fuction} callback event handler
+     * @function
+     */
+    DOM.watch = (function() {
+        DOM._watchers = {};
+
+        if (htmlEl.addBehavior) {
+            var behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+
+            return function(selector, callback) {
+                var entry = DOM._watchers[selector];
+
+                if (entry) {
+                    entry.push(callback);
+                    // need to call the callback manually for each element
+                    // because behaviour is already attached to the DOM
+                    DOM.findAll(selector).each(callback);
+                } else {
+                    DOM._watchers[selector] = [callback];
+                    // append style rule at the last step
+                    DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
+                }
+            };
+        } else {
+            // use trick discovered by Daniel Buchner:
+            // https://github.com/csuwldcat/SelectorListener
+            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+                computed = getComputedStyle(htmlEl),
+                cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+
+            return function(selector, callback) {
+                var animationName = "DOM" + new Date().getTime(),
+                    allAnimationNames = DOM._watchers[selector] || animationName;
+
+                DOM.importStyles(
+                    "@" + cssPrefix + "keyframes " + animationName,
+                    "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                );
+
+                // use comma separated animation names in case of multiple
+                if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
+
+                DOM.importStyles(
+                    selector,
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
+                );
+
+                _.forEach(startNames, function(name) {
+                    document.addEventListener(name, function(e) {
+                        var el = e.target;
+
+                        if (e.animationName === animationName) {
+                            callback(DOMElement(el));
+                        }
+                    }, false);
+                });
+
+                DOM._watchers[selector] = allAnimationNames;
+            };
+        }
+    })();
+
+    /**
+     * Define a DOM extension
+     * @memberOf DOM
+     * @param  {String} selector extension css selector
+     * @param  {{after: String, before: String, append: String, prepend: String}} [template] extension templates
+     * @param  {Object} mixins extension mixins
+     * @example
+     * // simple example
+     * DOM.extend(".myplugin", {
+     *     append: "&#60;span&#62;myplugin text&#60;/span&#62;"
+     * }, {
+     *     constructor: function() {
+     *         // initialize extension
+     *     }
+     * });
+     *
+     * // emmet-like syntax example
+     * DOM.extend(".mycalendar", {
+     *     after: "table>(tr>th*7)+(tr>td*7)*6"
+     * }, {
+     *     constructor: function() {
+     *         // initialize extension
+     *     },
+     *     method1: function() {
+     *         // this method will be mixed into every instance
+     *     },
+     *     method2: function() {
+     *         // this method will be mixed into evety instance
+     *     }
+     * });
+     */
+    DOM.extend = function(selector, template, mixins) {
+        if (mixins === undefined) {
+            mixins = template;
+            template = undefined;
+        }
+
+        if (typeof mixins === "function") {
+            mixins = {constructor: mixins};
+        }
+
+        if (!mixins || typeof mixins !== "object") {
+            throw makeError("extend", "DOM");
+        }
+
+        if (template) {
+            _.forOwn(template, function(key) {
+                var tpl = template[key];
+
+                if (tpl[0] !== "&lt;") {
+                    tpl = DOM.parseTemplate(tpl);
+                }
+
+                // IE8 doesn't support HTML5 element so it fails
+                // to clone fragments that contan new tags
+                template[key] = document.addEventListener ? _.parseFragment(tpl) : tpl;
+            });
+        }
+
+        extensions[selector] = mixins;
+
+        DOM.watch(selector, function(el) {
+            if (el._extends[selector]) return;
+
+            if (template) {
+                _.forOwn(template, function(key) {
+                    if (key !== "constructor") {
+                        var tpl = template[key];
+
+                        el[key](document.addEventListener ? tpl.cloneNode(true) : tpl);
+                    }
+                });
+            }
+
+            _.mixin(el, mixins);
+
+            if (mixins.hasOwnProperty("constructor")) {
+                mixins.constructor.call(el);
+            }
+
+            el._extends[selector] = true;
+        });
+    };
+
+    /**
+     * Parse Emmet-like template to HTML string
+     * @memberOf DOM
+     * @param  {String} template Emmet-like expression
+     * @return {String} HTML string
+     * @function
+     * @see http://docs.emmet.io/cheat-sheet/
+     */
+    DOM.parseTemplate = (function() {
+        var operators = { // name / priority object
+            "(": 0,
+            ")": 1,
+            ">": 2,
+            "+": 2,
+            "*": 3,
+            "]": 3,
+            "[": 4,
+            ".": 5,
+            "#": 6
+        },
+        rindex = /\$/g,
+        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
+        normalizeAttrs = function(term, str) {
+            var index = str.indexOf("="),
+                name = ~index ? str.substr(0, index) : str,
+                value = ~index ? str.substr(index + 1) : "";
+
+            if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
+
+            return term + " " + name + "=" + value;
+        },
+        toHtmlString = function(obj) {
+            return _.isArray(obj) ? obj.join("") : obj.toString();
+        },
+        appendToAll = function(node) {
+            node.insertTerm(this, true);
+        };
+
+        // helper class
+        function HtmlBuilder(term, noparse) {
+            this.str = noparse ? term : "&lt;" + term + ">&lt;/" + term + ">";
+        }
+
+        HtmlBuilder.prototype = {
+            insertTerm: function(term, toend) {
+                var index = toend ? this.str.lastIndexOf("&lt;") : this.str.indexOf(">");
+
+                this.str = this.str.substr(0, index) + term + this.str.substr(index);
+            },
+            addTerm: function(term) {
+                this.str += term;
+            },
+            toString: function() {
+                return this.str;
+            }
+        };
+
+        return function(template) {
+            var stack = [],
+                output = [],
+                term = "";
+
+            // parse exrpression into RPN
+        
+            _.forEach(template, function(str) {
+                var top = stack[0], priority;
+
+                if (str in operators && (top !== "[" || str === "]")) {
+                    if (top === "." && str === ".") {
+                        term += " "; // concat .c1.c2 into single space separated class string
+
+                        return;
+                    }
+
+                    if (term) {
+                        output.push(term);
+                        term = "";
+                    }
+
+                    if (str !== "(") {
+                        priority = operators[str];
+
+                        while (operators[stack[0]] > priority) {
+                            output.push(stack.shift());
+                        }
+                    }
+
+                    if (str === ")") {
+                        stack.shift(); // remove "(" symbol from stack
+                    } else if (str !== "]") { // don't need to have "]" in stack
+                        stack.unshift(str);
+                    }
+                } else {
+                    term += str;
+                }
+            });
+
+            if (term) output.push(term);
+
+            output.push.apply(output, stack);
+
+            stack = [];
+
+            // transform RPN into html nodes
+
+            _.forEach(output, function(str) {
+                var term, node;
+
+                if (str in operators) {
+                    term = stack.shift();
+                    node = stack.shift() || "div";
+
+                    if (typeof node === "string") node = new HtmlBuilder(node);
+
+                    switch(str) {
+                    case ".":
+                        node.insertTerm(" class=\"" + term + "\"");
+                        break;
+
+                    case "#":
+                        node.insertTerm(" id=\"" + term + "\"");
+                        break;
+
+                    case "[":
+                        node.insertTerm(_.reduce(term.match(rattr), normalizeAttrs, ""));
+                        break;
+                        
+                    case "+":
+                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
+
+                        _.isArray(node) ? node.push(term) : node.addTerm(term);
+                        break;
+
+                    case ">":
+                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
+
+                        _.isArray(node) ? _.forEach(node, appendToAll, term) : node.insertTerm(term, true);
+                        break;
+
+                    case "*":
+                        str = toHtmlString(node);
+                        node = [];
+
+                        _.times(parseInt(term, 10), function(i) {
+                            node.push(new HtmlBuilder(str.replace(rindex, i + 1), true));
+                        });
+                        break;
+                    }
+
+                    str = node;
+                }
+
+                stack.unshift(str);
+            });
+
+            return toHtmlString(stack[0]);
+        };
+    })();
+
+    /**
+     * Return an {@link DOMElement} mock specified for optional selector
+     * @memberOf DOM
+     * @param  {String} [selector] selector of mock
+     * @return {DOMElement} mock instance
+     */
+    DOM.mock = function(selector) {
+        var el = DOMElement(), mixins;
+
+        if (selector) {
+            mixins = extensions[selector];
+
+            _.mixin(el, mixins);
+
+            if (mixins.hasOwnProperty("constructor")) {
+                el.constructor = MockElement;
+
+                mixins.constructor.call(el);
+            }
+        }
+
+        return el;
+    };
+
+    if (!supports("hidden", "a")) {
+        // corrects block display not defined in IE8/9
+        DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
+        // adds styling not present in IE6/7/8/9
+        DOM.importStyles("mark", "background:#FF0;color:#000");
+        // hides non-rendered elements
+        DOM.importStyles("template,[hidden]", "display:none");
+    }
+
+    // Helpers
+    // -------
+
     /**
      * Helper for css selectors
      * @private
@@ -1538,9 +2045,6 @@
 
         return ctor;
     })();
-
-    // EventHelper
-    // -----------
     
     /**
      * Helper for events
@@ -1612,341 +2116,7 @@
         }
     })();
 
-    // finish prototypes
-    
-    // fix constructor property
-    _.forEach([DOMNode, DOMElement, MockElement], function(ctr) {
-        ctr.prototype.constructor = ctr;
-    });
-
-    /**
-     * Global object to access DOM. Contains all methods of the {@link DOMNode}
-     * @namespace DOM
-     */
-    var DOM = new DOMNode(document), extensions = {};
-
-    /**
-     * Create DOMElement instance
-     * @memberOf DOM
-     * @param  {String|Element} content native element, element name or html string
-     * @return {DOMElemen} element
-     */
-    DOM.create = function(content) {
-        var elem = content;
-
-        if (typeof content === "string") {
-            if (content[0] === "&lt;") {
-                elem = _.parseFragment(content).firstChild;
-
-                while (elem.nodeType !== 1) elem = elem.nextSibling;
-            } else {
-                elem = _.createElement(content);
-            }
-        } else if (!(content instanceof Element)) {
-            throw makeError("create", "DOM");
-        }
-
-        return DOMElement(elem);
-    };
-
-    /**
-     * Register callback on dom ready
-     * @memberOf DOM
-     * @param {Function} callback event handler
-     */
-    DOM.ready = function() {
-        var readyCallbacks = [],
-            scrollIntervalId,
-            safeExecution = function(callback) {
-                // wrap callback with setTimeout to protect from unexpected exceptions
-                setTimeout(callback, 0);
-            },
-            pageLoaded = function() {
-                if (scrollIntervalId) {
-                    clearInterval(scrollIntervalId);
-                }
-
-                if (readyCallbacks) {
-                    // trigger callbacks
-                    _.forEach(readyCallbacks, safeExecution);
-                    // cleanup
-                    readyCallbacks = null;
-                }
-            };
-
-        // https://raw.github.com/requirejs/domReady/latest/domReady.js
-        
-        if (document.addEventListener) {
-            document.addEventListener("DOMContentLoaded", pageLoaded, false);
-            window.addEventListener("load", pageLoaded, false);
-        } else {
-            window.attachEvent("onload", pageLoaded);
-
-            (function() {
-                var testDiv = document.createElement("div"),
-                    isTop;
-                
-                try {
-                    isTop = window.frameElement === null;
-                } catch (e) {}
-
-                //DOMContentLoaded approximation that uses a doScroll, as found by
-                //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-                //but modified by other contributors, including jdalton
-                if (testDiv.doScroll && isTop && window.external) {
-                    scrollIntervalId = setInterval(function () {
-                        try {
-                            testDiv.doScroll();
-                            pageLoaded();
-                        } catch (e) {}
-                    }, 30);
-                }
-            })();
-        }
-
-        // Catch cases where ready is called after the browser event has already occurred.
-        // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
-        // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if ( document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
-            pageLoaded();
-        }
-
-        // return implementation
-        return function(callback) {
-            if (typeof callback !== "function") {
-                throw makeError("ready", "DOM");
-            }
-
-            if (readyCallbacks) {
-                readyCallbacks.push(callback);
-            } else {
-                safeExecution(callback);
-            }
-        };
-    }();
-
-    /**
-     * Import css styles on page
-     * @memberOf DOM
-     * @param {String|Object} selector css selector or object with selector/rules pairs
-     * @param {String} styles css rules
-     */
-    DOM.importStyles = function() {
-        var styleSheet = (function() {
-                var headEl = scripts[0].parentNode;
-
-                headEl.insertBefore(_.createElement("style"), headEl.firstChild);
-
-                return document.styleSheets[0];
-            })(),
-            obj = {_node: {style: {cssText: ""}}};
-
-        return function(selector, styles) {
-            if (typeof styles === "object") {
-                DOMElement.prototype.setStyle.call(obj, styles);
-
-                styles = obj._node.style.cssText.substr(1); // remove leading comma
-            }
-
-            if (typeof selector !== "string" || typeof styles !== "string") {
-                throw makeError("importStyles", "DOM");
-            }
-
-            if (styleSheet.cssRules) {
-                // w3c browser
-                styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
-            } else {
-                // ie doesn't support multiple selectors in addRule
-                _.forEach(selector.split(","), function(selector) {
-                    styleSheet.addRule(selector, styles);
-                });
-            }
-        };
-    }();
-
-    /**
-     * Execute callback when element with specified selector matches
-     * @memberOf DOM
-     * @param {String} selector css selector
-     * @param {Fuction} callback event handler
-     */
-    DOM.watch = function() {
-        DOM._watchers = {};
-
-        if (htmlEl.addBehavior) {
-            var behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
-
-            return function(selector, callback) {
-                var entry = DOM._watchers[selector];
-
-                if (entry) {
-                    entry.push(callback);
-                    // need to call the callback manually for each element
-                    // because behaviour is already attached to the DOM
-                    DOM.findAll(selector).each(callback);
-                } else {
-                    DOM._watchers[selector] = [callback];
-                    // append style rule at the last step
-                    DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
-                }
-            };
-        } else {
-            // use trick discovered by Daniel Buchner:
-            // https://github.com/csuwldcat/SelectorListener
-            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = getComputedStyle(htmlEl),
-                cssPrefix = window.CSSKeyframesRule ? "" : (_.slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
-
-            return function(selector, callback) {
-                var animationName = "DOM" + new Date().getTime(),
-                    allAnimationNames = DOM._watchers[selector] || animationName;
-
-                DOM.importStyles(
-                    "@" + cssPrefix + "keyframes " + animationName,
-                    "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
-                );
-
-                // use comma separated animation names in case of multiple
-                if (allAnimationNames !== animationName) allAnimationNames += "," + animationName;
-
-                DOM.importStyles(
-                    selector,
-                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + allAnimationNames + " !important"
-                );
-
-                _.forEach(startNames, function(name) {
-                    document.addEventListener(name, function(e) {
-                        var el = e.target;
-
-                        if (e.animationName === animationName) {
-                            callback(DOMElement(el));
-                        }
-                    }, false);
-                });
-
-                DOM._watchers[selector] = allAnimationNames;
-            };
-        }
-    }();
-
-    /**
-     * Extend DOM with custom widget. Templates support limited edition of emmet-like
-     * syntax - see html section in http://docs.emmet.io/cheat-sheet/
-     * @memberOf DOM
-     * @param  {String} selector extension css selector
-     * @param  {{after: String, before: String, append: String, prepend: String}} [template] extension templates
-     * @param  {Object} mixins extension mixins
-     * @example
-     * // simple example
-     * DOM.extend(".myplugin", {
-     *     append: "&#60;span&#62;myplugin text&#60;/span&#62;"
-     * }, {
-     *     constructor: function() {
-     *         // initialize extension
-     *     }
-     * });
-     *
-     * // emmet-like syntax example
-     * DOM.extend(".mycalendar", {
-     *     after: "table>(tr>th*7)+(tr>td*7)*6"
-     * }, {
-     *     constructor: function() {
-     *         // initialize extension
-     *     },
-     *     method1: function() {
-     *         // this method will be mixed into every instance
-     *     },
-     *     method2: function() {
-     *         // this method will be mixed into evety instance
-     *     }
-     * });
-     */
-    DOM.extend = function(selector, template, mixins) {
-        if (mixins === undefined) {
-            mixins = template;
-            template = undefined;
-        }
-
-        if (typeof mixins === "function") {
-            mixins = {constructor: mixins};
-        }
-
-        if (!mixins || typeof mixins !== "object") {
-            throw makeError("extend", "DOM");
-        }
-
-        if (template) {
-            _.forOwn(template, function(key) {
-                var tpl = template[key];
-
-                if (tpl[0] !== "&lt;") {
-                    tpl = _.parseTemplate(tpl);
-                } else {
-                    tpl = _.parseFragment(tpl);
-                }
-
-                template[key] = tpl;
-            });
-        }
-
-        extensions[selector] = mixins;
-
-        DOM.watch(selector, function(el) {
-            if (el._extends[selector]) return;
-
-            if (template) {
-                _.forOwn(template, function(key) {
-                    if (key !== "constructor") {
-                        el[key](_.cloneNode(template[key]));
-                    }
-                });
-            }
-
-            _.mixin(el, mixins);
-
-            if (mixins.hasOwnProperty("constructor")) {
-                mixins.constructor.call(el);
-            }
-
-            el._extends[selector] = true;
-        });
-    };
-
-    /**
-     * Return an {@link DOMElement} mock specified for optional selector
-     * @memberOf DOM
-     * @param  {String} [selector] selector of mock
-     * @return {DOMElement} mock instance
-     */
-    DOM.mock = function(selector) {
-        var el = DOMElement(), mixins;
-
-        if (selector) {
-            mixins = extensions[selector];
-
-            _.mixin(el, mixins);
-
-            if (mixins.hasOwnProperty("constructor")) {
-                el.constructor = MockElement;
-
-                mixins.constructor.call(el);
-            }
-        }
-
-        return el;
-    };
-
-    if (!supports("hidden", "a")) {
-        // corrects block display not defined in IE8/9
-        DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
-        // adds styling not present in IE6/7/8/9
-        DOM.importStyles("mark", "background:#FF0;color:#000");
-        // hides non-rendered elements
-        DOM.importStyles("template,[hidden]", "display:none");
-    }
-
-    // REGISTER GLOBALS
-    
+    // register global variable
     window.DOM = DOM;
 
 })(window, document, (function(undefined) {
@@ -2063,14 +2233,11 @@
             }
         },
         parser = document.createElement("body"),
-        createElement, cloneNode, createFragment;
+        createElement, createFragment;
 
     if (document.addEventListener) {
         createElement = function(tagName) {
             return document.createElement(tagName);
-        };
-        cloneNode = function(node) {
-            return node.cloneNode(true);
         };
         createFragment = function() {
             return document.createDocumentFragment();
@@ -2115,58 +2282,14 @@
                     }) +
                 ");return n}"
             )(frag);
-
-            // IE&lt;=8 does not properly clone detached, unknown element nodes
-            cloneNode = function(node) {
-                if (node.nodeType === 1) {
-                    parser.innerHTML = node.outerHTML;
-                    return parser.firstChild;
-                } else if (node.nodeType === 11) {
-                    var result = "", el;
-
-                    for (el = node.firstChild; el; el = el.nextSibling) {
-                        result += el.outerHTML;
-                    }
-
-                    return _.parseFragment(result);
-                }
-
-                return node.cloneNode(true);
-            };
         })();
     }
 
     return _.mixin(_, {
 
-        // String utilites
-
-        trim: function() {
-            if (String.prototype.trim) {
-                return function(str) {
-                    return str.trim();
-                };
-            } else {
-                var rwsleft = /^\s\s*/,
-                    rwsright = /\s\s*$/;
-
-                return function(str) {
-                    return str.replace(rwsleft, "").replace(rwsright, "");
-                };
-            }
-        }(),
-
-        unquote: function() {
-            var rquotes = /^["']|["']$/g;
-
-            return function(str) {
-                return str ? str.replace(rquotes, "") : "";
-            };
-        }(),
-
         // DOM utilites
 
         createElement: createElement,
-        cloneNode: cloneNode,
         parseFragment: function(html) {
             var fragment = createFragment();
 
@@ -2179,156 +2302,7 @@
             }
 
             return fragment;
-        },
-        parseTemplate: (function() {
-            var operators = { // name / priority object
-                "(": 0,
-                ")": 1,
-                ">": 2,
-                "+": 2,
-                "*": 3,
-                "]": 3,
-                "[": 4,
-                ".": 5,
-                "#": 6
-            },
-            rindex = /\$/g,
-            rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
-            prepareTerm = function(term, flag) {
-                if (_.isArray(term)) {
-                    if (!flag) term = term.join("");
-                } else if (term[0] !== "&lt;") {
-                    term = "&lt;" + term + ">&lt;/" + term + ">";
-                }
-
-                return term;
-            },
-            appendTerm = function(node) {
-                var index = node.lastIndexOf("&lt;");
-
-                return node.substr(0, index) + this + node.substr(index);
-            },
-            prependTerm = function(node) {
-                var index = node.indexOf(">");
-
-                return node.substr(0, index) + this + node.substr(index);
-            },
-            normalizeAttrs = function(term, str) {
-                return term + " " + (~str.indexOf("=") ? str : str + "=\'\'");
-            };
-
-            return function(expr) {
-                // use emmet-like syntax to describe html templates:
-                // http://docs.emmet.io/cheat-sheet/
-
-                var stack = [],
-                    output = [],
-                    term = "";
-
-                // parse exrpression into RPN
-            
-                _.forEach(expr, function(str) {
-                    var top = stack[0], priority;
-
-                    if (str in operators && (top !== "[" || str === "]")) {
-                        if (top === "." && str === ".") {
-                            term += " "; // concat .c1.c2 into single space separated class string
-
-                            return;
-                        }
-
-                        if (term) {
-                            output.push(term);
-                            term = "";
-                        }
-
-                        if (str !== "(") {
-                            priority = operators[str];
-
-                            while (operators[stack[0]] > priority) {
-                                output.push(stack.shift());
-                            }
-                        }
-
-                        if (str === ")") {
-                            stack.shift(); // remove "(" symbol from stack
-                        } else if (str !== "]") { // don't need to have "]" in stack
-                            stack.unshift(str);
-                        }
-                    } else {
-                        term += str;
-                    }
-                });
-
-                if (term) stack.unshift(term);
-
-                output.push.apply(output, stack);
-
-                stack = [];
-
-                // transform RPN into html nodes
-
-                _.forEach(output, function(str) {
-                    var term, node;
-
-                    if (str in operators) {
-                        term = stack.shift();
-                        node = stack.shift() || "div";
-
-                        node = prepareTerm(node, true);
-
-                        switch(str) {
-                        case ".":
-                            node = prependTerm.call(" class='" + term + "'", node);
-                            break;
-
-                        case "#":
-                            node = prependTerm.call(" id='" + term + "'", node);
-                            break;
-
-                        case "[":
-                            node = prependTerm.call(_.reduce(term.match(rattr), normalizeAttrs, ""), node);
-                            break;
-                            
-                        case "+":
-                            term = prepareTerm(term);
-
-                            if (_.isArray(node)) {
-                                node.push(term);
-                            } else {
-                                node += term;
-                            }
-                            break;
-
-                        case ">":
-                            term = prepareTerm(term);
-
-                            if (_.isArray(node)) {
-                                node = _.map(node, appendTerm, term);
-                            } else {
-                                node = appendTerm.call(term, node);
-                            }
-                            break;
-
-                        case "*":
-                            str = node;
-                            node = [];
-
-                            _.times(parseInt(term, 10), function(i) {
-                                node.push(str.replace(rindex, i + 1));
-                            });
-                            break;
-                        }
-
-                        str = node;
-                    }
-
-                    stack.unshift(str);
-                });
-
-                return _.parseFragment(_.isArray(stack[0]) ? stack[0].join("") : stack[0]);
-            };
-        })()
+        }
     });
 })());
 </code></pre>
@@ -2347,7 +2321,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 27 2013 03:32:37 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon May 27 2013 23:52:14 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

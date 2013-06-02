@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Index</title>
+    <title>JSDoc: Source: Node.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,37 @@
 
 <div id="main">
     
-    <h1 class="page-title">Index</h1>
+    <h1 class="page-title">Source: Node.js</h1>
     
     
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>define(["Helpers"], function() {
+    "use strict";
 
+    // DOMNode
+    // -------
 
-    <h3> </h3>
+    /**
+     * Prototype for limited/protected elements in better-dom
+     * @name DOMNode
+     * @constructor
+     * @private
+     * @param node native object
+     */
+    function DOMNode(node) {
+        this._node = node;
+        this._data = {};
+        this._listeners = [];
+    }
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    DOMNode.prototype = {};
+});</code></pre>
+        </article>
+    </section>
 
 
 
