@@ -4,7 +4,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
     (function() {
         var containsElement;
 
-        if (document.contains) {
+        if (document.documentElement.contains) {
             containsElement = function(parent, child) {
                 return parent.contains(child);
             };
