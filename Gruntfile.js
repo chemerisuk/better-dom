@@ -11,7 +11,7 @@ module.exports = function(grunt) {
             },
             build: {
                 files: ["src/*.js"],
-                tasks: ["requirejs:compile"]
+                tasks: ["requirejs"]
             }
         },
 
@@ -126,15 +126,18 @@ module.exports = function(grunt) {
         },
 
         uglify: {
+            options: {
+                preserveComments: "some",
+                report: "gzip"
+            },
             dist: {
                 options: {
-                    preserveComments: "some",
+                    screwIE8: true,
                     sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.src",
-                    sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src",
-                    report: "gzip"
+                    sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["dist/<%= pkg.name %>-<%= pkg.version %>.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["build/<%= pkg.name %>.js"]
                 }
             }
         },
@@ -154,16 +157,16 @@ module.exports = function(grunt) {
                 name: "DOM",
                 create: true,
                 wrap: {
-                    startFile: "extra/start.fragment",
-                    endFile: "extra/end.fragment"
+                    startFile: "extra/script.start.fragment",
+                    endFile: "extra/script.end.fragment"
                 },
                 include: [
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
                     "Element.offset", "Element.props", "Element.styles", "Element.toquerystring",
                     "Element.traversing", "Element.visibility", "Collection", "MockElement",
-                    "DOM.importstyles", "DOM.create", "DOM.extend","DOM.parsetemplate",
-                    "DOM.ready", "DOM.watch", "DOM.mock", "SelectorMatcher", "EventHelper"
+                    "DOM.watch", "DOM.create", "DOM.extend","DOM.parsetemplate", "DOM.ready",
+                    "DOM.importstyles", "DOM.mock", "SelectorMatcher", "EventHelper"
                 ],
                 onBuildWrite: function (id, path, contents) {
                     if ((/define\(.*?\{/).test(contents)) {
@@ -186,6 +189,24 @@ module.exports = function(grunt) {
                         grunt.file.write(grunt.config.process("build/<%= pkg.name %>.js"), grunt.config.process(text));
                     }
                 }
+            },
+            compile_htc: {
+                options: {
+                    optimize: "none",
+                    optimizeCss: "none",
+                    wrap: {
+                        startFile: ["extra/htc.start.fragment", "extra/script.start.fragment"],
+                        endFile: ["extra/script.end.fragment", "extra/htc.end.fragment"]
+                    },
+                    out: function(text) {
+                        // replace empty define with correct declaration
+                        text = text.replace("define(\"DOM\", function(){});\n", "");
+                        // remove conditional comments
+                        text = text.replace("\"use strict\";/*@cc_on@*/", "").replace(/\/\*@/g, "").replace(/@\*\//g, "");
+                        // write file
+                        grunt.file.write(grunt.config.process("build/<%= pkg.name %>.htc"), grunt.config.process(text));
+                    }
+                }
             }
         }
     });
@@ -203,7 +224,7 @@ module.exports = function(grunt) {
 
 
     grunt.registerTask("dev", [
-        "requirejs:compile",
+        "requirejs",
         "connect", // start web server
         "shell:openCoverage", // open coverage page
         "karma:watch", // start karma server

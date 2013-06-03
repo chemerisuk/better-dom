@@ -16,8 +16,9 @@
 
     <!-- include source files here... -->
     <script src="../components/lodash/lodash.js"></script>
-    <script src="../build/better-dom.js" data-htc="../extra/better-dom.htc"></script>
-
+    <!--[if IE]><style>html{behavior:url(../build/better-dom.htc)}</style>
+    <!-->   <script src="../build/better-dom.js"></script><!--<![endif]-->
+    
     <!-- include spec files here... -->
     <script src="spec/find.spec.js"></script>
     <script src="spec/clone.spec.js"></script>

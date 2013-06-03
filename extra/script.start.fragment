@@ -6,5 +6,5 @@
  * @license MIT
  * @see <%= pkg.repository.url %>
  */
-(function(window, document, slice, undefined) {
-    "use strict";
+window.DOM || (function(window, document, slice, undefined) {
+    "use strict";/*@cc_on@*/

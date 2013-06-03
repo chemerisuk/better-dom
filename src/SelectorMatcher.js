@@ -30,7 +30,8 @@ define([], function() {
                 var propertyName = prefix + "atchesSelector";
 
                 return result || document.documentElement[propertyName] && propertyName;
-            }, null),
+            }, null)
+            /*@,
             matches = function(el, selector) {
                 var nodeList = document.querySelectorAll(selector);
 
@@ -39,7 +40,7 @@ define([], function() {
                 }
 
                 return false;
-            };
+            }@*/;
 
         ctor.prototype = {
             test: function(el) {
@@ -52,7 +53,7 @@ define([], function() {
                     );
                 }
 
-                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
+                return /*@!matchesProp ? matches(el, this.selector) : @*/el[matchesProp](this.selector);
             }
         };
 

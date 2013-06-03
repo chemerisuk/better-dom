@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, createElement) {
+define(["Element"], function(DOMElement) {
     "use strict";
 
     /**
@@ -9,13 +9,17 @@ define(["Element"], function(DOMElement, createElement) {
     DOMElement.prototype.clone = function() {
         var el;
 
+        /*@
         if (document.addEventListener) {
-            el = this._node.cloneNode(true);
+        @*/
+        el = this._node.cloneNode(true);
+        /*@
         } else {
             el = createElement("div");
             el.innerHTML = this._node.outerHTML;
             el = el.firstChild;
         }
+        @*/
 
         return new DOMElement(el);
     };

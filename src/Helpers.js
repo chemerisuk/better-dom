@@ -12,21 +12,24 @@ define([], function() {
                 this[name](key, value);
             });
         },
-        getComputedStyle = window.getComputedStyle || function(el) {
-            return el.currentStyle;
+        getComputedStyle = function(el) {
+            return /*@ !window.getComputedStyle ? el.currentStyle : @*/window.getComputedStyle(el);
         },
         parseFragment, createElement, createFragment;
 
     (function() {
         var parser = document.createElement("body");
 
+        /*@
         if (document.addEventListener) {
-            createElement = function(tagName) {
-                return document.createElement(tagName);
-            };
-            createFragment = function() {
-                return document.createDocumentFragment();
-            };
+        @*/
+        createElement = function(tagName) {
+            return document.createElement(tagName);
+        };
+        createFragment = function() {
+            return document.createDocumentFragment();
+        };
+        /*@
         } else {
             // Add html5 elements support via:
             // https://github.com/aFarkas/html5shiv
@@ -69,7 +72,7 @@ define([], function() {
                 )(frag);
             })();
         }
-
+        @*/
         parseFragment = function(html) {
             var fragment = createFragment();
 

@@ -11,10 +11,12 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
             rescape = /'|\\/g,
             tmpId = _.uniqueId("DOM");
 
+        /*@
         if (!document.getElementsByClassName) {
             // exclude getElementsByClassName from pattern
             rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
         }
+        @*/
         
         /**
          * Finds element by selector

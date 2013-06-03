@@ -57,15 +57,19 @@ define(["Element"], function(DOMElement, slice) {
         });
 
         // normalize float css property
+        /*@
         if ("cssFloat" in computed) {
-            getStyleHooks.float = function(style) {
-                return style.cssFloat;
-            };
+        @*/
+        getStyleHooks.float = function(style) {
+            return style.cssFloat;
+        };
+        /*@
         } else {
             getStyleHooks.float = function(style) {
                 return style.styleFloat;
             };
         }
+        @*/
 
         _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
             // Exclude the following css properties to add px

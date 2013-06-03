@@ -8,7 +8,7 @@ define(["Element"], function(DOMElement, parseFragment) {
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             // always use parseFragment because of HTML5 and NoScope bugs in IE
-            if (document.attachEvent) fasterMethodName = false;
+            /*@ fasterMethodName = false; @*/
 
             return function(value, /*INTERNAL*/reverse) {
                 var el = reverse ? value : this._node,

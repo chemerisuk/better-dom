@@ -35,12 +35,14 @@ define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) 
                     matcher = SelectorMatcher(selector),
                     el;
 
+                /*@
                 if (!document.addEventListener) {
                     // fix IE8 bug with children collection
                     children = _.filter(children, function(el) {
                         return el.nodeType === 1;
                     });
                 }
+                @*/
 
                 if (multiple) {
                     return new DOMElementCollection(!matcher ? children :
