@@ -10,15 +10,16 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
      * @function
      */
     DOM.watch = (function() {
-        var watchers = [];
+        var docEl = document.documentElement,
+            watchers = [];
 
         /*@
-        if (!document.documentElement.addBehavior) {
+        if (!docEl.addBehavior) {
         @*/
         // use trick discovered by Daniel Buchner:
         // https://github.com/csuwldcat/SelectorListener
         var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-            computed = getComputedStyle(document.documentElement),
+            computed = getComputedStyle(docEl),
             cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
         return function(selector, callback, once) {

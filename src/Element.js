@@ -17,8 +17,6 @@ define(["Node"], function(DOMNode, MockElement) {
         }
 
         DOMNode.call(this, element);
-
-        if (element) element.__dom__ = this;
     }
 
     DOMElement.prototype = new DOMNode();
