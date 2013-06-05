@@ -112,15 +112,48 @@ module.exports = function(grunt) {
 
         copy: {
             dist: {
+                options: {
+                    processContent: function(content) {
+                        // remove ie-specific conditional comments
+                        return content.replace(/\/\*@(.|[\r\n])*?@\*\//g, "");
+                    }
+                },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["<%= pkg.name %>.htc"],
                     "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["<%= pkg.name %>.js"]
+                }
+            },
+            dist_htc: {
+                options: {
+                    processContent: function(content) {
+                        var start = grunt.file.read("extra/htc.start.fragment"),
+                            end = grunt.file.read("extra/htc.end.fragment");
+                        // remove htc file header/footer
+                        content = content.replace(start, "").replace(end, "");
+                        // uncomment ie-specific legacy code
+                        return content.replace("\"use strict\";/*@cc_on@*/", "").replace(/(\/\*@)|(@\*\/)/g, "");
+                    }
+                },
+                files: {
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["<%= pkg.name %>.js"]
+                }
+            },
+            wrap_htc: {
+                options: {
+                    processContent: function(content) {
+                        var start = grunt.file.read("extra/htc.start.fragment"),
+                            end = grunt.file.read("extra/htc.end.fragment");
+
+                        return start + content + end;
+                    }
+                },
+                files: {
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["dist/<%= pkg.name %>-<%= pkg.version %>.htc"]
                 }
             },
             publish: {
                 files: {
                     "<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
-                    "<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
+                    "<%= pkg.name %>.htc": ["build/<%= pkg.name %>.htc"]
                 }
             }
         },
@@ -137,7 +170,12 @@ module.exports = function(grunt) {
                     sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["build/<%= pkg.name %>.js"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["dist/<%= pkg.name %>-<%= pkg.version %>.js"]
+                }
+            },
+            dist_htc: {
+                files: {
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["dist/<%= pkg.name %>-<%= pkg.version %>.htc"]
                 }
             }
         },
@@ -152,14 +190,12 @@ module.exports = function(grunt) {
 
         requirejs: {
             options: {
+                optimize: "none",
+                optimizeCss: "none",
                 useStrict: true,
                 baseUrl: "src",
                 name: "DOM",
                 create: true,
-                wrap: {
-                    startFile: "extra/script.start.fragment",
-                    endFile: "extra/script.end.fragment"
-                },
                 include: [
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
@@ -180,8 +216,10 @@ module.exports = function(grunt) {
             },
             compile: {
                 options: {
-                    optimize: "none",
-                    optimizeCss: "none",
+                    wrap: {
+                        startFile: "extra/script.start.fragment",
+                        endFile: "extra/script.end.fragment"
+                    },
                     out: function(text) {
                         // replace empty define with correct declaration
                         text = text.replace("define(\"DOM\", function(){});\n", "");
@@ -192,8 +230,6 @@ module.exports = function(grunt) {
             },
             compile_htc: {
                 options: {
-                    optimize: "none",
-                    optimizeCss: "none",
                     wrap: {
                         startFile: ["extra/htc.start.fragment", "extra/script.start.fragment"],
                         endFile: ["extra/script.end.fragment", "extra/htc.end.fragment"]
@@ -202,7 +238,7 @@ module.exports = function(grunt) {
                         // replace empty define with correct declaration
                         text = text.replace("define(\"DOM\", function(){});\n", "");
                         // remove conditional comments
-                        text = text.replace("\"use strict\";/*@cc_on@*/", "").replace(/\/\*@/g, "").replace(/@\*\//g, "");
+                        text = text.replace("\"use strict\";/*@cc_on@*/", "").replace(/(\/\*@)|(@\*\/)/g, "");
                         // write file
                         grunt.file.write(grunt.config.process("build/<%= pkg.name %>.htc"), grunt.config.process(text));
                     }
@@ -240,7 +276,9 @@ module.exports = function(grunt) {
     grunt.registerTask("default", [
         "clean",
         "copy:dist",
-        "uglify:dist"
+        "copy:dist_htc",
+        "uglify",
+        "copy:wrap_htc"
     ]);
 
     grunt.registerTask("travis", [
