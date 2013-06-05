@@ -1,141 +1,49 @@
 define(["Element"], function(DOMElement, slice) {
     "use strict";
 
-    // DOMElementCollection
+    // DOMCollection
     // --------------------
 
     /**
      * Prototype for collection of elements in better-dom
-     * @name DOMElementCollection
+     * @name DOMCollection
      * @constructor
      */
-    function DOMElementCollection(elements) {
-        this._nodes = _.map(elements || [], DOMElement);
-        this.length = this._nodes.length;
-    }
-
-    (function() {
-        function makeCollectionMethod(name) {
-            var process = DOMElement.prototype[name];
-
-            return function() {
-                var args = slice.call(arguments);
-
-                return this.each(function(elem) {
-                    process.apply(elem, args);
-                });
-            };
-        }
-
-        DOMElementCollection.prototype = {
-            /**
-             * Execute callback for each element in collection
-             * @memberOf DOMElementCollection.prototype
-             * @param  {Function} callback action to execute
-             * @return {DOMElementCollection} reference to this
-             */
-            each: function(callback) {
-                _.forEach(this._nodes, callback, this);
-
-                return this;
+    // jshint unused:false
+    var DOMCollection = (function(){
+        var initialize = function(element, index) {
+                this[index] = DOMElement(element);
             },
+            DOMCollection = function(elements) {
+                elements = elements || [];
 
-            /**
-             * Shortcut to {@link DOMNode#on} method
-             * @memberOf DOMElementCollection.prototype
-             * @param  {String}   event    event type
-             * @param  {String}   [selector] css selector to filter
-             * @param  {Function} callback event handler
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#on
-             */
-            on: makeCollectionMethod("on"),
+                this.length = elements.length;
+            
+                _.forEach(elements, initialize, this);
+            },
+            props;
 
-            /**
-             * Shortcut to {@link DOMNode#off} method
-             * @memberOf DOMElementCollection.prototype
-             * @param  {String}   eventType event type
-             * @param  {Function} [callback]  event handler
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#off
-             */
-            off: makeCollectionMethod("off"),
+        DOMCollection.prototype = [];
 
-            /**
-             * Shortcut to {@link DOMNode#fire} method
-             * @memberOf DOMElementCollection.prototype
-             * @param  {String} eventType type of event
-             * @param  {Object} [detail] data to attach
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#fire
-             */
-            fire: makeCollectionMethod("fire"),
+        /*@
+        if (Object.getOwnPropertyNames) {
+        @*/
+        props = Object.getOwnPropertyNames(Array.prototype);
+        /*@
+        } else {
+            props = ["toLocaleString", "join", "pop", "push", "concat", "reverse", "shift", "unshift", "slice", "splice", "sort", "indexOf", "lastIndexOf"];
+        }
+        @*/
 
-            /**
-             * Shortcut to {@link DOMNode#setData} method
-             * @memberOf DOMElementCollection.prototype
-             * @param {String|Object} key data entry key | key/value pairs
-             * @param {Object} value data to store
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#setData
-             */
-            setData: makeCollectionMethod("setData"),
+        _.forEach(props, function(key) {
+            if (key !== "length") DOMCollection.prototype[key] = undefined;
+        });
 
-            /**
-             * Shortcut to {@link DOMElement#set} method
-             * @memberOf DOMElementCollection.prototype
-             * @param {String} name  property/attribute name
-             * @param {String} value property/attribute value
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#set
-             */
-            set: makeCollectionMethod("set"),
-
-            /**
-             * Shortcut to {@link DOMElement#setStyle} method
-             * @memberOf DOMElementCollection.prototype
-             * @param {String} name  property name
-             * @param {String} value property value
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#setStyle
-             */
-            setStyle: makeCollectionMethod("setStyle"),
-
-            /**
-             * Shortcut to {@link DOMElement#addClass} method
-             * @memberOf DOMElementCollection
-             * @param {String} classNames space-separated class name(s)
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#addClass
-             */
-            addClass: makeCollectionMethod("addClass"),
-
-            /**
-             * Shortcut to {@link DOMElement#removeClass} method
-             * @memberOf DOMElementCollection.prototype
-             * @param {String} classNames space-separated class name(s)
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#removeClass
-             */
-            removeClass: makeCollectionMethod("removeClass"),
-
-            /**
-             * Shortcut to {@link DOMElement#toggleClass} method
-             * @memberOf DOMElementCollection.prototype
-             * @param {String} classNames space-separated class name(s)
-             * @return {DOMElementCollection} reference to this
-             * @function
-             * @see DOMElement#toggleClass
-             */
-            toggleClass: makeCollectionMethod("toggleClass")
+        DOMCollection.prototype.length = 0;
+        DOMCollection.prototype.toString = function () {
+            return slice.call(this).toString();
         };
+
+        return DOMCollection;
     })();
 });

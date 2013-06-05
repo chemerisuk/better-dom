@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
+define(["Node"], function(DOMNode, DOMElement, DOMCollection) {
     "use strict";
 
     (function() {
@@ -30,8 +30,8 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
                 result = containsElement(reverse ? element : node, reverse ? node : element);
             } else if (element instanceof DOMElement) {
                 result = element.contains(node, true);
-            } else if (element instanceof DOMElementCollection) {
-                element.each(function(element) {
+            } else if (element instanceof DOMCollection) {
+                _.forEach(element, function(element) {
                     result = result && element.contains(node, true);
                 });
             } else {

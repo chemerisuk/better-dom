@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) {
+define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher) {
     "use strict";
 
     // TRAVERSING
@@ -19,7 +19,7 @@ define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) 
                     }
                 }
 
-                return multiple ? new DOMElementCollection(nodes) : DOMElement(it);
+                return multiple ? new DOMCollection(nodes) : DOMElement(it);
             };
         }
 
@@ -45,7 +45,7 @@ define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) 
                 @*/
 
                 if (multiple) {
-                    return new DOMElementCollection(!matcher ? children :
+                    return new DOMCollection(!matcher ? children :
                         _.filter(children, matcher.test, matcher));
                 }
 
@@ -79,7 +79,7 @@ define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) 
          * Find all next sibling elements filtered by optional selector
          * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
-         * @return {DOMElementCollection} matched elements
+         * @return {DOMCollection} matched elements
          * @function
          */
         DOMElement.prototype.nextAll = makeTraversingMethod("nextSibling", true);
@@ -88,7 +88,7 @@ define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) 
          * Find all previous sibling elements filtered by optional selector
          * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
-         * @return {DOMElementCollection} matched elements
+         * @return {DOMCollection} matched elements
          * @function
          */
         DOMElement.prototype.prevAll = makeTraversingMethod("previousSibling", true);
@@ -121,7 +121,7 @@ define(["Element"], function(DOMElement, DOMElementCollection, SelectorMatcher) 
          * Fetch children elements filtered by optional selector
          * @memberOf DOMElement.prototype
          * @param  {String} [selector] css selector
-         * @return {DOMElementCollection} matched elements
+         * @return {DOMCollection} matched elements
          * @function
          */
         DOMElement.prototype.children = makeChildTraversingMethod(true);

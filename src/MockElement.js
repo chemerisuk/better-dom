@@ -1,4 +1,4 @@
-define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMElementCollection) {
+define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMCollection) {
     "use strict";
 
     // Mock Element
@@ -11,7 +11,7 @@ define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMEleme
     MockElement.prototype = new DOMElement();
 
     _.forIn(DOMElement.prototype, function(functor, key) {
-        var isSetter = key in DOMElementCollection.prototype;
+        var isSetter = key in DOMCollection.prototype;
 
         MockElement.prototype[key] = isSetter ? function() { return this; } : function() { };
     });
@@ -21,11 +21,11 @@ define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMEleme
     });
 
     _.forEach("nextAll prevAll children findAll".split(" "), function(key) {
-        MockElement.prototype[key] = function() { return new DOMElementCollection(); };
+        MockElement.prototype[key] = function() { return new DOMCollection(); };
     });
 
     // fix constructor property
-    _.forEach([DOMNode, DOMElement, MockElement], function(ctr) {
+    _.forEach([DOMNode, DOMElement, MockElement, DOMCollection], function(ctr) {
         ctr.prototype.constructor = ctr;
     });
 });

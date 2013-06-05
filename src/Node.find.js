@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
+define(["Node"], function(DOMNode, DOMElement, DOMCollection) {
     "use strict";
 
     (function() {
@@ -89,14 +89,14 @@ define(["Node"], function(DOMNode, DOMElement, DOMElementCollection) {
                 }
             }
 
-            return multiple ? new DOMElementCollection(elements) : DOMElement(elements);
+            return multiple ? new DOMCollection(elements) : DOMElement(elements);
         };
 
         /**
          * Finds all elements by selector
          * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
-         * @return {DOMElementCollection} elements collection
+         * @return {DOMCollection} elements collection
          */
         DOMNode.prototype.findAll = function(selector) {
             return this.find(selector, true);

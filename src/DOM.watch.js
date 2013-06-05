@@ -66,7 +66,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
         /*@
         } else {
             var styles = document.styleSheets,
-                behaviorUrl = /url\((.+)\)/.exec(styles[styles.length - 1].cssText)[1];
+                behaviorUrl = /url\((.+)\)/.exec(styles[styles.length - 1].cssText)[0];
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
@@ -88,9 +88,12 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
                 if (_.some(watchers, haveWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
                     // because the behaviour is already attached to selector
-                    DOM.findAll(selector).each(callback);
+                    // also execute the callback safely
+                    _.forEach(DOM.findAll(selector), function(el) {
+                        _.defer(function() { callback(el); });
+                    });
                 } else {
-                    DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
+                    DOM.importStyles(selector, { behavior: behaviorUrl });
                 }
 
                 watchers.push(watcher);

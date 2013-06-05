@@ -43,7 +43,7 @@ describe("traversing", function() {
                 };
 
             for (var methodName in expectedResults) {
-                link[methodName]().each(isOK(methodName));
+                _.each(link[methodName](), isOK(methodName));
             }
         });
 
@@ -62,7 +62,7 @@ describe("traversing", function() {
             for (var methodName in filters) {
                 var tagName = filters[methodName];
                 
-                link[methodName](tagName).each(haveTag(tagName));
+                _.each(link[methodName](tagName), haveTag(tagName));
             }
         });
     });
