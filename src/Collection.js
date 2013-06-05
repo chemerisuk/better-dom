@@ -5,9 +5,10 @@ define(["Element"], function(DOMElement, slice) {
     // --------------------
 
     /**
-     * Prototype for collection of elements in better-dom
+     * Read-only array-like collection of elements
      * @name DOMCollection
      * @constructor
+     * @private
      */
     // jshint unused:false
     var DOMCollection = (function(){
@@ -39,9 +40,20 @@ define(["Element"], function(DOMElement, slice) {
             if (key !== "length") DOMCollection.prototype[key] = undefined;
         });
 
+        /**
+         * Number of elements in the collection
+         * @memberOf DOMCollection.prototype
+         * @type {Number}
+         */
         DOMCollection.prototype.length = 0;
+
+        /**
+         * Always returns string "DOMCollection"
+         * @memberOf DOMCollection.prototype
+         * @return {String} "DOMCollection" string
+         */
         DOMCollection.prototype.toString = function () {
-            return slice.call(this).toString();
+            return "DOMCollection";
         };
 
         return DOMCollection;

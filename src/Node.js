@@ -20,6 +20,11 @@ define(["Helpers"], function() {
     }
 
     DOMNode.prototype = {
+        /**
+         * Always returns string "DOMElement"
+         * @memberOf DOMNode.prototype
+         * @return {String} "DOMElement" string
+         */
         toString: function() {
             return "DOMNode";
         },

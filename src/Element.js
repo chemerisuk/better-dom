@@ -10,6 +10,7 @@ define(["Node"], function(DOMNode, MockElement) {
      * @constructor
      * @param element native element
      * @extends DOMNode
+     * @private
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
@@ -21,6 +22,11 @@ define(["Node"], function(DOMNode, MockElement) {
 
     DOMElement.prototype = new DOMNode();
 
+    /**
+     * Always returns string "DOMElement"
+     * @memberOf DOMElement.prototype
+     * @return {String} "DOMElement" string
+     */
     DOMElement.prototype.toString = function() {
         return "DOMElement";
     };
