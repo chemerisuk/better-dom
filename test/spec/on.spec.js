@@ -17,8 +17,12 @@ describe("on", function() {
         expect(input.on("click", spy)).toEqual(input);
     });
 
-    it("should accept single callback", function() {
+    it("should accept single callback with the element as 'this' by default", function() {
         input.on("focus", spy).fire("focus");
+
+        spy.andCallFake(function() {
+            expect(this).toEqual(input);
+        });
 
         expect(spy).toHaveBeenCalled();
     });
@@ -27,11 +31,9 @@ describe("on", function() {
         DOM.on("focus input", spy);
 
         link.fire("focus");
-
         expect(spy).not.toHaveBeenCalled();
 
         input.fire("focus");
-
         expect(spy).toHaveBeenCalled();
     });
 
@@ -39,61 +41,48 @@ describe("on", function() {
         var otherSpy = jasmine.createSpy("callback2");
 
         input.on({focus: spy, click: otherSpy}).fire("focus");
-
         expect(spy).toHaveBeenCalled();
 
         input.fire("click");
-
         expect(otherSpy).toHaveBeenCalled();
     });
 
-    it("should have target element as 'this' by default", function() {
-        spy.andCallFake(function() {
-            expect(this).toEqual(input);
-        });
-
-        input.on("click", spy).fire("click");
-    });
-
-    it("should call preventDefault if options have cancel:true", function() {
-        input.on("click", {cancel: true}, spy).fire("click");
-
-        expect(spy).toHaveBeenCalled();
-        expect(location.hash).not.toBe("#test");
-    });
-
-    it("should call stopPropagation if options have stop:true", function() {
+    it("should accept optional options argument", function() {
         var callback = jasmine.createSpy("callback");
 
         DOM.on("click", callback);
-        input.on("click", {stop: true}, spy).fire("click");
+        input.on("click", spy, {stop: true, cancel: true, args: ["type"]}).fire("click");
 
-        expect(spy).toHaveBeenCalled();
-        expect(callback).not.toHaveBeenCalled();
-    });
-
-    it("should call preventDefault and stopPropagation if options have cancel:true and stop:true", function() {
-        var callback = jasmine.createSpy("callback");
-
-        DOM.on("click", callback);
-        input.on("click", {cancel: true, stop: true}, spy).fire("click");
-
-        expect(spy).toHaveBeenCalled();
-        expect(callback).not.toHaveBeenCalled();
-        expect(location.hash).not.toBe("#test");
-    });
-
-    it("should pass optional event arguments", function() {
         spy.andCallFake(function(type) {
             expect(type).toBe("click");
         });
 
-        input
-            .on("click", {args: ["type"]}, spy)
-            .on("click", ["type"], spy)
-            .fire("click");
+        expect(spy).toHaveBeenCalled();
+        expect(callback).not.toHaveBeenCalled();
+        expect(location.hash).not.toBe("#test");
+    });
 
-        expect(spy.callCount).toBe(2);
+    it("should support optional extra arguments", function() {
+        var a = {}, b = {}, obj = {callback: function() {}};
+
+        spy.andCallFake(function(type, argA, argB) {
+            expect(type).toBe("click");
+            expect(argA).toBe(a);
+            expect(argB).toBe(b);
+        });
+
+        input.on("click", spy, {args: ["type"]}, [a, b]).fire("click");
+        expect(spy).toHaveBeenCalled();
+
+        spy = spyOn(obj, "callback");
+        spy.andCallFake(function(argA, argB, argC) {
+            expect(argA).toBe(1);
+            expect(argB).toBe(2);
+            expect(argC).toBe(3);
+        });
+
+        input.on("click", spy, [1, 2, 3]).fire("click");
+        expect(spy).toHaveBeenCalled();
     });
 
     it("should not stop to call handlers if any of them throws an error inside", function() {
@@ -126,37 +115,27 @@ describe("on", function() {
 
     it("should fix input event", function() {
         input.on("input", spy).fire("input");
-
         expect(spy).toHaveBeenCalled();
 
         DOM.on("input a", spy);
-
         input.fire("input");
-
         expect(spy.callCount).toBe(2);
 
         DOM.on("input input", spy);
-
         input.fire("input");
-
         expect(spy.callCount).toBe(4);
     });
 
     it("should fix submit event", function() {
-        form.on("submit", {cancel: true}, spy).fire("submit");
-
+        form.on("submit", spy, {cancel: true}).fire("submit");
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("submit a", {cancel: true}, spy);
-
+        DOM.on("submit a", spy, {cancel: true});
         form.fire("submit");
-
         expect(spy.callCount).toBe(2);
 
-        DOM.on("submit form", {cancel: true}, spy);
-
+        DOM.on("submit form", spy, {cancel: true});
         form.fire("submit");
-
         expect(spy.callCount).toBe(4);
     });
 
@@ -169,28 +148,15 @@ describe("on", function() {
         expect(location.hash).not.toBe("#test");
     });
 
-    it("should optionally support extra handler arguments", function() {
-        var a = {}, b = {};
-
-        spy.andCallFake(function(type, argA, argB) {
-            expect(type).toBe("click");
-            expect(argA).toBe(a);
-            expect(argB).toBe(b);
-        });
-
-        input.on("click", ["type"], spy, [a, b]).fire("click");
-
-        expect(spy).toHaveBeenCalled();
-    });
-
     it("should optionally support extra context", function() {
-        var obj = {};
+        var obj = {callback: function() {}};
 
+        spy = spyOn(obj, "callback");
         spy.andCallFake(function() {
             expect(this).toBe(obj);
         });
 
-        input.on("click", spy, [], obj).fire("click");
+        input.on("click", obj, "callback").fire("click");
 
         expect(spy).toHaveBeenCalled();
     });

@@ -4,14 +4,13 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
     (function() {
         var eventHooks = {},
             veto = false,
-            createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
-                if (_.isArray(options)) options = {args: options};
-
+            createEventHandler = function(type, selector, context, callback, options, extras, thisArg) {
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
                         if (veto !== type) {
                             var eventHelper = new EventHelper(e/*@ || window.event@*/, currentTarget),
+                                fn = (typeof callback === "function" ? callback : context[callback]),
                                 args;
 
                             // handle modifiers
@@ -27,7 +26,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                                 args = extras ? extras.slice(0) : [];
                             }
 
-                            callback.apply(context || thisArg, args);
+                            if (fn) fn.apply(context, args);
                         }
                     };
 
@@ -59,21 +58,26 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
          * @param  {String}   type    event type
-         * @param  {Object}   [options] callback options
-         * @param  {Function} callback event callback
-         * @param  {Array}    [args] extra arguments
          * @param  {Object}   [context] callback context
+         * @param  {Function|String} callback event callback
+         * @param  {Array}    [args] extra arguments
+         * @param  {Object}   [options] callback options
          * @return {DOMNode}  current context
          */
-        DOMNode.prototype.on = function(type, options, callback, args, context) {
+        DOMNode.prototype.on = function(type, context, callback, options, args) {
             var eventType = typeof type,
                 hook, handler, selector;
 
             if (eventType === "string") {
-                if (typeof options === "function") {
-                    context = args;
-                    args = callback;
-                    callback = options;
+                if (typeof context === "function") {
+                    args = options;
+                    options = callback;
+                    callback = context;
+                    context = this;
+                }
+
+                if (_.isArray(options)) {
+                    args = options;
                     options = {};
                 }
 
@@ -85,9 +89,10 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     type = type.substr(0, type.length - selector.length - 1);
                 }
 
-                handler = createEventHandler(type, selector, options, callback, args, context, this);
+                handler = createEventHandler(type, selector, context, callback, options || {}, args || [], this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
+                handler.context = context;
 
                 if (hook = eventHooks[type]) hook(handler);
 
@@ -119,19 +124,25 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         /**
          * Unbind a DOM event from the context
          * @memberOf DOMNode.prototype
-         * @param  {String} type event type
+         * @param  {String}   type event type
+         * @param  {Object}   [context] callback context
          * @param  {Function} [callback] event handler
          * @return {DOMNode} current context
          */
-        DOMNode.prototype.off = function(type, callback) {
-            if (typeof type !== "string" || callback !== undefined && typeof callback !== "function") {
+        DOMNode.prototype.off = function(type, context, callback) {
+            if (typeof type !== "string") {
                 throw this.makeError("off");
+            }
+
+            if (callback === undefined) {
+                callback = context;
+                context = undefined;
             }
 
             _.forEach(this._listeners, function(handler, index, events) {
                 var node = this._node;
 
-                if (handler && type === handler.type && (!callback || callback === handler.callback)) {
+                if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
 
                     /*@

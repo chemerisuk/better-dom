@@ -12,17 +12,29 @@ describe("off", function() {
         spy = jasmine.createSpy("click");
     });
 
-    it("should remove event handler", function() {
+    it("should remove event callback", function() {
         input.on("click", spy).off("click").fire("click");
-
         expect(spy).not.toHaveBeenCalled();
 
         input.on("click", spy).off("click", spy).fire("click");
-
         expect(spy).not.toHaveBeenCalled();
 
         input.on("click a", spy).off("click a", spy).fire("click");
+        expect(spy).not.toHaveBeenCalled();
+    });
 
+    it("should remove event callback", function() {
+        var obj = {callback: function() {}};
+
+        spy = spyOn(obj, "callback");
+
+        input.on("click", obj, "callback").off("click").fire("click");
+        expect(spy).not.toHaveBeenCalled();
+
+        input.on("click", obj, "callback").off("click", obj, "callback").fire("click");
+        expect(spy).not.toHaveBeenCalled();
+
+        input.on("click a", obj, "callback").off("click a", obj, "callback").fire("click");
         expect(spy).not.toHaveBeenCalled();
     });
 
