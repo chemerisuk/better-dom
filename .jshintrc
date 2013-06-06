@@ -4,6 +4,7 @@
     "boss": true,
     "newcap": false,
     "expr": true,
+    "evil": true,
 
     "quotmark": "double",
     "indent": 4,

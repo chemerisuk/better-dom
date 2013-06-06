@@ -1,8 +1,9 @@
 define([], function() {
     "use strict";
 
-    // UTILITES
-    // --------
+    // HELPERS
+    // -------
+
     // jshint unused:false
     var _uniqueId = (function() {
             var idCounter = 0;
@@ -19,81 +20,71 @@ define([], function() {
         // Collection utilites
         // -------------------
         
+        makeCollectionMethod = (function(){
+            var tpl = "", args = {
+                    BEFORE: "",
+                    COUNT:  "list ? list.length : 0",
+                    BODY:   "",
+                    AFTER:  ""
+                };
+
+            tpl += "%BEFORE%";
+            tpl += "\nfor (var i = 0, n = %COUNT%; i < n; ++i) {";
+            tpl += "%BODY%";
+            tpl += "}%AFTER%";
+
+            return function(options) {
+                var code = tpl, key;
+
+                for (key in args) {
+                    code = code.replace("%" + key + "%", options[key] || args[key]);
+                }
+
+                return Function("list", "callback", "optional", "undefined", code);
+            };
+        })(),
+        _forEach = makeCollectionMethod({
+            BODY:   "callback.call(optional, list[i], i, list)"
+        }),
+        _times = makeCollectionMethod({
+            COUNT:  "list",
+            BODY:   "callback.call(optional, i)"
+        }),
+        _map = makeCollectionMethod({
+            BEFORE: "var result = []",
+            BODY:   "result.push(callback.call(optional, list[i], i, list))",
+            AFTER:  "return result"
+        }),
+        _some = makeCollectionMethod({
+            BODY:   "if (callback.call(optional, list[i], i, list) === true) return true",
+            AFTER:  "return false"
+        }),
+        _every = makeCollectionMethod({
+            BEFORE: "var result = true",
+            BODY:   "result = result && callback.call(optional, list[i], list)",
+            AFTER:  "return result"
+        }),
+        _filter = makeCollectionMethod({
+            BEFORE: "var result = []",
+            BODY:   "if (callback.call(optional, list[i], i, list)) result.push(list[i])",
+            AFTER:  "return result"
+        }),
+        _foldl = makeCollectionMethod({
+            BODY:   "optional = !i && optional === undefined ? list[i] : callback(optional, list[i], i, list)",
+            AFTER:  "return optional"
+        }),
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index || 0);
         },
         _isArray = Array.isArray || function(obj) {
             return Object.prototype.toString.call(obj) === "[object Array]";
         },
-        _forEach = function(list, callback, thisPtr) {
-            for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
-                callback.call(thisPtr, list[i], i, list);
-            }
-        },
-        _times = function(n, callback, thisArg) {
-            for (var i = 0; i < n; ++i) {
-                callback.call(thisArg, i);
-            }
-        },
-        _foldl = function(list, callback, result) {
-            _forEach(list, function(el, index) {
-                if (!index && result === undefined) {
-                    result = el;
-                } else {
-                    result = callback(result, el, index, list);
-                }
-            });
-
-            return result;
-        },
-        _map = function(list, callback, thisPtr) {
-            var result = [];
-
-            _forEach(list, function(el, index) {
-                result.push(callback.call(thisPtr, el, index, list));
-            });
-
-            return result;
-        },
-        _some = function(list, testFn, thisPtr) {
-            for (var i = 0, n = list ? list.length : 0; i < n; ++i) {
-                if (testFn.call(thisPtr, list[i], i, list) === true) {
-                    return true;
-                }
-            }
-
-            return false;
-        },
-        _every = function(list, testFn, thisPtr) {
-            var result = true;
-
-            _forEach(list, function(el) {
-                result = result && testFn.call(thisPtr, el, list);
-            });
-
-            return result;
-        },
-        _filter = function(list, testFn, thisPtr) {
-            var result = [];
-
-            _forEach(list, function(el, index) {
-                if (testFn.call(thisPtr, el, index, list)) result.push(el);
-            });
-
-            return result;
-        },
 
         // Object utilites
         // ---------------
         
         _keys = Object.keys || function(obj) {
-            var objType = typeof obj,
-                result = [],
-                prop;
-
-            if (objType !== "object" && objType !== "function" || obj === null) {
-                throw new TypeError("Object.keys called on non-object");
-            }
+            var result = [], prop;
      
             for (prop in obj) {
                 if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
@@ -102,15 +93,13 @@ define([], function() {
             return result;
         },
         _forOwn = function(obj, callback, thisPtr) {
-            for (var list = _keys(obj), i = 0, n = list.length, key; i < n; ++i) {
-                key = list[i];
-
-                callback.call(thisPtr,  obj[key], key, obj);
+            for (var prop in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
             }
         },
         _forIn = function(obj, callback, thisPtr) {
-            for (var key in obj) {
-                callback.call(thisPtr, obj[key], key, obj);
+            for (var prop in obj) {
+                callback.call(thisPtr, obj[prop], prop, obj);
             }
         },
         _extend = function(obj, name, value) {
@@ -118,7 +107,7 @@ define([], function() {
                 obj[name] = value;
             } else if (name) {
                 _forOwn(name, function(value, key) {
-                    _extend(obj, key, value);
+                    obj[key] = value;
                 });
             }
 
