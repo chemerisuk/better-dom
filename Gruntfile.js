@@ -103,6 +103,9 @@ module.exports = function(grunt) {
             },
             openJsdoc: {
                 command: "open jsdoc/index.html"
+            },
+            rollbackPublished: {
+                command: "git checkout HEAD -- <%= pkg.name %>.js <%= pkg.name %>.htc"
             }
         },
 
@@ -285,6 +288,17 @@ module.exports = function(grunt) {
         "requirejs:compile",
         "jshint",
         "karma:travis"
+    ]);
+
+    grunt.registerTask("dist-test", [
+        "requirejs:compile",
+        "copy:publish",
+        "copy:dist",
+        "copy:dist_htc",
+        "uglify",
+        "copy:wrap_htc",
+        "shell:rollbackPublished",
+        "clean"
     ]);
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
