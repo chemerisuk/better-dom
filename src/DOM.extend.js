@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement) {
+define(["DOM", "Element"], function(DOM, DOMElement, _map, _forEach, _extend) {
     "use strict";
 
     /**
@@ -44,17 +44,17 @@ define(["DOM", "Element"], function(DOM, DOMElement) {
 
         if (selector === "*") {
             // extending element prototype
-            _.extend(DOMElement.prototype, mixins);
+            _extend(DOMElement.prototype, mixins);
         } else {
-            template = _.map(template || [], DOM.create);
+            template = _map(template || [], DOM.create);
             // update internal element mixins
             DOM.mock(selector, mixins);
 
             DOM.watch(selector, function(el) {
-                _.extend(el, mixins);
+                _extend(el, mixins);
 
                 if (mixins.hasOwnProperty("constructor")) {
-                    mixins.constructor.apply(el, _.map(template, function(value) {
+                    mixins.constructor.apply(el, _map(template, function(value) {
                         return value.clone();
                     }));
                 }

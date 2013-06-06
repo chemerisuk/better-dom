@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, slice) {
+define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle) {
     "use strict";
 
     // STYLES MANIPULATION
@@ -11,11 +11,11 @@ define(["Element"], function(DOMElement, slice) {
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = getComputedStyle(document.documentElement),
-            // In Opera CSSStyleDeclaration objects returned by getComputedStyle have length 0
-            props = computed.length ? slice.call(computed) : _.map(_.keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
+            computed = _getComputedStyle(document.documentElement),
+            // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
+            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         
-        _.forEach(props, function(propName) {
+        _forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
                 stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
@@ -37,7 +37,7 @@ define(["Element"], function(DOMElement, slice) {
         });
 
         // shortcuts
-        _.forOwn({
+        _forOwn({
             font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
             padding: ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"],
             margin: ["marginTop", "marginRight", "marginBottom", "marginLeft"],
@@ -52,7 +52,7 @@ define(["Element"], function(DOMElement, slice) {
                         return !result[index];
                     };
 
-                return _.some(value, hasEmptyStyleValue) ? "" : result.join(" ");
+                return _some(value, hasEmptyStyleValue) ? "" : result.join(" ");
             };
         });
 
@@ -71,7 +71,7 @@ define(["Element"], function(DOMElement, slice) {
         }
         @*/
 
-        _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
+        _forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
             // Exclude the following css properties to add px
             setStyleHooks[propName] = function(name, value) {
                 return name + ":" + value;
@@ -97,7 +97,7 @@ define(["Element"], function(DOMElement, slice) {
             result = hook ? hook(style) : style[name];
 
             if (!result) {
-                style = getComputedStyle(this._node);
+                style = _getComputedStyle(this._node);
 
                 result = hook ? hook(style) : style[name];
             }
@@ -121,7 +121,7 @@ define(["Element"], function(DOMElement, slice) {
 
                 cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
             } else if (nameType === "object") {
-                cssText = _.reduce(_.keys(name), function(cssText, key) {
+                cssText = _foldl(_keys(name), function(cssText, key) {
                     value = name[key];
                     hook = setStyleHooks[key];
 

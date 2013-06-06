@@ -1,4 +1,4 @@
-define(["DOM", "MockElement"], function(DOM, MockElement) {
+define(["DOM", "MockElement"], function(DOM, MockElement, _extend) {
     "use strict";
 
     (function() {
@@ -19,7 +19,7 @@ define(["DOM", "MockElement"], function(DOM, MockElement) {
                 var el = new MockElement();
 
                 if (selector) {
-                    _.extend(el, extensions[selector]);
+                    _extend(el, extensions[selector]);
 
                     el.constructor = MockElement;
                 }
@@ -27,7 +27,7 @@ define(["DOM", "MockElement"], function(DOM, MockElement) {
                 return el;
             }
 
-            extensions[selector] = _.extend(extensions[selector] || {}, mixins);
+            extensions[selector] = _extend(extensions[selector] || {}, mixins);
         };
     })();
 });

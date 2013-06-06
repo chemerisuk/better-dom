@@ -1,11 +1,11 @@
-define(["DOM", "Element"], function(DOM, DOMElement, createElement) {
+define(["DOM", "Element"], function(DOM, DOMElement, _createElement) {
     "use strict";
 
     (function() {
         var styleSheet = (function() {
                 var headEl = document.scripts[0].parentNode;
 
-                headEl.insertBefore(createElement("style"), headEl.firstChild);
+                headEl.insertBefore(_createElement("style"), headEl.firstChild);
 
                 return document.styleSheets[0];
             })(),
@@ -35,7 +35,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement) {
             /*@
             } else {
                 // ie doesn't support multiple selectors in addRule
-                _.forEach(selector.split(","), function(selector) {
+                _forEach(selector.split(","), function(selector) {
                     styleSheet.addRule(selector, styles);
                 });
             }

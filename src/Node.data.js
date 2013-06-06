@@ -1,55 +1,59 @@
-define(["Node"], function(DOMNode, handleObjectParam) {
+define(["Node"], function(DOMNode, _forOwn) {
     "use strict";
-    
-    /**
-     * Read data entry value
-     * @memberOf DOMNode.prototype
-     * @param  {String} key data entry key
-     * @return {Object} data entry value
-     * @example
-     * var domLink = DOM.find(".link");
-     *
-     * domLink.setData("test", "message");
-     * domLink.getData("test");
-     * // returns string "message"
-     */
-    DOMNode.prototype.getData = function(key) {
-        if (typeof key !== "string") {
-            throw this.makeError("getData");
-        }
 
-        var node = this._node,
-            result = this._data[key];
+    (function() {
+        var processObjectParam = function(value, name) { this.setData(name, value); };
 
-        if (result === undefined && node.hasAttribute("data-" + key)) {
-            result = this._data[key] = node.getAttribute("data-" + key);
-        }
+        /**
+         * Read data entry value
+         * @memberOf DOMNode.prototype
+         * @param  {String} key data entry key
+         * @return {Object} data entry value
+         * @example
+         * var domLink = DOM.find(".link");
+         *
+         * domLink.setData("test", "message");
+         * domLink.getData("test");
+         * // returns string "message"
+         */
+        DOMNode.prototype.getData = function(key) {
+            if (typeof key !== "string") {
+                throw this.makeError("getData");
+            }
 
-        return result;
-    };
+            var node = this._node,
+                result = this._data[key];
 
-    /**
-     * Store data entry value(s)
-     * @memberOf DOMNode.prototype
-     * @param {String|Object} key data entry key | key/value pairs
-     * @param {Object} value data to store
-     * @example
-     * var domLink = DOM.find(".link");
-     *
-     * domLink.setData("test", "message");
-     * domLink.setData({a: "b", c: "d"});
-     */
-    DOMNode.prototype.setData = function(key, value) {
-        var keyType = typeof key;
+            if (result === undefined && node.hasAttribute("data-" + key)) {
+                result = this._data[key] = node.getAttribute("data-" + key);
+            }
 
-        if (keyType === "string") {
-            this._data[key] = value;
-        } else if (keyType === "object") {
-            _.forOwn(key, handleObjectParam("setData"), this);
-        } else {
-            throw this.makeError("setData");
-        }
+            return result;
+        };
 
-        return this;
-    };
+        /**
+         * Store data entry value(s)
+         * @memberOf DOMNode.prototype
+         * @param {String|Object} key data entry key | key/value pairs
+         * @param {Object} value data to store
+         * @example
+         * var domLink = DOM.find(".link");
+         *
+         * domLink.setData("test", "message");
+         * domLink.setData({a: "b", c: "d"});
+         */
+        DOMNode.prototype.setData = function(key, value) {
+            var keyType = typeof key;
+
+            if (keyType === "string") {
+                this._data[key] = value;
+            } else if (keyType === "object") {
+                _forOwn(key, processObjectParam, this);
+            } else {
+                throw this.makeError("setData");
+            }
+
+            return this;
+        };
+    })();
 });

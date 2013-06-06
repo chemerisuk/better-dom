@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM) {
+define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
     "use strict";
 
     (function() {
@@ -27,7 +27,7 @@ define(["DOM"], function(DOM) {
             return term + " " + name + "=" + value;
         },
         toHtmlString = function(obj) {
-            return _.isArray(obj) ? obj.join("") : obj.toString();
+            return _isArray(obj) ? obj.join("") : obj.toString();
         },
         appendToAll = function(node) {
             node.insertTerm(this, true);
@@ -73,7 +73,7 @@ define(["DOM"], function(DOM) {
 
             // parse exrpression into RPN
         
-            _.forEach(template, function(str) {
+            _forEach(template, function(str) {
                 var top = stack[0], priority;
 
                 // concat .c1.c2 into single space separated class string
@@ -117,7 +117,7 @@ define(["DOM"], function(DOM) {
 
             // transform RPN into html nodes
 
-            _.forEach(output, function(str) {
+            _forEach(output, function(str) {
                 var term, node;
 
                 if (str in operators) {
@@ -140,26 +140,26 @@ define(["DOM"], function(DOM) {
                         break;
 
                     case "[":
-                        node.insertTerm(_.reduce(term.match(rattr), normalizeAttrs, ""));
+                        node.insertTerm(_foldl(term.match(rattr), normalizeAttrs, ""));
                         break;
                         
                     case "+":
                         term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
 
-                        _.isArray(node) ? node.push(term) : node.addTerm(term);
+                        _isArray(node) ? node.push(term) : node.addTerm(term);
                         break;
 
                     case ">":
                         term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
 
-                        _.isArray(node) ? _.forEach(node, appendToAll, term) : node.insertTerm(term, true);
+                        _isArray(node) ? _forEach(node, appendToAll, term) : node.insertTerm(term, true);
                         break;
 
                     case "*":
                         str = toHtmlString(node);
                         node = [];
 
-                        _.times(parseInt(term, 10), function(i) {
+                        _times(parseInt(term, 10), function(i) {
                             node.push(new HtmlBuilder(str.replace(rindex, i + 1), true));
                         });
                         break;

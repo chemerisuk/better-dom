@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, slice) {
+define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _every, _forEach, _uniqueId, _getComputedStyle) {
     "use strict";
 
     /**
@@ -19,11 +19,11 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
         // use trick discovered by Daniel Buchner:
         // https://github.com/csuwldcat/SelectorListener
         var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-            computed = getComputedStyle(docEl),
-            cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            computed = _getComputedStyle(docEl),
+            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
         return function(selector, callback, once) {
-            var animationName = _.uniqueId("DOM"),
+            var animationName = _uniqueId("DOM"),
                 cancelBubbling = function(e) {
                     if (e.animationName === animationName) e.stopPropagation();
                 },
@@ -38,7 +38,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
                         callback(DOMElement(el));
                     }
                 },
-                animationNames = _.reduce(watchers, function(res, watcher) {
+                animationNames = _foldl(watchers, function(res, watcher) {
                     if (watcher.selector === selector) res.push(watcher.animationName);
 
                     return res;
@@ -57,7 +57,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
                 cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
             );
 
-            _.forEach(startNames, function(name) {
+            _forEach(startNames, function(name) {
                 document.addEventListener(name, watcher, false);
             });
 
@@ -76,7 +76,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
                         if (once) el.on("htc:watch", cancelCallback, {args: ["detail"]});
 
                         // do not execute callback if it was previously excluded
-                        if (_.every(canceledCallbacks, isNotEqualToCallback)) {
+                        if (_every(canceledCallbacks, isNotEqualToCallback)) {
                             callback(el);
                         }
                     };
@@ -85,12 +85,12 @@ define(["DOM", "Element"], function(DOM, DOMElement, slice) {
 
                 DOM.on("htc:watch " + selector, watcher, {args: ["detail", "target"]});
 
-                if (_.some(watchers, haveWatcherWithTheSameSelector)) {
+                if (_some(watchers, haveWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
                     // because the behaviour is already attached to selector
                     // also execute the callback safely
-                    _.forEach(DOM.findAll(selector), function(el) {
-                        _.defer(function() { callback(el); });
+                    _forEach(DOM.findAll(selector), function(el) {
+                        _defer(function() { callback(el); });
                     });
                 } else {
                     DOM.importStyles(selector, { behavior: behaviorUrl });

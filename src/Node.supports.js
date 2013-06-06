@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, createElement) {
+define(["Node"], function(DOMNode, _createElement) {
     "use strict";
 
     /**
@@ -17,7 +17,7 @@ define(["Node"], function(DOMNode, createElement) {
     DOMNode.prototype.supports = function(prop, tagName) {
         tagName = tagName || this && this._node.nodeName.toLowerCase();
 
-        var el = tagName ? createElement(tagName) : document,
+        var el = tagName ? _createElement(tagName) : document,
             isSupported = prop in el;
 
         if (!isSupported && !prop.indexOf("on")) {

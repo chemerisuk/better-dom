@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, parseFragment) {
+define(["Element"], function(DOMElement, _parseFragment) {
     "use strict";
 
     // MANIPULATION
@@ -7,7 +7,7 @@ define(["Element"], function(DOMElement, parseFragment) {
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use parseFragment because of HTML5 and NoScope bugs in IE
+            // always use _parseFragment because of HTML5 and NoScope bugs in IE
             /*@ fasterMethodName = false; @*/
 
             return function(value, /*INTERNAL*/reverse) {
@@ -19,7 +19,7 @@ define(["Element"], function(DOMElement, parseFragment) {
                 if (typeof value === "string") {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
-                    relatedNode = fasterMethodName ? null : parseFragment(value);
+                    relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
                     relatedNode = value;
                 } else if (value instanceof DOMElement) {

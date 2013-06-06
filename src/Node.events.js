@@ -1,9 +1,10 @@
-define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, handleObjectParam) {
+define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, _isArray, _map, _forEach, _forOwn) {
     "use strict";
 
     (function() {
         var eventHooks = {},
             veto = false,
+            processObjectParam = function(value, name) { this.on(name, value); },
             createEventHandler = function(type, selector, context, callback, options, extras, thisArg) {
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
@@ -19,7 +20,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
                             // populate extra event arguments
                             if (options.args) {
-                                args = _.map(options.args, eventHelper.get, eventHelper);
+                                args = _map(options.args, eventHelper.get, eventHelper);
                                 
                                 if (extras) args.push.apply(args, extras);
                             } else {
@@ -76,7 +77,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     context = this;
                 }
 
-                if (_.isArray(options)) {
+                if (_isArray(options)) {
                     args = options;
                     options = {};
                 }
@@ -113,7 +114,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 // store event entry
                 this._listeners.push(handler);
             } else if (eventType === "object") {
-                _.forOwn(type, handleObjectParam("on"), this);
+                _forOwn(type, processObjectParam, this);
             } else {
                 throw this.makeError("on");
             }
@@ -139,7 +140,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 context = undefined;
             }
 
-            _.forEach(this._listeners, function(handler, index, events) {
+            _forEach(this._listeners, function(handler, index, events) {
                 var node = this._node;
 
                 if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
@@ -234,7 +235,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
         // firefox doesn't support focusin/focusout events
         if (DOMNode.prototype.supports("onfocusin", "input")) {
-            _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+            _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
         } else {

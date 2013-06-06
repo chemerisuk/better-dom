@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement) {
+define(["Element"], function(DOMElement, _forEach, _foldl) {
     "use strict";
 
     /**
@@ -12,12 +12,12 @@ define(["Element"], function(DOMElement) {
             };
 
         if (el.elements) {
-            result = _.reduce(el.elements, function(parts, field) {
+            result = _foldl(el.elements, function(parts, field) {
                 if (field.name) { // don't include form fields without names
                     switch(field.type) {
                     case "select-one":
                     case "select-multiple":
-                        _.forEach(field.options, function(option) {
+                        _forEach(field.options, function(option) {
                             if (option.selected) {
                                 parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
                             }

@@ -15,7 +15,7 @@ define(["Element"], function(DOMElement) {
         el = this._node.cloneNode(true);
         /*@
         } else {
-            el = createElement("div");
+            el = _createElement("div");
             el.innerHTML = this._node.outerHTML;
             el = el.firstChild;
         }

@@ -8,12 +8,9 @@
     "ignore": [
         ".*",
         "test",
-        "extra",
         "src"
     ],
-    "dependencies": {
-        "lodash": "1.2.1"
-    },
+    "dependencies": {},
     "devDependencies": {
         "jquery": "1.10.0",
         "google-code-prettify": "1.0.0",

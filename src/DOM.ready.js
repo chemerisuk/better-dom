@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM/*@, createElement@*/) {
+define(["DOM"], function(DOM, _defer, _forEach) {
     "use strict";
 
     (function() {
@@ -11,7 +11,7 @@ define(["DOM"], function(DOM/*@, createElement@*/) {
 
                 if (readyCallbacks) {
                     // safely trigger callbacks
-                    _.forEach(readyCallbacks, _.defer);
+                    _forEach(readyCallbacks, _defer);
                     // cleanup
                     readyCallbacks = null;
                 }
@@ -28,7 +28,7 @@ define(["DOM"], function(DOM/*@, createElement@*/) {
             window.attachEvent("onload", pageLoaded);
 
             (function() {
-                var testDiv = createElement("div"),
+                var testDiv = _createElement("div"),
                     isTop;
                 
                 try {
@@ -70,7 +70,7 @@ define(["DOM"], function(DOM/*@, createElement@*/) {
             if (readyCallbacks) {
                 readyCallbacks.push(callback);
             } else {
-                _.defer(callback);
+                _defer(callback);
             }
         };
     })();

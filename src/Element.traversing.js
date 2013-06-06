@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher) {
+define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter) {
     "use strict";
 
     // TRAVERSING
@@ -38,7 +38,7 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher) {
                 /*@
                 if (!document.addEventListener) {
                     // fix IE8 bug with children collection
-                    children = _.filter(children, function(el) {
+                    children = _filter(children, function(el) {
                         return el.nodeType === 1;
                     });
                 }
@@ -46,7 +46,7 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher) {
 
                 if (multiple) {
                     return new DOMCollection(!matcher ? children :
-                        _.filter(children, matcher.test, matcher));
+                        _filter(children, matcher.test, matcher));
                 }
 
                 if (index < 0) index = children.length + index;

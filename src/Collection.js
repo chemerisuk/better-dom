@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, slice) {
+define(["Element"], function(DOMElement, slice, _forEach) {
     "use strict";
 
     // DOMCollection
@@ -20,7 +20,7 @@ define(["Element"], function(DOMElement, slice) {
 
                 this.length = elements.length;
             
-                _.forEach(elements, initialize, this);
+                _forEach(elements, initialize, this);
             },
             props;
 
@@ -36,7 +36,7 @@ define(["Element"], function(DOMElement, slice) {
         }
         @*/
 
-        _.forEach(props, function(key) {
+        _forEach(props, function(key) {
             if (key !== "length") DOMCollection.prototype[key] = undefined;
         });
 

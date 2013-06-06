@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMCollection) {
+define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId) {
     "use strict";
 
     (function() {
@@ -9,7 +9,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection) {
         var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rescape = /'|\\/g,
-            tmpId = _.uniqueId("DOM");
+            tmpId = _uniqueId("DOM");
 
         /*@
         if (!document.getElementsByClassName) {

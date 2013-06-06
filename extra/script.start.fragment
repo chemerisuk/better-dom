@@ -6,7 +6,7 @@
  * @license MIT
  * @see <%= pkg.repository.url %>
  */
-(function(window, document, slice, undefined) {
+(function(window, document, undefined) {
     "use strict";/*@cc_on@*/
 
     if (document.__dom__) return; // prevent double initialization

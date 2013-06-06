@@ -8,7 +8,7 @@ describe("DOM.mock", function() {
         expect(el._node).toBeNull();
     });
 
-    it("should populate instance with extensino methods", function() {
+    it("should populate instance with extension methods", function() {
         setFixtures("<div class='mock'></div>");
 
         var method = function() {}, field = new Date();

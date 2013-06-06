@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, slice) {
+define(["Element"], function(DOMElement, _slice, _forEach) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -13,7 +13,7 @@ define(["Element"], function(DOMElement, slice) {
             return function() {
                 var result = true;
 
-                _.forEach(slice.call(arguments), function(className) {
+                _forEach(_slice(arguments), function(className) {
                     if (typeof className !== "string") throw this.makeError(methodName);
 
                     if (this._node.classList) {

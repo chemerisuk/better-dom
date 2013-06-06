@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, createElement, parseFragment) {
+define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _parseFragment) {
     "use strict";
 
     (function(){
@@ -13,11 +13,11 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement, parseFragmen
         DOM.create = function(value) {
             if (typeof value === "string") {
                 if (value.match(rquick)) {
-                    value = createElement(value);
+                    value = _createElement(value);
                 } else {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
-                    value = parseFragment(value);
+                    value = _parseFragment(value);
                 }
             }
 
@@ -27,7 +27,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, createElement, parseFragmen
                 if (value.childNodes.length === 1) {
                     value = value.firstChild;
                 } else {
-                    var div = createElement("div");
+                    var div = _createElement("div");
 
                     div.appendChild(value);
 

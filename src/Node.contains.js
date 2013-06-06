@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMCollection) {
+define(["Node"], function(DOMNode, DOMElement, DOMCollection, _forEach) {
     "use strict";
 
     (function() {
@@ -31,7 +31,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection) {
             } else if (element instanceof DOMElement) {
                 result = element.contains(node, true);
             } else if (element instanceof DOMCollection) {
-                _.forEach(element, function(element) {
+                _forEach(element, function(element) {
                     result = result && element.contains(node, true);
                 });
             } else {

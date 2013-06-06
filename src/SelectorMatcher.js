@@ -1,4 +1,4 @@
-define([], function() {
+define([], function(_foldl) {
     "use strict";
 
     /**
@@ -26,7 +26,7 @@ define([], function() {
                     return selector ? new SelectorMatcher(selector) : null;
                 }
             },
-            matchesProp = _.reduce("m oM msM mozM webkitM".split(" "), function(result, prefix) {
+            matchesProp = _foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
                 return result || document.documentElement[propertyName] && propertyName;

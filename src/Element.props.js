@@ -1,4 +1,4 @@
-define(["Node", "Element"], function(DOMNode, DOMElement, parseFragment, handleObjectParam) {
+define(["Node", "Element"], function(DOMNode, DOMElement, _parseFragment, _forEach, _forOwn) {
     "use strict";
 
     // GETTER / SETTER
@@ -6,9 +6,10 @@ define(["Node", "Element"], function(DOMNode, DOMElement, parseFragment, handleO
 
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function() { throw this.makeError("get"); };
+            throwIllegalAccess = function() { throw this.makeError("get"); },
+            processObjectParam = function(value, name) { this.set(name, value); };
         // protect access to some properties
-        _.forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
+        _forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
             propHooks[key] = propHooks[key.replace("Element", "")] = {
                 get: throwIllegalAccess,
                 set: throwIllegalAccess
@@ -26,7 +27,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, parseFragment, handleO
         propHooks.innerHTML = {
             set: function(el, value) {
                 el.innerHTML = "";
-                el.appendChild(parseFragment(value));
+                el.appendChild(_parseFragment(value));
             }
         };
         
@@ -85,7 +86,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, parseFragment, handleO
                 valueType = typeof value;
 
             if (nameType === "object") {
-                _.forOwn(name, handleObjectParam("set"), this);
+                _forOwn(name, processObjectParam, this);
             } else {
                 if (value === undefined) {
                     valueType = nameType;
@@ -100,7 +101,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, parseFragment, handleO
                 }
 
                 if (nameType === "string") {
-                    _.forEach(name.split(" "), function(name) {
+                    _forEach(name.split(" "), function(name) {
                         var hook = propHooks[name];
 
                         if (hook) {
