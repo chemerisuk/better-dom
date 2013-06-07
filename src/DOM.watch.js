@@ -49,7 +49,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
 
             DOM.importStyles(
                 "@" + cssPrefix + "keyframes " + animationName,
-                "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                "from {clip: rect(1px,auto,auto,auto)} to {clip: rect(0px,auto,auto,auto)}"
             );
 
             DOM.importStyles(
@@ -65,8 +65,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
         };
         /*@
         } else {
-            var styles = document.styleSheets,
-                behaviorUrl = /url\((.+)\)/.exec(styles[styles.length - 1].cssText)[0];
+            var behaviorUrl = /url\((.+)\)/.exec(document.body.style.cssText)[0];
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },

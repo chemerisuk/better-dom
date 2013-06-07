@@ -6,19 +6,15 @@
 
     <title>better-dom specs</title>
 
-    <link rel="stylesheet" type="text/css" href="../components/jasmine/lib/jasmine-core/jasmine.css">
+    <link rel="stylesheet" href="../components/jasmine/lib/jasmine-core/jasmine.css">
 
+    <script src="../components/lodash/lodash.js"></script>
     <script src="../components/jasmine/lib/jasmine-core/jasmine.js"></script>
     <script src="../components/jasmine/lib/jasmine-core/jasmine-html.js"></script>
 
     <script src="lib/jasmine-dom/jasmine-dom-fixtures.js"></script>
     <script src="lib/jasmine-dom/jasmine-dom-matchers.js"></script>
 
-    <!-- include source files here... -->
-    <script src="../components/lodash/lodash.js"></script>
-    <!--[if IE]><style>html{-ms-behavior:url(../build/better-dom.htc)}</style>
-    <!-->   <script src="../build/better-dom.js"></script><!--<![endif]-->
-    
     <!-- include spec files here... -->
     <script src="spec/find.spec.js"></script>
     <script src="spec/clone.spec.js"></script>
@@ -42,7 +38,7 @@
     <script src="spec/mock.spec.js"></script>
 
 </head>
-<body>
+<body style="-ms-behavior: url(../build/better-dom.htc)">
     <script type="text/javascript">
     (function() {
         var jasmineEnv = jasmine.getEnv(),
@@ -60,5 +56,6 @@
         };
     })();
     </script>
+    <!--[if !IE]>--><script src="../build/better-dom.js"></script><!--<![endif]-->
 </body>
 </html>

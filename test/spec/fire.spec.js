@@ -31,8 +31,8 @@ describe("fire", function() {
 
     it("should trigger native methods if they exist", function() {
         input.fire("focus");
-
         expect(input._node).toBe(document.activeElement);
+        expect(input.isFocused()).toBe(true);
     });
 
     it("should trigger custom events", function() {

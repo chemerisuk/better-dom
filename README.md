@@ -18,11 +18,21 @@ Use [bower](http://bower.io/) to download the library with its dependencies:
 
 This will clone the latest version of the better-dom into the `components` directory at the root of your project.
 
-Then append the following script on your page:
+Then include `js` and `htc` files on your page like below:
 
 ```html
-<script src="components/lodash/lodash.js"></script>
-<script src="components/better-dom/better-dom.js" data-htc="components/better-dom/better-dom.htc"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- force IE to use the latest version of the browser engine -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    ...    
+</head>
+<body style="-ms-behavior: url(/components/better-dom/better-dom.htc)">
+    ...
+    <!--[if !IE]>--><script src="/components/better-dom/better-dom.js"></script><!--<![endif]-->    
+</body>
+</html>
 ```
 
 Compatablity
