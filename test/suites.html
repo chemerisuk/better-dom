@@ -25,8 +25,6 @@
 
     <!-- libs -->
     <script src="../components/jquery/jquery.js"></script>
-    <script src="../components/lodash/lodash.js"></script>
-    <script src="../build/better-dom.js" data-htc="../extra/better-dom.htc"></script>
   </head>
 
   <body>
@@ -68,6 +66,11 @@
           prettyPrint();
         };
       })();
+    </script>
+    <script>
+    (function(D,O,M){M=D.documentElement;M.addBehavior?(M.setAttribute("data-htc",
+    O=O.substr(0,O.length-2)+"htc"),M.addBehavior(O)):(M=D.createElement("script"),
+    M.async=!1,M.src=O,D.head.appendChild(M))})(document,"../build/better-dom.js");
     </script>
   </body>
 </html>

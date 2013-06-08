@@ -65,7 +65,8 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
         };
         /*@
         } else {
-            var behaviorUrl = /url\((.+)\)/.exec(document.body.style.cssText)[0];
+            var behaviorUrl = docEl.getAttribute("data-htc");
+            docEl.removeAttribute("data-htc");
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
@@ -92,7 +93,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
                         _defer(function() { callback(el); });
                     });
                 } else {
-                    DOM.importStyles(selector, { behavior: behaviorUrl });
+                    DOM.importStyles(selector, {behavior: "url(" + behaviorUrl + ")"});
                 }
 
                 watchers.push(watcher);

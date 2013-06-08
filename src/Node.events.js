@@ -11,7 +11,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     defaultEventHandler = function(e) {
                         if (veto !== type) {
                             var eventHelper = new EventHelper(e/*@ || window.event@*/, currentTarget),
-                                fn = (typeof callback === "function" ? callback : context[callback]),
+                                fn = typeof callback === "function" ? callback : context[callback],
                                 args;
 
                             // handle modifiers
@@ -32,19 +32,19 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     };
 
                 return !selector ? defaultEventHandler : function(e) {
-                    var target = /*@ window.event ? window.event.srcElement : @*/e.target;
+                    var el = /*@ window.event ? window.event.srcElement : @*/e.target;
 
-                    for (; target && target !== currentTarget; target = target.parentNode) {
-                        if (matcher.test(target)) {
-                            return defaultEventHandler(e);
+                    for (; el && el !== currentTarget; el = el.parentNode) {
+                        if (matcher.test(el)) {
+                            defaultEventHandler(e);
+
+                            break;
                         }
                     }
                 };
             }/*@,
-            createCustomEventHandler = function(originalHandler) {
+            createCustomEventHandler = function(originalHandler, type) {
                 var handler = function() {
-                        var type = originalHandler.type.split(" ")[0];
-
                         if (window.event._type === type) originalHandler();
                     };
 
@@ -58,11 +58,11 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         /**
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
-         * @param  {String}   type    event type
+         * @param  {String}   type event type
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback
-         * @param  {Array}    [args] extra arguments
          * @param  {Object}   [options] callback options
+         * @param  {Array}    [args] extra arguments
          * @return {DOMNode}  current context
          */
         DOMNode.prototype.on = function(type, context, callback, options, args) {
@@ -103,10 +103,8 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 /*@
                 } else {
-                    if (~type.indexOf(":") || handler.custom) {
-                        // handle custom events for IE8
-                        handler = createCustomEventHandler(handler);
-                    }
+                    // handle custom events for IE8
+                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventHandler(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }

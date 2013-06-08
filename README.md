@@ -28,9 +28,13 @@ Then include `js` and `htc` files on your page like below:
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     ...    
 </head>
-<body style="-ms-behavior: url(/components/better-dom/better-dom.htc)">
+<body>
     ...
-    <!--[if !IE]>--><script src="/components/better-dom/better-dom.js"></script><!--<![endif]-->    
+    <script>
+    (function(D,O,M){M=D.documentElement;M.addBehavior?(M.setAttribute("data-htc",
+    O=O.substr(0,O.length-2)+"htc"),M.addBehavior(O)):(M=D.createElement("script"),
+    M.async=!1,M.src=O,D.head.appendChild(M))})(document,"/components/better-dom/better-dom.js");
+    </script>  
 </body>
 </html>
 ```
