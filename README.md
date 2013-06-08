@@ -1,6 +1,7 @@
 better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 ==========
-Modern javascript library for working with DOM. 
+Modern javascript library for working with DOM.
+Making DOM to be nice
 
 JSDoc - http://chemerisuk.github.io/better-dom/
 
@@ -18,13 +19,13 @@ Use [bower](http://bower.io/) to download the library with its dependencies:
 
 This will clone the latest version of the better-dom into the `components` directory at the root of your project.
 
-Then include `js` and `htc` files on your page like below:
+Then include the library on your page with the script below:
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- force IE to use the latest version of the browser engine -->
+    <!-- force IE to use the best version of the browser engine -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     ...    
 </head>
@@ -48,6 +49,42 @@ Moreover you can use DOM extentions with any other AJAX-library because they are
 Ajax-friendly
 -------------
 The idea is to write DOM plugins in declaratively. `DOM.extend` is used to implement a new extension and the coolest thing is that any matched HTML element is automatically captured by the library even in dynamic content. As a result it's much simpler to write [polyfills](#quick-example-placeholder-polyfill) or to create your own web components for a single-page website.
+
+Event handling
+--------------
+Events handling is a big part of writing code for DOM. And there are some features included to the library that force developers to use best practicises.
+
+> Get rid of the event object
+ 
+Event handlers don't own an event object now and this thing improves testability of your code:
+
+```js
+// NOTICE: handler don't have e as the first argument
+DOM.find("#link").on("click", function() {...});
+// NOTICE: options argument
+DOM.find("#link").on("keydown", function(keyCode, altKey) {...}, {args: ["keyCode", "altKey"]});
+```
+
+> Call preventDefault() or stopPropagation() before logic
+
+It's a common situation to work with unsafe code that can throw an exception. If preventDefault() or stopPropagation() are called at the end of logic than program may start to work unexpected.
+
+```js
+// NOTICE: preventDefault is always called before the handler
+DOM.find("#link").on("click", handler, {cancel: true});
+// NOTICE: stopPropagation os always called before the handler
+DOM.find("#link").on("click", handler, {stop: true});
+```
+
+> Callback systems are brittle
+
+If any of the callback functions throw an error then the subsequent callbacks are not executed. In reality, this means that a poorly written plugin can prevent other plugins from initialising (read  http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/ for additional details).
+
+```js
+DOM.ready(function() { throw Error("exception in a bad code"); });
+// NOTICE: you'll always see the message in console
+DOM.ready(function() { console.log("Nothing can break your code") });
+```
 
 Performance
 -----------
