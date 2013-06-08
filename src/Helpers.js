@@ -23,7 +23,7 @@ define([], function() {
         makeCollectionMethod = (function(){
             var tpl = "", args = {
                     BEFORE: "",
-                    COUNT:  "list ? list.length : 0",
+                    COUNT:  "a ? a.length : 0",
                     BODY:   "",
                     AFTER:  ""
                 };
@@ -40,38 +40,38 @@ define([], function() {
                     code = code.replace("%" + key + "%", options[key] || args[key]);
                 }
 
-                return Function("list", "callback", "optional", "undefined", code);
+                return Function("a", "cb", "that", "undefined", code);
             };
         })(),
         _forEach = makeCollectionMethod({
-            BODY:   "callback.call(optional, list[i], i, list)"
+            BODY:   "cb.call(that, a[i], i, a)"
         }),
         _times = makeCollectionMethod({
-            COUNT:  "list",
-            BODY:   "callback.call(optional, i)"
+            COUNT:  "a",
+            BODY:   "cb.call(that, i)"
         }),
         _map = makeCollectionMethod({
-            BEFORE: "var result = []",
-            BODY:   "result.push(callback.call(optional, list[i], i, list))",
-            AFTER:  "return result"
+            BEFORE: "var out = []",
+            BODY:   "out.push(cb.call(that, a[i], i, a))",
+            AFTER:  "return out"
         }),
         _some = makeCollectionMethod({
-            BODY:   "if (callback.call(optional, list[i], i, list) === true) return true",
+            BODY:   "if (cb.call(that, a[i], i, a) === true) return true",
             AFTER:  "return false"
         }),
         _every = makeCollectionMethod({
-            BEFORE: "var result = true",
-            BODY:   "result = result && callback.call(optional, list[i], list)",
-            AFTER:  "return result"
+            BEFORE: "var out = true",
+            BODY:   "out = out && cb.call(that, a[i], a)",
+            AFTER:  "return out"
         }),
         _filter = makeCollectionMethod({
-            BEFORE: "var result = []",
-            BODY:   "if (callback.call(optional, list[i], i, list)) result.push(list[i])",
-            AFTER:  "return result"
+            BEFORE: "var out = []",
+            BODY:   "if (cb.call(that, a[i], i, a)) out.push(a[i])",
+            AFTER:  "return out"
         }),
         _foldl = makeCollectionMethod({
-            BODY:   "optional = !i && optional === undefined ? list[i] : callback(optional, list[i], i, list)",
-            AFTER:  "return optional"
+            BODY:   "that = !i && that === undefined ? a[i] : cb(that, a[i], i, a)",
+            AFTER:  "return that"
         }),
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index || 0);
@@ -83,15 +83,6 @@ define([], function() {
         // Object utilites
         // ---------------
         
-        _keys = Object.keys || function(obj) {
-            var result = [], prop;
-     
-            for (prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) result.push(prop);
-            }
-
-            return result;
-        },
         _forOwn = function(obj, callback, thisPtr) {
             for (var prop in obj) {
                 if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
@@ -102,6 +93,17 @@ define([], function() {
                 callback.call(thisPtr, obj[prop], prop, obj);
             }
         },
+        _keys = Object.keys || (function() {
+            var collectKeys = function(value, key) { this.push(key); };
+
+            return function(obj) {
+                var result = [];
+
+                _forOwn(obj, collectKeys, result);
+
+                return result;
+            };
+        }()),
         _extend = function(obj, name, value) {
             if (arguments.length === 3) {
                 obj[name] = value;
