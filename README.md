@@ -5,12 +5,6 @@ Making DOM to be nice
 
 JSDoc - http://chemerisuk.github.io/better-dom/
 
-Overview
---------
-Everybody who manipulated DOM via vanilla javascript knows that it is an awful API. Current specification has bugs, browser behavior incosistences etc. The library tries to fix that: it introduces it's own more friednly types for document nodes with developer-fiendly APIs.
-
-Important to note that it covers only DOM so, for instance, there are no methods for working with AJAX.
-
 Installation
 ------------
 Use [bower](http://bower.io/) to download the library with its dependencies:
@@ -40,90 +34,13 @@ Then include the library on your page with the script below:
 </html>
 ```
 
-Compatablity
-------------
-The library introduces it's own objects for working with DOM. It doesn't modify any native prototypes. `DOM` is actually the only one global variable.
+Unobtrusive extensions
+----------------------
+The idea is to write DOM additions declaratively. `DOM.extend` used to define a new extension and after the call any existing matched element will be initialized with an appropriate constructor. But the coolest thing is that the same will happen even for HTML content inserted dynamically via `innerHTML` or any other javascript framework.
 
-Moreover you can use DOM extentions with any other AJAX-library because they are...
+No need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea) or to write [polyfills](#placeholder-polyfill) for old browsers.
 
-Ajax-friendly
--------------
-The idea is to write DOM plugins in declaratively. `DOM.extend` is used to implement a new extension and the coolest thing is that any matched HTML element is automatically captured by the library even in dynamic content. As a result it's much simpler to write [polyfills](#quick-example-placeholder-polyfill) or to create your own web components for a single-page website.
-
-Event handling
---------------
-Events handling is a big part of writing code for DOM. And there are some features included to the library that force developers to use best practicises.
-
-> Get rid of the event object
- 
-Event handlers don't own an event object now and this thing improves testability of your code:
-
-```js
-// NOTICE: handler don't have e as the first argument
-DOM.find("#link").on("click", function() {...});
-// NOTICE: options argument
-DOM.find("#link").on("keydown", function(keyCode, altKey) {...}, {args: ["keyCode", "altKey"]});
-```
-
-> Call preventDefault() or stopPropagation() before logic
-
-It's a common situation to work with unsafe code that can throw an exception. If preventDefault() or stopPropagation() are called at the end of logic than program may start to work unexpected.
-
-```js
-// NOTICE: preventDefault is always called before the handler
-DOM.find("#link").on("click", handler, {cancel: true});
-// NOTICE: stopPropagation os always called before the handler
-DOM.find("#link").on("click", handler, {stop: true});
-```
-
-> Callback systems are brittle
-
-If any of the callback functions throw an error then the subsequent callbacks are not executed. In reality, this means that a poorly written plugin can prevent other plugins from initialising (read  http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/ for additional details).
-
-```js
-DOM.ready(function() { throw Error("exception in a bad code"); });
-// NOTICE: you'll always see the message in console
-DOM.ready(function() { console.log("Nothing can break your code") });
-```
-
-Performance
------------
-DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.
-
-Quick example: placeholder polyfill
------------------------------------
-It's pretty simple to write polyfills, because you do not need to worry about monitoring if an appropriate element found in DOM:
-
-```js
-DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
-    holder: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
-}, {
-    constructor: function(tpl) {
-        var offset = this.offset(),
-            holder = tpl.holder;
-
-        holder
-            .set(this.get("placeholder"))
-            .setStyle("width", offset.right - offset.left)
-            .on("click", this.fire, ["focus"], this);
-
-        this.on("focus", holder.hide, [], holder);
-        this.on("blur", this._showPlaceholder, [holder]);
-
-        if (this.get() || this.isFocused()) holder.hide();
-
-        this.before(holder);
-    },
-    _showPlaceholder: function(holder) {
-        if (!this.get()) holder.show();
-    }
-});
-```
-
-See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open in IE < 10)
-
-More complex example: elastic textarea
---------------------------------------
+### elastic textarea
 This is a textarea extension which autoresizes textarea to contain all text:
 
 ```js
@@ -172,11 +89,73 @@ DOM.importStyles("textarea.elastic", {
 ```
 See it in action: http://chemerisuk.github.io/better-elastic-textarea/
 
-Another example: dateinput polyfill
------------------------------------
-See the extension repository at https://github.com/chemerisuk/better-dateinput-polyfill.
+### placeholder polyfill
+```js
+DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
+    holder: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
+}, {
+    constructor: function(tpl) {
+        var offset = this.offset(),
+            holder = tpl.holder;
 
-Specs examples (using jasmine) are included.
+        holder
+            .set(this.get("placeholder"))
+            .setStyle("width", offset.right - offset.left)
+            .on("click", this.fire, ["focus"], this);
+
+        this.on("focus", holder.hide, [], holder);
+        this.on("blur", this._showPlaceholder, [holder]);
+
+        if (this.get() || this.isFocused()) holder.hide();
+
+        this.before(holder);
+    },
+    _showPlaceholder: function(holder) {
+        if (!this.get()) holder.show();
+    }
+});
+```
+See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open in IE < 10)
+
+Event handling
+--------------
+Events handling is a big part of writing code for DOM. And there are some features included to the library that force developers to use best practicises.
+
+> Get rid of the event object
+ 
+Event handlers don't own an event object now and this thing improves testability of your code:
+
+```js
+// NOTICE: handler don't have e as the first argument
+DOM.find("#link").on("click", function() {...});
+// NOTICE: options argument
+DOM.find("#link").on("keydown", function(keyCode, altKey) {...}, {args: ["keyCode", "altKey"]});
+```
+
+> Call preventDefault() or stopPropagation() before logic
+
+It's a common situation to work with unsafe code that can throw an exception. If preventDefault() or stopPropagation() are called at the end of logic than program may start to work unexpected.
+
+```js
+// NOTICE: preventDefault is always called before the handler
+DOM.find("#link").on("click", handler, {cancel: true});
+// NOTICE: stopPropagation os always called before the handler
+DOM.find("#link").on("click", handler, {stop: true});
+```
+
+> Callback systems are brittle
+
+If any of the callback functions throw an error then the subsequent callbacks are not executed. In reality, this means that a poorly written plugin can prevent other plugins from initialising (read  http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/ for additional details).
+
+```js
+DOM.ready(function() { throw Error("exception in a bad code"); });
+// NOTICE: you'll always see the message in console
+DOM.ready(function() { console.log("Nothing can break your code") });
+```
+
+Performance
+-----------
+DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.
 
 Browser support
 ---------------
