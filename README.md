@@ -1,26 +1,21 @@
 better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 ==========
-Modern javascript library for working with DOM.
-Making DOM to be nice
-
-JSDoc - http://chemerisuk.github.io/better-dom/
+It's all about making DOM to be nice.
 
 Installation
 ------------
-Use [bower](http://bower.io/) to download the library with its dependencies:
+The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the better-dom into the `components` directory at the root of your project.
+This will clone the latest version of the library into the `components` directory at the root of your project.
 
-Then include the library on your page with the script below:
+Then include script below on your web page:
 
 ```html
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- force IE to use the best version of the browser engine -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     ...    
 </head>
 <body>
@@ -29,7 +24,7 @@ Then include the library on your page with the script below:
     (function(D,O,M){M=D.documentElement;M.addBehavior?(M.setAttribute("data-htc",
     O=O.substr(0,O.length-2)+"htc"),M.addBehavior(O)):(M=D.createElement("script"),
     M.async=!1,M.src=O,D.head.appendChild(M))})(document,"/components/better-dom/better-dom.js");
-    </script>  
+    </script>
 </body>
 </html>
 ```
@@ -40,8 +35,8 @@ The idea is to write DOM additions declaratively. `DOM.extend` used to define a 
 
 No need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea) or to write [polyfills](#placeholder-polyfill) for old browsers.
 
-### elastic textarea
-This is a textarea extension which autoresizes textarea to contain all text:
+#### elastic textarea
+This is a textarea extension which autoresizes itself to contain all entered text:
 
 ```js
 DOM.extend("textarea.elastic", {
@@ -89,7 +84,7 @@ DOM.importStyles("textarea.elastic", {
 ```
 See it in action: http://chemerisuk.github.io/better-elastic-textarea/
 
-### placeholder polyfill
+#### placeholder polyfill
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
     holder: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
@@ -117,9 +112,9 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
 ```
 See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open in IE < 10)
 
-Event handling
---------------
-Events handling is a big part of writing code for DOM. And there are some features included to the library that force developers to use best practicises.
+Event handling best practices
+-----------------------------
+Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to use best practicises for solving their problems.
 
 > Get rid of the event object
  

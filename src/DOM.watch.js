@@ -70,13 +70,13 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
-                    isNotEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
+                    isEqualToCallback = function(otherCallback) { return otherCallback === callback; },
                     cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
                     watcher = function(canceledCallbacks, el) {
                         if (once) el.on("htc:watch", cancelCallback, {args: ["detail"]});
 
                         // do not execute callback if it was previously excluded
-                        if (_every(canceledCallbacks, isNotEqualToCallback)) {
+                        if (!_some(canceledCallbacks, isEqualToCallback)) {
                             callback(el);
                         }
                     };

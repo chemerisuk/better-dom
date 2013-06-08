@@ -59,11 +59,6 @@ define([], function() {
             BODY:   "if (cb.call(that, a[i], i, a) === true) return true",
             AFTER:  "return false"
         }),
-        _every = makeCollectionMethod({
-            BEFORE: "var out = true",
-            BODY:   "out = out && cb.call(that, a[i], a)",
-            AFTER:  "return out"
-        }),
         _filter = makeCollectionMethod({
             BEFORE: "var out = []",
             BODY:   "if (cb.call(that, a[i], i, a)) out.push(a[i])",
