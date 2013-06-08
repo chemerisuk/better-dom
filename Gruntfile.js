@@ -201,11 +201,11 @@ module.exports = function(grunt) {
                 create: true,
                 include: [
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
-                    "Element.classes", "Element.clone", "Element.manipulation", "Element.matches",
-                    "Element.offset", "Element.props", "Element.styles", "Element.toquerystring",
-                    "Element.traversing", "Element.visibility", "Collection", "MockElement",
-                    "DOM.watch", "DOM.create", "DOM.extend","DOM.parsetemplate", "DOM.ready",
-                    "DOM.importstyles", "DOM.mock", "SelectorMatcher", "EventHelper"
+                    "SelectorMatcher", "EventHelper", "Element.classes", "Element.clone",
+                    "Element.manipulation", "Element.matches", "Element.offset", "Element.props",
+                    "Element.styles", "Element.toquerystring", "Element.traversing",
+                    "Element.visibility", "Collection", "MockElement", "DOM.watch", "DOM.create",
+                    "DOM.extend","DOM.parsetemplate", "DOM.ready", "DOM.importstyles", "DOM.mock"
                 ],
                 onBuildWrite: function (id, path, contents) {
                     if ((/define\(.*?\{/).test(contents)) {

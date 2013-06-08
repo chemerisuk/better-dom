@@ -3,12 +3,7 @@ define(["DOM"], function(DOM, _defer, _forEach) {
 
     (function() {
         var readyCallbacks = [],
-            scrollIntervalId,
             pageLoaded = function() {
-                if (scrollIntervalId) {
-                    clearInterval(scrollIntervalId);
-                }
-
                 if (readyCallbacks) {
                     // safely trigger callbacks
                     _forEach(readyCallbacks, _defer);
@@ -17,7 +12,6 @@ define(["DOM"], function(DOM, _defer, _forEach) {
                 }
             };
 
-        // https://raw.github.com/requirejs/domReady/latest/domReady.js
         /*@
         if (document.addEventListener) {
         @*/
@@ -25,28 +19,7 @@ define(["DOM"], function(DOM, _defer, _forEach) {
         window.addEventListener("load", pageLoaded, false);
         /*@
         } else {
-            window.attachEvent("onload", pageLoaded);
-
-            (function() {
-                var testDiv = _createElement("div"),
-                    isTop;
-                
-                try {
-                    isTop = window.frameElement === null;
-                } catch (e) {}
-
-                //DOMContentLoaded approximation that uses a doScroll, as found by
-                //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-                //but modified by other contributors, including jdalton
-                if (testDiv.doScroll && isTop && window.external) {
-                    scrollIntervalId = setInterval(function () {
-                        try {
-                            testDiv.doScroll();
-                            pageLoaded();
-                        } catch (e) {}
-                    }, 30);
-                }
-            })();
+            DOM.on("htc:watch html", pageLoaded);
         }
         @*/
 
