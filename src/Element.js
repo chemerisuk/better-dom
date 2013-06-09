@@ -1,8 +1,8 @@
 define(["Node"], function(DOMNode, MockElement) {
     "use strict";
     
-    // DOMElement
-    // ----------
+    // DOM ELEMENT
+    // -----------
 
     /**
      * Prototype for a DOM element

@@ -1,8 +1,8 @@
 define(["Helpers"], function() {
     "use strict";
 
-    // DOMNode
-    // -------
+    // DOM NODE
+    // --------
 
     /**
      * Prototype for a DOM node

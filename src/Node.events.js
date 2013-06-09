@@ -1,6 +1,9 @@
 define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, _isArray, _map, _forEach, _forOwn, _makeError) {
     "use strict";
 
+    // DOM EVENTS
+    // ----------
+
     (function() {
         var eventHooks = {},
             veto = false,

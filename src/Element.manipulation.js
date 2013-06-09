@@ -2,8 +2,7 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
     "use strict";
 
     // MANIPULATION
-    // http://www.w3.org/TR/domcore/
-    // 5.2.2 Mutation methods
+    // ------------
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {

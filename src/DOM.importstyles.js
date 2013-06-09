@@ -1,6 +1,9 @@
 define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _makeError) {
     "use strict";
 
+    // IMPORT STYLES
+    // -------------
+
     (function() {
         var styleSheet = (function() {
                 var headEl = document.scripts[0].parentNode;

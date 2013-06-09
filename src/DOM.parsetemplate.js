@@ -1,6 +1,9 @@
 define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
     "use strict";
 
+    // EMMET-LIKE PARSER
+    // -----------------
+
     (function() {
         var operators = { // name / priority object
             "(": 0,

@@ -1,6 +1,9 @@
 define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _parseFragment) {
     "use strict";
 
+    // CREATE ELEMENT
+    // --------------
+
     (function(){
         var rquick = /^[a-z]+$/;
 

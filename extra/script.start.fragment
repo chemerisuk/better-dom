@@ -10,3 +10,4 @@
     "use strict";
 
     if (document.__dom__) return; // prevent double initialization
+    

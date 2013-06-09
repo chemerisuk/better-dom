@@ -1,8 +1,8 @@
 define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeError) {
     "use strict";
 
-    // DOMCollection
-    // --------------------
+    // DOM COLLECTION
+    // --------------
 
     /**
      * Read-only array-like collection of elements

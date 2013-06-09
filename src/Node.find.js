@@ -1,6 +1,9 @@
 define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeError) {
     "use strict";
 
+    // SEARCH BY QUERY
+    // ---------------
+
     (function() {
         // big part of code inspired by Sizzle:
         // https://github.com/jquery/sizzle/blob/master/sizzle.js

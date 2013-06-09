@@ -1,6 +1,9 @@
 define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle) {
     "use strict";
 
+    // WATCH CALLBACK
+    // --------------
+
     /**
      * Execute callback when element with specified selector matches
      * @memberOf DOM

@@ -1,7 +1,7 @@
 define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMCollection, _forEach, _forIn) {
     "use strict";
 
-    // Mock Element
+    // MOCK ELEMENT
     // ------------
 
     function MockElement() {

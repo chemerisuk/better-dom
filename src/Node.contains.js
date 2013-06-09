@@ -1,6 +1,9 @@
 define(["Node"], function(DOMNode, DOMElement, DOMCollection, _forEach, _makeError) {
     "use strict";
 
+    // CONTAINS ELEMENT/COLLECTION
+    // ---------------------------
+
     (function() {
         var containsElement;
 

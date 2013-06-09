@@ -32,8 +32,8 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>" + type + ".html#" + method + " to verify the function call";
         },
 
-        // Collection utilites
-        // -------------------
+        // COLLECTION UTILS
+        // ----------------
         
         makeCollectionMethod = (function(){
             var tpl = "", args = {
@@ -90,8 +90,8 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             return Object.prototype.toString.call(obj) === "[object Array]";
         },
 
-        // Object utilites
-        // ---------------
+        // OBJECT UTILS
+        // ------------
         
         _forOwn = function(obj, callback, thisPtr) {
             for (var prop in obj) {
@@ -126,8 +126,8 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             return obj;
         },
 
-        // DOM utilites
-        // ------------
+        // DOM UTILS
+        // ---------
 
         _getComputedStyle = function(el) {
             return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;

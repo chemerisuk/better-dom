@@ -1,6 +1,9 @@
 define(["Element"], function(DOMElement, _forEach) {
     "use strict";
 
+    // FORM SERIALIZATION
+    // ------------------
+
     /**
      * Serialize element into query string
      * @memberOf DOMElement.prototype

@@ -1,6 +1,9 @@
 define(["Node"], function(DOMNode, _forOwn, _makeError) {
     "use strict";
 
+    // INTERNAL DATA
+    // -------------
+
     (function() {
         var processObjectParam = function(value, name) { this.setData(name, value); };
 
