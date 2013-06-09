@@ -22,35 +22,35 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _parseFragment, _forEa
             }
         };
 
-        /*@
-        // fix NoScope elements in IE < 10
-        propHooks.innerHTML = {
-            set: function(el, value) {
-                el.innerHTML = "";
-                el.appendChild(_parseFragment(value));
-            }
-        };
-        
-        // fix hidden attribute for IE < 10
-        propHooks.hidden = {
-            set: function(el, value) {
-                if (typeof value !== "boolean") {
-                    throw this.makeError("set");
+        if (document.attachEvent) {
+            // fix NoScope elements in IE < 10
+            propHooks.innerHTML = {
+                set: function(el, value) {
+                    el.innerHTML = "";
+                    el.appendChild(_parseFragment(value));
                 }
+            };
+            
+            // fix hidden attribute for IE < 10
+            propHooks.hidden = {
+                set: function(el, value) {
+                    if (typeof value !== "boolean") {
+                        throw this.makeError("set");
+                    }
 
-                el.hidden = value;
+                    el.hidden = value;
 
-                if (value) {
-                    el.setAttribute("hidden", "hidden");
-                } else {
-                    el.removeAttribute("hidden");
+                    if (value) {
+                        el.setAttribute("hidden", "hidden");
+                    } else {
+                        el.removeAttribute("hidden");
+                    }
+
+                    // trigger redraw in IE
+                    el.style.zoom = value ? "1" : "0";
                 }
-
-                // trigger redraw in IE
-                el.style.zoom = value ? "1" : "0";
-            }
-        };
-        @*/
+            };
+        }
 
         /**
          * Get property or attribute by name

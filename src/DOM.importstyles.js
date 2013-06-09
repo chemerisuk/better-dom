@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _createElement) {
+define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach) {
     "use strict";
 
     (function() {
@@ -28,27 +28,23 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement) {
                 throw this.makeError("importStyles");
             }
 
-            /*@
             if (styleSheet.cssRules) {
-            @*/
-            styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
-            /*@
+                styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
             } else {
                 // ie doesn't support multiple selectors in addRule
                 _forEach(selector.split(","), function(selector) {
                     styleSheet.addRule(selector, styles);
                 });
             }
-            @*/
         };
 
-        /*@
-        // corrects block display not defined in IE8/9
-        DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
-        // adds styling not present in IE6/7/8/9
-        DOM.importStyles("mark", "background:#FF0;color:#000");
-        // hides non-rendered elements
-        DOM.importStyles("template,[hidden]", "display:none");
-        @*/
-    })();
+        if (document.attachEvent) {
+            // corrects block display not defined in IE8/9
+            DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
+            // adds styling not present in IE6/7/8/9
+            DOM.importStyles("mark", "background:#FF0;color:#000");
+            // hides non-rendered elements
+            DOM.importStyles("template,[hidden]", "display:none");
+        }
+    }());
 });

@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _every, _forEach, _uniqueId, _getComputedStyle) {
+define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle) {
     "use strict";
 
     /**
@@ -13,60 +13,57 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
         var docEl = document.documentElement,
             watchers = [];
 
-        /*@
         if (!docEl.addBehavior) {
-        @*/
-        // use trick discovered by Daniel Buchner:
-        // https://github.com/csuwldcat/SelectorListener
-        var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-            computed = _getComputedStyle(docEl),
-            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            // use trick discovered by Daniel Buchner:
+            // https://github.com/csuwldcat/SelectorListener
+            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+                computed = _getComputedStyle(docEl),
+                cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
-        return function(selector, callback, once) {
-            var animationName = _uniqueId("DOM"),
-                cancelBubbling = function(e) {
-                    if (e.animationName === animationName) e.stopPropagation();
-                },
-                watcher = function(e) {
-                    var el = e.target;
+            return function(selector, callback, once) {
+                var animationName = _uniqueId("DOM"),
+                    cancelBubbling = function(e) {
+                        if (e.animationName === animationName) e.stopPropagation();
+                    },
+                    watcher = function(e) {
+                        var el = e.target;
 
-                    if (e.animationName === animationName) {
-                        // MUST cancelBubbling first otherwise may have
-                        // unexpected calls in firefox
-                        if (once) el.addEventListener(e.type, cancelBubbling, false);
+                        if (e.animationName === animationName) {
+                            // MUST cancelBubbling first otherwise may have
+                            // unexpected calls in firefox
+                            if (once) el.addEventListener(e.type, cancelBubbling, false);
 
-                        callback(DOMElement(el));
-                    }
-                },
-                animationNames = _foldl(watchers, function(res, watcher) {
-                    if (watcher.selector === selector) res.push(watcher.animationName);
+                            callback(DOMElement(el));
+                        }
+                    },
+                    animationNames = _foldl(watchers, function(res, watcher) {
+                        if (watcher.selector === selector) res.push(watcher.animationName);
 
-                    return res;
-                }, [animationName]);
+                        return res;
+                    }, [animationName]);
 
-            watcher.selector = selector;
-            watcher.animationName = animationName;
+                watcher.selector = selector;
+                watcher.animationName = animationName;
 
-            DOM.importStyles(
-                "@" + cssPrefix + "keyframes " + animationName,
-                "from {clip: rect(1px,auto,auto,auto)} to {clip: rect(0px,auto,auto,auto)}"
-            );
+                DOM.importStyles(
+                    "@" + cssPrefix + "keyframes " + animationName,
+                    "from {clip: rect(1px,auto,auto,auto)} to {clip: rect(0px,auto,auto,auto)}"
+                );
 
-            DOM.importStyles(
-                selector,
-                cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
-            );
+                DOM.importStyles(
+                    selector,
+                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
+                );
 
-            _forEach(startNames, function(name) {
-                document.addEventListener(name, watcher, false);
-            });
+                _forEach(startNames, function(name) {
+                    document.addEventListener(name, watcher, false);
+                });
 
-            watchers.push(watcher);
-        };
-        /*@
+                watchers.push(watcher);
+            };
         } else {
-            var behaviorUrl = docEl.getAttribute("data-htc");
-            docEl.removeAttribute("data-htc");
+            var scripts = document.scripts,
+                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
@@ -99,6 +96,5 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _eve
                 watchers.push(watcher);
             };
         }
-        @*/
-    })();
+    }());
 });

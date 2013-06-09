@@ -12,21 +12,17 @@ define(["DOM"], function(DOM, _defer, _forEach) {
                 }
             };
 
-        /*@
         if (document.addEventListener) {
-        @*/
-        document.addEventListener("DOMContentLoaded", pageLoaded, false);
-        window.addEventListener("load", pageLoaded, false);
-        /*@
+            document.addEventListener("DOMContentLoaded", pageLoaded, false);
+            window.addEventListener("load", pageLoaded, false);
         } else {
             DOM.on("htc:watch html", pageLoaded);
         }
-        @*/
 
         // Catch cases where ready is called after the browser event has already occurred.
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if (/*@ document.attachEvent ? document.readyState === "complete" : @*/document.readyState !== "loading") {
+        if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
             pageLoaded();
         }
 

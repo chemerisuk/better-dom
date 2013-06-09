@@ -26,16 +26,13 @@ define(["Element"], function(DOMElement, slice, _forEach) {
 
         DOMCollection.prototype = [];
 
-        /*@
+        // clean DOMCollection prototype
         if (Object.getOwnPropertyNames) {
-        @*/
-        props = Object.getOwnPropertyNames(Array.prototype);
-        /*@
+            props = Object.getOwnPropertyNames(Array.prototype);
         } else {
-            props = ["toLocaleString", "join", "pop", "push", "concat", "reverse", "shift", "unshift", "slice", "splice", "sort", "indexOf", "lastIndexOf"];
+            props = "toLocaleString join pop push concat reverse shift unshift slice splice sort indexOf lastIndexOf".split(" ");
         }
-        @*/
-
+        
         _forEach(props, function(key) {
             if (key !== "length") DOMCollection.prototype[key] = undefined;
         });
@@ -57,5 +54,5 @@ define(["Element"], function(DOMElement, slice, _forEach) {
         };
 
         return DOMCollection;
-    })();
+    }());
 });

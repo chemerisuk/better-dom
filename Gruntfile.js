@@ -115,42 +115,9 @@ module.exports = function(grunt) {
 
         copy: {
             dist: {
-                options: {
-                    processContent: function(content) {
-                        // remove ie-specific conditional comments
-                        return content.replace(/\/\*@(.|[\r\n])*?@\*\//g, "");
-                    }
-                },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["<%= pkg.name %>.js"]
-                }
-            },
-            dist_htc: {
-                options: {
-                    processContent: function(content) {
-                        var start = grunt.file.read("extra/htc.start.fragment"),
-                            end = grunt.file.read("extra/htc.end.fragment");
-                        // remove htc file header/footer
-                        content = content.replace(start, "").replace(end, "");
-                        // uncomment ie-specific legacy code
-                        return content.replace("\"use strict\";/*@cc_on@*/", "").replace(/(\/\*@)|(@\*\/)/g, "");
-                    }
-                },
-                files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["<%= pkg.name %>.js"]
-                }
-            },
-            wrap_htc: {
-                options: {
-                    processContent: function(content) {
-                        var start = grunt.file.read("extra/htc.start.fragment"),
-                            end = grunt.file.read("extra/htc.end.fragment");
-
-                        return start + content + end;
-                    }
-                },
-                files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["dist/<%= pkg.name %>-<%= pkg.version %>.htc"]
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["<%= pkg.name %>.js"],
+                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["<%= pkg.name %>.htc"]
                 }
             },
             publish: {
@@ -168,17 +135,11 @@ module.exports = function(grunt) {
             },
             dist: {
                 options: {
-                    screwIE8: true,
                     sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.src",
                     sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src"
                 },
                 files: {
                     "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["dist/<%= pkg.name %>-<%= pkg.version %>.js"]
-                }
-            },
-            dist_htc: {
-                files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["dist/<%= pkg.name %>-<%= pkg.version %>.htc"]
                 }
             }
         },
@@ -207,7 +168,7 @@ module.exports = function(grunt) {
                     "Element.visibility", "Collection", "MockElement", "DOM.watch", "DOM.create",
                     "DOM.extend","DOM.parsetemplate", "DOM.ready", "DOM.importstyles", "DOM.mock"
                 ],
-                onBuildWrite: function (id, path, contents) {
+                onBuildWrite: function(id, path, contents) {
                     if ((/define\(.*?\{/).test(contents)) {
                         //Remove AMD ceremony for use without require.js or almond.js
                         contents = contents.replace(/define\(.*?\{\s*"use strict";[\r\n]*/m, "");
@@ -228,22 +189,6 @@ module.exports = function(grunt) {
                         text = text.replace("define(\"DOM\", function(){});\n", "");
                         // write file
                         grunt.file.write(grunt.config.process("build/<%= pkg.name %>.js"), grunt.config.process(text));
-                    }
-                }
-            },
-            compile_htc: {
-                options: {
-                    wrap: {
-                        startFile: ["extra/htc.start.fragment", "extra/script.start.fragment"],
-                        endFile: ["extra/script.end.fragment", "extra/htc.end.fragment"]
-                    },
-                    out: function(text) {
-                        // replace empty define with correct declaration
-                        text = text.replace("define(\"DOM\", function(){});\n", "");
-                        // remove conditional comments
-                        text = text.replace("\"use strict\";/*@cc_on@*/", "").replace(/(\/\*@)|(@\*\/)/g, "");
-                        // write file
-                        grunt.file.write(grunt.config.process("build/<%= pkg.name %>.htc"), grunt.config.process(text));
                     }
                 }
             }
@@ -279,9 +224,7 @@ module.exports = function(grunt) {
     grunt.registerTask("default", [
         "clean",
         "copy:dist",
-        "copy:dist_htc",
-        "uglify",
-        "copy:wrap_htc"
+        "uglify"
     ]);
 
     grunt.registerTask("travis", [
@@ -294,9 +237,7 @@ module.exports = function(grunt) {
         "requirejs:compile",
         "copy:publish",
         "copy:dist",
-        "copy:dist_htc",
         "uglify",
-        "copy:wrap_htc",
         "shell:rollbackPublished",
         "clean"
     ]);

@@ -10,7 +10,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
                         if (veto !== type) {
-                            var eventHelper = new EventHelper(e/*@ || window.event@*/, currentTarget),
+                            var eventHelper = new EventHelper(e || window.event, currentTarget),
                                 fn = typeof callback === "function" ? callback : context[callback],
                                 args;
 
@@ -32,7 +32,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     };
 
                 return !selector ? defaultEventHandler : function(e) {
-                    var el = /*@ window.event ? window.event.srcElement : @*/e.target;
+                    var el = window.event ? window.event.srcElement : e.target;
 
                     for (; el && el !== currentTarget; el = el.parentNode) {
                         if (matcher.test(el)) {
@@ -42,7 +42,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                         }
                     }
                 };
-            }/*@,
+            },
             createCustomEventHandler = function(originalHandler, type) {
                 var handler = function() {
                         if (window.event._type === type) originalHandler();
@@ -53,7 +53,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 handler.callback = originalHandler.callback;
 
                 return handler;
-            }@*/;
+            };
 
         /**
          * Bind a DOM event to the context
@@ -97,18 +97,14 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
                 if (hook = eventHooks[type]) hook(handler);
 
-                /*@
                 if (document.addEventListener) {
-                @*/
-                this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
-                /*@
+                    this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
                     // handle custom events for IE8
                     if (~type.indexOf(":") || handler.custom) handler = createCustomEventHandler(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }
-                @*/
                 // store event entry
                 this._listeners.push(handler);
             } else if (eventType === "object") {
@@ -144,16 +140,12 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
 
-                    /*@
                     if (document.removeEventListener) {
-                    @*/
-                    node.removeEventListener(type, handler, !!handler.capturing);
-                    /*@
+                        node.removeEventListener(type, handler, !!handler.capturing);
                     } else {
                         node.detachEvent("on" + type, handler);
                     }
-                    @*/
-
+                    
                     delete events[index];
                 }
             }, this);
@@ -187,19 +179,16 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
             if (hook) hook(handler);
 
-            /*@
             if (document.dispatchEvent) {
-            @*/
-            event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
-            if (isCustomEvent) {
-                event.initCustomEvent(handler._type || type, true, false, detail);
-            } else {
-                event.initEvent(handler._type || type, true, true);
-            }
+                if (isCustomEvent) {
+                    event.initCustomEvent(handler._type || type, true, false, detail);
+                } else {
+                    event.initEvent(handler._type || type, true, true);
+                }
 
-            canContinue = node.dispatchEvent(event);
-            /*@
+                canContinue = node.dispatchEvent(event);
             } else {
                 event = document.createEventObject();
 
@@ -215,7 +204,6 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
                 canContinue = event.returnValue !== false;
             }
-            @*/
 
             // Call a native DOM method on the target with the same name as the event
             // IE<9 dies on focus/blur to hidden element
@@ -248,7 +236,6 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             };
         }
 
-        /*@
         if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
@@ -317,6 +304,5 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 handler.custom = true;
             };
         }
-        @*/
-    })();
+    }());
 });

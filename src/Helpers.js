@@ -115,7 +115,7 @@ define([], function() {
         // ------------
 
         _getComputedStyle = function(el) {
-            return /*@ !window.getComputedStyle ? el.currentStyle : @*/window.getComputedStyle(el);
+            return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;
         },
         _createElement = function(tagName) {
             return document.createElement(tagName);
@@ -126,7 +126,6 @@ define([], function() {
         _parseFragment = (function() {
             var parser = document.createElement("body");
 
-            /*@
             if (!document.addEventListener) {
                 // Add html5 elements support via:
                 // https://github.com/aFarkas/html5shiv
@@ -169,7 +168,7 @@ define([], function() {
                     )(frag);
                 })();
             }
-            @*/
+
             return function(html) {
                 var fragment = _createFragment();
 
