@@ -1,4 +1,4 @@
-define(["DOM", "MockElement"], function(DOM, MockElement, _extend) {
+define(["DOM", "MockElement"], function(DOM, MockElement, _extend, _makeError) {
     "use strict";
 
     (function() {
@@ -12,7 +12,7 @@ define(["DOM", "MockElement"], function(DOM, MockElement, _extend) {
          */
         DOM.mock = function(selector, mixins) {
             if (selector && typeof selector !== "string" || mixins && typeof mixins !== "object") {
-                throw this.makeError("mock");
+                throw _makeError("mock", this);
             }
 
             if (!mixins) {

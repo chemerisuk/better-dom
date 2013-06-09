@@ -28,7 +28,8 @@ define(["Element"], function(DOMElement, _forEach) {
                         });
                         break;
     
-                    case undefined: // fieldset
+                    case undefined:
+                    case "fieldset": // fieldset
                     case "file": // file input
                     case "submit": // submit button
                     case "reset": // reset button

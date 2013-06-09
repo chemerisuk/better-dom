@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, slice, _forEach, _some, _slice) {
+define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeError) {
     "use strict";
 
     // DOMCollection
@@ -45,15 +45,6 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice) {
         DOMCollection.prototype.length = 0;
 
         /**
-         * Always returns string "DOMCollection"
-         * @memberOf DOMCollection.prototype
-         * @return {String} "DOMCollection" string
-         */
-        DOMCollection.prototype.toString = function () {
-            return "DOMCollection";
-        };
-
-        /**
          * Executes callback on each element in the collection
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
@@ -77,7 +68,7 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice) {
             var args = _slice(arguments, 1);
 
             if (typeof name !== "string") {
-                throw this.makeError("invoke");
+                throw _makeError("invoke", this);
             }
 
             _forEach(this, function(el) {

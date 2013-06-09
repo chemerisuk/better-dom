@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, SelectorMatcher) {
+define(["Element"], function(DOMElement, SelectorMatcher, _makeError) {
     "use strict";
 
     /**
@@ -9,7 +9,7 @@ define(["Element"], function(DOMElement, SelectorMatcher) {
      */
     DOMElement.prototype.matches = function(selector) {
         if (!selector || typeof selector !== "string") {
-            throw this.makeError("matches");
+            throw _makeError("matches", this);
         }
 
         return new SelectorMatcher(selector).test(this._node);

@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _parseFragment) {
+define(["Element"], function(DOMElement, _parseFragment, _makeError) {
     "use strict";
 
     // MANIPULATION
@@ -27,7 +27,7 @@ define(["Element"], function(DOMElement, _parseFragment) {
 
                     return this;
                 } else if (value !== undefined) {
-                    throw this.makeError(methodName);
+                    throw _makeError(methodName, this);
                 }
 
                 if (relatedNode) {

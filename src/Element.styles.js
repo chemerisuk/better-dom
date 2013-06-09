@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle) {
+define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle, _makeError) {
     "use strict";
 
     // STYLES MANIPULATION
@@ -85,7 +85,7 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
                 hook, result;
 
             if (typeof name !== "string") {
-                throw this.makeError("getStyle");
+                throw _makeError("getStyle", this);
             }
 
             hook = getStyleHooks[name];
@@ -124,7 +124,7 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
                     return cssText + ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
                 }, "");
             } else {
-                throw this.makeError("setStyle");
+                throw _makeError("setStyle", this);
             }
 
             this._node.style.cssText += cssText;

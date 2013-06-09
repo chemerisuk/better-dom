@@ -1,4 +1,4 @@
-define([], function() {
+define([], function(DOMNode, DOMElement, DOMCollection) {
     "use strict";
 
     // HELPERS
@@ -15,6 +15,21 @@ define([], function() {
         })(),
         _defer = function(callback) {
             return setTimeout(callback, 0);
+        },
+        _makeError = function(method, el) {
+            var type;
+
+            if (el instanceof DOMNode) {
+                type = "DOMNode";
+            } else if (el instanceof DOMElement) {
+                type = "DOMElement";
+            } else if (el instanceof DOMCollection) {
+                type = "DOMCollection";
+            } else {
+                type = "DOM";
+            }
+
+            return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>" + type + ".html#" + method + " to verify the function call";
         },
 
         // Collection utilites

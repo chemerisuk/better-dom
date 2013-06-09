@@ -1,4 +1,4 @@
-define(["Node", "Element"], function(DOMNode, DOMElement, _slice) {
+define(["Node", "Element"], function(DOMNode, DOMElement, _slice, _makeError) {
     "use strict";
 
     /**
@@ -13,7 +13,7 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _slice) {
             method = this[name];
 
         if (!args.length || typeof method !== "function" || method in DOMNode.prototype || method in DOMElement.prototype) {
-            throw this.makeError("bind");
+            throw _makeError("bind", this);
         }
 
         this[name] = function() {

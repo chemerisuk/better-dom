@@ -21,13 +21,4 @@ define(["Node"], function(DOMNode, MockElement) {
     }
 
     DOMElement.prototype = new DOMNode();
-
-    /**
-     * Always returns string "DOMElement"
-     * @memberOf DOMElement.prototype
-     * @return {String} "DOMElement" string
-     */
-    DOMElement.prototype.toString = function() {
-        return "DOMElement";
-    };
 });

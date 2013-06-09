@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter) {
+define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter, _makeError) {
     "use strict";
 
     // TRAVERSING
@@ -28,7 +28,7 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
                 if (multiple) {
                     selector = index;
                 } else if (typeof index !== "number") {
-                    throw this.makeError("child");
+                    throw _makeError("child", this);
                 }
 
                 var children = this._node.children,
