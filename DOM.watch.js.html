@@ -25,7 +25,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["DOM", "Element"], function(DOM, DOMElement, supports, slice) {
+            <pre class="prettyprint source"><code>define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle) {
     "use strict";
 
     /**
@@ -37,48 +37,18 @@
      * @function
      */
     DOM.watch = (function() {
-        DOM._watchers = [];
+        var docEl = document.documentElement,
+            watchers = [];
 
-        if (supports("addBehavior", "a")) {
-            var scripts = document.scripts,
-                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
-
-            return function(selector, callback, once) {
-                var hasWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
-                    isNotEqualToCallback = function(otherCallback) { return otherCallback !== callback; },
-                    cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
-                    watcher = function(canceledCallbacks, el) {
-                        if (once) el.on("htc:watch", ["detail"], cancelCallback);
-
-                        // do not execute callback if it was previously excluded
-                        if (_.every(canceledCallbacks, isNotEqualToCallback)) {
-                            callback(el);
-                        }
-                    };
-
-                watcher.selector = selector;
-
-                this.on("htc:watch " + selector, ["detail", "target"], watcher);
-
-                if (_.some(this._watchers, hasWatcherWithTheSameSelector)) {
-                    // call the callback manually for each matched element
-                    // because the behaviour is already attached to selector
-                    this.findAll(selector).each(callback);
-                } else {
-                    DOM.importStyles(selector, { behavior: "url(" + behaviorUrl + ")" });
-                }
-
-                this._watchers.push(watcher);
-            };
-        } else {
+        if (!docEl.addBehavior) {
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = getComputedStyle(document.documentElement),
-                cssPrefix = window.CSSKeyframesRule ? "" : (slice.call(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+                computed = _getComputedStyle(docEl),
+                cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback, once) {
-                var animationName = _.uniqueId("DOM"),
+                var animationName = _uniqueId("DOM"),
                     cancelBubbling = function(e) {
                         if (e.animationName === animationName) e.stopPropagation();
                     },
@@ -93,7 +63,7 @@
                             callback(DOMElement(el));
                         }
                     },
-                    animationNames = _.reduce(this._watchers, function(res, watcher) {
+                    animationNames = _foldl(watchers, function(res, watcher) {
                         if (watcher.selector === selector) res.push(watcher.animationName);
 
                         return res;
@@ -104,7 +74,7 @@
 
                 DOM.importStyles(
                     "@" + cssPrefix + "keyframes " + animationName,
-                    "from { clip: rect(1px, auto, auto, auto) } to { clip: rect(0px, auto, auto, auto) }"
+                    "from {clip: rect(1px,auto,auto,auto)} to {clip: rect(0px,auto,auto,auto)}"
                 );
 
                 DOM.importStyles(
@@ -112,15 +82,50 @@
                     cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
                 );
 
-                _.forEach(startNames, function(name) {
-                    this._node.addEventListener(name, watcher, false);
-                }, this);
+                _forEach(startNames, function(name) {
+                    document.addEventListener(name, watcher, false);
+                });
 
-                this._watchers.push(watcher);
+                watchers.push(watcher);
+            };
+        } else {
+            var scripts = document.scripts,
+                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+
+            return function(selector, callback, once) {
+                var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
+                    isEqualToCallback = function(otherCallback) { return otherCallback === callback; },
+                    cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
+                    watcher = function(canceledCallbacks, el) {
+                        if (once) el.on("htc:watch", {args: ["detail"]}, cancelCallback);
+
+                        // do not execute callback if it was previously excluded
+                        if (!_some(canceledCallbacks, isEqualToCallback)) {
+                            callback(el);
+                        }
+                    };
+
+                watcher.selector = selector;
+
+                DOM.on("htc:watch " + selector, {args: ["detail", "target"]}, watcher);
+
+                if (_some(watchers, haveWatcherWithTheSameSelector)) {
+                    // call the callback manually for each matched element
+                    // because the behaviour is already attached to selector
+                    // also execute the callback safely
+                    _forEach(DOM.findAll(selector), function(el) {
+                        _defer(function() { callback(el); });
+                    });
+                } else {
+                    DOM.importStyles(selector, {behavior: "url(" + behaviorUrl + ")"});
+                }
+
+                watchers.push(watcher);
             };
         }
-    })();
-});</code></pre>
+    }());
+});
+</code></pre>
         </article>
     </section>
 
@@ -130,13 +135,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMCollection.html">DOMCollection</a></li><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 02 2013 19:45:05 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 09 2013 18:43:42 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

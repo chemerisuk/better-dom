@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Element.matches.js</title>
+    <title>JSDoc: Source: Element.bind.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: Element.matches.js</h1>
+    <h1 class="page-title">Source: Element.bind.js</h1>
     
     
 
@@ -25,23 +25,32 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["Element"], function(DOMElement, SelectorMatcher, _makeError) {
+            <pre class="prettyprint source"><code>define(["Node", "Element"], function(DOMNode, DOMElement, _slice, _makeError) {
     "use strict";
 
     /**
-     * Check if the element matches selector
+     * Prepend extra arguments to the method with specified name
      * @memberOf DOMElement.prototype
-     * @param  {String} selector css selector
+     * @param  {String}    name  name of method to bind arguments with
+     * @param  {...Object} args  extra arguments to prepend to the method
      * @return {DOMElement} reference to this
      */
-    DOMElement.prototype.matches = function(selector) {
-        if (!selector || typeof selector !== "string") {
-            throw _makeError("matches", this);
+    DOMElement.prototype.bind = function(name) {
+        var args = _slice(arguments, 1),
+            method = this[name];
+
+        if (!args.length || typeof method !== "function" || method in DOMNode.prototype || method in DOMElement.prototype) {
+            throw _makeError("bind", this);
         }
 
-        return new SelectorMatcher(selector).test(this._node);
+        this[name] = function() {
+            return method.apply(this, args.concat(_slice(arguments)));
+        };
+
+        return this;
     };
-});</code></pre>
+});
+</code></pre>
         </article>
     </section>
 

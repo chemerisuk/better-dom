@@ -39,7 +39,7 @@
     
         
 <dt>
-    <h4 class="name" id="DOMElement"><span class="type-signature"></span>new DOMElement<span class="signature">(element)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="DOMElement"><span class="type-signature">&lt;private> </span>new DOMElement<span class="signature">(element)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -47,7 +47,7 @@
     
     
     <div class="description">
-        Prototype for elements in better-dom
+        Prototype for a DOM element
     </div>
     
 
@@ -741,6 +741,184 @@
         
             
 <dt>
+    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(name, args)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Prepend extra arguments to the method with specified name
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">name of method to bind arguments with</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>args</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">extra arguments to prepend to the method</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Element.bind.js.html">Element.bind.js</a>, line 11
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    reference to this
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
     <h4 class="name" id="child"><span class="type-signature"></span>child<span class="signature">(index, <span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
     
     
@@ -927,7 +1105,7 @@ body.child(-1); // => last child</code></pre>
         
             
 <dt>
-    <h4 class="name" id="children"><span class="type-signature"></span>children<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
+    <h4 class="name" id="children"><span class="type-signature"></span>children<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMCollection.html">DOMCollection</a>}</span></h4>
     
     
 </dt>
@@ -1060,7 +1238,7 @@ body.child(-1); // => last child</code></pre>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMElementCollection.html">DOMElementCollection</a></span>
+<span class="param-type"><a href="DOMCollection.html">DOMCollection</a></span>
 
 
 	</dd>
@@ -1457,7 +1635,7 @@ domBody.find(".link");
         
             
 <dt>
-    <h4 class="name" id="findAll"><span class="type-signature"></span>findAll<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
+    <h4 class="name" id="findAll"><span class="type-signature"></span>findAll<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="DOMCollection.html">DOMCollection</a>}</span></h4>
     
     
 </dt>
@@ -1583,7 +1761,7 @@ domBody.find(".link");
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMElementCollection.html">DOMElementCollection</a></span>
+<span class="param-type"><a href="DOMCollection.html">DOMCollection</a></span>
 
 
 	</dd>
@@ -1734,7 +1912,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, line 161
+        <a href="Node.events.js.html">Node.events.js</a>, line 170
     </li></ul></dd>
     
     
@@ -2031,7 +2209,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.data.js.html">Node.data.js</a>, line 16
+        <a href="Node.data.js.html">Node.data.js</a>, line 19
     </li></ul></dd>
     
     
@@ -2911,7 +3089,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="nextAll"><span class="type-signature"></span>nextAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
+    <h4 class="name" id="nextAll"><span class="type-signature"></span>nextAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMCollection.html">DOMCollection</a>}</span></h4>
     
     
 </dt>
@@ -3044,7 +3222,7 @@ domLink.getData("test");
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMElementCollection.html">DOMElementCollection</a></span>
+<span class="param-type"><a href="DOMCollection.html">DOMCollection</a></span>
 
 
 	</dd>
@@ -3058,7 +3236,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(type, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="DOMNode.html">DOMNode</a>}</span></h4>
+    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(type, <span class="optional">context</span>, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="DOMNode.html">DOMNode</a>}</span></h4>
     
     
 </dt>
@@ -3133,6 +3311,39 @@ domLink.getData("test");
 	
         <tr>
             
+                <td class="name"><code>context</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">callback context</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>callback</code></td>
             
             
@@ -3195,7 +3406,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, line 123
+        <a href="Node.events.js.html">Node.events.js</a>, line 127
     </li></ul></dd>
     
     
@@ -3443,6 +3654,9 @@ domLink.getData("test");
             
                 
 <span class="param-type">Function</span>
+|
+
+<span class="param-type">String</span>
 
 
             
@@ -4043,7 +4257,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="prevAll"><span class="type-signature"></span>prevAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElementCollection.html">DOMElementCollection</a>}</span></h4>
+    <h4 class="name" id="prevAll"><span class="type-signature"></span>prevAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMCollection.html">DOMCollection</a>}</span></h4>
     
     
 </dt>
@@ -4176,7 +4390,7 @@ domLink.getData("test");
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMElementCollection.html">DOMElementCollection</a></span>
+<span class="param-type"><a href="DOMCollection.html">DOMCollection</a></span>
 
 
 	</dd>
@@ -4863,7 +5077,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.data.js.html">Node.data.js</a>, line 42
+        <a href="Node.data.js.html">Node.data.js</a>, line 45
     </li></ul></dd>
     
     
@@ -5277,7 +5491,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.supports.js.html">Node.supports.js</a>, line 19
+        <a href="Node.supports.js.html">Node.supports.js</a>, line 17
     </li></ul></dd>
     
     
@@ -5499,7 +5713,7 @@ DOM.supports("oninvalid", "input");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.toquerystring.js.html">Element.toquerystring.js</a>, line 8
+        <a href="Element.toquerystring.js.html">Element.toquerystring.js</a>, line 10
     </li></ul></dd>
     
     
@@ -5558,13 +5772,13 @@ DOM.supports("oninvalid", "input");
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMCollection.html">DOMCollection</a></li><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 02 2013 19:45:06 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 09 2013 18:43:43 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

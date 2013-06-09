@@ -25,20 +25,20 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["Node"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, makeError, supports, handleObjectParam) {
+            <pre class="prettyprint source"><code>define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, _isArray, _map, _forEach, _forOwn, _makeError) {
     "use strict";
 
     (function() {
         var eventHooks = {},
             veto = false,
+            processObjectParam = function(value, name) { this.on(name, value); },
             createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
-                if (_.isArray(options)) options = {args: options};
-
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
                         if (veto !== type) {
                             var eventHelper = new EventHelper(e || window.event, currentTarget),
+                                fn = typeof callback === "string" ? context[callback] : callback,
                                 args;
 
                             // handle modifiers
@@ -47,31 +47,31 @@
 
                             // populate extra event arguments
                             if (options.args) {
-                                args = _.map(options.args, eventHelper.get, eventHelper);
+                                args = _map(options.args, eventHelper.get, eventHelper);
                                 
                                 if (extras) args.push.apply(args, extras);
                             } else {
                                 args = extras ? extras.slice(0) : [];
                             }
 
-                            callback.apply(context || thisArg, args);
+                            if (fn) fn.apply(context, args);
                         }
                     };
 
                 return !selector ? defaultEventHandler : function(e) {
-                    var target = window.event ? window.event.srcElement : e.target;
+                    var el = window.event ? window.event.srcElement : e.target;
 
-                    for (; target && target !== currentTarget; target = target.parentNode) {
-                        if (matcher.test(target)) {
-                            return defaultEventHandler(e);
+                    for (; el && el !== currentTarget; el = el.parentNode) {
+                        if (matcher.test(el)) {
+                            defaultEventHandler(e);
+
+                            break;
                         }
                     }
                 };
             },
-            createCustomEventHandler = function(originalHandler) {
+            createCustomEventHandler = function(originalHandler, type) {
                 var handler = function() {
-                        var type = originalHandler.type.split(" ")[0];
-
                         if (window.event._type === type) originalHandler();
                     };
 
@@ -85,9 +85,9 @@
         /**
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
-         * @param  {String}   type    event type
+         * @param  {String}   type event type
          * @param  {Object}   [options] callback options
-         * @param  {Function} callback event callback
+         * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
          * @param  {Object}   [context] callback context
          * @return {DOMNode}  current context
@@ -97,11 +97,16 @@
                 hook, handler, selector;
 
             if (eventType === "string") {
-                if (typeof options === "function") {
+                if (typeof options !== "object") {
                     context = args;
                     args = callback;
                     callback = options;
                     options = {};
+                }
+
+                if (!_isArray(args)) {
+                    context = args;
+                    args = null;
                 }
 
                 selector = type.substr(type.indexOf(" ") + 1);
@@ -111,30 +116,28 @@
                 } else {
                     type = type.substr(0, type.length - selector.length - 1);
                 }
-
-                handler = createEventHandler(type, selector, options, callback, args, context, this);
+                
+                handler = createEventHandler(type, selector, options, callback, args || [], context || this, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
+                handler.context = context;
 
                 if (hook = eventHooks[type]) hook(handler);
 
                 if (document.addEventListener) {
                     this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
-                    if (~type.indexOf(":") || handler.custom) {
-                        // handle custom events for IE8
-                        handler = createCustomEventHandler(handler);
-                    }
+                    // handle custom events for IE8
+                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventHandler(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }
-                
                 // store event entry
                 this._listeners.push(handler);
             } else if (eventType === "object") {
-                _.forOwn(type, handleObjectParam("on"), this);
+                _forOwn(type, processObjectParam, this);
             } else {
-                throw makeError("on");
+                throw _makeError("on", this);
             }
 
             return this;
@@ -143,19 +146,25 @@
         /**
          * Unbind a DOM event from the context
          * @memberOf DOMNode.prototype
-         * @param  {String} type event type
+         * @param  {String}   type event type
+         * @param  {Object}   [context] callback context
          * @param  {Function} [callback] event handler
          * @return {DOMNode} current context
          */
-        DOMNode.prototype.off = function(type, callback) {
-            if (typeof type !== "string" || callback !== undefined && typeof callback !== "function") {
-                throw makeError("off");
+        DOMNode.prototype.off = function(type, context, callback) {
+            if (typeof type !== "string") {
+                throw _makeError("off", this);
             }
 
-            _.forEach(this._listeners, function(handler, index, events) {
+            if (callback === undefined) {
+                callback = context;
+                context = undefined;
+            }
+
+            _forEach(this._listeners, function(handler, index, events) {
                 var node = this._node;
 
-                if (handler && type === handler.type && (!callback || callback === handler.callback)) {
+                if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
 
                     if (document.removeEventListener) {
@@ -163,7 +172,7 @@
                     } else {
                         node.detachEvent("on" + type, handler);
                     }
-
+                    
                     delete events[index];
                 }
             }, this);
@@ -187,7 +196,7 @@
          */
         DOMNode.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {
-                throw makeError("fire");
+                throw _makeError("fire", this);
             }
 
             var node = this._node,
@@ -238,8 +247,8 @@
         };
 
         // firefox doesn't support focusin/focusout events
-        if (supports("onfocusin", "input")) {
-            _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+        if (DOMNode.prototype.supports("onfocusin", "input")) {
+            _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
         } else {
@@ -248,13 +257,13 @@
             };
         }
 
-        if (supports("oninvalid", "input")) {
+        if (DOMNode.prototype.supports("oninvalid", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };
         }
 
-        if (!supports("addEventListener")) {
+        if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
                 var propertyChangeEventHandler = function() {
@@ -322,7 +331,7 @@
                 handler.custom = true;
             };
         }
-    })();
+    }());
 });</code></pre>
         </article>
     </section>
@@ -333,13 +342,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMElementCollection.html">DOMElementCollection</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMCollection.html">DOMCollection</a></li><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 02 2013 19:45:05 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jun 09 2013 18:43:42 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
