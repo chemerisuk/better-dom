@@ -123,18 +123,16 @@ module.exports = function(grunt) {
             publish: {
                 files: {
                     "<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
-                    "<%= pkg.name %>.htc": ["build/<%= pkg.name %>.htc"]
+                    "<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
                 }
             }
         },
 
         uglify: {
-            options: {
-                preserveComments: "some",
-                report: "gzip"
-            },
             dist: {
                 options: {
+                    preserveComments: "some",
+                    report: "gzip",
                     sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.src",
                     sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src"
                 },

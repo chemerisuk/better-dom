@@ -7,6 +7,6 @@
  * @see <%= pkg.repository.url %>
  */
 (function(window, document, undefined) {
-    "use strict";/*@cc_on@*/
+    "use strict";
 
     if (document.__dom__) return; // prevent double initialization

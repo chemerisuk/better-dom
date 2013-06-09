@@ -1,25 +1,27 @@
-define(["Element"], function(DOMElement, _forEach, _foldl) {
+define(["Element"], function(DOMElement, _forEach) {
     "use strict";
 
     /**
      * Serialize element into query string
      * @return {String} query string
      */
-    DOMElement.prototype.toQueryString = function() {
-        var el = this._node, result,
-            makePair = function(name, value) {
-                return encodeURIComponent(name) + "=" +encodeURIComponent(value);
+    DOMElement.prototype.toQueryString = (function(){
+        var makePair = function(name, value) {
+                return encodeURIComponent(name) + "=" + encodeURIComponent(value);
             };
 
-        if (el.elements) {
-            result = _foldl(el.elements, function(parts, field) {
-                if (field.name) { // don't include form fields without names
-                    switch(field.type) {
+        return function() {
+            var el = this._node,
+                result = [];
+
+            _forEach(el.elements || (el.form ? [el] : []), function(el) {
+                if (el.name) { // don't include form fields without names
+                    switch(el.type) {
                     case "select-one":
                     case "select-multiple":
-                        _forEach(field.options, function(option) {
+                        _forEach(el.options, function(option) {
                             if (option.selected) {
-                                parts.push(makePair(field.name, option.hasAttribute("value") ? option.value : option.text));
+                                result.push(makePair(el.name, option.hasAttribute("value") ? option.value : option.text));
                             }
                         });
                         break;
@@ -33,23 +35,15 @@ define(["Element"], function(DOMElement, _forEach, _foldl) {
     
                     case "radio": // radio button
                     case "checkbox": // checkbox
-                        if (!field.checked) break;
+                        if (!el.checked) break;
                         /* falls through */
                     default:
-                        parts.push(makePair(field.name, field.value));
+                        result.push(makePair(el.name, el.value));
                     }
-
-                    return parts;
                 }
-            }, []);
+            });
 
-            result = result.join("&");
-        } else if (el.form) {
-            result = makePair(el.name, el.value);
-        } else {
-            throw this.makeError("toQueryString");
-        }
-
-        return result.replace(/%20/g, "+");
-    };
+            return result.join("&").replace(/%20/g, "+");
+        };
+    }());
 });

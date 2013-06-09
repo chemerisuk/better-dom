@@ -33,6 +33,7 @@
     <a href="#" id="test3" data-test="t3"></a>
     <div id="sandbox"></div>
 
+    <script src="../build/better-dom.js" data-htc="../extra/better-dom.htc"></script>
     <!-- speeds -->
     <script src="speed/get.suite.js"></script>
     <script src="speed/set.suite.js"></script>
@@ -66,11 +67,6 @@
           prettyPrint();
         };
       })();
-    </script>
-    <script>
-    (function(D,O,M){M=D.documentElement;M.addBehavior?(M.setAttribute("data-htc",
-    O=O.substr(0,O.length-2)+"htc"),M.addBehavior(O)):(M=D.createElement("script"),
-    M.async=!1,M.src=O,D.head.appendChild(M))})(document,"../build/better-dom.js");
     </script>
   </body>
 </html>
