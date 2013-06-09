@@ -2,7 +2,7 @@ better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?
 ==========
 Making DOM to be nice.
 
-### Installation
+## Installation
 The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
@@ -24,7 +24,7 @@ Then include script below on your web page:
 </html>
 ```
 
-### Unobtrusive extensions
+## Unobtrusive extensions
 The idea is to write DOM additions declaratively. `DOM.extend` used to define a new extension and after the call any existing matched element will be initialized with an appropriate constructor. But the coolest thing is that the same will happen even for HTML content inserted dynamically via `innerHTML` or any other javascript framework.
 
 No need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea) or to write [polyfills](#placeholder-polyfill) for old browsers.
@@ -110,7 +110,7 @@ The extension makes `input[type=date]` controls with the same UX for all browser
 
 Check out the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
-### Emmet expressions support
+## Emmet expressions support
 HTML strings are boring and complex, they take a lot of space. Let's fix that with [emmet](http://emmet.io/):
 
 * `nav>ul>li` -> `<nav><ul><li></li></ul></nav>`
@@ -121,7 +121,7 @@ HTML strings are boring and complex, they take a lot of space. Let's fix that wi
 Because of code size emmet expressions support is only for HTML strings and has some limitations for now, but major features are in place.
 
 
-### Event handling best practices
+## Event handling best practices
 Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to prevent known issues in their code.
 
 #### Get rid of the event object
