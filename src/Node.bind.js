@@ -3,8 +3,9 @@ define(["Node"], function(DOMNode, _slice) {
 
     /**
      * Bind a method with specified arguments
-     * @param {String} name name of method to bind arguments with
-     * @return {[type]} [description]
+     * @param  {String}    name  name of method to bind arguments with
+     * @param  {...Object} args  extra arguments to prepend to the method
+     * @return {DOMNode} reference to this
      */
     DOMNode.prototype.bind = function(name) {
         var args = _slice(arguments, 1),
