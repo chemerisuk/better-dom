@@ -35,28 +35,26 @@ The idea is to write DOM additions declaratively. `DOM.extend` used to define a 
 
 No need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea) or to write [polyfills](#placeholder-polyfill) for old browsers.
 
-#### elastic textarea
+#### elastic textarea example
 This is a textarea extension which autoresizes itself to contain all entered text:
 
 ```js
-DOM.extend("textarea.elastic", {
-    wrapper: "div[style=position:relative]>pre[style=visibility:hidden;margin:0;border-style:solid]>span[style=display:inline-block;white-space:pre-wrap]"
-}, {
-    constructor: function(tpl) {
-        var wrapper = tpl.wrapper,
-            holder = wrapper.child(0),
+DOM.extend("textarea.elastic", [
+    "div[style=position:relative]>pre[style=visibility:hidden;margin:0;border-style:solid]>span[style=display:inline-block;white-space:pre-wrap]"
+], {
+    constructor: function(wrapper) {
+        var holder = wrapper.child(0),
             span = holder.child(0);
 
-        holder.setStyle({
-            font: this.getStyle("font"),
-            padding: this.getStyle("padding"),
-            "border-width": this.getStyle("border-width")
-        });
-
-        this.on("input", this._syncWithHolder, [span]);
-        this._syncWithHolder(span);
+        this.on("input", this._syncWithHolder, [span])._syncWithHolder(span);
 
         this.parent("form").on("reset", this._syncWithHolder, [span, true], this);
+
+        holder.setStyle({
+            "font": this.getStyle("font"),
+            "padding": this.getStyle("padding"),
+            "border-width": this.getStyle("border-width")
+        });
 
         wrapper.append(this.after(wrapper));
     },
@@ -84,22 +82,22 @@ DOM.importStyles("textarea.elastic", {
 ```
 See it in action: http://chemerisuk.github.io/better-elastic-textarea/
 
-#### placeholder polyfill
+#### placeholder polyfill example
 ```js
-DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", {
-    holder: "<input type='text' style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent'/>"
-}, {
-    constructor: function(tpl) {
-        var offset = this.offset(),
-            holder = tpl.holder;
+DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
+    "input[style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent']"
+], {
+    constructor: function(holder) {
+        var offset = this.offset();
+
+        this
+            .on("focus", holder.hide, holder)
+            .on("blur", this._showPlaceholder, [holder]);
 
         holder
             .set(this.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
             .on("click", this.fire, ["focus"], this);
-
-        this.on("focus", holder.hide, [], holder);
-        this.on("blur", this._showPlaceholder, [holder]);
 
         if (this.get() || this.isFocused()) holder.hide();
 
@@ -114,7 +112,7 @@ See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open
 
 Event handling best practices
 -----------------------------
-Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to use best practicises for solving their problems.
+Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to prevent known issues in their code.
 
 > Get rid of the event object
  
@@ -123,8 +121,8 @@ Event handlers don't own an event object now and this thing improves testability
 ```js
 // NOTICE: handler don't have e as the first argument
 DOM.find("#link").on("click", function() {...});
-// NOTICE: options argument
-DOM.find("#link").on("keydown", function(keyCode, altKey) {...}, {args: ["keyCode", "altKey"]});
+// NOTICE: the second options argument
+DOM.find("#link").on("keydown", {args: ["keyCode", "altKey"]}, function(keyCode, altKey) {...});
 ```
 
 > Call preventDefault() or stopPropagation() before logic
@@ -133,14 +131,14 @@ It's a common situation to work with unsafe code that can throw an exception. If
 
 ```js
 // NOTICE: preventDefault is always called before the handler
-DOM.find("#link").on("click", handler, {cancel: true});
+DOM.find("#link").on("click", {cancel: true}, handler);
 // NOTICE: stopPropagation os always called before the handler
-DOM.find("#link").on("click", handler, {stop: true});
+DOM.find("#link").on("click", {stop: true}, handler);
 ```
 
 > Callback systems are brittle
 
-If any of the callback functions throw an error then the subsequent callbacks are not executed. In reality, this means that a poorly written plugin can prevent other plugins from initialising (read  http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/ for additional details).
+The library doesn't use callback arrays, so any event listener can't break another one (read  http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/ for additional details).
 
 ```js
 DOM.ready(function() { throw Error("exception in a bad code"); });

@@ -5,13 +5,13 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         var eventHooks = {},
             veto = false,
             processObjectParam = function(value, name) { this.on(name, value); },
-            createEventHandler = function(type, selector, context, callback, options, extras, thisArg) {
+            createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
                 var currentTarget = thisArg._node,
                     matcher = SelectorMatcher(selector),
                     defaultEventHandler = function(e) {
                         if (veto !== type) {
                             var eventHelper = new EventHelper(e || window.event, currentTarget),
-                                fn = typeof callback === "function" ? callback : context[callback],
+                                fn = typeof callback === "string" ? context[callback] : callback,
                                 args;
 
                             // handle modifiers
@@ -59,27 +59,27 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * Bind a DOM event to the context
          * @memberOf DOMNode.prototype
          * @param  {String}   type event type
-         * @param  {Object}   [context] callback context
-         * @param  {Function|String} callback event callback
          * @param  {Object}   [options] callback options
+         * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
+         * @param  {Object}   [context] callback context
          * @return {DOMNode}  current context
          */
-        DOMNode.prototype.on = function(type, context, callback, options, args) {
+        DOMNode.prototype.on = function(type, options, callback, args, context) {
             var eventType = typeof type,
                 hook, handler, selector;
 
             if (eventType === "string") {
-                if (typeof context === "function") {
-                    args = options;
-                    options = callback;
-                    callback = context;
-                    context = this;
+                if (typeof options !== "object") {
+                    context = args;
+                    args = callback;
+                    callback = options;
+                    options = {};
                 }
 
-                if (_isArray(options)) {
-                    args = options;
-                    options = {};
+                if (!_isArray(args)) {
+                    context = args;
+                    args = null;
                 }
 
                 selector = type.substr(type.indexOf(" ") + 1);
@@ -89,8 +89,8 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 } else {
                     type = type.substr(0, type.length - selector.length - 1);
                 }
-
-                handler = createEventHandler(type, selector, context, callback, options || {}, args || [], this);
+                
+                handler = createEventHandler(type, selector, options, callback, args || [], context || this, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;

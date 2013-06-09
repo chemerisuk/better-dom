@@ -5,4 +5,4 @@
         window.DOM = DOM;
     }
     
-})(window, window.document);
+})(window, document);

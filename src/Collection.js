@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, slice, _forEach) {
+define(["Element"], function(DOMElement, slice, _forEach, _some) {
     "use strict";
 
     // DOMCollection
@@ -51,6 +51,18 @@ define(["Element"], function(DOMElement, slice, _forEach) {
          */
         DOMCollection.prototype.toString = function () {
             return "DOMCollection";
+        };
+
+        /**
+         * Execute callback for each element
+         * @param  {Function} callback callback function
+         * @param  {Object}   [thisArg]  callback context
+         * @return {DOMCollection} reference to this
+         */
+        DOMCollection.prototype.each = function(callback, thisArg) {
+            _some(this, callback, thisArg || this);
+
+            return this;
         };
 
         return DOMCollection;

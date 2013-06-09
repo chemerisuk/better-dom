@@ -51,7 +51,7 @@ describe("on", function() {
         var callback = jasmine.createSpy("callback");
 
         DOM.on("click", callback);
-        input.on("click", spy, {stop: true, cancel: true, args: ["type"]}).fire("click");
+        input.on("click", {stop: true, cancel: true, args: ["type"]}, spy).fire("click");
 
         spy.andCallFake(function(type) {
             expect(type).toBe("click");
@@ -71,7 +71,7 @@ describe("on", function() {
             expect(argB).toBe(b);
         });
 
-        input.on("click", spy, {args: ["type"]}, [a, b]).fire("click");
+        input.on("click", {args: ["type"]}, spy, [a, b]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy = spyOn(obj, "callback");
@@ -127,14 +127,14 @@ describe("on", function() {
     });
 
     it("should fix submit event", function() {
-        form.on("submit", spy, {cancel: true}).fire("submit");
+        form.on("submit", {cancel: true}, spy).fire("submit");
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("submit a", spy, {cancel: true});
+        DOM.on("submit a", {cancel: true}, spy);
         form.fire("submit");
         expect(spy.callCount).toBe(2);
 
-        DOM.on("submit form", spy, {cancel: true});
+        DOM.on("submit form", {cancel: true}, spy);
         form.fire("submit");
         expect(spy.callCount).toBe(4);
     });
@@ -156,7 +156,7 @@ describe("on", function() {
             expect(this).toBe(obj);
         });
 
-        input.on("click", obj, "callback").fire("click");
+        input.on("click", "callback", obj).fire("click");
 
         expect(spy).toHaveBeenCalled();
     });
