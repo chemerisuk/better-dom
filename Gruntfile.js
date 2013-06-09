@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 
         jsdoc: {
             dist: {
-                src: ["src/*.js"],
+                src: ["src/*.js", "jsdoc/README.md"],
                 options: {
                     destination: "jsdoc"
                 }
@@ -110,7 +110,8 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            dist: ["dist/"]
+            dist: ["dist/"],
+            jsdoc: ["jsdoc/"]
         },
 
         copy: {
@@ -124,6 +125,20 @@ module.exports = function(grunt) {
                 files: {
                     "<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
                     "<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
+                }
+            },
+            readme: {
+                options: {
+                    processContent: function(content) {
+                        return content
+                            // remove build status indicator
+                            .replace(/\[!\[Build Status\][^\n]*/, "")
+                            // remove source code
+                            .replace(/```[^`]+```/g, "");
+                    }
+                },
+                files: {
+                    "jsdoc/README.md": ["README.md"]
                 }
             }
         },
@@ -240,6 +255,12 @@ module.exports = function(grunt) {
         "clean"
     ]);
 
+    grunt.registerTask("docs", [
+        "clean:jsdoc",
+        "copy:readme",
+        "jsdoc"
+    ]);
+
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
 
@@ -264,7 +285,7 @@ module.exports = function(grunt) {
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "copy:publish",
-            "jsdoc",
+            "docs",
             "shell:checkoutDocs",
             "bumpDocsBuild",
             "shell:updateDocs"

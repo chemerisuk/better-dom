@@ -3,7 +3,7 @@
     "title": "better-dom",
     "version": "0.9.7",
     "author": "Maksim Chemerisuk",
-    "description": "It's all about making DOM to be nice",
+    "description": "Making DOM to be nice",
     "license": "MIT",
     "repository": {
         "type": "git",

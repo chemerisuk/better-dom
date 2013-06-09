@@ -1,9 +1,9 @@
 better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 ==========
-It's all about making DOM to be nice.
+Making DOM to be nice.
 
-Installation
-------------
+### Installation
+
 The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
@@ -20,17 +20,13 @@ Then include script below on your web page:
 </head>
 <body>
     ...
-    <script>
-    (function(D,O,M){M=D.documentElement;M.addBehavior?(M.setAttribute("data-htc",
-    O=O.substr(0,O.length-2)+"htc"),M.addBehavior(O)):(M=D.createElement("script"),
-    M.async=!1,M.src=O,D.head.appendChild(M))})(document,"/components/better-dom/better-dom.js");
-    </script>
+    <script src="components/build/better-dom.js" data-htc="components/extra/better-dom.htc"></script>
 </body>
 </html>
 ```
 
-Unobtrusive extensions
-----------------------
+### Unobtrusive extensions
+
 The idea is to write DOM additions declaratively. `DOM.extend` used to define a new extension and after the call any existing matched element will be initialized with an appropriate constructor. But the coolest thing is that the same will happen even for HTML content inserted dynamically via `innerHTML` or any other javascript framework.
 
 No need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea) or to write [polyfills](#placeholder-polyfill) for old browsers.
@@ -80,9 +76,10 @@ DOM.importStyles("textarea.elastic", {
     "box-sizing": "border-box"
 });
 ```
-See it in action: http://chemerisuk.github.io/better-elastic-textarea/
+Check out [live demo](http://chemerisuk.github.io/better-elastic-textarea/).
 
 #### placeholder polyfill example
+The extension polyfills `[placeholder]` for old browsers
 ```js
 DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
     "input[style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent']"
@@ -108,13 +105,18 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
     }
 });
 ```
-See it in action: http://chemerisuk.github.io/better-placeholder-polyfill/ (open in IE < 10)
+Check out [live demo](http://chemerisuk.github.io/better-placeholder-polyfill/) (open in IE < 10).
 
-Event handling best practices
------------------------------
+#### more code: dateinput polyfill
+The extension makes `input[type=date]` controls with the same UX for all browsers.
+
+Check out the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
+
+### Event handling best practices
+
 Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to prevent known issues in their code.
 
-> Get rid of the event object
+#### Get rid of the event object
  
 Event handlers don't own an event object now and this thing improves testability of your code:
 
@@ -125,7 +127,7 @@ DOM.find("#link").on("click", function() {...});
 DOM.find("#link").on("keydown", {args: ["keyCode", "altKey"]}, function(keyCode, altKey) {...});
 ```
 
-> Call preventDefault() or stopPropagation() before logic
+#### Call preventDefault() or stopPropagation() before logic
 
 It's a common situation to work with unsafe code that can throw an exception. If preventDefault() or stopPropagation() are called at the end of logic than program may start to work unexpected.
 
@@ -136,9 +138,9 @@ DOM.find("#link").on("click", {cancel: true}, handler);
 DOM.find("#link").on("click", {stop: true}, handler);
 ```
 
-> Callback systems are brittle
+#### Callback systems are brittle
 
-The library doesn't use callback arrays, so any event listener can't break another one (read  http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/ for additional details).
+The library doesn't use callback arrays, so any event listener can't break another one (read the nice [article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
 
 ```js
 DOM.ready(function() { throw Error("exception in a bad code"); });
@@ -146,12 +148,12 @@ DOM.ready(function() { throw Error("exception in a bad code"); });
 DOM.ready(function() { console.log("Nothing can break your code") });
 ```
 
-Performance
------------
+### Performance
+
 DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.
 
-Browser support
----------------
+### Browser support
+
 * Chrome
 * Safari
 * Firefox
