@@ -10,6 +10,7 @@
     "use strict";
 
     if (document.__dom__) return; // prevent double initialization
+    
     // HELPERS
     // -------
 
@@ -41,8 +42,8 @@
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         },
 
-        // Collection utilites
-        // -------------------
+        // COLLECTION UTILS
+        // ----------------
         
         makeCollectionMethod = (function(){
             var tpl = "", args = {
@@ -99,8 +100,8 @@
             return Object.prototype.toString.call(obj) === "[object Array]";
         },
 
-        // Object utilites
-        // ---------------
+        // OBJECT UTILS
+        // ------------
         
         _forOwn = function(obj, callback, thisPtr) {
             for (var prop in obj) {
@@ -135,8 +136,8 @@
             return obj;
         },
 
-        // DOM utilites
-        // ------------
+        // DOM UTILS
+        // ---------
 
         _getComputedStyle = function(el) {
             return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;
@@ -208,8 +209,8 @@
             };
         })();
 
-    // DOMNode
-    // -------
+    // DOM NODE
+    // --------
 
     /**
      * Prototype for a DOM node
@@ -256,6 +257,9 @@
             
         return isSupported;
     };
+
+    // SEARCH BY QUERY
+    // ---------------
 
     (function() {
         // big part of code inspired by Sizzle:
@@ -357,6 +361,9 @@
         };
     })();
 
+    // INTERNAL DATA
+    // -------------
+
     (function() {
         var processObjectParam = function(value, name) { this.setData(name, value); };
 
@@ -413,6 +420,9 @@
         };
     })();
 
+    // CONTAINS ELEMENT/COLLECTION
+    // ---------------------------
+
     (function() {
         var containsElement;
 
@@ -453,6 +463,9 @@
             return result;
         };
     })();
+
+    // DOM EVENTS
+    // ----------
 
     (function() {
         var eventHooks = {},
@@ -818,8 +831,8 @@
     })();
 
     
-    // DOMElement
-    // ----------
+    // DOM ELEMENT
+    // -----------
 
     /**
      * Prototype for a DOM element
@@ -1012,8 +1025,7 @@
     };
 
     // MANIPULATION
-    // http://www.w3.org/TR/domcore/
-    // 5.2.2 Mutation methods
+    // ------------
     
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
@@ -1407,6 +1419,9 @@
         };
     })();
 
+    // FORM SERIALIZATION
+    // ------------------
+
     /**
      * Serialize element into query string
      * @memberOf DOMElement.prototype
@@ -1638,8 +1653,8 @@
         return this._node === document.activeElement;
     };
 
-    // DOMCollection
-    // --------------------
+    // DOM COLLECTION
+    // --------------
 
     /**
      * Read-only array-like collection of elements
@@ -1718,7 +1733,7 @@
         return DOMCollection;
     }());
 
-    // Mock Element
+    // MOCK ELEMENT
     // ------------
 
     function MockElement() {
@@ -1746,6 +1761,9 @@
         ctr.prototype.constructor = ctr;
     });
 
+    // GLOBAL API
+    // ----------
+
     /**
      * Global object to access DOM
      * @namespace DOM
@@ -1753,6 +1771,9 @@
      */
     // jshint unused:false
     var DOM = new DOMNode(document);
+
+    // WATCH CALLBACK
+    // --------------
 
     /**
      * Execute callback when element with specified selector matches
@@ -1850,6 +1871,9 @@
             };
         }
     }());
+
+    // CREATE ELEMENT
+    // --------------
 
     (function(){
         var rquick = /^[a-z]+$/;
@@ -1951,6 +1975,9 @@
             }, true);
         }
     };
+
+    // EMMET-LIKE PARSER
+    // -----------------
 
     (function() {
         var operators = { // name / priority object
@@ -2126,8 +2153,12 @@
         };
     })();
 
+    // READY CALLBACK
+    // --------------
+
     (function() {
         var readyCallbacks = [],
+            readyState = document.readyState,
             pageLoaded = function() {
                 if (readyCallbacks) {
                     // safely trigger callbacks
@@ -2141,13 +2172,13 @@
             document.addEventListener("DOMContentLoaded", pageLoaded, false);
             window.addEventListener("load", pageLoaded, false);
         } else {
-            DOM.on("htc:watch html", pageLoaded);
+            DOM.watch("body", pageLoaded, true);
         }
 
         // Catch cases where ready is called after the browser event has already occurred.
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
             pageLoaded();
         }
 
@@ -2168,6 +2199,9 @@
             }
         };
     })();
+
+    // IMPORT STYLES
+    // -------------
 
     (function() {
         var styleSheet = (function() {
@@ -2246,7 +2280,10 @@
         };
     })();
 
-    // do not support AMD because need to access DOM from the htc file
+    
+    // REGISTER API
+    // ------------
+
     if (typeof define === "function" && define.amd) {
         define("DOM", function() { return DOM; });
     } else {
