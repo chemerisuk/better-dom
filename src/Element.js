@@ -5,7 +5,7 @@ define(["Node"], function(DOMNode, MockElement) {
     // ----------
 
     /**
-     * Prototype for elements in better-dom
+     * Prototype for a DOM element
      * @name DOMElement
      * @constructor
      * @param element native element

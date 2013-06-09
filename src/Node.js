@@ -5,11 +5,11 @@ define(["Helpers"], function() {
     // -------
 
     /**
-     * Prototype for limited/protected elements in better-dom
+     * Prototype for a DOM node
      * @name DOMNode
+     * @param node native object
      * @constructor
      * @private
-     * @param node native object
      */
     function DOMNode(node) {
         this._node = node;

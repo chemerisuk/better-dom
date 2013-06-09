@@ -1,17 +1,18 @@
-define(["Node"], function(DOMNode, _slice) {
+define(["Node", "Element"], function(DOMNode, DOMElement, _slice) {
     "use strict";
 
     /**
-     * Bind a method with specified arguments
+     * Prepend extra arguments to the method with specified name
+     * @memberOf DOMElement.prototype
      * @param  {String}    name  name of method to bind arguments with
      * @param  {...Object} args  extra arguments to prepend to the method
-     * @return {DOMNode} reference to this
+     * @return {DOMElement} reference to this
      */
-    DOMNode.prototype.bind = function(name) {
+    DOMElement.prototype.bind = function(name) {
         var args = _slice(arguments, 1),
             method = this[name];
 
-        if (!args.length || typeof method !== "function") {
+        if (!args.length || typeof method !== "function" || method in DOMNode.prototype || method in DOMElement.prototype) {
             throw this.makeError("bind");
         }
 

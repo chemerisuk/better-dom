@@ -3,7 +3,9 @@ define(["Element"], function(DOMElement, _forEach) {
 
     /**
      * Serialize element into query string
+     * @memberOf DOMElement.prototype
      * @return {String} query string
+     * @function
      */
     DOMElement.prototype.toQueryString = (function(){
         var makePair = function(name, value) {

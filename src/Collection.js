@@ -55,6 +55,7 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice) {
 
         /**
          * Executes callback on each element in the collection
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {DOMCollection} reference to this
@@ -67,8 +68,9 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice) {
 
         /**
          * Calls the method named by name on each element in the collection
+         * @memberOf DOMCollection.prototype
          * @param  {String}    name   name of the method
-         * @param  {...Object} [args] arguments for method call
+         * @param  {...Object} [args] arguments for the method call
          * @return {DOMCollection} reference to this
          */
         DOMCollection.prototype.invoke = function(name) {
