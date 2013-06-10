@@ -2,6 +2,8 @@ better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?
 ==========
 Making DOM to be nice.
 
+API description: http://chemerisuk.github.io/better-dom/.
+
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
 
@@ -111,9 +113,9 @@ The extension makes `input[type=date]` controls with the same UX for all browser
 Check out the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
 ## Getter and setter
-One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property is faster, but a lot of people don't know that or just always get an attribute value to keep algorithm the same everywhere.
+One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which entity to grab. Usually reading a property is faster, but a lot of people don't know that or just always use attribute to keep the algorithm the same everywhere.
 
-To fix that confusion the library introduces smart getter and setter.
+To fix that the library introduces smart getter and setter.
 
 ```js
 var link = DOM.find("#link");
@@ -147,7 +149,7 @@ Because of code size emmet expressions support is only for HTML strings and has 
 Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to use  best practices to prevent potential issues in their code.
 
 #### Get rid of the event object
-Event handlers loose event object argument and this thing improves testability of your code:
+Event handlers loose event object argument and this thing improves testability of your code.
 
 ```js
 // NOTICE: handler don't have e as the first argument
@@ -162,7 +164,7 @@ It's a common situation to work with unsafe code that can throw an exception. If
 ```js
 // NOTICE: preventDefault is always called before the handler
 DOM.find("#link").on("click", {cancel: true}, handler);
-// NOTICE: stopPropagation os always called before the handler
+// NOTICE: stopPropagation is always called before the handler
 DOM.find("#link").on("click", {stop: true}, handler);
 ```
 

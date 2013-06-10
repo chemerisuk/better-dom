@@ -83,6 +83,11 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             BODY:   "that = !i && that === undefined ? a[i] : cb(that, a[i], i, a)",
             AFTER:  "return that"
         }),
+        _every = makeCollectionMethod({
+            BEFORE: "var out = true",
+            BODY:   "out = cb.call(that, a[i], a) && out",
+            AFTER:  "return out"
+        }),
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index || 0);
         },
