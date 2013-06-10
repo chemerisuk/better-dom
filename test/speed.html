@@ -9,8 +9,6 @@
     <!-- Prettify -->
     <link href="../components/google-code-prettify/src/prettify.css" rel="stylesheet">
     <script src="../components/google-code-prettify/src/prettify.js"></script>
-    <!-- D3.js -->
-    <script src="../components/d3/d3.js"></script>
     <!-- Platform.js -->
     <script src="../node_modules/platform/platform.js"></script>
     <!-- Benchmark.js -->
@@ -52,10 +50,10 @@
           benchmineEnv.show();
 
           var tableReporter   = new Benchmine.TableReporter();
-          var chartReporter   = new Benchmine.ChartReporter();
+          //var chartReporter   = new Benchmine.ChartReporter();
           
           benchmineEnv.addReporter(tableReporter);
-          benchmineEnv.addReporter(chartReporter);
+          //benchmineEnv.addReporter(chartReporter);
         }
 
         var currentWindowOnload = window.onload;

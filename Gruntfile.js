@@ -34,7 +34,7 @@ module.exports = function(grunt) {
 
         karma: {
             watch: {
-                configFile: "test/lib/karma.conf.js",
+                configFile: "test/lib/karma.conf",
                 background: true,
                 reporters: ["coverage", "progress"],
                 preprocessors: {
@@ -42,12 +42,16 @@ module.exports = function(grunt) {
                 }
             },
             unit: {
-                configFile: "test/lib/karma.conf.js",
+                configFile: "test/lib/karma.conf",
                 browsers: ["Chrome", "Opera", "Safari", "Firefox", "PhantomJS"],
                 singleRun: true
             },
             travis: {
-                configFile: "test/lib/karma.conf.js",
+                configFile: "test/lib/karma.conf",
+                singleRun: true
+            },
+            speed: {
+                configFile: "test/lib/karma.speed.conf",
                 singleRun: true
             }
         },
@@ -98,11 +102,11 @@ module.exports = function(grunt) {
                     stderr: true
                 }
             },
-            openCoverage: {
-                command: "open coverage/PhantomJS\\ 1.9\\ \\(Mac\\)/index.html"
-            },
-            openJsdoc: {
-                command: "open jsdoc/index.html"
+            showCoverage: {
+                command: "ls -lrt -d -1 $PWD/coverage",
+                options: {
+                    stdout: true
+                }
             },
             rollbackPublished: {
                 command: "git checkout HEAD -- <%= pkg.name %>.js <%= pkg.name %>.htc"
@@ -223,7 +227,7 @@ module.exports = function(grunt) {
     grunt.registerTask("dev", [
         "requirejs",
         "connect", // start web server
-        "shell:openCoverage", // open coverage page
+        "shell:showCoverage", // open coverage page
         "karma:watch", // start karma server
         "watch" // watch for a file changes
     ]);
