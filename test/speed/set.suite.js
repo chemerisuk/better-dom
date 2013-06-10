@@ -1,27 +1,36 @@
-suite("DOMElement.set", function () {
+(function(){
     "use strict";
 
-    var nativeLink = document.getElementById("test1"),
-        jqueryLink = jQuery("#test2"),
-        domLink = DOM.find("#test3");
+    var nativeSandbox = document.createElement("a"),
+        jquerySandbox = jQuery(nativeSandbox),
+        domSandbox = DOM.create(nativeSandbox);
 
-    benchmark("jquery#attr", function() {
-        jqueryLink.attr("id", new Date().toString());
-    });
+    nativeSandbox.rel = "sandbox";
+    document.body.appendChild(nativeSandbox);
 
-    benchmark("jquery#prop", function() {
-        jqueryLink.prop("id", new Date().toString());
-    });
+    suite("setter", function () {
+        benchmark("jquery#attr", function() {
+            jquerySandbox.attr("rel", new Date().toString());
+        });
 
-    benchmark("DOMElement.set", function() {
-        domLink.set("id", new Date().toString());
-    });
+        benchmark("jquery#prop", function() {
+            jquerySandbox.prop("rel", new Date().toString());
+        });
 
-    benchmark("native#setAttribute", function() {
-        nativeLink.setAttribute("id", new Date().toString());
-    });
+        benchmark("DOMElement.set", function() {
+            domSandbox.set("rel", new Date().toString());
+        });
 
-    benchmark("native#set", function() {
-        nativeLink.id = new Date().toString();
+        benchmark("native#setAttribute", function() {
+            nativeSandbox.setAttribute("rel", new Date().toString());
+        });
+
+        benchmark("native#set", function() {
+            nativeSandbox.rel = new Date().toString();
+        });
+    }, {
+        onComplete: function() {
+            document.body.removeChild(nativeSandbox);
+        }
     });
-});
+}());

@@ -1,12 +1,12 @@
 (function() {
     "use strict";
 
-    var nativeElements = /*Array.prototype.slice.call(*/document.all,
-        jqueryElements = jQuery("*"), 
+    var nativeElements = Array.prototype.slice.call(document.all),
+        jqueryElements = jQuery("*"),
         domElements = DOM.findAll("*"),
         i = 0, j = 0, k = 0;
 
-    suite("DOMElement.each", function () {
+    suite("each", function () {
         benchmark("jquery#each", function() {
             jqueryElements.each(function() {
                 ++i;
@@ -24,7 +24,5 @@
                 j = nativeElements[i];
             }
         });
-
     });
-
 })();

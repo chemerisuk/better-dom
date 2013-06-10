@@ -1,4 +1,4 @@
-suite("DOM.create", function () {
+suite("create", function () {
     "use strict";
 
     benchmark("jquery#create(String)", function() {
@@ -9,7 +9,7 @@ suite("DOM.create", function () {
         jQuery(document.createElement("a"));
     });
 
-    benchmark("jquery#create(String...)", function() {
+    benchmark("jquery#create(HtmlString)", function() {
         jQuery("<a><span></span><i></i></a>");
     });
 
@@ -21,8 +21,12 @@ suite("DOM.create", function () {
         DOM.create(document.createElement("a"));
     });
 
-    benchmark("DOM#create(String...)", function() {
+    benchmark("DOM#create(HtmlString)", function() {
         DOM.create("<a><span></span><i></i></a>");
+    });
+
+    benchmark("DOM#create(EmmetString)", function() {
+        DOM.create("a>span+i");
     });
 
     benchmark("native(String)", function() {

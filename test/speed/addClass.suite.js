@@ -1,22 +1,30 @@
-suite("DOMElement.addClass", function () {
+(function(){
     "use strict";
 
-    var nativeSandbox = document.getElementById("sandbox"),
-        jquerySandbox = jQuery("#sandbox"),
-        domSandbox = DOM.find("#sandbox");
+    var nativeSandbox = document.createElement("div"),
+        jquerySandbox = jQuery(nativeSandbox),
+        domSandbox = DOM.create(nativeSandbox);
 
-    benchmark("jquery#addClass", function() {
-        jquerySandbox.addClass("t" + new Date().getTime());
-        nativeSandbox.className = "";
-    });
+    document.body.appendChild(nativeSandbox);
 
-    benchmark("DOMElement#addClass", function() {
-        domSandbox.addClass("t" + new Date().getTime());
-        nativeSandbox.className = ""; 
-    });
+    suite("addClass", function() {
+        benchmark("jquery#addClass", function() {
+            jquerySandbox.addClass("t" + new Date().getTime());
+            nativeSandbox.className = "";
+        });
 
-    benchmark("native", function() {
-        nativeSandbox.classList.add("t" + new Date().getTime());
-        nativeSandbox.className = "";
+        benchmark("DOMElement#addClass", function() {
+            domSandbox.addClass("t" + new Date().getTime());
+            nativeSandbox.className = "";
+        });
+
+        benchmark("native", function() {
+            nativeSandbox.classList.add("t" + new Date().getTime());
+            nativeSandbox.className = "";
+        });
+    }, {
+        onComplete: function() {
+            document.body.removeChild(nativeSandbox);
+        }
     });
-});
+}());

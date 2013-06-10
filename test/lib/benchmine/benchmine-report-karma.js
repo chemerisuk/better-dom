@@ -43,7 +43,7 @@
 
     // Called when the suite completes running.
     KarmaReporter.prototype.onComplete = function() {
-        log("Benchmarking \"" + this.name + "\"...");
+        log("Benchmarking \"" + this.name + "\"");
 
         this.forEach(function(target){
             log(">> " + String(target));

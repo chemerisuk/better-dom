@@ -1,34 +1,30 @@
-(function() {
+(function(){
     "use strict";
 
-    // var nativeSandbox = document.getElementById("sandbox"),
-    //     jqueryLink = jQuery("#link"), 
-    //     domLink = DOM.find("#link");
+    var nativeSandbox = document.createElement("div"),
+        jquerySandbox = jQuery(nativeSandbox),
+        domSandbox = DOM.create(nativeSandbox);
 
-    // suite("DOMElement.show/hide", function () {
-    //     benchmark("jquery#hide()", function() {
-    //         jqueryLink.hide();
-    //     });
+    document.body.appendChild(nativeSandbox);
 
-    //     benchmark("jquery#show()", function() {
-    //         jqueryLink.show();
-    //     });
+    suite("show/hide", function() {
+        benchmark("jquery#hide()/show()", function() {
+            jquerySandbox.hide();
+            jquerySandbox.show();
+        });
 
-    //     benchmark("DOM#hide()", function() {
-    //         domLink.hide();
-    //     });
+        benchmark("DOM#hide()/show()", function() {
+            domSandbox.hide();
+            domSandbox.show();
+        });
 
-    //     benchmark("DOM#show()", function() {
-    //         domLink.show();
-    //     });
-
-    // }, {
-    //     onCycle: function() {
-    //         nativeSandbox.innerHTML = "<a id='link'>t<a>";
-
-    //         jqueryLink = jQuery("#link");
-    //         domLink = DOM.find("#link");
-    //     }
-    // });
-
-})();
+        benchmark("native#hide()/show()", function() {
+            nativeSandbox.style.display = "none";
+            nativeSandbox.style.display = "block";
+        });
+    }, {
+        onComplete: function() {
+            document.body.removeChild(nativeSandbox);
+        }
+    });
+}());

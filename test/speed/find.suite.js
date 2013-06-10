@@ -1,4 +1,4 @@
-suite("DOMElement.find", function () {
+suite("find/findAll", function () {
     "use strict";
 
     benchmark("jquery#selector", function() {

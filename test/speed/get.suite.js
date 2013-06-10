@@ -1,27 +1,37 @@
-suite("DOMElement.get", function () {
+(function(){
     "use strict";
 
-    var nativeLink = document.getElementById("test1"),
-        jqueryLink = jQuery("#test2"),
-        domLink = DOM.find("#test3");
+    var nativeSandbox = document.createElement("a"),
+        jquerySandbox = jQuery(nativeSandbox),
+        domSandbox = DOM.create(nativeSandbox);
 
-    benchmark("jquery#attr", function() {
-        jqueryLink.attr("id");
-    });
+    nativeSandbox.rel = "sandbox";
+    document.body.appendChild(nativeSandbox);
 
-    benchmark("jquery#prop", function() {
-        jqueryLink.prop("id");
-    });
+    suite("getter", function () {
+        benchmark("jquery#attr", function() {
+            jquerySandbox.attr("id");
+        });
 
-    benchmark("DOMElement.get", function() {
-        domLink.get("id");
-    });
+        benchmark("jquery#prop", function() {
+            jquerySandbox.prop("id");
+        });
 
-    benchmark("native#getAttribute", function() {
-        nativeLink.getAttribute("id");
-    });
+        benchmark("DOMElement.get", function() {
+            domSandbox.get("id");
+        });
 
-    benchmark("native#get", function() {
-        nativeLink.id;
+        benchmark("native#getAttribute", function() {
+            nativeSandbox.getAttribute("id");
+        });
+
+        benchmark("native#get", function() {
+            nativeSandbox.id;
+        });
+    }, {
+        onComplete: function() {
+            document.body.removeChild(nativeSandbox);
+        }
     });
-});
+}());
+

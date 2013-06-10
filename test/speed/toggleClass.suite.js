@@ -1,20 +1,28 @@
-suite("DOMElement.toggleClass", function () {
+(function(){
     "use strict";
 
-    var nativeSandbox = document.getElementById("sandbox"),
-        jquerySandbox = jQuery("#sandbox"),
-        domSandbox = DOM.find("#sandbox"),
+    var nativeSandbox = document.createElement("div"),
+        jquerySandbox = jQuery(nativeSandbox),
+        domSandbox = DOM.create(nativeSandbox),
         className = "t" + new Date().getTime();
 
-    benchmark("jquery#toggleClass", function() {
-        jquerySandbox.toggleClass(className);
-    });
+    document.body.appendChild(nativeSandbox);
 
-    benchmark("DOMElement#toggleClass", function() {
-        domSandbox.toggleClass(className);
-    });
+    suite("toggleClass", function() {
+        benchmark("jquery#toggleClass", function() {
+            jquerySandbox.toggleClass(className);
+        });
 
-    benchmark("native", function() {
-        nativeSandbox.classList.toggle(className);
+        benchmark("DOMElement#toggleClass", function() {
+            domSandbox.toggleClass(className);
+        });
+
+        benchmark("native", function() {
+            nativeSandbox.classList.toggle(className);
+        });
+    }, {
+        onComplete: function() {
+            document.body.removeChild(nativeSandbox);
+        }
     });
-});
+}());
