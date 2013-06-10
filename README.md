@@ -110,22 +110,44 @@ The extension makes `input[type=date]` controls with the same UX for all browser
 
 Check out the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
+## Getter and setter
+One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property is faster, but a lot of people don't know that or just always get an attribute value to keep algorithm the same everywhere.
+
+To fix that confusion the library introduces smart getter and setter.
+
+```js
+var link = DOM.find("#link");
+
+// returns value of the id property (i.e. "link" string)
+link.get("id");
+// returns value of "data-attr" attribute
+link.get("data-attr");
+// returns innerHTML of the element
+link.get();
+
+// sets property href (and that action updates attribute value too)
+link.set("href", "/some/path");
+// sets attribute "data-attr" to "123"
+link.set("data-attr", "123");
+// sets innerHTML to "some text"
+link.set("some text");
+```
+
 ## Emmet expressions support
 HTML strings are boring and complex, they take a lot of space. Let's fix that with [emmet](http://emmet.io/):
 
-* `nav>ul>li` -> `<nav><ul><li></li></ul></nav>`
-* `form#search.wide` -> `<form id="search" class="wide"></form>`
-* `[a='value1' b="value2"]` -> `<div a="value1" b="value2"></div>`
-* `ul>li.item$*3` -> `<ul><li class="item1"></li><li class="item2"></li><li class="item3"></li></ul>`
+* `nav>ul>li` instead of `<nav><ul><li></li></ul></nav>`
+* `form#search.wide` instead of `<form id="search" class="wide"></form>`
+* `[a='value1' b="value2"]` instead of `<div a="value1" b="value2"></div>`
+* `ul>li.item$*3` instead of `<ul><li class="item1"></li><li class="item2"></li><li class="item3"></li></ul>`
 
 Because of code size emmet expressions support is only for HTML strings and has some limitations for now, but major features are in place.
 
-
-## Event handling best practices
-Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to prevent known issues in their code.
+## Better event handling
+Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to use  best practices to prevent potential issues in their code.
 
 #### Get rid of the event object
-Event handlers don't own an event object now and this thing improves testability of your code:
+Event handlers loose event object argument and this thing improves testability of your code:
 
 ```js
 // NOTICE: handler don't have e as the first argument
