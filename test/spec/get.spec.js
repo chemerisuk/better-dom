@@ -21,31 +21,31 @@ describe("get", function() {
         expect(input.get("tabIndex")).toBe(0);
     });
 
-    it("should not allow to access to legacy objects", function() {
-        var protectedProps = {
-                children: true,
-                childNodes: true,
-                firstChild: true,
-                lastChild: true,
-                nextSibling: true,
-                previousSibling: true,
-                firstElementChild: true,
-                lastElementChild: true,
-                nextElementSibling: true,
-                previousElementSibling: true,
-                parentNode: true,
-                elements: true
-            },
-            readProp = function(propName) {
-                return function() {
-                    link.get(propName);
-                };
-            };
+    // it("should not allow to access to legacy objects", function() {
+    //     var protectedProps = {
+    //             children: true,
+    //             childNodes: true,
+    //             firstChild: true,
+    //             lastChild: true,
+    //             nextSibling: true,
+    //             previousSibling: true,
+    //             firstElementChild: true,
+    //             lastElementChild: true,
+    //             nextElementSibling: true,
+    //             previousElementSibling: true,
+    //             parentNode: true,
+    //             elements: true
+    //         },
+    //         readProp = function(propName) {
+    //             return function() {
+    //                 link.get(propName);
+    //             };
+    //         };
 
-        for (var propName in protectedProps) {
-            expect(readProp(propName)).toThrow();
-        }
-    });
+    //     for (var propName in protectedProps) {
+    //         expect(readProp(propName)).toThrow();
+    //     }
+    // });
 
     it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
         expect(link.get()).toBe("get-test");

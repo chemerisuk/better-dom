@@ -16,6 +16,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeErr
 
     DOMCollection.prototype = {
         constructor: DOMCollection,
+        
         /**
          * Executes callback on each element in the collection
          * @memberOf DOMCollection.prototype
@@ -28,6 +29,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeErr
 
             return this;
         },
+
         /**
          * Calls the method named by name on each element in the collection
          * @memberOf DOMCollection.prototype

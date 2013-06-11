@@ -6,15 +6,71 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _parseFragment, _forEa
 
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function() { throw _makeError("get", this); },
             processObjectParam = function(value, name) { this.set(name, value); };
-        // protect access to some properties
-        _forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
-            propHooks[key] = propHooks[key.replace("Element", "")] = {
-                get: throwIllegalAccess,
-                set: throwIllegalAccess
-            };
-        });
+
+        /**
+         * Get property or attribute by name
+         * @memberOf DOMElement.prototype
+         * @param  {String} [name] property/attribute name
+         * @return {String} property/attribute value
+         */
+        DOMElement.prototype.get = function(name) {
+            var el = this._node,
+                hook = propHooks[name];
+
+            if (name === undefined) {
+                name = el.type && "value" in el ? "value" : "innerHTML";
+            } else if (typeof name !== "string") {
+                throw _makeError("get", this);
+            }
+
+            if (hook) hook = hook.get;
+
+            return hook ? hook(el) : name in el ? el[name] : el.getAttribute(name);
+        };
+
+        /**
+         * Set property/attribute value
+         * @memberOf DOMElement.prototype
+         * @param {String} [name] property/attribute name
+         * @param {String} value property/attribute value
+         * @return {DOMElement} reference to this
+         */
+        DOMElement.prototype.set = function(name, value) {
+            var el = this._node,
+                nameType = typeof name;
+
+            if (nameType === "string") {
+                if (value === undefined) {
+                    value = name;
+                    name = el.type && "value" in el ? "value" : "innerHTML";
+                }
+
+                if (typeof value === "function") {
+                    value = value.call(this, this.get(name));
+                }
+
+                _forEach(name.split(" "), function(name) {
+                    var hook = propHooks[name];
+
+                    if (hook) {
+                        hook.set(el, value);
+                    } else if (value === null) {
+                        el.removeAttribute(name);
+                    } else if (name in el) {
+                        el[name] = value;
+                    } else {
+                        el.setAttribute(name, value);
+                    }
+                });
+            } else if (nameType === "object") {
+                _forOwn(name, processObjectParam, this);
+            } else {
+                throw _makeError("set", this);
+            }
+
+            return this;
+        };
 
         propHooks.tagName = propHooks.nodeName = {
             get: function(el) {
@@ -51,75 +107,5 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _parseFragment, _forEa
                 }
             };
         }
-
-        /**
-         * Get property or attribute by name
-         * @memberOf DOMElement.prototype
-         * @param  {String} [name] property/attribute name
-         * @return {String} property/attribute value
-         */
-        DOMElement.prototype.get = function(name) {
-            var el = this._node,
-                hook = propHooks[name];
-
-            if (name === undefined) {
-                name = el.type && "value" in el ? "value" : "innerHTML";
-            } else if (typeof name !== "string") {
-                throw _makeError("get", this);
-            }
-
-            if (hook) hook = hook.get;
-
-            return hook ? hook(el) : name in el ? el[name] : el.getAttribute(name);
-        };
-
-        /**
-         * Set property/attribute value
-         * @memberOf DOMElement.prototype
-         * @param {String} [name] property/attribute name
-         * @param {String} value property/attribute value
-         * @return {DOMElement} reference to this
-         */
-        DOMElement.prototype.set = function(name, value) {
-            var el = this._node,
-                nameType = typeof name,
-                valueType = typeof value;
-
-            if (nameType === "object") {
-                _forOwn(name, processObjectParam, this);
-            } else {
-                if (value === undefined) {
-                    valueType = nameType;
-                    value = name;
-                    name = el.type && "value" in el ? "value" : "innerHTML";
-                    nameType = "string";
-                }
-
-                if (valueType === "function") {
-                    value = value.call(this, this.get(name));
-                    valueType = typeof value;
-                }
-
-                if (nameType === "string") {
-                    _forEach(name.split(" "), function(name) {
-                        var hook = propHooks[name];
-
-                        if (hook) {
-                            hook.set(el, value);
-                        } else if (value === null) {
-                            el.removeAttribute(name);
-                        } else if (name in el) {
-                            el[name] = value;
-                        } else {
-                            el.setAttribute(name, value);
-                        }
-                    });
-                } else {
-                    throw _makeError("set", this);
-                }
-            }
-
-            return this;
-        };
     })();
 });
