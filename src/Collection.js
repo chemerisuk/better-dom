@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeError) {
+define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeError) {
     "use strict";
 
     // DOM COLLECTION
@@ -10,40 +10,12 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeEr
      * @constructor
      * @private
      */
-    // jshint unused:false
-    var DOMCollection = (function(){
-        var initialize = function(element, index) {
-                this[index] = DOMElement(element);
-            },
-            DOMCollection = function(elements) {
-                elements = elements || [];
+    function DOMCollection(elements) {
+        Array.prototype.push.apply(this, _map(elements, DOMElement));
+    }
 
-                this.length = elements.length;
-            
-                _forEach(elements, initialize, this);
-            },
-            props;
-
-        DOMCollection.prototype = [];
-
-        // clean DOMCollection prototype
-        if (Object.getOwnPropertyNames) {
-            props = Object.getOwnPropertyNames(Array.prototype);
-        } else {
-            props = "toLocaleString join pop push concat reverse shift unshift slice splice sort indexOf lastIndexOf".split(" ");
-        }
-        
-        _forEach(props, function(key) {
-            if (key !== "length") DOMCollection.prototype[key] = undefined;
-        });
-
-        /**
-         * Number of elements in the collection
-         * @memberOf DOMCollection.prototype
-         * @type {Number}
-         */
-        DOMCollection.prototype.length = 0;
-
+    DOMCollection.prototype = {
+        constructor: DOMCollection,
         /**
          * Executes callback on each element in the collection
          * @memberOf DOMCollection.prototype
@@ -51,12 +23,11 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeEr
          * @param  {Object}   [thisArg]  callback context
          * @return {DOMCollection} reference to this
          */
-        DOMCollection.prototype.each = function(callback, thisArg) {
+        each: function(callback, thisArg) {
             _some(this, callback, thisArg || this);
 
             return this;
-        };
-
+        },
         /**
          * Calls the method named by name on each element in the collection
          * @memberOf DOMCollection.prototype
@@ -64,7 +35,7 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeEr
          * @param  {...Object} [args] arguments for the method call
          * @return {DOMCollection} reference to this
          */
-        DOMCollection.prototype.invoke = function(name) {
+        invoke: function(name) {
             var args = _slice(arguments, 1);
 
             if (typeof name !== "string") {
@@ -76,8 +47,6 @@ define(["Element"], function(DOMElement, slice, _forEach, _some, _slice, _makeEr
             });
 
             return this;
-        };
-
-        return DOMCollection;
-    }());
+        }
+    };
 });

@@ -19,5 +19,7 @@ define(["Helpers"], function() {
         if (node) node.__dom__ = this;
     }
 
-    DOMNode.prototype = { };
+    DOMNode.prototype = {
+        constructor: DOMNode
+    };
 });

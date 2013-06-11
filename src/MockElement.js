@@ -9,6 +9,7 @@ define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMColle
     }
 
     MockElement.prototype = new DOMElement();
+    MockElement.prototype.constructor = MockElement;
 
     _forIn(DOMElement.prototype, function(functor, key) {
         var isSetter = key in DOMCollection.prototype;
@@ -22,10 +23,5 @@ define(["Node", "Element", "Collection"], function(DOMNode, DOMElement, DOMColle
 
     _forEach("nextAll prevAll children findAll".split(" "), function(key) {
         MockElement.prototype[key] = function() { return new DOMCollection(); };
-    });
-
-    // fix constructor property
-    _forEach([DOMNode, DOMElement, MockElement, DOMCollection], function(ctr) {
-        ctr.prototype.constructor = ctr;
     });
 });
