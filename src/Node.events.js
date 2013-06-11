@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHelper, _isArray, _map, _forEach, _forOwn, _makeError) {
+define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHandler, _isArray, _forEach, _forOwn, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -6,47 +6,8 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
     (function() {
         var eventHooks = {},
-            veto = false,
             processObjectParam = function(value, name) { this.on(name, value); },
-            createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
-                var currentTarget = thisArg._node,
-                    matcher = SelectorMatcher(selector),
-                    defaultEventHandler = function(e) {
-                        if (veto !== type) {
-                            var eventHelper = new EventHelper(e || window.event, currentTarget),
-                                fn = typeof callback === "string" ? context[callback] : callback,
-                                args;
-
-                            // handle modifiers
-                            if (options.cancel) eventHelper.preventDefault();
-                            if (options.stop) eventHelper.stopPropagation();
-
-                            // populate extra event arguments
-                            if (options.args) {
-                                args = _map(options.args, eventHelper.get, eventHelper);
-                                
-                                if (extras) args.push.apply(args, extras);
-                            } else {
-                                args = extras ? extras.slice(0) : [];
-                            }
-
-                            if (fn) fn.apply(context, args);
-                        }
-                    };
-
-                return !selector ? defaultEventHandler : function(e) {
-                    var el = window.event ? window.event.srcElement : e.target;
-
-                    for (; el && el !== currentTarget; el = el.parentNode) {
-                        if (matcher.test(el)) {
-                            defaultEventHandler(e);
-
-                            break;
-                        }
-                    }
-                };
-            },
-            createCustomEventHandler = function(originalHandler, type) {
+            createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
                         if (window.event._type === type) originalHandler();
                     };
@@ -93,7 +54,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     type = type.substr(0, type.length - selector.length - 1);
                 }
                 
-                handler = createEventHandler(type, selector, options, callback, args || [], context || this, this);
+                handler = EventHandler(type, selector, options, callback, args || [], context || this, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -104,7 +65,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
                     // handle custom events for IE8
-                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventHandler(handler, type);
+                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventWrapper(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }
@@ -212,11 +173,11 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             // IE<9 dies on focus/blur to hidden element
             if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
                 // Prevent re-triggering of the same event
-                veto = type;
+                EventHandler.veto = type;
                 
                 node[type]();
 
-                veto = false;
+                EventHandler.veto = false;
             }
 
             return this;
