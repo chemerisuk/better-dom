@@ -11,8 +11,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _
                 headEl.insertBefore(_createElement("style"), headEl.firstChild);
 
                 return document.styleSheets[0];
-            })(),
-            obj = {_node: {style: {cssText: ""}}};
+            })();
 
         /**
          * Import global css styles on page
@@ -22,6 +21,8 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _
          */
         DOM.importStyles = function(selector, styles) {
             if (typeof styles === "object") {
+                var obj = {_node: {style: {cssText: ""}}};
+
                 DOMElement.prototype.setStyle.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
