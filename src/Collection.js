@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeError) {
+define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeError) {
     "use strict";
 
     // DOM COLLECTION
@@ -14,6 +14,8 @@ define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeErr
         Array.prototype.push.apply(this, _map(elements, DOMElement));
     }
 
+    DOMCollection.prototype = new DOMElement();
+
     DOMCollection.prototype = {
         constructor: DOMCollection,
         
@@ -25,7 +27,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeErr
          * @return {DOMCollection} reference to this
          */
         each: function(callback, thisArg) {
-            _some(this, callback, thisArg || this);
+            _forEach(this, callback, thisArg || this);
 
             return this;
         },
@@ -51,4 +53,15 @@ define(["Element"], function(DOMElement, _map, _forEach, _some, _slice, _makeErr
             return this;
         }
     };
+
+    // shortcuts
+    _forIn(DOMElement.prototype, function(value, key) {
+        if (~("" + value).indexOf("return this;")) {
+            var args = [key];
+
+            DOMCollection.prototype[key] = function() {
+                return this.invoke.apply(this, args.concat(_slice(arguments)));
+            };
+        }
+    });
 });

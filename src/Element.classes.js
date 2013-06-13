@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _slice, _every, _makeError) {
+define(["Element"], function(DOMElement, _slice, _every, _forEach, _makeError) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -24,11 +24,17 @@ define(["Element"], function(DOMElement, _slice, _every, _makeError) {
                 };
             })(strategy);
 
-            return function() {
-                var result = _every(_slice(arguments), strategy, this);
+            if (methodName === "hasClass") {
+                return function() {
+                    return _every(_slice(arguments), strategy, this);
+                };
+            } else {
+                return function() {
+                    _forEach(_slice(arguments), strategy, this);
 
-                return nativeStrategyName === "contains" ? result : this;
-            };
+                    return this;
+                };
+            }
         }
 
         /**

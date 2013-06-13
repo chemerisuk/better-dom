@@ -15,9 +15,19 @@ describe("collection", function() {
         expect(spy.callCount).toBe(3);
     });
 
-    it("should allow to break execution if true was returned", function() {
-        inputs.each(spy.andReturn(true));
-        expect(spy.callCount).toBe(1);
+    // it("should allow to break execution if true was returned", function() {
+    //     inputs.each(spy.andReturn(true));
+    //     expect(spy.callCount).toBe(1);
+    // });
+
+    it("should have shortcut methods", function() {
+        var links = DOM.findAll("body");
+
+        _.forIn(links[0].prototype, function(value, key) {
+            if (~("" + value).indexOf("return this;")) {
+                expect(typeof links[key]).toBe("function");
+            }
+        });
     });
 
     it("should allow to invoke method for each element", function() {

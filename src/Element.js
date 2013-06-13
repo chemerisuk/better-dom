@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, MockElement) {
+define(["Node"], function(DOMNode, NullElement) {
     "use strict";
     
     // DOM ELEMENT
@@ -14,7 +14,7 @@ define(["Node"], function(DOMNode, MockElement) {
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new MockElement();
+            return element ? element.__dom__ || new DOMElement(element) : new NullElement();
         }
 
         DOMNode.call(this, element);

@@ -1,4 +1,4 @@
-define(["DOM", "MockElement"], function(DOM, MockElement, _extend, _makeError) {
+define(["DOM", "NullElement"], function(DOM, NullElement, _extend, _makeError) {
     "use strict";
 
     (function() {
@@ -16,12 +16,12 @@ define(["DOM", "MockElement"], function(DOM, MockElement, _extend, _makeError) {
             }
 
             if (!mixins) {
-                var el = new MockElement();
+                var el = new NullElement();
 
                 if (selector) {
                     _extend(el, extensions[selector]);
 
-                    el.constructor = MockElement;
+                    el.constructor = NullElement;
                 }
 
                 return el;

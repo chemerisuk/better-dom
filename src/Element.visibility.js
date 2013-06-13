@@ -7,7 +7,9 @@ define(["Element"], function(DOMElement) {
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.show = function() {
-        return this.set("hidden", false);
+        this.set("hidden", false);
+
+        return this;
     };
 
     /**
@@ -16,7 +18,9 @@ define(["Element"], function(DOMElement) {
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.hide = function() {
-        return this.set("hidden", true);
+        this.set("hidden", true);
+
+        return this;
     };
 
     /**
