@@ -21,13 +21,18 @@ describe("collection", function() {
     // });
 
     it("should have shortcut methods", function() {
-        var links = DOM.findAll("body");
+        var links = DOM.findAll("body"),
+            spy = spyOn(links[0], "on"),
+            callback = function() {};
 
         _.forIn(links[0].prototype, function(value, key) {
             if (~("" + value).indexOf("return this;")) {
                 expect(typeof links[key]).toBe("function");
             }
         });
+
+        links.on("click", callback, links);
+        expect(spy).toHaveBeenCalledWith("click", callback, links);
     });
 
     it("should allow to invoke method for each element", function() {
@@ -35,5 +40,7 @@ describe("collection", function() {
 
         expect(inputs.invoke("fire", "focus")).toBe(inputs);
         expect(spy.callCount).toBe(3);
+
+        expect(function() { inputs.invoke(); }).toThrow();
     });
 });

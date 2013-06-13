@@ -98,7 +98,7 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
                 result = hook ? hook(style) : style[name];
             }
 
-            return result || "";
+            return result;
         };
 
         /**

@@ -88,6 +88,12 @@ describe("style", function() {
             expect(link.offset()).not.toEqual(offset);
         });
 
+        it("should not add px suffix to some css properties", function() {
+            _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
+                expect(link.setStyle(propName, 5).getStyle(propName)).not.toBe("5px");
+            });
+        });
+
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.setStyle(1); }).toThrow();
         });

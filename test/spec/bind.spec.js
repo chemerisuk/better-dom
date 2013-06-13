@@ -21,11 +21,13 @@ describe("Node.bind", function() {
     });
 
     it("should throw error if arguments are invalid", function() {
-        expect(function() { this.bind(); }).toThrow();
-        expect(function() { this.bind("test"); }).toThrow();
-        expect(function() { this.bind("fire"); }).toThrow();
-        expect(function() { this.bind(1); }).toThrow();
-        expect(function() { this.test = 123; this.bind("test", 1); }).toThrow();
+        var link = DOM.create("a");
+        
+        expect(function() { link.bind(); }).toThrow();
+        expect(function() { link.bind("test"); }).toThrow();
+        expect(function() { link.bind("fire"); }).toThrow();
+        expect(function() { link.bind(1); }).toThrow();
+        expect(function() { link.test = 123; link.bind("test", 1); }).toThrow();
     });
 
 });
