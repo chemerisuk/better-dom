@@ -67,7 +67,7 @@ describe("parseTemplate", function() {
         checkExpression("a[title='hello world' href=other name]>em", "<a title='hello world' href=\"other\" name=\"\"><em></em></a>"));
     it("should accept section[id=javascript.files]",
         checkExpression("section[id=javascript.files]", "<section id=\"javascript.files\"></section>"));
-     it("should accept a[b c='d' e=\"\"f\\\"g\"]",
+    it("should accept a[b c='d' e=\"\"f\\\"g\"]",
         checkExpression("a[b c='d\\'f']", "<a b=\"\" c='d\\'f'></a>"));
 
     // counters
