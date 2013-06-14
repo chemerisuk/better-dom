@@ -51,8 +51,7 @@ module.exports = function(grunt) {
                 singleRun: true
             },
             speed: {
-                configFile: "test/lib/karma.speed.conf",
-                singleRun: true
+                configFile: "test/lib/karma.speed.conf"
             }
         },
 

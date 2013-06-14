@@ -107,6 +107,8 @@ describe("parseTemplate", function() {
         checkExpression("p.p$*2>(i.i$+b.b$)*3", "<p class=\"p1\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p><p class=\"p2\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p>"));
 
     // type attribute
+    // it("should accept ul>.t>a",
+    //     checkExpression("ul>.t>a", "<input type=\"radio\">"));
     it("should accept input:radio",
         checkExpression("input:radio", "<input type=\"radio\">"));
     it("should accept input:email#a.b",
