@@ -17,9 +17,8 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
             "#": 6,
             ":": 7
         },
-        rindex = /\$/g,
-        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
         emptyElements = " area base br col hr img input link meta param command keygen source ",
+        rattr = /([A-Za-z0-9_\-]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g,
         normalizeAttrs = function(term, str) {
             var index = str.indexOf("="),
                 name = ~index ? str.substr(0, index) : str,
@@ -49,13 +48,10 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
         }
 
         HtmlBuilder.prototype = {
-            insertTerm: function(term, toend) {
-                var index = toend ? this.str.lastIndexOf("<") : this.str.indexOf(">");
+            insertTerm: function(term, last) {
+                var index = last ? this.str.lastIndexOf("<") : this.str.indexOf(">");
 
                 this.str = this.str.substr(0, index) + term + this.str.substr(index);
-            },
-            addTerm: function(term) {
-                this.str += term;
             },
             toString: function() {
                 return this.str;
@@ -110,13 +106,11 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
 
             if (term) stack.unshift(term);
 
-            if (output.length) {
-                output.push.apply(output, stack);
+            output.push.apply(output, stack);
 
-                stack = [];
-            } else {
-                stack.unshift(new HtmlBuilder(stack.shift()));
-            }
+            stack = [];
+
+            if (output.length === 1) output.push(new HtmlBuilder(output[0]));
 
             // transform RPN into html nodes
 
@@ -149,7 +143,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
                     case "+":
                         term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
 
-                        _isArray(node) ? node.push(term) : node.addTerm(term);
+                        _isArray(node) ? node.push(term) : node.str += term;
                         break;
 
                     case ">":
@@ -163,7 +157,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
                         node = [];
 
                         _times(parseInt(term, 10), function(i) {
-                            node.push(new HtmlBuilder(str.replace(rindex, i + 1), true));
+                            node.push(new HtmlBuilder(str.split("$").join(i + 1), true));
                         });
                         break;
                     }
