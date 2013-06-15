@@ -83,7 +83,7 @@ describe("manipulation", function() {
                 otherDiv.set("innerHTML", "<section>This native javascript sentence is in a green box <mark>with these words highlighted</mark>?</section>");
 
                 expect(checkMethod(div[strategy](otherDiv))._node).toHaveTag("div");
-                expect(otherDiv.find("section").getStyle("display")).toBe("block");
+                expect(otherDiv.find("section")._node).toHaveTag("section");
             }
         });
 
