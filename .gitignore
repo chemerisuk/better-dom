@@ -6,3 +6,4 @@ jsdoc
 coverage
 *.log
 build
+reports

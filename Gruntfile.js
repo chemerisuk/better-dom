@@ -207,6 +207,16 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+        plato: {
+            all: {
+                options: {
+                    jshint: grunt.file.readJSON(".jshintrc")
+                },
+                files: {
+                    reports: ["src/*.js"]
+                }
+            }
         }
     });
 
@@ -220,6 +230,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-clean");
     grunt.loadNpmTasks("grunt-contrib-connect");
     grunt.loadNpmTasks("grunt-contrib-requirejs");
+    grunt.loadNpmTasks("grunt-plato");
 
 
     grunt.registerTask("dev", [
