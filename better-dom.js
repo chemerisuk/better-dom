@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.0.0-beta.1
+ * @version 1.0.0-rc.1
  * @overview Making DOM to be nice
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -42,64 +42,6 @@
             return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         },
 
-        // COLLECTION UTILS
-        // ----------------
-        
-        makeCollectionMethod = (function(){
-            var tpl = "", args = {
-                    BEFORE: "",
-                    COUNT:  "a ? a.length : 0",
-                    BODY:   "",
-                    AFTER:  ""
-                };
-
-            tpl += "%BEFORE%";
-            tpl += "\nfor (var i = 0, n = %COUNT%; i < n; ++i) {";
-            tpl += "%BODY%";
-            tpl += "}%AFTER%";
-
-            return function(options) {
-                var code = tpl, key;
-
-                for (key in args) {
-                    code = code.replace("%" + key + "%", options[key] || args[key]);
-                }
-
-                return Function("a", "cb", "that", "undefined", code);
-            };
-        })(),
-        _forEach = makeCollectionMethod({
-            BODY:   "cb.call(that, a[i], i, a)"
-        }),
-        _times = makeCollectionMethod({
-            COUNT:  "a",
-            BODY:   "cb.call(that, i)"
-        }),
-        _map = makeCollectionMethod({
-            BEFORE: "var out = []",
-            BODY:   "out.push(cb.call(that, a[i], i, a))",
-            AFTER:  "return out"
-        }),
-        _some = makeCollectionMethod({
-            BODY:   "if (cb.call(that, a[i], i, a) === true) return true",
-            AFTER:  "return false"
-        }),
-        _filter = makeCollectionMethod({
-            BEFORE: "var out = []",
-            BODY:   "if (cb.call(that, a[i], i, a)) out.push(a[i])",
-            AFTER:  "return out"
-        }),
-        _foldl = makeCollectionMethod({
-            BODY:   "that = !i && that === undefined ? a[i] : cb(that, a[i], i, a)",
-            AFTER:  "return that"
-        }),
-        _slice = function(list, index) {
-            return Array.prototype.slice.call(list, index || 0);
-        },
-        _isArray = Array.isArray || function(obj) {
-            return Object.prototype.toString.call(obj) === "[object Array]";
-        },
-
         // OBJECT UTILS
         // ------------
         
@@ -134,6 +76,70 @@
             }
 
             return obj;
+        },
+
+        // COLLECTION UTILS
+        // ----------------
+        
+        makeCollectionMethod = (function(){
+            var rcallback = /cb\.call\(([^)]+)\)/g,
+                defaults = {
+                    BEFORE: "",
+                    COUNT:  "a ? a.length : 0",
+                    BODY:   "",
+                    AFTER:  ""
+                };
+
+            return function(options) {
+                var code = "%BEFORE%\nfor (var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
+
+                _forOwn(defaults, function(value, key) {
+                    code = code.replace("%" + key + "%", options[key] || value);
+                });
+
+                // improve callback invokation by using call on demand
+                code = code.replace(rcallback, function(expr, args) {
+                    return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
+                });
+
+                return Function("a", "cb", "that", "undefined", code);
+            };
+        })(),
+        _forEach = makeCollectionMethod({
+            BODY:   "cb.call(that, a[i], i, a)"
+        }),
+        _times = makeCollectionMethod({
+            COUNT:  "a",
+            BODY:   "cb.call(that, i)"
+        }),
+        _map = makeCollectionMethod({
+            BEFORE: "var out = []",
+            BODY:   "out.push(cb.call(that, a[i], i, a))",
+            AFTER:  "return out"
+        }),
+        _some = makeCollectionMethod({
+            BODY:   "if (cb.call(that, a[i], i, a) === true) return true",
+            AFTER:  "return false"
+        }),
+        _filter = makeCollectionMethod({
+            BEFORE: "var out = []",
+            BODY:   "if (cb.call(that, a[i], i, a)) out.push(a[i])",
+            AFTER:  "return out"
+        }),
+        _foldl = makeCollectionMethod({
+            BODY:   "that = !i && that === undefined ? a[i] : cb(that, a[i], i, a)",
+            AFTER:  "return that"
+        }),
+        _every = makeCollectionMethod({
+            BEFORE: "var out = true",
+            BODY:   "out = cb.call(that, a[i], a) && out",
+            AFTER:  "return out"
+        }),
+        _slice = function(list, index) {
+            return Array.prototype.slice.call(list, index || 0);
+        },
+        _isArray = Array.isArray || function(obj) {
+            return Object.prototype.toString.call(obj) === "[object Array]";
         },
 
         // DOM UTILS
@@ -227,7 +233,9 @@
         if (node) node.__dom__ = this;
     }
 
-    DOMNode.prototype = { };
+    DOMNode.prototype = {
+        constructor: DOMNode
+    };
 
     /**
      * Check element capability
@@ -295,7 +303,7 @@
             }
 
             var node = this._node,
-                quickMatch, m, elem, elements;
+                quickMatch, m, elem, elements, old, nid, context;
 
             if (quickMatch = rquickExpr.exec(selector)) {
                 // Speed-up: "#ID"
@@ -318,9 +326,9 @@
                     elements = elements[0];
                 }
             } else {
-                var old = true,
-                    nid = tmpId,
-                    context = node;
+                old = true,
+                nid = tmpId,
+                context = node;
 
                 if (node !== document) {
                     // qSA works strangely on Element-rooted queries
@@ -469,47 +477,8 @@
 
     (function() {
         var eventHooks = {},
-            veto = false,
             processObjectParam = function(value, name) { this.on(name, value); },
-            createEventHandler = function(type, selector, options, callback, extras, context, thisArg) {
-                var currentTarget = thisArg._node,
-                    matcher = SelectorMatcher(selector),
-                    defaultEventHandler = function(e) {
-                        if (veto !== type) {
-                            var eventHelper = new EventHelper(e || window.event, currentTarget),
-                                fn = typeof callback === "string" ? context[callback] : callback,
-                                args;
-
-                            // handle modifiers
-                            if (options.cancel) eventHelper.preventDefault();
-                            if (options.stop) eventHelper.stopPropagation();
-
-                            // populate extra event arguments
-                            if (options.args) {
-                                args = _map(options.args, eventHelper.get, eventHelper);
-                                
-                                if (extras) args.push.apply(args, extras);
-                            } else {
-                                args = extras ? extras.slice(0) : [];
-                            }
-
-                            if (fn) fn.apply(context, args);
-                        }
-                    };
-
-                return !selector ? defaultEventHandler : function(e) {
-                    var el = window.event ? window.event.srcElement : e.target;
-
-                    for (; el && el !== currentTarget; el = el.parentNode) {
-                        if (matcher.test(el)) {
-                            defaultEventHandler(e);
-
-                            break;
-                        }
-                    }
-                };
-            },
-            createCustomEventHandler = function(originalHandler, type) {
+            createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
                         if (window.event._type === type) originalHandler();
                     };
@@ -556,7 +525,7 @@
                     type = type.substr(0, type.length - selector.length - 1);
                 }
                 
-                handler = createEventHandler(type, selector, options, callback, args || [], context || this, this);
+                handler = EventHandler(type, selector, options, callback, args || [], context || this, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -567,7 +536,7 @@
                     this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
                     // handle custom events for IE8
-                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventHandler(handler, type);
+                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventWrapper(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }
@@ -675,11 +644,11 @@
             // IE<9 dies on focus/blur to hidden element
             if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
                 // Prevent re-triggering of the same event
-                veto = type;
+                EventHandler.veto = type;
                 
                 node[type]();
 
-                veto = false;
+                EventHandler.veto = false;
             }
 
             return this;
@@ -706,13 +675,11 @@
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
                 var propertyChangeEventHandler = function() {
-                        var e = window.event;
+                        var e = window.event, event;
 
                         if (e.propertyName === "value") {
-                            var event = document.createEventObject();
-
+                            event = document.createEventObject();
                             event._type = "input";
-
                             // trigger special event that bubbles
                             e.srcElement.fireEvent("ondataavailable", event);
                         }
@@ -802,15 +769,13 @@
 
                 return result || document.documentElement[propertyName] && propertyName;
             }, null),
-            matches = function(el, selector) {
-                var nodeList = document.querySelectorAll(selector);
+            matches = (function() {
+                var isEqual = function(val) { return val === this; };
 
-                for (var i = 0, n = nodeList.length; i < n; ++i) {
-                    if (nodeList[i] === el) return true;
-                }
-
-                return false;
-            };
+                return function(el, selector) {
+                    return _.some(document.querySelectorAll(selector), isEqual, el);
+                };
+            }());
 
         ctor.prototype = {
             test: function(el) {
@@ -830,6 +795,94 @@
         return ctor;
     })();
 
+    /**
+     * Helper type to create an event handler
+     * @private
+     * @constructor
+     */
+    var EventHandler = (function() {
+        var hooks = {};
+
+        hooks.currentTarget = function(event, currentTarget) {
+            return DOMElement(currentTarget);
+        };
+
+        if (document.addEventListener) {
+            hooks.target = function(event) {
+                return DOMElement(event.target);
+            };
+        } else {
+            hooks.target = function(event) {
+                return DOMElement(event.srcElement);
+            };
+        }
+        
+        if (document.addEventListener) {
+            hooks.relatedTarget = function(event) {
+                return DOMElement(event.relatedTarget);
+            };
+        } else {
+            hooks.relatedTarget = function(event, currentTarget) {
+                var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
+
+                return DOMElement(event[propName]);
+            };
+        }
+
+        return function(type, selector, options, callback, extras, context, thisArg) {
+            var currentTarget = thisArg._node,
+                matcher = SelectorMatcher(selector),
+                isCallbackProp = typeof callback === "string",
+                defaultEventHandler = function(e) {
+                    if (EventHandler.veto !== type) {
+                        var event = e || window.event,
+                            fn = isCallbackProp ? context[callback] : callback,
+                            args;
+
+                        // handle modifiers
+                        if (options.cancel === true) {
+                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+                        }
+
+                        if (options.stop === true) {
+                            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
+                        }
+
+                        // populate extra event arguments
+                        if (options.args) {
+                            args = _map(options.args, function(name) {
+                                var hook = hooks[name];
+
+                                return hook ? hook(event, currentTarget) : event[name];
+                            });
+                            
+                            if (extras) args.push.apply(args, extras);
+                        } else {
+                            args = extras ? extras.slice(0) : [];
+                        }
+
+                        if (args.length) {
+                            if (fn) fn.apply(context, args);
+                        } else {
+                            isCallbackProp ? fn && context[callback]() : fn.call(context);
+                        }
+                    }
+                };
+
+            return !selector ? defaultEventHandler : function(e) {
+                var el = window.event ? window.event.srcElement : e.target;
+
+                for (; el && el !== currentTarget; el = el.parentNode) {
+                    if (matcher.test(el)) {
+                        defaultEventHandler(e);
+
+                        break;
+                    }
+                }
+            };
+        };
+    }());
+
     
     // DOM ELEMENT
     // -----------
@@ -844,83 +897,14 @@
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new MockElement();
+            return element ? element.__dom__ || new DOMElement(element) : new NullElement();
         }
 
         DOMNode.call(this, element);
     }
 
     DOMElement.prototype = new DOMNode();
-
-    /**
-     * Helper for events
-     * @private
-     * @constructor
-     */
-    function EventHelper(event, currentTarget) {
-        this._event = event;
-        this._currentTarget = currentTarget;
-    }
-
-    (function() {
-        var hooks = {},
-            returnTrue = function() { return true; },
-            makeFuncMethod = function(name, propName, legacyHandler) {
-                return !document.addEventListener ? legacyHandler : function() {
-                    this._event[name]();
-
-                    // IE9 behaves strangely with defaultPrevented so
-                    // it's safer manually overwrite the getter
-                    this[propName] = returnTrue;
-                };
-            };
-
-        EventHelper.prototype = {
-            get: function(name) {
-                var hook = hooks[name];
-
-                return hook ? hook(this) : this._event[name];
-            },
-            preventDefault: makeFuncMethod("preventDefault", "isDefaultPrevented", function() {
-                this._event.returnValue = false;
-            }),
-            stopPropagation: makeFuncMethod("stopPropagation", "isBubbleCanceled", function() {
-                this._event.cancelBubble = true;
-            }),
-            isDefaultPrevented: function() {
-                return this._event.defaultPrevented || this._event.returnValue === false;
-            },
-            isBubbleCanceled: function() {
-                return this._event.bubbleCanceled || this._event.cancelBubble === true;
-            }
-        };
-
-        hooks.currentTarget = function(thisArg) {
-            return DOMElement(thisArg._currentTarget);
-        };
-
-        if (document.addEventListener) {
-            hooks.target = function(thisArg) {
-                return DOMElement(thisArg._event.target);
-            };
-        } else {
-            hooks.target = function(thisArg) {
-                return DOMElement(thisArg._event.srcElement);
-            };
-        }
-        
-        if (document.addEventListener) {
-            hooks.relatedTarget = function(thisArg) {
-                return DOMElement(thisArg._event.relatedTarget);
-            };
-        } else {
-            hooks.relatedTarget = function(thisArg) {
-                var propName = ( thisArg._event.toElement === thisArg._currentTarget ? "from" : "to" ) + "Element";
-
-                return DOMElement(thisArg._event[propName]);
-            };
-        }
-    }());
+    DOMElement.prototype.constructor = DOMElement;
 
     // CLASSES MANIPULATION
     // --------------------
@@ -931,21 +915,31 @@
         function makeClassesMethod(nativeStrategyName, strategy) {
             var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-            return function() {
-                var result = true;
+            if (document.documentElement.classList) {
+                strategy = function(className) {
+                    return this._node.classList[nativeStrategyName](className);
+                };
+            }
 
-                _forEach(_slice(arguments), function(className) {
+            strategy = (function(strategy){
+                return function(className) {
                     if (typeof className !== "string") throw _makeError(methodName, this);
 
-                    if (this._node.classList) {
-                        result = this._node.classList[nativeStrategyName](className) && result;
-                    } else {
-                        result = strategy.call(this, className) && result;
-                    }
-                }, this);
+                    return strategy.call(this, className);
+                };
+            })(strategy);
 
-                return nativeStrategyName === "contains" ? result : this;
-            };
+            if (methodName === "hasClass") {
+                return function() {
+                    return _every(arguments, strategy, this);
+                };
+            } else {
+                return function() {
+                    _forEach(arguments, strategy, this);
+
+                    return this;
+                };
+            }
         }
 
         /**
@@ -1170,15 +1164,71 @@
 
     (function() {
         var propHooks = {},
-            throwIllegalAccess = function() { throw _makeError("get", this); },
             processObjectParam = function(value, name) { this.set(name, value); };
-        // protect access to some properties
-        _forEach("children childNodes elements parentNode firstElementChild lastElementChild nextElementSibling previousElementSibling".split(" "), function(key) {
-            propHooks[key] = propHooks[key.replace("Element", "")] = {
-                get: throwIllegalAccess,
-                set: throwIllegalAccess
-            };
-        });
+
+        /**
+         * Get property or attribute by name
+         * @memberOf DOMElement.prototype
+         * @param  {String} [name] property/attribute name
+         * @return {String} property/attribute value
+         */
+        DOMElement.prototype.get = function(name) {
+            var el = this._node,
+                hook = propHooks[name];
+
+            if (name === undefined) {
+                name = el.type && "value" in el ? "value" : "innerHTML";
+            } else if (typeof name !== "string") {
+                throw _makeError("get", this);
+            }
+
+            if (hook) hook = hook.get;
+
+            return hook ? hook(el) : name in el ? el[name] : el.getAttribute(name);
+        };
+
+        /**
+         * Set property/attribute value
+         * @memberOf DOMElement.prototype
+         * @param {String} [name] property/attribute name
+         * @param {String} value property/attribute value
+         * @return {DOMElement} reference to this
+         */
+        DOMElement.prototype.set = function(name, value) {
+            var el = this._node,
+                nameType = typeof name;
+
+            if (nameType === "string") {
+                if (value === undefined) {
+                    value = name;
+                    name = el.type && "value" in el ? "value" : "innerHTML";
+                }
+
+                if (typeof value === "function") {
+                    value = value.call(this, this.get(name));
+                }
+
+                _forEach(name.split(" "), function(name) {
+                    var hook = propHooks[name];
+
+                    if (hook) {
+                        hook.set(el, value);
+                    } else if (value === null) {
+                        el.removeAttribute(name);
+                    } else if (name in el) {
+                        el[name] = value;
+                    } else {
+                        el.setAttribute(name, value);
+                    }
+                });
+            } else if (nameType === "object") {
+                _forOwn(name, processObjectParam, this);
+            } else {
+                throw _makeError("set", this);
+            }
+
+            return this;
+        };
 
         propHooks.tagName = propHooks.nodeName = {
             get: function(el) {
@@ -1215,76 +1265,6 @@
                 }
             };
         }
-
-        /**
-         * Get property or attribute by name
-         * @memberOf DOMElement.prototype
-         * @param  {String} [name] property/attribute name
-         * @return {String} property/attribute value
-         */
-        DOMElement.prototype.get = function(name) {
-            var el = this._node,
-                hook = propHooks[name];
-
-            if (name === undefined) {
-                name = el.type && "value" in el ? "value" : "innerHTML";
-            } else if (typeof name !== "string") {
-                throw _makeError("get", this);
-            }
-
-            if (hook) hook = hook.get;
-
-            return hook ? hook(el) : name in el ? el[name] : el.getAttribute(name);
-        };
-
-        /**
-         * Set property/attribute value
-         * @memberOf DOMElement.prototype
-         * @param {String} [name] property/attribute name
-         * @param {String} value property/attribute value
-         * @return {DOMElement} reference to this
-         */
-        DOMElement.prototype.set = function(name, value) {
-            var el = this._node,
-                nameType = typeof name,
-                valueType = typeof value;
-
-            if (nameType === "object") {
-                _forOwn(name, processObjectParam, this);
-            } else {
-                if (value === undefined) {
-                    valueType = nameType;
-                    value = name;
-                    name = el.type && "value" in el ? "value" : "innerHTML";
-                    nameType = "string";
-                }
-
-                if (valueType === "function") {
-                    value = value.call(this, this.get(name));
-                    valueType = typeof value;
-                }
-
-                if (nameType === "string") {
-                    _forEach(name.split(" "), function(name) {
-                        var hook = propHooks[name];
-
-                        if (hook) {
-                            hook.set(el, value);
-                        } else if (value === null) {
-                            el.removeAttribute(name);
-                        } else if (name in el) {
-                            el[name] = value;
-                        } else {
-                            el.setAttribute(name, value);
-                        }
-                    });
-                } else {
-                    throw _makeError("set", this);
-                }
-            }
-
-            return this;
-        };
     })();
 
     // STYLES MANIPULATION
@@ -1384,7 +1364,7 @@
                 result = hook ? hook(style) : style[name];
             }
 
-            return result || "";
+            return result;
         };
 
         /**
@@ -1623,7 +1603,9 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.show = function() {
-        return this.set("hidden", false);
+        this.set("hidden", false);
+
+        return this;
     };
 
     /**
@@ -1632,7 +1614,9 @@
      * @return {DOMElement} reference to this
      */
     DOMElement.prototype.hide = function() {
-        return this.set("hidden", true);
+        this.set("hidden", true);
+
+        return this;
     };
 
     /**
@@ -1662,40 +1646,15 @@
      * @constructor
      * @private
      */
-    // jshint unused:false
-    var DOMCollection = (function(){
-        var initialize = function(element, index) {
-                this[index] = DOMElement(element);
-            },
-            DOMCollection = function(elements) {
-                elements = elements || [];
+    function DOMCollection(elements) {
+        Array.prototype.push.apply(this, _map(elements, DOMElement));
+    }
 
-                this.length = elements.length;
-            
-                _forEach(elements, initialize, this);
-            },
-            props;
+    DOMCollection.prototype = new DOMElement();
 
-        DOMCollection.prototype = [];
-
-        // clean DOMCollection prototype
-        if (Object.getOwnPropertyNames) {
-            props = Object.getOwnPropertyNames(Array.prototype);
-        } else {
-            props = "toLocaleString join pop push concat reverse shift unshift slice splice sort indexOf lastIndexOf".split(" ");
-        }
+    DOMCollection.prototype = {
+        constructor: DOMCollection,
         
-        _forEach(props, function(key) {
-            if (key !== "length") DOMCollection.prototype[key] = undefined;
-        });
-
-        /**
-         * Number of elements in the collection
-         * @memberOf DOMCollection.prototype
-         * @type {Number}
-         */
-        DOMCollection.prototype.length = 0;
-
         /**
          * Executes callback on each element in the collection
          * @memberOf DOMCollection.prototype
@@ -1703,11 +1662,11 @@
          * @param  {Object}   [thisArg]  callback context
          * @return {DOMCollection} reference to this
          */
-        DOMCollection.prototype.each = function(callback, thisArg) {
-            _some(this, callback, thisArg || this);
+        each: function(callback, thisArg) {
+            _forEach(this, callback, thisArg);
 
             return this;
-        };
+        },
 
         /**
          * Calls the method named by name on each element in the collection
@@ -1716,7 +1675,7 @@
          * @param  {...Object} [args] arguments for the method call
          * @return {DOMCollection} reference to this
          */
-        DOMCollection.prototype.invoke = function(name) {
+        invoke: function(name) {
             var args = _slice(arguments, 1);
 
             if (typeof name !== "string") {
@@ -1728,38 +1687,38 @@
             });
 
             return this;
-        };
+        }
+    };
 
-        return DOMCollection;
-    }());
+    // shortcuts
+    _forIn(DOMElement.prototype, function(value, key) {
+        if (~("" + value).indexOf("return this;")) {
+            var args = [key];
 
-    // MOCK ELEMENT
+            DOMCollection.prototype[key] = function() {
+                return this.invoke.apply(this, args.concat(_slice(arguments)));
+            };
+        }
+    });
+
+    // NULL ELEMENT
     // ------------
 
-    function MockElement() {
-        DOMNode.call(this, null);
-    }
+    function NullElement() { }
 
-    MockElement.prototype = new DOMElement();
+    NullElement.prototype = new DOMElement(null);
 
-    _forIn(DOMElement.prototype, function(functor, key) {
-        var isSetter = key in DOMCollection.prototype;
+    _forIn(NullElement.prototype, function(value, key, proto) {
+        if (typeof value !== "function") return;
 
-        MockElement.prototype[key] = isSetter ? function() { return this; } : function() { };
+        if (key in DOMCollection.prototype) {
+            proto[key] = function() { return this; };
+        } else {
+            proto[key] = function() { };
+        }
     });
 
-    _forEach("next prev find child clone".split(" "), function(key) {
-        MockElement.prototype[key] = function() { return new MockElement(); };
-    });
-
-    _forEach("nextAll prevAll children findAll".split(" "), function(key) {
-        MockElement.prototype[key] = function() { return new DOMCollection(); };
-    });
-
-    // fix constructor property
-    _forEach([DOMNode, DOMElement, MockElement, DOMCollection], function(ctr) {
-        ctr.prototype.constructor = ctr;
-    });
+    NullElement.prototype.constructor = NullElement;
 
     // GLOBAL API
     // ----------
@@ -1785,14 +1744,15 @@
      */
     DOM.watch = (function() {
         var docEl = document.documentElement,
-            watchers = [];
+            watchers = [],
+            startNames, computed, cssPrefix, scripts, behaviorUrl;
 
         if (!docEl.addBehavior) {
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = _getComputedStyle(docEl),
-                cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+            computed = _getComputedStyle(docEl),
+            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback, once) {
                 var animationName = _uniqueId("DOM"),
@@ -1836,8 +1796,8 @@
                 watchers.push(watcher);
             };
         } else {
-            var scripts = document.scripts,
-                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+            scripts = document.scripts,
+            behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
@@ -1895,16 +1855,15 @@
                 }
             }
 
-            var nodeType = value.nodeType;
+            var nodeType = value.nodeType, div;
 
             if (nodeType === 11) {
                 if (value.childNodes.length === 1) {
                     value = value.firstChild;
                 } else {
-                    var div = _createElement("div");
-
+                    // wrap result with div
+                    div = _createElement("div");
                     div.appendChild(value);
-
                     value = div;
                 }
             } else if (nodeType !== 1) {
@@ -1992,9 +1951,8 @@
             "#": 6,
             ":": 7
         },
-        rindex = /\$/g,
-        rattr = /[\w\-_]+(=[^\s'"]+|='[^']+.|="[^"]+.)?/g,
         emptyElements = " area base br col hr img input link meta param command keygen source ",
+        rattr = /([A-Za-z0-9_\-]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g,
         normalizeAttrs = function(term, str) {
             var index = str.indexOf("="),
                 name = ~index ? str.substr(0, index) : str,
@@ -2024,13 +1982,10 @@
         }
 
         HtmlBuilder.prototype = {
-            insertTerm: function(term, toend) {
-                var index = toend ? this.str.lastIndexOf("<") : this.str.indexOf(">");
+            insertTerm: function(term, last) {
+                var index = last ? this.str.lastIndexOf("<") : this.str.indexOf(">");
 
                 this.str = this.str.substr(0, index) + term + this.str.substr(index);
-            },
-            addTerm: function(term) {
-                this.str += term;
             },
             toString: function() {
                 return this.str;
@@ -2085,13 +2040,11 @@
 
             if (term) stack.unshift(term);
 
-            if (output.length) {
-                output.push.apply(output, stack);
+            output.push.apply(output, stack);
 
-                stack = [];
-            } else {
-                stack.unshift(new HtmlBuilder(stack.shift()));
-            }
+            stack = [];
+
+            if (output.length === 1) output.push(new HtmlBuilder(output[0]));
 
             // transform RPN into html nodes
 
@@ -2124,7 +2077,7 @@
                     case "+":
                         term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
 
-                        _isArray(node) ? node.push(term) : node.addTerm(term);
+                        _isArray(node) ? node.push(term) : node.str += term;
                         break;
 
                     case ">":
@@ -2138,7 +2091,7 @@
                         node = [];
 
                         _times(parseInt(term, 10), function(i) {
-                            node.push(new HtmlBuilder(str.replace(rindex, i + 1), true));
+                            node.push(new HtmlBuilder(str.split("$").join(i + 1), true));
                         });
                         break;
                     }
@@ -2163,8 +2116,7 @@
                 headEl.insertBefore(_createElement("style"), headEl.firstChild);
 
                 return document.styleSheets[0];
-            })(),
-            obj = {_node: {style: {cssText: ""}}};
+            })();
 
         /**
          * Import global css styles on page
@@ -2174,6 +2126,8 @@
          */
         DOM.importStyles = function(selector, styles) {
             if (typeof styles === "object") {
+                var obj = {_node: {style: {cssText: ""}}};
+
                 DOMElement.prototype.setStyle.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
@@ -2194,12 +2148,7 @@
         };
 
         if (document.attachEvent) {
-            // corrects block display not defined in IE8/9
-            DOM.importStyles("article,aside,figcaption,figure,footer,header,hgroup,main,nav,section", "display:block");
-            // adds styling not present in IE6/7/8/9
-            DOM.importStyles("mark", "background:#FF0;color:#000");
-            // hides non-rendered elements
-            DOM.importStyles("template,[hidden]", "display:none");
+            DOM.importStyles("[hidden]", "display:none");
         }
     }());
 
@@ -2265,12 +2214,12 @@
             }
 
             if (!mixins) {
-                var el = new MockElement();
+                var el = new NullElement();
 
                 if (selector) {
                     _extend(el, extensions[selector]);
 
-                    el.constructor = MockElement;
+                    el.constructor = NullElement;
                 }
 
                 return el;
@@ -2280,7 +2229,6 @@
         };
     })();
 
-    
     // REGISTER API
     // ------------
 
