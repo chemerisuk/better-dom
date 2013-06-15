@@ -38,10 +38,11 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
         return function(type, selector, options, callback, extras, context, thisArg) {
             var currentTarget = thisArg._node,
                 matcher = SelectorMatcher(selector),
+                isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
                     if (EventHandler.veto !== type) {
                         var event = e || window.event,
-                            fn = typeof callback === "string" ? context[callback] : callback,
+                            fn = isCallbackProp ? context[callback] : callback,
                             args;
 
                         // handle modifiers
@@ -66,7 +67,11 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
                             args = extras ? extras.slice(0) : [];
                         }
 
-                        if (fn) fn.apply(context, args);
+                        if (args.length) {
+                            if (fn) fn.apply(context, args);
+                        } else {
+                            isCallbackProp ? fn && context[callback]() : fn.call(context);
+                        }
                     }
                 };
 

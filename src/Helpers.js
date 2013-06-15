@@ -32,28 +32,65 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>" + type + ".html#" + method + " to verify the function call";
         },
 
+        // OBJECT UTILS
+        // ------------
+        
+        _forOwn = function(obj, callback, thisPtr) {
+            for (var prop in obj) {
+                if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
+            }
+        },
+        _forIn = function(obj, callback, thisPtr) {
+            for (var prop in obj) {
+                callback.call(thisPtr, obj[prop], prop, obj);
+            }
+        },
+        _keys = Object.keys || (function() {
+            var collectKeys = function(value, key) { this.push(key); };
+
+            return function(obj) {
+                var result = [];
+
+                _forOwn(obj, collectKeys, result);
+
+                return result;
+            };
+        }()),
+        _extend = function(obj, name, value) {
+            if (arguments.length === 3) {
+                obj[name] = value;
+            } else if (name) {
+                _forOwn(name, function(value, key) {
+                    obj[key] = value;
+                });
+            }
+
+            return obj;
+        },
+
         // COLLECTION UTILS
         // ----------------
         
         makeCollectionMethod = (function(){
-            var tpl = "", args = {
+            var rcallback = /cb\.call\(([^)]+)\)/g,
+                defaults = {
                     BEFORE: "",
                     COUNT:  "a ? a.length : 0",
                     BODY:   "",
                     AFTER:  ""
                 };
 
-            tpl += "%BEFORE%";
-            tpl += "\nfor (var i = 0, n = %COUNT%; i < n; ++i) {";
-            tpl += "%BODY%";
-            tpl += "}%AFTER%";
-
             return function(options) {
-                var code = tpl, key;
+                var code = "%BEFORE%\nfor (var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
 
-                for (key in args) {
-                    code = code.replace("%" + key + "%", options[key] || args[key]);
-                }
+                _forOwn(defaults, function(value, key) {
+                    code = code.replace("%" + key + "%", options[key] || value);
+                });
+
+                // improve callback invokation by using call on demand
+                code = code.replace(rcallback, function(expr, args) {
+                    return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
+                });
 
                 return Function("a", "cb", "that", "undefined", code);
             };
@@ -93,42 +130,6 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
         },
         _isArray = Array.isArray || function(obj) {
             return Object.prototype.toString.call(obj) === "[object Array]";
-        },
-
-        // OBJECT UTILS
-        // ------------
-        
-        _forOwn = function(obj, callback, thisPtr) {
-            for (var prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
-            }
-        },
-        _forIn = function(obj, callback, thisPtr) {
-            for (var prop in obj) {
-                callback.call(thisPtr, obj[prop], prop, obj);
-            }
-        },
-        _keys = Object.keys || (function() {
-            var collectKeys = function(value, key) { this.push(key); };
-
-            return function(obj) {
-                var result = [];
-
-                _forOwn(obj, collectKeys, result);
-
-                return result;
-            };
-        }()),
-        _extend = function(obj, name, value) {
-            if (arguments.length === 3) {
-                obj[name] = value;
-            } else if (name) {
-                _forOwn(name, function(value, key) {
-                    obj[key] = value;
-                });
-            }
-
-            return obj;
         },
 
         // DOM UTILS

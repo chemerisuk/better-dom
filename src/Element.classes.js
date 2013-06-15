@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _slice, _every, _forEach, _makeError) {
+define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -26,11 +26,11 @@ define(["Element"], function(DOMElement, _slice, _every, _forEach, _makeError) {
 
             if (methodName === "hasClass") {
                 return function() {
-                    return _every(_slice(arguments), strategy, this);
+                    return _every(arguments, strategy, this);
                 };
             } else {
                 return function() {
-                    _forEach(_slice(arguments), strategy, this);
+                    _forEach(arguments, strategy, this);
 
                     return this;
                 };

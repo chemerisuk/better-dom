@@ -27,7 +27,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
          * @return {DOMCollection} reference to this
          */
         each: function(callback, thisArg) {
-            _forEach(this, callback, thisArg || this);
+            _forEach(this, callback, thisArg);
 
             return this;
         },
