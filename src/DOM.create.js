@@ -24,16 +24,15 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _parseFragm
                 }
             }
 
-            var nodeType = value.nodeType;
+            var nodeType = value.nodeType, div;
 
             if (nodeType === 11) {
                 if (value.childNodes.length === 1) {
                     value = value.firstChild;
                 } else {
-                    var div = _createElement("div");
-
+                    // wrap result with div
+                    div = _createElement("div");
                     div.appendChild(value);
-
                     value = div;
                 }
             } else if (nodeType !== 1) {

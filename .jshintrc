@@ -5,6 +5,7 @@
     "newcap": false,
     "expr": true,
     "evil": true,
+    "onevar": true,
 
     "quotmark": "double",
     "indent": 4,
@@ -16,6 +17,9 @@
     "trailing": true,
     "maxdepth": 4,
     "unused": true,
+    "immed": true,
+    "latedef": true,
+    "nonew": true,
     
     "globals": {
         "DOM": true,

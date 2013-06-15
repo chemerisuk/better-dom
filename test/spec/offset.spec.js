@@ -28,9 +28,9 @@ describe("offset", function() {
     function normalize(offset) {
         var result = {};
 
-        for (var prop in offset) {
-            result[prop] = Math.floor(offset[prop]);
-        }
+        _.forOwn(offset, function(value, key) {
+            result[key] = Math.floor(value);
+        });
 
         return result;
     }

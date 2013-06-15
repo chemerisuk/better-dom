@@ -12,14 +12,14 @@ describe("traversing", function() {
     describe("next, prev, parent", function() {
         it("should return an appropriate element", function() {
             var expectedResults = {
-                next: "b",
-                prev: "i",
-                parent: "div"
-            };
+                    next: "b",
+                    prev: "i",
+                    parent: "div"
+                };
 
-            for (var methodName in expectedResults) {
-                expect(link[methodName]()._node).toHaveTag(expectedResults[methodName]);
-            }
+            _.forOwn(expectedResults, function(tagName, methodName) {
+                expect(link[methodName]()._node).toHaveTag(tagName);
+            });
         });
 
         it("should search for the first matching element if selector exists", function() {
@@ -42,9 +42,9 @@ describe("traversing", function() {
                     };
                 };
 
-            for (var methodName in expectedResults) {
+            _.forOwn(expectedResults, function(tagName, methodName) {
                 _.each(link[methodName](), isOK(methodName));
-            }
+            });
         });
 
         it("should filter matching elements by optional selector", function() {
@@ -59,11 +59,9 @@ describe("traversing", function() {
                     };
                 };
 
-            for (var methodName in filters) {
-                var tagName = filters[methodName];
-                
+            _.forOwn(filters, function(tagName, methodName) {
                 _.each(link[methodName](tagName), haveTag(tagName));
-            }
+            });
         });
     });
 

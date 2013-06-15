@@ -38,7 +38,7 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeEr
             }
 
             var node = this._node,
-                quickMatch, m, elem, elements;
+                quickMatch, m, elem, elements, old, nid, context;
 
             if (quickMatch = rquickExpr.exec(selector)) {
                 // Speed-up: "#ID"
@@ -61,9 +61,9 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeEr
                     elements = elements[0];
                 }
             } else {
-                var old = true,
-                    nid = tmpId,
-                    context = node;
+                old = true,
+                nid = tmpId,
+                context = node;
 
                 if (node !== document) {
                     // qSA works strangely on Element-rooted queries

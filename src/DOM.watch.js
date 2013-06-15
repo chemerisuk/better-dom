@@ -14,14 +14,15 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
      */
     DOM.watch = (function() {
         var docEl = document.documentElement,
-            watchers = [];
+            watchers = [],
+            startNames, computed, cssPrefix, scripts, behaviorUrl;
 
         if (!docEl.addBehavior) {
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            var startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
-                computed = _getComputedStyle(docEl),
-                cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
+            computed = _getComputedStyle(docEl),
+            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback, once) {
                 var animationName = _uniqueId("DOM"),
@@ -65,8 +66,8 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                 watchers.push(watcher);
             };
         } else {
-            var scripts = document.scripts,
-                behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+            scripts = document.scripts,
+            behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
 
             return function(selector, callback, once) {
                 var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },

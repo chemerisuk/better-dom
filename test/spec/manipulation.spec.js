@@ -40,60 +40,54 @@ describe("manipulation", function() {
         });
 
         it("should accept html string", function() {
-            for (var strategy in checkStrategies) {
-                var arg = createDivHtml(strategy),
-                    checkMethod = checkStrategies[strategy];
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDivHtml(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            }
+            });
         });
 
         it("should accept native object", function() {
-            for (var strategy in checkStrategies) {
-                var arg = createDiv(strategy),
-                    checkMethod = checkStrategies[strategy];
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDiv(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            }
+            });
         });
 
         it("should accept document fragment", function() {
-            for (var strategy in checkStrategies) {
-                var arg = createDivFragment(strategy),
-                    checkMethod = checkStrategies[strategy];
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDivFragment(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            }
+            });
         });
 
         it("should accept DOMElement", function() {
-            for (var strategy in checkStrategies) {
-                var arg = DOM.create(createDiv(strategy)),
-                    checkMethod = checkStrategies[strategy];
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = DOM.create(createDiv(strategy));
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            }
+            });
         });
 
         it("should fix html5 elements", function() {
-            for (var strategy in checkStrategies) {
-                var checkMethod = checkStrategies[strategy],
-                    otherDiv = DOM.create("div");
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var otherDiv = DOM.create("div");
 
                 otherDiv.set("innerHTML", "<section>This native javascript sentence is in a green box <mark>with these words highlighted</mark>?</section>");
 
                 expect(checkMethod(div[strategy](otherDiv))._node).toHaveTag("div");
                 expect(otherDiv.find("section")._node).toHaveTag("section");
-            }
+            });
         });
 
         it("should support emmet-like expressions", function() {
-            for (var strategy in checkStrategies) {
-                var arg = createDivEmmet(strategy),
-                    checkMethod = checkStrategies[strategy];
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDivEmmet(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            }
+            });
         });
 
         it("should throw error if argument is invalid", function() {
@@ -103,9 +97,9 @@ describe("manipulation", function() {
                     };
                 };
 
-            for (var strategy in checkStrategies) {
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
                 expect(callProp(strategy)).toThrow();
-            }
+            });
         });
 
     });

@@ -204,13 +204,11 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
                 var propertyChangeEventHandler = function() {
-                        var e = window.event;
+                        var e = window.event, event;
 
                         if (e.propertyName === "value") {
-                            var event = document.createEventObject();
-
+                            event = document.createEventObject();
                             event._type = "input";
-
                             // trigger special event that bubbles
                             e.srcElement.fireEvent("ondataavailable", event);
                         }

@@ -31,15 +31,13 @@ define([], function(_foldl) {
 
                 return result || document.documentElement[propertyName] && propertyName;
             }, null),
-            matches = function(el, selector) {
-                var nodeList = document.querySelectorAll(selector);
+            matches = (function() {
+                var isEqual = function(val) { return val === this; };
 
-                for (var i = 0, n = nodeList.length; i < n; ++i) {
-                    if (nodeList[i] === el) return true;
-                }
-
-                return false;
-            };
+                return function(el, selector) {
+                    return _.some(document.querySelectorAll(selector), isEqual, el);
+                };
+            }());
 
         ctor.prototype = {
             test: function(el) {
