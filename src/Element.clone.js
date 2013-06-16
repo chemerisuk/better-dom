@@ -3,8 +3,7 @@ define(["Element"], function(DOMElement, _createElement) {
 
     /**
      * Clone element
-     * @memberOf DOMElement.prototype
-     * @return {DOMElement} reference to this
+     * @return {DOMElement} clone of current element
      */
     DOMElement.prototype.clone = function() {
         var el;

@@ -76,7 +76,6 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
 
         /**
          * Get css style from element
-         * @memberOf DOMElement.prototype
          * @param  {String} name property name
          * @return {String} property value
          */
@@ -103,10 +102,9 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
 
         /**
          * Set css style for element
-         * @memberOf DOMElement.prototype
          * @param {String} name  property name
          * @param {String} value property value
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          */
         DOMElement.prototype.setStyle = function(name, value) {
             var nameType = typeof name,

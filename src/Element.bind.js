@@ -3,10 +3,9 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _slice, _makeError) {
 
     /**
      * Prepend extra arguments to the method with specified name
-     * @memberOf DOMElement.prototype
      * @param  {String}    name  name of method to bind arguments with
      * @param  {...Object} args  extra arguments to prepend to the method
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.bind = function(name) {
         var args = _slice(arguments, 1),

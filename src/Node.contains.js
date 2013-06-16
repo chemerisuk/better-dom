@@ -19,7 +19,6 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _forEach, _makeErr
         
         /**
          * Check if element is inside of context
-         * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
          * @return {Boolean} true if success
          * @example

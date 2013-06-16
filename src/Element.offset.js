@@ -3,7 +3,6 @@ define(["Element"], function(DOMElement) {
     
     /**
      * Calculates offset of current context
-     * @memberOf DOMElement.prototype
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     DOMElement.prototype.offset = function() {

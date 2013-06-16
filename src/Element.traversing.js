@@ -57,7 +57,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Find next sibling element filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -66,7 +65,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Find previous sibling element filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -75,7 +73,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Find all next sibling elements filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMCollection} matched elements
          * @function
@@ -84,7 +81,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Find all previous sibling elements filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMCollection} matched elements
          * @function
@@ -93,7 +89,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Find parent element filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -102,7 +97,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Return child element by index filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param  {Number} index child index
          * @param  {String} [selector] css selector
          * @return {DOMElement} matched child
@@ -117,7 +111,6 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
         /**
          * Fetch children elements filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param  {String} [selector] css selector
          * @return {DOMCollection} matched elements
          * @function

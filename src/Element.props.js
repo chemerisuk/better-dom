@@ -10,7 +10,6 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _parseFragment, _forEa
 
         /**
          * Get property or attribute by name
-         * @memberOf DOMElement.prototype
          * @param  {String} [name] property/attribute name
          * @return {String} property/attribute value
          */
@@ -31,10 +30,9 @@ define(["Node", "Element"], function(DOMNode, DOMElement, _parseFragment, _forEa
 
         /**
          * Set property/attribute value
-         * @memberOf DOMElement.prototype
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          */
         DOMElement.prototype.set = function(name, value) {
             var el = this._node,

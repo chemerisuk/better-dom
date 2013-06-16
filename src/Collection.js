@@ -24,7 +24,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMCollection} reference to this
+         * @return {DOMCollection}
          */
         each: function(callback, thisArg) {
             _forEach(this, callback, thisArg);
@@ -37,7 +37,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
          * @memberOf DOMCollection.prototype
          * @param  {String}    name   name of the method
          * @param  {...Object} [args] arguments for the method call
-         * @return {DOMCollection} reference to this
+         * @return {DOMCollection}
          */
         invoke: function(name) {
             var args = _slice(arguments, 1);

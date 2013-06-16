@@ -41,9 +41,8 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Insert html string or native element after the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
@@ -52,9 +51,8 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Insert html string or native element before the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
@@ -63,9 +61,8 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Prepend html string or native element to the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
@@ -74,9 +71,8 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Append html string or native element to the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
@@ -85,9 +81,8 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Replace current element with html string or native element
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
@@ -96,8 +91,7 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Remove current element from DOM
-         * @memberOf DOMElement.prototype
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {

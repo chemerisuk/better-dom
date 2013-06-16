@@ -6,7 +6,6 @@ define(["Element"], function(DOMElement, _forEach) {
 
     /**
      * Serialize element into query string
-     * @memberOf DOMElement.prototype
      * @return {String} query string
      * @function
      */

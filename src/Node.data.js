@@ -9,7 +9,6 @@ define(["Node"], function(DOMNode, _forOwn, _makeError) {
 
         /**
          * Read data entry value
-         * @memberOf DOMNode.prototype
          * @param  {String} key data entry key
          * @return {Object} data entry value
          * @example
@@ -36,9 +35,9 @@ define(["Node"], function(DOMNode, _forOwn, _makeError) {
 
         /**
          * Store data entry value(s)
-         * @memberOf DOMNode.prototype
          * @param {String|Object} key data entry key | key/value pairs
          * @param {Object} value data to store
+         * @return {DOMNode}
          * @example
          * var domLink = DOM.find(".link");
          *

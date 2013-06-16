@@ -39,7 +39,6 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
 
         /**
          * Check if element contains class name(s)
-         * @memberOf DOMElement.prototype
          * @param  {...String} classNames class name(s)
          * @return {Boolean}   true if the element contains all classes
          * @function
@@ -51,9 +50,8 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
 
         /**
          * Add class(es) to element
-         * @memberOf DOMElement.prototype
-         * @param  {...String}  classNames class name(s)
-         * @return {DOMElement} reference to this
+         * @param  {...String} classNames class name(s)
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.addClass = makeClassesMethod("add", function(className) {
@@ -64,9 +62,8 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
 
         /**
          * Remove class(es) from element
-         * @memberOf DOMElement.prototype
-         * @param  {...String}  classNames class name(s)
-         * @return {DOMElement} reference to this
+         * @param  {...String} classNames class name(s)
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
@@ -78,9 +75,8 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
 
         /**
          * Toggle class(es) on element
-         * @memberOf DOMElement.prototype
          * @param  {...String}  classNames class name(s)
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.toggleClass = makeClassesMethod("toggle", function(className) {

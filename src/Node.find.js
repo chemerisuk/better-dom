@@ -21,7 +21,6 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeEr
         
         /**
          * Finds element by selector
-         * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMElement} element or null if nothing was found
          * @example
@@ -95,7 +94,6 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeEr
 
         /**
          * Finds all elements by selector
-         * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMCollection} elements collection
          */

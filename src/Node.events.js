@@ -21,13 +21,12 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
         /**
          * Bind a DOM event to the context
-         * @memberOf DOMNode.prototype
          * @param  {String}   type event type
          * @param  {Object}   [options] callback options
          * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
          * @param  {Object}   [context] callback context
-         * @return {DOMNode}  current context
+         * @return {DOMNode}
          */
         DOMNode.prototype.on = function(type, options, callback, args, context) {
             var eventType = typeof type,
@@ -82,11 +81,10 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
         /**
          * Unbind a DOM event from the context
-         * @memberOf DOMNode.prototype
          * @param  {String}   type event type
          * @param  {Object}   [context] callback context
          * @param  {Function} [callback] event handler
-         * @return {DOMNode} current context
+         * @return {DOMNode}
          */
         DOMNode.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
@@ -119,10 +117,9 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
         /**
          * Triggers an event of specific type
-         * @memberOf DOMNode.prototype
          * @param  {String} eventType type of event
          * @param  {Object} [detail] data to attach
-         * @return {DOMNode} current context
+         * @return {DOMNode}
          * @example
          * var domLink = DOM.find(".link");
          *

@@ -3,9 +3,9 @@ define(["Node"], function(DOMNode, _createElement) {
 
     /**
      * Check element capability
-     * @memberOf DOMNode.prototype
      * @param {String} prop property to check
      * @param {String} [tag] name of element to test
+     * @return {Boolean} true, if feature is supported
      * @example
      * input.supports("placeholder");
      * // => true if an input supports placeholders
