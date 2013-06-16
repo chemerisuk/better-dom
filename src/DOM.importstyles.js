@@ -6,7 +6,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _
 
     (function() {
         var styleSheet = (function() {
-                var headEl = document.scripts[0].parentNode;
+                var headEl = document.getElementsByTagName("head")[0];
 
                 headEl.insertBefore(_createElement("style"), headEl.firstChild);
 
