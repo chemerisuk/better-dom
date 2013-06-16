@@ -3,8 +3,7 @@ define(["Element"], function(DOMElement) {
 
     /**
      * Show element
-     * @memberOf DOMElement.prototype
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.show = function() {
         this.set("hidden", false);
@@ -14,8 +13,7 @@ define(["Element"], function(DOMElement) {
 
     /**
      * Hide element
-     * @memberOf DOMElement.prototype
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.hide = function() {
         this.set("hidden", true);
@@ -24,8 +22,17 @@ define(["Element"], function(DOMElement) {
     };
 
     /**
+     * Display or hide element
+     * @return {DOMElement}
+     */
+    DOMElement.prototype.toggle = function() {
+        this.set("hidden", !this.get("hidden"));
+
+        return this;
+    };
+
+    /**
      * Check is element is hidden
-     * @memberOf DOMElement.prototype
      * @return {Boolean} true if element is hidden
      */
     DOMElement.prototype.isHidden = function() {
@@ -34,7 +41,6 @@ define(["Element"], function(DOMElement) {
 
     /**
      * Check if element has focus
-     * @memberOf DOMElement.prototype
      * @return {Boolean} true if current element is focused
      */
     DOMElement.prototype.isFocused = function() {

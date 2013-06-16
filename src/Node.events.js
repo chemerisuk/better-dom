@@ -54,7 +54,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     type = type.substr(0, type.length - selector.length - 1);
                 }
                 
-                handler = EventHandler(type, selector, options, callback, args || [], context || this, this);
+                handler = EventHandler(type, selector, options, callback, args || [], context || this, this._node);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;

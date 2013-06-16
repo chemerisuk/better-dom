@@ -35,26 +35,18 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
             };
         }
 
-        return function(type, selector, options, callback, extras, context, thisArg) {
-            var currentTarget = thisArg._node,
-                matcher = SelectorMatcher(selector),
+        return function(type, selector, options, callback, extras, context, currentTarget) {
+            var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
                     if (EventHandler.veto !== type) {
                         var event = e || window.event,
                             fn = isCallbackProp ? context[callback] : callback,
+                            cancel = options.cancel,
+                            stop = options.stop,
                             args;
 
-                        // handle modifiers
-                        if (options.cancel === true) {
-                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
-                        }
-
-                        if (options.stop === true) {
-                            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
-                        }
-
-                        // populate extra event arguments
+                        // populate event handler arguments
                         if (options.args) {
                             args = _map(options.args, function(name) {
                                 var hook = hooks[name];
@@ -67,6 +59,19 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
                             args = extras ? extras.slice(0) : [];
                         }
 
+                        if (typeof cancel === "function") cancel = cancel.apply(context, args);
+                        if (typeof stop === "function") stop = stop.apply(context, args);
+
+                        // handle event modifiers
+                        if (cancel === true) {
+                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+                        }
+
+                        if (stop === true) {
+                            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
+                        }
+
+                        // optimizations
                         if (args.length) {
                             if (fn) fn.apply(context, args);
                         } else {

@@ -22,8 +22,8 @@
     "nonew": true,
     
     "globals": {
-        "DOM": true,
         "_": true,
+        "DOM": true,
         "define": true,
 
         "beforeEach": true,
