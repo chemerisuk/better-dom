@@ -176,6 +176,24 @@ DOM.ready(function() { throw Error("exception in a bad code"); });
 // NOTICE: you'll always see the message in console
 DOM.ready(function() { console.log("Nothing can break your code") });
 ```
+## Easy localization
+Multilanguage support is often a part of a DOM extension. The library helps with that too.
+
+Strings are part of the presentation layer, so let's store them in css. The pattern is simple: special `data-i18n` attribute is used for a string key and `content` property of the `:before` pseudoelement displays localized string value.
+
+```css
+[data-i18n="hello.0"]:before { content: "Hello!" }
+/* use :lang selector to specify language of the string */
+[data-i18n="hello.0"]:lang(ru):before { content: "Привет!" }
+/* use data-* attributes for a string variables */
+[data-i18n="hello.1"]:before { content: "Hello " attr(data-user) "!" }
+```
+So for instance `<a data-i18n="hello.1" data-user="Maksim"><a>` element will display string "Hello Maksim!". Also it's possible to populate strings programmatically via `DOM.addLocaleString`.
+
+```js
+DOM.addLocaleString("hello.2", "Hello {user}!");
+DOM.addLocaleString("hello.2", "Привет {user}!", "ru");
+```
 
 ## Performance
 DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.

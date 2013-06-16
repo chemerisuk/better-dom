@@ -34,4 +34,13 @@ describe("i18n", function(){
             "[data-i18n=\"str5\"]:before", "content:\"test2\""
         );
     });
+
+    it("should allow to read/write current language", function() {
+        document.documentElement.lang = "en";
+
+        expect(DOM.getLanguage()).toBe("en");
+        DOM.setLanguage("ru");
+        expect(DOM.getLanguage()).toBe("ru");
+        expect(document.documentElement.lang).toBe("ru");
+    });
 });

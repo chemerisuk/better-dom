@@ -4,9 +4,10 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn) {
     DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
 
     /**
-     * Switch DOM language
+     * Switch current language to
      * @memberOf DOM
-     * @param  {String} lang language abbreviation
+     * @param {String} lang language code
+     * @see http://www.w3.org/TR/html401/struct/dirlang.html#adef-lang
      */
     DOM.setLanguage = function(lang) {
         DOM.create(document.documentElement).set("lang", lang);
@@ -15,7 +16,8 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn) {
     /**
      * Return current language
      * @memberOf DOM
-     * @return {String} language abbreviation
+     * @return {String} language code
+     * @see http://www.w3.org/TR/html401/struct/dirlang.html#adef-lang
      */
     DOM.getLanguage = function() {
         return DOM.create(document.documentElement).get("lang");
@@ -24,10 +26,17 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn) {
     /**
      * Add global i18n string
      * @memberOf DOM
-     * @param {String} key     string key
-     * @param {String} pattern string pattern
-     * @param {String} [lang]  string language
+     * @param {String|Object}  key     string key
+     * @param {String}         pattern string pattern
+     * @param {String}         [lang]  string language
      * @function
+     * @example
+ * // have element &#60;a data-i18n="str.1" data-user="Maksim"&#62;&#60;a&#62; in markup
+     * DOM.addLocaleString("str.1", "Hello {user}!");
+     * // the link text now is "Hello Maksim!"
+     * DOM.addLocaleString("str.1", "Привет!", "ru");
+     * DOM.setLanguage("ru");
+     * // the link text now is "Привет!"
      */
     DOM.addLocaleString = (function() {
         var rparam = /\{([a-z\-]+)\}/g,
