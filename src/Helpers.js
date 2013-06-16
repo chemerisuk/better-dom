@@ -6,11 +6,10 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
 
     // jshint unused:false
     var _uniqueId = (function() {
-            var idCounter = 0;
+            var idCounter = 1;
 
             return function(prefix) {
-                var id = ++idCounter;
-                return String(prefix || "") + id;
+                return (prefix || "") + idCounter++;
             };
         })(),
         _defer = function(callback) {
@@ -19,9 +18,7 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
         _makeError = function(method, el) {
             var type;
 
-            if (el instanceof DOMNode) {
-                type = "DOMNode";
-            } else if (el instanceof DOMElement) {
+            if (el instanceof DOMElement) {
                 type = "DOMElement";
             } else if (el instanceof DOMCollection) {
                 type = "DOMCollection";
@@ -56,14 +53,10 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
                 return result;
             };
         }()),
-        _extend = function(obj, name, value) {
-            if (arguments.length === 3) {
-                obj[name] = value;
-            } else if (name) {
-                _forOwn(name, function(value, key) {
-                    obj[key] = value;
-                });
-            }
+        _extend = function(obj, mixins) {
+            _forOwn(mixins, function(value, key) {
+                obj[key] = value;
+            });
 
             return obj;
         },
@@ -81,7 +74,7 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
                 };
 
             return function(options) {
-                var code = "%BEFORE%\nfor (var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
+                var code = "%BEFORE%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
 
                 _forOwn(defaults, function(value, key) {
                     code = code.replace("%" + key + "%", options[key] || value);

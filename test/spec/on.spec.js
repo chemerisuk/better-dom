@@ -52,7 +52,7 @@ describe("on", function() {
 
         DOM.on("click", callback);
         input.on("click", {stop: true, cancel: true, args: ["type"]}, spy).fire("click");
-
+        
         spy.andCallFake(function(type) {
             expect(type).toBe("click");
         });
@@ -60,18 +60,23 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
         expect(callback).not.toHaveBeenCalled();
         expect(location.hash).not.toBe("#test");
+
+        form.on("click", {stop: function() { return true; }, args: ["type"]}, spy).fire("click");
+
+        expect(spy.callCount).toBe(2);
+        expect(callback).not.toHaveBeenCalled();
     });
 
     it("should support optional extra arguments", function() {
         var a = {}, b = {}, obj = {callback: function() {}};
 
-        spy.andCallFake(function(type, argA, argB) {
-            expect(type).toBe("click");
+        spy.andCallFake(function(target, argA, argB) {
+            expect(target).toBe(input);
             expect(argA).toBe(a);
             expect(argB).toBe(b);
         });
 
-        input.on("click", {args: ["type"]}, spy, [a, b]).fire("click");
+        input.on("click", {args: ["target"]}, spy, [a, b]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy = spyOn(obj, "callback");
@@ -82,6 +87,13 @@ describe("on", function() {
         });
 
         input.on("click", spy, [1, 2, 3]).fire("click");
+        expect(spy).toHaveBeenCalled();
+
+        spy.andCallFake(function(type) {
+            expect(type).toBe("focus");
+        });
+
+        input.on("focus", {args: ["type"]}, spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
@@ -157,8 +169,10 @@ describe("on", function() {
         });
 
         input.on("click", "callback", obj).fire("click");
-
         expect(spy).toHaveBeenCalled();
+
+        obj.callback = null;
+        expect(function() { input.on("click", "callback", obj).fire("click"); }).not.toThrow();
     });
 
     it("should throw error if arguments are invalid", function() {

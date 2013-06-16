@@ -42,7 +42,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _
             }
         };
 
-        if (document.attachEvent) {
+        if (!DOM.supports("hidden", "a")) {
             DOM.importStyles("[hidden]", "display:none");
         }
     }());

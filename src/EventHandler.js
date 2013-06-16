@@ -49,6 +49,8 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
                         // populate event handler arguments
                         if (options.args) {
                             args = _map(options.args, function(name) {
+                                if (name === "type") return type;
+
                                 var hook = hooks[name];
 
                                 return hook ? hook(event, currentTarget) : event[name];

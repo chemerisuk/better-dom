@@ -17,7 +17,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
             watchers = [],
             startNames, computed, cssPrefix, scripts, behaviorUrl;
 
-        if (!docEl.addBehavior) {
+        if (!DOM.supports("addBehavior", "a")) {
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
