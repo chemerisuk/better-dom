@@ -773,7 +773,7 @@
                 var isEqual = function(val) { return val === this; };
 
                 return function(el, selector) {
-                    return _.some(document.querySelectorAll(selector), isEqual, el);
+                    return _some(document.querySelectorAll(selector), isEqual, el);
                 };
             }());
 
