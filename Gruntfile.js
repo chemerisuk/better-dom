@@ -182,7 +182,7 @@ module.exports = function(grunt) {
                     "Element.styles", "Element.toquerystring", "Element.traversing", "Element.bind",
                     "Element.visibility", "Collection", "NullElement", "DOM.watch", "DOM.create",
                     "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.ready", "DOM.mock",
-                    "DOM.i18n"
+                    "DOM.importstrings"
                 ],
                 onBuildWrite: function(id, path, contents) {
                     if ((/define\(.*?\{/).test(contents)) {

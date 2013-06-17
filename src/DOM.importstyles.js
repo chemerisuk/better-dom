@@ -6,11 +6,9 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _
 
     (function() {
         var styleSheet = (function() {
-                var headEl = document.getElementsByTagName("head")[0];
+                var styleEl = document.documentElement.firstChild.appendChild(_createElement("style"));
 
-                headEl.insertBefore(_createElement("style"), headEl.firstChild);
-
-                return document.styleSheets[0];
+                return styleEl.sheet || styleEl.styleSheet;
             })();
 
         /**
