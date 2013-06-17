@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.0.0-rc.1
+ * @version 1.0.0-rc.2
  * @overview Making DOM to be nice
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -16,11 +16,10 @@
 
     // jshint unused:false
     var _uniqueId = (function() {
-            var idCounter = 0;
+            var idCounter = 1;
 
             return function(prefix) {
-                var id = ++idCounter;
-                return String(prefix || "") + id;
+                return (prefix || "") + idCounter++;
             };
         })(),
         _defer = function(callback) {
@@ -29,9 +28,7 @@
         _makeError = function(method, el) {
             var type;
 
-            if (el instanceof DOMNode) {
-                type = "DOMNode";
-            } else if (el instanceof DOMElement) {
+            if (el instanceof DOMElement) {
                 type = "DOMElement";
             } else if (el instanceof DOMCollection) {
                 type = "DOMCollection";
@@ -66,14 +63,10 @@
                 return result;
             };
         }()),
-        _extend = function(obj, name, value) {
-            if (arguments.length === 3) {
-                obj[name] = value;
-            } else if (name) {
-                _forOwn(name, function(value, key) {
-                    obj[key] = value;
-                });
-            }
+        _extend = function(obj, mixins) {
+            _forOwn(mixins, function(value, key) {
+                obj[key] = value;
+            });
 
             return obj;
         },
@@ -91,7 +84,7 @@
                 };
 
             return function(options) {
-                var code = "%BEFORE%\nfor (var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
+                var code = "%BEFORE%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
 
                 _forOwn(defaults, function(value, key) {
                     code = code.replace("%" + key + "%", options[key] || value);
@@ -239,9 +232,9 @@
 
     /**
      * Check element capability
-     * @memberOf DOMNode.prototype
      * @param {String} prop property to check
      * @param {String} [tag] name of element to test
+     * @return {Boolean} true, if feature is supported
      * @example
      * input.supports("placeholder");
      * // => true if an input supports placeholders
@@ -286,7 +279,6 @@
         
         /**
          * Finds element by selector
-         * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMElement} element or null if nothing was found
          * @example
@@ -360,7 +352,6 @@
 
         /**
          * Finds all elements by selector
-         * @memberOf DOMNode.prototype
          * @param  {String} selector css selector
          * @return {DOMCollection} elements collection
          */
@@ -377,7 +368,6 @@
 
         /**
          * Read data entry value
-         * @memberOf DOMNode.prototype
          * @param  {String} key data entry key
          * @return {Object} data entry value
          * @example
@@ -404,9 +394,9 @@
 
         /**
          * Store data entry value(s)
-         * @memberOf DOMNode.prototype
          * @param {String|Object} key data entry key | key/value pairs
          * @param {Object} value data to store
+         * @return {DOMNode}
          * @example
          * var domLink = DOM.find(".link");
          *
@@ -446,7 +436,6 @@
         
         /**
          * Check if element is inside of context
-         * @memberOf DOMNode.prototype
          * @param  {DOMElement} element element to check
          * @return {Boolean} true if success
          * @example
@@ -492,13 +481,12 @@
 
         /**
          * Bind a DOM event to the context
-         * @memberOf DOMNode.prototype
          * @param  {String}   type event type
          * @param  {Object}   [options] callback options
          * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
          * @param  {Object}   [context] callback context
-         * @return {DOMNode}  current context
+         * @return {DOMNode}
          */
         DOMNode.prototype.on = function(type, options, callback, args, context) {
             var eventType = typeof type,
@@ -525,7 +513,7 @@
                     type = type.substr(0, type.length - selector.length - 1);
                 }
                 
-                handler = EventHandler(type, selector, options, callback, args || [], context || this, this);
+                handler = EventHandler(type, selector, options, callback, args, context || this, this._node);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -553,11 +541,10 @@
 
         /**
          * Unbind a DOM event from the context
-         * @memberOf DOMNode.prototype
          * @param  {String}   type event type
          * @param  {Object}   [context] callback context
          * @param  {Function} [callback] event handler
-         * @return {DOMNode} current context
+         * @return {DOMNode}
          */
         DOMNode.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
@@ -590,10 +577,9 @@
 
         /**
          * Triggers an event of specific type
-         * @memberOf DOMNode.prototype
          * @param  {String} eventType type of event
          * @param  {Object} [detail] data to attach
-         * @return {DOMNode} current context
+         * @return {DOMNode}
          * @example
          * var domLink = DOM.find(".link");
          *
@@ -829,28 +815,22 @@
             };
         }
 
-        return function(type, selector, options, callback, extras, context, thisArg) {
-            var currentTarget = thisArg._node,
-                matcher = SelectorMatcher(selector),
+        return function(type, selector, options, callback, extras, context, currentTarget) {
+            var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
                     if (EventHandler.veto !== type) {
                         var event = e || window.event,
                             fn = isCallbackProp ? context[callback] : callback,
+                            cancel = options.cancel,
+                            stop = options.stop,
                             args;
 
-                        // handle modifiers
-                        if (options.cancel === true) {
-                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
-                        }
-
-                        if (options.stop === true) {
-                            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
-                        }
-
-                        // populate extra event arguments
+                        // populate event handler arguments
                         if (options.args) {
                             args = _map(options.args, function(name) {
+                                if (name === "type") return type;
+
                                 var hook = hooks[name];
 
                                 return hook ? hook(event, currentTarget) : event[name];
@@ -861,6 +841,19 @@
                             args = extras ? extras.slice(0) : [];
                         }
 
+                        if (typeof cancel === "function") cancel = cancel.apply(context, args);
+                        if (typeof stop === "function") stop = stop.apply(context, args);
+
+                        // handle event modifiers
+                        if (cancel === true) {
+                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+                        }
+
+                        if (stop === true) {
+                            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
+                        }
+
+                        // optimizations
                         if (args.length) {
                             if (fn) fn.apply(context, args);
                         } else {
@@ -944,7 +937,6 @@
 
         /**
          * Check if element contains class name(s)
-         * @memberOf DOMElement.prototype
          * @param  {...String} classNames class name(s)
          * @return {Boolean}   true if the element contains all classes
          * @function
@@ -956,9 +948,8 @@
 
         /**
          * Add class(es) to element
-         * @memberOf DOMElement.prototype
-         * @param  {...String}  classNames class name(s)
-         * @return {DOMElement} reference to this
+         * @param  {...String} classNames class name(s)
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.addClass = makeClassesMethod("add", function(className) {
@@ -969,9 +960,8 @@
 
         /**
          * Remove class(es) from element
-         * @memberOf DOMElement.prototype
-         * @param  {...String}  classNames class name(s)
-         * @return {DOMElement} reference to this
+         * @param  {...String} classNames class name(s)
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
@@ -983,9 +973,8 @@
 
         /**
          * Toggle class(es) on element
-         * @memberOf DOMElement.prototype
          * @param  {...String}  classNames class name(s)
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
@@ -1001,8 +990,7 @@
 
     /**
      * Clone element
-     * @memberOf DOMElement.prototype
-     * @return {DOMElement} reference to this
+     * @return {DOMElement} clone of current element
      */
     DOMElement.prototype.clone = function() {
         var el;
@@ -1058,9 +1046,8 @@
 
         /**
          * Insert html string or native element after the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
@@ -1069,9 +1056,8 @@
 
         /**
          * Insert html string or native element before the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
@@ -1080,9 +1066,8 @@
 
         /**
          * Prepend html string or native element to the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
@@ -1091,9 +1076,8 @@
 
         /**
          * Append html string or native element to the current
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
@@ -1102,9 +1086,8 @@
 
         /**
          * Replace current element with html string or native element
-         * @memberOf DOMElement.prototype
          * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
@@ -1113,8 +1096,7 @@
 
         /**
          * Remove current element from DOM
-         * @memberOf DOMElement.prototype
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          * @function
          */
         DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
@@ -1124,9 +1106,8 @@
 
     /**
      * Check if the element matches selector
-     * @memberOf DOMElement.prototype
      * @param  {String} selector css selector
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.matches = function(selector) {
         if (!selector || typeof selector !== "string") {
@@ -1139,7 +1120,6 @@
     
     /**
      * Calculates offset of current context
-     * @memberOf DOMElement.prototype
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     DOMElement.prototype.offset = function() {
@@ -1168,7 +1148,6 @@
 
         /**
          * Get property or attribute by name
-         * @memberOf DOMElement.prototype
          * @param  {String} [name] property/attribute name
          * @return {String} property/attribute value
          */
@@ -1189,10 +1168,9 @@
 
         /**
          * Set property/attribute value
-         * @memberOf DOMElement.prototype
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          */
         DOMElement.prototype.set = function(name, value) {
             var el = this._node,
@@ -1342,7 +1320,6 @@
 
         /**
          * Get css style from element
-         * @memberOf DOMElement.prototype
          * @param  {String} name property name
          * @return {String} property value
          */
@@ -1369,10 +1346,9 @@
 
         /**
          * Set css style for element
-         * @memberOf DOMElement.prototype
          * @param {String} name  property name
          * @param {String} value property value
-         * @return {DOMElement} reference to this
+         * @return {DOMElement}
          */
         DOMElement.prototype.setStyle = function(name, value) {
             var nameType = typeof name,
@@ -1404,7 +1380,6 @@
 
     /**
      * Serialize element into query string
-     * @memberOf DOMElement.prototype
      * @return {String} query string
      * @function
      */
@@ -1507,7 +1482,6 @@
 
         /**
          * Find next sibling element filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -1516,7 +1490,6 @@
 
         /**
          * Find previous sibling element filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -1525,7 +1498,6 @@
 
         /**
          * Find all next sibling elements filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMCollection} matched elements
          * @function
@@ -1534,7 +1506,6 @@
 
         /**
          * Find all previous sibling elements filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMCollection} matched elements
          * @function
@@ -1543,7 +1514,6 @@
 
         /**
          * Find parent element filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param {String} [selector] css selector
          * @return {DOMElement} matched element
          * @function
@@ -1552,7 +1522,6 @@
 
         /**
          * Return child element by index filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param  {Number} index child index
          * @param  {String} [selector] css selector
          * @return {DOMElement} matched child
@@ -1567,7 +1536,6 @@
 
         /**
          * Fetch children elements filtered by optional selector
-         * @memberOf DOMElement.prototype
          * @param  {String} [selector] css selector
          * @return {DOMCollection} matched elements
          * @function
@@ -1577,10 +1545,9 @@
 
     /**
      * Prepend extra arguments to the method with specified name
-     * @memberOf DOMElement.prototype
      * @param  {String}    name  name of method to bind arguments with
      * @param  {...Object} args  extra arguments to prepend to the method
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.bind = function(name) {
         var args = _slice(arguments, 1),
@@ -1599,8 +1566,7 @@
 
     /**
      * Show element
-     * @memberOf DOMElement.prototype
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.show = function() {
         this.set("hidden", false);
@@ -1610,8 +1576,7 @@
 
     /**
      * Hide element
-     * @memberOf DOMElement.prototype
-     * @return {DOMElement} reference to this
+     * @return {DOMElement}
      */
     DOMElement.prototype.hide = function() {
         this.set("hidden", true);
@@ -1620,8 +1585,17 @@
     };
 
     /**
+     * Display or hide element
+     * @return {DOMElement}
+     */
+    DOMElement.prototype.toggle = function() {
+        this.set("hidden", !this.get("hidden"));
+
+        return this;
+    };
+
+    /**
      * Check is element is hidden
-     * @memberOf DOMElement.prototype
      * @return {Boolean} true if element is hidden
      */
     DOMElement.prototype.isHidden = function() {
@@ -1630,7 +1604,6 @@
 
     /**
      * Check if element has focus
-     * @memberOf DOMElement.prototype
      * @return {Boolean} true if current element is focused
      */
     DOMElement.prototype.isFocused = function() {
@@ -1660,7 +1633,7 @@
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMCollection} reference to this
+         * @return {DOMCollection}
          */
         each: function(callback, thisArg) {
             _forEach(this, callback, thisArg);
@@ -1673,7 +1646,7 @@
          * @memberOf DOMCollection.prototype
          * @param  {String}    name   name of the method
          * @param  {...Object} [args] arguments for the method call
-         * @return {DOMCollection} reference to this
+         * @return {DOMCollection}
          */
         invoke: function(name) {
             var args = _slice(arguments, 1);
@@ -1747,7 +1720,7 @@
             watchers = [],
             startNames, computed, cssPrefix, scripts, behaviorUrl;
 
-        if (!docEl.addBehavior) {
+        if (!DOM.supports("addBehavior", "a")) {
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
@@ -2111,11 +2084,9 @@
 
     (function() {
         var styleSheet = (function() {
-                var headEl = document.scripts[0].parentNode;
+                var styleEl = document.documentElement.firstChild.appendChild(_createElement("style"));
 
-                headEl.insertBefore(_createElement("style"), headEl.firstChild);
-
-                return document.styleSheets[0];
+                return styleEl.sheet || styleEl.styleSheet;
             })();
 
         /**
@@ -2147,7 +2118,7 @@
             }
         };
 
-        if (document.attachEvent) {
+        if (!DOM.supports("hidden", "a")) {
             DOM.importStyles("[hidden]", "display:none");
         }
     }());
@@ -2228,6 +2199,52 @@
             extensions[selector] = _extend(extensions[selector] || {}, mixins);
         };
     })();
+
+    // IMPORT STRINGS
+    // --------------
+
+    /**
+     * Import global i18n string(s)
+     * @memberOf DOM
+     * @param {String|Object}  key     string key
+     * @param {String}         pattern string pattern
+     * @param {String}         [lang]  string language
+     * @function
+     * @example
+     * // have element &#60;a data-i18n="str.1" data-user="Maksim"&#62;&#60;a&#62; in markup
+     * DOM.importStrings("str.1", "Hello {user}!");
+     * DOM.importStrings("str.1", "Привет!", "ru");
+     * // the link text now is "Hello Maksim!"
+     * link.set("lang", "ru");
+     * // the link text now is "Привет!"
+     */
+    DOM.importStrings = (function() {
+        var rparam = /\{([a-z\-]+)\}/g,
+            toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\""; };
+
+        return function(key, pattern, lang) {
+            var keyType = typeof key,
+                selector, content;
+
+            if (keyType === "string") {
+                selector = "[data-i18n=\"" + key + "\"]";
+                
+                if (lang) selector += ":lang(" + lang + ")";
+
+                content = "content:\"" + pattern.replace(rparam, toContentAttr) + "\"";
+
+                DOM.importStyles(selector + ":before", content);
+            } else if (keyType === "object") {
+                lang = pattern;
+
+                _forOwn(key, function(pattern, key) {
+                    DOM.importStrings(key, pattern, lang);
+                });
+            }
+        };
+    }());
+
+    DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
 
     // REGISTER API
     // ------------

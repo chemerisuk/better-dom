@@ -1,7 +1,7 @@
 {
     "name": "better-dom",
     "title": "better-dom",
-    "version": "1.0.0-rc.1",
+    "version": "1.0.0-rc.2",
     "author": "Maksim Chemerisuk",
     "description": "Making DOM to be nice",
     "license": "MIT",
