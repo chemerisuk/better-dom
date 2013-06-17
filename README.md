@@ -135,7 +135,7 @@ link.set("data-attr", "123");
 link.set("some text");
 ```
 
-## Emmet expressions support
+## Emmet expressions
 HTML strings are boring and complex, they take a lot of space. Let's fix that with [emmet](http://emmet.io/):
 
 * `nav>ul>li` instead of `<nav><ul><li></li></ul></nav>`
@@ -145,11 +145,11 @@ HTML strings are boring and complex, they take a lot of space. Let's fix that wi
 
 Because of code size emmet expressions support is only for HTML strings and has some limitations for now, but major features are in place.
 
-## Better event handling
-Events handling is a big part of writing code for DOM. And there are some features included to the library APIs that force developers to use  best practices to prevent potential issues in their code.
+## Event handling best practices
+Events handling is a big part of writing a code for DOM. And there are some features included to the library APIs that help developers to avoid potential issues and keep their code easier to maintain.
 
 #### Get rid of the event object
-Event handlers loose event object argument and this thing improves testability of your code.
+Event callback looses event object argument and it improves testability of your code.
 
 ```js
 // NOTICE: handler don't have e as the first argument
@@ -159,7 +159,7 @@ DOM.find("#link").on("keydown", {args: ["keyCode", "altKey"]}, function(keyCode,
 ```
 
 #### Call preventDefault() or stopPropagation() before logic
-It's a common situation to work with unsafe code that can throw an exception. If preventDefault() or stopPropagation() are called at the end of logic than program may start to work unexpected.
+It's a common situation that a handler throws an exception for a some reason. If preventDefault() or stopPropagation() are called at the end of logic than program may start to behave incorrectly.
 
 ```js
 // NOTICE: preventDefault is always called before the handler
@@ -169,7 +169,7 @@ DOM.find("#link").on("click", {stop: true}, handler);
 ```
 
 #### Callback systems are brittle
-The library doesn't use callback arrays, so any event listener can't break another one (read the nice [article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
+The library doesn't use callback arrays, so any event listener can't break another one (read the [nice article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
 
 ```js
 DOM.ready(function() { throw Error("exception in a bad code"); });
@@ -177,22 +177,27 @@ DOM.ready(function() { throw Error("exception in a bad code"); });
 DOM.ready(function() { console.log("Nothing can break your code") });
 ```
 ## Easy localization
-Multilanguage support is often a part of a DOM extension. The library helps with that too.
-
-Strings are part of the presentation layer, so let's store them in css. The pattern is simple: special `data-i18n` attribute is used for a string key and `content` property of the `:before` pseudoelement displays localized string value.
-
-```css
-[data-i18n="hello.0"]:before { content: "Hello!" }
-/* use :lang selector to specify language of the string */
-[data-i18n="hello.0"]:lang(ru):before { content: "Привет!" }
-/* use data-* attributes for a string variables */
-[data-i18n="hello.1"]:before { content: "Hello " attr(data-user) "!" }
-```
-So for instance `<a data-i18n="hello.1" data-user="Maksim"><a>` element will display string "Hello Maksim!". Also it's possible to populate strings programmatically via `DOM.addLocaleString`.
+Multilanguage support is often required for a DOM extension. `DOM.importStrings` allows to add a localized string which may be displayed in a html element using `data-i18n` attribute with an appropriate key.
 
 ```js
-DOM.addLocaleString("hello.2", "Hello {user}!");
-DOM.addLocaleString("hello.2", "Привет {user}!", "ru");
+DOM.importStrings("hello.0", "Hello!");
+// NOTICE: optional parameter to specify language of the string
+DOM.importStrings("hello.0", "Привет!", "ru");
+// element <span data-i18n="hello.0"><span> will display "Hello!"
+```
+You can use parametrized strings via special `{param}` substrings and appropriate `data-*` attributes.
+
+```js
+DOM.importStrings("hello.1", "Hello {user}!");
+// element <a data-i18n="hello.1" data-user="Maksim"><a> will display "Hello Maksim!"
+```
+To change a string language manually use setter with `lang` parameter.
+
+```js
+span.set("lang", "ru");
+// now the span displays "Привет!"
+DOM.find("html").set("lang", "ru");
+// the line changes language globally
 ```
 
 ## Performance
