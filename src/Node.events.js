@@ -6,6 +6,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
     (function() {
         var eventHooks = {},
+            legacyCustomEventName = "dataavailable",
             processObjectParam = function(value, name) { this.on(name, value); },
             createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
@@ -13,7 +14,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     };
 
                 handler.type = originalHandler.type;
-                handler._type = "dataavailable";
+                handler._type = legacyCustomEventName;
                 handler.callback = originalHandler.callback;
 
                 return handler;
@@ -64,7 +65,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
                     // handle custom events for IE8
-                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventWrapper(handler, type);
+                    if (!this.supports("on" + type) || handler.custom) handler = createCustomEventWrapper(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }
@@ -134,11 +135,13 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             }
 
             var node = this._node,
-                isCustomEvent = ~type.indexOf(":"),
                 hook = eventHooks[type],
-                canContinue, event, handler = {};
+                handler = {},
+                isCustomEvent, canContinue, event;
 
             if (hook) hook(handler);
+
+            isCustomEvent = handler.custom || !this.supports("on" + type);
 
             if (document.dispatchEvent) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
@@ -153,15 +156,13 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             } else {
                 event = document.createEventObject();
 
-                isCustomEvent = isCustomEvent || handler.custom;
-
                 if (isCustomEvent) {
-                    // use private attribute to store custom event name
+                    // store original event name
                     event._type = type;
                     event.detail = detail;
                 }
 
-                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
+                node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
 
                 canContinue = event.returnValue !== false;
             }

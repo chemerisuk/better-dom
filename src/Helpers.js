@@ -110,7 +110,7 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             AFTER:  "return out"
         }),
         _foldl = makeCollectionMethod({
-            BODY:   "that = !i && that === undefined ? a[i] : cb(that, a[i], i, a)",
+            BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[i], i, a))",
             AFTER:  "return that"
         }),
         _every = makeCollectionMethod({
