@@ -83,18 +83,13 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         /**
          * Unbind a DOM event from the context
          * @param  {String}   type event type
-         * @param  {Object}   [context] callback context
          * @param  {Function} [callback] event handler
+         * @param  {Object}   [context] callback context
          * @return {DOMNode}
          */
-        DOMNode.prototype.off = function(type, context, callback) {
+        DOMNode.prototype.off = function(type, callback, context) {
             if (typeof type !== "string") {
                 throw _makeError("off", this);
-            }
-
-            if (callback === undefined) {
-                callback = context;
-                context = undefined;
             }
 
             _forEach(this._listeners, function(handler, index, events) {
