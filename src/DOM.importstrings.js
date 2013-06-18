@@ -1,4 +1,4 @@
-define(["DOM", "DOM.importstyles"], function(DOM, _forOwn) {
+define(["DOM", "DOM.importstyles"], function(DOM, _forOwn, _makeError) {
     "use strict";
 
     // IMPORT STRINGS
@@ -41,6 +41,8 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn) {
                 _forOwn(key, function(pattern, key) {
                     DOM.importStrings(key, pattern, lang);
                 });
+            } else {
+                throw _makeError("importStrings", this);
             }
         };
     }());

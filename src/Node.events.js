@@ -201,14 +201,13 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
-                var propertyChangeEventHandler = function() {
-                        var e = window.event, event;
+                var legacyInputEventName = "onpropertychange",
+                    propertyChangeEventHandler = function() {
+                        var e = window.event;
 
                         if (e.propertyName === "value") {
-                            event = document.createEventObject();
-                            event._type = "input";
                             // trigger special event that bubbles
-                            e.srcElement.fireEvent("ondataavailable", event);
+                            DOMElement(e.srcElement).fire("input");
                         }
                     },
                     capturedEl;
@@ -217,22 +216,23 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     var target = window.event.srcElement;
 
                     if (capturedEl) {
-                        capturedEl.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
                         capturedEl = null;
                     }
 
                     if (target.type === "input" || target.type === "textarea") {
-                        (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
+                        (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
                     }
                 };
             })());
 
             // submit event bubbling fix
             document.attachEvent("onkeydown", function() {
-                var target = window.event.srcElement,
+                var e = window.event,
+                    target = e.srcElement,
                     form = target.form;
 
-                if (form && target.type !== "textarea" && window.event.keyCode === 13) {
+                if (form && target.type !== "textarea" && e.keyCode === 13) {
                     DOMElement(form).fire("submit");
 
                     return false;
@@ -260,7 +260,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 };
             })());
 
-            eventHooks.submit = eventHooks.input = function(handler) {
+            eventHooks.submit = function(handler) {
                 handler.custom = true;
             };
         }

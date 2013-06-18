@@ -302,7 +302,8 @@ module.exports = function(grunt) {
             "docs",
             "shell:checkoutDocs",
             "bumpDocsBuild",
-            "shell:updateDocs"
+            "shell:updateDocs",
+            "plato"
         ]);
     });
 };
