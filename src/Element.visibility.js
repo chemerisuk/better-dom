@@ -22,7 +22,7 @@ define(["Element"], function(DOMElement) {
     };
 
     /**
-     * Display or hide element
+     * Toggle element visibility
      * @return {DOMElement}
      */
     DOMElement.prototype.toggle = function() {

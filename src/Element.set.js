@@ -13,6 +13,13 @@ define(["Element"], function(DOMElement, _parseFragment, _forEach, _forOwn, _mak
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
          * @return {DOMElement}
+         * @example
+         * // sets property href (and that action updates attribute value too)
+         * link.set("href", "/some/path");
+         * // sets attribute "data-attr" to "123"
+         * link.set("data-attr", "123");
+         * // sets innerHTML to "some text"
+         * link.set("some text");
          */
         DOMElement.prototype.set = function(name, value) {
             var el = this._node,

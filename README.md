@@ -60,7 +60,7 @@ The extension makes `input[type=date]` controls with the same UX for all browser
 Check out [live demo](http://chemerisuk.github.io/better-dateinput-polyfill) the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
 ## Getter and setter
-One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which entity to grab. Usually reading a property is faster, but a lot of people don't know that or just always use attribute to keep the algorithm the same everywhere.
+One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property _is faster_, but a lot of people don't know that or just always use attributes to keep the accessing the same everywhere in a code.
 
 To fix that the library introduces smart getter and setter.
 
