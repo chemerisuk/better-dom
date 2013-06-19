@@ -74,7 +74,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                     isEqualToCallback = function(otherCallback) { return otherCallback === callback; },
                     cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
                     watcher = function(canceledCallbacks, el) {
-                        if (once) el.on("htc:watch", {args: ["detail"]}, cancelCallback);
+                        if (once) el.on("X", {args: ["detail"]}, cancelCallback);
 
                         // do not execute callback if it was previously excluded
                         if (!_some(canceledCallbacks, isEqualToCallback)) {
@@ -84,7 +84,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
 
                 watcher.selector = selector;
 
-                DOM.on("htc:watch " + selector, {args: ["detail", "target"]}, watcher);
+                DOM.on("X " + selector, {args: ["detail", "target"]}, watcher);
 
                 if (_some(watchers, haveWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
