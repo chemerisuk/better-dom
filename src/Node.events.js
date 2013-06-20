@@ -227,7 +227,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     target = e.srcElement,
                     form = target.form;
 
-                if (form && target.type !== "textarea" && e.keyCode === 13) {
+                if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
                     DOMElement(form).fire("submit");
 
                     return false;
