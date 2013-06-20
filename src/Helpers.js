@@ -28,20 +28,54 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
 
             return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>" + type + ".html#" + method + " to verify the function call";
         },
+        makeLoopMethod = (function(){
+            var rcallback = /cb\.call\(([^)]+)\)/g,
+                defaults = {
+                    BEFORE: "",
+                    COUNT:  "a ? a.length : 0",
+                    BODY:   "",
+                    AFTER:  ""
+                };
+
+            return function(options) {
+                var code = "%BEFORE%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
+
+                _forIn(defaults, function(value, key) {
+                    code = code.replace("%" + key + "%", options[key] || value);
+                });
+
+                // improve callback invokation by using call on demand
+                code = code.replace(rcallback, function(expr, args) {
+                    return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
+                });
+
+                return Function("a", "cb", "that", "undefined", code);
+            };
+        })(),
 
         // OBJECT UTILS
         // ------------
         
-        _forOwn = function(obj, callback, thisPtr) {
-            for (var prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
-            }
-        },
         _forIn = function(obj, callback, thisPtr) {
             for (var prop in obj) {
                 callback.call(thisPtr, obj[prop], prop, obj);
             }
         },
+        _forOwn = (function() {
+            if (Object.keys) {
+                return makeLoopMethod({
+                    BEFORE: "var keys = Object.keys(a), k",
+                    COUNT:  "keys.length",
+                    BODY:   "k = keys[i]; cb.call(that, a[k], k, a)"
+                });
+            } else {
+                return function(obj, callback, thisPtr) {
+                    for (var prop in obj) {
+                        if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
+                    }
+                };
+            }
+        }()),
         _keys = Object.keys || (function() {
             var collectKeys = function(value, key) { this.push(key); };
 
@@ -64,56 +98,32 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
         // COLLECTION UTILS
         // ----------------
         
-        makeCollectionMethod = (function(){
-            var rcallback = /cb\.call\(([^)]+)\)/g,
-                defaults = {
-                    BEFORE: "",
-                    COUNT:  "a ? a.length : 0",
-                    BODY:   "",
-                    AFTER:  ""
-                };
-
-            return function(options) {
-                var code = "%BEFORE%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%";
-
-                _forOwn(defaults, function(value, key) {
-                    code = code.replace("%" + key + "%", options[key] || value);
-                });
-
-                // improve callback invokation by using call on demand
-                code = code.replace(rcallback, function(expr, args) {
-                    return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
-                });
-
-                return Function("a", "cb", "that", "undefined", code);
-            };
-        })(),
-        _forEach = makeCollectionMethod({
+        _forEach = makeLoopMethod({
             BODY:   "cb.call(that, a[i], i, a)"
         }),
-        _times = makeCollectionMethod({
+        _times = makeLoopMethod({
             COUNT:  "a",
             BODY:   "cb.call(that, i)"
         }),
-        _map = makeCollectionMethod({
+        _map = makeLoopMethod({
             BEFORE: "var out = []",
             BODY:   "out.push(cb.call(that, a[i], i, a))",
             AFTER:  "return out"
         }),
-        _some = makeCollectionMethod({
+        _some = makeLoopMethod({
             BODY:   "if (cb.call(that, a[i], i, a) === true) return true",
             AFTER:  "return false"
         }),
-        _filter = makeCollectionMethod({
+        _filter = makeLoopMethod({
             BEFORE: "var out = []",
             BODY:   "if (cb.call(that, a[i], i, a)) out.push(a[i])",
             AFTER:  "return out"
         }),
-        _foldl = makeCollectionMethod({
+        _foldl = makeLoopMethod({
             BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[i], i, a))",
             AFTER:  "return that"
         }),
-        _every = makeCollectionMethod({
+        _every = makeLoopMethod({
             BEFORE: "var out = true",
             BODY:   "out = cb.call(that, a[i], a) && out",
             AFTER:  "return out"
