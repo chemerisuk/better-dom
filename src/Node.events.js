@@ -6,6 +6,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
     (function() {
         var eventHooks = {},
+            rpropexpr = /^([a-z:]+)(?:\(([^)]+)\))?\s?(.*)$/,
             legacyCustomEventName = "dataavailable",
             processObjectParam = function(value, name) { this.on(name, value); },
             createCustomEventWrapper = function(originalHandler, type) {
@@ -23,38 +24,32 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         /**
          * Bind a DOM event to the context
          * @param  {String}   type event type
-         * @param  {Object}   [options] callback options
-         * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
+         * @param  {Function|String} callback event callback
          * @param  {Object}   [context] callback context
          * @return {DOMNode}
+         * @example
+         * // NOTICE: handler don't have e as the first argument
+         * input.on("click", function() {...});
+         * // NOTICE: event arguments in event name
+         * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
          */
-        DOMNode.prototype.on = function(type, options, callback, args, context) {
+        DOMNode.prototype.on = function(type, args, callback, context) {
             var eventType = typeof type,
-                hook, handler, selector;
+                hook, handler, selector, expr;
 
             if (eventType === "string") {
-                if (typeof options !== "object") {
-                    context = args;
-                    args = callback;
-                    callback = options;
-                    options = {};
-                }
-
                 if (!_isArray(args)) {
-                    context = args;
+                    context = callback;
+                    callback = args;
                     args = null;
                 }
 
-                selector = type.substr(type.indexOf(" ") + 1);
-
-                if (selector === type) {
-                    selector = undefined;
-                } else {
-                    type = type.substr(0, type.length - selector.length - 1);
-                }
+                expr = rpropexpr.exec(type);
+                type = expr[1];
+                selector = expr[3];
                 
-                handler = EventHandler(type, selector, options, callback, args, context || this, this._node);
+                handler = EventHandler(expr, args, callback, context || this, this._node);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -152,7 +147,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 event = document.createEventObject();
 
                 if (isCustomEvent) {
-                    // store original event name
+                    // store original event type
                     event._type = type;
                     event.detail = detail;
                 }

@@ -35,21 +35,19 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
             };
         }
 
-        return function(type, selector, options, callback, extras, context, currentTarget) {
-            var matcher = SelectorMatcher(selector),
+        return function(expr, extras, callback, context, currentTarget) {
+            var matcher = SelectorMatcher(expr[3]),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
-                    if (EventHandler.veto !== type) {
+                    if (EventHandler.veto !== expr[1]) {
                         var event = e || window.event,
                             fn = isCallbackProp ? context[callback] : callback,
-                            cancel = options.cancel,
-                            stop = options.stop,
-                            args;
+                            result, args;
 
                         // populate event handler arguments
-                        if (options.args) {
-                            args = _map(options.args, function(name) {
-                                if (name === "type") return type;
+                        if (expr[2]) {
+                            args = _map(expr[2].split(","), function(name) {
+                                if (name === "type") return expr[1];
 
                                 var hook = hooks[name];
 
@@ -61,36 +59,25 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
                             args = extras ? extras.slice(0) : [];
                         }
 
-                        if (typeof cancel === "function") cancel = cancel.apply(context, args);
-                        if (typeof stop === "function") stop = stop.apply(context, args);
-
-                        // handle event modifiers
-                        if (cancel === true) {
-                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
-                        }
-
-                        if (stop === true) {
-                            event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
-                        }
-
-                        // optimizations
+                        // make performant call
                         if (args.length) {
-                            if (fn) fn.apply(context, args);
+                            if (fn) result = fn.apply(context, args);
                         } else {
-                            isCallbackProp ? fn && context[callback]() : fn.call(context);
+                            result = isCallbackProp ? fn && context[callback]() : fn.call(context);
+                        }
+
+                        // prevent default if handler returns false
+                        if (result === false) {
+                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
                         }
                     }
                 };
 
-            return !selector ? defaultEventHandler : function(e) {
+            return !matcher ? defaultEventHandler : function(e) {
                 var el = window.event ? window.event.srcElement : e.target;
 
                 for (; el && el !== currentTarget; el = el.parentNode) {
-                    if (matcher.test(el)) {
-                        defaultEventHandler(e);
-
-                        break;
-                    }
+                    if (matcher.test(el)) return defaultEventHandler(e);
                 }
             };
         };

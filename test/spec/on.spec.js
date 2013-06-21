@@ -47,24 +47,12 @@ describe("on", function() {
         expect(otherSpy).toHaveBeenCalled();
     });
 
-    it("should accept optional options argument", function() {
-        var callback = jasmine.createSpy("callback");
+    it("should prevent default if handler returns false", function() {
+        spy.andReturn(false);
 
-        DOM.on("click", callback);
-        input.on("click", {stop: true, cancel: true, args: ["type"]}, spy).fire("click");
-        
-        spy.andCallFake(function(type) {
-            expect(type).toBe("click");
-        });
-
+        link.on("click", spy).fire("click");
         expect(spy).toHaveBeenCalled();
-        expect(callback).not.toHaveBeenCalled();
         expect(location.hash).not.toBe("#test");
-
-        form.on("click", {stop: function() { return true; }, args: ["type"]}, spy).fire("click");
-
-        expect(spy.callCount).toBe(2);
-        expect(callback).not.toHaveBeenCalled();
     });
 
     it("should support optional extra arguments", function() {
@@ -76,7 +64,7 @@ describe("on", function() {
             expect(argB).toBe(b);
         });
 
-        input.on("click", {args: ["target"]}, spy, [a, b]).fire("click");
+        input.on("click(target)", [a, b], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy = spyOn(obj, "callback");
@@ -86,14 +74,14 @@ describe("on", function() {
             expect(argC).toBe(3);
         });
 
-        input.on("click", spy, [1, 2, 3]).fire("click");
+        input.on("click", [1, 2, 3], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy.andCallFake(function(type) {
             expect(type).toBe("focus");
         });
 
-        input.on("focus", {args: ["type"]}, spy).fire("focus");
+        input.on("focus(type)", spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
@@ -139,14 +127,16 @@ describe("on", function() {
     });
 
     it("should fix submit event", function() {
-        form.on("submit", {cancel: true}, spy).fire("submit");
+        spy.andReturn(false);
+
+        form.on("submit", spy).fire("submit");
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("submit a", {cancel: true}, spy);
+        DOM.on("submit a", spy);
         form.fire("submit");
         expect(spy.callCount).toBe(2);
 
-        DOM.on("submit form", {cancel: true}, spy);
+        DOM.on("submit form", spy);
         form.fire("submit");
         expect(spy.callCount).toBe(4);
     });

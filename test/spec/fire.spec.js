@@ -48,7 +48,7 @@ describe("fire", function() {
             expect(detail).toBe(detail);
         });
 
-        input.on("my:click", {args: ["detail"]}, callback);
+        input.on("my:click(detail)", callback);
 
         input.fire("my:click", detail);
 

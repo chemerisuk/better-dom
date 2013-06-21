@@ -100,19 +100,17 @@ Event callback looses event object argument and it improves testability of your 
 
 ```js
 // NOTICE: handler don't have e as the first argument
-DOM.find("#link").on("click", function() {...});
-// NOTICE: the second options argument
-DOM.find("#link").on("keydown", {args: ["keyCode", "altKey"]}, function(keyCode, altKey) {...});
+input.on("click", function() {...});
+// NOTICE: event arguments in event name
+input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
 ```
 
-#### Call preventDefault() or stopPropagation() before logic
-It's a common situation that a handler throws an exception for a some reason. If preventDefault() or stopPropagation() are called at the end of logic than program may start to behave incorrectly.
+#### Correct return false behavior
+
 
 ```js
-// NOTICE: preventDefault is always called before the handler
-DOM.find("#link").on("click", {cancel: true}, handler);
-// NOTICE: stopPropagation is always called before the handler
-DOM.find("#link").on("click", {stop: true}, handler);
+// NOTICE: return false prevents default action
+DOM.find("#link").on("click", function() { return false; });
 ```
 
 #### Callback systems are brittle

@@ -1,3 +1,3 @@
 <PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="window.document.__dom__.create(element).fire('htc:watch',[]);" />
+    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="window.document.__dom__.create(element).fire('x',[]);" />
 </PUBLIC:COMPONENT>
