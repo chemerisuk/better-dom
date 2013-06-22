@@ -86,10 +86,10 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
     // shortcuts
     _forIn(DOMElement.prototype, function(value, key) {
         if (~("" + value).indexOf("return this;")) {
-            var args = [key];
+            var functor = function(el) { el[key].apply(el, this); };
 
             DOMCollection.prototype[key] = function() {
-                return this.invoke.apply(this, args.concat(_slice(arguments)));
+                return this.each(functor, arguments);
             };
         }
     });
