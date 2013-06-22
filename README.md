@@ -105,11 +105,12 @@ input.on("click", function() {...});
 input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
 ```
 
-#### Correct return false behavior
-
+#### Correct return false interpretation
+jQuery has strange behavior of event handler that returns false and it's [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability with each other.
+In general it's better to avoid using stopPropagation because it breaks the ability of listeners related to some other task to do their work. That's why at present there is no posibility to call this function using better-dom apis.
 
 ```js
-// NOTICE: return false prevents default action
+// return false prevents ONLY default action
 DOM.find("#link").on("click", function() { return false; });
 ```
 

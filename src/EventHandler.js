@@ -7,31 +7,37 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
      * @constructor
      */
     var EventHandler = (function() {
-        var hooks = {};
+        var hooks = {}, legacyIE = !document.addEventListener;
 
         hooks.currentTarget = function(event, currentTarget) {
             return DOMElement(currentTarget);
         };
 
-        if (document.addEventListener) {
-            hooks.target = function(event) {
-                return DOMElement(event.target);
-            };
-        } else {
+        if (legacyIE) {
             hooks.target = function(event) {
                 return DOMElement(event.srcElement);
             };
+        } else {
+            hooks.target = function(event) {
+                return DOMElement(event.target);
+            };
         }
         
-        if (document.addEventListener) {
-            hooks.relatedTarget = function(event) {
-                return DOMElement(event.relatedTarget);
-            };
-        } else {
+        if (legacyIE) {
             hooks.relatedTarget = function(event, currentTarget) {
                 var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
 
                 return DOMElement(event[propName]);
+            };
+        } else {
+            hooks.relatedTarget = function(event) {
+                return DOMElement(event.relatedTarget);
+            };
+        }
+
+        if (legacyIE) {
+            hooks.defaulPrevented = function(event) {
+                return event.returnValue === false;
             };
         }
 
