@@ -1,6 +1,6 @@
 better-dom 
 ==========
-Making DOM to be nice.
+> Sandbox for DOM extensions
 
 API description: http://chemerisuk.github.io/better-dom/.
 
@@ -9,35 +9,32 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the library into the `components` directory at the root of your project.
-
-Then include script below on your web page:
+This will clone the latest version of the library into the `components` directory at the root of your project. Then just include script below on your web page:
 
 
 
 ## Unobtrusive extensions
-The idea is to write DOM additions declaratively. `DOM.extend` used to define a new extension and after the call any existing matched element will be initialized with an appropriate constructor. But the coolest thing is that the same will happen even for HTML content inserted dynamically via `innerHTML` or any other javascript framework.
+`DOM.extend` used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via `innerHTML` or using a javascript framework.
 
-No need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea) or to write [polyfills](#placeholder-polyfill) for old browsers.
-
-#### elastic textarea example
-This is a textarea extension which autoresizes itself to contain all entered text:
-
-
-Check out [live demo](http://chemerisuk.github.io/better-elastic-textarea/).
+So as a developer you don't need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea-example) or to write [polyfills](#placeholder-polyfill-example) for old browsers.
 
 #### placeholder polyfill example
 The extension polyfills `[placeholder]` for old browsers
 
 Check out [live demo](http://chemerisuk.github.io/better-placeholder-polyfill/) (open in IE < 10).
 
+#### elastic textarea example
+This is a textarea extension which autoresizes itself to contain all entered text.
+
+Check out [live demo](http://chemerisuk.github.io/better-elastic-textarea/) and the [extension repository](https://github.com/chemerisuk/better-elastic-textarea).
+
 #### more code: dateinput polyfill
 The extension makes `input[type=date]` controls with the same UX for all browsers.
 
-Check out the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
+Check out [live demo](http://chemerisuk.github.io/better-dateinput-polyfill) the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
 ## Getter and setter
-One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which entity to grab. Usually reading a property is faster, but a lot of people don't know that or just always use attribute to keep the algorithm the same everywhere.
+One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property _is faster_, but a lot of people don't know that or just always use attributes to keep the accessing the same everywhere in a code.
 
 To fix that the library introduces smart getter and setter.
 
@@ -61,8 +58,13 @@ Event callback looses event object argument and it improves testability of your 
 
 
 
-#### Call preventDefault() or stopPropagation() before logic
-It's a common situation that a handler throws an exception for a some reason. If preventDefault() or stopPropagation() are called at the end of logic than program may start to behave incorrectly.
+#### Correct return false interpretation
+jQuery has strange behavior of event handler that returns false and it's [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability. So the better-dom library has standards-friendly behavior.
+
+
+
+#### Late binding
+Usually an event lintener function is bound when some `addEventListener` method called. This causes trouble when the function value is changed. The library helps to solve the problem by allowing to handle an event using _object property_ instead of just function.
 
 
 

@@ -43,7 +43,7 @@
     <section>
         <article><h1>better-dom </h1>
 
-<p>Making DOM to be nice.</p>
+<blockquote><p>Sandbox for DOM extensions</p></blockquote>
 
 <p>API description: http://chemerisuk.github.io/better-dom/.</p>
 
@@ -53,21 +53,13 @@
 
 <pre><code>bower install better-dom</code></pre>
 
-<p>This will clone the latest version of the library into the <code>components</code> directory at the root of your project.</p>
-
-<p>Then include script below on your web page:</p>
+<p>This will clone the latest version of the library into the <code>components</code> directory at the root of your project. Then just include script below on your web page:</p>
 
 <h2>Unobtrusive extensions</h2>
 
-<p>The idea is to write DOM additions declaratively. <code>DOM.extend</code> used to define a new extension and after the call any existing matched element will be initialized with an appropriate constructor. But the coolest thing is that the same will happen even for HTML content inserted dynamically via <code>innerHTML</code> or any other javascript framework.</p>
+<p><code>DOM.extend</code> used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via <code>innerHTML</code> or using a javascript framework.</p>
 
-<p>No need to worry about when and how the extension will be initialized. As a result it&#39;s much simpler to create your own <a href="#elastic-textarea">components</a> or to write <a href="#placeholder-polyfill">polyfills</a> for old browsers.</p>
-
-<h4>elastic textarea example</h4>
-
-<p>This is a textarea extension which autoresizes itself to contain all entered text:</p>
-
-<p>Check out <a href="http://chemerisuk.github.io/better-elastic-textarea/">live demo</a>.</p>
+<p>So as a developer you don&#39;t need to worry about when and how the extension will be initialized. As a result it&#39;s much simpler to create your own <a href="#elastic-textarea-example">components</a> or to write <a href="#placeholder-polyfill-example">polyfills</a> for old browsers.</p>
 
 <h4>placeholder polyfill example</h4>
 
@@ -75,15 +67,21 @@
 
 <p>Check out <a href="http://chemerisuk.github.io/better-placeholder-polyfill/">live demo</a> (open in IE &lt; 10).</p>
 
+<h4>elastic textarea example</h4>
+
+<p>This is a textarea extension which autoresizes itself to contain all entered text.</p>
+
+<p>Check out <a href="http://chemerisuk.github.io/better-elastic-textarea/">live demo</a> and the <a href="https://github.com/chemerisuk/better-elastic-textarea">extension repository</a>.</p>
+
 <h4>more code: dateinput polyfill</h4>
 
 <p>The extension makes <code>input[type=date]</code> controls with the same UX for all browsers.</p>
 
-<p>Check out the <a href="https://github.com/chemerisuk/better-dateinput-polyfill">extension repository</a>.</p>
+<p>Check out <a href="http://chemerisuk.github.io/better-dateinput-polyfill">live demo</a> the <a href="https://github.com/chemerisuk/better-dateinput-polyfill">extension repository</a>.</p>
 
 <h2>Getter and setter</h2>
 
-<p>One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which entity to grab. Usually reading a property is faster, but a lot of people don&#39;t know that or just always use attribute to keep the algorithm the same everywhere.</p>
+<p>One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property <em>is faster</em>, but a lot of people don&#39;t know that or just always use attributes to keep the accessing the same everywhere in a code.</p>
 
 <p>To fix that the library introduces smart getter and setter.</p>
 
@@ -103,9 +101,13 @@
 
 <p>Event callback looses event object argument and it improves testability of your code.</p>
 
-<h4>Call preventDefault() or stopPropagation() before logic</h4>
+<h4>Correct return false interpretation</h4>
 
-<p>It&#39;s a common situation that a handler throws an exception for a some reason. If preventDefault() or stopPropagation() are called at the end of logic than program may start to behave incorrectly.</p>
+<p>jQuery has strange behavior of event handler that returns false and it&#39;s <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability. So the better-dom library has standards-friendly behavior.</p>
+
+<h4>Late binding</h4>
+
+<p>Usually an event lintener function is bound when some <code>addEventListener</code> method called. This causes trouble when the function value is changed. The library helps to solve the problem by allowing to handle an event using <em>object property</em> instead of just function.</p>
 
 <h4>Callback systems are brittle</h4>
 
@@ -142,7 +144,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jun 17 2013 21:14:57 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jun 22 2013 12:33:23 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

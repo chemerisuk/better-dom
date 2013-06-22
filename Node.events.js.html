@@ -33,6 +33,8 @@
 
     (function() {
         var eventHooks = {},
+            rpropexpr = /^([a-z:]+)(?:\(([^)]+)\))?\s?(.*)$/,
+            legacyCustomEventName = "dataavailable",
             processObjectParam = function(value, name) { this.on(name, value); },
             createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
@@ -40,7 +42,7 @@
                     };
 
                 handler.type = originalHandler.type;
-                handler._type = "dataavailable";
+                handler._type = legacyCustomEventName;
                 handler.callback = originalHandler.callback;
 
                 return handler;
@@ -49,38 +51,32 @@
         /**
          * Bind a DOM event to the context
          * @param  {String}   type event type
-         * @param  {Object}   [options] callback options
+         * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
-         * @param  {Object}   [context] callback context
          * @return {DOMNode}
+         * @example
+         * // NOTICE: handler don't have e as the first argument
+         * input.on("click", function() {...});
+         * // NOTICE: event arguments in event name
+         * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
          */
-        DOMNode.prototype.on = function(type, options, callback, args, context) {
+        DOMNode.prototype.on = function(type, context, callback, args) {
             var eventType = typeof type,
-                hook, handler, selector;
+                hook, handler, selector, expr;
 
             if (eventType === "string") {
-                if (typeof options !== "object") {
-                    context = args;
+                if (typeof context !== "object") {
                     args = callback;
-                    callback = options;
-                    options = {};
+                    callback = context;
+                    context = this;
                 }
 
-                if (!_isArray(args)) {
-                    context = args;
-                    args = null;
-                }
-
-                selector = type.substr(type.indexOf(" ") + 1);
-
-                if (selector === type) {
-                    selector = undefined;
-                } else {
-                    type = type.substr(0, type.length - selector.length - 1);
-                }
+                expr = rpropexpr.exec(type);
+                type = expr[1];
+                selector = expr[3];
                 
-                handler = EventHandler(type, selector, options, callback, args, context || this, this._node);
+                handler = EventHandler(expr, context, callback, args, this._node);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -91,7 +87,7 @@
                     this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
                     // handle custom events for IE8
-                    if (~type.indexOf(":") || handler.custom) handler = createCustomEventWrapper(handler, type);
+                    if (!this.supports("on" + type) || handler.custom) handler = createCustomEventWrapper(handler, type);
 
                     this._node.attachEvent("on" + (handler._type || type), handler);
                 }
@@ -108,9 +104,9 @@
 
         /**
          * Unbind a DOM event from the context
-         * @param  {String}   type event type
-         * @param  {Object}   [context] callback context
-         * @param  {Function} [callback] event handler
+         * @param  {String}          type event type
+         * @param  {Object}          [context] callback context
+         * @param  {Function|String} [callback] event handler
          * @return {DOMNode}
          */
         DOMNode.prototype.off = function(type, context, callback) {
@@ -118,9 +114,9 @@
                 throw _makeError("off", this);
             }
 
-            if (callback === undefined) {
+            if (typeof context !== "object") {
                 callback = context;
-                context = undefined;
+                context = !callback ? undefined : this;
             }
 
             _forEach(this._listeners, function(handler, index, events) {
@@ -161,11 +157,13 @@
             }
 
             var node = this._node,
-                isCustomEvent = ~type.indexOf(":"),
                 hook = eventHooks[type],
-                canContinue, event, handler = {};
+                handler = {},
+                isCustomEvent, canContinue, event;
 
             if (hook) hook(handler);
+
+            isCustomEvent = handler.custom || !this.supports("on" + type);
 
             if (document.dispatchEvent) {
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
@@ -180,15 +178,13 @@
             } else {
                 event = document.createEventObject();
 
-                isCustomEvent = isCustomEvent || handler.custom;
-
                 if (isCustomEvent) {
-                    // use private attribute to store custom event name
+                    // store original event type
                     event._type = type;
                     event.detail = detail;
                 }
 
-                node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), event);
+                node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
 
                 canContinue = event.returnValue !== false;
             }
@@ -227,14 +223,13 @@
         if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
-                var propertyChangeEventHandler = function() {
-                        var e = window.event, event;
+                var legacyInputEventName = "onpropertychange",
+                    propertyChangeEventHandler = function() {
+                        var e = window.event;
 
                         if (e.propertyName === "value") {
-                            event = document.createEventObject();
-                            event._type = "input";
                             // trigger special event that bubbles
-                            e.srcElement.fireEvent("ondataavailable", event);
+                            DOMElement(e.srcElement).fire("input");
                         }
                     },
                     capturedEl;
@@ -243,22 +238,23 @@
                     var target = window.event.srcElement;
 
                     if (capturedEl) {
-                        capturedEl.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
                         capturedEl = null;
                     }
 
                     if (target.type === "input" || target.type === "textarea") {
-                        (capturedEl = target).attachEvent("onpropertychange", propertyChangeEventHandler);
+                        (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
                     }
                 };
             })());
 
             // submit event bubbling fix
             document.attachEvent("onkeydown", function() {
-                var target = window.event.srcElement,
+                var e = window.event,
+                    target = e.srcElement,
                     form = target.form;
 
-                if (form && target.type !== "textarea" && window.event.keyCode === 13) {
+                if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
                     DOMElement(form).fire("submit");
 
                     return false;
@@ -286,7 +282,7 @@
                 };
             })());
 
-            eventHooks.submit = eventHooks.input = function(handler) {
+            eventHooks.submit = function(handler) {
                 handler.custom = true;
             };
         }
@@ -307,7 +303,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jun 17 2013 21:14:57 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jun 22 2013 12:33:23 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
