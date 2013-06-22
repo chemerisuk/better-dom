@@ -6,8 +6,7 @@
         "better-dom.htc"
     ],
     "ignore": [
-        ".gitignore",
-        ".travis.yml",
+        ".*",
         "test",
         "src",
         "extra"

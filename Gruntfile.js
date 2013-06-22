@@ -211,9 +211,6 @@ module.exports = function(grunt) {
         },
         plato: {
             all: {
-                options: {
-                    jshint: grunt.file.readJSON(".jshintrc")
-                },
                 files: {
                     reports: ["src/*.js"]
                 }
