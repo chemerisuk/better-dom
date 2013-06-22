@@ -30,13 +30,13 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
         var offset = this.offset();
 
         this
-            .on("focus", holder.hide, holder)
-            .on("blur", this._showPlaceholder, [holder]);
+            .on("focus", holder, "hide")
+            .on("blur", this, "_showPlaceholder", [holder]);
 
         holder
             .set(this.get("placeholder"))
             .setStyle("width", offset.right - offset.left)
-            .on("click", this.fire, ["focus"], this);
+            .on("click", this, "fire", ["focus"]);
 
         if (this.get() || this.isFocused()) holder.hide();
 
