@@ -41,7 +41,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
             };
         }
 
-        return function(expr, extras, callback, context, currentTarget) {
+        return function(expr, context, callback, extras, currentTarget) {
             var matcher = SelectorMatcher(expr[3]),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {

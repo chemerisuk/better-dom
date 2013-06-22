@@ -24,9 +24,9 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         /**
          * Bind a DOM event to the context
          * @param  {String}   type event type
-         * @param  {Array}    [args] extra arguments
-         * @param  {Function|String} callback event callback
          * @param  {Object}   [context] callback context
+         * @param  {Function|String} callback event callback
+         * @param  {Array}    [args] extra arguments
          * @return {DOMNode}
          * @example
          * // NOTICE: handler don't have e as the first argument
@@ -34,22 +34,22 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * // NOTICE: event arguments in event name
          * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
          */
-        DOMNode.prototype.on = function(type, args, callback, context) {
+        DOMNode.prototype.on = function(type, context, callback, args) {
             var eventType = typeof type,
                 hook, handler, selector, expr;
 
             if (eventType === "string") {
-                if (!_isArray(args)) {
-                    context = callback;
-                    callback = args;
-                    args = null;
+                if (typeof context !== "object") {
+                    args = callback;
+                    callback = context;
+                    context = this;
                 }
 
                 expr = rpropexpr.exec(type);
                 type = expr[1];
                 selector = expr[3];
                 
-                handler = EventHandler(expr, args, callback, context || this, this._node);
+                handler = EventHandler(expr, context, callback, args, this._node);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -77,14 +77,19 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
         /**
          * Unbind a DOM event from the context
-         * @param  {String}   type event type
-         * @param  {Function} [callback] event handler
-         * @param  {Object}   [context] callback context
+         * @param  {String}          type event type
+         * @param  {Object}          [context] callback context
+         * @param  {Function|String} [callback] event handler
          * @return {DOMNode}
          */
-        DOMNode.prototype.off = function(type, callback, context) {
+        DOMNode.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
                 throw _makeError("off", this);
+            }
+
+            if (typeof context !== "object") {
+                callback = context;
+                context = !callback ? undefined : this;
             }
 
             _forEach(this._listeners, function(handler, index, events) {

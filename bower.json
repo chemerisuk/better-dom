@@ -8,7 +8,8 @@
     "ignore": [
         ".*",
         "test",
-        "src"
+        "src",
+        "extra"
     ],
     "dependencies": {},
     "devDependencies": {

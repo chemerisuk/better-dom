@@ -64,7 +64,7 @@ describe("on", function() {
             expect(argB).toBe(b);
         });
 
-        input.on("click(target)", [a, b], spy).fire("click");
+        input.on("click(target)", spy, [a, b]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy = spyOn(obj, "callback");
@@ -74,7 +74,7 @@ describe("on", function() {
             expect(argC).toBe(3);
         });
 
-        input.on("click", [1, 2, 3], spy).fire("click");
+        input.on("click", spy, [1, 2, 3]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy.andCallFake(function(type) {
@@ -158,11 +158,11 @@ describe("on", function() {
             expect(this).toBe(obj);
         });
 
-        input.on("click", "callback", obj).fire("click");
+        input.on("click", obj, "callback").fire("click");
         expect(spy).toHaveBeenCalled();
 
         obj.callback = null;
-        expect(function() { input.on("click", "callback", obj).fire("click"); }).not.toThrow();
+        expect(function() { input.on("click", obj, "callback").fire("click"); }).not.toThrow();
     });
 
     it("should throw error if arguments are invalid", function() {

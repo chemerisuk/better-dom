@@ -23,7 +23,7 @@ describe("off", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it("should remove event callback", function() {
+    it("should remove event callback with context", function() {
         var obj = {callback: function() {}};
 
         spy = spyOn(obj, "callback");
