@@ -165,6 +165,20 @@ describe("on", function() {
         expect(function() { input.on("click", obj, "callback").fire("click"); }).not.toThrow();
     });
 
+    it("should support late binding", function() {
+        var obj = {callback: spy},
+            spy2 = jasmine.createSpy("spy2");
+
+        input.on("click", obj, "callback").fire("click");
+        expect(spy).toHaveBeenCalled();
+
+        obj.callback = spy2;
+
+        input.fire("click");
+        expect(spy2).toHaveBeenCalled();
+        expect(spy.callCount).toBe(1);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });

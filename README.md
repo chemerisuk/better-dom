@@ -106,11 +106,25 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
 ```
 
 #### Correct return false interpretation
-jQuery has strange behavior of event handler that returns false and it's [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability. In general it's better to avoid using `stopPropagation` because it breaks the ability of listeners related to some other task to do their work. That's why at present there is no posibility to stop event bubbling in better-dom apis.
+jQuery has strange behavior of event handler that returns false and it's [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability. So the better-dom library has standards-friendly behavior.
 
 ```js
 // return false prevents ONLY default action
-DOM.find("#link").on("click", function() { return false; });
+DOM.find("a").on("click", function() { return false; });
+```
+
+#### Late binding
+Usually an event lintener function is bound when some `addEventListener` method called. This causes trouble when the function value is changed. The library helps to solve the problem by allowing to handle an event using _object property_ instead of just function.
+
+```js
+var link = DOM.find(".test-link"), 
+    obj = {handleClick: function() { console.log("Hello!"); }};
+
+link.on("click", obj, "handleClick");
+// every click on the link now logs "Hello!" into console
+obj.handleClick = function() { console.log("Hello, Maksim!"); }
+// every click on the link now logs "Hello, Maksim!" into console
+// NOTICE: there if no link.off("click") call
 ```
 
 #### Callback systems are brittle
