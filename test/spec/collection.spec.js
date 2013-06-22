@@ -35,12 +35,12 @@ describe("collection", function() {
         expect(spy).toHaveBeenCalledWith("click", callback, links);
     });
 
-    it("should allow to invoke method for each element", function() {
-        inputs.invoke("on", "focus", spy);
+    // it("should allow to invoke method for each element", function() {
+    //     inputs.invoke("on", "focus", spy);
 
-        expect(inputs.invoke("fire", "focus")).toBe(inputs);
-        expect(spy.callCount).toBe(3);
+    //     expect(inputs.invoke("fire", "focus"));
+    //     expect(spy.callCount).toBe(3);
 
-        expect(function() { inputs.invoke(); }).toThrow();
-    });
+    //     expect(function() { inputs.invoke(); }).toThrow();
+    // });
 });

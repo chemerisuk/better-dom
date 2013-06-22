@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _makeError) {
+define(["Element"], function(DOMElement, DOMCollection, _makeError) {
     "use strict";
 
     // GETTER
@@ -34,6 +34,10 @@ define(["Element"], function(DOMElement, _makeError) {
 
         hooks.tagName = hooks.nodeName = function(el) {
             return el.nodeName.toLowerCase();
+        };
+
+        hooks.elements = function(el) {
+            return new DOMCollection(el.elements);
         };
     })();
 });
