@@ -7,3 +7,5 @@ coverage
 *.log
 build
 reports
+.grunt
+specs.html

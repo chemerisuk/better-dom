@@ -4,24 +4,48 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
 
+        jasmine: {
+            options: {
+                vendor: [
+                    "test/lib/jasmine-dom/jasmine-dom-fixtures.js",
+                    "test/lib/jasmine-dom/jasmine-dom-matchers.js",
+                    "node_modules/lodash/lodash.js"
+                ],
+                specs: "test/spec/*.spec.js",
+                outfile: "specs.html",
+                keepRunner: true
+            },
+            unit: {
+                src: ["build/*.js"]
+            },
+            coverage: {
+                src: ["build/*.js"],
+                options: {
+                    
+                    template: require("grunt-template-jasmine-istanbul"),
+                    templateOptions: {
+                        coverage: "coverage/coverage.json",
+                        report: "coverage"
+                    }
+                }
+            }
+        },
         watch: {
-            karma: {
+            jasmine: {
                 files: ["build/<%= pkg.name %>.js", "test/spec/*.js"],
-                tasks: ["karma:watch:run"]
+                tasks: ["jasmine:coverage"]
             },
             build: {
                 files: ["src/*.js"],
                 tasks: ["requirejs"]
             }
         },
-
         jshint: {
             all: ["src/*.js", "test/spec/*.js", "Gruntfile.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
         },
-
         jsdoc: {
             dist: {
                 src: ["src/*.js", "jsdoc/README.md"],
@@ -30,30 +54,14 @@ module.exports = function(grunt) {
                 }
             }
         },
-
         karma: {
-            watch: {
-                configFile: "test/lib/karma.conf",
-                background: true,
-                reporters: ["coverage", "progress"],
-                preprocessors: {
-                    "build/*.js": "coverage"
-                }
-            },
             unit: {
-                configFile: "test/lib/karma.conf",
-                browsers: ["Chrome", "Opera", "Safari", "Firefox", "PhantomJS"],
-                singleRun: true
-            },
-            travis: {
-                configFile: "test/lib/karma.conf",
-                singleRun: true
+                configFile: "test/lib/karma.conf"
             },
             speed: {
                 configFile: "test/lib/karma.speed.conf"
             }
         },
-
         shell: {
             checkVersionTag: {
                 command: "git tag -a v<%= pkg.version %> -m ''",
@@ -110,12 +118,10 @@ module.exports = function(grunt) {
                 command: "git checkout HEAD -- <%= pkg.name %>.js <%= pkg.name %>.htc"
             }
         },
-
         clean: {
             dist: ["dist/"],
             jsdoc: ["jsdoc/"]
         },
-
         copy: {
             dist: {
                 files: {
@@ -144,7 +150,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-
         uglify: {
             dist: {
                 options: {
@@ -158,7 +163,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-
         connect: {
             watch: {
                 options: {
@@ -166,7 +170,6 @@ module.exports = function(grunt) {
                 }
             }
         },
-
         requirejs: {
             options: {
                 optimize: "none",
@@ -229,32 +232,25 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks("grunt-contrib-connect");
     grunt.loadNpmTasks("grunt-contrib-requirejs");
     grunt.loadNpmTasks("grunt-plato");
+    grunt.loadNpmTasks("grunt-contrib-jasmine");
 
 
     grunt.registerTask("dev", [
-        "requirejs",
+        "test",
         "connect", // start web server
-        "shell:showCoverage", // open coverage page
-        "karma:watch", // start karma server
         "watch" // watch for a file changes
     ]);
 
     grunt.registerTask("test", [
         "requirejs:compile",
         "jshint",
-        "karma:unit"
+        "jasmine:unit"
     ]);
 
     grunt.registerTask("default", [
         "clean",
         "copy:dist",
         "uglify"
-    ]);
-
-    grunt.registerTask("travis", [
-        "requirejs:compile",
-        "jshint",
-        "karma:travis"
     ]);
 
     grunt.registerTask("dist-test", [
@@ -297,7 +293,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "shell:checkVersionTag",
-            "test",
+            "karma:unit",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "copy:publish",
