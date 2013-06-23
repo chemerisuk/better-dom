@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>better-dom specs</title>
+
+    <link rel="stylesheet" href="../components/jasmine/lib/jasmine-core/jasmine.css">
+
+    <script src="../components/lodash/lodash.js"></script>
+    <script src="../components/jasmine/lib/jasmine-core/jasmine.js"></script>
+    <script src="../components/jasmine/lib/jasmine-core/jasmine-html.js"></script>
+
+    <script src="lib/jasmine-dom/jasmine-dom-fixtures.js"></script>
+    <script src="lib/jasmine-dom/jasmine-dom-matchers.js"></script>
+
+    <script src="../build/better-dom.js" data-htc="../extra/better-dom.htc"></script>
+
+    <!-- include spec files here... -->
+    <script src="spec/find.spec.js"></script>
+    <script src="spec/clone.spec.js"></script>
+    <script src="spec/contains.spec.js"></script>
+    <script src="spec/on.spec.js"></script>
+    <script src="spec/off.spec.js"></script>
+    <script src="spec/fire.spec.js"></script>
+    <script src="spec/data.spec.js"></script>
+    <script src="spec/get.spec.js"></script>
+    <script src="spec/set.spec.js"></script>
+    <script src="spec/traversing.spec.js"></script>
+    <script src="spec/classes.spec.js"></script>
+    <script src="spec/is.spec.js"></script>
+    <script src="spec/offset.spec.js"></script>
+    <script src="spec/watch.spec.js"></script>
+    <script src="spec/create.spec.js"></script>
+    <script src="spec/manipulation.spec.js"></script>
+    <script src="spec/style.spec.js"></script>
+    <script src="spec/extend.spec.js"></script>
+    <script src="spec/parseTemplate.spec.js"></script>
+    <script src="spec/mock.spec.js"></script>
+    <script src="spec/ready.spec.js"></script>
+    <script src="spec/bind.spec.js"></script>
+    <script src="spec/collection.spec.js"></script>
+    <script src="spec/importstyles.spec.js"></script>
+    <script src="spec/visibility.spec.js"></script>
+    <script src="spec/importstrings.spec.js"></script>
+
+</head>
+<body>
+    <script type="text/javascript">
+    (function() {
+        var jasmineEnv = jasmine.getEnv(),
+        currentWindowOnload = window.onload;
+
+        jasmineEnv.updateInterval = 250;
+        jasmineEnv.addReporter(new jasmine.HtmlReporter());
+
+        window.onload = function() {
+            if (currentWindowOnload) {
+              currentWindowOnload();
+            }
+
+            jasmineEnv.execute();
+        };
+    })();
+    </script>
+</body>
+</html>

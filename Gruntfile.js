@@ -12,7 +12,6 @@ module.exports = function(grunt) {
                     "node_modules/lodash/lodash.js"
                 ],
                 specs: "test/spec/*.spec.js",
-                outfile: "specs.html",
                 keepRunner: true
             },
             unit: {
@@ -21,7 +20,6 @@ module.exports = function(grunt) {
             coverage: {
                 src: ["build/*.js"],
                 options: {
-                    
                     template: require("grunt-template-jasmine-istanbul"),
                     templateOptions: {
                         coverage: "coverage/coverage.json",

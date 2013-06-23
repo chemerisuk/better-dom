@@ -8,4 +8,4 @@ coverage
 build
 reports
 .grunt
-specs.html
+_SpecRunner.html
