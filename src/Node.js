@@ -20,6 +20,10 @@ define(["Helpers"], function() {
     }
 
     DOMNode.prototype = {
-        constructor: DOMNode
+        constructor: DOMNode,
+
+        toString: function() {
+            return "<%= pkg.version %>";
+        }
     };
 });

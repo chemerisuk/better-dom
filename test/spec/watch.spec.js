@@ -121,4 +121,21 @@ describe("watch", function() {
         });
     });
 
+    it("should not match parent elements", function() {
+        var spy1 = jasmine.createSpy("spy1"),
+            spy2 = jasmine.createSpy("spy2");
+
+        setFixtures("<form id='watch7'><input id='watch8'/></form>");
+
+        DOM.watch("#watch7", spy1);
+        DOM.watch("#watch8", spy2);
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(spy1.callCount).toBe(1);
+            expect(spy2.callCount).toBe(1);
+        });
+    });
+
 });

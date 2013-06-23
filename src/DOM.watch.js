@@ -74,17 +74,20 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                     isEqualToCallback = function(otherCallback) { return otherCallback === callback; },
                     cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
                     watcher = function(canceledCallbacks, el) {
-                        if (once) el.on("x(detail)", cancelCallback);
-
                         // do not execute callback if it was previously excluded
                         if (!_some(canceledCallbacks, isEqualToCallback)) {
+                            if (once) el.on("x(detail)", cancelCallback);
+
                             callback(el);
                         }
                     };
 
                 watcher.selector = selector;
 
-                DOM.on("x(detail,target) " + selector, watcher);
+                // can't use event selector because it checks all parent elements
+                DOM.on("x(detail,target)", function(canceledCallbacks, el) {
+                    if (el.matches(selector)) watcher(canceledCallbacks, el);
+                });
 
                 if (_some(watchers, haveWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
