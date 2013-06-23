@@ -123,6 +123,10 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
             BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[i], i, a))",
             AFTER:  "return that"
         }),
+        _foldr = makeLoopMethod({
+            BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[n - i - 1], n - i - 1, a))",
+            AFTER:  "return that"
+        }),
         _every = makeLoopMethod({
             BEFORE: "var out = true",
             BODY:   "out = cb.call(that, a[i], a) && out",

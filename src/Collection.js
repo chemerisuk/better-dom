@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeError, _some, _every, _filter, _foldl) {
+define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeError, _some, _every, _filter, _foldl, _foldr) {
     "use strict";
 
     // DOM COLLECTION
@@ -73,15 +73,28 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
         },
 
         /**
-         * Boils down a list of values into a single value
+         * Boils down a list of values into a single value (from start to end)
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
          */
-        reduce: function(callback, memo) {
+        foldl: function(callback, memo) {
             return _foldl(this, callback, memo);
+        },
+
+        /**
+         * Boils down a list of values into a single value (from end to start)
+         * @param  {Function} callback callback function
+         * @param  {Object}   memo     initial value of the accumulator
+         * @return {Object} the accumulated value
+         */
+        foldr: function(callback, memo) {
+            return _foldr(this, callback, memo);
         }
     };
+
+    // aliases
+    DOMCollection.prototype.reduce = DOMCollection.prototype.foldl;
 
     // shortcuts
     _forIn(DOMElement.prototype, function(value, key) {

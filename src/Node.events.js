@@ -142,7 +142,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
-                    event.initCustomEvent(handler._type || type, true, false, detail);
+                    event.initCustomEvent(handler._type || type, true, true, detail);
                 } else {
                     event.initEvent(handler._type || type, true, true);
                 }
