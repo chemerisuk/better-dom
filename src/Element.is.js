@@ -6,9 +6,9 @@ define(["Element"], function(DOMElement, SelectorMatcher, _makeError) {
      * @param  {String} selector css selector
      * @return {DOMElement}
      */
-    DOMElement.prototype.matches = function(selector) {
+    DOMElement.prototype.is = function(selector) {
         if (!selector || typeof selector !== "string") {
-            throw _makeError("matches", this);
+            throw _makeError("is", this);
         }
 
         return new SelectorMatcher(selector).test(this._node);

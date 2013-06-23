@@ -86,7 +86,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
 
                 // can't use event selector because it checks all parent elements
                 DOM.on("x(detail,target)", function(canceledCallbacks, el) {
-                    if (el.matches(selector)) watcher(canceledCallbacks, el);
+                    if (el.is(selector)) watcher(canceledCallbacks, el);
                 });
 
                 if (_some(watchers, haveWatcherWithTheSameSelector)) {

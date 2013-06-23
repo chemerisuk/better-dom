@@ -178,8 +178,8 @@ module.exports = function(grunt) {
                 include: [
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
-                    "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
-                    "Element.has", "Element.set", "Element.styles", "Element.traversing",
+                    "Element.manipulation", "Element.is", "Element.offset", "Element.get",
+                    "Element.set", "Element.styles", "Element.traversing",
                     "Element.bind", "Element.visibility", "Collection", "NullElement", "DOM.watch",
                     "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.ready",
                     "DOM.mock", "DOM.importstrings"
