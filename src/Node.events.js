@@ -208,14 +208,15 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     capturedEl;
 
                 return function() {
-                    var target = window.event.srcElement;
+                    var target = window.event.srcElement,
+                        type = target.type;
 
                     if (capturedEl) {
                         capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
                         capturedEl = null;
                     }
 
-                    if (target.type === "input" || target.type === "textarea") {
+                    if (type === "text" || type === "password" || type === "textarea") {
                         (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
                     }
                 };
