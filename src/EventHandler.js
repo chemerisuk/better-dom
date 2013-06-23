@@ -36,7 +36,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
         }
 
         if (legacyIE) {
-            hooks.defaulPrevented = function(event) {
+            hooks.defaultPrevented = function(event) {
                 return event.returnValue === false;
             };
         }

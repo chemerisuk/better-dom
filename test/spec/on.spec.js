@@ -179,6 +179,21 @@ describe("on", function() {
         expect(spy.callCount).toBe(1);
     });
 
+    it("should allow to prevent custom events", function() {
+        var spy2 = jasmine.createSpy("spy2");
+
+        form.on("custom:on(defaultPrevented)", spy);
+        input.on("custom:on", spy2.andReturn(false));
+
+        spy.andCallFake(function(defaultPrevented) {
+            expect(defaultPrevented).toBe(true);
+        });
+
+        input.fire("custom:on");
+        expect(spy).toHaveBeenCalled();
+        expect(spy2).toHaveBeenCalled();
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });
