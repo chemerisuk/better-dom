@@ -24,7 +24,11 @@ define(["Element"], function(DOMElement, DOMCollection, _makeError) {
                 hook = hooks[name];
 
             if (name === undefined) {
-                name = el.type && "value" in el ? "value" : "innerHTML";
+                if (el instanceof Option) {
+                    name = el.hasAttribute("value") ? "value" : "text";
+                } else {
+                    name = el.type && "value" in el ? "value" : "innerHTML";
+                }
             } else if (typeof name !== "string") {
                 throw _makeError("get", this);
             }
@@ -32,12 +36,25 @@ define(["Element"], function(DOMElement, DOMCollection, _makeError) {
             return hook ? hook(el) : (name in el ? el[name] : el.getAttribute(name));
         };
 
-        hooks.tagName = hooks.nodeName = function(el) {
+        hooks.tagName = function(el) {
             return el.nodeName.toLowerCase();
         };
 
         hooks.elements = function(el) {
             return new DOMCollection(el.elements);
+        };
+
+        hooks.options = function(el) {
+            return new DOMCollection(el.options);
+        };
+
+        hooks.form = function(el) {
+            return DOMElement(el.form);
+        };
+
+        hooks.type = function(el) {
+            // some browsers don't recognize input[type=email] etc.
+            return el.getAttribute("type") || el.type;
         };
     })();
 });
