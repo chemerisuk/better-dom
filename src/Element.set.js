@@ -28,7 +28,7 @@ define(["Element"], function(DOMElement, _parseFragment, _forEach, _forOwn, _mak
             if (nameType === "string") {
                 if (value === undefined) {
                     value = name;
-                    name = el.type && "value" in el ? "value" : "innerHTML";
+                    name = el.tagName === "INPUT" ? "value" : "innerHTML";
                 }
 
                 if (typeof value === "function") {
