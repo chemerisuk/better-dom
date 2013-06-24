@@ -254,7 +254,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Collection.js.html">Collection.js</a>, line 29
+        <a href="Collection.js.html">Collection.js</a>, line 27
     </li></ul></dd>
     
     
@@ -296,7 +296,7 @@
         
             
 <dt>
-    <h4 class="name" id="invoke"><span class="type-signature"></span>invoke<span class="signature">(name, <span class="optional">args</span>)</span><span class="type-signature"> &rarr; {<a href="DOMCollection.html">DOMCollection</a>}</span></h4>
+    <h4 class="name" id="every"><span class="type-signature"></span>every<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -304,7 +304,7 @@
     
     
     <div class="description">
-        Calls the method named by name on each element in the collection
+        Checks if the callback returns true for all elements in the collection
     </div>
     
 
@@ -340,13 +340,13 @@
 	
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>callback</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">Function</span>
 
 
             
@@ -364,14 +364,14 @@
             
             
             
-            <td class="description last">name of the method</td>
+            <td class="description last">callback function</td>
         </tr>
 	
 	
 	
         <tr>
             
-                <td class="name"><code>args</code></td>
+                <td class="name"><code>thisArg</code></td>
             
             
             <td class="type">
@@ -392,14 +392,12 @@
                 
                     
                 
-                    &lt;repeatable><br>
-                
                 </td>
             
             
             
             
-            <td class="description last">arguments for the method call</td>
+            <td class="description last">callback context</td>
         </tr>
 	
 	
@@ -430,7 +428,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Collection.js.html">Collection.js</a>, line 42
+        <a href="Collection.js.html">Collection.js</a>, line 51
     </li></ul></dd>
     
     
@@ -450,6 +448,10 @@
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    true, if all elements in the collection returns true
+</div>
+
 
 
 <dl>
@@ -458,7 +460,185 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMCollection.html">DOMCollection</a></span>
+<span class="param-type">Boolean</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="some"><span class="type-signature"></span>some<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Checks if the callback returns true for any element in the collection
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Argument</th>
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">callback function</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>thisArg</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">callback context</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Collection.js.html">Collection.js</a>, line 40
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    true, if any element in the collection return true
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Boolean</span>
 
 
 	</dd>
@@ -491,7 +671,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jun 22 2013 12:33:23 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jun 24 2013 22:22:57 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

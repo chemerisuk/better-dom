@@ -13,15 +13,15 @@ This will clone the latest version of the library into the `components` director
 
 
 
-## Unobtrusive extensions
-`DOM.extend` used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via `innerHTML` or using a javascript framework.
+## Unobtrusive
+`DOM.extend` used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via `innerHTML` or using any other javascript framework.
 
-So as a developer you don't need to worry about when and how the extension will be initialized. As a result it's much simpler to create your own [components](#elastic-textarea-example) or to write [polyfills](#placeholder-polyfill-example) for old browsers.
+So as a developer you don't need to worry about when and how the extension will be initialized. Therefore it's much simpler to create new [extensions](#elastic-textarea-example) or to write [polyfills](#placeholder-polyfill-example) for old browsers.
 
 #### placeholder polyfill example
-The extension polyfills `[placeholder]` for old browsers
+This is a polyfill of the `[placeholder]` attribute for old browsers
 
-Check out [live demo](http://chemerisuk.github.io/better-placeholder-polyfill/) (open in IE < 10).
+Check out [live demo](http://chemerisuk.github.io/better-placeholder-polyfill/) (open in IE < 10, for example).
 
 #### elastic textarea example
 This is a textarea extension which autoresizes itself to contain all entered text.
@@ -34,9 +34,9 @@ The extension makes `input[type=date]` controls with the same UX for all browser
 Check out [live demo](http://chemerisuk.github.io/better-dateinput-polyfill) the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
 ## Getter and setter
-One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property _is faster_, but a lot of people don't know that or just always use attributes to keep the accessing the same everywhere in a code.
+Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property _is faster_, but a lot of people don't know that or just alway use attributes to keep access the same everywhere in a code.
 
-To fix that the library introduces smart getter and setter.
+To fix this confusion better-dom introduces smart getter and setter.
 
 
 
@@ -51,15 +51,15 @@ HTML strings are boring and complex, they take a lot of space. Let's fix that wi
 Because of code size emmet expressions support is only for HTML strings and has some limitations for now, but major features are in place.
 
 ## Event handling best practices
-Events handling is a big part of writing a code for DOM. And there are some features included to the library APIs that help developers to avoid potential issues and keep their code easier to maintain.
+Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.
 
 #### Get rid of the event object
-Event callback looses event object argument and it improves testability of your code.
+Event callbacks loose the event object argument and it improves testability of code.
 
 
 
 #### Correct return false interpretation
-jQuery has strange behavior of event handler that returns false and it's [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability. So the better-dom library has standards-friendly behavior.
+jQuery has strange behavior of event handler that returns false and it's a [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. This library has standards-based behavior which does what everybody expected.
 
 
 
@@ -69,11 +69,11 @@ Usually an event lintener function is bound when some `addEventListener` method 
 
 
 #### Callback systems are brittle
-The library doesn't use callback arrays, so any event listener can't break another one (read the [nice article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
+The library doesn't use callback arrays, so any event listener can't break another one (read a [nice article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
 
 
 ## Easy localization
-Multilanguage support is often required for a DOM extension. `DOM.importStrings` allows to add a localized string which may be displayed in a html element using `data-i18n` attribute with an appropriate key.
+Multilanguage support is often required for an extension. `DOM.importStrings` allows to add a localized string which may be displayed in a html element using `data-i18n` attribute with the appropriate key.
 
 
 You can use parametrized strings via special `{param}` substrings and appropriate `data-*` attributes.

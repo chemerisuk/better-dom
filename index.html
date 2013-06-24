@@ -55,17 +55,17 @@
 
 <p>This will clone the latest version of the library into the <code>components</code> directory at the root of your project. Then just include script below on your web page:</p>
 
-<h2>Unobtrusive extensions</h2>
+<h2>Unobtrusive</h2>
 
-<p><code>DOM.extend</code> used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via <code>innerHTML</code> or using a javascript framework.</p>
+<p><code>DOM.extend</code> used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via <code>innerHTML</code> or using any other javascript framework.</p>
 
-<p>So as a developer you don&#39;t need to worry about when and how the extension will be initialized. As a result it&#39;s much simpler to create your own <a href="#elastic-textarea-example">components</a> or to write <a href="#placeholder-polyfill-example">polyfills</a> for old browsers.</p>
+<p>So as a developer you don&#39;t need to worry about when and how the extension will be initialized. Therefore it&#39;s much simpler to create new <a href="#elastic-textarea-example">extensions</a> or to write <a href="#placeholder-polyfill-example">polyfills</a> for old browsers.</p>
 
 <h4>placeholder polyfill example</h4>
 
-<p>The extension polyfills <code>[placeholder]</code> for old browsers</p>
+<p>This is a polyfill of the <code>[placeholder]</code> attribute for old browsers</p>
 
-<p>Check out <a href="http://chemerisuk.github.io/better-placeholder-polyfill/">live demo</a> (open in IE &lt; 10).</p>
+<p>Check out <a href="http://chemerisuk.github.io/better-placeholder-polyfill/">live demo</a> (open in IE &lt; 10, for example).</p>
 
 <h4>elastic textarea example</h4>
 
@@ -81,9 +81,9 @@
 
 <h2>Getter and setter</h2>
 
-<p>One of the unclear moments about standard DOM APIs is notion of properties and attributes for a element. Every time a developer wants to get some value he or she needs to decide which value to grab. Usually reading a property <em>is faster</em>, but a lot of people don&#39;t know that or just always use attributes to keep the accessing the same everywhere in a code.</p>
+<p>Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property <em>is faster</em>, but a lot of people don&#39;t know that or just alway use attributes to keep access the same everywhere in a code.</p>
 
-<p>To fix that the library introduces smart getter and setter.</p>
+<p>To fix this confusion better-dom introduces smart getter and setter.</p>
 
 <h2>Emmet expressions</h2>
 
@@ -95,15 +95,15 @@
 
 <h2>Event handling best practices</h2>
 
-<p>Events handling is a big part of writing a code for DOM. And there are some features included to the library APIs that help developers to avoid potential issues and keep their code easier to maintain.</p>
+<p>Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.</p>
 
 <h4>Get rid of the event object</h4>
 
-<p>Event callback looses event object argument and it improves testability of your code.</p>
+<p>Event callbacks loose the event object argument and it improves testability of code.</p>
 
 <h4>Correct return false interpretation</h4>
 
-<p>jQuery has strange behavior of event handler that returns false and it&#39;s <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. Additionally to preventing default action it also stops propagation and this is a very bad thing that may break plugin compatability. So the better-dom library has standards-friendly behavior.</p>
+<p>jQuery has strange behavior of event handler that returns false and it&#39;s a <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. This library has standards-based behavior which does what everybody expected.</p>
 
 <h4>Late binding</h4>
 
@@ -111,11 +111,11 @@
 
 <h4>Callback systems are brittle</h4>
 
-<p>The library doesn&#39;t use callback arrays, so any event listener can&#39;t break another one (read the <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
+<p>The library doesn&#39;t use callback arrays, so any event listener can&#39;t break another one (read a <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
 
 <h2>Easy localization</h2>
 
-<p>Multilanguage support is often required for a DOM extension. <code>DOM.importStrings</code> allows to add a localized string which may be displayed in a html element using <code>data-i18n</code> attribute with an appropriate key.</p>
+<p>Multilanguage support is often required for an extension. <code>DOM.importStrings</code> allows to add a localized string which may be displayed in a html element using <code>data-i18n</code> attribute with the appropriate key.</p>
 
 <p>You can use parametrized strings via special <code>{param}</code> substrings and appropriate <code>data-*</code> attributes.</p>
 
@@ -144,7 +144,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jun 22 2013 12:33:23 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jun 24 2013 22:22:57 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
