@@ -27,7 +27,7 @@ define(["Element"], function(DOMElement, DOMCollection, _makeError) {
                 if (el instanceof Option) {
                     name = el.hasAttribute("value") ? "value" : "text";
                 } else {
-                    name = el.tagName === "INPUT" ? "value" : "innerHTML";
+                    name = el.type && "value" in el ? "value" : "innerHTML";
                 }
             } else if (typeof name !== "string") {
                 throw _makeError("get", this);

@@ -28,7 +28,9 @@ define(["Element"], function(DOMElement, _parseFragment, _forEach, _forOwn, _mak
             if (nameType === "string") {
                 if (value === undefined) {
                     value = name;
-                    name = el.tagName === "INPUT" ? "value" : "innerHTML";
+                    name = el.type && "value" in el ? "value" : "innerHTML";
+                    // for IE use innerText because it doesn't trigger onpropertychange
+                    if (!window.addEventListener && name === "value") name = "innerText";
                 }
 
                 if (typeof value === "function") {

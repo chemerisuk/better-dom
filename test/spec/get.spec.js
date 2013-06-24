@@ -1,13 +1,14 @@
 describe("get", function() {
     "use strict";
     
-    var link, input;
+    var link, input, textarea;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><input type='text' id='get_input' value='test'/>");
+        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea>'");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
+        textarea = DOM.find("#get_textarea");
     });
 
     it("should read an attribute value", function() {
@@ -50,6 +51,9 @@ describe("get", function() {
     it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
         expect(link.get()).toBe("get-test");
         expect(input.get()).toBe("test");
+        expect(textarea.get()).toBe("");
+        textarea.set("value", "123");
+        expect(textarea.get()).toBe("123");
     });
 
     it("should throw error if argument is invalid", function() {
