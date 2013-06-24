@@ -1,7 +1,7 @@
 {
     "name": "better-dom",
     "title": "better-dom",
-    "version": "1.0.0-rc.3",
+    "version": "1.0.0-rc.4",
     "author": "Maksim Chemerisuk",
     "description": "Sandbox for DOM extensions",
     "license": "MIT",

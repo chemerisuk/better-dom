@@ -133,6 +133,10 @@
             BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[i], i, a))",
             AFTER:  "return that"
         }),
+        _foldr = makeLoopMethod({
+            BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[n - i - 1], n - i - 1, a))",
+            AFTER:  "return that"
+        }),
         _every = makeLoopMethod({
             BEFORE: "var out = true",
             BODY:   "out = cb.call(that, a[i], a) && out",
@@ -237,7 +241,11 @@
     }
 
     DOMNode.prototype = {
-        constructor: DOMNode
+        constructor: DOMNode,
+
+        toString: function() {
+            return "1.0.0-rc.3";
+        }
     };
 
     /**
@@ -612,7 +620,7 @@
                 event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
 
                 if (isCustomEvent) {
-                    event.initCustomEvent(handler._type || type, true, false, detail);
+                    event.initCustomEvent(handler._type || type, true, true, detail);
                 } else {
                     event.initEvent(handler._type || type, true, true);
                 }
@@ -678,14 +686,15 @@
                     capturedEl;
 
                 return function() {
-                    var target = window.event.srcElement;
+                    var target = window.event.srcElement,
+                        type = target.type;
 
                     if (capturedEl) {
                         capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
                         capturedEl = null;
                     }
 
-                    if (target.type === "input" || target.type === "textarea") {
+                    if (type === "text" || type === "password" || type === "textarea") {
                         (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
                     }
                 };
@@ -822,7 +831,7 @@
         }
 
         if (legacyIE) {
-            hooks.defaulPrevented = function(event) {
+            hooks.defaultPrevented = function(event) {
                 return event.returnValue === false;
             };
         }
@@ -1108,9 +1117,9 @@
      * @param  {String} selector css selector
      * @return {DOMElement}
      */
-    DOMElement.prototype.matches = function(selector) {
+    DOMElement.prototype.is = function(selector) {
         if (!selector || typeof selector !== "string") {
-            throw _makeError("matches", this);
+            throw _makeError("is", this);
         }
 
         return new SelectorMatcher(selector).test(this._node);
@@ -1161,7 +1170,11 @@
                 hook = hooks[name];
 
             if (name === undefined) {
-                name = el.type && "value" in el ? "value" : "innerHTML";
+                if (el instanceof Option) {
+                    name = el.hasAttribute("value") ? "value" : "text";
+                } else {
+                    name = el.type && "value" in el ? "value" : "innerHTML";
+                }
             } else if (typeof name !== "string") {
                 throw _makeError("get", this);
             }
@@ -1169,8 +1182,25 @@
             return hook ? hook(el) : (name in el ? el[name] : el.getAttribute(name));
         };
 
-        hooks.tagName = hooks.nodeName = function(el) {
+        hooks.tagName = function(el) {
             return el.nodeName.toLowerCase();
+        };
+
+        hooks.elements = function(el) {
+            return new DOMCollection(el.elements);
+        };
+
+        hooks.options = function(el) {
+            return new DOMCollection(el.options);
+        };
+
+        hooks.form = function(el) {
+            return DOMElement(el.form);
+        };
+
+        hooks.type = function(el) {
+            // some browsers don't recognize input[type=email] etc.
+            return el.getAttribute("type") || el.type;
         };
     })();
 
@@ -1202,6 +1232,8 @@
                 if (value === undefined) {
                     value = name;
                     name = el.type && "value" in el ? "value" : "innerHTML";
+                    // for IE use innerText because it doesn't trigger onpropertychange
+                    if (!window.addEventListener && name === "value") name = "innerText";
                 }
 
                 if (typeof value === "function") {
@@ -1584,8 +1616,6 @@
         Array.prototype.push.apply(this, _map(elements, DOMElement));
     }
 
-    DOMCollection.prototype = new DOMElement();
-
     DOMCollection.prototype = {
         constructor: DOMCollection,
         
@@ -1603,34 +1633,78 @@
         },
 
         /**
-         * Calls the method named by name on each element in the collection
+         * Checks if the callback returns true for any element in the collection
          * @memberOf DOMCollection.prototype
-         * @param  {String}    name   name of the method
-         * @param  {...Object} [args] arguments for the method call
-         * @return {DOMCollection}
+         * @param  {Function} callback   callback function
+         * @param  {Object}   [thisArg]  callback context
+         * @return {Boolean} true, if any element in the collection return true
          */
-        invoke: function(name) {
-            var args = _slice(arguments, 1);
+        some: function(callback, thisArg) {
+            return _some(this, callback, thisArg);
+        },
 
-            if (typeof name !== "string") {
-                throw _makeError("invoke", this);
-            }
+        /**
+         * Checks if the callback returns true for all elements in the collection
+         * @memberOf DOMCollection.prototype
+         * @param  {Function} callback   callback function
+         * @param  {Object}   [thisArg]  callback context
+         * @return {Boolean} true, if all elements in the collection returns true
+         */
+        every: function(callback, thisArg) {
+            return _every(this, callback, thisArg);
+        },
 
-            _forEach(this, function(el) {
-                el[name].apply(el, args);
-            });
+        /**
+         * Creates an array of values by running each element in the collection through the callback
+         * @param  {Function} callback   callback function
+         * @param  {Object}   [thisArg]  callback context
+         * @return {Array} new array of the results of each callback execution
+         */
+        map: function(callback, thisArg) {
+            return _map(this, callback, thisArg);
+        },
 
-            return this;
+        /**
+         * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+         * @param  {Function} callback   callback function
+         * @param  {Object}   [thisArg]  callback context
+         * @return {DOMCollection} new DOMCollection of elements that passed the callback check
+         */
+        filter: function(callback, thisArg) {
+            return new DOMCollection(_filter(this, callback, thisArg));
+        },
+
+        /**
+         * Boils down a list of values into a single value (from start to end)
+         * @param  {Function} callback callback function
+         * @param  {Object}   memo     initial value of the accumulator
+         * @return {Object} the accumulated value
+         */
+        foldl: function(callback, memo) {
+            return _foldl(this, callback, memo);
+        },
+
+        /**
+         * Boils down a list of values into a single value (from end to start)
+         * @param  {Function} callback callback function
+         * @param  {Object}   memo     initial value of the accumulator
+         * @return {Object} the accumulated value
+         */
+        foldr: function(callback, memo) {
+            return _foldr(this, callback, memo);
         }
     };
+
+    // aliases
+    DOMCollection.prototype.reduce = DOMCollection.prototype.foldl;
 
     // shortcuts
     _forIn(DOMElement.prototype, function(value, key) {
         if (~("" + value).indexOf("return this;")) {
-            var args = [key];
+            var functor = function(el) { el[key].apply(el, this); };
 
             DOMCollection.prototype[key] = function() {
-                return this.invoke.apply(this, args.concat(_slice(arguments)));
+                return this.each(functor, arguments);
             };
         }
     });
@@ -1738,17 +1812,20 @@
                     isEqualToCallback = function(otherCallback) { return otherCallback === callback; },
                     cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
                     watcher = function(canceledCallbacks, el) {
-                        if (once) el.on("x(detail)", cancelCallback);
-
                         // do not execute callback if it was previously excluded
                         if (!_some(canceledCallbacks, isEqualToCallback)) {
+                            if (once) el.on("x(detail)", cancelCallback);
+
                             callback(el);
                         }
                     };
 
                 watcher.selector = selector;
 
-                DOM.on("x(detail,target) " + selector, watcher);
+                // can't use event selector because it checks all parent elements
+                DOM.on("x(detail,target)", function(canceledCallbacks, el) {
+                    if (el.is(selector)) watcher(canceledCallbacks, el);
+                });
 
                 if (_some(watchers, haveWatcherWithTheSameSelector)) {
                     // call the callback manually for each matched element
