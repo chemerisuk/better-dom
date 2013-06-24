@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.0.0-rc.3
+ * @version 1.0.0-rc.4
  * @overview Sandbox for DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -244,7 +244,7 @@
         constructor: DOMNode,
 
         toString: function() {
-            return "1.0.0-rc.3";
+            return "1.0.0-rc.4";
         }
     };
 
@@ -1656,6 +1656,7 @@
 
         /**
          * Creates an array of values by running each element in the collection through the callback
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Array} new array of the results of each callback execution
@@ -1666,6 +1667,7 @@
 
         /**
          * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {DOMCollection} new DOMCollection of elements that passed the callback check
@@ -1676,6 +1678,7 @@
 
         /**
          * Boils down a list of values into a single value (from start to end)
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -1686,6 +1689,7 @@
 
         /**
          * Boils down a list of values into a single value (from end to start)
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value

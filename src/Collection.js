@@ -54,6 +54,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
 
         /**
          * Creates an array of values by running each element in the collection through the callback
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Array} new array of the results of each callback execution
@@ -64,6 +65,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
 
         /**
          * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {DOMCollection} new DOMCollection of elements that passed the callback check
@@ -74,6 +76,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
 
         /**
          * Boils down a list of values into a single value (from start to end)
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -84,6 +87,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
 
         /**
          * Boils down a list of values into a single value (from end to start)
+         * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value

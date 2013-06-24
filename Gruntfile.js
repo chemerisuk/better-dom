@@ -294,6 +294,7 @@ module.exports = function(grunt) {
             "karma:unit",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
+            "requirejs:compile",
             "copy:publish",
             "docs",
             "shell:checkoutDocs",
