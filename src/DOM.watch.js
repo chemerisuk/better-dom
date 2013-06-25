@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle) {
+define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn) {
     "use strict";
 
     // WATCH CALLBACK
@@ -14,52 +14,51 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
      */
     DOM.watch = (function() {
         var docEl = document.documentElement,
-            watchers = [],
-            startNames, computed, cssPrefix, scripts, behaviorUrl;
+            watchers = [], hash = {},
+            computed, cssPrefix, scripts, behaviorUrl;
 
         if (window.CSSKeyframesRule || !DOM.supports("addBehavior", "a")) {
-            // use trick discovered by Daniel Buchner:
+            // Inspired by trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
             computed = _getComputedStyle(docEl),
             cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
+            _forEach(["animationstart", "oAnimationStart", "webkitAnimationStart"], function(name) {
+                document.addEventListener(name, function(e) {
+                    var entry = hash[e.animationName],
+                        el = e.target;
+
+                    if (entry) {
+                        // MUST cancelBubbling first otherwise may have extra calls in firefox
+                        if (entry.once) el.addEventListener(name, entry.once, false);
+
+                        entry.callback(DOMElement(el));
+                    }
+                }, false);
+            });
+
             return function(selector, callback, once) {
                 var animationName = _uniqueId("DOM"),
-                    cancelBubbling = function(e) {
-                        if (e.animationName === animationName) e.stopPropagation();
-                    },
-                    watcher = function(e) {
-                        var el = e.target;
+                    animations = [animationName];
 
-                        if (e.animationName === animationName) {
-                            // MUST cancelBubbling first otherwise may have extra calls in firefox
-                            if (once) el.addEventListener(e.type, cancelBubbling, false);
-
-                            callback(DOMElement(el));
-                        }
-                    },
-                    animationNames = _foldl(watchers, function(res, watcher) {
-                        if (watcher.selector === selector) res.push(watcher.animationName);
-
-                        return res;
-                    }, [animationName]);
-
-                watcher.selector = selector;
-                watcher.animationName = animationName;
+                _forOwn(hash, function(entry, key) {
+                    if (entry.selector === selector) animations.push(key);
+                });
 
                 DOM.importStyles("@" + cssPrefix + "keyframes " + animationName, "1% {opacity: .99}");
 
-                DOM.importStyles(
-                    selector,
-                    cssPrefix + "animation-duration: 1ms;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
-                );
-
-                _forEach(startNames, function(name) {
-                    document.addEventListener(name, watcher, false);
+                DOM.importStyles(selector, {
+                    "animation-duration": "1ms",
+                    "animation-name": animations.join(",") + " !important"
                 });
 
-                watchers.push(watcher);
+                hash[animationName] = {
+                    selector: selector,
+                    callback: callback,
+                    once: once && function(e) {
+                        if (e.animationName === animationName) e.stopPropagation();
+                    }
+                };
             };
         } else {
             scripts = document.scripts,
@@ -72,7 +71,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                     watcher = function(canceledCallbacks, el) {
                         // do not execute callback if it was previously excluded
                         if (!_some(canceledCallbacks, isEqualToCallback)) {
-                            if (once) el.on("x(detail)", cancelCallback);
+                            if (once) el.on("htc(detail)", cancelCallback);
 
                             callback(el);
                         }
