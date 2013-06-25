@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn) {
+define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn, SelectorMatcher) {
     "use strict";
 
     // WATCH CALLBACK
@@ -13,19 +13,18 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
      * @function
      */
     DOM.watch = (function() {
-        var docEl = document.documentElement,
-            watchers = [], hash = {},
-            computed, cssPrefix, scripts, behaviorUrl;
+        var watchers, computed, cssPrefix, scripts, behaviorUrl;
 
-        if (window.CSSKeyframesRule || !DOM.supports("addBehavior", "a")) {
+        if (window.CSSKeyframesRule || !document.attachEvent) {
             // Inspired by trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            computed = _getComputedStyle(docEl),
-            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            computed = _getComputedStyle(document.documentElement);
+            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join(",").match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            watchers = {};
 
             _forEach(["animationstart", "oAnimationStart", "webkitAnimationStart"], function(name) {
                 document.addEventListener(name, function(e) {
-                    var entry = hash[e.animationName],
+                    var entry = watchers[e.animationName],
                         el = e.target;
 
                     if (entry) {
@@ -41,7 +40,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                 var animationName = _uniqueId("DOM"),
                     animations = [animationName];
 
-                _forOwn(hash, function(entry, key) {
+                _forOwn(watchers, function(entry, key) {
                     if (entry.selector === selector) animations.push(key);
                 });
 
@@ -52,7 +51,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                     "animation-name": animations.join(",") + " !important"
                 });
 
-                hash[animationName] = {
+                watchers[animationName] = {
                     selector: selector,
                     callback: callback,
                     once: once && function(e) {
@@ -61,41 +60,53 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                 };
             };
         } else {
-            scripts = document.scripts,
+            scripts = document.scripts;
             behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+            watchers = [];
+
+            document.attachEvent("ondataavailable", function() {
+                var e = window.event,
+                    el = e.srcElement;
+
+                if (typeof e._type !== "string") {
+                    _forEach(watchers, function(entry) {
+                        // do not execute callback if it was previously excluded
+                        if (_some(e.detail, function(callback) { return callback === entry.callback; })) return;
+
+                        if (entry.matcher.test(el)) {
+                            if (entry.once) el.attachEvent("on" + e.type, entry.once);
+
+                            _defer(function() { entry.callback(DOMElement(el)); });
+                        }
+                    });
+                }
+            });
 
             return function(selector, callback, once) {
-                var haveWatcherWithTheSameSelector = function(watcher) { return watcher.selector === selector; },
-                    isEqualToCallback = function(otherCallback) { return otherCallback === callback; },
-                    cancelCallback = function(canceledCallbacks) { canceledCallbacks.push(callback); },
-                    watcher = function(canceledCallbacks, el) {
-                        // do not execute callback if it was previously excluded
-                        if (!_some(canceledCallbacks, isEqualToCallback)) {
-                            if (once) el.on("htc(detail)", cancelCallback);
-
-                            callback(el);
-                        }
-                    };
-
-                watcher.selector = selector;
-
-                // can't use event selector because it checks all parent elements
-                DOM.on("x(detail,target)", function(canceledCallbacks, el) {
-                    if (el.is(selector)) watcher(canceledCallbacks, el);
-                });
-
-                if (_some(watchers, haveWatcherWithTheSameSelector)) {
+                var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector; });
+                
+                if (behaviorExists) {
                     // call the callback manually for each matched element
                     // because the behaviour is already attached to selector
                     // also execute the callback safely
-                    _forEach(DOM.findAll(selector), function(el) {
+                    DOM.findAll(selector).each(function(el) {
                         _defer(function() { callback(el); });
                     });
-                } else {
-                    DOM.importStyles(selector, {behavior: "url(" + behaviorUrl + ")"});
                 }
 
-                watchers.push(watcher);
+                watchers.push({
+                    callback: callback,
+                    matcher: new SelectorMatcher(selector),
+                    once: once && function() {
+                        var e = window.event;
+
+                        if (typeof e._type !== "string") {
+                            (e.detail = e.detail || []).push(callback);
+                        }
+                    }
+                });
+
+                if (!behaviorExists) DOM.importStyles(selector, {behavior: "url(" + behaviorUrl + ")"});
             };
         }
     }());

@@ -1,7 +1,7 @@
 describe("watch", function() {
     "use strict";
     
-    var WAIT_FOR_WATCH_TIME = 50,
+    var WAIT_FOR_WATCH_TIME = 30,
         callback;
 
     beforeEach(function() {
