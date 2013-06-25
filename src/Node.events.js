@@ -187,7 +187,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             };
         }
 
-        if (DOMNode.prototype.supports("oninvalid", "input")) {
+        if (DOMNode.prototype.supports("validity", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };

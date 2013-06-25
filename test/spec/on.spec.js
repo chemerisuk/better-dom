@@ -100,16 +100,12 @@ describe("on", function() {
 
     it("should fix some non-bubbling events", function() {
         DOM.on("focus", spy);
-
         input.fire("focus");
-
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("invalid", spy);
-
-        if (input._node.checkValidity) {
+        if (DOM.supports("validity", "input")) {
+            DOM.on("invalid", spy);
             input._node.checkValidity();
-
             expect(spy.callCount).toBe(2);
         }
     });

@@ -17,12 +17,12 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
             watchers = [],
             startNames, computed, cssPrefix, scripts, behaviorUrl;
 
-        if (!DOM.supports("addBehavior", "a")) {
+        if (window.CSSKeyframesRule || !DOM.supports("addBehavior", "a")) {
             // use trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             startNames = ["animationstart", "oAnimationStart", "webkitAnimationStart"],
             computed = _getComputedStyle(docEl),
-            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit|ms)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join("").match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
 
             return function(selector, callback, once) {
                 var animationName = _uniqueId("DOM"),
@@ -33,8 +33,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                         var el = e.target;
 
                         if (e.animationName === animationName) {
-                            // MUST cancelBubbling first otherwise may have
-                            // unexpected calls in firefox
+                            // MUST cancelBubbling first otherwise may have extra calls in firefox
                             if (once) el.addEventListener(e.type, cancelBubbling, false);
 
                             callback(DOMElement(el));
@@ -49,14 +48,11 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                 watcher.selector = selector;
                 watcher.animationName = animationName;
 
-                DOM.importStyles(
-                    "@" + cssPrefix + "keyframes " + animationName,
-                    "from {clip: rect(1px,auto,auto,auto)} to {clip: rect(0px,auto,auto,auto)}"
-                );
+                DOM.importStyles("@" + cssPrefix + "keyframes " + animationName, "1% {opacity: .99}");
 
                 DOM.importStyles(
                     selector,
-                    cssPrefix + "animation-duration:0.001s;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
+                    cssPrefix + "animation-duration: 1ms;" + cssPrefix + "animation-name:" + animationNames.join(",") + " !important"
                 );
 
                 _forEach(startNames, function(name) {
