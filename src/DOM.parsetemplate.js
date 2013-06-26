@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
+define(["DOM"], function(DOM, _foldl, _forEach) {
     "use strict";
 
     // EMMET-LIKE PARSER
@@ -30,34 +30,46 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
             if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
 
             return term + " " + name + "=" + value;
-        },
-        toHtmlString = function(obj) {
-            return _isArray(obj) ? obj.join("") : obj.toString();
-        },
-        appendToAll = function(node) {
-            node.insertTerm(this, true);
         };
 
         // helper class
-        function HtmlBuilder(term, noparse) {
-            if (noparse) this.str = term;
-            else {
-                this.str = "<" + term + ">";
+        function HtmlBuilder(node, n) {
+            this.length = 0;
 
-                if (!~emptyElements.indexOf(" " + term + " ")) {
-                    this.str += "</" + term + ">";
+            if (n) {
+                node = node.toString();
+
+                for (var i = 1; i <= n; ++i) {
+                    this.push(node.split("$").join(i));
                 }
+            } else {
+                this.push(HtmlBuilder.parse(node));
             }
         }
 
-        HtmlBuilder.prototype = {
-            insertTerm: function(term, last) {
-                var index = last ? this.str.lastIndexOf("<") : this.str.indexOf(">");
+        HtmlBuilder.parse = function(term) {
+            var result = "<" + term + ">";
 
-                this.str = this.str.substr(0, index) + term + this.str.substr(index);
+            if (!~emptyElements.indexOf(" " + term + " ")) {
+                result += "</" + term + ">";
+            }
+
+            return result;
+        };
+
+        HtmlBuilder.prototype = {
+            push: function(term) {
+                Array.prototype.push.call(this, term);
+            },
+            insert: function(term, last) {
+                _forEach(this, function(el, i) {
+                    var index = last ? el.lastIndexOf("<") : el.indexOf(">");
+                    // update value
+                    this[i] = el.substr(0, index) + term + el.substr(index);
+                }, this);
             },
             toString: function() {
-                return this.str;
+                return Array.prototype.join.call(this, "");
             }
         };
 
@@ -114,7 +126,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
 
             stack = [];
 
-            if (output.length === 1) output.push(new HtmlBuilder(output[0]));
+            if (output.length === 1) output.push(HtmlBuilder.parse(output[0]));
 
             // transform RPN into html nodes
 
@@ -129,44 +141,34 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
 
                     switch(str) {
                     case ".":
-                        node.insertTerm(" class=\"" + term + "\"");
+                        node.insert(" class=\"" + term + "\"");
                         break;
 
                     case "#":
-                        node.insertTerm(" id=\"" + term + "\"");
+                        node.insert(" id=\"" + term + "\"");
                         break;
 
                     case ":":
-                        node.insertTerm(" type=\"" + term + "\"");
+                        node.insert(" type=\"" + term + "\"");
                         break;
 
                     case "[":
-                        node.insertTerm(_foldl(term.match(rattr), normalizeAttrs, ""));
+                        node.insert(_foldl(term.match(rattr), normalizeAttrs, ""));
                         break;
 
                     case "{":
-                        node.insertTerm(term, true);
+                        node.insert(term, true);
                         break;
-                        
+
                     case "+":
-                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
-
-                        _isArray(node) ? node.push(term) : node.str += term;
-                        break;
-
                     case ">":
-                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
+                        term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
 
-                        _isArray(node) ? _forEach(node, appendToAll, term) : node.insertTerm(term, true);
+                        node[str === "+" ? "push" : "insert"](term, true);
                         break;
 
                     case "*":
-                        str = toHtmlString(node);
-                        node = [];
-
-                        _times(parseInt(term, 10), function(i) {
-                            node.push(new HtmlBuilder(str.split("$").join(i + 1), true));
-                        });
+                        node = new HtmlBuilder(node, parseInt(term, 10));
                         break;
                     }
 
@@ -176,7 +178,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
                 stack.unshift(str);
             });
 
-            return toHtmlString(stack[0]).replace(rempty, "");
+            return stack[0].toString().replace(rempty, "");
         };
     })();
 });

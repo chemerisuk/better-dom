@@ -101,10 +101,6 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
         _forEach = makeLoopMethod({
             BODY:   "cb.call(that, a[i], i, a)"
         }),
-        _times = makeLoopMethod({
-            COUNT:  "a",
-            BODY:   "cb.call(that, i)"
-        }),
         _map = makeLoopMethod({
             BEFORE: "var out = []",
             BODY:   "out.push(cb.call(that, a[i], i, a))",
