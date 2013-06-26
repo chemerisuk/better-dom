@@ -19,7 +19,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
             // Inspired by trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
             computed = _getComputedStyle(document.documentElement);
-            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join(",").match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join().match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
             watchers = {};
 
             _forEach(["animationstart", "oAnimationStart", "webkitAnimationStart"], function(name) {
@@ -48,7 +48,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
 
                 DOM.importStyles(selector, {
                     "animation-duration": "1ms",
-                    "animation-name": animations.join(",") + " !important"
+                    "animation-name": animations.join() + " !important"
                 });
 
                 watchers[animationName] = {
@@ -68,10 +68,10 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                 var e = window.event,
                     el = e.srcElement;
 
-                if (typeof e._type !== "string") {
+                if (e._type === undefined) {
                     _forEach(watchers, function(entry) {
                         // do not execute callback if it was previously excluded
-                        if (_some(e.detail, function(callback) { return callback === entry.callback; })) return;
+                        if (_some(e.detail, function(x) { return x === entry.callback; })) return;
 
                         if (entry.matcher.test(el)) {
                             if (entry.once) el.attachEvent("on" + e.type, entry.once);
@@ -100,7 +100,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                     once: once && function() {
                         var e = window.event;
 
-                        if (typeof e._type !== "string") {
+                        if (e._type === undefined) {
                             (e.detail = e.detail || []).push(callback);
                         }
                     }

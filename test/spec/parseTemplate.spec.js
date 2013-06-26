@@ -80,8 +80,10 @@ describe("parseTemplate", function() {
         checkExpression("ul>li*3>b", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>"));
     it("should accept ul#nav>li.pre$*3+li.post$*3",
         checkExpression("ul#nav>li.pre$*3+li.post$*3", "<ul id=\"nav\"><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"pre3\"></li><li class=\"post1\"></li><li class=\"post2\"></li><li class=\"post3\"></li></ul>"));
-    it("should accept .sample$*3",
-        checkExpression(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>"));
+    it("should accept div.sample$*3",
+        checkExpression("div.sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>"));
+    // it("should accept .sample$*3",
+    //     checkExpression(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>"));
     it("should accept li#id$.class$*3",
         checkExpression("li#id$.class$*3", "<li id=\"id1\" class=\"class1\"></li><li id=\"id2\" class=\"class2\"></li><li id=\"id3\" class=\"class3\"></li>"));
 
@@ -113,9 +115,18 @@ describe("parseTemplate", function() {
         checkExpression("input:radio", "<input type=\"radio\">"));
     it("should accept input:email#a.b",
         checkExpression("input:email#a.b", "<input type=\"email\" id=\"a\" class=\"b\">"));
-    it("should accept :date",
-        checkExpression(":date", "<input type=\"date\">"));
-    it("should accept a>:date+b",
-        checkExpression("a>:date+b", "<a><input type=\"date\"><b></b></a>"));
+    // it("should accept :date",
+    //     checkExpression(":date", "<input type=\"date\">"));
+    // it("should accept a>:date+b",
+    //     checkExpression("a>:date+b", "<a><input type=\"date\"><b></b></a>"));
 
+    // text nodes
+    it("span{Hello world}",
+        checkExpression("span{Hello world}", "<span>Hello world</span>"));
+    it("span>{Hello world}",
+        checkExpression("span>{Hello world}", "<span>Hello world</span>"));
+    it("span>{Hello}+{ world}",
+        checkExpression("span>{Hello}+{ world}", "<span>Hello world</span>"));
+    it("span>{Click }+(a[href=/url/]>{here})+{ for more info}",
+        checkExpression("span>{Click }+(a[href=/url/]>{here})+{ for more info}", "<span>Click <a href=\"/url/\">here</a> for more info</span>"));
 });

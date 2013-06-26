@@ -11,6 +11,8 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
             ">": 2,
             "+": 2,
             "*": 3,
+            "}": 3,
+            "{": 4,
             "]": 3,
             "[": 4,
             ".": 5,
@@ -18,6 +20,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
             ":": 7
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
+        rempty = /<\?>|<\/\?>/g,
         rattr = /([A-Za-z0-9_\-]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g,
         normalizeAttrs = function(term, str) {
             var index = str.indexOf("="),
@@ -78,8 +81,9 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
                 // concat .c1.c2 into single space separated class string
                 if (top === "." && str === ".") str = " ";
 
-                if (str in operators && (top !== "[" || str === "]")) {
-                    if (str === ":") term = "input";
+                if (str in operators && (top !== "[" || str === "]") && (top !== "{" || str === "}")) {
+                    // append empty tag for text nodes or put missing '>' operator
+                    if (str === "{") term ? stack.unshift(">") : term = "?";
 
                     if (term) {
                         output.push(term);
@@ -96,7 +100,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
 
                     if (str === ")") {
                         stack.shift(); // remove "(" symbol from stack
-                    } else if (str !== "]") { // don't need to have "]" in stack
+                    } else if (str !== "]" && str !== "}") { // don't need to have "]" in stack
                         stack.unshift(str);
                     }
                 } else {
@@ -119,7 +123,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
 
                 if (str in operators) {
                     term = stack.shift();
-                    node = stack.shift() || "div";
+                    node = stack.shift() || "?";
 
                     if (typeof node === "string") node = new HtmlBuilder(node);
 
@@ -138,6 +142,10 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
 
                     case "[":
                         node.insertTerm(_foldl(term.match(rattr), normalizeAttrs, ""));
+                        break;
+
+                    case "{":
+                        node.insertTerm(term, true);
                         break;
                         
                     case "+":
@@ -168,7 +176,7 @@ define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
                 stack.unshift(str);
             });
 
-            return toHtmlString(stack[0]);
+            return toHtmlString(stack[0]).replace(rempty, "");
         };
     })();
 });
