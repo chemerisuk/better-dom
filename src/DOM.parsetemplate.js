@@ -7,7 +7,18 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
     (function() {
         var operators = {
             // operator type / priority object
-            "(": 0, ")": 1, ">": 2, "+": 2, "*": 3, "}": 3, "{": 4, "]": 3, "[": 4, ".": 5, "#": 6, ":": 7
+            "(": 1,
+            ")": 2,
+            ">": 3,
+            "+": 3,
+            "*": 4,
+            "}": 4,
+            "{": 5,
+            "]": 4,
+            "[": 5,
+            ".": 6,
+            "#": 7,
+            ":": 8
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
         rempty = /<\?>|<\/\?>/g,
@@ -84,7 +95,7 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
                 // concat .c1.c2 into single space separated class string
                 if (str === "." && stack[0] === ".") str = " ";
 
-                if (str in operators && (!skip || skip === str)) {
+                if ((priority = operators[str]) && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator
                     if (str === "{") term ? stack.unshift(">") : term = "?";
 
@@ -94,8 +105,6 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
                     }
 
                     if (str !== "(") {
-                        priority = operators[str];
-
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
                         }
@@ -125,7 +134,7 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
             if (output.length === 1) output.push(HtmlBuilder.parse(output[0]));
 
             // transform RPN into html nodes
-            
+
             _forEach(output, function(str) {
                 var term, node;
 
