@@ -129,4 +129,13 @@ describe("parseTemplate", function() {
         checkExpression("span>{Hello}+{ world}", "<span>Hello world</span>"));
     it("span>{Click }+(a[href=/url/]>{here})+{ for more info}",
         checkExpression("span>{Click }+(a[href=/url/]>{here})+{ for more info}", "<span>Click <a href=\"/url/\">here</a> for more info</span>"));
+
+    // describe("implied tag names", function() {
+
+    //     it("#content",
+    //         checkExpression("#content", "<div id=\"content\"></div>"));
+    //     it(".content",
+    //         checkExpression(".content", "<div class=\"content\"></div>"));
+
+    // });
 });

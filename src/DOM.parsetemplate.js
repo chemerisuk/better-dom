@@ -5,19 +5,9 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
     // -----------------
 
     (function() {
-        var operators = { // name / priority object
-            "(": 0,
-            ")": 1,
-            ">": 2,
-            "+": 2,
-            "*": 3,
-            "}": 3,
-            "{": 4,
-            "]": 3,
-            "[": 4,
-            ".": 5,
-            "#": 6,
-            ":": 7
+        var operators = {
+            // operator type / priority object
+            "(": 0, ")": 1, ">": 2, "+": 2, "*": 3, "}": 3, "{": 4, "]": 3, "[": 4, ".": 5, "#": 6, ":": 7
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
         rempty = /<\?>|<\/\?>/g,
@@ -83,17 +73,18 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
         DOM.parseTemplate = function(template) {
             var stack = [],
                 output = [],
-                term = "";
+                term = "",
+                skip;
 
             // parse exrpression into RPN
         
             _forEach(template, function(str) {
-                var top = stack[0], priority;
+                var priority;
 
                 // concat .c1.c2 into single space separated class string
-                if (top === "." && str === ".") str = " ";
+                if (str === "." && stack[0] === ".") str = " ";
 
-                if (str in operators && (top !== "[" || str === "]") && (top !== "{" || str === "}")) {
+                if (str in operators && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator
                     if (str === "{") term ? stack.unshift(">") : term = "?";
 
@@ -112,8 +103,13 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
 
                     if (str === ")") {
                         stack.shift(); // remove "(" symbol from stack
-                    } else if (str !== "]" && str !== "}") { // don't need to have "]" in stack
+                    } else if (!skip) { // don't need to have "]" in stack
                         stack.unshift(str);
+
+                        if (str === "[") skip = "]";
+                        if (str === "{") skip = "}";
+                    } else {
+                        skip = null;
                     }
                 } else {
                     term += str;
@@ -129,7 +125,7 @@ define(["DOM"], function(DOM, _foldl, _forEach) {
             if (output.length === 1) output.push(HtmlBuilder.parse(output[0]));
 
             // transform RPN into html nodes
-
+            
             _forEach(output, function(str) {
                 var term, node;
 
