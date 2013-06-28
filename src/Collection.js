@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeError, _some, _every, _filter, _foldl, _foldr) {
+define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr) {
     "use strict";
 
     // DOM COLLECTION
@@ -94,20 +94,42 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forIn, _makeEr
          */
         foldr: function(callback, memo) {
             return _foldr(this, callback, memo);
+        },
+
+        /**
+         * Calls the method named by name on each element in the collection
+         * @memberOf DOMCollection.prototype
+         * @param  {String}    name   name of the method
+         * @param  {...Object} [args] arguments for the method call
+         * @return {DOMCollection}
+         */
+        invoke: function(name) {
+            var args = _slice(arguments, 1);
+
+            if (typeof name !== "string") {
+                throw _makeError("invoke", this);
+            }
+
+            _forEach(this, function(el) {
+                if (args.length) {
+                    el[name].apply(el, args);
+                } else {
+                    el[name]();
+                }
+            });
+
+            return this;
         }
     };
 
     // aliases
-    DOMCollection.prototype.reduce = DOMCollection.prototype.foldl;
-
-    // shortcuts
-    _forIn(DOMElement.prototype, function(value, key) {
-        if (~("" + value).indexOf("return this;")) {
-            var functor = function(el) { el[key].apply(el, this); };
-
-            DOMCollection.prototype[key] = function() {
-                return this.each(functor, arguments);
-            };
-        }
-    });
+    _forOwn({
+        all: "every",
+        any: "some",
+        select: "filter",
+        reduce: "foldl",
+        reduceRight: "foldr"
+    }, function(value, key) {
+        this[key] = this[value];
+    }, DOMCollection.prototype);
 });
