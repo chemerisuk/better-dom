@@ -1,8 +1,11 @@
 module.exports = function(grunt) {
     "use strict";
 
+    var globalConfig = {};
+
     grunt.initConfig({
         pkg: grunt.file.readJSON("package.json"),
+        globalConfig: globalConfig,
 
         jasmine: {
             options: {
@@ -30,7 +33,7 @@ module.exports = function(grunt) {
         },
         watch: {
             jasmine: {
-                files: ["build/<%= pkg.name %>.js", "test/spec/*.js"],
+                files: ["build/*.js", "test/spec/*.js"],
                 tasks: ["jasmine:coverage"]
             },
             build: {
@@ -57,7 +60,19 @@ module.exports = function(grunt) {
                 configFile: "test/lib/karma.conf"
             },
             speed: {
-                configFile: "test/lib/karma.speed.conf"
+                configFile: "test/lib/karma.conf",
+                browsers: ["<%= globalConfig.browser %>"],
+                options: {
+                    files: [
+                        "node_modules/benchmark/benchmark.js",
+                        "test/lib/benchmine/benchmine-env.js",
+                        "test/lib/karma-benchmine-adapter.js",
+                        "test/lib/benchmine/benchmine-report-karma.js",
+                        "components/jquery/jquery.js",
+                        "build/*.js",
+                        "test/speed/<%= globalConfig.task %>.suite.js"
+                    ]
+                }
             }
         },
         shell: {
@@ -176,6 +191,9 @@ module.exports = function(grunt) {
                 baseUrl: "src",
                 name: "DOM",
                 create: true,
+                logLevel: 2,
+                skipPragmas: true,
+                skipModuleInsertion: true,
                 include: [
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
@@ -186,13 +204,7 @@ module.exports = function(grunt) {
                     "DOM.mock", "DOM.importstrings"
                 ],
                 onBuildWrite: function(id, path, contents) {
-                    if ((/define\(.*?\{/).test(contents)) {
-                        //Remove AMD ceremony for use without require.js or almond.js
-                        contents = contents.replace(/define\(.*?\{\s*"use strict";[\r\n]*/m, "");
-                        contents = contents.replace(/\}\);\s*$/, "");
-                    }
-
-                    return contents;
+                    return contents.replace(/^define\(.*?\{\s*"use strict";[\r\n]*([.\s\S]+)\}\);\s*$/m, "$1");
                 }
             },
             compile: {
@@ -219,19 +231,7 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.loadNpmTasks("grunt-jsdoc");
-    grunt.loadNpmTasks("grunt-contrib-jshint");
-    grunt.loadNpmTasks("grunt-karma");
-    grunt.loadNpmTasks("grunt-contrib-watch");
-    grunt.loadNpmTasks("grunt-shell");
-    grunt.loadNpmTasks("grunt-contrib-uglify");
-    grunt.loadNpmTasks("grunt-contrib-copy");
-    grunt.loadNpmTasks("grunt-contrib-clean");
-    grunt.loadNpmTasks("grunt-contrib-connect");
-    grunt.loadNpmTasks("grunt-contrib-requirejs");
-    grunt.loadNpmTasks("grunt-plato");
-    grunt.loadNpmTasks("grunt-contrib-jasmine");
-
+    require("matchdep").filterDev("grunt-*").filter(function(x) { return x !== "grunt-template-jasmine-istanbul"; }).forEach(grunt.loadNpmTasks);
 
     grunt.registerTask("dev", [
         "test",
@@ -266,10 +266,11 @@ module.exports = function(grunt) {
         "jsdoc"
     ]);
 
-    grunt.registerTask("speed", [
-        "requirejs:compile",
-        "karma:speed"
-    ]);
+    grunt.registerTask("speed", "Run speed suite on a specified browser", function(task, browser) {
+        globalConfig.task = task;
+        globalConfig.browser = browser || "Chrome";
+        grunt.task.run(["requirejs:compile", "karma:speed"]);
+    });
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
