@@ -36,11 +36,9 @@ define(["DOM"], function(DOM, _forEach) {
             if (n) {
                 node = node.toString();
 
-                for (var i = 0, v = []; i < n; ++i) {
-                    v[i] = node.split("$").join(i + 1);
+                for (var i = 1; i <= n; ++i) {
+                    this.push(node.split("$").join(i));
                 }
-
-                this.push.apply(this, v);
             } else {
                 this.push(HtmlBuilder.parse(node));
             }
@@ -59,11 +57,11 @@ define(["DOM"], function(DOM, _forEach) {
         HtmlBuilder.prototype = {
             push: Array.prototype.push,
             inject: function(term, first) {
-                _forEach(this, function(el, i) {
+                _forEach(this, function(el, i, builder) {
                     var index = first ? el.indexOf(">") : el.lastIndexOf("<");
                     // update value
-                    this[i] = el.substr(0, index) + term + el.substr(index);
-                }, this);
+                    builder[i] = el.substr(0, index) + term + el.substr(index);
+                });
             },
             toString: function() {
                 return Array.prototype.join.call(this, "");
@@ -127,7 +125,7 @@ define(["DOM"], function(DOM, _forEach) {
 
             stack = [];
 
-            if (output.length === 1) output.push(HtmlBuilder.parse(output[0]));
+            if (output.length === 1) output.push(">");
 
             // transform RPN into html nodes
 
