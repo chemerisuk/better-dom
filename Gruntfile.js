@@ -1,11 +1,13 @@
 module.exports = function(grunt) {
     "use strict";
 
-    var globalConfig = {};
+    var pkg = grunt.file.readJSON("package.json"),
+        gruntDeps = function(name) {
+            return !name.indexOf("grunt-") && name !== "grunt-template-jasmine-istanbul";
+        };
 
     grunt.initConfig({
-        pkg: grunt.file.readJSON("package.json"),
-        globalConfig: globalConfig,
+        pkg: pkg,
 
         jasmine: {
             options: {
@@ -61,7 +63,7 @@ module.exports = function(grunt) {
             },
             speed: {
                 configFile: "test/lib/karma.conf",
-                browsers: ["<%= globalConfig.browser %>"],
+                browsers: ["<%= pkg.speed.browser %>"],
                 options: {
                     files: [
                         "node_modules/benchmark/benchmark.js",
@@ -70,7 +72,7 @@ module.exports = function(grunt) {
                         "test/lib/benchmine/benchmine-report-karma.js",
                         "components/jquery/jquery.js",
                         "build/*.js",
-                        "test/speed/<%= globalConfig.task %>.suite.js"
+                        "test/speed/<%= pkg.speed.task %>.suite.js"
                     ]
                 }
             }
@@ -231,7 +233,7 @@ module.exports = function(grunt) {
         }
     });
 
-    require("matchdep").filterDev("grunt-*").filter(function(x) { return x !== "grunt-template-jasmine-istanbul"; }).forEach(grunt.loadNpmTasks);
+    Object.keys(pkg.devDependencies).filter(gruntDeps).forEach(grunt.loadNpmTasks);
 
     grunt.registerTask("dev", [
         "test",
@@ -267,8 +269,9 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("speed", "Run speed suite on a specified browser", function(task, browser) {
-        globalConfig.task = task;
-        globalConfig.browser = browser || "Chrome";
+        pkg.speed = {};
+        pkg.speed.task = task;
+        pkg.speed.browser = browser || "Chrome";
         grunt.task.run(["requirejs:compile", "karma:speed"]);
     });
 
