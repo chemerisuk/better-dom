@@ -25,63 +25,75 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["DOM"], function(DOM, _isArray, _times, _foldl, _forEach) {
+            <pre class="prettyprint source"><code>define(["DOM"], function(DOM, _forEach) {
     "use strict";
 
     // EMMET-LIKE PARSER
     // -----------------
 
     (function() {
-        var operators = { // name / priority object
-            "(": 0,
-            ")": 1,
-            ">": 2,
-            "+": 2,
-            "*": 3,
-            "]": 3,
-            "[": 4,
-            ".": 5,
-            "#": 6,
-            ":": 7
+        var operators = {
+            // operator type / priority object
+            "(": 1,
+            ")": 2,
+            ">": 3,
+            "+": 3,
+            "*": 4,
+            "}": 4,
+            "{": 5,
+            "]": 4,
+            "[": 5,
+            ".": 6,
+            "#": 7,
+            ":": 8
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
-        rattr = /([A-Za-z0-9_\-]+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g,
-        normalizeAttrs = function(term, str) {
-            var index = str.indexOf("="),
-                name = ~index ? str.substr(0, index) : str,
-                value = ~index ? str.substr(index + 1) : "";
+        reEmpty = /&lt;\?>|&lt;\/\?>/g,
+        reAttr = /([A-Za-z0-9_\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s\]]+)))?/g,
+        normalizeAttrs = function(term, name, value) {
+            value = value || "";
 
             if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
 
-            return term + " " + name + "=" + value;
-        },
-        toHtmlString = function(obj) {
-            return _isArray(obj) ? obj.join("") : obj.toString();
-        },
-        appendToAll = function(node) {
-            node.insertTerm(this, true);
+            return name + "=" + value;
         };
 
         // helper class
-        function HtmlBuilder(term, noparse) {
-            if (noparse) this.str = term;
-            else {
-                this.str = "&lt;" + term + ">";
+        function HtmlBuilder(node, n) {
+            if (n) {
+                node = node.toString();
 
-                if (!~emptyElements.indexOf(" " + term + " ")) {
-                    this.str += "&lt;/" + term + ">";
+                for (var i = 0, v = []; i &lt; n; ++i) {
+                    v[i] = node.split("$").join(i + 1);
                 }
+
+                this.push.apply(this, v);
+            } else {
+                this.push(HtmlBuilder.parse(node));
             }
         }
 
-        HtmlBuilder.prototype = {
-            insertTerm: function(term, last) {
-                var index = last ? this.str.lastIndexOf("&lt;") : this.str.indexOf(">");
+        HtmlBuilder.parse = function(term) {
+            var result = "&lt;" + term + ">";
 
-                this.str = this.str.substr(0, index) + term + this.str.substr(index);
+            if (!~emptyElements.indexOf(" " + term + " ")) {
+                result += "&lt;/" + term + ">";
+            }
+
+            return result;
+        };
+
+        HtmlBuilder.prototype = {
+            push: Array.prototype.push,
+            inject: function(term, first) {
+                _forEach(this, function(el, i) {
+                    var index = first ? el.indexOf(">") : el.lastIndexOf("&lt;");
+                    // update value
+                    this[i] = el.substr(0, index) + term + el.substr(index);
+                }, this);
             },
             toString: function() {
-                return this.str;
+                return Array.prototype.join.call(this, "");
             }
         };
 
@@ -95,18 +107,20 @@
         DOM.parseTemplate = function(template) {
             var stack = [],
                 output = [],
-                term = "";
+                term = "",
+                skip;
 
             // parse exrpression into RPN
         
             _forEach(template, function(str) {
-                var top = stack[0], priority;
-
                 // concat .c1.c2 into single space separated class string
-                if (top === "." && str === ".") str = " ";
+                if (str === "." && stack[0] === ".") str = " ";
 
-                if (str in operators && (top !== "[" || str === "]")) {
-                    if (str === ":") term = "input";
+                var priority = operators[str];
+
+                if (priority && (!skip || skip === str)) {
+                    // append empty tag for text nodes or put missing '>' operator
+                    if (str === "{") term ? stack.unshift(">") : term = "?";
 
                     if (term) {
                         output.push(term);
@@ -114,8 +128,6 @@
                     }
 
                     if (str !== "(") {
-                        priority = operators[str];
-
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
                         }
@@ -123,8 +135,13 @@
 
                     if (str === ")") {
                         stack.shift(); // remove "(" symbol from stack
-                    } else if (str !== "]") { // don't need to have "]" in stack
+                    } else if (!skip) { // don't need to have "]" in stack
                         stack.unshift(str);
+
+                        if (str === "[") skip = "]";
+                        if (str === "{") skip = "}";
+                    } else {
+                        skip = null;
                     }
                 } else {
                     term += str;
@@ -137,7 +154,7 @@
 
             stack = [];
 
-            if (output.length === 1) output.push(new HtmlBuilder(output[0]));
+            if (output.length === 1) output.push(HtmlBuilder.parse(output[0]));
 
             // transform RPN into html nodes
 
@@ -146,46 +163,40 @@
 
                 if (str in operators) {
                     term = stack.shift();
-                    node = stack.shift() || "div";
+                    node = stack.shift() || "?";
 
                     if (typeof node === "string") node = new HtmlBuilder(node);
 
                     switch(str) {
                     case ".":
-                        node.insertTerm(" class=\"" + term + "\"");
+                        node.inject(" class=\"" + term + "\"", true);
                         break;
 
                     case "#":
-                        node.insertTerm(" id=\"" + term + "\"");
+                        node.inject(" id=\"" + term + "\"", true);
                         break;
 
                     case ":":
-                        node.insertTerm(" type=\"" + term + "\"");
+                        node.inject(" type=\"" + term + "\"", true);
                         break;
 
                     case "[":
-                        node.insertTerm(_foldl(term.match(rattr), normalizeAttrs, ""));
+                        node.inject(" " + term.replace(reAttr, normalizeAttrs), true);
                         break;
-                        
+
+                    case "{":
+                        node.inject(term);
+                        break;
+
                     case "+":
-                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
-
-                        _isArray(node) ? node.push(term) : node.str += term;
-                        break;
-
                     case ">":
-                        term = toHtmlString(typeof term === "string" ? new HtmlBuilder(term) : term);
+                        term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
 
-                        _isArray(node) ? _forEach(node, appendToAll, term) : node.insertTerm(term, true);
+                        node[str === "+" ? "push" : "inject"](term);
                         break;
 
                     case "*":
-                        str = toHtmlString(node);
-                        node = [];
-
-                        _times(parseInt(term, 10), function(i) {
-                            node.push(new HtmlBuilder(str.split("$").join(i + 1), true));
-                        });
+                        node = new HtmlBuilder(node, parseInt(term, 10));
                         break;
                     }
 
@@ -195,10 +206,11 @@
                 stack.unshift(str);
             });
 
-            return toHtmlString(stack[0]);
+            return stack[0].toString().replace(reEmpty, "");
         };
     })();
-});</code></pre>
+});
+</code></pre>
         </article>
     </section>
 
@@ -214,7 +226,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jun 24 2013 22:36:33 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jun 29 2013 12:56:07 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

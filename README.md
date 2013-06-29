@@ -33,23 +33,6 @@ The extension makes `input[type=date]` controls with the same UX for all browser
 
 Check out [live demo](http://chemerisuk.github.io/better-dateinput-polyfill) the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
 
-## Getter and setter
-Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property _is faster_, but a lot of people don't know that or just alway use attributes to keep access the same everywhere in a code.
-
-To fix this confusion better-dom introduces smart getter and setter.
-
-
-
-## Emmet expressions
-HTML strings are boring and complex, they take a lot of space. Let's fix that with [emmet](http://emmet.io/):
-
-* `nav>ul>li` instead of `<nav><ul><li></li></ul></nav>`
-* `form#search.wide` instead of `<form id="search" class="wide"></form>`
-* `[a='value1' b="value2"]` instead of `<div a="value1" b="value2"></div>`
-* `ul>li.item$*3` instead of `<ul><li class="item1"></li><li class="item2"></li><li class="item3"></li></ul>`
-
-Because of code size emmet expressions support is only for HTML strings and has some limitations for now, but major features are in place.
-
 ## Event handling best practices
 Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.
 
@@ -72,6 +55,25 @@ Usually an event lintener function is bound when some `addEventListener` method 
 The library doesn't use callback arrays, so any event listener can't break another one (read a [nice article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
 
 
+
+## Getter and setter
+Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property _is faster_, but a lot of people don't know that or just alway use attributes to keep access the same everywhere in a code.
+
+To fix this confusion better-dom introduces smart getter and setter.
+
+
+
+## Emmet expressions
+HTML strings are boring and complex, they take a lot of space. Let's fix that with [emmet](http://emmet.io/):
+
+* `nav>ul>li` instead of `<nav><ul><li></li></ul></nav>`
+* `form#search.wide` instead of `<form id="search" class="wide"></form>`
+* `[a='value1' b="value2"]` instead of `<div a="value1" b="value2"></div>`
+* `ul>li.item$*3` instead of `<ul><li class="item1"></li><li class="item2"></li><li class="item3"></li></ul>`
+
+Because of code size emmet expressions support is only for HTML strings and has some limitations for now, but major features are in place.
+
+
 ## Easy localization
 Multilanguage support is often required for an extension. `DOM.importStrings` allows to add a localized string which may be displayed in a html element using `data-i18n` attribute with the appropriate key.
 
@@ -82,9 +84,6 @@ You can use parametrized strings via special `{param}` substrings and appropriat
 To change a string language manually use setter with `lang` parameter.
 
 
-
-## Performance
-DOM is usually the main bottleneck of javascript applications. Therefore performance question should be on the top for any library that works with it.
 
 ## Browser support
 * Chrome

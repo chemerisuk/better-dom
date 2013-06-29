@@ -304,7 +304,7 @@
     
     
     <div class="description">
-        Checks if the callback returns true for all elements in the collection
+        (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
     </div>
     
 
@@ -482,7 +482,7 @@
     
     
     <div class="description">
-        Examines each element in a collection, returning an array of all elements the callback returns truthy for
+        (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
     </div>
     
 
@@ -652,7 +652,7 @@
         
             
 <dt>
-    <h4 class="name" id="foldl"><span class="type-signature"></span>foldl<span class="signature">(callback, memo)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="invoke"><span class="type-signature"></span>invoke<span class="signature">(name, <span class="optional">args</span>)</span><span class="type-signature"> &rarr; {<a href="DOMCollection.html">DOMCollection</a>}</span></h4>
     
     
 </dt>
@@ -660,7 +660,7 @@
     
     
     <div class="description">
-        Boils down a list of values into a single value (from start to end)
+        Calls the method named by name on each element in the collection
     </div>
     
 
@@ -682,6 +682,8 @@
 		<th>Type</th>
 		
 		
+		<th>Argument</th>
+		
 		
 		
 		
@@ -694,30 +696,38 @@
 	
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>name</code></td>
             
             
             <td class="type">
             
                 
-<span class="param-type">Function</span>
+<span class="param-type">String</span>
 
 
             
             </td>
             
             
+                <td class="attributes">
+                
+                    
+                
+                    
+                
+                </td>
             
             
             
-            <td class="description last">callback function</td>
+            
+            <td class="description last">name of the method</td>
         </tr>
 	
 	
 	
         <tr>
             
-                <td class="name"><code>memo</code></td>
+                <td class="name"><code>args</code></td>
             
             
             <td class="type">
@@ -730,10 +740,22 @@
             </td>
             
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
             
             
-            <td class="description last">initial value of the accumulator</td>
+            
+            <td class="description last">arguments for the method call</td>
         </tr>
 	
 	
@@ -764,7 +786,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Collection.js.html">Collection.js</a>, line 84
+        <a href="Collection.js.html">Collection.js</a>, line 106
     </li></ul></dd>
     
     
@@ -784,10 +806,6 @@
     <h5>Returns:</h5>
     
             
-<div class="param-desc">
-    the accumulated value
-</div>
-
 
 
 <dl>
@@ -796,165 +814,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="foldr"><span class="type-signature"></span>foldr<span class="signature">(callback, memo)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Boils down a list of values into a single value (from end to start)
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Function</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">callback function</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>memo</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            
-            
-            <td class="description last">initial value of the accumulator</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Collection.js.html">Collection.js</a>, line 95
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    the accumulated value
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
+<span class="param-type"><a href="DOMCollection.html">DOMCollection</a></span>
 
 
 	</dd>
@@ -976,7 +836,7 @@
     
     
     <div class="description">
-        Creates an array of values by running each element in the collection through the callback
+        (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
     </div>
     
 
@@ -1146,6 +1006,322 @@
         
             
 <dt>
+    <h4 class="name" id="reduce"><span class="type-signature"></span>reduce<span class="signature">(callback, memo)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback function</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>memo</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">initial value of the accumulator</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Collection.js.html">Collection.js</a>, line 84
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    the accumulated value
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="reduceRight"><span class="type-signature"></span>reduceRight<span class="signature">(callback, memo)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">callback function</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>memo</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">initial value of the accumulator</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Collection.js.html">Collection.js</a>, line 95
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    the accumulated value
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+        
+    
+    
+</dd>
+
+        
+            
+<dt>
     <h4 class="name" id="some"><span class="type-signature"></span>some<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
@@ -1154,7 +1330,7 @@
     
     
     <div class="description">
-        Checks if the callback returns true for any element in the collection
+        (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
     </div>
     
 
@@ -1343,7 +1519,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jun 24 2013 22:36:33 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jun 29 2013 12:56:07 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
