@@ -1,6 +1,6 @@
 {
     "name": "better-dom",
-    "version": "1.0.0-rc.4",
+    "version": "1.0.0",
     "main": [
         "better-dom.js",
         "better-dom.htc"
