@@ -35,12 +35,12 @@ module.exports = function(grunt) {
         },
         watch: {
             jasmine: {
-                files: ["build/*.js", "test/spec/*.js"],
+                files: ["test/spec/*.js"],
                 tasks: ["jasmine:coverage"]
             },
             build: {
                 files: ["src/*.js"],
-                tasks: ["requirejs"]
+                tasks: ["requirejs", "jasmine:coverage"]
             }
         },
         jshint: {
