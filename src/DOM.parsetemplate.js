@@ -22,13 +22,9 @@ define(["DOM"], function(DOM, _forEach) {
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
         reEmpty = /<\?>|<\/\?>/g,
-        reAttr = /([A-Za-z0-9_\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s\]]+)))?/g,
-        normalizeAttrs = function(term, name, value) {
-            value = value || "";
-
-            if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
-
-            return name + "=" + value;
+        reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+        normalizeAttrs = function(term, name, value, a, b, simple) {
+            return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
         };
 
         // helper class
