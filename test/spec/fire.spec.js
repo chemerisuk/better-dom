@@ -41,18 +41,20 @@ describe("fire", function() {
         expect(callback).toHaveBeenCalled();
     });
 
-    it("should accept optional data object into custom events", function() {
+    it("should accept optional data object", function() {
         var detail = {x: 1, y: 2};
 
-        callback.andCallFake(function(detail) {
-            expect(detail).toBe(detail);
+        callback.andCallFake(function(param) {
+            expect(param).toBe(detail);
         });
 
         input.on("my:click(detail)", callback);
-
         input.fire("my:click", detail);
-
         expect(callback).toHaveBeenCalled();
+
+        input.on("click(detail)", callback);
+        input.fire("click", detail);
+        expect(callback.callCount).toBe(2);
     });
 
     it("should return reference to 'this'", function() {

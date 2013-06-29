@@ -138,24 +138,19 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
             isCustomEvent = handler.custom || !this.supports("on" + type);
 
-            if (document.dispatchEvent) {
-                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+            if (document.createEvent) {
+                event = document.createEvent("HTMLEvents");
 
-                if (isCustomEvent) {
-                    event.initCustomEvent(handler._type || type, true, true, detail);
-                } else {
-                    event.initEvent(handler._type || type, true, true);
-                }
+                event.initEvent(handler._type || type, true, true);
+                event.detail = detail;
 
                 canContinue = node.dispatchEvent(event);
             } else {
                 event = document.createEventObject();
 
-                if (isCustomEvent) {
-                    // store original event type
-                    event._type = type;
-                    event.detail = detail;
-                }
+                // store original event type
+                event._type = isCustomEvent ? type : undefined;
+                event.detail = detail;
 
                 node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
 
