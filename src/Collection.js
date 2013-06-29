@@ -31,7 +31,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         },
 
         /**
-         * Checks if the callback returns true for any element in the collection
+         * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
@@ -42,7 +42,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         },
 
         /**
-         * Checks if the callback returns true for all elements in the collection
+         * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
@@ -53,7 +53,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         },
 
         /**
-         * Creates an array of values by running each element in the collection through the callback
+         * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
@@ -64,7 +64,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         },
 
         /**
-         * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+         * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
@@ -75,24 +75,24 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         },
 
         /**
-         * Boils down a list of values into a single value (from start to end)
+         * (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
          */
-        foldl: function(callback, memo) {
+        reduce: function(callback, memo) {
             return _foldl(this, callback, memo);
         },
 
         /**
-         * Boils down a list of values into a single value (from end to start)
+         * (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
          * @memberOf DOMCollection.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
          */
-        foldr: function(callback, memo) {
+        reduceRight: function(callback, memo) {
             return _foldr(this, callback, memo);
         },
 
@@ -126,9 +126,10 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
     _forOwn({
         all: "every",
         any: "some",
+        collect: "map",
         select: "filter",
-        reduce: "foldl",
-        reduceRight: "foldr"
+        foldl: "reduce",
+        foldr: "reduceRight"
     }, function(value, key) {
         this[key] = this[value];
     }, DOMCollection.prototype);

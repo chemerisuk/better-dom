@@ -102,7 +102,8 @@ describe("collection", function() {
             any: "some",
             select: "filter",
             reduce: "foldl",
-            reduceRight: "foldr"
+            reduceRight: "foldr",
+            collect: "map"
         }, function(value, key) {
             expect(inputs[key]).toBe(inputs[value]);
         });
