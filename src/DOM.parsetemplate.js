@@ -9,16 +9,17 @@ define(["DOM"], function(DOM, _forEach) {
             // operator type / priority object
             "(": 1,
             ")": 2,
-            ">": 3,
-            "+": 3,
-            "*": 4,
-            "}": 4,
-            "{": 5,
-            "]": 4,
-            "[": 5,
-            ".": 6,
-            "#": 7,
-            ":": 8
+            "^": 3,
+            ">": 4,
+            "+": 4,
+            "*": 5,
+            "}": 5,
+            "{": 6,
+            "]": 5,
+            "[": 6,
+            ".": 7,
+            "#": 8,
+            ":": 9
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
         reEmpty = /<\?>|<\/\?>/g,
@@ -168,11 +169,12 @@ define(["DOM"], function(DOM, _forEach) {
                         node.inject(term);
                         break;
 
+                    case "^":
                     case "+":
                     case ">":
                         term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
 
-                        node[str === "+" ? "push" : "inject"](term);
+                        node[str === ">" ? "inject" : "push"](term);
                         break;
 
                     case "*":

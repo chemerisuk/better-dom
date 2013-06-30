@@ -7,14 +7,24 @@ describe("DOM.parseTemplate", function() {
         });
     }
 
-    checkExpr("a", "<a></a>");
-    checkExpr("p+p", "<p></p><p></p>");
-    checkExpr("p.name+p+p", "<p class=\"name\"></p><p></p><p></p>");
-    
-    checkExpr("p>em", "<p><em></em></p>");
-    checkExpr("ul>li>a", "<ul><li><a></a></li></ul>");
-    checkExpr("p.hello>em.world>span", "<p class=\"hello\"><em class=\"world\"><span></span></em></p>");
-    checkExpr("a>b+i>span", "<a><b></b><i><span></span></i></a>");
+    describe("'+' operator", function() {
+        checkExpr("a", "<a></a>");
+        checkExpr("p+p", "<p></p><p></p>");
+        checkExpr("p.name+p+p", "<p class=\"name\"></p><p></p><p></p>");
+    });
+
+    describe("'>' operator", function() {
+        checkExpr("p>em", "<p><em></em></p>");
+        checkExpr("ul>li>a", "<ul><li><a></a></li></ul>");
+        checkExpr("p.hello>em.world>span", "<p class=\"hello\"><em class=\"world\"><span></span></em></p>");
+        checkExpr("a>b+i>span", "<a><b></b><i><span></span></i></a>");
+    });
+
+    describe("'^' operator", function() {
+        checkExpr("p>em^div", "<p><em></em></p><div></div>");
+        checkExpr("p>em>span^^div", "<p><em><span></span></em></p><div></div>");
+        checkExpr("p>em>span^^^^div", "<p><em><span></span></em></p><div></div>");
+    });
 
     describe("classes", function() {
         checkExpr("p.name", "<p class=\"name\"></p>");
