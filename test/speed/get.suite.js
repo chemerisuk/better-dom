@@ -10,23 +10,23 @@
 
     suite("getter", function () {
         benchmark("jquery#attr", function() {
-            jquerySandbox.attr("id");
+            jquerySandbox.attr("rel");
         });
 
         benchmark("jquery#prop", function() {
-            jquerySandbox.prop("id");
+            jquerySandbox.prop("rel");
         });
 
         benchmark("DOMElement.get", function() {
-            domSandbox.get("id");
+            domSandbox.get("rel");
         });
 
         benchmark("native#getAttribute", function() {
-            nativeSandbox.getAttribute("id");
+            nativeSandbox.getAttribute("rel");
         });
 
         benchmark("native#get", function() {
-            nativeSandbox.id;
+            nativeSandbox.rel;
         });
     }, {
         onComplete: function() {
@@ -34,4 +34,3 @@
         }
     });
 }());
-

@@ -9,16 +9,26 @@
 
     suite("addClass", function() {
         benchmark("jquery#addClass", function() {
-            jquerySandbox.addClass("t" + new Date().getTime());
+            jquerySandbox.addClass("a" + new Date().getTime());
+            nativeSandbox.className = "";
+        });
+
+        benchmark("jquery#addClasses", function() {
+            jquerySandbox.addClass("a" + new Date().getTime() + " b" + new Date().getTime() + " c" + new Date().getTime() + " d" + new Date().getTime());
             nativeSandbox.className = "";
         });
 
         benchmark("DOMElement#addClass", function() {
-            domSandbox.addClass("t" + new Date().getTime());
+            domSandbox.addClass("a" + new Date().getTime());
             nativeSandbox.className = "";
         });
 
-        benchmark("native", function() {
+        benchmark("DOMElement#addClasses", function() {
+            domSandbox.addClass("a" + new Date().getTime(), "b" + new Date().getTime(), "c" + new Date().getTime(), "d" + new Date().getTime());
+            nativeSandbox.className = "";
+        });
+
+        benchmark("native#addClass", function() {
             nativeSandbox.classList.add("t" + new Date().getTime());
             nativeSandbox.className = "";
         });

@@ -1,6 +1,6 @@
 /**
  * @file <%= pkg.name %>
- * @version <%= pkg.version %>
+ * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>
  * @overview <%= pkg.description %>
  * @copyright <%= pkg.author %> 2013
  * @license MIT
