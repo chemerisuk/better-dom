@@ -27,11 +27,12 @@ define(["DOM"], function(DOM, _forEach) {
         reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
         reIndexg = new RegExp(reIndex.source, "g"),
         normalizeAttrs = function(term, name, value, a, b, simple) {
+            // wrap attribute values with quotes if they don't exist
             return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
         },
         formatIndex = function(index) {
             return function(expr, fmt) {
-                return (fmt + index).slice(-fmt.length).split("$").join("0");
+                return (fmt + index).slice(-fmt.length).split("$").join(0);
             };
         };
 
@@ -57,7 +58,7 @@ define(["DOM"], function(DOM, _forEach) {
         HtmlBuilder.parse = function(term) {
             var result = "<" + term + ">";
 
-            if (!~emptyElements.indexOf(" " + term + " ")) {
+            if (emptyElements.indexOf(" " + term + " ") < 0) {
                 result += "</" + term + ">";
             }
 
@@ -69,7 +70,7 @@ define(["DOM"], function(DOM, _forEach) {
             inject: function(term, first) {
                 _forEach(this, function(el, i, builder) {
                     var index = first ? el.indexOf(">") : el.lastIndexOf("<");
-                    // update value
+                    // inject term into the html string
                     builder[i] = el.substr(0, index) + term + el.substr(index);
                 });
             },
@@ -102,7 +103,7 @@ define(["DOM"], function(DOM, _forEach) {
                 if (priority && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator
                     if (str === "{") term ? stack.unshift(">") : term = "?";
-                    // remove redundat ^ operators when more that one exists
+                    // remove redundat ^ operators when more than one exists
                     if (str === "^" && stack[0] === "^") stack.shift();
 
                     if (term) {
@@ -115,7 +116,7 @@ define(["DOM"], function(DOM, _forEach) {
                             output.push(stack.shift());
 
                             if (str === "^" && output[output.length - 1] === ">") {
-                                break; // for ^ operator stop shifting of the stack on >
+                                break; // for ^ operator stop shifting when the first > is found
                             }
                         }
                     }
