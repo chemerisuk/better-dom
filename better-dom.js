@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.0.0
+ * @version 1.0.0 2013-07-01T00:06:07
  * @overview Sandbox for DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -609,24 +609,19 @@
 
             isCustomEvent = handler.custom || !this.supports("on" + type);
 
-            if (document.dispatchEvent) {
-                event = document.createEvent(isCustomEvent ? "CustomEvent" : "Event");
+            if (document.createEvent) {
+                event = document.createEvent("HTMLEvents");
 
-                if (isCustomEvent) {
-                    event.initCustomEvent(handler._type || type, true, true, detail);
-                } else {
-                    event.initEvent(handler._type || type, true, true);
-                }
+                event.initEvent(handler._type || type, true, true);
+                event.detail = detail;
 
                 canContinue = node.dispatchEvent(event);
             } else {
                 event = document.createEventObject();
 
-                if (isCustomEvent) {
-                    // store original event type
-                    event._type = type;
-                    event.detail = detail;
-                }
+                // store original event type
+                event._type = isCustomEvent ? type : undefined;
+                event.detail = detail;
 
                 node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
 
@@ -1981,26 +1976,31 @@
             // operator type / priority object
             "(": 1,
             ")": 2,
-            ">": 3,
-            "+": 3,
-            "*": 4,
-            "}": 4,
-            "{": 5,
-            "]": 4,
-            "[": 5,
-            ".": 6,
-            "#": 7,
-            ":": 8
+            "^": 3,
+            ">": 4,
+            "+": 4,
+            "*": 5,
+            "}": 5,
+            "{": 6,
+            "]": 5,
+            "[": 6,
+            ".": 7,
+            "#": 8,
+            ":": 9
         },
         emptyElements = " area base br col hr img input link meta param command keygen source ",
         reEmpty = /<\?>|<\/\?>/g,
-        reAttr = /([A-Za-z0-9_\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s\]]+)))?/g,
-        normalizeAttrs = function(term, name, value) {
-            value = value || "";
-
-            if (value[0] !== "\"" && value[0] !== "'") value = "\"" + value + "\"";
-
-            return name + "=" + value;
+        reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+        reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
+        reIndexg = new RegExp(reIndex.source, "g"),
+        normalizeAttrs = function(term, name, value, a, b, simple) {
+            // wrap attribute values with quotes if they don't exist
+            return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
+        },
+        formatIndex = function(index) {
+            return function(expr, fmt) {
+                return (fmt + index).slice(-fmt.length).split("$").join(0);
+            };
         };
 
         // helper class
@@ -2008,11 +2008,15 @@
             if (n) {
                 node = node.toString();
 
-                for (var i = 0, v = []; i < n; ++i) {
-                    v[i] = node.split("$").join(i + 1);
-                }
+                var parsed = reIndex.exec(node) || [],
+                    step = parsed[2] ? -1 : 1,
+                    i = parsed[3] ? +parsed[3] : 1;
 
-                this.push.apply(this, v);
+                if (step < 0) i += n - 1;
+
+                for (; n--; i += step) {
+                    this.push(node.replace(reIndexg, formatIndex(i)));
+                }
             } else {
                 this.push(HtmlBuilder.parse(node));
             }
@@ -2021,7 +2025,7 @@
         HtmlBuilder.parse = function(term) {
             var result = "<" + term + ">";
 
-            if (!~emptyElements.indexOf(" " + term + " ")) {
+            if (emptyElements.indexOf(" " + term + " ") < 0) {
                 result += "</" + term + ">";
             }
 
@@ -2031,11 +2035,11 @@
         HtmlBuilder.prototype = {
             push: Array.prototype.push,
             inject: function(term, first) {
-                _forEach(this, function(el, i) {
+                _forEach(this, function(el, i, builder) {
                     var index = first ? el.indexOf(">") : el.lastIndexOf("<");
-                    // update value
-                    this[i] = el.substr(0, index) + term + el.substr(index);
-                }, this);
+                    // inject term into the html string
+                    builder[i] = el.substr(0, index) + term + el.substr(index);
+                });
             },
             toString: function() {
                 return Array.prototype.join.call(this, "");
@@ -2066,6 +2070,8 @@
                 if (priority && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator
                     if (str === "{") term ? stack.unshift(">") : term = "?";
+                    // remove redundat ^ operators when more than one exists
+                    if (str === "^" && stack[0] === "^") stack.shift();
 
                     if (term) {
                         output.push(term);
@@ -2075,6 +2081,10 @@
                     if (str !== "(") {
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
+
+                            if (str === "^" && output[output.length - 1] === ">") {
+                                break; // for ^ operator stop shifting when the first > is found
+                            }
                         }
                     }
 
@@ -2099,7 +2109,7 @@
 
             stack = [];
 
-            if (output.length === 1) output.push(HtmlBuilder.parse(output[0]));
+            if (output.length === 1) output.push(">");
 
             // transform RPN into html nodes
 
@@ -2133,15 +2143,14 @@
                         node.inject(term);
                         break;
 
-                    case "+":
-                    case ">":
-                        term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
-
-                        node[str === "+" ? "push" : "inject"](term);
-                        break;
-
                     case "*":
                         node = new HtmlBuilder(node, parseInt(term, 10));
+                        break;
+
+                    default:
+                        term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
+
+                        node[str === ">" ? "inject" : "push"](term);
                         break;
                     }
 
@@ -2159,11 +2168,8 @@
     // -------------
 
     (function() {
-        var styleSheet = (function() {
-                var styleEl = document.documentElement.firstChild.appendChild(_createElement("style"));
-
-                return styleEl.sheet || styleEl.styleSheet;
-            })();
+        var styleEl = document.documentElement.firstChild.appendChild(_createElement("style")),
+            styleSheet = styleEl.sheet || styleEl.styleSheet;
 
         /**
          * Import global css styles on page
