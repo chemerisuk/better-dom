@@ -23,8 +23,15 @@ define(["DOM"], function(DOM, _forEach) {
         emptyElements = " area base br col hr img input link meta param command keygen source ",
         reEmpty = /<\?>|<\/\?>/g,
         reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+        reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
+        reIndexg = new RegExp(reIndex.source, "g"),
         normalizeAttrs = function(term, name, value, a, b, simple) {
             return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
+        },
+        formatIndex = function(index) {
+            return function(expr, fmt) {
+                return (fmt + index).slice(-fmt.length).split("$").join("0");
+            };
         };
 
         // helper class
@@ -32,8 +39,14 @@ define(["DOM"], function(DOM, _forEach) {
             if (n) {
                 node = node.toString();
 
-                for (var i = 1; i <= n; ++i) {
-                    this.push(node.split("$").join(i));
+                var parsed = reIndex.exec(node) || [],
+                    step = parsed[2] ? -1 : 1,
+                    i = parsed[3] ? +parsed[3] : 1;
+
+                if (step < 0) i += n - 1;
+
+                for (; n--; i += step) {
+                    this.push(node.replace(reIndexg, formatIndex(i)));
                 }
             } else {
                 this.push(HtmlBuilder.parse(node));
