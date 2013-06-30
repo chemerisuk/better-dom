@@ -9,7 +9,7 @@ define(["DOM"], function(DOM, _forEach) {
             // operator type / priority object
             "(": 1,
             ")": 2,
-            //"^": 3,
+            "^": 3,
             ">": 4,
             "+": 4,
             "*": 5,
@@ -102,6 +102,8 @@ define(["DOM"], function(DOM, _forEach) {
                 if (priority && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator
                     if (str === "{") term ? stack.unshift(">") : term = "?";
+                    // remove redundat ^ operators when more that one exists
+                    if (str === "^" && stack[0] === "^") stack.shift();
 
                     if (term) {
                         output.push(term);
@@ -111,6 +113,10 @@ define(["DOM"], function(DOM, _forEach) {
                     if (str !== "(") {
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
+
+                            if (str === "^" && output[output.length - 1] === ">") {
+                                break; // for ^ operator stop shifting of the stack on >
+                            }
                         }
                     }
 

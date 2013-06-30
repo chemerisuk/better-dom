@@ -21,10 +21,11 @@ describe("DOM.parseTemplate", function() {
     });
 
     describe("'^' operator", function() {
-        // checkExpr("p>em^div", "<p><em></em></p><div></div>");
-        // checkExpr("p>em>span^b", "<p><em><span></span></em><b></b></p>");
-        // checkExpr("p>em>span^^div", "<p><em><span></span></em></p><div></div>");
-        // checkExpr("p>em>span^^^^div", "<p><em><span></span></em></p><div></div>");
+        checkExpr("p>em^div", "<p><em></em></p><div></div>");
+        checkExpr("p>em>span^b", "<p><em><span></span></em><b></b></p>");
+        checkExpr("p>em>span+i^b", "<p><em><span></span><i></i></em><b></b></p>");
+        checkExpr("p>em>span^^div", "<p><em><span></span></em></p><div></div>");
+        checkExpr("p>em>span^^^^div", "<p><em><span></span></em></p><div></div>");
     });
 
     describe("classes", function() {
@@ -97,11 +98,5 @@ describe("DOM.parseTemplate", function() {
         checkExpr("span>{Hello world}", "<span>Hello world</span>");
         checkExpr("span>{Hello}+{ world}", "<span>Hello world</span>");
         checkExpr("span>{Click }+(a[href=/url/]>{here})+{ for more info}", "<span>Click <a href=\"/url/\">here</a> for more info</span>");
-    });
-
-    describe("implied tag names", function() {
-        // checkExpr("#content", "<div id=\"content\"></div>");
-        // checkExpr(".content", "<div class=\"content\"></div>");
-        // checkExpr("ul>.item", "<ul><li class=\"item\"></li></ul>");
     });
 });
