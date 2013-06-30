@@ -9,7 +9,7 @@ define(["DOM"], function(DOM, _forEach) {
             // operator type / priority object
             "(": 1,
             ")": 2,
-            "^": 3,
+            //"^": 3,
             ">": 4,
             "+": 4,
             "*": 5,
@@ -169,16 +169,14 @@ define(["DOM"], function(DOM, _forEach) {
                         node.inject(term);
                         break;
 
-                    case "^":
-                    case "+":
-                    case ">":
+                    case "*":
+                        node = new HtmlBuilder(node, parseInt(term, 10));
+                        break;
+
+                    default:
                         term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
 
                         node[str === ">" ? "inject" : "push"](term);
-                        break;
-
-                    case "*":
-                        node = new HtmlBuilder(node, parseInt(term, 10));
                         break;
                     }
 

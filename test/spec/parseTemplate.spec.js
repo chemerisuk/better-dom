@@ -21,9 +21,10 @@ describe("DOM.parseTemplate", function() {
     });
 
     describe("'^' operator", function() {
-        checkExpr("p>em^div", "<p><em></em></p><div></div>");
-        checkExpr("p>em>span^^div", "<p><em><span></span></em></p><div></div>");
-        checkExpr("p>em>span^^^^div", "<p><em><span></span></em></p><div></div>");
+        // checkExpr("p>em^div", "<p><em></em></p><div></div>");
+        // checkExpr("p>em>span^b", "<p><em><span></span></em><b></b></p>");
+        // checkExpr("p>em>span^^div", "<p><em><span></span></em></p><div></div>");
+        // checkExpr("p>em>span^^^^div", "<p><em><span></span></em></p><div></div>");
     });
 
     describe("classes", function() {
