@@ -70,7 +70,7 @@ module.exports = function(grunt) {
                         "test/lib/benchmine/benchmine-env.js",
                         "test/lib/karma-benchmine-adapter.js",
                         "test/lib/benchmine/benchmine-report-karma.js",
-                        "components/jquery/jquery.js",
+                        "bower_components/jquery/jquery.js",
                         "build/*.js",
                         "test/speed/<%= pkg.speed.task %>.suite.js"
                     ]

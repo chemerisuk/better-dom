@@ -9,10 +9,10 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the library into the `components` directory at the root of your project. Then just include script below on your web page:
+This will clone the latest version of the library into the `bower_components` directory at the root of your project. Then just include script below on your web page:
 
 ```html
-<script src="components/build/better-dom.js" data-htc="components/extra/better-dom.htc"></script>
+<script src="bower_components/build/better-dom.js" data-htc="bower_components/extra/better-dom.htc"></script>
 ```
 
 ## Unobtrusive
@@ -23,7 +23,9 @@ So as a developer you don't need to worry about when and how the extension will 
 #### placeholder polyfill example
 This is a polyfill of the `[placeholder]` attribute for old browsers
 ```js
-DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
+if (DOM.supports("placeholder", "input")) return;
+
+DOM.extend("[placeholder]", [
     "input[style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent']"
 ], {
     constructor: function(holder) {
@@ -31,9 +33,7 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
 
         this
             .on("focus", holder, "hide")
-            .on("blur", function() {
-                if (!this.get()) holder.show();
-            });
+            .on("blur", this, "_showPlaceholder", [holder]);
 
         holder
             .set(this.get("placeholder"))
@@ -43,6 +43,9 @@ DOM.supports("placeholder", "input") || DOM.extend("[placeholder]", [
         if (this.get() || this.isFocused()) holder.hide();
 
         this.before(holder);
+    },
+    _showPlaceholder: function(holder) {
+        if (!this.get()) holder.show();
     }
 });
 ```
