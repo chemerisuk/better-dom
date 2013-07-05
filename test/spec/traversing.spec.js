@@ -69,7 +69,7 @@ describe("traversing", function() {
 
         it("should accept optional filter", function() {
             expect(link.child(0)._node).toHaveTag("strong");
-            expect(link.child(0, "a")._node).toBeNull();
+            expect(link.child(0, "a")._node).toBeFalsy();
         });
 
         it("should throw error if the first arg is not a number", function() {

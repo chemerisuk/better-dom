@@ -12,11 +12,13 @@ define(["Helpers"], function() {
      * @private
      */
     function DOMNode(node) {
-        this._node = node;
-        this._data = {};
-        this._listeners = [];
+        if (node) {
+            this._node = node;
+            this._data = {};
+            this._listeners = [];
 
-        if (node) node.__dom__ = this;
+            node.__dom__ = this;
+        }
     }
 
     DOMNode.prototype = {

@@ -1,4 +1,4 @@
-define(["DOM", "NullElement"], function(DOM, NullElement, _extend, _makeError) {
+define(["DOM", "Collection"], function(DOM, DOMCollection, _extend, _makeError) {
     "use strict";
 
     (function() {
@@ -16,12 +16,12 @@ define(["DOM", "NullElement"], function(DOM, NullElement, _extend, _makeError) {
             }
 
             if (!mixins) {
-                var el = new NullElement();
+                var el = new DOMCollection();
 
                 if (selector) {
                     _extend(el, extensions[selector]);
 
-                    el.constructor = NullElement;
+                    el.constructor = DOMCollection;
                 }
 
                 return el;

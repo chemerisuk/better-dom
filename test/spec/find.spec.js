@@ -14,7 +14,7 @@ describe("find", function() {
 
         setFixtures("<a id='test'>test</a><span id='test2'></span>");
 
-        expect(DOM.find("#test").find("#test2")._node).toBeNull();
+        expect(DOM.find("#test").find("#test2")._node).toBeFalsy();
     });
 
     it("should find an element by class", function() {

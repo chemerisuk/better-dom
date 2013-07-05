@@ -26,15 +26,13 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _forEach, _makeErr
          * // returns true
          */
         DOMNode.prototype.contains = function(element, /*INTERNAL*/reverse) {
-            var node = this._node, result = true;
+            var node = this._node, result;
 
             if (element.nodeType === 1) {
                 result = containsElement(reverse ? element : node, reverse ? node : element);
             } else if (element instanceof DOMElement) {
-                result = element.contains(node, true);
-            } else if (element instanceof DOMCollection) {
-                _forEach(element, function(element) {
-                    result = result && element.contains(node, true);
+                result = element.every(function(element) {
+                    return element.contains(node, true);
                 });
             } else {
                 throw _makeError("contains", this);

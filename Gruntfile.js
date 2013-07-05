@@ -201,7 +201,7 @@ module.exports = function(grunt) {
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
                     "Element.manipulation", "Element.is", "Element.offset", "Element.get",
                     "Element.set", "Element.styles", "Element.traversing",
-                    "Element.bind", "Element.visibility", "Collection", "NullElement", "DOM.watch",
+                    "Element.bind", "Element.visibility", "Collection", "DOM.watch",
                     "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.ready",
                     "DOM.mock", "DOM.importstrings"
                 ],

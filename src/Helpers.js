@@ -1,4 +1,4 @@
-define([], function(DOMNode, DOMElement, DOMCollection) {
+define([], function(DOMElement) {
     "use strict";
 
     // HELPERS
@@ -20,13 +20,11 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
 
             if (el instanceof DOMElement) {
                 type = "DOMElement";
-            } else if (el instanceof DOMCollection) {
-                type = "DOMCollection";
             } else {
                 type = "DOM";
             }
 
-            return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>" + type + ".html#" + method + " to verify the function call";
+            return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the function call";
         },
         makeLoopMethod = (function(){
             var rcallback = /cb\.call\(([^)]+)\)/g,
@@ -99,7 +97,8 @@ define([], function(DOMNode, DOMElement, DOMCollection) {
         // ----------------
         
         _forEach = makeLoopMethod({
-            BODY:   "cb.call(that, a[i], i, a)"
+            BODY:   "cb.call(that, a[i], i, a)",
+            AFTER:  "return a"
         }),
         _map = makeLoopMethod({
             BEFORE: "var out = []",

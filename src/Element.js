@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, NullElement) {
+define(["Node"], function(DOMNode, DOMCollection) {
     "use strict";
     
     // DOM ELEMENT
@@ -14,10 +14,14 @@ define(["Node"], function(DOMNode, NullElement) {
      */
     function DOMElement(element) {
         if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new NullElement();
+            return element ? element.__dom__ || new DOMElement(element) : new DOMCollection();
         }
 
         DOMNode.call(this, element);
+
+        if (element) {
+            Array.prototype.push.call(this, this);
+        }
     }
 
     DOMElement.prototype = new DOMNode();

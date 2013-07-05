@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr) {
+define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr) {
     "use strict";
 
     // DOM COLLECTION
@@ -14,25 +14,42 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         Array.prototype.push.apply(this, _map(elements, DOMElement));
     }
 
-    DOMCollection.prototype = {
-        constructor: DOMCollection,
-        
+    DOMCollection.prototype = new DOMElement();
+    DOMCollection.prototype.constructor = DOMCollection;
+
+    _forIn(DOMCollection.prototype, function(value, key, proto) {
+        if (typeof value !== "function") return;
+
+        if (~value.toString().indexOf("return this;")) {
+            proto[key] = function() {
+                var args = arguments;
+
+                _forEach(this, function(el) {
+                    value.apply(el, args);
+                });
+
+                return this;
+            };
+        } else {
+            proto[key] = function() {};
+        }
+    });
+
+    _extend(DOMElement.prototype, {
         /**
          * Executes callback on each element in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMCollection}
+         * @return {DOMElement}
          */
         each: function(callback, thisArg) {
-            _forEach(this, callback, thisArg);
-
-            return this;
+            return _forEach(this, callback, thisArg);
         },
 
         /**
          * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Boolean} true, if any element in the collection return true
@@ -43,7 +60,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
 
         /**
          * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Boolean} true, if all elements in the collection returns true
@@ -54,7 +71,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
 
         /**
          * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Array} new array of the results of each callback execution
@@ -65,10 +82,10 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
 
         /**
          * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMCollection} new DOMCollection of elements that passed the callback check
+         * @return {DOMElement} new DOMCollection of elements that passed the callback check
          */
         filter: function(callback, thisArg) {
             return new DOMCollection(_filter(this, callback, thisArg));
@@ -76,7 +93,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
 
         /**
          * (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -87,7 +104,7 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
 
         /**
          * (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -98,10 +115,10 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
 
         /**
          * Calls the method named by name on each element in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf DOMElement.prototype
          * @param  {String}    name   name of the method
          * @param  {...Object} [args] arguments for the method call
-         * @return {DOMCollection}
+         * @return {DOMElement}
          */
         invoke: function(name) {
             var args = _slice(arguments, 1);
@@ -110,17 +127,15 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
                 throw _makeError("invoke", this);
             }
 
-            _forEach(this, function(el) {
+            return _forEach(this, function(el) {
                 if (args.length) {
                     el[name].apply(el, args);
                 } else {
                     el[name]();
                 }
             });
-
-            return this;
         }
-    };
+    });
 
     // aliases
     _forOwn({
@@ -132,5 +147,5 @@ define(["Element"], function(DOMElement, _map, _forEach, _slice, _forOwn, _makeE
         foldr: "reduceRight"
     }, function(value, key) {
         this[key] = this[value];
-    }, DOMCollection.prototype);
+    }, DOMElement.prototype);
 });
