@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr) {
+define(["Element"], function($Element, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr) {
     "use strict";
 
     // DOM COLLECTION
@@ -6,42 +6,40 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
     /**
      * Read-only array-like collection of elements
-     * @name DOMCollection
+     * @name $CompositeElement
      * @constructor
      * @private
      */
-    function DOMCollection(elements) {
-        Array.prototype.push.apply(this, _map(elements, DOMElement));
+    function $CompositeElement(elements) {
+        Array.prototype.push.apply(this, _map(elements, $Element));
     }
 
-    DOMCollection.prototype = new DOMElement();
-    DOMCollection.prototype.constructor = DOMCollection;
+    $CompositeElement.prototype = new $Element();
+    $CompositeElement.prototype.constructor = $CompositeElement;
 
-    _forIn(DOMCollection.prototype, function(value, key, proto) {
+    _forIn($CompositeElement.prototype, function(value, key, proto) {
         if (typeof value !== "function") return;
 
         if (~value.toString().indexOf("return this;")) {
             proto[key] = function() {
                 var args = arguments;
 
-                _forEach(this, function(el) {
+                return _forEach(this, function(el) {
                     value.apply(el, args);
                 });
-
-                return this;
             };
         } else {
             proto[key] = function() {};
         }
     });
 
-    _extend(DOMElement.prototype, {
+    _extend($Element.prototype, {
         /**
          * Executes callback on each element in the collection
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMElement}
+         * @return {$Element}
          */
         each: function(callback, thisArg) {
             return _forEach(this, callback, thisArg);
@@ -49,7 +47,7 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
         /**
          * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Boolean} true, if any element in the collection return true
@@ -60,7 +58,7 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
         /**
          * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Boolean} true, if all elements in the collection returns true
@@ -71,7 +69,7 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
         /**
          * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Array} new array of the results of each callback execution
@@ -82,18 +80,18 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
         /**
          * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMElement} new DOMCollection of elements that passed the callback check
+         * @return {$Element} new $CompositeElement of elements that passed the callback check
          */
         filter: function(callback, thisArg) {
-            return new DOMCollection(_filter(this, callback, thisArg));
+            return new $CompositeElement(_filter(this, callback, thisArg));
         },
 
         /**
          * (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -104,7 +102,7 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
         /**
          * (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -115,10 +113,10 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
 
         /**
          * Calls the method named by name on each element in the collection
-         * @memberOf DOMElement.prototype
+         * @memberOf $Element.prototype
          * @param  {String}    name   name of the method
          * @param  {...Object} [args] arguments for the method call
-         * @return {DOMElement}
+         * @return {$Element}
          */
         invoke: function(name) {
             var args = _slice(arguments, 1);
@@ -147,5 +145,5 @@ define(["Element"], function(DOMElement, _extend, _forIn, _map, _forEach, _slice
         foldr: "reduceRight"
     }, function(value, key) {
         this[key] = this[value];
-    }, DOMElement.prototype);
+    }, $Element.prototype);
 });

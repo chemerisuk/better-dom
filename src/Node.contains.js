@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMCollection, _forEach, _makeError) {
+define(["Node"], function($Node, $Element, $CompositeElement, _forEach, _makeError) {
     "use strict";
 
     // CONTAINS
@@ -19,18 +19,18 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _forEach, _makeErr
         
         /**
          * Check if element is inside of context
-         * @param  {DOMElement} element element to check
+         * @param  {$Element} element element to check
          * @return {Boolean} true if success
          * @example
          * DOM.find("html").contains(DOM.find("body"));
          * // returns true
          */
-        DOMNode.prototype.contains = function(element, /*INTERNAL*/reverse) {
+        $Node.prototype.contains = function(element, /*INTERNAL*/reverse) {
             var node = this._node, result;
 
             if (element.nodeType === 1) {
                 result = containsElement(reverse ? element : node, reverse ? node : element);
-            } else if (element instanceof DOMElement) {
+            } else if (element instanceof $Element) {
                 result = element.every(function(element) {
                     return element.contains(node, true);
                 });

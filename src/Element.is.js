@@ -1,12 +1,12 @@
-define(["Element"], function(DOMElement, SelectorMatcher, _makeError) {
+define(["Element"], function($Element, SelectorMatcher, _makeError) {
     "use strict";
 
     /**
      * Check if the element matches selector
      * @param  {String} selector css selector
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.is = function(selector) {
+    $Element.prototype.is = function(selector) {
         if (!selector || typeof selector !== "string") {
             throw _makeError("is", this);
         }

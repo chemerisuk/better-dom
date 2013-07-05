@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _parseFragment, _forEach, _forOwn, _makeError) {
+define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeError) {
     "use strict";
 
     // SETTER
@@ -12,7 +12,7 @@ define(["Element"], function(DOMElement, _parseFragment, _forEach, _forOwn, _mak
          * Set property/attribute value
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
-         * @return {DOMElement}
+         * @return {$Element}
          * @example
          * // sets property href (and that action updates attribute value too)
          * link.set("href", "/some/path");
@@ -21,7 +21,7 @@ define(["Element"], function(DOMElement, _parseFragment, _forEach, _forOwn, _mak
          * // sets innerHTML to "some text"
          * link.set("some text");
          */
-        DOMElement.prototype.set = function(name, value) {
+        $Element.prototype.set = function(name, value) {
             var el = this._node,
                 nameType = typeof name;
 

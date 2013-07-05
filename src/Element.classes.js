@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
+define(["Element"], function($Element, _every, _forEach, _makeError) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -43,7 +43,7 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
          * @return {Boolean}   true if the element contains all classes
          * @function
          */
-        DOMElement.prototype.hasClass = makeClassesMethod("contains", function(className) {
+        $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
             return !!~((" " + this._node.className + " ")
                         .replace(rclass, " ")).indexOf(" " + className + " ");
         });
@@ -51,10 +51,10 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
         /**
          * Add class(es) to element
          * @param  {...String} classNames class name(s)
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.addClass = makeClassesMethod("add", function(className) {
+        $Element.prototype.addClass = makeClassesMethod("add", function(className) {
             if (!this.hasClass(className)) {
                 this._node.className += " " + className;
             }
@@ -63,10 +63,10 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
         /**
          * Remove class(es) from element
          * @param  {...String} classNames class name(s)
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
+        $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
             className = (" " + this._node.className + " ")
                     .replace(rclass, " ").replace(" " + className + " ", " ");
 
@@ -76,10 +76,10 @@ define(["Element"], function(DOMElement, _every, _forEach, _makeError) {
         /**
          * Toggle class(es) on element
          * @param  {...String}  classNames class name(s)
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
+        $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
             var oldClassName = this._node.className;
 
             this.addClass(className);

@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter, _makeError) {
+define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filter, _makeError) {
     "use strict";
 
     // TRAVERSING
@@ -19,7 +19,7 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
                     }
                 }
 
-                return multiple ? new DOMCollection(nodes) : DOMElement(it);
+                return multiple ? new $CompositeElement(nodes) : $Element(it);
             };
         }
 
@@ -43,7 +43,7 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
                 }
 
                 if (multiple) {
-                    return new DOMCollection(!matcher ? children :
+                    return new $CompositeElement(!matcher ? children :
                         _filter(children, matcher.test, matcher));
                 }
 
@@ -51,55 +51,55 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
 
                 el = children[index];
 
-                return DOMElement(!matcher || matcher.test(el) ? el : null);
+                return $Element(!matcher || matcher.test(el) ? el : null);
             };
         }
 
         /**
          * Find next sibling element filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
+         * @return {$Element} matched element
          * @function
          */
-        DOMElement.prototype.next = makeTraversingMethod("nextSibling");
+        $Element.prototype.next = makeTraversingMethod("nextSibling");
 
         /**
          * Find previous sibling element filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
+         * @return {$Element} matched element
          * @function
          */
-        DOMElement.prototype.prev = makeTraversingMethod("previousSibling");
+        $Element.prototype.prev = makeTraversingMethod("previousSibling");
 
         /**
          * Find all next sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMCollection} matched elements
+         * @return {$CompositeElement} matched elements
          * @function
          */
-        DOMElement.prototype.nextAll = makeTraversingMethod("nextSibling", true);
+        $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 
         /**
          * Find all previous sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMCollection} matched elements
+         * @return {$CompositeElement} matched elements
          * @function
          */
-        DOMElement.prototype.prevAll = makeTraversingMethod("previousSibling", true);
+        $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
         /**
          * Find parent element filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
+         * @return {$Element} matched element
          * @function
          */
-        DOMElement.prototype.parent = makeTraversingMethod("parentNode");
+        $Element.prototype.parent = makeTraversingMethod("parentNode");
 
         /**
          * Return child element by index filtered by optional selector
          * @param  {Number} index child index
          * @param  {String} [selector] css selector
-         * @return {DOMElement} matched child
+         * @return {$Element} matched child
          * @function
          * @example
          * var body = DOM.find("body");
@@ -107,14 +107,14 @@ define(["Element"], function(DOMElement, DOMCollection, SelectorMatcher, _filter
          * body.child(0); // => first child
          * body.child(-1); // => last child
          */
-        DOMElement.prototype.child = makeChildTraversingMethod(false);
+        $Element.prototype.child = makeChildTraversingMethod(false);
 
         /**
          * Fetch children elements filtered by optional selector
          * @param  {String} [selector] css selector
-         * @return {DOMCollection} matched elements
+         * @return {$CompositeElement} matched elements
          * @function
          */
-        DOMElement.prototype.children = makeChildTraversingMethod(true);
+        $Element.prototype.children = makeChildTraversingMethod(true);
     })();
 });

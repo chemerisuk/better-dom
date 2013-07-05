@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, _forOwn, _makeError) {
+define(["Node"], function($Node, _forOwn, _makeError) {
     "use strict";
 
     // INTERNAL DATA
@@ -18,7 +18,7 @@ define(["Node"], function(DOMNode, _forOwn, _makeError) {
          * domLink.getData("test");
          * // returns string "message"
          */
-        DOMNode.prototype.getData = function(key) {
+        $Node.prototype.getData = function(key) {
             if (typeof key !== "string") {
                 throw _makeError("getData", this);
             }
@@ -37,14 +37,14 @@ define(["Node"], function(DOMNode, _forOwn, _makeError) {
          * Store data entry value(s)
          * @param {String|Object} key data entry key | key/value pairs
          * @param {Object} value data to store
-         * @return {DOMNode}
+         * @return {$Node}
          * @example
          * var domLink = DOM.find(".link");
          *
          * domLink.setData("test", "message");
          * domLink.setData({a: "b", c: "d"});
          */
-        DOMNode.prototype.setData = function(key, value) {
+        $Node.prototype.setData = function(key, value) {
             var keyType = typeof key;
 
             if (keyType === "string") {

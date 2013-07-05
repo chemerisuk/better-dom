@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeError) {
+define(["Node"], function($Node, $Element, $CompositeElement, _uniqueId, _makeError) {
     "use strict";
 
     // SEARCH BY QUERY
@@ -22,16 +22,16 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeEr
         /**
          * Finds element by selector
          * @param  {String} selector css selector
-         * @return {DOMElement} element or null if nothing was found
+         * @return {$Element} element or null if nothing was found
          * @example
          * var domBody = DOM.find("body");
          *
          * domBody.find("#element");
-         * // returns DOMElement with id="element"
+         * // returns $Element with id="element"
          * domBody.find(".link");
          * // returns first element with class="link"
          */
-        DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
+        $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
             if (typeof selector !== "string") {
                 throw _makeError("find", this);
             }
@@ -89,15 +89,15 @@ define(["Node"], function(DOMNode, DOMElement, DOMCollection, _uniqueId, _makeEr
                 }
             }
 
-            return multiple ? new DOMCollection(elements) : DOMElement(elements);
+            return multiple ? new $CompositeElement(elements) : $Element(elements);
         };
 
         /**
          * Finds all elements by selector
          * @param  {String} selector css selector
-         * @return {DOMCollection} elements collection
+         * @return {$CompositeElement} elements collection
          */
-        DOMNode.prototype.findAll = function(selector) {
+        $Node.prototype.findAll = function(selector) {
             return this.find(selector, true);
         };
     })();

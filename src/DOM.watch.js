@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn, SelectorMatcher) {
+define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn, SelectorMatcher) {
     "use strict";
 
     // WATCH CALLBACK
@@ -31,7 +31,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                         // MUST cancelBubbling first otherwise may have extra calls in firefox
                         if (entry.once) el.addEventListener(name, entry.once, false);
 
-                        entry.callback(DOMElement(el));
+                        entry.callback($Element(el));
                     }
                 }, false);
             });
@@ -76,7 +76,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _slice, _foldl, _some, _def
                         if (entry.matcher.test(el)) {
                             if (entry.once) el.attachEvent("on" + e.type, entry.once);
 
-                            _defer(function() { entry.callback(DOMElement(el)); });
+                            _defer(function() { entry.callback($Element(el)); });
                         }
                     });
                 }

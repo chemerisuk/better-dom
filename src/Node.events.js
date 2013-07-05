@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHandler, _isArray, _forEach, _forOwn, _makeError) {
+define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -27,14 +27,14 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
-         * @return {DOMNode}
+         * @return {$Node}
          * @example
          * // NOTICE: handler don't have e as the first argument
          * input.on("click", function() {...});
          * // NOTICE: event arguments in event name
          * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
          */
-        DOMNode.prototype.on = function(type, context, callback, args) {
+        $Node.prototype.on = function(type, context, callback, args) {
             var eventType = typeof type,
                 hook, handler, selector, expr;
 
@@ -80,9 +80,9 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * @param  {String}          type event type
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
-         * @return {DOMNode}
+         * @return {$Node}
          */
-        DOMNode.prototype.off = function(type, context, callback) {
+        $Node.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
                 throw _makeError("off", this);
             }
@@ -115,7 +115,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * Triggers an event of specific type
          * @param  {String} eventType type of event
          * @param  {Object} [detail] data to attach
-         * @return {DOMNode}
+         * @return {$Node}
          * @example
          * var domLink = DOM.find(".link");
          *
@@ -124,7 +124,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
          * domLink.fire("custom:event", {x: 1, y: 2});
          * // trigger a custom:event on the element
          */
-        DOMNode.prototype.fire = function(type, detail) {
+        $Node.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {
                 throw _makeError("fire", this);
             }
@@ -172,7 +172,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
         };
 
         // firefox doesn't support focusin/focusout events
-        if (DOMNode.prototype.supports("onfocusin", "input")) {
+        if ($Node.prototype.supports("onfocusin", "input")) {
             _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
@@ -182,7 +182,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
             };
         }
 
-        if (DOMNode.prototype.supports("validity", "input")) {
+        if ($Node.prototype.supports("validity", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };
@@ -197,7 +197,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
                         if (e.propertyName === "value") {
                             // trigger special event that bubbles
-                            DOMElement(e.srcElement).fire("input");
+                            $Element(e.srcElement).fire("input");
                         }
                     },
                     capturedEl;
@@ -224,7 +224,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
                     form = target.form;
 
                 if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
-                    DOMElement(form).fire("submit");
+                    $Element(form).fire("submit");
 
                     return false;
                 }
@@ -236,7 +236,7 @@ define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher,
 
                         form.detachEvent("onsubmit", handleSubmit);
 
-                        DOMElement(form).fire("submit");
+                        $Element(form).fire("submit");
 
                         return false;
                     };

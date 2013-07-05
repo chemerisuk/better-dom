@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _makeError) {
+define(["DOM", "Element"], function(DOM, $Element, _createElement, _forEach, _makeError) {
     "use strict";
 
     // IMPORT STYLES
@@ -18,7 +18,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _forEach, _
             if (typeof styles === "object") {
                 var obj = {_node: {style: {cssText: ""}}};
 
-                DOMElement.prototype.setStyle.call(obj, styles);
+                $Element.prototype.setStyle.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
             }

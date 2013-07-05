@@ -1,11 +1,11 @@
-define(["Element"], function(DOMElement) {
+define(["Element"], function($Element) {
     "use strict";
 
     /**
      * Show element
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.show = function() {
+    $Element.prototype.show = function() {
         this.set("hidden", false);
 
         return this;
@@ -13,9 +13,9 @@ define(["Element"], function(DOMElement) {
 
     /**
      * Hide element
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.hide = function() {
+    $Element.prototype.hide = function() {
         this.set("hidden", true);
 
         return this;
@@ -23,9 +23,9 @@ define(["Element"], function(DOMElement) {
 
     /**
      * Toggle element visibility
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.toggle = function() {
+    $Element.prototype.toggle = function() {
         this.set("hidden", !this.get("hidden"));
 
         return this;
@@ -35,7 +35,7 @@ define(["Element"], function(DOMElement) {
      * Check is element is hidden
      * @return {Boolean} true if element is hidden
      */
-    DOMElement.prototype.isHidden = function() {
+    $Element.prototype.isHidden = function() {
         return !!this.get("hidden");
     };
 
@@ -43,7 +43,7 @@ define(["Element"], function(DOMElement) {
      * Check if element has focus
      * @return {Boolean} true if current element is focused
      */
-    DOMElement.prototype.isFocused = function() {
+    $Element.prototype.isFocused = function() {
         return this._node === document.activeElement;
     };
 });

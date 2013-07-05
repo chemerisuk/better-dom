@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle, _makeError) {
+define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle, _makeError) {
     "use strict";
 
     // STYLES MANIPULATION
@@ -79,7 +79,7 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
          * @param  {String} name property name
          * @return {String} property value
          */
-        DOMElement.prototype.getStyle = function(name) {
+        $Element.prototype.getStyle = function(name) {
             var style = this._node.style,
                 hook, result;
 
@@ -104,9 +104,9 @@ define(["Element"], function(DOMElement, _slice, _foldl, _map, _some, _keys, _fo
          * Set css style for element
          * @param {String} name  property name
          * @param {String} value property value
-         * @return {DOMElement}
+         * @return {$Element}
          */
-        DOMElement.prototype.setStyle = function(name, value) {
+        $Element.prototype.setStyle = function(name, value) {
             var nameType = typeof name,
                 hook, cssText;
 

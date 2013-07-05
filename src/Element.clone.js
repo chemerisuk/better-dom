@@ -1,11 +1,11 @@
-define(["Element"], function(DOMElement, _createElement) {
+define(["Element"], function($Element, _createElement) {
     "use strict";
 
     /**
      * Clone element
-     * @return {DOMElement} clone of current element
+     * @return {$Element} clone of current element
      */
-    DOMElement.prototype.clone = function() {
+    $Element.prototype.clone = function() {
         var el;
 
         if (document.addEventListener) {
@@ -16,6 +16,6 @@ define(["Element"], function(DOMElement, _createElement) {
             el = el.firstChild;
         }
         
-        return new DOMElement(el);
+        return new $Element(el);
     };
 });

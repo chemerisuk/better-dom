@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, _parseFragment, _makeError) {
+define(["Element"], function($Element, _parseFragment, _makeError) {
     "use strict";
 
     // MANIPULATION
@@ -21,7 +21,7 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
                     relatedNode = value;
-                } else if (value instanceof DOMElement) {
+                } else if (value instanceof $Element) {
                     value[methodName](el, true);
 
                     return this;
@@ -41,60 +41,60 @@ define(["Element"], function(DOMElement, _parseFragment, _makeError) {
 
         /**
          * Insert html string or native element after the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
+        $Element.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
             node.parentNode.insertBefore(relatedNode, node.nextSibling);
         });
 
         /**
          * Insert html string or native element before the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
+        $Element.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
             node.parentNode.insertBefore(relatedNode, node);
         });
 
         /**
          * Prepend html string or native element to the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
+        $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
             node.insertBefore(relatedNode, node.firstChild);
         });
 
         /**
          * Append html string or native element to the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
+        $Element.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
             node.appendChild(relatedNode);
         });
 
         /**
          * Replace current element with html string or native element
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
+        $Element.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
             node.parentNode.replaceChild(relatedNode, node);
         });
 
         /**
          * Remove current element from DOM
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
+        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
             parentNode.removeChild(node);
         });
     })();

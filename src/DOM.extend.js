@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _map, _forEach, _extend, _makeError) {
+define(["DOM", "Element"], function(DOM, $Element, _map, _forEach, _extend, _makeError) {
     "use strict";
 
     /**
@@ -44,7 +44,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _map, _forEach, _extend, _m
 
         if (selector === "*") {
             // extending element prototype
-            _extend(DOMElement.prototype, mixins);
+            _extend($Element.prototype, mixins);
         } else {
             template = _map(template || [], DOM.create);
             // update internal element mixins

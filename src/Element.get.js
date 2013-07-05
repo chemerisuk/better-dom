@@ -1,4 +1,4 @@
-define(["Element"], function(DOMElement, DOMCollection, _makeError) {
+define(["Element", "CompositeElement"], function($Element, $CompositeElement, _makeError) {
     "use strict";
 
     // GETTER
@@ -19,7 +19,7 @@ define(["Element"], function(DOMElement, DOMCollection, _makeError) {
          * // returns innerHTML of the element
          * link.get();
          */
-        DOMElement.prototype.get = function(name) {
+        $Element.prototype.get = function(name) {
             var el = this._node,
                 hook = hooks[name];
 
@@ -41,15 +41,15 @@ define(["Element"], function(DOMElement, DOMCollection, _makeError) {
         };
 
         hooks.elements = function(el) {
-            return new DOMCollection(el.elements);
+            return new $CompositeElement(el.elements);
         };
 
         hooks.options = function(el) {
-            return new DOMCollection(el.options);
+            return new $CompositeElement(el.options);
         };
 
         hooks.form = function(el) {
-            return DOMElement(el.form);
+            return $Element(el.form);
         };
 
         hooks.type = function(el) {

@@ -1,4 +1,4 @@
-define([], function(DOMElement) {
+define([], function($Element) {
     "use strict";
 
     // HELPERS
@@ -18,8 +18,8 @@ define([], function(DOMElement) {
         _makeError = function(method, el) {
             var type;
 
-            if (el instanceof DOMElement) {
-                type = "DOMElement";
+            if (el instanceof $Element) {
+                type = "$Element";
             } else {
                 type = "DOM";
             }
@@ -130,9 +130,6 @@ define([], function(DOMElement) {
         }),
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index || 0);
-        },
-        _isArray = Array.isArray || function(obj) {
-            return Object.prototype.toString.call(obj) === "[object Array]";
         },
 
         // DOM UTILS

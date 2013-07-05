@@ -1,14 +1,14 @@
-define(["DOM", "Collection"], function(DOM, DOMCollection, _extend, _makeError) {
+define(["DOM", "CompositeElement"], function(DOM, $CompositeElement, _extend, _makeError) {
     "use strict";
 
     (function() {
         var extensions = {};
 
         /**
-         * Return an {@link DOMElement} mock specified for optional selector
+         * Return an {@link $Element} mock specified for optional selector
          * @memberOf DOM
          * @param  {String} [selector] selector of mock
-         * @return {DOMElement} mock instance
+         * @return {$Element} mock instance
          */
         DOM.mock = function(selector, mixins) {
             if (selector && typeof selector !== "string" || mixins && typeof mixins !== "object") {
@@ -16,12 +16,12 @@ define(["DOM", "Collection"], function(DOM, DOMCollection, _extend, _makeError) 
             }
 
             if (!mixins) {
-                var el = new DOMCollection();
+                var el = new $CompositeElement();
 
                 if (selector) {
                     _extend(el, extensions[selector]);
 
-                    el.constructor = DOMCollection;
+                    el.constructor = $CompositeElement;
                 }
 
                 return el;

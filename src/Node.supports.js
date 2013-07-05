@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, _createElement) {
+define(["Node"], function($Node, _createElement) {
     "use strict";
 
     /**
@@ -14,7 +14,7 @@ define(["Node"], function(DOMNode, _createElement) {
      * DOM.supports("oninvalid", "input");
      * // => true if browser supports `invalid` event
      */
-    DOMNode.prototype.supports = function(prop, tagName) {
+    $Node.prototype.supports = function(prop, tagName) {
         tagName = tagName || this && this._node.nodeName.toLowerCase();
 
         var el = tagName ? _createElement(tagName) : document,

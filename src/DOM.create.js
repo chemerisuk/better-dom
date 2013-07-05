@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _parseFragment) {
+define(["DOM", "Element"], function(DOM, $Element, _createElement, _parseFragment) {
     "use strict";
 
     // CREATE ELEMENT
@@ -8,10 +8,10 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _parseFragm
         var rquick = /^[a-z]+$/;
 
         /**
-         * Create a DOMElement instance
+         * Create a $Element instance
          * @memberOf DOM
          * @param  {String|Element} value native element or element tag name
-         * @return {DOMElement} element
+         * @return {$Element} element
          */
         DOM.create = function(value) {
             if (typeof value === "string") {
@@ -39,7 +39,7 @@ define(["DOM", "Element"], function(DOM, DOMElement, _createElement, _parseFragm
                 this.error("create");
             }
 
-            return DOMElement(value);
+            return $Element(value);
         };
     })();
 });

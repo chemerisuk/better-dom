@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode, DOMCollection) {
+define(["Node"], function($Node, $CompositeElement) {
     "use strict";
     
     // DOM ELEMENT
@@ -6,24 +6,24 @@ define(["Node"], function(DOMNode, DOMCollection) {
 
     /**
      * Prototype for a DOM element
-     * @name DOMElement
+     * @name $Element
      * @constructor
      * @param element native element
-     * @extends DOMNode
+     * @extends $Node
      * @private
      */
-    function DOMElement(element) {
-        if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new DOMCollection();
+    function $Element(element) {
+        if (!(this instanceof $Element)) {
+            return element ? element.__dom__ || new $Element(element) : new $CompositeElement();
         }
 
-        DOMNode.call(this, element);
+        $Node.call(this, element);
 
         if (element) {
             Array.prototype.push.call(this, this);
         }
     }
 
-    DOMElement.prototype = new DOMNode();
-    DOMElement.prototype.constructor = DOMElement;
+    $Element.prototype = new $Node();
+    $Element.prototype.constructor = $Element;
 });

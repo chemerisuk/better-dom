@@ -1,11 +1,11 @@
-define(["Element"], function(DOMElement) {
+define(["Element"], function($Element) {
     "use strict";
     
     /**
      * Calculates offset of current context
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
-    DOMElement.prototype.offset = function() {
+    $Element.prototype.offset = function() {
         var htmlEl = document.documentElement,
             bodyEl = document.body,
             boundingRect = this._node.getBoundingClientRect(),

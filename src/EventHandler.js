@@ -1,4 +1,4 @@
-define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
+define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
     "use strict";
 
     /**
@@ -10,16 +10,16 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
         var hooks = {}, legacyIE = !document.addEventListener;
 
         hooks.currentTarget = function(event, currentTarget) {
-            return DOMElement(currentTarget);
+            return $Element(currentTarget);
         };
 
         if (legacyIE) {
             hooks.target = function(event) {
-                return DOMElement(event.srcElement);
+                return $Element(event.srcElement);
             };
         } else {
             hooks.target = function(event) {
-                return DOMElement(event.target);
+                return $Element(event.target);
             };
         }
         
@@ -27,11 +27,11 @@ define(["SelectorMatcher"], function(SelectorMatcher, DOMElement, _map) {
             hooks.relatedTarget = function(event, currentTarget) {
                 var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
 
-                return DOMElement(event[propName]);
+                return $Element(event[propName]);
             };
         } else {
             hooks.relatedTarget = function(event) {
-                return DOMElement(event.relatedTarget);
+                return $Element(event.relatedTarget);
             };
         }
 

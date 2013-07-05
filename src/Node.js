@@ -6,12 +6,12 @@ define(["Helpers"], function() {
 
     /**
      * Prototype for a DOM node
-     * @name DOMNode
+     * @name $Node
      * @param node native object
      * @constructor
      * @private
      */
-    function DOMNode(node) {
+    function $Node(node) {
         if (node) {
             this._node = node;
             this._data = {};
@@ -21,7 +21,7 @@ define(["Helpers"], function() {
         }
     }
 
-    DOMNode.prototype = {
-        constructor: DOMNode
+    $Node.prototype = {
+        constructor: $Node
     };
 });

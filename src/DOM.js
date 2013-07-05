@@ -1,4 +1,4 @@
-define(["Node"], function(DOMNode) {
+define(["Node"], function($Node) {
     "use strict";
 
     // GLOBAL API
@@ -7,9 +7,9 @@ define(["Node"], function(DOMNode) {
     /**
      * Global object to access DOM
      * @namespace DOM
-     * @extends DOMNode
+     * @extends $Node
      */
-    var DOM = new DOMNode(document);
+    var DOM = new $Node(document);
 
     DOM.version = "<%= pkg.version %>";
 });
