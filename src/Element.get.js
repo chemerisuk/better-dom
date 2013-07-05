@@ -1,4 +1,4 @@
-define(["Element", "CompositeElement"], function($Element, $CompositeElement, _makeError) {
+define(["Element"], function($Element, $CompositeElement, _makeError) {
     "use strict";
 
     // GETTER

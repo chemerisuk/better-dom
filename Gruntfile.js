@@ -200,8 +200,8 @@ module.exports = function(grunt) {
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
                     "Element.manipulation", "Element.is", "Element.offset", "Element.get",
-                    "Element.set", "Element.styles", "Element.traversing",
-                    "Element.bind", "Element.visibility", "CompositeElement", "DOM.watch",
+                    "Element.set", "Element.styles", "Element.traversing", "Element.bind",
+                    "Element.visibility", "Element.collection", "CompositeElement", "DOM.watch",
                     "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.ready",
                     "DOM.mock", "DOM.importstrings"
                 ],
