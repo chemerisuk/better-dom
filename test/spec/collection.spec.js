@@ -63,7 +63,7 @@ describe("collection", function() {
             expect(this).toBe(obj);
             expect(a).toBe(inputs);
 
-            return el.is("input");
+            return el.matches("input");
         }, obj)).toBe(true);
 
         expect(inputs.map(function(el) { return el.get("className"); })).toEqual(["c1","c2","c3"]);

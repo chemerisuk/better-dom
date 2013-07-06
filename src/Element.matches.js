@@ -6,9 +6,9 @@ define(["Element"], function($Element, SelectorMatcher, _makeError) {
      * @param  {String} selector css selector
      * @return {$Element}
      */
-    $Element.prototype.is = function(selector) {
+    $Element.prototype.matches = function(selector) {
         if (!selector || typeof selector !== "string") {
-            throw _makeError("is", this);
+            throw _makeError("matches", this);
         }
 
         return new SelectorMatcher(selector).test(this._node);

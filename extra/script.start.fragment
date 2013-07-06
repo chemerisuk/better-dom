@@ -8,6 +8,4 @@
  */
 (function(window, document, undefined) {
     "use strict";
-
-    if (document.__dom__) return; // prevent double initialization
     

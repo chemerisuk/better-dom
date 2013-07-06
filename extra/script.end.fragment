@@ -1,10 +1,10 @@
     // REGISTER API
     // ------------
 
+    window.DOM = DOM;
+    
     if (typeof define === "function" && define.amd) {
         define("DOM", function() { return DOM; });
-    } else {
-        window.DOM = DOM;
     }
     
 })(window, document);

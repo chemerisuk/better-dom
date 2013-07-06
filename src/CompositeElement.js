@@ -8,6 +8,7 @@ define(["Element"], function($Element, _forEach, _forIn, _map) {
      * Read-only array-like collection of elements
      * @name $CompositeElement
      * @constructor
+     * @extends $Element
      * @private
      */
     function $CompositeElement(elements) {

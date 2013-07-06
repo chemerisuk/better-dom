@@ -56,5 +56,9 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
             // some browsers don't recognize input[type=email] etc.
             return el.getAttribute("type") || el.type;
         };
+
+        hooks.method = function(el) {
+            return el.method.toLowerCase();
+        };
     })();
 });
