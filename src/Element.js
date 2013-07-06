@@ -13,15 +13,15 @@ define(["Node"], function($Node, $CompositeElement) {
      * @private
      */
     function $Element(element) {
+        if (element && element.__dom__) return element.__dom__;
+
         if (!(this instanceof $Element)) {
-            return element ? element.__dom__ || new $Element(element) : new $CompositeElement();
+            return element ? new $Element(element) : new $CompositeElement();
         }
 
         $Node.call(this, element);
 
-        if (element) {
-            Array.prototype.push.call(this, this);
-        }
+        if (element) Array.prototype.push.call(this, this);
     }
 
     $Element.prototype = new $Node();

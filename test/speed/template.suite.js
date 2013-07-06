@@ -1,7 +1,7 @@
 (function(){
     "use strict";
 
-    suite("append", function () {
+    suite("template", function () {
         benchmark("p.name+p+p", function() {
             DOM.parseTemplate("p.name+p+p");
         });

@@ -223,13 +223,6 @@ module.exports = function(grunt) {
                     }
                 }
             }
-        },
-        plato: {
-            all: {
-                files: {
-                    reports: ["src/*.js"]
-                }
-            }
         }
     });
 
@@ -303,8 +296,7 @@ module.exports = function(grunt) {
             "docs",
             "shell:checkoutDocs",
             "bumpDocsBuild",
-            "shell:updateDocs",
-            "plato"
+            "shell:updateDocs"
         ]);
     });
 };

@@ -6,9 +6,7 @@
 
     <title>Benchmark Runner</title>
 
-    <!-- Platform.js -->
     <script src="../node_modules/platform/platform.js"></script>
-    <!-- Benchmark.js -->
     <script src="../node_modules/benchmark/benchmark.js"></script>
 
     <!-- Benchmine -->
@@ -32,7 +30,7 @@
     <script src="speed/find.suite.js"></script>
     <script src="speed/create.suite.js"></script>
     <script src="speed/append.suite.js"></script>
-    <script src="speed/showhide.suite.js"></script>
+    <script src="speed/visibility.suite.js"></script>
     <script src="speed/each.suite.js"></script>
 
     <script>
@@ -54,7 +52,6 @@
             currentWindowOnload();
           }
           execBenchmine();
-          prettyPrint();
         };
       })();
     </script>
