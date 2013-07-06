@@ -34,7 +34,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
                 }
 
                 if (typeof value === "function") {
-                    value = value.call(this, this.get(name));
+                    value = value.call(this, value.length ? this.get(name) : undefined);
                 }
 
                 _forEach(name.split(" "), function(name) {

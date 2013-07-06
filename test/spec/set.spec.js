@@ -40,11 +40,13 @@ describe("set", function() {
     it("should accept function", function() {
         var spy = jasmine.createSpy("setter");
 
-        link.set("id", spy.andCallFake(function(value) {
+        link.set("id", function(value) {
+            spy();
+            
             expect(value).toBe("test");
 
             return "test_changed";
-        }));
+        });
 
         expect(link._node).toHaveAttr("id", "test_changed");
     });

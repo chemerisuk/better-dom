@@ -25,14 +25,14 @@ define(["Node"], function($Node, $Element, $CompositeElement, _forEach, _makeErr
          * DOM.find("html").contains(DOM.find("body"));
          * // returns true
          */
-        $Node.prototype.contains = function(element, /*INTERNAL*/reverse) {
+        $Node.prototype.contains = function(element) {
             var node = this._node, result;
 
             if (element.nodeType === 1) {
-                result = containsElement(reverse ? element : node, reverse ? node : element);
+                result = containsElement(node, element);
             } else if (element instanceof $Element) {
                 result = element.every(function(element) {
-                    return element.contains(node, true);
+                    return containsElement(node, element._node);
                 });
             } else {
                 throw _makeError("contains", this);

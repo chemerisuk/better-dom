@@ -9,11 +9,9 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent) fasterMethodName = false;
 
-            return function(value, /*INTERNAL*/reverse) {
-                var el = reverse ? value : this._node,
-                    relatedNode = el.parentNode;
-
-                if (reverse) value = this._node;
+            return function(value) {
+                var node = this._node,
+                    relatedNode = node.parentNode;
 
                 if (typeof value === "string") {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
@@ -22,7 +20,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
                 } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
                     relatedNode = value;
                 } else if (value instanceof $Element) {
-                    value[methodName](el, true);
+                    value.each(function(el) { this[methodName](el._node); }, this);
 
                     return this;
                 } else if (value !== undefined) {
@@ -30,9 +28,9 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
                 }
 
                 if (relatedNode) {
-                    strategy(el, relatedNode);
+                    strategy(node, relatedNode);
                 } else {
-                    el.insertAdjacentHTML(fasterMethodName, value);
+                    node.insertAdjacentHTML(fasterMethodName, value);
                 }
 
                 return this;
