@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _every, _forEach, _makeError) {
+define(["Element"], function($Element, _every, _forEach, _makeError, documentElement) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -10,7 +10,7 @@ define(["Element"], function($Element, _every, _forEach, _makeError) {
         function makeClassesMethod(nativeStrategyName, strategy) {
             var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-            if (document.documentElement.classList) {
+            if (documentElement.classList) {
                 strategy = function(className) {
                     return this._node.classList[nativeStrategyName](className);
                 };

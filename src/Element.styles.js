@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle, _makeError) {
+define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forEach, _forOwn, _getComputedStyle, _makeError, documentElement) {
     "use strict";
 
     // STYLES MANIPULATION
@@ -11,7 +11,7 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
             rcamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = _getComputedStyle(document.documentElement),
+            computed = _getComputedStyle(documentElement),
             // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
             props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
         

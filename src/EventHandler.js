@@ -74,7 +74,11 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
 
                         // prevent default if handler returns false
                         if (result === false) {
-                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+                            if (event.preventDefault) {
+                                event.preventDefault();
+                            } else {
+                                event.returnValue = false;
+                            }
                         }
                     }
                 };

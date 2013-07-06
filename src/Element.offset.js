@@ -1,4 +1,4 @@
-define(["Element"], function($Element) {
+define(["Element"], function($Element, documentElement) {
     "use strict";
     
     /**
@@ -6,7 +6,7 @@ define(["Element"], function($Element) {
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     $Element.prototype.offset = function() {
-        var htmlEl = document.documentElement,
+        var htmlEl = documentElement,
             bodyEl = document.body,
             boundingRect = this._node.getBoundingClientRect(),
             clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,

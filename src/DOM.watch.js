@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn, SelectorMatcher) {
+define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn, SelectorMatcher, documentElement) {
     "use strict";
 
     // WATCH CALLBACK
@@ -18,7 +18,7 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
         if (window.CSSKeyframesRule || !document.attachEvent) {
             // Inspired by trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            computed = _getComputedStyle(document.documentElement);
+            computed = _getComputedStyle(documentElement);
             cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join().match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
             watchers = {};
 

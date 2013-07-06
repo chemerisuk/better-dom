@@ -3,7 +3,6 @@
 
     "boss": true,
     "newcap": false,
-    "expr": true,
     "evil": true,
     "onevar": true,
 

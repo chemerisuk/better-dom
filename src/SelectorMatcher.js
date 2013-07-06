@@ -1,4 +1,4 @@
-define([], function(_foldl, _some) {
+define([], function(documentElement, _foldl, _some) {
     "use strict";
 
     /**
@@ -29,7 +29,7 @@ define([], function(_foldl, _some) {
             matchesProp = _foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || document.documentElement[propertyName] && propertyName;
+                return result || documentElement[propertyName] && propertyName;
             }, null),
             matches = (function() {
                 var isEqual = function(val) { return val === this; };

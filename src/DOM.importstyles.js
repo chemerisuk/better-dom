@@ -1,11 +1,11 @@
-define(["DOM", "Element"], function(DOM, $Element, _createElement, _forEach, _makeError) {
+define(["DOM", "Element"], function(DOM, $Element, _createElement, _forEach, _makeError, documentElement) {
     "use strict";
 
     // IMPORT STYLES
     // -------------
 
     (function() {
-        var styleEl = document.documentElement.firstChild.appendChild(_createElement("style")),
+        var styleEl = documentElement.firstChild.appendChild(_createElement("style")),
             styleSheet = styleEl.sheet || styleEl.styleSheet;
 
         /**

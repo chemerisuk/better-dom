@@ -1,4 +1,4 @@
-define(["Node"], function($Node, $Element, $CompositeElement, _forEach, _makeError) {
+define(["Node"], function($Node, $Element, $CompositeElement, _forEach, _makeError, documentElement) {
     "use strict";
 
     // CONTAINS
@@ -7,7 +7,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _forEach, _makeErr
     (function() {
         var containsElement;
 
-        if (document.documentElement.contains) {
+        if (documentElement.contains) {
             containsElement = function(parent, child) {
                 return parent.contains(child);
             };

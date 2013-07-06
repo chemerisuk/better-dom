@@ -102,7 +102,13 @@ define(["DOM"], function(DOM, _forEach) {
 
                 if (priority && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator
-                    if (str === "{") term ? stack.unshift(">") : term = "?";
+                    if (str === "{") {
+                        if (term) {
+                            stack.unshift(">");
+                        } else {
+                            term = "?";
+                        }
+                    }
                     // remove redundat ^ operators when more than one exists
                     if (str === "^" && stack[0] === "^") stack.shift();
 

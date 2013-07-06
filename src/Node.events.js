@@ -114,7 +114,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
         /**
          * Triggers an event of specific type
          * @param  {String} eventType type of event
-         * @param  {Object} [detail] data to attach
+         * @param  {Object} [detail] event details
          * @return {$Node}
          * @example
          * var domLink = DOM.find(".link");

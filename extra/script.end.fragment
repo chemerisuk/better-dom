@@ -7,4 +7,4 @@
         define("DOM", function() { return DOM; });
     }
     
-})(window, document);
+})(window, document, document.documentElement);
