@@ -4,7 +4,7 @@ describe("get", function() {
     var link, input, textarea;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea>'");
+        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
@@ -54,6 +54,11 @@ describe("get", function() {
         expect(textarea.get()).toBe("");
         textarea.set("value", "123");
         expect(textarea.get()).toBe("123");
+
+        setFixtures("<select id='get_select'><option value='a1'>a2</option><option>a3</option></select>");
+        var select = DOM.find("#get_select");
+        expect(select.child(0).get()).toBe("a1");
+        expect(select.child(1).get()).toBe("a3");
     });
 
     it("should throw error if argument is invalid", function() {

@@ -252,7 +252,7 @@ module.exports = function(grunt) {
         "copy:dist",
         "uglify",
         "shell:rollbackPublished",
-        "clean"
+        "clean:dist"
     ]);
 
     grunt.registerTask("docs", [

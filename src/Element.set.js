@@ -28,9 +28,13 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
             if (nameType === "string") {
                 if (value === undefined) {
                     value = name;
-                    name = el.type && "value" in el ? "value" : "innerHTML";
-                    // for IE use innerText because it doesn't trigger onpropertychange
-                    if (!window.addEventListener && name === "value") name = "innerText";
+
+                    if (el.type && "value" in el) {
+                        // for IE use innerText because it doesn't trigger onpropertychange
+                        name = window.addEventListener ? "value" : "innerText";
+                    } else {
+                        name = "innerHTML";
+                    }
                 }
 
                 if (typeof value === "function") {

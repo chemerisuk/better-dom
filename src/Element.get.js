@@ -24,7 +24,7 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
                 hook = hooks[name];
 
             if (name === undefined) {
-                if (el instanceof Option) {
+                if (el.tagName === "OPTION") {
                     name = el.hasAttribute("value") ? "value" : "text";
                 } else {
                     name = el.type && "value" in el ? "value" : "innerHTML";

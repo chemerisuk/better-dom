@@ -15,9 +15,7 @@ define(["Node"], function($Node, _createElement) {
      * // => true if browser supports `invalid` event
      */
     $Node.prototype.supports = function(prop, tagName) {
-        tagName = tagName || this && this._node.nodeName.toLowerCase();
-
-        var el = tagName ? _createElement(tagName) : document,
+        var el = _createElement(tagName || this._node.tagName || "div"),
             isSupported = prop in el;
 
         if (!isSupported && !prop.indexOf("on")) {

@@ -101,7 +101,7 @@ define(["DOM"], function(DOM, _forEach) {
                 var priority = operators[str];
 
                 if (priority && (!skip || skip === str)) {
-                    // append empty tag for text nodes or put missing '>' operator
+                    // append empty tag for text nodes or put missing '>' operator into the stack
                     if (str === "{") {
                         if (term) {
                             stack.unshift(">");
