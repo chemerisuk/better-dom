@@ -47,6 +47,14 @@ describe("manipulation", function() {
             });
         });
 
+        it("should accept functor", function() {
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = function() { return createDivHtml(strategy); };
+
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+            });
+        });
+
         it("should accept native object", function() {
             _.forOwn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDiv(strategy);

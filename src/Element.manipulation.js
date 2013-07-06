@@ -10,10 +10,16 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
             if (document.attachEvent) fasterMethodName = false;
 
             return function(value) {
-                var node = this._node,
+                var valueType = typeof value,
+                    node = this._node,
                     relatedNode = node.parentNode;
 
-                if (typeof value === "string") {
+                if (valueType === "function") {
+                    value = value.call(this);
+                    valueType = typeof value;
+                }
+
+                if (valueType === "string") {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
