@@ -41,8 +41,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
                 }
 
                 if (multiple) {
-                    return new $CompositeElement(!matcher ? children :
-                        _filter(children, matcher.test, matcher));
+                    return new $CompositeElement(!matcher ? children : _filter(children, matcher.test, matcher));
                 }
 
                 if (index < 0) index = children.length + index;

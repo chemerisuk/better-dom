@@ -108,19 +108,18 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
          */
         $Element.prototype.setStyle = function(name, value) {
             var nameType = typeof name,
-                hook, cssText;
+                cssText = "", hook;
 
             if (nameType === "string") {
                 hook = setStyleHooks[name];
 
                 cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
             } else if (nameType === "object") {
-                cssText = _foldl(_keys(name), function(cssText, key) {
-                    value = name[key];
+                _forOwn(name, function(value, key) {
                     hook = setStyleHooks[key];
 
-                    return cssText + ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
-                }, "");
+                    cssText += ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
+                });
             } else {
                 throw _makeError("setStyle", this);
             }
