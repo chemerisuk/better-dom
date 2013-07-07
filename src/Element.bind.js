@@ -8,15 +8,16 @@ define(["Node", "Element"], function($Node, $Element, _slice, _makeError) {
      * @return {$Element}
      */
     $Element.prototype.bind = function(name) {
-        var args = _slice(arguments, 1),
+        var self = this,
+            args = _slice(arguments, 1),
             method = this[name];
 
-        if (!args.length || typeof method !== "function" || method in $Node.prototype || method in $Element.prototype) {
+        if (typeof method !== "function" || method in $Node.prototype || method in $Element.prototype) {
             throw _makeError("bind", this);
         }
 
         this[name] = function() {
-            return method.apply(this, args.concat(_slice(arguments)));
+            return method.apply(self, args.concat(_slice(arguments)));
         };
 
         return this;
