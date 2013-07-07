@@ -84,7 +84,7 @@
         <h3 class="subsection-title">Extends</h3>
         
         <ul>
-            <li><a href="DOMNode.html">DOMNode</a></li>
+            <li><a href="$Node.html">$Node</a></li>
         </ul>
     
     
@@ -104,7 +104,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
+    <h4 class="name" id="create"><span class="type-signature">&lt;static> </span>create<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -112,7 +112,7 @@
     
     
     <div class="description">
-        Create a DOMElement instance
+        Create a $Element instance
     </div>
     
 
@@ -228,7 +228,7 @@
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -446,6 +446,93 @@ DOM.extend(".mycalendar", [
     }
 });</code></pre>
 
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="getTitle"><span class="type-signature">&lt;static> </span>getTitle<span class="signature">()</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Return current page title
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DOM.title.js.html">DOM.title.js</a>, line 9
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    current page title
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">String</span>
+
+
+	</dd>
+</dl>
+
+        
+    
     
 </dd>
 
@@ -791,7 +878,7 @@ link.set("lang", "ru");
         
             
 <dt>
-    <h4 class="name" id="mock"><span class="type-signature">&lt;static> </span>mock<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="DOMElement.html">DOMElement</a>}</span></h4>
+    <h4 class="name" id="mock"><span class="type-signature">&lt;static> </span>mock<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -799,7 +886,7 @@ link.set("lang", "ru");
     
     
     <div class="description">
-        Return an <a href="DOMElement.html">DOMElement</a> mock specified for optional selector
+        Return an <a href="$Element.html">$Element</a> mock specified for optional selector
     </div>
     
 
@@ -924,7 +1011,7 @@ link.set("lang", "ru");
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="DOMElement.html">DOMElement</a></span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -1027,7 +1114,7 @@ link.set("lang", "ru");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="DOM.parsetemplate.js.html">DOM.parsetemplate.js</a>, line 89
+        <a href="DOM.parsetemplate.js.html">DOM.parsetemplate.js</a>, line 74
     </li></ul></dd>
     
     
@@ -1186,6 +1273,137 @@ link.set("lang", "ru");
     
     
     
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="setTitle"><span class="type-signature">&lt;static> </span>setTitle<span class="signature">(value)</span><span class="type-signature"> &rarr; {<a href="DOM.html">DOM</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Change current page title
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last">new title</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="DOM.title.js.html">DOM.title.js</a>, line 19
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type"><a href="DOM.html">DOM</a></span>
+
+
+	</dd>
+</dl>
+
+        
     
     
 </dd>
@@ -1393,13 +1611,13 @@ link.set("lang", "ru");
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMCollection.html">DOMCollection</a></li><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$CompositeElement.html">$CompositeElement</a></li><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jul 01 2013 00:06:11 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 07 2013 22:56:47 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

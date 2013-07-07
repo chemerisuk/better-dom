@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: DOM.mock.js</title>
+    <title>JSDoc: Source: DOM.title.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: DOM.mock.js</h1>
+    <h1 class="page-title">Source: DOM.title.js</h1>
     
     
 
@@ -25,39 +25,35 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["DOM", "CompositeElement"], function(DOM, $CompositeElement, _extend, _makeError) {
+            <pre class="prettyprint source"><code>define(["DOM"], function(DOM, _makeError) {
     "use strict";
 
-    (function() {
-        var extensions = {};
+    /**
+     * Return current page title
+     * @memberOf DOM
+     * @return {String} current page title
+     */
+    DOM.getTitle = function() {
+        return document.title;
+    };
 
-        /**
-         * Return an {@link $Element} mock specified for optional selector
-         * @memberOf DOM
-         * @param  {String} [selector] selector of mock
-         * @return {$Element} mock instance
-         */
-        DOM.mock = function(selector, mixins) {
-            if (selector && typeof selector !== "string" || mixins && typeof mixins !== "object") {
-                throw _makeError("mock", this);
-            }
+    /**
+     * Change current page title
+     * @memberOf DOM
+     * @param  {String} value new title
+     * @return {DOM}
+     */
+    DOM.setTitle = function(value) {
+        if (typeof value !== "string") {
+            throw _makeError("setTitle", this);
+        }
+        
+        document.title = value;
 
-            if (!mixins) {
-                var el = new $CompositeElement();
-
-                if (selector) {
-                    _extend(el, extensions[selector]);
-
-                    el.constructor = $CompositeElement;
-                }
-
-                return el;
-            }
-
-            extensions[selector] = _extend(extensions[selector] || {}, mixins);
-        };
-    })();
-});</code></pre>
+        return this;
+    };
+});
+</code></pre>
         </article>
     </section>
 

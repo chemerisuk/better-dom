@@ -25,7 +25,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["Element"], function(DOMElement, _parseFragment, _makeError) {
+            <pre class="prettyprint source"><code>define(["Element"], function($Element, _parseFragment, _makeError) {
     "use strict";
 
     // MANIPULATION
@@ -36,20 +36,24 @@
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent) fasterMethodName = false;
 
-            return function(value, /*INTERNAL*/reverse) {
-                var el = reverse ? value : this._node,
-                    relatedNode = el.parentNode;
+            return function(value) {
+                var valueType = typeof value,
+                    node = this._node,
+                    relatedNode = node.parentNode;
 
-                if (reverse) value = this._node;
+                if (valueType === "function") {
+                    value = value.call(this);
+                    valueType = typeof value;
+                }
 
-                if (typeof value === "string") {
+                if (valueType === "string") {
                     if (value[0] !== "&lt;") value = DOM.parseTemplate(value);
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
                     relatedNode = value;
-                } else if (value instanceof DOMElement) {
-                    value[methodName](el, true);
+                } else if (value instanceof $Element) {
+                    value.each(function(el) { this[methodName](el._node); }, this);
 
                     return this;
                 } else if (value !== undefined) {
@@ -57,9 +61,9 @@
                 }
 
                 if (relatedNode) {
-                    strategy(el, relatedNode);
+                    strategy(node, relatedNode);
                 } else {
-                    el.insertAdjacentHTML(fasterMethodName, value);
+                    node.insertAdjacentHTML(fasterMethodName, value);
                 }
 
                 return this;
@@ -68,64 +72,65 @@
 
         /**
          * Insert html string or native element after the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
+        $Element.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
             node.parentNode.insertBefore(relatedNode, node.nextSibling);
         });
 
         /**
          * Insert html string or native element before the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
+        $Element.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
             node.parentNode.insertBefore(relatedNode, node);
         });
 
         /**
          * Prepend html string or native element to the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
+        $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
             node.insertBefore(relatedNode, node.firstChild);
         });
 
         /**
          * Append html string or native element to the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
+        $Element.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
             node.appendChild(relatedNode);
         });
 
         /**
          * Replace current element with html string or native element
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
+        $Element.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
             node.parentNode.replaceChild(relatedNode, node);
         });
 
         /**
          * Remove current element from DOM
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
+        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
             parentNode.removeChild(node);
         });
     })();
-});</code></pre>
+});
+</code></pre>
         </article>
     </section>
 
@@ -135,13 +140,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMCollection.html">DOMCollection</a></li><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$CompositeElement.html">$CompositeElement</a></li><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jul 01 2013 00:06:11 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 07 2013 22:56:46 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -9,7 +9,7 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the library into the `components` directory at the root of your project. Then just include script below on your web page:
+This will clone the latest version of the library into the `bower_components` directory at the root of your project. Then just include script below on your web page:
 
 
 

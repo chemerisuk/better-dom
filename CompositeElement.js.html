@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Element.js</title>
+    <title>JSDoc: Source: CompositeElement.js</title>
     
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Source: Element.js</h1>
+    <h1 class="page-title">Source: CompositeElement.js</h1>
     
     
 
@@ -25,34 +25,42 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["Node"], function($Node, $CompositeElement) {
+            <pre class="prettyprint source"><code>define(["Element"], function($Element, _forEach, _forIn, _map) {
     "use strict";
-    
-    // DOM ELEMENT
-    // -----------
+
+    // COMPOSITE ELEMENT
+    // -----------------
 
     /**
-     * Prototype for a DOM element
-     * @name $Element
-     * @param element native element
-     * @extends $Node
+     * Array-like collection of elements with the same interface as $Element. Setters do
+     * processing for each element, getters return undefined value.
+     * @name $CompositeElement
+     * @extends $Element
      * @constructor
      * @private
      */
-    function $Element(element) {
-        if (element && element.__dom__) return element.__dom__;
-
-        if (!(this instanceof $Element)) {
-            return element ? new $Element(element) : new $CompositeElement();
-        }
-
-        $Node.call(this, element);
-
-        if (element) Array.prototype.push.call(this, this);
+    function $CompositeElement(elements) {
+        Array.prototype.push.apply(this, _map(elements, $Element));
     }
 
-    $Element.prototype = new $Node();
-    $Element.prototype.constructor = $Element;
+    $CompositeElement.prototype = new $Element();
+    $CompositeElement.prototype.constructor = $CompositeElement;
+
+    _forIn($CompositeElement.prototype, function(value, key, proto) {
+        if (typeof value !== "function") return;
+
+        if (~value.toString().indexOf("return this;")) {
+            proto[key] = function() {
+                var args = arguments;
+
+                return _forEach(this, function(el) {
+                    value.apply(el, args);
+                });
+            };
+        } else {
+            proto[key] = function() {};
+        }
+    });
 });
 </code></pre>
         </article>

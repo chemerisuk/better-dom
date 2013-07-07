@@ -25,7 +25,7 @@
     
     <section>
         <article>
-            <pre class="prettyprint source"><code>define(["Node", "Node.supports"], function(DOMNode, DOMElement, SelectorMatcher, EventHandler, _isArray, _forEach, _forOwn, _makeError) {
+            <pre class="prettyprint source"><code>define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -54,14 +54,14 @@
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
-         * @return {DOMNode}
+         * @return {$Node}
          * @example
          * // NOTICE: handler don't have e as the first argument
          * input.on("click", function() {...});
          * // NOTICE: event arguments in event name
          * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
          */
-        DOMNode.prototype.on = function(type, context, callback, args) {
+        $Node.prototype.on = function(type, context, callback, args) {
             var eventType = typeof type,
                 hook, handler, selector, expr;
 
@@ -107,9 +107,9 @@
          * @param  {String}          type event type
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
-         * @return {DOMNode}
+         * @return {$Node}
          */
-        DOMNode.prototype.off = function(type, context, callback) {
+        $Node.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
                 throw _makeError("off", this);
             }
@@ -141,8 +141,8 @@
         /**
          * Triggers an event of specific type
          * @param  {String} eventType type of event
-         * @param  {Object} [detail] data to attach
-         * @return {DOMNode}
+         * @param  {Object} [detail] event details
+         * @return {$Node}
          * @example
          * var domLink = DOM.find(".link");
          *
@@ -151,7 +151,7 @@
          * domLink.fire("custom:event", {x: 1, y: 2});
          * // trigger a custom:event on the element
          */
-        DOMNode.prototype.fire = function(type, detail) {
+        $Node.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {
                 throw _makeError("fire", this);
             }
@@ -199,7 +199,7 @@
         };
 
         // firefox doesn't support focusin/focusout events
-        if (DOMNode.prototype.supports("onfocusin", "input")) {
+        if ($Node.prototype.supports("onfocusin", "input")) {
             _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
@@ -209,7 +209,7 @@
             };
         }
 
-        if (DOMNode.prototype.supports("validity", "input")) {
+        if ($Node.prototype.supports("validity", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };
@@ -218,28 +218,27 @@
         if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
-                var legacyInputEventName = "onpropertychange",
-                    propertyChangeEventHandler = function() {
+                var propertyChangeEventHandler = function() {
                         var e = window.event;
 
                         if (e.propertyName === "value") {
                             // trigger special event that bubbles
-                            DOMElement(e.srcElement).fire("input");
+                            $Element(e.srcElement).fire("input");
                         }
                     },
-                    capturedEl;
+                    capturedNode;
 
                 return function() {
                     var target = window.event.srcElement,
                         type = target.type;
 
-                    if (capturedEl) {
-                        capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
-                        capturedEl = null;
+                    if (capturedNode) {
+                        capturedNode.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedNode = undefined;
                     }
 
                     if (type === "text" || type === "password" || type === "textarea") {
-                        (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
+                        (capturedNode = target).attachEvent("onpropertychange", propertyChangeEventHandler);
                     }
                 };
             })());
@@ -251,7 +250,7 @@
                     form = target.form;
 
                 if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
-                    DOMElement(form).fire("submit");
+                    $Element(form).fire("submit");
 
                     return false;
                 }
@@ -263,7 +262,7 @@
 
                         form.detachEvent("onsubmit", handleSubmit);
 
-                        DOMElement(form).fire("submit");
+                        $Element(form).fire("submit");
 
                         return false;
                     };
@@ -283,7 +282,8 @@
             };
         }
     }());
-});</code></pre>
+});
+</code></pre>
         </article>
     </section>
 
@@ -293,13 +293,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="DOMCollection.html">DOMCollection</a></li><li><a href="DOMElement.html">DOMElement</a></li><li><a href="DOMNode.html">DOMNode</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$CompositeElement.html">$CompositeElement</a></li><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Mon Jul 01 2013 00:06:11 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 07 2013 22:56:46 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
