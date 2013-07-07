@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    var nativeElements = Array.prototype.slice.call(document.all),
+    var nativeElements = _.toArray(document.all),
         jqueryElements = jQuery("*"),
         domElements = DOM.findAll("*"),
         i = 0, j = 0, k = 0;
