@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM, _forEach) {
+define(["DOM"], function(DOM) {
     "use strict";
 
     // EMMET-LIKE PARSER
@@ -68,11 +68,12 @@ define(["DOM"], function(DOM, _forEach) {
         HtmlBuilder.prototype = {
             push: Array.prototype.push,
             inject: function(term, first) {
-                _forEach(this, function(el, i, builder) {
-                    var index = first ? el.indexOf(">") : el.lastIndexOf("<");
+                for (var i = 0, n = this.length, index, el; i < n; ++i) {
+                    el = this[i];
+                    index = first ? el.indexOf(">") : el.lastIndexOf("<");
                     // inject term into the html string
-                    builder[i] = el.substr(0, index) + term + el.substr(index);
-                });
+                    this[i] = el.substr(0, index) + term + el.substr(index);
+                }
             },
             toString: function() {
                 return Array.prototype.join.call(this, "");
@@ -90,15 +91,15 @@ define(["DOM"], function(DOM, _forEach) {
             var stack = [],
                 output = [],
                 term = "",
-                skip;
+                skip, i, n, str, priority, node;
 
             // parse exrpression into RPN
-        
-            _forEach(template, function(str) {
+            for (i = 0, n = template.length; i < n; ++i) {
+                str = template[i];
                 // concat .c1.c2 into single space separated class string
                 if (str === "." && stack[0] === ".") str = " ";
 
-                var priority = operators[str];
+                priority = operators[str];
 
                 if (priority && (!skip || skip === str)) {
                     // append empty tag for text nodes or put missing '>' operator into the stack
@@ -121,9 +122,8 @@ define(["DOM"], function(DOM, _forEach) {
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
 
-                            if (str === "^" && output[output.length - 1] === ">") {
-                                break; // for ^ operator stop shifting when the first > is found
-                            }
+                            // for ^ operator stop shifting when the first > is found
+                            if (str === "^" && output[output.length - 1] === ">") break;
                         }
                     }
 
@@ -140,7 +140,7 @@ define(["DOM"], function(DOM, _forEach) {
                 } else {
                     term += str;
                 }
-            });
+            }
 
             if (term) stack.unshift(term);
 
@@ -152,8 +152,8 @@ define(["DOM"], function(DOM, _forEach) {
 
             // transform RPN into html nodes
 
-            _forEach(output, function(str) {
-                var term, node;
+            for (i = 0, n = output.length; i < n; ++i) {
+                str = output[i];
 
                 if (str in operators) {
                     term = stack.shift();
@@ -197,7 +197,7 @@ define(["DOM"], function(DOM, _forEach) {
                 }
 
                 stack.unshift(str);
-            });
+            }
 
             return stack[0].toString().replace(reEmpty, "");
         };
