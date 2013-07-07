@@ -1,46 +1,30 @@
 define(["DOM"], function(DOM) {
     "use strict";
 
-    // EMMET-LIKE PARSER
-    // -----------------
+    // EMMET EXPRESSIONS PARSER
+    // ------------------------
 
     (function() {
-        var operators = {
-            // operator type / priority object
-            "(": 1,
-            ")": 2,
-            "^": 3,
-            ">": 4,
-            "+": 4,
-            "*": 5,
-            "}": 5,
-            "{": 6,
-            "]": 5,
-            "[": 6,
-            ".": 7,
-            "#": 8,
-            ":": 9
-        },
-        emptyElements = " area base br col hr img input link meta param command keygen source ",
-        reEmpty = /<\?>|<\/\?>/g,
-        reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
-        reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
-        reIndexg = new RegExp(reIndex.source, "g"),
-        normalizeAttrs = function(term, name, value, a, b, simple) {
-            // wrap attribute values with quotes if they don't exist
-            return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
-        },
-        formatIndex = function(index) {
-            return function(expr, fmt) {
-                return (fmt + index).slice(-fmt.length).split("$").join(0);
+        // operator type / priority object
+        var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
+            emptyElements = " area base br col hr img input link meta param command keygen source ",
+            reEmpty = /<\?>|<\/\?>/g,
+            reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
+            reIndexg = new RegExp(reIndex.source, "g"),
+            normalizeAttrs = function(term, name, value, a, b, simple) {
+                // always wrap attribute values with quotes if they don't exist
+                return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
+            },
+            formatIndex = function(index) {
+                return function(expr, fmt) {
+                    return (fmt + index).slice(-fmt.length).split("$").join("0");
+                };
             };
-        };
 
         // helper class
         function HtmlBuilder(node, n) {
             if (n) {
-                node = node.toString();
-
                 var parsed = reIndex.exec(node) || [],
                     step = parsed[2] ? -1 : 1,
                     i = parsed[3] ? +parsed[3] : 1;
@@ -91,9 +75,10 @@ define(["DOM"], function(DOM) {
             var stack = [],
                 output = [],
                 term = "",
-                skip, i, n, str, priority, node;
+                i, n, str, priority, skip, node;
 
             // parse exrpression into RPN
+            
             for (i = 0, n = template.length; i < n; ++i) {
                 str = template[i];
                 // concat .c1.c2 into single space separated class string
@@ -110,7 +95,7 @@ define(["DOM"], function(DOM) {
                             term = "?";
                         }
                     }
-                    // remove redundat ^ operators when more than one exists
+                    // remove redundat ^ operators from the stack when more than one exists
                     if (str === "^" && stack[0] === "^") stack.shift();
 
                     if (term) {
@@ -121,7 +106,6 @@ define(["DOM"], function(DOM) {
                     if (str !== "(") {
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
-
                             // for ^ operator stop shifting when the first > is found
                             if (str === "^" && output[output.length - 1] === ">") break;
                         }
@@ -129,13 +113,13 @@ define(["DOM"], function(DOM) {
 
                     if (str === ")") {
                         stack.shift(); // remove "(" symbol from stack
-                    } else if (!skip) { // don't need to have "]" in stack
+                    } else if (!skip) {
                         stack.unshift(str);
 
                         if (str === "[") skip = "]";
                         if (str === "{") skip = "}";
                     } else {
-                        skip = null;
+                        skip = false;
                     }
                 } else {
                     term += str;
@@ -146,11 +130,11 @@ define(["DOM"], function(DOM) {
 
             output.push.apply(output, stack);
 
+            // transform RPN into html nodes
+
             stack = [];
 
             if (output.length === 1) output.push(">");
-
-            // transform RPN into html nodes
 
             for (i = 0, n = output.length; i < n; ++i) {
                 str = output[i];
@@ -183,7 +167,7 @@ define(["DOM"], function(DOM) {
                         break;
 
                     case "*":
-                        node = new HtmlBuilder(node, parseInt(term, 10));
+                        node = new HtmlBuilder(node.toString(), parseInt(term, 10));
                         break;
 
                     default:
