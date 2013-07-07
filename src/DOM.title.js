@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM) {
+define(["DOM"], function(DOM, _makeError) {
     "use strict";
 
     /**
@@ -13,10 +13,14 @@ define(["DOM"], function(DOM) {
     /**
      * Change current page title
      * @memberOf DOM
-     * @param  {String} [value] new title
+     * @param  {String} value new title
      * @return {DOM}
      */
     DOM.setTitle = function(value) {
+        if (typeof value !== "string") {
+            throw _makeError("setTitle", this);
+        }
+        
         document.title = value;
 
         return this;
