@@ -1,15 +1,13 @@
 /**
  * @file better-dom
- * @version 1.0.0 2013-07-01T00:06:07
+ * @version 1.1.0 2013-07-07T22:56:42
  * @overview Sandbox for DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
-(function(window, document, undefined) {
+(function(window, document, documentElement, undefined) {
     "use strict";
-
-    if (document.__dom__) return; // prevent double initialization
     
     // HELPERS
     // -------
@@ -28,15 +26,13 @@
         _makeError = function(method, el) {
             var type;
 
-            if (el instanceof DOMElement) {
-                type = "DOMElement";
-            } else if (el instanceof DOMCollection) {
-                type = "DOMCollection";
+            if (el instanceof $Element) {
+                type = "$Element";
             } else {
                 type = "DOM";
             }
 
-            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom" + type + ".html#" + method + " to verify the function call";
+            return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
         },
         makeLoopMethod = (function(){
             var rcallback = /cb\.call\(([^)]+)\)/g,
@@ -109,7 +105,8 @@
         // ----------------
         
         _forEach = makeLoopMethod({
-            BODY:   "cb.call(that, a[i], i, a)"
+            BODY:   "cb.call(that, a[i], i, a)",
+            AFTER:  "return a"
         }),
         _map = makeLoopMethod({
             BEFORE: "var out = []",
@@ -141,9 +138,6 @@
         }),
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index || 0);
-        },
-        _isArray = Array.isArray || function(obj) {
-            return Object.prototype.toString.call(obj) === "[object Array]";
         },
 
         // DOM UTILS
@@ -224,21 +218,23 @@
 
     /**
      * Prototype for a DOM node
-     * @name DOMNode
+     * @name $Node
      * @param node native object
      * @constructor
      * @private
      */
-    function DOMNode(node) {
-        this._node = node;
-        this._data = {};
-        this._listeners = [];
+    function $Node(node) {
+        if (node) {
+            this._node = node;
+            this._data = {};
+            this._listeners = [];
 
-        if (node) node.__dom__ = this;
+            node.__dom__ = this;
+        }
     }
 
-    DOMNode.prototype = {
-        constructor: DOMNode
+    $Node.prototype = {
+        constructor: $Node
     };
 
     /**
@@ -254,17 +250,15 @@
      * DOM.supports("oninvalid", "input");
      * // => true if browser supports `invalid` event
      */
-    DOMNode.prototype.supports = function(prop, tagName) {
-        tagName = tagName || this && this._node.nodeName.toLowerCase();
-
-        var el = tagName ? _createElement(tagName) : document,
-            isSupported = prop in el;
+    $Node.prototype.supports = function(prop, tagName) {
+        // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
+        var node = _createElement(tagName || this._node.tagName || "div"),
+            isSupported = prop in node;
 
         if (!isSupported && !prop.indexOf("on")) {
-            // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
-            el.setAttribute(prop, "return;");
+            node.setAttribute(prop, "return;");
 
-            isSupported = typeof el[prop] === "function";
+            isSupported = typeof node[prop] === "function";
         }
             
         return isSupported;
@@ -291,16 +285,16 @@
         /**
          * Finds element by selector
          * @param  {String} selector css selector
-         * @return {DOMElement} element or null if nothing was found
+         * @return {$Element} element or null if nothing was found
          * @example
          * var domBody = DOM.find("body");
          *
          * domBody.find("#element");
-         * // returns DOMElement with id="element"
+         * // returns $Element with id="element"
          * domBody.find(".link");
          * // returns first element with class="link"
          */
-        DOMNode.prototype.find = function(selector, /*INTERNAL*/multiple) {
+        $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
             if (typeof selector !== "string") {
                 throw _makeError("find", this);
             }
@@ -358,15 +352,15 @@
                 }
             }
 
-            return multiple ? new DOMCollection(elements) : DOMElement(elements);
+            return multiple ? new $CompositeElement(elements) : $Element(elements);
         };
 
         /**
          * Finds all elements by selector
          * @param  {String} selector css selector
-         * @return {DOMCollection} elements collection
+         * @return {$CompositeElement} elements collection
          */
-        DOMNode.prototype.findAll = function(selector) {
+        $Node.prototype.findAll = function(selector) {
             return this.find(selector, true);
         };
     })();
@@ -388,7 +382,7 @@
          * domLink.getData("test");
          * // returns string "message"
          */
-        DOMNode.prototype.getData = function(key) {
+        $Node.prototype.getData = function(key) {
             if (typeof key !== "string") {
                 throw _makeError("getData", this);
             }
@@ -407,14 +401,14 @@
          * Store data entry value(s)
          * @param {String|Object} key data entry key | key/value pairs
          * @param {Object} value data to store
-         * @return {DOMNode}
+         * @return {$Node}
          * @example
          * var domLink = DOM.find(".link");
          *
          * domLink.setData("test", "message");
          * domLink.setData({a: "b", c: "d"});
          */
-        DOMNode.prototype.setData = function(key, value) {
+        $Node.prototype.setData = function(key, value) {
             var keyType = typeof key;
 
             if (keyType === "string") {
@@ -435,7 +429,7 @@
     (function() {
         var containsElement;
 
-        if (document.documentElement.contains) {
+        if (documentElement.contains) {
             containsElement = function(parent, child) {
                 return parent.contains(child);
             };
@@ -447,22 +441,20 @@
         
         /**
          * Check if element is inside of context
-         * @param  {DOMElement} element element to check
+         * @param  {$Element} element element to check
          * @return {Boolean} true if success
          * @example
          * DOM.find("html").contains(DOM.find("body"));
          * // returns true
          */
-        DOMNode.prototype.contains = function(element, /*INTERNAL*/reverse) {
-            var node = this._node, result = true;
+        $Node.prototype.contains = function(element) {
+            var node = this._node, result;
 
             if (element.nodeType === 1) {
-                result = containsElement(reverse ? element : node, reverse ? node : element);
-            } else if (element instanceof DOMElement) {
-                result = element.contains(node, true);
-            } else if (element instanceof DOMCollection) {
-                _forEach(element, function(element) {
-                    result = result && element.contains(node, true);
+                result = containsElement(node, element);
+            } else if (element instanceof $Element) {
+                result = element.every(function(element) {
+                    return containsElement(node, element._node);
                 });
             } else {
                 throw _makeError("contains", this);
@@ -498,14 +490,14 @@
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback
          * @param  {Array}    [args] extra arguments
-         * @return {DOMNode}
+         * @return {$Node}
          * @example
          * // NOTICE: handler don't have e as the first argument
          * input.on("click", function() {...});
          * // NOTICE: event arguments in event name
          * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
          */
-        DOMNode.prototype.on = function(type, context, callback, args) {
+        $Node.prototype.on = function(type, context, callback, args) {
             var eventType = typeof type,
                 hook, handler, selector, expr;
 
@@ -551,9 +543,9 @@
          * @param  {String}          type event type
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
-         * @return {DOMNode}
+         * @return {$Node}
          */
-        DOMNode.prototype.off = function(type, context, callback) {
+        $Node.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
                 throw _makeError("off", this);
             }
@@ -585,8 +577,8 @@
         /**
          * Triggers an event of specific type
          * @param  {String} eventType type of event
-         * @param  {Object} [detail] data to attach
-         * @return {DOMNode}
+         * @param  {Object} [detail] event details
+         * @return {$Node}
          * @example
          * var domLink = DOM.find(".link");
          *
@@ -595,7 +587,7 @@
          * domLink.fire("custom:event", {x: 1, y: 2});
          * // trigger a custom:event on the element
          */
-        DOMNode.prototype.fire = function(type, detail) {
+        $Node.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {
                 throw _makeError("fire", this);
             }
@@ -643,7 +635,7 @@
         };
 
         // firefox doesn't support focusin/focusout events
-        if (DOMNode.prototype.supports("onfocusin", "input")) {
+        if ($Node.prototype.supports("onfocusin", "input")) {
             _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
@@ -653,7 +645,7 @@
             };
         }
 
-        if (DOMNode.prototype.supports("validity", "input")) {
+        if ($Node.prototype.supports("validity", "input")) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };
@@ -662,28 +654,27 @@
         if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
-                var legacyInputEventName = "onpropertychange",
-                    propertyChangeEventHandler = function() {
+                var propertyChangeEventHandler = function() {
                         var e = window.event;
 
                         if (e.propertyName === "value") {
                             // trigger special event that bubbles
-                            DOMElement(e.srcElement).fire("input");
+                            $Element(e.srcElement).fire("input");
                         }
                     },
-                    capturedEl;
+                    capturedNode;
 
                 return function() {
                     var target = window.event.srcElement,
                         type = target.type;
 
-                    if (capturedEl) {
-                        capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
-                        capturedEl = null;
+                    if (capturedNode) {
+                        capturedNode.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedNode = undefined;
                     }
 
                     if (type === "text" || type === "password" || type === "textarea") {
-                        (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
+                        (capturedNode = target).attachEvent("onpropertychange", propertyChangeEventHandler);
                     }
                 };
             })());
@@ -695,7 +686,7 @@
                     form = target.form;
 
                 if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
-                    DOMElement(form).fire("submit");
+                    $Element(form).fire("submit");
 
                     return false;
                 }
@@ -707,7 +698,7 @@
 
                         form.detachEvent("onsubmit", handleSubmit);
 
-                        DOMElement(form).fire("submit");
+                        $Element(form).fire("submit");
 
                         return false;
                     };
@@ -756,7 +747,7 @@
             matchesProp = _foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || document.documentElement[propertyName] && propertyName;
+                return result || documentElement[propertyName] && propertyName;
             }, null),
             matches = (function() {
                 var isEqual = function(val) { return val === this; };
@@ -793,16 +784,16 @@
         var hooks = {}, legacyIE = !document.addEventListener;
 
         hooks.currentTarget = function(event, currentTarget) {
-            return DOMElement(currentTarget);
+            return $Element(currentTarget);
         };
 
         if (legacyIE) {
             hooks.target = function(event) {
-                return DOMElement(event.srcElement);
+                return $Element(event.srcElement);
             };
         } else {
             hooks.target = function(event) {
-                return DOMElement(event.target);
+                return $Element(event.target);
             };
         }
         
@@ -810,11 +801,11 @@
             hooks.relatedTarget = function(event, currentTarget) {
                 var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
 
-                return DOMElement(event[propName]);
+                return $Element(event[propName]);
             };
         } else {
             hooks.relatedTarget = function(event) {
-                return DOMElement(event.relatedTarget);
+                return $Element(event.relatedTarget);
             };
         }
 
@@ -857,16 +848,20 @@
 
                         // prevent default if handler returns false
                         if (result === false) {
-                            event.preventDefault ? event.preventDefault() : event.returnValue = false;
+                            if (event.preventDefault) {
+                                event.preventDefault();
+                            } else {
+                                event.returnValue = false;
+                            }
                         }
                     }
                 };
 
             return !matcher ? defaultEventHandler : function(e) {
-                var el = window.event ? window.event.srcElement : e.target;
+                var node = window.event ? window.event.srcElement : e.target;
 
-                for (; el && el !== currentTarget; el = el.parentNode) {
-                    if (matcher.test(el)) return defaultEventHandler(e);
+                for (; node && node !== currentTarget; node = node.parentNode) {
+                    if (matcher.test(node)) return defaultEventHandler(e);
                 }
             };
         };
@@ -878,22 +873,26 @@
 
     /**
      * Prototype for a DOM element
-     * @name DOMElement
-     * @constructor
+     * @name $Element
      * @param element native element
-     * @extends DOMNode
+     * @extends $Node
+     * @constructor
      * @private
      */
-    function DOMElement(element) {
-        if (!(this instanceof DOMElement)) {
-            return element ? element.__dom__ || new DOMElement(element) : new NullElement();
+    function $Element(element) {
+        if (element && element.__dom__) return element.__dom__;
+
+        if (!(this instanceof $Element)) {
+            return element ? new $Element(element) : new $CompositeElement();
         }
 
-        DOMNode.call(this, element);
+        $Node.call(this, element);
+
+        if (element) Array.prototype.push.call(this, this);
     }
 
-    DOMElement.prototype = new DOMNode();
-    DOMElement.prototype.constructor = DOMElement;
+    $Element.prototype = new $Node();
+    $Element.prototype.constructor = $Element;
 
     // CLASSES MANIPULATION
     // --------------------
@@ -904,7 +903,7 @@
         function makeClassesMethod(nativeStrategyName, strategy) {
             var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-            if (document.documentElement.classList) {
+            if (documentElement.classList) {
                 strategy = function(className) {
                     return this._node.classList[nativeStrategyName](className);
                 };
@@ -937,7 +936,7 @@
          * @return {Boolean}   true if the element contains all classes
          * @function
          */
-        DOMElement.prototype.hasClass = makeClassesMethod("contains", function(className) {
+        $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
             return !!~((" " + this._node.className + " ")
                         .replace(rclass, " ")).indexOf(" " + className + " ");
         });
@@ -945,10 +944,10 @@
         /**
          * Add class(es) to element
          * @param  {...String} classNames class name(s)
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.addClass = makeClassesMethod("add", function(className) {
+        $Element.prototype.addClass = makeClassesMethod("add", function(className) {
             if (!this.hasClass(className)) {
                 this._node.className += " " + className;
             }
@@ -957,10 +956,10 @@
         /**
          * Remove class(es) from element
          * @param  {...String} classNames class name(s)
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.removeClass = makeClassesMethod("remove", function(className) {
+        $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
             className = (" " + this._node.className + " ")
                     .replace(rclass, " ").replace(" " + className + " ", " ");
 
@@ -970,10 +969,10 @@
         /**
          * Toggle class(es) on element
          * @param  {...String}  classNames class name(s)
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
+        $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
             var oldClassName = this._node.className;
 
             this.addClass(className);
@@ -986,20 +985,20 @@
 
     /**
      * Clone element
-     * @return {DOMElement} clone of current element
+     * @return {$Element} clone of current element
      */
-    DOMElement.prototype.clone = function() {
-        var el;
+    $Element.prototype.clone = function() {
+        var node;
 
         if (document.addEventListener) {
-            el = this._node.cloneNode(true);
+            node = this._node.cloneNode(true);
         } else {
-            el = _createElement("div");
-            el.innerHTML = this._node.outerHTML;
-            el = el.firstChild;
+            node = _createElement("div");
+            node.innerHTML = this._node.outerHTML;
+            node = node.firstChild;
         }
         
-        return new DOMElement(el);
+        return new $Element(node);
     };
 
     // MANIPULATION
@@ -1010,20 +1009,24 @@
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent) fasterMethodName = false;
 
-            return function(value, /*INTERNAL*/reverse) {
-                var el = reverse ? value : this._node,
-                    relatedNode = el.parentNode;
+            return function(value) {
+                var valueType = typeof value,
+                    node = this._node,
+                    relatedNode = node.parentNode;
 
-                if (reverse) value = this._node;
+                if (valueType === "function") {
+                    value = value.call(this);
+                    valueType = typeof value;
+                }
 
-                if (typeof value === "string") {
+                if (valueType === "string") {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
                     relatedNode = value;
-                } else if (value instanceof DOMElement) {
-                    value[methodName](el, true);
+                } else if (value instanceof $Element) {
+                    value.each(function(el) { this[methodName](el._node); }, this);
 
                     return this;
                 } else if (value !== undefined) {
@@ -1031,9 +1034,9 @@
                 }
 
                 if (relatedNode) {
-                    strategy(el, relatedNode);
+                    strategy(node, relatedNode);
                 } else {
-                    el.insertAdjacentHTML(fasterMethodName, value);
+                    node.insertAdjacentHTML(fasterMethodName, value);
                 }
 
                 return this;
@@ -1042,60 +1045,60 @@
 
         /**
          * Insert html string or native element after the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
+        $Element.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
             node.parentNode.insertBefore(relatedNode, node.nextSibling);
         });
 
         /**
          * Insert html string or native element before the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
+        $Element.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
             node.parentNode.insertBefore(relatedNode, node);
         });
 
         /**
          * Prepend html string or native element to the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
+        $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
             node.insertBefore(relatedNode, node.firstChild);
         });
 
         /**
          * Append html string or native element to the current
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
+        $Element.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
             node.appendChild(relatedNode);
         });
 
         /**
          * Replace current element with html string or native element
-         * @param {String|Element|DOMElement} content HTML string or Element
-         * @return {DOMElement}
+         * @param {String|Element|$Element} content HTML string or Element
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
+        $Element.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
             node.parentNode.replaceChild(relatedNode, node);
         });
 
         /**
          * Remove current element from DOM
-         * @return {DOMElement}
+         * @return {$Element}
          * @function
          */
-        DOMElement.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
+        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
             parentNode.removeChild(node);
         });
     })();
@@ -1103,11 +1106,11 @@
     /**
      * Check if the element matches selector
      * @param  {String} selector css selector
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.is = function(selector) {
+    $Element.prototype.matches = function(selector) {
         if (!selector || typeof selector !== "string") {
-            throw _makeError("is", this);
+            throw _makeError("matches", this);
         }
 
         return new SelectorMatcher(selector).test(this._node);
@@ -1118,14 +1121,13 @@
      * Calculates offset of current context
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
-    DOMElement.prototype.offset = function() {
-        var htmlEl = document.documentElement,
-            bodyEl = document.body,
+    $Element.prototype.offset = function() {
+        var bodyElement = document.body,
             boundingRect = this._node.getBoundingClientRect(),
-            clientTop = htmlEl.clientTop || bodyEl.clientTop || 0,
-            clientLeft = htmlEl.clientLeft || bodyEl.clientLeft || 0,
-            scrollTop = window.pageYOffset || htmlEl.scrollTop || bodyEl.scrollTop,
-            scrollLeft = window.pageXOffset || htmlEl.scrollLeft || bodyEl.scrollLeft;
+            clientTop = documentElement.clientTop || bodyElement.clientTop || 0,
+            clientLeft = documentElement.clientLeft || bodyElement.clientLeft || 0,
+            scrollTop = window.pageYOffset || documentElement.scrollTop || bodyElement.scrollTop,
+            scrollLeft = window.pageXOffset || documentElement.scrollLeft || bodyElement.scrollLeft;
 
         return {
             top: boundingRect.top + scrollTop - clientTop,
@@ -1153,42 +1155,38 @@
          * // returns innerHTML of the element
          * link.get();
          */
-        DOMElement.prototype.get = function(name) {
-            var el = this._node,
+        $Element.prototype.get = function(name) {
+            var node = this._node,
                 hook = hooks[name];
 
             if (name === undefined) {
-                if (el instanceof Option) {
-                    name = el.hasAttribute("value") ? "value" : "text";
+                if (node.tagName === "OPTION") {
+                    name = node.hasAttribute("value") ? "value" : "text";
                 } else {
-                    name = el.type && "value" in el ? "value" : "innerHTML";
+                    name = node.type && "value" in node ? "value" : "innerHTML";
                 }
             } else if (typeof name !== "string") {
                 throw _makeError("get", this);
             }
 
-            return hook ? hook(el) : (name in el ? el[name] : el.getAttribute(name));
+            return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
         };
 
-        hooks.tagName = function(el) {
-            return el.nodeName.toLowerCase();
+        hooks.tagName = hooks.method = function(node, key) {
+            return node[key].toLowerCase();
         };
 
-        hooks.elements = function(el) {
-            return new DOMCollection(el.elements);
+        hooks.elements = hooks.options = function(node, key) {
+            return new $CompositeElement(node[key]);
         };
 
-        hooks.options = function(el) {
-            return new DOMCollection(el.options);
+        hooks.form = function(node) {
+            return $Element(node.form);
         };
 
-        hooks.form = function(el) {
-            return DOMElement(el.form);
-        };
-
-        hooks.type = function(el) {
+        hooks.type = function(node) {
             // some browsers don't recognize input[type=email] etc.
-            return el.getAttribute("type") || el.type;
+            return node.getAttribute("type") || node.type;
         };
     })();
 
@@ -1203,7 +1201,7 @@
          * Set property/attribute value
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
-         * @return {DOMElement}
+         * @return {$Element}
          * @example
          * // sets property href (and that action updates attribute value too)
          * link.set("href", "/some/path");
@@ -1212,33 +1210,37 @@
          * // sets innerHTML to "some text"
          * link.set("some text");
          */
-        DOMElement.prototype.set = function(name, value) {
-            var el = this._node,
+        $Element.prototype.set = function(name, value) {
+            var node = this._node,
                 nameType = typeof name;
 
             if (nameType === "string") {
                 if (value === undefined) {
                     value = name;
-                    name = el.type && "value" in el ? "value" : "innerHTML";
-                    // for IE use innerText because it doesn't trigger onpropertychange
-                    if (!window.addEventListener && name === "value") name = "innerText";
+
+                    if (node.type && "value" in node) {
+                        // for IE use innerText because it doesn't trigger onpropertychange
+                        name = window.addEventListener ? "value" : "innerText";
+                    } else {
+                        name = "innerHTML";
+                    }
                 }
 
                 if (typeof value === "function") {
-                    value = value.call(this, this.get(name));
+                    value = value.call(this, value.length ? this.get(name) : undefined);
                 }
 
                 _forEach(name.split(" "), function(name) {
                     var hook = hooks[name];
 
                     if (hook) {
-                        hook(el, value);
+                        hook(node, value);
                     } else if (value === null) {
-                        el.removeAttribute(name);
-                    } else if (name in el) {
-                        el[name] = value;
+                        node.removeAttribute(name);
+                    } else if (name in node) {
+                        node[name] = value;
                     } else {
-                        el.setAttribute(name, value);
+                        node.setAttribute(name, value);
                     }
                 });
             } else if (nameType === "object") {
@@ -1252,27 +1254,27 @@
 
         if (document.attachEvent) {
             // fix NoScope elements in IE < 10
-            hooks.innerHTML = function(el, value) {
-                el.innerHTML = "";
-                el.appendChild(_parseFragment(value));
+            hooks.innerHTML = function(node, value) {
+                node.innerHTML = "";
+                node.appendChild(_parseFragment(value));
             };
             
             // fix hidden attribute for IE < 10
-            hooks.hidden = function(el, value) {
+            hooks.hidden = function(node, value) {
                 if (typeof value !== "boolean") {
                     throw _makeError("set", this);
                 }
 
-                el.hidden = value;
+                node.hidden = value;
 
                 if (value) {
-                    el.setAttribute("hidden", "hidden");
+                    node.setAttribute("hidden", "hidden");
                 } else {
-                    el.removeAttribute("hidden");
+                    node.removeAttribute("hidden");
                 }
 
                 // trigger redraw in IE
-                el.style.zoom = value ? "1" : "0";
+                node.style.zoom = value ? "1" : "0";
             };
         }
     })();
@@ -1283,18 +1285,18 @@
     (function() {
         var getStyleHooks = {},
             setStyleHooks = {},
-            rdash = /\-./g,
-            rcamel = /[A-Z]/g,
+            reDash = /\-./g,
+            reCamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
-            computed = _getComputedStyle(document.documentElement),
+            computed = _getComputedStyle(documentElement),
             // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
-            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
+            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(reCamel, camelCaseToDashSeparated); });
         
         _forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-                stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
+                stylePropName = propName.replace(reDash, dashSeparatedToCamelCase);
 
             // some browsers start vendor specific props in lowecase
             if (!(stylePropName in computed)) {
@@ -1355,7 +1357,7 @@
          * @param  {String} name property name
          * @return {String} property value
          */
-        DOMElement.prototype.getStyle = function(name) {
+        $Element.prototype.getStyle = function(name) {
             var style = this._node.style,
                 hook, result;
 
@@ -1380,23 +1382,22 @@
          * Set css style for element
          * @param {String} name  property name
          * @param {String} value property value
-         * @return {DOMElement}
+         * @return {$Element}
          */
-        DOMElement.prototype.setStyle = function(name, value) {
+        $Element.prototype.setStyle = function(name, value) {
             var nameType = typeof name,
-                hook, cssText;
+                cssText = "", hook;
 
             if (nameType === "string") {
                 hook = setStyleHooks[name];
 
                 cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
             } else if (nameType === "object") {
-                cssText = _foldl(_keys(name), function(cssText, key) {
-                    value = name[key];
+                _forOwn(name, function(value, key) {
                     hook = setStyleHooks[key];
 
-                    return cssText + ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
-                }, "");
+                    cssText += ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
+                });
             } else {
                 throw _makeError("setStyle", this);
             }
@@ -1425,7 +1426,7 @@
                     }
                 }
 
-                return multiple ? new DOMCollection(nodes) : DOMElement(it);
+                return multiple ? new $CompositeElement(nodes) : $Element(it);
             };
         }
 
@@ -1439,73 +1440,70 @@
 
                 var children = this._node.children,
                     matcher = SelectorMatcher(selector),
-                    el;
+                    node;
 
                 if (!document.addEventListener) {
                     // fix IE8 bug with children collection
-                    children = _filter(children, function(el) {
-                        return el.nodeType === 1;
-                    });
+                    children = _filter(children, function(node) { return node.nodeType === 1; });
                 }
 
                 if (multiple) {
-                    return new DOMCollection(!matcher ? children :
-                        _filter(children, matcher.test, matcher));
+                    return new $CompositeElement(!matcher ? children : _filter(children, matcher.test, matcher));
                 }
 
                 if (index < 0) index = children.length + index;
 
-                el = children[index];
+                node = children[index];
 
-                return DOMElement(!matcher || matcher.test(el) ? el : null);
+                return $Element(!matcher || matcher.test(node) ? node : null);
             };
         }
 
         /**
          * Find next sibling element filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
+         * @return {$Element} matched element
          * @function
          */
-        DOMElement.prototype.next = makeTraversingMethod("nextSibling");
+        $Element.prototype.next = makeTraversingMethod("nextSibling");
 
         /**
          * Find previous sibling element filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
+         * @return {$Element} matched element
          * @function
          */
-        DOMElement.prototype.prev = makeTraversingMethod("previousSibling");
+        $Element.prototype.prev = makeTraversingMethod("previousSibling");
 
         /**
          * Find all next sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMCollection} matched elements
+         * @return {$CompositeElement} matched elements
          * @function
          */
-        DOMElement.prototype.nextAll = makeTraversingMethod("nextSibling", true);
+        $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 
         /**
          * Find all previous sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMCollection} matched elements
+         * @return {$CompositeElement} matched elements
          * @function
          */
-        DOMElement.prototype.prevAll = makeTraversingMethod("previousSibling", true);
+        $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
         /**
          * Find parent element filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {DOMElement} matched element
+         * @return {$Element} matched element
          * @function
          */
-        DOMElement.prototype.parent = makeTraversingMethod("parentNode");
+        $Element.prototype.parent = makeTraversingMethod("parentNode");
 
         /**
          * Return child element by index filtered by optional selector
          * @param  {Number} index child index
          * @param  {String} [selector] css selector
-         * @return {DOMElement} matched child
+         * @return {$Element} matched child
          * @function
          * @example
          * var body = DOM.find("body");
@@ -1513,33 +1511,34 @@
          * body.child(0); // => first child
          * body.child(-1); // => last child
          */
-        DOMElement.prototype.child = makeChildTraversingMethod(false);
+        $Element.prototype.child = makeChildTraversingMethod(false);
 
         /**
          * Fetch children elements filtered by optional selector
          * @param  {String} [selector] css selector
-         * @return {DOMCollection} matched elements
+         * @return {$CompositeElement} matched elements
          * @function
          */
-        DOMElement.prototype.children = makeChildTraversingMethod(true);
+        $Element.prototype.children = makeChildTraversingMethod(true);
     })();
 
     /**
      * Prepend extra arguments to the method with specified name
      * @param  {String}    name  name of method to bind arguments with
      * @param  {...Object} args  extra arguments to prepend to the method
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.bind = function(name) {
-        var args = _slice(arguments, 1),
+    $Element.prototype.bind = function(name) {
+        var self = this,
+            args = _slice(arguments, 1),
             method = this[name];
 
-        if (!args.length || typeof method !== "function" || method in DOMNode.prototype || method in DOMElement.prototype) {
+        if (typeof method !== "function" || method in $Node.prototype || method in $Element.prototype) {
             throw _makeError("bind", this);
         }
 
         this[name] = function() {
-            return method.apply(this, args.concat(_slice(arguments)));
+            return method.apply(self, args.concat(_slice(arguments)));
         };
 
         return this;
@@ -1547,9 +1546,9 @@
 
     /**
      * Show element
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.show = function() {
+    $Element.prototype.show = function() {
         this.set("hidden", false);
 
         return this;
@@ -1557,9 +1556,9 @@
 
     /**
      * Hide element
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.hide = function() {
+    $Element.prototype.hide = function() {
         this.set("hidden", true);
 
         return this;
@@ -1567,9 +1566,9 @@
 
     /**
      * Toggle element visibility
-     * @return {DOMElement}
+     * @return {$Element}
      */
-    DOMElement.prototype.toggle = function() {
+    $Element.prototype.toggle = function() {
         this.set("hidden", !this.get("hidden"));
 
         return this;
@@ -1579,7 +1578,7 @@
      * Check is element is hidden
      * @return {Boolean} true if element is hidden
      */
-    DOMElement.prototype.isHidden = function() {
+    $Element.prototype.isHidden = function() {
         return !!this.get("hidden");
     };
 
@@ -1587,42 +1586,62 @@
      * Check if element has focus
      * @return {Boolean} true if current element is focused
      */
-    DOMElement.prototype.isFocused = function() {
+    $Element.prototype.isFocused = function() {
         return this._node === document.activeElement;
     };
 
-    // DOM COLLECTION
-    // --------------
+    // COMPOSITE ELEMENT
+    // -----------------
 
     /**
-     * Read-only array-like collection of elements
-     * @name DOMCollection
+     * Array-like collection of elements with the same interface as $Element. Setters do
+     * processing for each element, getters return undefined value.
+     * @name $CompositeElement
+     * @extends $Element
      * @constructor
      * @private
      */
-    function DOMCollection(elements) {
-        Array.prototype.push.apply(this, _map(elements, DOMElement));
+    function $CompositeElement(elements) {
+        Array.prototype.push.apply(this, _map(elements, $Element));
     }
 
-    DOMCollection.prototype = {
-        constructor: DOMCollection,
-        
+    $CompositeElement.prototype = new $Element();
+    $CompositeElement.prototype.constructor = $CompositeElement;
+
+    _forIn($CompositeElement.prototype, function(value, key, proto) {
+        if (typeof value !== "function") return;
+
+        if (~value.toString().indexOf("return this;")) {
+            proto[key] = function() {
+                var args = arguments;
+
+                return _forEach(this, function(el) {
+                    value.apply(el, args);
+                });
+            };
+        } else {
+            proto[key] = function() {};
+        }
+    });
+
+    // ELEMENT COLLECTION EXTESIONS
+    // ----------------------------
+
+    _extend($Element.prototype, {
         /**
          * Executes callback on each element in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMCollection}
+         * @return {$Element}
          */
         each: function(callback, thisArg) {
-            _forEach(this, callback, thisArg);
-
-            return this;
+            return _forEach(this, callback, thisArg);
         },
 
         /**
          * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Boolean} true, if any element in the collection return true
@@ -1633,7 +1652,7 @@
 
         /**
          * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Boolean} true, if all elements in the collection returns true
@@ -1644,7 +1663,7 @@
 
         /**
          * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
          * @return {Array} new array of the results of each callback execution
@@ -1655,18 +1674,18 @@
 
         /**
          * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {DOMCollection} new DOMCollection of elements that passed the callback check
+         * @return {$Element} new $CompositeElement of elements that passed the callback check
          */
         filter: function(callback, thisArg) {
-            return new DOMCollection(_filter(this, callback, thisArg));
+            return new $CompositeElement(_filter(this, callback, thisArg));
         },
 
         /**
          * (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -1677,7 +1696,7 @@
 
         /**
          * (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {Function} callback callback function
          * @param  {Object}   memo     initial value of the accumulator
          * @return {Object} the accumulated value
@@ -1688,10 +1707,10 @@
 
         /**
          * Calls the method named by name on each element in the collection
-         * @memberOf DOMCollection.prototype
+         * @memberOf $Element.prototype
          * @param  {String}    name   name of the method
          * @param  {...Object} [args] arguments for the method call
-         * @return {DOMCollection}
+         * @return {$Element}
          */
         invoke: function(name) {
             var args = _slice(arguments, 1);
@@ -1700,17 +1719,15 @@
                 throw _makeError("invoke", this);
             }
 
-            _forEach(this, function(el) {
+            return _forEach(this, function(el) {
                 if (args.length) {
                     el[name].apply(el, args);
                 } else {
                     el[name]();
                 }
             });
-
-            return this;
         }
-    };
+    });
 
     // aliases
     _forOwn({
@@ -1722,26 +1739,7 @@
         foldr: "reduceRight"
     }, function(value, key) {
         this[key] = this[value];
-    }, DOMCollection.prototype);
-
-    // NULL ELEMENT
-    // ------------
-
-    function NullElement() { }
-
-    NullElement.prototype = new DOMElement(null);
-
-    _forIn(NullElement.prototype, function(value, key, proto) {
-        if (typeof value !== "function") return;
-
-        if (key in DOMCollection.prototype) {
-            proto[key] = function() { return this; };
-        } else {
-            proto[key] = function() { };
-        }
-    });
-
-    NullElement.prototype.constructor = NullElement;
+    }, $Element.prototype);
 
     // GLOBAL API
     // ----------
@@ -1749,11 +1747,11 @@
     /**
      * Global object to access DOM
      * @namespace DOM
-     * @extends DOMNode
+     * @extends $Node
      */
-    var DOM = new DOMNode(document);
+    var DOM = new $Node(document);
 
-    DOM.version = "1.0.0";
+    DOM.version = "1.1.0";
 
     // WATCH CALLBACK
     // --------------
@@ -1772,20 +1770,20 @@
         if (window.CSSKeyframesRule || !document.attachEvent) {
             // Inspired by trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            computed = _getComputedStyle(document.documentElement);
+            computed = _getComputedStyle(documentElement);
             cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join().match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
             watchers = {};
 
             _forEach(["animationstart", "oAnimationStart", "webkitAnimationStart"], function(name) {
                 document.addEventListener(name, function(e) {
                     var entry = watchers[e.animationName],
-                        el = e.target;
+                        node = e.target;
 
                     if (entry) {
                         // MUST cancelBubbling first otherwise may have extra calls in firefox
-                        if (entry.once) el.addEventListener(name, entry.once, false);
+                        if (entry.once) node.addEventListener(name, entry.once, false);
 
-                        entry.callback(DOMElement(el));
+                        entry.callback($Element(node));
                     }
                 }, false);
             });
@@ -1820,17 +1818,17 @@
 
             document.attachEvent("ondataavailable", function() {
                 var e = window.event,
-                    el = e.srcElement;
+                    node = e.srcElement;
 
                 if (e._type === undefined) {
                     _forEach(watchers, function(entry) {
                         // do not execute callback if it was previously excluded
                         if (_some(e.detail, function(x) { return x === entry.callback; })) return;
 
-                        if (entry.matcher.test(el)) {
-                            if (entry.once) el.attachEvent("on" + e.type, entry.once);
+                        if (entry.matcher.test(node)) {
+                            if (entry.once) node.attachEvent("on" + e.type, entry.once);
 
-                            _defer(function() { entry.callback(DOMElement(el)); });
+                            _defer(function() { entry.callback($Element(node)); });
                         }
                     });
                 }
@@ -1872,10 +1870,10 @@
         var rquick = /^[a-z]+$/;
 
         /**
-         * Create a DOMElement instance
+         * Create a $Element instance
          * @memberOf DOM
          * @param  {String|Element} value native element or element tag name
-         * @return {DOMElement} element
+         * @return {$Element} element
          */
         DOM.create = function(value) {
             if (typeof value === "string") {
@@ -1903,7 +1901,7 @@
                 this.error("create");
             }
 
-            return DOMElement(value);
+            return $Element(value);
         };
     })();
 
@@ -1950,7 +1948,7 @@
 
         if (selector === "*") {
             // extending element prototype
-            _extend(DOMElement.prototype, mixins);
+            _extend($Element.prototype, mixins);
         } else {
             template = _map(template || [], DOM.create);
             // update internal element mixins
@@ -1968,46 +1966,30 @@
         }
     };
 
-    // EMMET-LIKE PARSER
-    // -----------------
+    // EMMET EXPRESSIONS PARSER
+    // ------------------------
 
     (function() {
-        var operators = {
-            // operator type / priority object
-            "(": 1,
-            ")": 2,
-            "^": 3,
-            ">": 4,
-            "+": 4,
-            "*": 5,
-            "}": 5,
-            "{": 6,
-            "]": 5,
-            "[": 6,
-            ".": 7,
-            "#": 8,
-            ":": 9
-        },
-        emptyElements = " area base br col hr img input link meta param command keygen source ",
-        reEmpty = /<\?>|<\/\?>/g,
-        reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
-        reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
-        reIndexg = new RegExp(reIndex.source, "g"),
-        normalizeAttrs = function(term, name, value, a, b, simple) {
-            // wrap attribute values with quotes if they don't exist
-            return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
-        },
-        formatIndex = function(index) {
-            return function(expr, fmt) {
-                return (fmt + index).slice(-fmt.length).split("$").join(0);
+        // operator type / priority object
+        var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
+            emptyElements = " area base br col hr img input link meta param command keygen source ",
+            reEmpty = /<\?>|<\/\?>/g,
+            reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
+            reIndexg = new RegExp(reIndex.source, "g"),
+            normalizeAttrs = function(term, name, value, a, b, simple) {
+                // always wrap attribute values with quotes if they don't exist
+                return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
+            },
+            formatIndex = function(index) {
+                return function(expr, fmt) {
+                    return (fmt + index).slice(-fmt.length).split("$").join("0");
+                };
             };
-        };
 
         // helper class
         function HtmlBuilder(node, n) {
             if (n) {
-                node = node.toString();
-
                 var parsed = reIndex.exec(node) || [],
                     step = parsed[2] ? -1 : 1,
                     i = parsed[3] ? +parsed[3] : 1;
@@ -2035,11 +2017,12 @@
         HtmlBuilder.prototype = {
             push: Array.prototype.push,
             inject: function(term, first) {
-                _forEach(this, function(el, i, builder) {
-                    var index = first ? el.indexOf(">") : el.lastIndexOf("<");
+                for (var i = 0, n = this.length, index, el; i < n; ++i) {
+                    el = this[i];
+                    index = first ? el.indexOf(">") : el.lastIndexOf("<");
                     // inject term into the html string
-                    builder[i] = el.substr(0, index) + term + el.substr(index);
-                });
+                    this[i] = el.substr(0, index) + term + el.substr(index);
+                }
             },
             toString: function() {
                 return Array.prototype.join.call(this, "");
@@ -2057,20 +2040,27 @@
             var stack = [],
                 output = [],
                 term = "",
-                skip;
+                i, n, str, priority, skip, node;
 
             // parse exrpression into RPN
-        
-            _forEach(template, function(str) {
+            
+            for (i = 0, n = template.length; i < n; ++i) {
+                str = template[i];
                 // concat .c1.c2 into single space separated class string
                 if (str === "." && stack[0] === ".") str = " ";
 
-                var priority = operators[str];
+                priority = operators[str];
 
                 if (priority && (!skip || skip === str)) {
-                    // append empty tag for text nodes or put missing '>' operator
-                    if (str === "{") term ? stack.unshift(">") : term = "?";
-                    // remove redundat ^ operators when more than one exists
+                    // append empty tag for text nodes or put missing '>' operator into the stack
+                    if (str === "{") {
+                        if (term) {
+                            stack.unshift(">");
+                        } else {
+                            term = "?";
+                        }
+                    }
+                    // remove redundat ^ operators from the stack when more than one exists
                     if (str === "^" && stack[0] === "^") stack.shift();
 
                     if (term) {
@@ -2081,40 +2071,38 @@
                     if (str !== "(") {
                         while (operators[stack[0]] > priority) {
                             output.push(stack.shift());
-
-                            if (str === "^" && output[output.length - 1] === ">") {
-                                break; // for ^ operator stop shifting when the first > is found
-                            }
+                            // for ^ operator stop shifting when the first > is found
+                            if (str === "^" && output[output.length - 1] === ">") break;
                         }
                     }
 
                     if (str === ")") {
                         stack.shift(); // remove "(" symbol from stack
-                    } else if (!skip) { // don't need to have "]" in stack
+                    } else if (!skip) {
                         stack.unshift(str);
 
                         if (str === "[") skip = "]";
                         if (str === "{") skip = "}";
                     } else {
-                        skip = null;
+                        skip = false;
                     }
                 } else {
                     term += str;
                 }
-            });
+            }
 
             if (term) stack.unshift(term);
 
             output.push.apply(output, stack);
 
+            // transform RPN into html nodes
+
             stack = [];
 
             if (output.length === 1) output.push(">");
 
-            // transform RPN into html nodes
-
-            _forEach(output, function(str) {
-                var term, node;
+            for (i = 0, n = output.length; i < n; ++i) {
+                str = output[i];
 
                 if (str in operators) {
                     term = stack.shift();
@@ -2144,7 +2132,7 @@
                         break;
 
                     case "*":
-                        node = new HtmlBuilder(node, parseInt(term, 10));
+                        node = new HtmlBuilder(node.toString(), parseInt(term, 10));
                         break;
 
                     default:
@@ -2158,7 +2146,7 @@
                 }
 
                 stack.unshift(str);
-            });
+            }
 
             return stack[0].toString().replace(reEmpty, "");
         };
@@ -2168,8 +2156,8 @@
     // -------------
 
     (function() {
-        var styleEl = document.documentElement.firstChild.appendChild(_createElement("style")),
-            styleSheet = styleEl.sheet || styleEl.styleSheet;
+        var styleNode = documentElement.firstChild.appendChild(_createElement("style")),
+            styleSheet = styleNode.sheet || styleNode.styleSheet;
 
         /**
          * Import global css styles on page
@@ -2181,7 +2169,7 @@
             if (typeof styles === "object") {
                 var obj = {_node: {style: {cssText: ""}}};
 
-                DOMElement.prototype.setStyle.call(obj, styles);
+                $Element.prototype.setStyle.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
             }
@@ -2256,10 +2244,10 @@
         var extensions = {};
 
         /**
-         * Return an {@link DOMElement} mock specified for optional selector
+         * Return an {@link $Element} mock specified for optional selector
          * @memberOf DOM
          * @param  {String} [selector] selector of mock
-         * @return {DOMElement} mock instance
+         * @return {$Element} mock instance
          */
         DOM.mock = function(selector, mixins) {
             if (selector && typeof selector !== "string" || mixins && typeof mixins !== "object") {
@@ -2267,12 +2255,12 @@
             }
 
             if (!mixins) {
-                var el = new NullElement();
+                var el = new $CompositeElement();
 
                 if (selector) {
                     _extend(el, extensions[selector]);
 
-                    el.constructor = NullElement;
+                    el.constructor = $CompositeElement;
                 }
 
                 return el;
@@ -2330,13 +2318,38 @@
 
     DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
 
+    /**
+     * Return current page title
+     * @memberOf DOM
+     * @return {String} current page title
+     */
+    DOM.getTitle = function() {
+        return document.title;
+    };
+
+    /**
+     * Change current page title
+     * @memberOf DOM
+     * @param  {String} value new title
+     * @return {DOM}
+     */
+    DOM.setTitle = function(value) {
+        if (typeof value !== "string") {
+            throw _makeError("setTitle", this);
+        }
+        
+        document.title = value;
+
+        return this;
+    };
+
     // REGISTER API
     // ------------
 
+    window.DOM = DOM;
+    
     if (typeof define === "function" && define.amd) {
         define("DOM", function() { return DOM; });
-    } else {
-        window.DOM = DOM;
     }
     
-})(window, document);
+})(window, document, document.documentElement);
