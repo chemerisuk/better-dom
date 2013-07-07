@@ -5,10 +5,11 @@ define(["Element"], function($Element, _forEach, _forIn, _map) {
     // -----------------
 
     /**
-     * Read-only array-like collection of elements
+     * Array-like collection of elements with the same interface as $Element. Setters do
+     * processing for each element, getters return undefined value.
      * @name $CompositeElement
-     * @constructor
      * @extends $Element
+     * @constructor
      * @private
      */
     function $CompositeElement(elements) {

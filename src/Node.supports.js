@@ -15,14 +15,14 @@ define(["Node"], function($Node, _createElement) {
      * // => true if browser supports `invalid` event
      */
     $Node.prototype.supports = function(prop, tagName) {
-        var el = _createElement(tagName || this._node.tagName || "div"),
-            isSupported = prop in el;
+        // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
+        var node = _createElement(tagName || this._node.tagName || "div"),
+            isSupported = prop in node;
 
         if (!isSupported && !prop.indexOf("on")) {
-            // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
-            el.setAttribute(prop, "return;");
+            node.setAttribute(prop, "return;");
 
-            isSupported = typeof el[prop] === "function";
+            isSupported = typeof node[prop] === "function";
         }
             
         return isSupported;

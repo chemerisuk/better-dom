@@ -7,18 +7,18 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
     (function() {
         var getStyleHooks = {},
             setStyleHooks = {},
-            rdash = /\-./g,
-            rcamel = /[A-Z]/g,
+            reDash = /\-./g,
+            reCamel = /[A-Z]/g,
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = _getComputedStyle(documentElement),
             // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
-            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(rcamel, camelCaseToDashSeparated); });
+            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(reCamel, camelCaseToDashSeparated); });
         
         _forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-                stylePropName = propName.replace(rdash, dashSeparatedToCamelCase);
+                stylePropName = propName.replace(reDash, dashSeparatedToCamelCase);
 
             // some browsers start vendor specific props in lowecase
             if (!(stylePropName in computed)) {

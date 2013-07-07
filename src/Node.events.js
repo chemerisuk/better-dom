@@ -191,8 +191,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
         if (!document.addEventListener) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
-                var legacyInputEventName = "onpropertychange",
-                    propertyChangeEventHandler = function() {
+                var propertyChangeEventHandler = function() {
                         var e = window.event;
 
                         if (e.propertyName === "value") {
@@ -200,19 +199,19 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                             $Element(e.srcElement).fire("input");
                         }
                     },
-                    capturedEl;
+                    capturedNode;
 
                 return function() {
                     var target = window.event.srcElement,
                         type = target.type;
 
-                    if (capturedEl) {
-                        capturedEl.detachEvent(legacyInputEventName, propertyChangeEventHandler);
-                        capturedEl = null;
+                    if (capturedNode) {
+                        capturedNode.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedNode = undefined;
                     }
 
                     if (type === "text" || type === "password" || type === "textarea") {
-                        (capturedEl = target).attachEvent(legacyInputEventName, propertyChangeEventHandler);
+                        (capturedNode = target).attachEvent("onpropertychange", propertyChangeEventHandler);
                     }
                 };
             })());

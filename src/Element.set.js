@@ -22,14 +22,14 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
          * link.set("some text");
          */
         $Element.prototype.set = function(name, value) {
-            var el = this._node,
+            var node = this._node,
                 nameType = typeof name;
 
             if (nameType === "string") {
                 if (value === undefined) {
                     value = name;
 
-                    if (el.type && "value" in el) {
+                    if (node.type && "value" in node) {
                         // for IE use innerText because it doesn't trigger onpropertychange
                         name = window.addEventListener ? "value" : "innerText";
                     } else {
@@ -45,13 +45,13 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
                     var hook = hooks[name];
 
                     if (hook) {
-                        hook(el, value);
+                        hook(node, value);
                     } else if (value === null) {
-                        el.removeAttribute(name);
-                    } else if (name in el) {
-                        el[name] = value;
+                        node.removeAttribute(name);
+                    } else if (name in node) {
+                        node[name] = value;
                     } else {
-                        el.setAttribute(name, value);
+                        node.setAttribute(name, value);
                     }
                 });
             } else if (nameType === "object") {
@@ -65,27 +65,27 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
 
         if (document.attachEvent) {
             // fix NoScope elements in IE < 10
-            hooks.innerHTML = function(el, value) {
-                el.innerHTML = "";
-                el.appendChild(_parseFragment(value));
+            hooks.innerHTML = function(node, value) {
+                node.innerHTML = "";
+                node.appendChild(_parseFragment(value));
             };
             
             // fix hidden attribute for IE < 10
-            hooks.hidden = function(el, value) {
+            hooks.hidden = function(node, value) {
                 if (typeof value !== "boolean") {
                     throw _makeError("set", this);
                 }
 
-                el.hidden = value;
+                node.hidden = value;
 
                 if (value) {
-                    el.setAttribute("hidden", "hidden");
+                    node.setAttribute("hidden", "hidden");
                 } else {
-                    el.removeAttribute("hidden");
+                    node.removeAttribute("hidden");
                 }
 
                 // trigger redraw in IE
-                el.style.zoom = value ? "1" : "0";
+                node.style.zoom = value ? "1" : "0";
             };
         }
     })();

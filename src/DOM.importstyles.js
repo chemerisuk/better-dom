@@ -5,8 +5,8 @@ define(["DOM", "Element"], function(DOM, $Element, _createElement, _forEach, _ma
     // -------------
 
     (function() {
-        var styleEl = documentElement.firstChild.appendChild(_createElement("style")),
-            styleSheet = styleEl.sheet || styleEl.styleSheet;
+        var styleNode = documentElement.firstChild.appendChild(_createElement("style")),
+            styleSheet = styleNode.sheet || styleNode.styleSheet;
 
         /**
          * Import global css styles on page

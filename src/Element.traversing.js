@@ -33,13 +33,11 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
 
                 var children = this._node.children,
                     matcher = SelectorMatcher(selector),
-                    el;
+                    node;
 
                 if (!document.addEventListener) {
                     // fix IE8 bug with children collection
-                    children = _filter(children, function(el) {
-                        return el.nodeType === 1;
-                    });
+                    children = _filter(children, function(node) { return node.nodeType === 1; });
                 }
 
                 if (multiple) {
@@ -49,9 +47,9 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
 
                 if (index < 0) index = children.length + index;
 
-                el = children[index];
+                node = children[index];
 
-                return $Element(!matcher || matcher.test(el) ? el : null);
+                return $Element(!matcher || matcher.test(node) ? node : null);
             };
         }
 

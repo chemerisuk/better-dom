@@ -20,45 +20,37 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
          * link.get();
          */
         $Element.prototype.get = function(name) {
-            var el = this._node,
+            var node = this._node,
                 hook = hooks[name];
 
             if (name === undefined) {
-                if (el.tagName === "OPTION") {
-                    name = el.hasAttribute("value") ? "value" : "text";
+                if (node.tagName === "OPTION") {
+                    name = node.hasAttribute("value") ? "value" : "text";
                 } else {
-                    name = el.type && "value" in el ? "value" : "innerHTML";
+                    name = node.type && "value" in node ? "value" : "innerHTML";
                 }
             } else if (typeof name !== "string") {
                 throw _makeError("get", this);
             }
 
-            return hook ? hook(el) : (name in el ? el[name] : el.getAttribute(name));
+            return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
         };
 
-        hooks.tagName = function(el) {
-            return el.nodeName.toLowerCase();
+        hooks.tagName = hooks.method = function(node, key) {
+            return node[key].toLowerCase();
         };
 
-        hooks.elements = function(el) {
-            return new $CompositeElement(el.elements);
+        hooks.elements = hooks.options = function(node, key) {
+            return new $CompositeElement(node[key]);
         };
 
-        hooks.options = function(el) {
-            return new $CompositeElement(el.options);
+        hooks.form = function(node) {
+            return $Element(node.form);
         };
 
-        hooks.form = function(el) {
-            return $Element(el.form);
-        };
-
-        hooks.type = function(el) {
+        hooks.type = function(node) {
             // some browsers don't recognize input[type=email] etc.
-            return el.getAttribute("type") || el.type;
-        };
-
-        hooks.method = function(el) {
-            return el.method.toLowerCase();
+            return node.getAttribute("type") || node.type;
         };
     })();
 });

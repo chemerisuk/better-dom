@@ -7,9 +7,9 @@ define(["Node"], function($Node, $CompositeElement) {
     /**
      * Prototype for a DOM element
      * @name $Element
-     * @constructor
      * @param element native element
      * @extends $Node
+     * @constructor
      * @private
      */
     function $Element(element) {

@@ -6,16 +6,16 @@ define(["Element"], function($Element, _createElement) {
      * @return {$Element} clone of current element
      */
     $Element.prototype.clone = function() {
-        var el;
+        var node;
 
         if (document.addEventListener) {
-            el = this._node.cloneNode(true);
+            node = this._node.cloneNode(true);
         } else {
-            el = _createElement("div");
-            el.innerHTML = this._node.outerHTML;
-            el = el.firstChild;
+            node = _createElement("div");
+            node.innerHTML = this._node.outerHTML;
+            node = node.firstChild;
         }
         
-        return new $Element(el);
+        return new $Element(node);
     };
 });

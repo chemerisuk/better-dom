@@ -25,13 +25,13 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
             _forEach(["animationstart", "oAnimationStart", "webkitAnimationStart"], function(name) {
                 document.addEventListener(name, function(e) {
                     var entry = watchers[e.animationName],
-                        el = e.target;
+                        node = e.target;
 
                     if (entry) {
                         // MUST cancelBubbling first otherwise may have extra calls in firefox
-                        if (entry.once) el.addEventListener(name, entry.once, false);
+                        if (entry.once) node.addEventListener(name, entry.once, false);
 
-                        entry.callback($Element(el));
+                        entry.callback($Element(node));
                     }
                 }, false);
             });
@@ -66,17 +66,17 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
 
             document.attachEvent("ondataavailable", function() {
                 var e = window.event,
-                    el = e.srcElement;
+                    node = e.srcElement;
 
                 if (e._type === undefined) {
                     _forEach(watchers, function(entry) {
                         // do not execute callback if it was previously excluded
                         if (_some(e.detail, function(x) { return x === entry.callback; })) return;
 
-                        if (entry.matcher.test(el)) {
-                            if (entry.once) el.attachEvent("on" + e.type, entry.once);
+                        if (entry.matcher.test(node)) {
+                            if (entry.once) node.attachEvent("on" + e.type, entry.once);
 
-                            _defer(function() { entry.callback($Element(el)); });
+                            _defer(function() { entry.callback($Element(node)); });
                         }
                     });
                 }

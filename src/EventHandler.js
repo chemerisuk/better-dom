@@ -84,10 +84,10 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
                 };
 
             return !matcher ? defaultEventHandler : function(e) {
-                var el = window.event ? window.event.srcElement : e.target;
+                var node = window.event ? window.event.srcElement : e.target;
 
-                for (; el && el !== currentTarget; el = el.parentNode) {
-                    if (matcher.test(el)) return defaultEventHandler(e);
+                for (; node && node !== currentTarget; node = node.parentNode) {
+                    if (matcher.test(node)) return defaultEventHandler(e);
                 }
             };
         };
