@@ -2,8 +2,8 @@
  * @file <%= pkg.name %>
  * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>
  * @overview <%= pkg.description %>
- * @copyright <%= pkg.author %> 2013
- * @license MIT
+ * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>
+ * @license <%= pkg.license %>
  * @see <%= pkg.repository.url %>
  */
 (function(window, document, documentElement, undefined) {
