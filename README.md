@@ -9,57 +9,22 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the library into the `bower_components` directory at the root of your project. Then just include script below on your web page:
+This will clone the latest version of the __better-dom__ into the `bower_components` directory at the root of your project. Then just include script below on your web page:
 
 ```html
-<script src="bower_components/build/better-dom.js" data-htc="bower_components/extra/better-dom.htc"></script>
+<script src="bower_components/better-dom/better-dom.js" data-htc="bower_components/better-dom/better-dom.htc"></script>
 ```
 
-## Unobtrusive
-`DOM.extend` used to define a new extension and any matched elements will be captured by it. But the coolest thing is that the same will happen even for future content inserted via `innerHTML` or using any other javascript framework.
+## Living extensions
+`DOM.extend` used to define a new extension and any matched element starts to be captured by it. But the coolest thing is that the same will happen even for future content inserted via `innerHTML` or using any other javascript framework.
 
-So as a developer you don't need to worry about when and how the extension will be initialized. Therefore it's much simpler to create new [extensions](#elastic-textarea-example) or to write [polyfills](#placeholder-polyfill-example) for old browsers.
+So as a developer you don't need to worry about when and how the extension is initialized. It just works. As a result it's much simpler to create new extensions or to write cross-browser polyfills.
 
-#### placeholder polyfill example
-This is a polyfill of the `[placeholder]` attribute for old browsers
-```js
-if (DOM.supports("placeholder", "input")) return;
-
-DOM.extend("[placeholder]", [
-    "input[style='box-sizing: border-box; position: absolute; color: graytext; background: none no-repeat 0 0; border-color: transparent']"
-], {
-    constructor: function(holder) {
-        var offset = this.offset();
-
-        this
-            .on("focus", holder, "hide")
-            .on("blur", this, "_showPlaceholder", [holder]);
-
-        holder
-            .set(this.get("placeholder"))
-            .setStyle("width", offset.right - offset.left)
-            .on("click", this, "fire", ["focus"]);
-
-        if (this.get() || this.isFocused()) holder.hide();
-
-        this.before(holder);
-    },
-    _showPlaceholder: function(holder) {
-        if (!this.get()) holder.show();
-    }
-});
-```
-Check out [live demo](http://chemerisuk.github.io/better-placeholder-polyfill/) (open in IE < 10, for example).
-
-#### elastic textarea example
-This is a textarea extension which autoresizes itself to contain all entered text.
-
-Check out [live demo](http://chemerisuk.github.io/better-elastic-textarea/) and the [extension repository](https://github.com/chemerisuk/better-elastic-textarea).
-
-#### more code: dateinput polyfill
-The extension makes `input[type=date]` controls with the same UX for all browsers.
-
-Check out [live demo](http://chemerisuk.github.io/better-dateinput-polyfill) the [extension repository](https://github.com/chemerisuk/better-dateinput-polyfill).
+#### Several examples
+* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill)
+* [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea)
+* [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill)
+* [better-form-validation](https://github.com/chemerisuk/better-form-validation)
 
 ## Event handling best practices
 Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.
