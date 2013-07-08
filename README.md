@@ -1,6 +1,6 @@
 better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 ==========
-> Sandbox for DOM extensions
+> Sandbox for living DOM extensions
 
 API description: http://chemerisuk.github.io/better-dom/.
 
