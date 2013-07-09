@@ -46,7 +46,7 @@ define([], function(documentElement, _foldl, _some) {
                         (!this.quick[1] || (el.nodeName || "").toLowerCase() === this.quick[1]) &&
                         (!this.quick[2] || el.id === this.quick[2]) &&
                         (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                        (!this.quick[4] || !!~((" " + (el.className || "") + " ").indexOf(this.quick[4])))
+                        (!this.quick[4] || (" " + (el.className || "") + " ").indexOf(this.quick[4]) >= 0)
                     );
                 }
 

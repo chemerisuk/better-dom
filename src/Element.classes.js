@@ -44,8 +44,7 @@ define(["Element"], function($Element, _every, _forEach, _makeError, documentEle
          * @function
          */
         $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
-            return !!~((" " + this._node.className + " ")
-                        .replace(rclass, " ")).indexOf(" " + className + " ");
+            return (" " + this._node.className + " ").replace(rclass, " ").indexOf(" " + className + " ") >= 0;
         });
 
         /**
@@ -55,9 +54,7 @@ define(["Element"], function($Element, _every, _forEach, _makeError, documentEle
          * @function
          */
         $Element.prototype.addClass = makeClassesMethod("add", function(className) {
-            if (!this.hasClass(className)) {
-                this._node.className += " " + className;
-            }
+            if (!this.hasClass(className)) this._node.className += " " + className;
         });
 
         /**
@@ -67,8 +64,7 @@ define(["Element"], function($Element, _every, _forEach, _makeError, documentEle
          * @function
          */
         $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
-            className = (" " + this._node.className + " ")
-                    .replace(rclass, " ").replace(" " + className + " ", " ");
+            className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
 
             this._node.className = className.substr(className[0] === " " ? 1 : 0, className.length - 2);
         });
@@ -84,9 +80,7 @@ define(["Element"], function($Element, _every, _forEach, _makeError, documentEle
 
             this.addClass(className);
 
-            if (oldClassName === this._node.className) {
-                this.removeClass(className);
-            }
+            if (oldClassName === this._node.className) this.removeClass(className);
         });
     })();
 });

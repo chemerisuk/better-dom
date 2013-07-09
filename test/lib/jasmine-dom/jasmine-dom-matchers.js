@@ -89,8 +89,8 @@ jasmine.DOM.matchers = {};
     {
       // var classes= jasmine.DOM.trim(this.actual.className).split(" ");
       // return -1!==classes.indexOf(className);
-      return !!~((" " + this.actual.className + " ")
-          .replace(/[\n\t\r]/g, " ")).indexOf(" " + className + " ");
+      return ((" " + this.actual.className + " ")
+          .replace(/[\n\t\r]/g, " ")).indexOf(" " + className + " ") >= 0;
     },
 
     toBeVisible: function()

@@ -23,7 +23,8 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
          */
         $Element.prototype.set = function(name, value) {
             var node = this._node,
-                nameType = typeof name;
+                nameType = typeof name,
+                hook;
 
             if (nameType === "string") {
                 if (value === undefined) {
@@ -41,19 +42,15 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
                     value = value.call(this, value.length ? this.get(name) : undefined);
                 }
 
-                _forEach(name.split(" "), function(name) {
-                    var hook = hooks[name];
-
-                    if (hook) {
-                        hook(node, value);
-                    } else if (value === null) {
-                        node.removeAttribute(name);
-                    } else if (name in node) {
-                        node[name] = value;
-                    } else {
-                        node.setAttribute(name, value);
-                    }
-                });
+                if (hook = hooks[name]) {
+                    hook(node, value);
+                } else if (value === null) {
+                    node.removeAttribute(name);
+                } else if (name in node) {
+                    node[name] = value;
+                } else {
+                    node.setAttribute(name, value);
+                }
             } else if (nameType === "object") {
                 _forOwn(name, processObjectParam, this);
             } else {

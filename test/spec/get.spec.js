@@ -1,14 +1,15 @@
 describe("get", function() {
     "use strict";
     
-    var link, input, textarea;
+    var link, input, textarea, form;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea>");
+        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form'><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
         textarea = DOM.find("#get_textarea");
+        form = DOM.find("#get_form");
     });
 
     it("should read an attribute value", function() {
@@ -20,6 +21,8 @@ describe("get", function() {
     it("should try to read property value first", function() {
         expect(link.get("href")).not.toBe("test.html");
         expect(input.get("tabIndex")).toBe(0);
+        expect(input.get("form")).toBe(form);
+
     });
 
     // it("should not allow to access to legacy objects", function() {

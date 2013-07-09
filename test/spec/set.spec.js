@@ -30,12 +30,12 @@ describe("set", function() {
         expect(link.set("href", null)._node).not.toHaveAttr("href");
     });
 
-    it("should accept space-separated property names", function() {
-        link.set("id href", "changed");
+    // it("should accept space-separated property names", function() {
+    //     link.set("id href", "changed");
 
-        expect(link._node).toHaveId("changed");
-        expect(link._node).toHaveAttr("href", "changed");
-    });
+    //     expect(link._node).toHaveId("changed");
+    //     expect(link._node).toHaveAttr("href", "changed");
+    // });
 
     it("should accept function", function() {
         var spy = jasmine.createSpy("setter");

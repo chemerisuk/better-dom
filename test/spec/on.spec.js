@@ -58,13 +58,15 @@ describe("on", function() {
     it("should support optional extra arguments", function() {
         var a = {}, b = {}, obj = {callback: function() {}};
 
-        spy.andCallFake(function(target, argA, argB) {
+        spy.andCallFake(function(target, currentTarget, relatedTarget, argA, argB) {
             expect(target).toBe(input);
+            expect(currentTarget).toBe(input);
+            expect(relatedTarget._node).toBeUndefined();
             expect(argA).toBe(a);
             expect(argB).toBe(b);
         });
 
-        input.on("click(target)", spy, [a, b]).fire("click");
+        input.on("click(target,currentTarget,relatedTarget)", spy, [a, b]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy = spyOn(obj, "callback");

@@ -20,20 +20,22 @@ describe("collection", function() {
     //     expect(spy.callCount).toBe(1);
     // });
 
-    // it("should have shortcut methods", function() {
-    //     var links = DOM.findAll("body"),
-    //         spy = spyOn(links[0], "on"),
-    //         callback = function() {};
+    it("should return undefined for getters and do for each for setters", function() {
+        var links = DOM.findAll("body"),
+            link = DOM.find("body"),
+            spy = jasmine.createSpy("callback");
 
-    //     _.forIn(links[0].prototype, function(value, key) {
-    //         if (~("" + value).indexOf("return this;")) {
-    //             expect(typeof links[key]).toBe("function");
-    //         }
-    //     });
+        _.forIn(link, function(value, key) {
+            if (~("" + value).indexOf("return this;")) {
+                expect(typeof links[key]).toBe("function");
+            }
+        });
 
-    //     links.on("click", callback, links);
-    //     expect(spy).toHaveBeenCalledWith("click", callback, links);
-    // });
+        link.on("click(detail)", spy);
+        links.fire("click", "abc");
+
+        expect(spy).toHaveBeenCalledWith("abc");
+    });
 
     it("should allow to invoke method for each element", function() {
         inputs.invoke("on", "focus", spy);
