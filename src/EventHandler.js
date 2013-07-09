@@ -7,37 +7,45 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
      * @constructor
      */
     var EventHandler = (function() {
-        var hooks = {}, legacyIE = !document.addEventListener;
+        var hooks = {};
 
         hooks.currentTarget = function(event, currentTarget) {
             return $Element(currentTarget);
         };
 
-        if (legacyIE) {
-            hooks.target = function(event) {
-                return $Element(event.srcElement);
-            };
-        } else {
+        if (document.addEventListener) {
             hooks.target = function(event) {
                 return $Element(event.target);
             };
-        }
-        
-        if (legacyIE) {
+
+            hooks.relatedTarget = function(event) {
+                return $Element(event.relatedTarget);
+            };
+        } else {
+            hooks.target = function(event) {
+                return $Element(event.srcElement);
+            };
+
             hooks.relatedTarget = function(event, currentTarget) {
                 var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
 
                 return $Element(event[propName]);
             };
-        } else {
-            hooks.relatedTarget = function(event) {
-                return $Element(event.relatedTarget);
-            };
-        }
 
-        if (legacyIE) {
             hooks.defaultPrevented = function(event) {
                 return event.returnValue === false;
+            };
+
+            hooks.which = function(event) {
+                var button = event.button;
+
+                if (button !== undefined) {
+                    // click: 1 === left; 2 === middle; 3 === right
+                    return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+                } else {
+                    // add which for key events
+                    return event.charCode || event.keyCode || undefined;
+                }
             };
         }
 
