@@ -11,7 +11,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
             processObjectParam = function(value, name) { this.on(name, value); },
             createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
-                        if (window.event._type === type) originalHandler();
+                        if (window.event.srcUrn === type) originalHandler();
                     };
 
                 handler.type = originalHandler.type;
@@ -149,7 +149,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 event = document.createEventObject();
 
                 // store original event type
-                event._type = isCustomEvent ? type : undefined;
+                event.srcUrn = isCustomEvent ? type : undefined;
                 event.detail = detail;
 
                 node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
