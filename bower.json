@@ -11,9 +11,10 @@
         "src",
         "extra"
     ],
-    "dependencies": {},
-    "devDependencies": {
-        "jquery": "2.0.2",
+    "dependencies": {
         "html5shiv": "3.6.2"
+    },
+    "devDependencies": {
+        "jquery": "2.0.2"
     }
 }

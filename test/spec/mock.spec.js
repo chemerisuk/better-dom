@@ -9,23 +9,16 @@ describe("DOM.mock", function() {
     });
 
     it("should populate instance with extension methods", function() {
-        setFixtures("<div class='mock'></div>");
+        var method = function() {},
+            field = new Date(),
+            el;
 
-        var method = function() {}, field = new Date();
+        DOM.extend(".mock", { method: method, field: field });
 
-        DOM.extend(".mock", {
-            method: method,
-            field: field
-        });
+        el = DOM.mock("div.mock");
 
-        waits(50);
-
-        runs(function() {
-            var el = DOM.mock(".mock");
-
-            expect(el.method).toBe(method);
-            expect(el.field).toBe(field);
-        });
+        expect(el.method).toBe(method);
+        expect(el.field).toBe(field);
     });
 
     it("should throw error if arguments are invalid", function() {

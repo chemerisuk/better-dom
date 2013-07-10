@@ -9,10 +9,20 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the __better-dom__ into the `bower_components` directory at the root of your project. Then just include script below on your web page:
+This will clone the latest version of the __better-dom__ and __html5shiv__ into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
 
 ```html
-<script src="bower_components/better-dom/better-dom.js" data-htc="bower_components/better-dom/better-dom.htc"></script>
+<!doctype html>
+<html lang="en">
+<head>
+    ...
+    <!--[if IE]><script src="bower_components/html5shiv/src/html5shiv.js"></script><![endif]-->
+</head>
+<body>
+    ...
+    <script src="bower_components/better-dom/better-dom.js" data-htc="bower_components/better-dom/better-dom.htc"></script>
+</body>
+</html>
 ```
 
 ## Living extensions
