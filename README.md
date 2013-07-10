@@ -9,14 +9,14 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the __better-dom__ and __html5shiv__ into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
+This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
 
 ```html
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     ...
-    <!--[if IE]><script src="bower_components/html5shiv/src/html5shiv.js"></script><![endif]-->
+    <!--[if IE]><script src="bower_components/html5shiv/dist/html5shiv.js"></script><![endif]-->
 </head>
 <body>
     ...
@@ -31,10 +31,11 @@ This will clone the latest version of the __better-dom__ and __html5shiv__ into 
 So as a developer you don't need to worry about when and how the extension is initialized. It just works. As a result it's much simpler to create new extensions or to write cross-browser polyfills.
 
 #### Several examples
-* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill)
-* [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea)
-* [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill)
-* [better-form-validation](https://github.com/chemerisuk/better-form-validation)
+* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
+* [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
+* [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - input[type=date] polyfill
+* [better-form-validation](https://github.com/chemerisuk/better-form-validation) - Form validation polyfill
+* [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
 
 ## Event handling best practices
 Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.
