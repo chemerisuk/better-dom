@@ -68,7 +68,7 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
                 var e = window.event,
                     node = e.srcElement;
 
-                if (e._type === undefined) {
+                if (e.srcUrn === "watch") {
                     _forEach(watchers, function(entry) {
                         // do not execute callback if it was previously excluded
                         if (_some(e.detail, function(x) { return x === entry.callback; })) return;
@@ -100,7 +100,7 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
                     once: once && function() {
                         var e = window.event;
 
-                        if (e._type === undefined) {
+                        if (e.srcUrn === "watch") {
                             (e.detail = e.detail || []).push(callback);
                         }
                     }

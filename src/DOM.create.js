@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _createElement, _parseFragment) {
+define(["DOM", "Element"], function(DOM, $Element, _parseFragment) {
     "use strict";
 
     // CREATE ELEMENT
@@ -16,7 +16,7 @@ define(["DOM", "Element"], function(DOM, $Element, _createElement, _parseFragmen
         DOM.create = function(value) {
             if (typeof value === "string") {
                 if (value.match(rquick)) {
-                    value = _createElement(value);
+                    value = document.createElement(value);
                 } else {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
@@ -31,7 +31,7 @@ define(["DOM", "Element"], function(DOM, $Element, _createElement, _parseFragmen
                     value = value.firstChild;
                 } else {
                     // wrap result with div
-                    div = _createElement("div");
+                    div = document.createElement("div");
                     div.appendChild(value);
                     value = div;
                 }

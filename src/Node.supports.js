@@ -1,4 +1,4 @@
-define(["Node"], function($Node, _createElement) {
+define(["Node"], function($Node) {
     "use strict";
 
     /**
@@ -16,7 +16,7 @@ define(["Node"], function($Node, _createElement) {
      */
     $Node.prototype.supports = function(prop, tagName) {
         // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
-        var node = _createElement(tagName || this._node.tagName || "div"),
+        var node = document.createElement(tagName || this._node.tagName || "div"),
             isSupported = prop in node;
 
         if (!isSupported && !prop.indexOf("on")) {

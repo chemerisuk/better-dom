@@ -34,4 +34,9 @@ describe("DOM.importStrings", function(){
             "[data-i18n=\"str5\"]:before", "content:\"test2\""
         );
     });
+
+    it("should throw error if arguments are invalid", function() {
+        expect(function() { DOM.importStrings(1, 2, 3); }).toThrow();
+        expect(function() { DOM.importStrings("a"); }).toThrow();
+    });
 });

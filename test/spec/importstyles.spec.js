@@ -31,7 +31,7 @@ describe("DOM.importStyles", function() {
         expect(link.getStyle("box-sizing")).toBe("border-box");
     });
 
-    it("should throw error iif arguments are invalid", function() {
+    it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStyles(1); }).toThrow();
         expect(function() { DOM.importStyles("a"); }).toThrow();
     });

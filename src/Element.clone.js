@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _createElement) {
+define(["Element"], function($Element) {
     "use strict";
 
     /**
@@ -11,7 +11,7 @@ define(["Element"], function($Element, _createElement) {
         if (document.addEventListener) {
             node = this._node.cloneNode(true);
         } else {
-            node = _createElement("div");
+            node = document.createElement("div");
             node.innerHTML = this._node.outerHTML;
             node = node.firstChild;
         }

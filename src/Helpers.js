@@ -138,63 +138,14 @@ define([], function($Element) {
         _getComputedStyle = function(el) {
             return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;
         },
-        _createElement = function(tagName) {
-            return document.createElement(tagName);
-        },
-        _createFragment = function() {
-            return document.createDocumentFragment();
-        },
         _parseFragment = (function() {
             var parser = document.createElement("body");
 
-            if (!document.addEventListener) {
-                // Add html5 elements support via:
-                // https://github.com/aFarkas/html5shiv
-                (function(){
-                    var elements = "abbr article aside audio bdi canvas data datalist details figcaption figure footer header hgroup main mark meter nav output progress section summary template time video",
-                        // Used to skip problem elements
-                        reSkip = /^<|^(?:button|map|select|textarea|object|iframe|option|optgroup)$/i,
-                        // Not all elements can be cloned in IE
-                        saveClones = /^(?:a|b|code|div|fieldset|h1|h2|h3|h4|h5|h6|i|label|li|ol|p|q|span|strong|style|table|tbody|td|th|tr|ul)$/i,
-                        create = document.createElement,
-                        frag = _createFragment(),
-                        cache = {};
-
-                    frag.appendChild(parser);
-
-                    _createElement = function(nodeName) {
-                        var node;
-
-                        if (cache[nodeName]) {
-                            node = cache[nodeName].cloneNode();
-                        } else if (saveClones.test(nodeName)) {
-                            node = (cache[nodeName] = create(nodeName)).cloneNode();
-                        } else {
-                            node = create(nodeName);
-                        }
-
-                        return node.canHaveChildren && !reSkip.test(nodeName) ? frag.appendChild(node) : node;
-                    };
-
-                    _createFragment = Function("f", "return function(){" +
-                        "var n=f.cloneNode(),c=n.createElement;" +
-                        "(" +
-                            // unroll the `createElement` calls
-                            elements.split(" ").join().replace(/\w+/g, function(nodeName) {
-                                create(nodeName);
-                                frag.createElement(nodeName);
-                                return "c('" + nodeName + "')";
-                            }) +
-                        ");return n}"
-                    )(frag);
-                })();
-            }
-
             return function(html) {
-                var fragment = _createFragment();
+                var fragment = document.createDocumentFragment();
 
                 // fix NoScope bug
-                parser.innerHTML = "<br/>" + html;
+                parser.innerHTML = "<br>" + html;
                 parser.removeChild(parser.firstChild);
 
                 while (parser.firstChild) {
