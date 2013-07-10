@@ -38,7 +38,7 @@
             processObjectParam = function(value, name) { this.on(name, value); },
             createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
-                        if (window.event._type === type) originalHandler();
+                        if (window.event.srcUrn === type) originalHandler();
                     };
 
                 handler.type = originalHandler.type;
@@ -176,7 +176,7 @@
                 event = document.createEventObject();
 
                 // store original event type
-                event._type = isCustomEvent ? type : undefined;
+                event.srcUrn = isCustomEvent ? type : undefined;
                 event.detail = detail;
 
                 node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
@@ -215,71 +215,79 @@
             };
         }
 
-        if (!document.addEventListener) {
+        if (document.attachEvent && !window.CSSKeyframesRule) {
             // input event fix via propertychange
             document.attachEvent("onfocusin", (function() {
-                var propertyChangeEventHandler = function() {
-                        var e = window.event;
-
-                        if (e.propertyName === "value") {
+                var legacyEventHandler = function() {
+                        if (capturedNode && capturedNode.value !== capturedNodeValue) {
+                            capturedNodeValue = capturedNode.value;
                             // trigger special event that bubbles
-                            $Element(e.srcElement).fire("input");
+                            $Element(capturedNode).fire("input");
                         }
                     },
-                    capturedNode;
+                    capturedNode, capturedNodeValue;
+
+                if (window.addEventListener) {
+                    // IE9 doesn't fire oninput when text is deleted, so use
+                    // legacy onselectionchange event to detect such cases
+                    // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
+                    document.attachEvent("onselectionchange", legacyEventHandler);
+                }
 
                 return function() {
                     var target = window.event.srcElement,
                         type = target.type;
 
                     if (capturedNode) {
-                        capturedNode.detachEvent("onpropertychange", propertyChangeEventHandler);
+                        capturedNode.detachEvent("onpropertychange", legacyEventHandler);
                         capturedNode = undefined;
                     }
 
                     if (type === "text" || type === "password" || type === "textarea") {
-                        (capturedNode = target).attachEvent("onpropertychange", propertyChangeEventHandler);
+                        (capturedNode = target).attachEvent("onpropertychange", legacyEventHandler);
                     }
                 };
             })());
 
-            // submit event bubbling fix
-            document.attachEvent("onkeydown", function() {
-                var e = window.event,
-                    target = e.srcElement,
-                    form = target.form;
+            if (!window.addEventListener) {
+                // submit event bubbling fix
+                document.attachEvent("onkeydown", function() {
+                    var e = window.event,
+                        target = e.srcElement,
+                        form = target.form;
 
-                if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
-                    $Element(form).fire("submit");
-
-                    return false;
-                }
-            });
-
-            document.attachEvent("onclick", (function() {
-                var handleSubmit = function() {
-                        var form = window.event.srcElement;
-
-                        form.detachEvent("onsubmit", handleSubmit);
-
+                    if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
                         $Element(form).fire("submit");
 
                         return false;
-                    };
-
-                return function() {
-                    var target = window.event.srcElement,
-                        form = target.form;
-
-                    if (form && target.type === "submit") {
-                        form.attachEvent("onsubmit", handleSubmit);
                     }
-                };
-            })());
+                });
 
-            eventHooks.submit = function(handler) {
-                handler.custom = true;
-            };
+                document.attachEvent("onclick", (function() {
+                    var handleSubmit = function() {
+                            var form = window.event.srcElement;
+
+                            form.detachEvent("onsubmit", handleSubmit);
+
+                            $Element(form).fire("submit");
+
+                            return false;
+                        };
+
+                    return function() {
+                        var target = window.event.srcElement,
+                            form = target.form;
+
+                        if (form && target.type === "submit") {
+                            form.attachEvent("onsubmit", handleSubmit);
+                        }
+                    };
+                })());
+
+                eventHooks.submit = function(handler) {
+                    handler.custom = true;
+                };
+            }
         }
     }());
 });
@@ -299,7 +307,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 07 2013 22:56:46 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed Jul 10 2013 21:22:07 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
