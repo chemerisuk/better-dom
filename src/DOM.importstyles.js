@@ -36,9 +36,5 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
                 });
             }
         };
-
-        if (!DOM.supports("hidden", "a")) {
-            DOM.importStyles("[hidden]", "display:none");
-        }
     }());
 });
