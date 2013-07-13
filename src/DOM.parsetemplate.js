@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM) {
+define(["DOM"], function(DOM, _map) {
     "use strict";
 
     // EMMET EXPRESSIONS PARSER
@@ -20,49 +20,41 @@ define(["DOM"], function(DOM) {
                 return function(expr, fmt) {
                     return (fmt + index).slice(-fmt.length).split("$").join("0");
                 };
-            };
-
-        // helper class
-        function HtmlBuilder(node, n) {
-            if (n) {
-                var parsed = reIndex.exec(node) || [],
-                    step = parsed[2] ? -1 : 1,
-                    i = parsed[3] ? +parsed[3] : 1;
-
-                if (step < 0) i += n - 1;
-
-                for (; n--; i += step) {
-                    this.push(node.replace(reIndexg, formatIndex(i)));
-                }
-            } else {
-                this.push(HtmlBuilder.parse(node));
-            }
-        }
-
-        HtmlBuilder.parse = function(term) {
-            var result = "<" + term + ">";
-
-            if (emptyElements.indexOf(" " + term + " ") < 0) {
-                result += "</" + term + ">";
-            }
-
-            return result;
-        };
-
-        HtmlBuilder.prototype = {
-            push: Array.prototype.push,
-            inject: function(term, first) {
-                for (var i = 0, n = this.length, index, el; i < n; ++i) {
-                    el = this[i];
-                    index = first ? el.indexOf(">") : el.lastIndexOf("<");
-                    // inject term into the html string
-                    this[i] = el.substr(0, index) + term + el.substr(index);
-                }
             },
-            toString: function() {
-                return Array.prototype.join.call(this, "");
-            }
-        };
+            injectTerm = function(term, first) {
+                return function(el) {
+                    var index = first ? el.indexOf(">") : el.lastIndexOf("<");
+                    // inject term into the html string
+                    return el.substr(0, index) + term + el.substr(index);
+                };
+            },
+            makeTerm = function(term) {
+                var result = "<" + term + ">";
+
+                if (emptyElements.indexOf(" " + term + " ") < 0) {
+                    result += "</" + term + ">";
+                }
+
+                return [result];
+            },
+            makeTerms = function(term, n) {
+                var parsed = reIndex.exec(term) || [],
+                    step = parsed[2] ? -1 : 1,
+                    index = parsed[3] ? +parsed[3] : 1,
+                    result = new Array(n),
+                    i = 0;
+
+                if (step < 0) index += n - 1;
+
+                for (; i < n; ++i, index += step) {
+                    result[i] = term.replace(reIndexg, formatIndex(index));
+                }
+
+                return result;
+            },
+            toString = function(xs) {
+                return typeof xs === "string" ? xs : xs.join("");
+            };
 
         /**
          * Parse emmet-like template to HTML string
@@ -136,6 +128,8 @@ define(["DOM"], function(DOM) {
 
             if (output.length === 1) output.push(">");
 
+            
+
             for (i = 0, n = output.length; i < n; ++i) {
                 str = output[i];
 
@@ -143,47 +137,52 @@ define(["DOM"], function(DOM) {
                     term = stack.shift();
                     node = stack.shift() || "?";
 
-                    if (typeof node === "string") node = new HtmlBuilder(node);
+                    if (typeof node === "string") node = makeTerm(node);
 
                     switch(str) {
                     case ".":
-                        node.inject(" class=\"" + term + "\"", true);
+                        term = injectTerm(" class=\"" + term + "\"", true);
                         break;
 
                     case "#":
-                        node.inject(" id=\"" + term + "\"", true);
+                        term = injectTerm(" id=\"" + term + "\"", true);
                         break;
 
                     case ":":
-                        node.inject(" type=\"" + term + "\"", true);
+                        term = injectTerm(" type=\"" + term + "\"", true);
                         break;
 
                     case "[":
-                        node.inject(" " + term.replace(reAttr, normalizeAttrs), true);
+                        term = injectTerm(" " + term.replace(reAttr, normalizeAttrs), true);
                         break;
 
                     case "{":
-                        node.inject(term);
+                        term = injectTerm(term);
                         break;
 
                     case "*":
-                        node = new HtmlBuilder(node.toString(), parseInt(term, 10));
+                        node = makeTerms(toString(node), parseInt(term, 10));
                         break;
 
                     default:
-                        term = typeof term === "string" ? HtmlBuilder.parse(term) : term.toString();
+                        if (typeof term === "string") term = makeTerm(term)[0];
 
-                        node[str === ">" ? "inject" : "push"](term);
-                        break;
+                        term = toString(term);
+
+                        if (str === ">") {
+                            term = injectTerm(term);
+                        } else {
+                            node.push(term);
+                        }
                     }
 
-                    str = node;
+                    str = typeof term === "function" ? _map(node, term) : node;
                 }
 
                 stack.unshift(str);
             }
 
-            return stack[0].toString().replace(reEmpty, "");
+            return toString(stack[0]).replace(reEmpty, "");
         };
     })();
 });
