@@ -52,8 +52,8 @@ define(["DOM"], function(DOM, _map) {
 
                 return result;
             },
-            toString = function(xs) {
-                return typeof xs === "string" ? xs : xs.join("");
+            toString = function(term) {
+                return typeof term === "string" ? term : term.join("");
             };
 
         /**
@@ -127,8 +127,6 @@ define(["DOM"], function(DOM, _map) {
             stack = [];
 
             if (output.length === 1) output.push(">");
-
-            
 
             for (i = 0, n = output.length; i < n; ++i) {
                 str = output[i];

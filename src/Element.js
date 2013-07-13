@@ -21,7 +21,11 @@ define(["Node"], function($Node, $CompositeElement) {
 
         $Node.call(this, element);
 
-        if (element) Array.prototype.push.call(this, this);
+        if (element) {
+            element.__dom__ = this;
+
+            Array.prototype.push.call(this, this);
+        }
     }
 
     $Element.prototype = new $Node();

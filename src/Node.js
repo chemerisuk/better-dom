@@ -16,8 +16,6 @@ define(["Helpers"], function() {
             this._node = node;
             this._data = {};
             this._listeners = [];
-
-            node.__dom__ = this;
         }
     }
 
