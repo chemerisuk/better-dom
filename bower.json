@@ -12,7 +12,7 @@
         "extra"
     ],
     "dependencies": {
-        "html5shiv": "git://github.com/chemerisuk/html5shiv.git#66f129de67994a787380850a4b741e885dfa61b9"
+        "html5shiv": "3.6.2"
     },
     "devDependencies": {
         "jquery": "latest"
