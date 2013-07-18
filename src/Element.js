@@ -5,7 +5,9 @@ define(["Node"], function($Node, $CompositeElement) {
     // -----------
 
     /**
-     * Prototype for a DOM element
+     * Array-like object that represents a DOM element. For single element methods behaves
+     * according to their description. If an element is null or it's a composite element
+     * then getters return an undefined value
      * @name $Element
      * @param element native element
      * @extends $Node
@@ -22,9 +24,7 @@ define(["Node"], function($Node, $CompositeElement) {
         $Node.call(this, element);
 
         if (element) {
-            element.__dom__ = this;
-
-            Array.prototype.push.call(this, this);
+            Array.prototype.push.call(this, element.__dom__ = this);
         }
     }
 

@@ -71,7 +71,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
         /**
          * Find all next sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {$CompositeElement} matched elements
+         * @return {$Element} collection of matched elements
          * @function
          */
         $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
@@ -79,7 +79,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
         /**
          * Find all previous sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {$CompositeElement} matched elements
+         * @return {$Element} collection of matched elements
          * @function
          */
         $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
@@ -109,7 +109,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
         /**
          * Fetch children elements filtered by optional selector
          * @param  {String} [selector] css selector
-         * @return {$CompositeElement} matched elements
+         * @return {$Element} collection of matched elements
          * @function
          */
         $Element.prototype.children = makeChildTraversingMethod(true);

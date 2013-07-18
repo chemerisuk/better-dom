@@ -147,7 +147,6 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 canContinue = node.dispatchEvent(event);
             } else {
                 event = document.createEventObject();
-
                 // store original event type
                 event.srcUrn = isCustomEvent ? type : undefined;
                 event.detail = detail;

@@ -7,7 +7,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
-            if (document.attachEvent) fasterMethodName = false;
+            if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
 
             return function(value) {
                 var valueType = typeof value,

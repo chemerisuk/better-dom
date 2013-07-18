@@ -22,7 +22,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _uniqueId, _makeEr
         /**
          * Finds element by selector
          * @param  {String} selector css selector
-         * @return {$Element} element or null if nothing was found
+         * @return {$Element} the first matched element
          * @example
          * var domBody = DOM.find("body");
          *
@@ -95,7 +95,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _uniqueId, _makeEr
         /**
          * Finds all elements by selector
          * @param  {String} selector css selector
-         * @return {$CompositeElement} elements collection
+         * @return {$Element} collection of matched elements
          */
         $Node.prototype.findAll = function(selector) {
             return this.find(selector, true);
