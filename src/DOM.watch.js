@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _forOwn, SelectorMatcher, CSSRule) {
+define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _forOwn, SelectorMatcher, CSSRule) {
     "use strict";
 
     // WATCH CALLBACK
@@ -13,7 +13,8 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
      * @function
      */
     DOM.watch = (function() {
-        var watchers, cssPrefix, scripts, behaviorUrl;
+        var animId = 19968, // use Chinese characters for animation names starting from 4E00
+            watchers, cssPrefix, scripts, behaviorUrl;
 
         if (window.CSSKeyframesRule || !document.attachEvent) {
             // Inspired by trick discovered by Daniel Buchner:
@@ -34,7 +35,7 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
             }, false);
 
             return function(selector, callback, once) {
-                var animationName = _uniqueId("DOM"),
+                var animationName = String.fromCharCode(animId++),
                     animations = [animationName];
 
                 _forOwn(watchers, function(entry, key) {

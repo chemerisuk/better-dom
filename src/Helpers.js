@@ -5,14 +5,7 @@ define([], function($Element) {
     // -------
 
     // jshint unused:false
-    var _uniqueId = (function() {
-            var idCounter = 1;
-
-            return function(prefix) {
-                return (prefix || "") + idCounter++;
-            };
-        })(),
-        _defer = function(callback) {
+    var _defer = function(callback) {
             return setTimeout(callback, 0);
         },
         _makeError = function(method, el) {

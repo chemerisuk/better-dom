@@ -1,4 +1,4 @@
-define(["Node"], function($Node, $Element, $CompositeElement, _uniqueId, _makeError) {
+define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
     "use strict";
 
     // SEARCH BY QUERY
@@ -12,7 +12,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _uniqueId, _makeEr
         var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rescape = /'|\\/g,
-            tmpId = _uniqueId("DOM");
+            tmpId = "DOM" + new Date().getTime();
 
         if (!document.getElementsByClassName) {
             // exclude getElementsByClassName from pattern
