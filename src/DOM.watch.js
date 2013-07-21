@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _forOwn, SelectorMatcher, CSSRule) {
+define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _forOwn, SelectorMatcher, CSSRule) {
     "use strict";
 
     // WATCH CALLBACK
@@ -84,9 +84,8 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
                 var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector; });
                 
                 if (behaviorExists) {
-                    // call the callback manually for each matched element
+                    // do safe call of the callback for each matched element
                     // because the behaviour is already attached to selector
-                    // also execute the callback safely
                     DOM.findAll(selector).each(function(el) {
                         _defer(function() { callback(el); });
                     });

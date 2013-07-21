@@ -31,13 +31,7 @@ define([], function(documentElement, _foldl, _some) {
 
                 if (!result) return documentElement[propertyName] && propertyName;
             }, null),
-            matchesFunc = (function() {
-                var isEqual = function(val) { return val === this; };
-
-                return function(el, selector) {
-                    return _some(document.querySelectorAll(selector), isEqual, el);
-                };
-            }());
+            isEqual = function(val) { return val === this; };
 
         ctor.prototype = {
             test: function(el) {
@@ -50,7 +44,9 @@ define([], function(documentElement, _foldl, _some) {
                     );
                 }
 
-                return matchesProp ? el[matchesProp](this.selector) : matchesFunc(el, this.selector);
+                if (matchesProp) return el[matchesProp](this.selector);
+
+                return _some(document.querySelectorAll(this.selector), isEqual, el);
             }
         };
 
