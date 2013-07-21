@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.2.1 2013-07-13T17:15:22
+ * @version 1.2.2 2013-07-21T12:00:46
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -234,7 +234,7 @@
         /**
          * Finds element by selector
          * @param  {String} selector css selector
-         * @return {$Element} element or null if nothing was found
+         * @return {$Element} the first matched element
          * @example
          * var domBody = DOM.find("body");
          *
@@ -307,7 +307,7 @@
         /**
          * Finds all elements by selector
          * @param  {String} selector css selector
-         * @return {$CompositeElement} elements collection
+         * @return {$Element} collection of matched elements
          */
         $Node.prototype.findAll = function(selector) {
             return this.find(selector, true);
@@ -559,7 +559,6 @@
                 canContinue = node.dispatchEvent(event);
             } else {
                 event = document.createEventObject();
-
                 // store original event type
                 event.srcUrn = isCustomEvent ? type : undefined;
                 event.detail = detail;
@@ -686,27 +685,27 @@
         // https://github.com/jquery/jquery
         var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
             ctor =  function(selector) {
-                if (this instanceof SelectorMatcher) {
-                    this.selector = selector;
-
-                    var quick = rquickIs.exec(selector);
-                    // TODO: support attribute value check
-                    if (this.quick = quick) {
-                        //   0  1    2   3          4
-                        // [ _, tag, id, attribute, class ]
-                        if (quick[1]) quick[1] = quick[1].toLowerCase();
-                        if (quick[4]) quick[4] = " " + quick[4] + " ";
-                    }
-                } else {
+                if (!(this instanceof SelectorMatcher)) {
                     return selector ? new SelectorMatcher(selector) : null;
+                }
+
+                this.selector = selector;
+
+                var quick = rquickIs.exec(selector);
+                // TODO: support attribute value check
+                if (this.quick = quick) {
+                    //   0  1    2   3          4
+                    // [ _, tag, id, attribute, class ]
+                    if (quick[1]) quick[1] = quick[1].toLowerCase();
+                    if (quick[4]) quick[4] = " " + quick[4] + " ";
                 }
             },
             matchesProp = _foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || documentElement[propertyName] && propertyName;
+                if (!result) return documentElement[propertyName] && propertyName;
             }, null),
-            matches = (function() {
+            matchesFunc = (function() {
                 var isEqual = function(val) { return val === this; };
 
                 return function(el, selector) {
@@ -725,12 +724,12 @@
                     );
                 }
 
-                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
+                return matchesProp ? el[matchesProp](this.selector) : matchesFunc(el, this.selector);
             }
         };
 
         return ctor;
-    })();
+    }());
 
     /**
      * Helper type to create an event handler
@@ -837,7 +836,9 @@
     // -----------
 
     /**
-     * Prototype for a DOM element
+     * Array-like object that represents a DOM element. For single element methods behaves
+     * according to their description. If an element is null or it's a composite element
+     * then getters return an undefined value
      * @name $Element
      * @param element native element
      * @extends $Node
@@ -854,9 +855,7 @@
         $Node.call(this, element);
 
         if (element) {
-            element.__dom__ = this;
-
-            Array.prototype.push.call(this, this);
+            Array.prototype.push.call(this, element.__dom__ = this);
         }
     }
 
@@ -970,7 +969,7 @@
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
-            if (document.attachEvent) fasterMethodName = false;
+            if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
 
             return function(value) {
                 var valueType = typeof value,
@@ -1438,7 +1437,7 @@
         /**
          * Find all next sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {$CompositeElement} matched elements
+         * @return {$Element} collection of matched elements
          * @function
          */
         $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
@@ -1446,7 +1445,7 @@
         /**
          * Find all previous sibling elements filtered by optional selector
          * @param {String} [selector] css selector
-         * @return {$CompositeElement} matched elements
+         * @return {$Element} collection of matched elements
          * @function
          */
         $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
@@ -1476,7 +1475,7 @@
         /**
          * Fetch children elements filtered by optional selector
          * @param  {String} [selector] css selector
-         * @return {$CompositeElement} matched elements
+         * @return {$Element} collection of matched elements
          * @function
          */
         $Element.prototype.children = makeChildTraversingMethod(true);
@@ -1554,12 +1553,9 @@
     // -----------------
 
     /**
-     * Array-like collection of elements with the same interface as $Element. Setters do
-     * processing for each element, getters return undefined value.
-     * @name $CompositeElement
-     * @extends $Element
-     * @constructor
+     * Used to represent collection of DOM elements
      * @private
+     * @constructor
      */
     function $CompositeElement(elements) {
         Array.prototype.push.apply(this, _map(elements, $Element));
@@ -1633,7 +1629,7 @@
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {$Element} new $CompositeElement of elements that passed the callback check
+         * @return {$Element} collection of elements that passed the callback check
          */
         filter: function(callback, thisArg) {
             return new $CompositeElement(_filter(this, callback, thisArg));
@@ -1707,7 +1703,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.2.1";
+    DOM.version = "1.2.2";
 
     // WATCH CALLBACK
     // --------------
@@ -2174,6 +2170,10 @@
                 });
             }
         };
+        
+        if (!DOM.supports("hidden", "a")) {
+            DOM.importStyles("[hidden]", "display:none");
+        }
     }());
 
     // READY CALLBACK

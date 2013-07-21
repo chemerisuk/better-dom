@@ -4,6 +4,11 @@ define(["Element"], function($Element, _forEach, _forIn, _map) {
     // COMPOSITE ELEMENT
     // -----------------
 
+    /**
+     * Used to represent collection of DOM elements
+     * @private
+     * @constructor
+     */
     function $CompositeElement(elements) {
         Array.prototype.push.apply(this, _map(elements, $Element));
     }

@@ -11,27 +11,27 @@ define([], function(documentElement, _foldl, _some) {
         // https://github.com/jquery/jquery
         var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
             ctor =  function(selector) {
-                if (this instanceof SelectorMatcher) {
-                    this.selector = selector;
-
-                    var quick = rquickIs.exec(selector);
-                    // TODO: support attribute value check
-                    if (this.quick = quick) {
-                        //   0  1    2   3          4
-                        // [ _, tag, id, attribute, class ]
-                        if (quick[1]) quick[1] = quick[1].toLowerCase();
-                        if (quick[4]) quick[4] = " " + quick[4] + " ";
-                    }
-                } else {
+                if (!(this instanceof SelectorMatcher)) {
                     return selector ? new SelectorMatcher(selector) : null;
+                }
+
+                this.selector = selector;
+
+                var quick = rquickIs.exec(selector);
+                // TODO: support attribute value check
+                if (this.quick = quick) {
+                    //   0  1    2   3          4
+                    // [ _, tag, id, attribute, class ]
+                    if (quick[1]) quick[1] = quick[1].toLowerCase();
+                    if (quick[4]) quick[4] = " " + quick[4] + " ";
                 }
             },
             matchesProp = _foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || documentElement[propertyName] && propertyName;
+                if (!result) return documentElement[propertyName] && propertyName;
             }, null),
-            matches = (function() {
+            matchesFunc = (function() {
                 var isEqual = function(val) { return val === this; };
 
                 return function(el, selector) {
@@ -50,10 +50,10 @@ define([], function(documentElement, _foldl, _some) {
                     );
                 }
 
-                return matchesProp ? el[matchesProp](this.selector) : matches(el, this.selector);
+                return matchesProp ? el[matchesProp](this.selector) : matchesFunc(el, this.selector);
             }
         };
 
         return ctor;
-    })();
+    }());
 });
