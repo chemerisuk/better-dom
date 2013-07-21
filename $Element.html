@@ -47,7 +47,9 @@
     
     
     <div class="description">
-        Prototype for a DOM element
+        Array-like object that represents a DOM element. For single element methods behaves
+according to their description. If an element is null or it's a composite element
+then getters return an undefined value
     </div>
     
 
@@ -1085,7 +1087,7 @@ body.child(-1); // => last child</code></pre>
         
             
 <dt>
-    <h4 class="name" id="children"><span class="type-signature"></span>children<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$CompositeElement.html">$CompositeElement</a>}</span></h4>
+    <h4 class="name" id="children"><span class="type-signature"></span>children<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -1207,7 +1209,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    matched elements
+    collection of matched elements
 </div>
 
 
@@ -1218,7 +1220,7 @@ body.child(-1); // => last child</code></pre>
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="$CompositeElement.html">$CompositeElement</a></span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -1970,7 +1972,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    new $CompositeElement of elements that passed the callback check
+    collection of elements that passed the callback check
 </div>
 
 
@@ -2110,7 +2112,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    element or null if nothing was found
+    the first matched element
 </div>
 
 
@@ -2145,7 +2147,7 @@ domBody.find(".link");
         
             
 <dt>
-    <h4 class="name" id="findAll"><span class="type-signature"></span>findAll<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="$CompositeElement.html">$CompositeElement</a>}</span></h4>
+    <h4 class="name" id="findAll"><span class="type-signature"></span>findAll<span class="signature">(selector)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -2260,7 +2262,7 @@ domBody.find(".link");
     
             
 <div class="param-desc">
-    elements collection
+    collection of matched elements
 </div>
 
 
@@ -2271,7 +2273,7 @@ domBody.find(".link");
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="$CompositeElement.html">$CompositeElement</a></span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -3951,7 +3953,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="nextAll"><span class="type-signature"></span>nextAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$CompositeElement.html">$CompositeElement</a>}</span></h4>
+    <h4 class="name" id="nextAll"><span class="type-signature"></span>nextAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -4073,7 +4075,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    matched elements
+    collection of matched elements
 </div>
 
 
@@ -4084,7 +4086,7 @@ domLink.getData("test");
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="$CompositeElement.html">$CompositeElement</a></span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -5085,7 +5087,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
         
             
 <dt>
-    <h4 class="name" id="prevAll"><span class="type-signature"></span>prevAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$CompositeElement.html">$CompositeElement</a>}</span></h4>
+    <h4 class="name" id="prevAll"><span class="type-signature"></span>prevAll<span class="signature">(<span class="optional">selector</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -5207,7 +5209,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
     
             
 <div class="param-desc">
-    matched elements
+    collection of matched elements
 </div>
 
 
@@ -5218,7 +5220,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
 	</dt>
 	<dd>
 		
-<span class="param-type"><a href="$CompositeElement.html">$CompositeElement</a></span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -7112,13 +7114,13 @@ DOM.supports("oninvalid", "input");
 </div>
 
 <nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$CompositeElement.html">$CompositeElement</a></li><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
 </nav>
 
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sat Jul 13 2013 17:15:27 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 21 2013 12:00:51 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
