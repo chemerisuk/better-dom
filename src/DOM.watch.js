@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _getComputedStyle, _forOwn, SelectorMatcher, documentElement) {
+define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer, _forEach, _uniqueId, _forOwn, SelectorMatcher, CSSRule) {
     "use strict";
 
     // WATCH CALLBACK
@@ -13,28 +13,25 @@ define(["DOM", "Element"], function(DOM, $Element, _slice, _foldl, _some, _defer
      * @function
      */
     DOM.watch = (function() {
-        var watchers, computed, cssPrefix, scripts, behaviorUrl;
+        var watchers, cssPrefix, scripts, behaviorUrl;
 
         if (window.CSSKeyframesRule || !document.attachEvent) {
             // Inspired by trick discovered by Daniel Buchner:
             // https://github.com/csuwldcat/SelectorListener
-            computed = _getComputedStyle(documentElement);
-            cssPrefix = window.CSSKeyframesRule ? "" : (_slice(computed).join().match(/-(moz|webkit)-/) || (computed.OLink === "" && ["-o-"]))[0];
+            cssPrefix = CSSRule.KEYFRAMES_RULE ? "" : "-webkit-";
             watchers = {};
 
-            _forEach(["animationstart", "oAnimationStart", "webkitAnimationStart"], function(name) {
-                document.addEventListener(name, function(e) {
-                    var entry = watchers[e.animationName],
-                        node = e.target;
+            document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
+                var entry = watchers[e.animationName],
+                    node = e.target;
 
-                    if (entry) {
-                        // MUST cancelBubbling first otherwise may have extra calls in firefox
-                        if (entry.once) node.addEventListener(name, entry.once, false);
+                if (entry) {
+                    // MUST cancelBubbling first because of extra calls in firefox
+                    if (entry.once) node.addEventListener(e.type, entry.once, false);
 
-                        entry.callback($Element(node));
-                    }
-                }, false);
-            });
+                    entry.callback($Element(node));
+                }
+            }, false);
 
             return function(selector, callback, once) {
                 var animationName = _uniqueId("DOM"),

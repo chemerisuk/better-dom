@@ -148,7 +148,7 @@ All strings are actually stored in css and `:before` pseudoelement is used to di
 
 ## Browser support
 * Chrome
-* Safari
-* Firefox
-* Opera
+* Safari 4+
+* Firefox 16+
+* Opera 12.10+
 * IE8+
