@@ -264,7 +264,7 @@ module.exports = function(grunt) {
     grunt.registerTask("speed", "Run speed suite on a specified browser", function(task, browser) {
         pkg.speed = {};
         pkg.speed.task = task;
-        pkg.speed.browser = browser || "Chrome";
+        pkg.speed.browser = browser || "PhantomJS";
         grunt.task.run(["requirejs:compile", "karma:speed"]);
     });
 
