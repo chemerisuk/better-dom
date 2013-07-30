@@ -23,10 +23,8 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
-                } else if (value && (value.nodeType === 1 || value.nodeType === 11)) {
-                    relatedNode = value;
                 } else if (value instanceof $Element) {
-                    value.each(function(el) { this[methodName](el._node); }, this);
+                    value.each(function(el) { strategy(node, el._node); });
 
                     return this;
                 } else if (value !== undefined) {
@@ -45,7 +43,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
 
         /**
          * Insert html string or native element after the current
-         * @param {String|Element|$Element} content HTML string or Element
+         * @param {String|$Element} content HTML string or $Element
          * @return {$Element}
          * @function
          */
@@ -55,7 +53,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
 
         /**
          * Insert html string or native element before the current
-         * @param {String|Element|$Element} content HTML string or Element
+         * @param {String|$Element} content HTML string or $Element
          * @return {$Element}
          * @function
          */
@@ -65,7 +63,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
 
         /**
          * Prepend html string or native element to the current
-         * @param {String|Element|$Element} content HTML string or Element
+         * @param {String|$Element} content HTML string or $Element
          * @return {$Element}
          * @function
          */
@@ -75,7 +73,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
 
         /**
          * Append html string or native element to the current
-         * @param {String|Element|$Element} content HTML string or Element
+         * @param {String|$Element} content HTML string or $Element
          * @return {$Element}
          * @function
          */
@@ -85,7 +83,7 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
 
         /**
          * Replace current element with html string or native element
-         * @param {String|Element|$Element} content HTML string or Element
+         * @param {String|$Element} content HTML string or $Element
          * @return {$Element}
          * @function
          */

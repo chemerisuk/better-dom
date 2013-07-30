@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _parseFragment) {
+define(["DOM", "Element"], function(DOM, $Element, _parseFragment, _makeError) {
     "use strict";
 
     // CREATE ELEMENT
@@ -10,36 +10,32 @@ define(["DOM", "Element"], function(DOM, $Element, _parseFragment) {
         /**
          * Create a $Element instance
          * @memberOf DOM
-         * @param  {String|Element} value native element or element tag name
+         * @param  {String} value element tag name or emmet expression
          * @return {$Element} element
          */
         DOM.create = function(value) {
-            if (typeof value === "string") {
-                if (value.match(rquick)) {
-                    value = document.createElement(value);
-                } else {
-                    if (value[0] !== "<") value = DOM.parseTemplate(value);
-
-                    value = _parseFragment(value);
-                }
+            if (typeof value !== "string") {
+                throw _makeError("create");
             }
 
-            var nodeType = value.nodeType, div;
+            if (value.match(rquick)) {
+                value = document.createElement(value);
+            } else {
+                if (value[0] !== "<") value = DOM.parseTemplate(value);
 
-            if (nodeType === 11) {
+                value = _parseFragment(value);
+
                 if (value.childNodes.length === 1) {
                     value = value.firstChild;
                 } else {
                     // wrap result with div
-                    div = document.createElement("div");
+                    var div = document.createElement("div");
                     div.appendChild(value);
                     value = div;
                 }
-            } else if (nodeType !== 1) {
-                this.error("create");
             }
 
-            return $Element(value);
+            return new $Element(value);
         };
     })();
 });

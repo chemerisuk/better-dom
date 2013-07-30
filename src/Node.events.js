@@ -112,7 +112,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
         };
 
         /**
-         * Triggers an event of specific type
+         * Triggers an event of specific type and executes it's default action if it exists
          * @param  {String} eventType type of event
          * @param  {Object} [detail] event details
          * @return {$Node}

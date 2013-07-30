@@ -55,35 +55,15 @@ describe("manipulation", function() {
             });
         });
 
-        it("should accept native object", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
-                var arg = createDiv(strategy);
-
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            });
-        });
-
-        it("should accept document fragment", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
-                var arg = createDivFragment(strategy);
-
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            });
-        });
-
         it("should accept DOMElement", function() {
             _.forOwn(checkStrategies, function(checkMethod, strategy) {
-                var arg = DOM.create(createDiv(strategy));
+                //var arg = DOM.create(createDiv(strategy));
+                var arg = DOM.create(createDivHtml(strategy)),
+                    otherDiv = DOM.create("div");
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
-            });
-        });
 
-        it("should fix html5 elements", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
-                var otherDiv = DOM.create("div");
-
-                otherDiv.set("innerHTML", "<section>This native javascript sentence is in a green box <mark>with these words highlighted</mark>?</section>");
+                otherDiv.set("<section>This native javascript sentence is in a green box <mark>with these words highlighted</mark>?</section>");
 
                 expect(checkMethod(div[strategy](otherDiv))._node).toHaveTag("div");
                 expect(otherDiv.find("section")._node).toHaveTag("section");
@@ -127,45 +107,17 @@ describe("manipulation", function() {
             expectToBeReplaced("test", "replace");
         });
 
-        it("should accept native object", function() {
-            div.replace(createDiv("replace"));
-
-            expectToBeReplaced("test", "replace");
-        });
-
-        it("should accept document fragment", function() {
-            div.replace(createDivFragment("replace"));
-
-            expectToBeReplaced("test", "replace");
-        });
-
         it("should throw error if argument is invalid", function() {
             expect(function() { div.replace(1); }).toThrow();
         });
     });
 
     function createDivHtml(className) {
-        return "<div class='" + className + "'>";
+        return "<div class='" + className + "'></div>";
     }
 
     function createDivEmmet(className) {
         return "div." + className;
-    }
-
-    function createDiv(className) {
-        var el = document.createElement("div");
-
-        el.className = className;
-
-        return el;
-    }
-
-    function createDivFragment(className) {
-        var fragment = document.createDocumentFragment();
-
-        fragment.appendChild(createDiv(className));
-
-        return fragment;
     }
 
     function expectToBeReplaced(id) {
