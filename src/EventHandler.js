@@ -47,6 +47,14 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
                     return event.charCode || event.keyCode || undefined;
                 }
             };
+
+            hooks.pageX = function(event) {
+                return event.clientX + document.body.scrollLeft;
+            };
+
+            hooks.pageY = function(event) {
+                return event.clientY + document.body.scrollTop;
+            };
         }
 
         return function(expr, context, callback, extras, currentTarget) {
