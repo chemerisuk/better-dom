@@ -147,5 +147,22 @@ define([], function($Element) {
 
                 return fragment;
             };
-        })();
+        })(),
+        _requestAnimationFrame = (function() {
+            var lastTime = 0,
+                raf = _foldl(["r", "webkitR", "mozR"], function(result, prefix) {
+                    var propertyName = prefix + "equestAnimationFrame";
+
+                    if (!result) return window[propertyName] && propertyName;
+                }, "");
+
+            return raf || function(callback) {
+                var currTime = new Date().getTime(),
+                    timeToCall = Math.max(0, 16 - (currTime - lastTime));
+
+                lastTime = currTime + timeToCall;
+
+                return setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+            };
+        }());
 });
