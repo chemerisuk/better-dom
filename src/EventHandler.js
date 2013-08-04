@@ -7,7 +7,16 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
      * @constructor
      */
     var EventHandler = (function() {
-        var hooks = {};
+        var hooks = {},
+            createCustomEventWrapper = function(originalHandler, type) {
+                var handler = function() {
+                        if (window.event.srcUrn === type) originalHandler();
+                    };
+
+                handler._type = "dataavailable";
+
+                return handler;
+            };
 
         hooks.currentTarget = function(event, currentTarget) {
             return $Element(currentTarget);
@@ -67,7 +76,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
                             args = _map(extras, function(name) {
                                 var hook = hooks[name];
 
-                                return hook ? hook(event, currentTarget) : (name === "type" ? type : event[name]);
+                                return hook ? hook(event, currentTarget._node) : (name === "type" ? type : event[name]);
                             }),
                             result;
 
@@ -89,15 +98,24 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
                             }
                         }
                     }
-                };
+                },
+                result;
 
-            return !matcher ? defaultEventHandler : function(e) {
-                var node = window.event ? window.event.srcElement : e.target;
+            result = !matcher ? defaultEventHandler : function(e) {
+                var node = window.event ? window.event.srcElement : e.target,
+                    root = currentTarget._node;
 
-                for (; node && node !== currentTarget; node = node.parentNode) {
+                for (; node && node !== root; node = node.parentNode) {
                     if (matcher.test(node)) return defaultEventHandler(e);
                 }
             };
+
+            if (!document.addEventListener && (!currentTarget.supports("on" + type) || type === "submit")) {
+                // handle custom events for IE8
+                result = createCustomEventWrapper(result, type);
+            }
+
+            return result;
         };
     }());
 });

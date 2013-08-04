@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _makeError) {
+define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _requestAnimationFrame, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -7,18 +7,27 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
     (function() {
         var eventHooks = {},
             legacyCustomEventName = "dataavailable",
-            processObjectParam = function(value, name) { this.on(name, value); },
-            createCustomEventWrapper = function(originalHandler, type) {
-                var handler = function() {
-                        if (window.event.srcUrn === type) originalHandler();
-                    };
+            processObjectParam = function(value, name) { this.on(name, value); }/*,
+            createDebouncedEventWrapper = function(originalHandler) {
+                var handler, ticking;
+
+                handler = function(e) {
+                    if (!ticking) {
+                        _requestAnimationFrame(function() {
+                            ticking = false;
+
+                            originalHandler(e);
+                        });
+
+                        ticking = true;
+                    }
+                };
 
                 handler.type = originalHandler.type;
-                handler._type = legacyCustomEventName;
                 handler.callback = originalHandler.callback;
 
                 return handler;
-            };
+            }*/;
 
         /**
          * Bind a DOM event to the context
@@ -34,7 +43,8 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
          */
         $Node.prototype.on = function(type, args, context, callback) {
-            var eventType = typeof type,
+            var node = this._node,
+                eventType = typeof type,
                 hook, handler, selector, index;
 
             if (eventType === "string") {
@@ -58,7 +68,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                     context = this;
                 }
                 
-                handler = EventHandler(type, selector, context, callback, args, this._node);
+                handler = EventHandler(type, selector, context, callback, args, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -66,12 +76,12 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 if (hook = eventHooks[type]) hook(handler);
 
                 if (document.addEventListener) {
-                    this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
-                    // handle custom events for IE8
-                    if (!this.supports("on" + type) || handler.custom) handler = createCustomEventWrapper(handler, type);
+                    // IE8 doesn't support onscroll on document level
+                    if (this === DOM && type === "scroll") node = window;
 
-                    this._node.attachEvent("on" + (handler._type || type), handler);
+                    node.attachEvent("on" + (handler._type || type), handler);
                 }
                 // store event entry
                 this._listeners.push(handler);
