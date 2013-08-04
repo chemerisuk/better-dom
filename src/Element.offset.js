@@ -6,12 +6,11 @@ define(["Element"], function($Element, documentElement) {
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     $Element.prototype.offset = function() {
-        var bodyElement = document.body,
-            boundingRect = this._node.getBoundingClientRect(),
-            clientTop = documentElement.clientTop || bodyElement.clientTop || 0,
-            clientLeft = documentElement.clientLeft || bodyElement.clientLeft || 0,
-            scrollTop = window.pageYOffset || documentElement.scrollTop || bodyElement.scrollTop,
-            scrollLeft = window.pageXOffset || documentElement.scrollLeft || bodyElement.scrollLeft;
+        var boundingRect = this._node.getBoundingClientRect(),
+            clientTop = documentElement.clientTop,
+            clientLeft = documentElement.clientLeft,
+            scrollTop = window.pageYOffset || documentElement.scrollTop,
+            scrollLeft = window.pageXOffset || documentElement.scrollLeft;
 
         return {
             top: boundingRect.top + scrollTop - clientTop,

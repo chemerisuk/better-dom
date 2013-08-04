@@ -49,11 +49,11 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
             };
 
             hooks.pageX = function(event) {
-                return event.clientX + documentElement.scrollLeft;
+                return event.clientX + documentElement.scrollLeft - documentElement.clientLeft;
             };
 
             hooks.pageY = function(event) {
-                return event.clientY + documentElement.scrollTop;
+                return event.clientY + documentElement.scrollTop - documentElement.clientTop;
             };
         }
 
@@ -65,11 +65,9 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
                         var event = e || window.event,
                             fn = isCallbackProp ? context[callback] : callback,
                             args = _map(extras, function(name) {
-                                if (name === "type") return type;
-
                                 var hook = hooks[name];
 
-                                return hook ? hook(event, currentTarget) : event[name];
+                                return hook ? hook(event, currentTarget) : (name === "type" ? type : event[name]);
                             }),
                             result;
 
