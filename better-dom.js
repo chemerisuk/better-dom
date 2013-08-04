@@ -7,7 +7,7 @@
  * @see https://github.com/chemerisuk/better-dom
  */
 (function(window, document, documentElement, undefined) {
-    "use strict";
+    "use strict"
     
     // HELPERS
     // -------

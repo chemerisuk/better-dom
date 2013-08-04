@@ -1,4 +1,4 @@
-define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
+define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentElement) {
     "use strict";
 
     /**
@@ -49,43 +49,37 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map) {
             };
 
             hooks.pageX = function(event) {
-                return event.clientX + document.body.scrollLeft;
+                return event.clientX + documentElement.scrollLeft;
             };
 
             hooks.pageY = function(event) {
-                return event.clientY + document.body.scrollTop;
+                return event.clientY + documentElement.scrollTop;
             };
         }
 
-        return function(expr, context, callback, extras, currentTarget) {
-            var matcher = SelectorMatcher(expr[3]),
+        return function(type, selector, context, callback, extras, currentTarget) {
+            var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
-                    if (EventHandler.veto !== expr[1]) {
+                    if (EventHandler.veto !== type) {
                         var event = e || window.event,
                             fn = isCallbackProp ? context[callback] : callback,
-                            result, args;
-
-                        // populate event handler arguments
-                        if (expr[2]) {
-                            args = _map(expr[2].split(","), function(name) {
-                                if (name === "type") return expr[1];
+                            args = _map(extras, function(name) {
+                                if (name === "type") return type;
 
                                 var hook = hooks[name];
 
                                 return hook ? hook(event, currentTarget) : event[name];
-                            });
-                            
-                            if (extras) args.push.apply(args, extras);
-                        } else {
-                            args = extras ? extras.slice(0) : [];
-                        }
+                            }),
+                            result;
+
+                        if (!fn) return;
 
                         // make performant call
                         if (args.length) {
-                            if (fn) result = fn.apply(context, args);
+                            result = fn.apply(context, args);
                         } else {
-                            result = isCallbackProp ? fn && context[callback]() : fn.call(context);
+                            result = isCallbackProp ? context[callback]() : fn.call(context);
                         }
 
                         // prevent default if handler returns false

@@ -48,11 +48,11 @@ describe("fire", function() {
             expect(param).toBe(detail);
         });
 
-        input.on("my:click(detail)", callback);
+        input.on("my:click", ["detail"], callback);
         input.fire("my:click", detail);
         expect(callback).toHaveBeenCalled();
 
-        input.on("click(detail)", callback);
+        input.on("click", ["detail"], callback);
         input.fire("click", detail);
         expect(callback.callCount).toBe(2);
     });

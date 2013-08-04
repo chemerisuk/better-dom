@@ -23,33 +23,43 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
         /**
          * Bind a DOM event to the context
-         * @param  {String}   type event type
+         * @param  {String}   type event type with optional selector
+         * @param  {Array}    [args] event arguments
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback
-         * @param  {Array}    [args] extra arguments
          * @return {$Node}
          * @example
          * // NOTICE: handler don't have e as the first argument
          * input.on("click", function() {...});
          * // NOTICE: event arguments in event name
-         * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
+         * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
          */
-        $Node.prototype.on = function(type, context, callback, args) {
+        $Node.prototype.on = function(type, args, context, callback) {
             var eventType = typeof type,
-                hook, handler, selector, expr;
+                hook, handler, selector, index;
 
             if (eventType === "string") {
+                index = type.indexOf(" ");
+
+                if (~index) {
+                    selector = type.substr(index + 1);
+                    type = type.substr(0, index);
+                }
+
+                // handle optional args argument
+                if (Object.prototype.toString.call(args) !== "[object Array]") {
+                    callback = context;
+                    context = args;
+                    args = undefined;
+                }
+
+                // handle optional context argument
                 if (typeof context !== "object") {
-                    args = callback;
                     callback = context;
                     context = this;
                 }
-
-                expr = rpropexpr.exec(type);
-                type = expr[1];
-                selector = expr[3];
                 
-                handler = EventHandler(expr, context, callback, args, this._node);
+                handler = EventHandler(type, selector, context, callback, args, this._node);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;

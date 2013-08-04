@@ -31,7 +31,7 @@ describe("collection", function() {
             }
         });
 
-        link.on("click(detail)", spy);
+        link.on("click", ["detail"], spy);
         links.fire("click", "abc");
 
         expect(spy).toHaveBeenCalledWith("abc");

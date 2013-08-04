@@ -56,34 +56,21 @@ describe("on", function() {
     });
 
     it("should support optional extra arguments", function() {
-        var a = {}, b = {}, obj = {callback: function() {}};
-
-        spy.andCallFake(function(target, currentTarget, relatedTarget, argA, argB) {
+        spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
             expect(relatedTarget._node).toBeUndefined();
-            expect(argA).toBe(a);
-            expect(argB).toBe(b);
         });
 
-        input.on("click(target,currentTarget,relatedTarget)", spy, [a, b]).fire("click");
+        input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy = spyOn(obj, "callback");
-        spy.andCallFake(function(argA, argB, argC) {
-            expect(argA).toBe(1);
-            expect(argB).toBe(2);
-            expect(argC).toBe(3);
-        });
-
-        input.on("click", spy, [1, 2, 3]).fire("click");
-        expect(spy).toHaveBeenCalled();
-
-        spy.andCallFake(function(type) {
+        spy.andCallFake(function(type, defaultPrevented) {
             expect(type).toBe("focus");
+            expect(defaultPrevented).toBe(false);
         });
 
-        input.on("focus(type)", spy).fire("focus");
+        input.on("focus", ["type", "defaultPrevented"], spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
@@ -181,7 +168,7 @@ describe("on", function() {
     it("should allow to prevent custom events", function() {
         var spy2 = jasmine.createSpy("spy2");
 
-        form.on("custom:on(defaultPrevented)", spy);
+        form.on("custom:on", ["defaultPrevented"], spy);
         input.on("custom:on", spy2.andReturn(false));
 
         spy.andCallFake(function(defaultPrevented) {
