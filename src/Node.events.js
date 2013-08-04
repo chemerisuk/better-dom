@@ -6,7 +6,6 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
     (function() {
         var eventHooks = {},
-            rpropexpr = /^([a-z:]+)(?:\(([^)]+)\))?\s?(.*)$/,
             legacyCustomEventName = "dataavailable",
             processObjectParam = function(value, name) { this.on(name, value); },
             createCustomEventWrapper = function(originalHandler, type) {
