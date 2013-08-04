@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _requestAnimationFrame, _makeError) {
+define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -7,27 +7,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
     (function() {
         var eventHooks = {},
             legacyCustomEventName = "dataavailable",
-            processObjectParam = function(value, name) { this.on(name, value); }/*,
-            createDebouncedEventWrapper = function(originalHandler) {
-                var handler, ticking;
-
-                handler = function(e) {
-                    if (!ticking) {
-                        _requestAnimationFrame(function() {
-                            ticking = false;
-
-                            originalHandler(e);
-                        });
-
-                        ticking = true;
-                    }
-                };
-
-                handler.type = originalHandler.type;
-                handler.callback = originalHandler.callback;
-
-                return handler;
-            }*/;
+            processObjectParam = function(value, name) { this.on(name, value); };
 
         /**
          * Bind a DOM event to the context
@@ -75,6 +55,9 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                 if (hook = eventHooks[type]) hook(handler);
 
+                // resize event supported only on window
+                if (this === DOM && type === "resize") node = window;
+
                 if (document.addEventListener) {
                     node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
@@ -117,9 +100,15 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
 
+                    // resize event supported only on window
+                    if (this === DOM && type === "resize") node = window;
+
                     if (document.removeEventListener) {
                         node.removeEventListener(type, handler, !!handler.capturing);
                     } else {
+                        // IE8 doesn't support onscroll on document level
+                        if (this === DOM && type === "scroll") node = window;
+
                         node.detachEvent("on" + type, handler);
                     }
                     

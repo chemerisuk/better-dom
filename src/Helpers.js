@@ -162,7 +162,11 @@ define([], function($Element) {
 
                 lastTime = currTime + timeToCall;
 
-                return setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+                if (timeToCall) {
+                    setTimeout(callback, timeToCall);
+                } else {
+                    callback(currTime + timeToCall);
+                }
             };
         }());
 });

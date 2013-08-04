@@ -1,4 +1,4 @@
-define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentElement) {
+define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement, _map, _requestAnimationFrame) {
     "use strict";
 
     /**
@@ -8,6 +8,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
      */
     var EventHandler = (function() {
         var hooks = {},
+            debouncedEvents = "scroll resize mousemove",
             createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
                         if (window.event.srcUrn === type) originalHandler();
@@ -16,6 +17,21 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
                 handler._type = "dataavailable";
 
                 return handler;
+            },
+            createDebouncedEventWrapper = function(originalHandler) {
+                var canProcess = true;
+
+                return function(e) {
+                    if (canProcess) {
+                        canProcess = false;
+
+                        _requestAnimationFrame(function() {
+                            originalHandler(e);
+
+                            canProcess = true;
+                        });
+                    }
+                };
             };
 
         hooks.currentTarget = function(event, currentTarget) {
@@ -110,7 +126,9 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, _map, documentEl
                 }
             };
 
-            if (!document.addEventListener && (!currentTarget.supports("on" + type) || type === "submit")) {
+            if (~debouncedEvents.indexOf(type)) {
+                result = createDebouncedEventWrapper(result);
+            } else if (!document.addEventListener && (!currentTarget.supports("on" + type) || type === "submit")) {
                 // handle custom events for IE8
                 result = createCustomEventWrapper(result, type);
             }
