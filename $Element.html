@@ -367,9 +367,6 @@ then getters return an undefined value
 <span class="param-type">String</span>
 |
 
-<span class="param-type">Element</span>
-|
-
 <span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
@@ -380,7 +377,7 @@ then getters return an undefined value
             
             
             
-            <td class="description last">HTML string or Element</td>
+            <td class="description last">HTML string or $Element</td>
         </tr>
 	
 	
@@ -411,7 +408,7 @@ then getters return an undefined value
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 52
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 50
     </li></ul></dd>
     
     
@@ -504,9 +501,6 @@ then getters return an undefined value
 <span class="param-type">String</span>
 |
 
-<span class="param-type">Element</span>
-|
-
 <span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
@@ -517,7 +511,7 @@ then getters return an undefined value
             
             
             
-            <td class="description last">HTML string or Element</td>
+            <td class="description last">HTML string or $Element</td>
         </tr>
 	
 	
@@ -548,7 +542,7 @@ then getters return an undefined value
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 82
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 80
     </li></ul></dd>
     
     
@@ -641,9 +635,6 @@ then getters return an undefined value
 <span class="param-type">String</span>
 |
 
-<span class="param-type">Element</span>
-|
-
 <span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
@@ -654,7 +645,7 @@ then getters return an undefined value
             
             
             
-            <td class="description last">HTML string or Element</td>
+            <td class="description last">HTML string or $Element</td>
         </tr>
 	
 	
@@ -685,181 +676,7 @@ then getters return an undefined value
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 62
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="$Element.html">$Element</a></span>
-
-
-	</dd>
-</dl>
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="bind"><span class="type-signature"></span>bind<span class="signature">(name, args)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Prepend extra arguments to the method with specified name
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Argument</th>
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">name of method to bind arguments with</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>args</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                    &lt;repeatable><br>
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">extra arguments to prepend to the method</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.bind.js.html">Element.bind.js</a>, line 10
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 60
     </li></ul></dd>
     
     
@@ -1415,7 +1232,7 @@ body.child(-1); // => last child</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.contains.js.html">Node.contains.js</a>, line 28
+        <a href="Node.contains.js.html">Node.contains.js</a>, line 15
     </li></ul></dd>
     
     
@@ -2295,7 +2112,7 @@ domBody.find(".link");
     
     
     <div class="description">
-        Triggers an event of specific type
+        Triggers an event of specific type and executes it's default action if it exists
     </div>
     
 
@@ -2424,7 +2241,7 @@ domBody.find(".link");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, line 127
+        <a href="Node.events.js.html">Node.events.js</a>, line 131
     </li></ul></dd>
     
     
@@ -4273,7 +4090,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, line 85
+        <a href="Node.events.js.html">Node.events.js</a>, line 83
     </li></ul></dd>
     
     
@@ -4402,7 +4219,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(type, <span class="optional">context</span>, callback, <span class="optional">args</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
+    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(type, <span class="optional">props</span>, <span class="optional">context</span>, callback)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
     
     
 </dt>
@@ -4470,7 +4287,40 @@ domLink.getData("test");
             
             
             
-            <td class="description last">event type</td>
+            <td class="description last">event type with optional selector</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>props</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                    
+                
+                </td>
+            
+            
+            
+            
+            <td class="description last">event properties to pass to the callback function</td>
         </tr>
 	
 	
@@ -4537,40 +4387,7 @@ domLink.getData("test");
             
             
             
-            <td class="description last">event callback</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>args</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">extra arguments</td>
+            <td class="description last">event callback/property name</td>
         </tr>
 	
 	
@@ -4606,7 +4423,7 @@ domLink.getData("test");
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, line 37
+        <a href="Node.events.js.html">Node.events.js</a>, line 24
     </li></ul></dd>
     
     
@@ -4647,8 +4464,8 @@ domLink.getData("test");
         
     <pre class="prettyprint"><code>// NOTICE: handler don't have e as the first argument
 input.on("click", function() {...});
-// NOTICE: event arguments in event name
-input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pre>
+// NOTICE: event properties in event name
+input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code></pre>
 
     
 </dd>
@@ -4854,9 +4671,6 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
 <span class="param-type">String</span>
 |
 
-<span class="param-type">Element</span>
-|
-
 <span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
@@ -4867,7 +4681,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
             
             
             
-            <td class="description last">HTML string or Element</td>
+            <td class="description last">HTML string or $Element</td>
         </tr>
 	
 	
@@ -4898,7 +4712,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 72
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 70
     </li></ul></dd>
     
     
@@ -5591,7 +5405,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 101
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 99
     </li></ul></dd>
     
     
@@ -5827,9 +5641,6 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
 <span class="param-type">String</span>
 |
 
-<span class="param-type">Element</span>
-|
-
 <span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
@@ -5840,7 +5651,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
             
             
             
-            <td class="description last">HTML string or Element</td>
+            <td class="description last">HTML string or $Element</td>
         </tr>
 	
 	
@@ -5871,7 +5682,7 @@ input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});</code></pr
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 92
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, line 90
     </li></ul></dd>
     
     
@@ -7120,7 +6931,7 @@ DOM.supports("oninvalid", "input");
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 21 2013 12:00:51 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Aug 11 2013 13:04:45 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

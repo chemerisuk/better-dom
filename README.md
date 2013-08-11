@@ -1,5 +1,4 @@
-better-dom 
-==========
+# better-dom 
 > Sandbox for living DOM extensions
 
 [API DESCRIPTION](http://chemerisuk.github.io/better-dom/)
@@ -18,40 +17,41 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 
 So as a developer you don't need to worry about when and how the extension is initialized. It just works. As a result it's much simpler to create new extensions or to write cross-browser polyfills.
 
-#### Several examples
+#### Usage examples
 * [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
 * [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
 * [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - input[type=date] polyfill
 * [better-form-validation](https://github.com/chemerisuk/better-form-validation) - Form validation polyfill
 * [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
+* [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine for better-dom
 
 ## Getter and setter
-Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property _is faster_, but a lot of people don't know that or just alway use attributes to keep access the same everywhere in a code.
+Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property is _faster_, but a lot of people don't know that or just always use attributes to keep code the same everywhere.
 
-To fix this confusion better-dom introduces smart getter and setter.
+The library fixes this confusion and introduces _smart_ getter and setter.
 
 
 
 ## Event handling best practices
-Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.
+Event handling is a big part of coding for DOM. There are some features included into the library that help developers to avoid potential issues and keep their code easier to maintain.
 
 #### Get rid of the event object
-Event callbacks loose the event object argument and it improves testability of code.
+Event callbacks loose the event object argument that improves testability of code.
 
 
 
 #### Correct return false interpretation
-jQuery has strange behavior of event handler that returns false and it's a [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. This library has standards-based behavior which does what everybody expected.
+jQuery has strange behavior of event handler that returns false which is a [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. This library has standards-based behavior and does what everybody expects.
 
 
 
 #### Late binding
-Usually an event lintener function is bound when some `addEventListener` method called. This causes trouble when the function value is changed. The library helps to solve the problem by allowing to handle an event using _object property_ instead of just function.
+Usually an event listener is bound when the `addEventListener` method is called. This causes trouble when the handler is changed. The library helps to solve the problem by allowing to listent to an event using _object property_ instead of just function.
 
 
 
 #### Callback systems are brittle
-The library doesn't use callback arrays, so any event listener can't break another one (read a [nice article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
+There are no callback arrays, so any event listener can't break another one (read a [nice article](http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/) for additional details).
 
 
 
@@ -77,13 +77,13 @@ To change a string language manually use setter with `lang` parameter.
 
 
 #### Behind the scenes
-All strings are actually stored in css and `:before` pseudoelement is used to display them. So the examples above actually create several css rules below:
+All strings are actually stored in css and `:before` pseudoelement is used to display them. So the code above actually create several css rules below:
 
 
 
 ## Browser support
 * Chrome
-* Safari
-* Firefox
-* Opera
+* Safari 5.2.2+
+* Firefox 16+
+* Opera 12.10+
 * IE8+

@@ -33,50 +33,48 @@
 
     (function() {
         var eventHooks = {},
-            rpropexpr = /^([a-z:]+)(?:\(([^)]+)\))?\s?(.*)$/,
-            legacyCustomEventName = "dataavailable",
-            processObjectParam = function(value, name) { this.on(name, value); },
-            createCustomEventWrapper = function(originalHandler, type) {
-                var handler = function() {
-                        if (window.event.srcUrn === type) originalHandler();
-                    };
-
-                handler.type = originalHandler.type;
-                handler._type = legacyCustomEventName;
-                handler.callback = originalHandler.callback;
-
-                return handler;
-            };
+            legacyCustomEventName = "dataavailable";
 
         /**
          * Bind a DOM event to the context
-         * @param  {String}   type event type
+         * @param  {String}   type event type with optional selector
+         * @param  {Array}    [props] event properties to pass to the callback function
          * @param  {Object}   [context] callback context
-         * @param  {Function|String} callback event callback
-         * @param  {Array}    [args] extra arguments
+         * @param  {Function|String} callback event callback/property name
          * @return {$Node}
          * @example
          * // NOTICE: handler don't have e as the first argument
          * input.on("click", function() {...});
-         * // NOTICE: event arguments in event name
-         * input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
+         * // NOTICE: event properties in event name
+         * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
          */
-        $Node.prototype.on = function(type, context, callback, args) {
-            var eventType = typeof type,
-                hook, handler, selector, expr;
+        $Node.prototype.on = function(type, props, context, callback) {
+            var node = this._node,
+                eventType = typeof type,
+                hook, handler, selector, index;
 
             if (eventType === "string") {
+                index = type.indexOf(" ");
+
+                if (~index) {
+                    selector = type.substr(index + 1);
+                    type = type.substr(0, index);
+                }
+
+                // handle optional props argument
+                if (Object.prototype.toString.call(props) !== "[object Array]") {
+                    callback = context;
+                    context = props;
+                    props = undefined;
+                }
+
+                // handle optional context argument
                 if (typeof context !== "object") {
-                    args = callback;
                     callback = context;
                     context = this;
                 }
-
-                expr = rpropexpr.exec(type);
-                type = expr[1];
-                selector = expr[3];
                 
-                handler = EventHandler(expr, context, callback, args, this._node);
+                handler = EventHandler(type, selector, context, callback, props, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
@@ -84,17 +82,17 @@
                 if (hook = eventHooks[type]) hook(handler);
 
                 if (document.addEventListener) {
-                    this._node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
-                    // handle custom events for IE8
-                    if (!this.supports("on" + type) || handler.custom) handler = createCustomEventWrapper(handler, type);
+                    // IE8 doesn't support onscroll on document level
+                    if (this === DOM && type === "scroll") node = window;
 
-                    this._node.attachEvent("on" + (handler._type || type), handler);
+                    node.attachEvent("on" + (handler._type || type), handler);
                 }
                 // store event entry
                 this._listeners.push(handler);
             } else if (eventType === "object") {
-                _forOwn(type, processObjectParam, this);
+                _forOwn(type, function(value, name) { this.on(name, value); }, this);
             } else {
                 throw _makeError("on", this);
             }
@@ -125,9 +123,15 @@
                 if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
 
+                    // resize event supported only on window
+                    if (this === DOM && type === "resize") node = window;
+
                     if (document.removeEventListener) {
                         node.removeEventListener(type, handler, !!handler.capturing);
                     } else {
+                        // IE8 doesn't support onscroll on document level
+                        if (this === DOM && type === "scroll") node = window;
+
                         node.detachEvent("on" + type, handler);
                     }
                     
@@ -139,7 +143,7 @@
         };
 
         /**
-         * Triggers an event of specific type
+         * Triggers an event of specific type and executes it's default action if it exists
          * @param  {String} eventType type of event
          * @param  {Object} [detail] event details
          * @return {$Node}
@@ -306,7 +310,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 21 2013 12:00:51 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Aug 11 2013 13:04:45 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>

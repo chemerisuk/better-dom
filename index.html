@@ -41,7 +41,7 @@
 
 
     <section>
-        <article><h1>better-dom </h1>
+        <article><h1>better-dom</h1>
 
 <blockquote><p>Sandbox for living DOM extensions</p></blockquote>
 
@@ -61,35 +61,35 @@
 
 <p>So as a developer you don&#39;t need to worry about when and how the extension is initialized. It just works. As a result it&#39;s much simpler to create new extensions or to write cross-browser polyfills.</p>
 
-<h4>Several examples</h4>
+<h4>Usage examples</h4>
 
-<ul><li><a href="https://github.com/chemerisuk/better-placeholder-polyfill">better-placeholder-polyfill</a> - Placeholder attribute polyfill</li><li><a href="https://github.com/chemerisuk/better-elastic-textarea">better-elastic-textarea</a> - Make textarea to expand on user input</li><li><a href="https://github.com/chemerisuk/better-dateinput-polyfill">better-dateinput-polyfill</a> - input[type=date] polyfill</li><li><a href="https://github.com/chemerisuk/better-form-validation">better-form-validation</a> - Form validation polyfill</li><li><a href="https://github.com/chemerisuk/better-prettydate">better-prettydate</a> - Enhances time element to update text in realtime</li></ul>
+<ul><li><a href="https://github.com/chemerisuk/better-placeholder-polyfill">better-placeholder-polyfill</a> - Placeholder attribute polyfill</li><li><a href="https://github.com/chemerisuk/better-elastic-textarea">better-elastic-textarea</a> - Make textarea to expand on user input</li><li><a href="https://github.com/chemerisuk/better-dateinput-polyfill">better-dateinput-polyfill</a> - input[type=date] polyfill</li><li><a href="https://github.com/chemerisuk/better-form-validation">better-form-validation</a> - Form validation polyfill</li><li><a href="https://github.com/chemerisuk/better-prettydate">better-prettydate</a> - Enhances time element to update text in realtime</li><li><a href="https://github.com/chemerisuk/better-ajaxify">better-ajaxify</a> - Ajax websites engine for better-dom</li></ul>
 
 <h2>Getter and setter</h2>
 
-<p>Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property <em>is faster</em>, but a lot of people don&#39;t know that or just alway use attributes to keep access the same everywhere in a code.</p>
+<p>Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property is <em>faster</em>, but a lot of people don&#39;t know that or just always use attributes to keep code the same everywhere.</p>
 
-<p>To fix this confusion better-dom introduces smart getter and setter.</p>
+<p>The library fixes this confusion and introduces <em>smart</em> getter and setter.</p>
 
 <h2>Event handling best practices</h2>
 
-<p>Events handling is a big part of writing a code for DOM. And there are some features included into the library APIs that help developers to avoid potential issues and keep their code easier to maintain in future.</p>
+<p>Event handling is a big part of coding for DOM. There are some features included into the library that help developers to avoid potential issues and keep their code easier to maintain.</p>
 
 <h4>Get rid of the event object</h4>
 
-<p>Event callbacks loose the event object argument and it improves testability of code.</p>
+<p>Event callbacks loose the event object argument that improves testability of code.</p>
 
 <h4>Correct return false interpretation</h4>
 
-<p>jQuery has strange behavior of event handler that returns false and it&#39;s a <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. This library has standards-based behavior which does what everybody expected.</p>
+<p>jQuery has strange behavior of event handler that returns false which is a <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. This library has standards-based behavior and does what everybody expects.</p>
 
 <h4>Late binding</h4>
 
-<p>Usually an event lintener function is bound when some <code>addEventListener</code> method called. This causes trouble when the function value is changed. The library helps to solve the problem by allowing to handle an event using <em>object property</em> instead of just function.</p>
+<p>Usually an event listener is bound when the <code>addEventListener</code> method is called. This causes trouble when the handler is changed. The library helps to solve the problem by allowing to listent to an event using <em>object property</em> instead of just function.</p>
 
 <h4>Callback systems are brittle</h4>
 
-<p>The library doesn&#39;t use callback arrays, so any event listener can&#39;t break another one (read a <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
+<p>There are no callback arrays, so any event listener can&#39;t break another one (read a <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
 
 <h2>Emmet expressions</h2>
 
@@ -109,11 +109,11 @@
 
 <h4>Behind the scenes</h4>
 
-<p>All strings are actually stored in css and <code>:before</code> pseudoelement is used to display them. So the examples above actually create several css rules below:</p>
+<p>All strings are actually stored in css and <code>:before</code> pseudoelement is used to display them. So the code above actually create several css rules below:</p>
 
 <h2>Browser support</h2>
 
-<ul><li>Chrome</li><li>Safari</li><li>Firefox</li><li>Opera</li><li>IE8+</li></ul></article>
+<ul><li>Chrome</li><li>Safari 5.2.2+</li><li>Firefox 16+</li><li>Opera 12.10+</li><li>IE8+</li></ul></article>
     </section>
 
 
@@ -130,7 +130,7 @@
 <br clear="both">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Jul 21 2013 12:00:51 GMT+0300 (FET)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Sun Aug 11 2013 13:04:45 GMT+0300 (FET)
 </footer>
 
 <script> prettyPrint(); </script>
