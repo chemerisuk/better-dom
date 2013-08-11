@@ -37,15 +37,15 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
             }
 
             var node = this._node,
-                quickMatch, m, elem, elements, old, nid, context;
+                quickMatch = rquickExpr.exec(selector),
+                m, elem, elements, old, nid, context;
 
-            if (quickMatch = rquickExpr.exec(selector)) {
+            if (quickMatch) {
                 // Speed-up: "#ID"
                 if (m = quickMatch[1]) {
                     elem = document.getElementById(m);
-                    // Handle the case where IE, Opera, and Webkit return items
-                    // by name instead of ID
-                    if ( elem && elem.parentNode && elem.id === m && (node === document || this.contains(elem)) ) {
+                    // Handle the case where IE, Opera, and Webkit return items by name instead of ID
+                    if ( elem && elem.parentNode && elem.id === m && (this === DOM || this.contains(elem)) ) {
                         elements = [elem];
                     }
                 // Speed-up: "TAG"
@@ -60,8 +60,8 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
                     elements = elements[0];
                 }
             } else {
-                old = true,
-                nid = tmpId,
+                old = true;
+                nid = tmpId;
                 context = node;
 
                 if (node !== document) {

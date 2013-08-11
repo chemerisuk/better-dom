@@ -8,7 +8,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
      */
     var EventHandler = (function() {
         var hooks = {},
-            debouncedEvents = "scroll resize mousemove",
+            debouncedEvents = "scroll mousemove",
             createCustomEventWrapper = function(originalHandler, type) {
                 var handler = function() {
                         if (window.event.srcUrn === type) originalHandler();

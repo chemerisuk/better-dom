@@ -6,8 +6,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
     (function() {
         var eventHooks = {},
-            legacyCustomEventName = "dataavailable",
-            processObjectParam = function(value, name) { this.on(name, value); };
+            legacyCustomEventName = "dataavailable";
 
         /**
          * Bind a DOM event to the context
@@ -55,9 +54,6 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                 if (hook = eventHooks[type]) hook(handler);
 
-                // resize event supported only on window
-                if (this === DOM && type === "resize") node = window;
-
                 if (document.addEventListener) {
                     node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 } else {
@@ -69,7 +65,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 // store event entry
                 this._listeners.push(handler);
             } else if (eventType === "object") {
-                _forOwn(type, processObjectParam, this);
+                _forOwn(type, function(value, name) { this.on(name, value); }, this);
             } else {
                 throw _makeError("on", this);
             }
