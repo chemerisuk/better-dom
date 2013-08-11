@@ -12,17 +12,17 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
         /**
          * Bind a DOM event to the context
          * @param  {String}   type event type with optional selector
-         * @param  {Array}    [args] event arguments
+         * @param  {Array}    [props] event properties to pass to the callback function
          * @param  {Object}   [context] callback context
-         * @param  {Function|String} callback event callback
+         * @param  {Function|String} callback event callback/property name
          * @return {$Node}
          * @example
          * // NOTICE: handler don't have e as the first argument
          * input.on("click", function() {...});
-         * // NOTICE: event arguments in event name
+         * // NOTICE: event properties in event name
          * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
          */
-        $Node.prototype.on = function(type, args, context, callback) {
+        $Node.prototype.on = function(type, props, context, callback) {
             var node = this._node,
                 eventType = typeof type,
                 hook, handler, selector, index;
@@ -35,11 +35,11 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                     type = type.substr(0, index);
                 }
 
-                // handle optional args argument
-                if (Object.prototype.toString.call(args) !== "[object Array]") {
+                // handle optional props argument
+                if (Object.prototype.toString.call(props) !== "[object Array]") {
                     callback = context;
-                    context = args;
-                    args = undefined;
+                    context = props;
+                    props = undefined;
                 }
 
                 // handle optional context argument
@@ -48,7 +48,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                     context = this;
                 }
                 
-                handler = EventHandler(type, selector, context, callback, args, this);
+                handler = EventHandler(type, selector, context, callback, props, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
                 handler.context = context;
