@@ -45,7 +45,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
                 if (m = quickMatch[1]) {
                     elem = document.getElementById(m);
                     // Handle the case where IE, Opera, and Webkit return items by name instead of ID
-                    if ( elem && elem.parentNode && elem.id === m && (this === DOM || this.contains(elem)) ) {
+                    if ( elem && elem.parentNode && elem.id === m && (this === DOM || node.contains(elem)) ) {
                         elements = [elem];
                     }
                 // Speed-up: "TAG"

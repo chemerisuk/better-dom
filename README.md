@@ -69,8 +69,8 @@ Event callbacks loose the event object argument that improves testability of cod
 ```js
 // NOTICE: handler don't have e as the first argument
 input.on("click", function() {...});
-// NOTICE: event arguments in event name
-input.on("keydown(keyCode,altKey)", function(keyCode, altKey) {...});
+// NOTICE: using of array to pass event properties into callback
+input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
 ```
 
 #### Correct return false interpretation
@@ -148,7 +148,7 @@ All strings are actually stored in css and `:before` pseudoelement is used to di
 
 ## Browser support
 * Chrome
-* Safari 4+
+* Safari 5.2.2+
 * Firefox 16+
 * Opera 12.10+
 * IE8+
