@@ -9,6 +9,14 @@ describe("create", function() {
         expect(link._node).toHaveTag("a");
     });
 
+    it("should create new DOM element if the first argument is native element", function() {
+        var el = DOM.create(document.createElement("em"));
+
+        setFixtures(el._node);
+
+        expect(el._node).toHaveTag("em");
+    });
+
     it("should parse HTML strings", function() {
         var el = DOM.create("<a><span></span></a>");
 
@@ -16,6 +24,12 @@ describe("create", function() {
 
         expect(el._node).toHaveTag("a");
         expect(el.child(0)._node).toHaveTag("span");
+    });
+
+    it("should wrap non-single element strings with div", function() {
+        expect(DOM.create("123")._node).toHaveTag("div");
+        expect(DOM.create("<b></b>123<a></a>")._node).toHaveTag("div");
+        expect(DOM.create("<b></b><a></a>")._node).toHaveTag("div");
     });
 
     it("should parse emmet-like expressions", function() {
@@ -39,7 +53,8 @@ describe("create", function() {
 
     it("should throw error if argument is invalid", function() {
         expect(function() { DOM.create(2); }).toThrow();
-        expect(function() { DOM.create(document.createElement("a")); }).toThrow();
+        expect(function() { DOM.create(null); }).toThrow();
+        expect(function() { DOM.create({}); }).toThrow();
     });
 
 });
