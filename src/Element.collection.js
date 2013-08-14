@@ -54,10 +54,10 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {$Element} collection of elements that passed the callback check
+         * @return {Array} new array with elements where callback returned true
          */
         filter: function(callback, thisArg) {
-            return new $CompositeElement(_filter(this, callback, thisArg));
+            return _filter(this, callback, thisArg);
         },
 
         /**

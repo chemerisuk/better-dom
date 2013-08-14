@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _makeError) {
+define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _slice, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -21,7 +21,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * // NOTICE: event properties in event name
          * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
          */
-        $Node.prototype.on = function(type, props, context, callback) {
+        $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
             var node = this._node,
                 eventType = typeof type,
                 hook, handler, selector, index;
@@ -36,6 +36,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                 // handle optional props argument
                 if (Object.prototype.toString.call(props) !== "[object Array]") {
+                    once = callback;
                     callback = context;
                     context = props;
                     props = undefined;
@@ -43,8 +44,20 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                 // handle optional context argument
                 if (typeof context !== "object") {
+                    once = callback;
                     callback = context;
                     context = this;
+                }
+
+                if (once) {
+                    callback = (function(thisPtr, originalCallback) {
+                        return function() {
+                            // remove event listener
+                            thisPtr.off(handler.type, handler.context, callback);
+
+                            return originalCallback.apply(this, arguments);
+                        };
+                    }(this, callback));
                 }
                 
                 handler = EventHandler(type, selector, context, callback, props, this);
@@ -74,6 +87,22 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
         };
 
         /**
+         * Bind a DOM event to the context and the callback only fire once before being removed
+         * @param  {String}   type event type with optional selector
+         * @param  {Array}    [props] event properties to pass to the callback function
+         * @param  {Object}   [context] callback context
+         * @param  {Function|String} callback event callback/property name
+         * @return {$Node}
+         */
+        $Node.prototype.once = function() {
+            var args = _slice(arguments);
+
+            args.push(true);
+
+            return $Node.prototype.on.apply(this, args);
+        };
+
+        /**
          * Unbind a DOM event from the context
          * @param  {String}          type event type
          * @param  {Object}          [context] callback context
@@ -85,7 +114,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 throw _makeError("off", this);
             }
 
-            if (typeof context !== "object") {
+            if (arguments.length === 2) {
                 callback = context;
                 context = !callback ? undefined : this;
             }
@@ -95,9 +124,6 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                 if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
-
-                    // resize event supported only on window
-                    if (this === DOM && type === "resize") node = window;
 
                     if (document.removeEventListener) {
                         node.removeEventListener(type, handler, !!handler.capturing);

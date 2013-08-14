@@ -55,7 +55,7 @@ describe("on", function() {
         expect(location.hash).not.toBe("#test");
     });
 
-    it("should support optional extra arguments", function() {
+    it("should allow to pass event propertient into callback", function() {
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);

@@ -81,7 +81,7 @@ describe("collection", function() {
             expect(this).toBe(obj);
 
             return el.get("options").length;
-        }, obj)).toEqual(DOM.findAll("0"));
+        }, obj)).toEqual([]);
 
         expect(inputs.foldl(function(memo, el, index, a) {
             if (index === 0) expect(memo).toBe("");
