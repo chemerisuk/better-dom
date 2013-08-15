@@ -59,22 +59,7 @@ module.exports = function(grunt) {
         },
         karma: {
             unit: {
-                configFile: "test/lib/karma.conf"
-            },
-            speed: {
-                configFile: "test/lib/karma.conf",
-                browsers: ["<%= pkg.speed.browser %>"],
-                options: {
-                    files: [
-                        "node_modules/benchmark/benchmark.js",
-                        "test/lib/benchmine/benchmine-env.js",
-                        "test/lib/karma-benchmine-adapter.js",
-                        "test/lib/benchmine/benchmine-report-karma.js",
-                        "bower_components/jquery/jquery.js",
-                        "build/*.js",
-                        "test/speed/<%= pkg.speed.task %>.suite.js"
-                    ]
-                }
+                configFile: "test/lib/karma.conf.js"
             }
         },
         shell: {
@@ -260,13 +245,6 @@ module.exports = function(grunt) {
         "copy:readme",
         "jsdoc"
     ]);
-
-    grunt.registerTask("speed", "Run speed suite on a specified browser", function(task, browser) {
-        pkg.speed = {};
-        pkg.speed.task = task;
-        pkg.speed.browser = browser || "PhantomJS";
-        grunt.task.run(["requirejs:compile", "karma:speed"]);
-    });
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
