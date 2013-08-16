@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.3.0 2013-08-11T13:04:38
+ * @version 1.3.1 2013-08-16T12:15:20
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -431,7 +431,7 @@
          * // NOTICE: event properties in event name
          * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
          */
-        $Node.prototype.on = function(type, props, context, callback) {
+        $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
             var node = this._node,
                 eventType = typeof type,
                 hook, handler, selector, index;
@@ -446,6 +446,7 @@
 
                 // handle optional props argument
                 if (Object.prototype.toString.call(props) !== "[object Array]") {
+                    once = callback;
                     callback = context;
                     context = props;
                     props = undefined;
@@ -453,8 +454,20 @@
 
                 // handle optional context argument
                 if (typeof context !== "object") {
+                    once = callback;
                     callback = context;
                     context = this;
+                }
+
+                if (once) {
+                    callback = (function(thisPtr, originalCallback) {
+                        return function() {
+                            // remove event listener
+                            thisPtr.off(handler.type, handler.context, callback);
+
+                            return originalCallback.apply(this, arguments);
+                        };
+                    }(this, callback));
                 }
                 
                 handler = EventHandler(type, selector, context, callback, props, this);
@@ -484,6 +497,22 @@
         };
 
         /**
+         * Bind a DOM event to the context and the callback only fire once before being removed
+         * @param  {String}   type event type with optional selector
+         * @param  {Array}    [props] event properties to pass to the callback function
+         * @param  {Object}   [context] callback context
+         * @param  {Function|String} callback event callback/property name
+         * @return {$Node}
+         */
+        $Node.prototype.once = function() {
+            var args = _slice(arguments);
+
+            args.push(true);
+
+            return $Node.prototype.on.apply(this, args);
+        };
+
+        /**
          * Unbind a DOM event from the context
          * @param  {String}          type event type
          * @param  {Object}          [context] callback context
@@ -495,7 +524,7 @@
                 throw _makeError("off", this);
             }
 
-            if (typeof context !== "object") {
+            if (arguments.length === 2) {
                 callback = context;
                 context = !callback ? undefined : this;
             }
@@ -505,9 +534,6 @@
 
                 if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                     type = handler._type || handler.type;
-
-                    // resize event supported only on window
-                    if (this === DOM && type === "resize") node = window;
 
                     if (document.removeEventListener) {
                         node.removeEventListener(type, handler, !!handler.capturing);
@@ -1638,10 +1664,10 @@
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [thisArg]  callback context
-         * @return {$Element} collection of elements that passed the callback check
+         * @return {Array} new array with elements where callback returned true
          */
         filter: function(callback, thisArg) {
-            return new $CompositeElement(_filter(this, callback, thisArg));
+            return _filter(this, callback, thisArg);
         },
 
         /**
@@ -1712,7 +1738,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.3.0";
+    DOM.version = "1.3.1";
 
     // WATCH CALLBACK
     // --------------
@@ -1830,32 +1856,33 @@
         /**
          * Create a $Element instance
          * @memberOf DOM
-         * @param  {String} value element tag name or emmet expression
+         * @param  {Element|String} value element/tag name or emmet expression
          * @return {$Element} element
          */
         DOM.create = function(value) {
-            if (typeof value !== "string") {
-                throw _makeError("create");
-            }
-
-            if (value.match(rquick)) {
-                value = document.createElement(value);
-            } else {
-                if (value[0] !== "<") value = DOM.parseTemplate(value);
-
-                value = _parseFragment(value);
-
-                if (value.childNodes.length === 1) {
-                    value = value.firstChild;
+            if (typeof value === "string") {
+                if (value.match(rquick)) {
+                    value = document.createElement(value);
                 } else {
-                    // wrap result with div
-                    var div = document.createElement("div");
-                    div.appendChild(value);
-                    value = div;
+                    if (value[0] !== "<") value = DOM.parseTemplate(value);
+
+                    var sandbox = document.createElement("div");
+
+                    sandbox.innerHTML = value;
+
+                    if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
+                        value = sandbox.removeChild(sandbox.firstChild);
+                    } else {
+                        value = sandbox; // result will be wrapped with the div
+                    }
                 }
             }
 
-            return new $Element(value);
+            if (value.nodeType !== 1) {
+                throw _makeError("create", this);
+            }
+
+            return $Element(value);
         };
     })();
 
