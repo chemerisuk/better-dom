@@ -3,44 +3,20 @@ module.exports = function(grunt) {
 
     var pkg = grunt.file.readJSON("package.json"),
         gruntDeps = function(name) {
-            return !name.indexOf("grunt-") && name !== "grunt-template-jasmine-istanbul";
+            return !name.indexOf("grunt-");
         };
 
     grunt.initConfig({
         pkg: pkg,
 
-        jasmine: {
-            options: {
-                vendor: [
-                    "test/lib/jasmine-dom/jasmine-dom-fixtures.js",
-                    "test/lib/jasmine-dom/jasmine-dom-matchers.js",
-                    "node_modules/lodash/lodash.js"
-                ],
-                specs: "test/spec/*.spec.js",
-                keepRunner: true
-            },
-            unit: {
-                src: ["build/*.js"]
-            },
-            coverage: {
-                src: ["build/*.js"],
-                options: {
-                    template: require("grunt-template-jasmine-istanbul"),
-                    templateOptions: {
-                        coverage: "coverage/coverage.json",
-                        report: "coverage"
-                    }
-                }
-            }
-        },
         watch: {
             jasmine: {
                 files: ["test/spec/*.js"],
-                tasks: ["jasmine:coverage"]
+                tasks: ["karma:coverage:run"]
             },
             build: {
                 files: ["src/*.js"],
-                tasks: ["requirejs", "jasmine:coverage"]
+                tasks: ["requirejs", "karma:coverage:run"]
             }
         },
         jshint: {
@@ -58,8 +34,20 @@ module.exports = function(grunt) {
             }
         },
         karma: {
-            unit: {
+            options: {
                 configFile: "test/lib/karma.conf.js"
+            },
+            all: {
+                browsers: ["PhantomJS", "Chrome", "Opera", "Safari", "Firefox"],
+                singleRun: true
+            },
+            coverage: {
+                preprocessors: { "build/*.js": "coverage" },
+                reporters: ["coverage", "progress"],
+                background: true
+            },
+            unit: {
+                singleRun: true
             }
         },
         shell: {
@@ -214,15 +202,17 @@ module.exports = function(grunt) {
     Object.keys(pkg.devDependencies).filter(gruntDeps).forEach(grunt.loadNpmTasks);
 
     grunt.registerTask("dev", [
-        "test",
+        "requirejs:compile",
+        "jshint",
         "connect",
+        "karma:coverage",
         "watch"
     ]);
 
     grunt.registerTask("test", [
         "requirejs:compile",
         "jshint",
-        "jasmine:unit"
+        "karma:unit"
     ]);
 
     grunt.registerTask("default", [
@@ -266,7 +256,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "shell:checkVersionTag",
-            "karma:unit",
+            "karma:all",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "requirejs:compile",

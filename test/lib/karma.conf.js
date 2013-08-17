@@ -2,10 +2,9 @@ module.exports = function(config) {
     "use strict";
 
     config.set({
-        singleRun: true,
         basePath: "../..",
         frameworks: ["jasmine"],
-        browsers: ["PhantomJS", "Chrome", "Opera", "Safari", "Firefox"],
+        browsers: ["PhantomJS"],
         logLevel: config.LOG_DISABLE,
         files: [
             "test/lib/jasmine-dom/*.js",
