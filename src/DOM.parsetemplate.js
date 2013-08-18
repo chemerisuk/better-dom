@@ -8,7 +8,7 @@ define(["DOM"], function(DOM, _map) {
         // operator type / priority object
         var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
             emptyElements = " area base br col hr img input link meta param command keygen source ",
-            reEmpty = /<\?>|<\/\?>/g,
+            reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
             reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
             normalizeAttrs = function(term, name, value, a, b, simple) {
@@ -18,11 +18,11 @@ define(["DOM"], function(DOM, _map) {
             indexTerm = function(term) {
                 term = toString(term);
 
-                return function(_, i, arr) {
+                return function(undefined, i, arr) {
                     return term.replace(reIndex, function(expr, fmt, sign, base) {
                         var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
                         // make zero-padding index string
-                        return (new Array(fmt.length).join("0") + index).slice(-fmt.length);
+                        return (fmt + index).slice(-fmt.length).split("$").join("0");
                     });
                 };
             },
@@ -149,7 +149,7 @@ define(["DOM"], function(DOM, _map) {
                         break;
 
                     case "*":
-                        node = _map(new Array(parseInt(term, 10)), indexTerm(node));
+                        node = _map(new Array(+term), indexTerm(node));
                         break;
 
                     default:
@@ -170,7 +170,7 @@ define(["DOM"], function(DOM, _map) {
                 stack.unshift(str);
             }
 
-            return toString(stack[0]).replace(reEmpty, "");
+            return toString(stack[0]).replace(reTextTag, "");
         };
     })();
 });

@@ -37,6 +37,7 @@ describe("once", function() {
         expect(spy).toHaveBeenCalled();
         expect(location.hash).not.toBe("#once_test");
 
+        link._node.onclick = function() { return false; };
         link.fire("click");
         expect(spy.callCount).toBe(1);
     });
