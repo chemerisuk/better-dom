@@ -10,15 +10,20 @@ define(["DOM"], function(DOM, _map) {
             emptyElements = " area base br col hr img input link meta param command keygen source ",
             reEmpty = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
-            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
-            reIndexg = new RegExp(reIndex.source, "g"),
+            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
                 return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
             },
-            formatIndex = function(index) {
-                return function(expr, fmt) {
-                    return (fmt + index).slice(-fmt.length).split("$").join("0");
+            indexTerm = function(term) {
+                term = toString(term);
+
+                return function(_, i, arr) {
+                    return term.replace(reIndex, function(expr, fmt, sign, base) {
+                        var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
+                        // make zero-padding index string
+                        return (new Array(fmt.length).join("0") + index).slice(-fmt.length);
+                    });
                 };
             },
             injectTerm = function(term, first) {
@@ -36,21 +41,6 @@ define(["DOM"], function(DOM, _map) {
                 }
 
                 return [result];
-            },
-            makeTerms = function(term, n) {
-                var parsed = reIndex.exec(term) || [],
-                    step = parsed[2] ? -1 : 1,
-                    index = parsed[3] ? +parsed[3] : 1,
-                    result = new Array(n),
-                    i = 0;
-
-                if (step < 0) index += n - 1;
-
-                for (; i < n; ++i, index += step) {
-                    result[i] = term.replace(reIndexg, formatIndex(index));
-                }
-
-                return result;
             },
             toString = function(term) {
                 return typeof term === "string" ? term : term.join("");
@@ -159,7 +149,7 @@ define(["DOM"], function(DOM, _map) {
                         break;
 
                     case "*":
-                        node = makeTerms(toString(node), parseInt(term, 10));
+                        node = _map(new Array(parseInt(term, 10)), indexTerm(node));
                         break;
 
                     default:

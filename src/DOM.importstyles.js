@@ -9,7 +9,7 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
             styleSheet = styleNode.sheet || styleNode.styleSheet;
 
         /**
-         * Import global css styles on page
+         * Append global css styles
          * @memberOf DOM
          * @param {String|Object} selector css selector or object with selector/rules pairs
          * @param {String} styles css rules

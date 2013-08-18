@@ -83,6 +83,8 @@ describe("DOM.parseTemplate", function() {
         checkExpr("(span.i$)*3", "<span class=\"i1\"></span><span class=\"i2\"></span><span class=\"i3\"></span>");
         // checkExpr("(p.i$+ul>li.i$*2>span.s$)*3", "<p class=\"i1\"></p><ul><li class=\"i1\"><span class=\"s1\"></span></li><li class=\"i2\"><span class=\"s2\"></span></li></ul><p class=\"i2\"></p><ul><li class=\"i1\"><span class=\"s1\"></span></li><li class=\"i2\"><span class=\"s2\"></span></li></ul><p class=\"i3\"></p><ul><li class=\"i1\"><span class=\"s1\"></span></li><li class=\"i2\"><span class=\"s2\"></span></li></ul>");
         checkExpr("p.p$*2>(i.i$+b.b$)*3", "<p class=\"p1\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p><p class=\"p2\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p>");
+        // checkExpr("a.c[d=$@2]*3>b>{Card $@-5}", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
+        checkExpr("(a.c[d=$@2]>b>{Card $@-5})*3", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
     });
 
     describe("type attribute", function() {
