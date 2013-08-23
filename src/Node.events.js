@@ -59,7 +59,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                         };
                     }(this, callback));
                 }
-                
+
                 handler = EventHandler(type, selector, context, callback, props, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
@@ -88,7 +88,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
         /**
          * Bind a DOM event to the context and the callback only fire once before being removed
-         * @param  {String}   type event type with optional selector
+         * @param  {String}   type type of event with optional selector to filter by
          * @param  {Array}    [props] event properties to pass to the callback function
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
@@ -104,7 +104,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
         /**
          * Unbind a DOM event from the context
-         * @param  {String}          type event type
+         * @param  {String}          type type of event
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
          * @return {$Node}
@@ -133,7 +133,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                         node.detachEvent("on" + type, handler);
                     }
-                    
+
                     delete events[index];
                 }
             }, this);
@@ -143,7 +143,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
         /**
          * Triggers an event of specific type and executes it's default action if it exists
-         * @param  {String} eventType type of event
+         * @param  {String} type type of event
          * @param  {Object} [detail] event details
          * @return {$Node}
          * @example
@@ -191,7 +191,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
             if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
                 // Prevent re-triggering of the same event
                 EventHandler.veto = type;
-                
+
                 node[type]();
 
                 EventHandler.veto = false;

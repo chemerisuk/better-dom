@@ -1,7 +1,7 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Sandbox for living DOM extensions
 
-[API DESCRIPTION](http://chemerisuk.github.io/better-dom/)
+[API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):

@@ -19,7 +19,8 @@
     "immed": true,
     "latedef": true,
     "nonew": true,
-    
+    "lastsemic": true,
+
     "globals": {
         "_": true,
         "DOM": true,

@@ -20,16 +20,9 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
         }
         
         /**
-         * Finds element by selector
+         * Find the first matched element by css selector
          * @param  {String} selector css selector
          * @return {$Element} the first matched element
-         * @example
-         * var domBody = DOM.find("body");
-         *
-         * domBody.find("#element");
-         * // returns $Element with id="element"
-         * domBody.find(".link");
-         * // returns first element with class="link"
          */
         $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
             if (typeof selector !== "string") {
@@ -93,7 +86,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
         };
 
         /**
-         * Finds all elements by selector
+         * Finds all matched elements by css selector
          * @param  {String} selector css selector
          * @return {$Element} collection of matched elements
          */

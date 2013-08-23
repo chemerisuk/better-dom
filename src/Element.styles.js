@@ -3,18 +3,19 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
 
     // STYLES MANIPULATION
     // -------------------
-    
+
     (function() {
         var getStyleHooks = {},
             setStyleHooks = {},
             reDash = /\-./g,
             reCamel = /[A-Z]/g,
+            directions = ["Top", "Right", "Bottom", "Left"],
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = _getComputedStyle(documentElement),
             // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
             props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(reCamel, camelCaseToDashSeparated); });
-        
+
         _forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
@@ -36,13 +37,13 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
             }
         });
 
-        // shortcuts
+        // normalize property shortcuts
         _forOwn({
             font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-            padding: ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"],
-            margin: ["marginTop", "marginRight", "marginBottom", "marginLeft"],
-            "border-width": ["borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth"],
-            "border-style": ["borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle"]
+            padding: _map(directions, function(dir) { return "padding" + dir }),
+            margin: _map(directions, function(dir) { return "margin" + dir }),
+            "border-width": _map(directions, function(dir) { return "border" + dir + "Width" }),
+            "border-style": _map(directions, function(dir) { return "border" + dir + "Style" })
         }, function(value, key) {
             getStyleHooks[key] = function(style) {
                 var result = [],
@@ -66,7 +67,7 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
                 return style.styleFloat;
             };
         }
-        
+
         _forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
             // Exclude the following css properties to add px
             setStyleHooks[propName] = function(name, value) {
@@ -76,7 +77,7 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
 
         /**
          * Get css style from element
-         * @param  {String} name property name
+         * @param  {String} name     property name
          * @return {String} property value
          */
         $Element.prototype.getStyle = function(name) {
@@ -102,8 +103,8 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
 
         /**
          * Set css style for element
-         * @param {String} name  property name
-         * @param {String} value property value
+         * @param {String|Object} name  property name or key/value pair
+         * @param {String}        value property value
          * @return {$Element}
          */
         $Element.prototype.setStyle = function(name, value) {
