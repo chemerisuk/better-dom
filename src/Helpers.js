@@ -46,7 +46,7 @@ define([], function($Element) {
 
         // OBJECT UTILS
         // ------------
-        
+
         _forIn = function(obj, callback, thisPtr) {
             for (var prop in obj) {
                 callback.call(thisPtr, obj[prop], prop, obj);
@@ -88,7 +88,7 @@ define([], function($Element) {
 
         // COLLECTION UTILS
         // ----------------
-        
+
         _forEach = makeLoopMethod({
             BODY:   "cb.call(that, a[i], i, a)",
             AFTER:  "return a"

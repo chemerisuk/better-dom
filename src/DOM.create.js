@@ -10,13 +10,20 @@ define(["DOM", "Element"], function(DOM, $Element, _makeError) {
         /**
          * Create a $Element instance
          * @memberOf DOM
-         * @param  {Element|String} value element/tag name or emmet expression
+         * @param  {Element|String} value        element/tag name or emmet expression
+         * @param  {Object}         [attributes] key/value pairs of the element attributes
+         * @param  {Object}         [styles]     key/value pairs of the element styles
          * @return {$Element} element
          */
-        DOM.create = function(value) {
+        DOM.create = function(value, attributes, styles) {
             if (typeof value === "string") {
                 if (value.match(rquick)) {
-                    value = document.createElement(value);
+                    value = new $Element(document.createElement(value));
+
+                    if (attributes && typeof attributes === "object") value.set(attributes);
+                    if (styles && typeof styles === "object") value.setStyle(styles);
+
+                    return value;
                 } else {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
