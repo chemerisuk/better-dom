@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM, _map) {
+define(["DOM"], function(DOM, _map, _forEach) {
     "use strict";
 
     // EMMET EXPRESSIONS PARSER
@@ -7,7 +7,6 @@ define(["DOM"], function(DOM, _map) {
     (function() {
         // operator type / priority object
         var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
-            emptyElements = " area base br col hr img input link meta param command keygen source ",
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
             reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
@@ -33,15 +32,24 @@ define(["DOM"], function(DOM, _map) {
                     return el.substr(0, index) + term + el.substr(index);
                 };
             },
-            makeTerm = function(term) {
-                var result = "<" + term + ">";
+            makeTerm = (function(){
+                var results = {};
 
-                if (emptyElements.indexOf(" " + term + " ") < 0) {
-                    result += "</" + term + ">";
-                }
+                // populate empty tags
+                _forEach("area base br col hr img input link meta param command keygen source".split(" "), function(tag) {
+                    results[tag] = "<" + tag + ">";
+                });
 
-                return [result];
-            },
+                return function(term) {
+                    var result = results[term];
+
+                    if (!result) {
+                        results[term] = result = "<" + term + "></" + term + ">";
+                    }
+
+                    return [result];
+                };
+            }()),
             toString = function(term) {
                 return typeof term === "string" ? term : term.join("");
             };
@@ -149,7 +157,7 @@ define(["DOM"], function(DOM, _map) {
                         break;
 
                     case "*":
-                        node = _map(Array(+term), indexTerm(node));
+                        node = _map(Array(term | 0), indexTerm(node));
                         break;
 
                     default:

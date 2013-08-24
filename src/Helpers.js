@@ -122,7 +122,7 @@ define([], function($Element) {
             AFTER:  "return out"
         }),
         _slice = function(list, index) {
-            return Array.prototype.slice.call(list, index || 0);
+            return Array.prototype.slice.call(list, index | 0);
         },
 
         // DOM UTILS

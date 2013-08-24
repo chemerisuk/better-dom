@@ -86,31 +86,22 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
             var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
+                    e = e || window.event;
+
                     if (EventHandler.veto !== type) {
-                        var event = e || window.event,
-                            fn = isCallbackProp ? context[callback] : callback,
+                        var fn = isCallbackProp ? context[callback] : callback,
                             args = _map(extras, function(name) {
                                 var hook = hooks[name];
 
-                                return hook ? hook(event, currentTarget._node) : (name === "type" ? type : event[name]);
-                            }),
-                            result;
+                                return hook ? hook(e, currentTarget._node) : (name === "type" ? type : e[name]);
+                            });
 
-                        if (!fn) return;
-
-                        // make performant call
-                        if (args.length) {
-                            result = fn.apply(context, args);
-                        } else {
-                            result = isCallbackProp ? context[callback]() : fn.call(context);
-                        }
-
-                        // prevent default if handler returns false
-                        if (result === false) {
-                            if (event.preventDefault) {
-                                event.preventDefault();
+                        if (fn && fn.apply(context, args) === false) {
+                            // prevent default if handler returns false
+                            if (e.preventDefault) {
+                                e.preventDefault();
                             } else {
-                                event.returnValue = false;
+                                e.returnValue = false;
                             }
                         }
                     }
