@@ -1,0 +1,25 @@
+{
+    "tags"      : {
+        "allowUnknownTags" : true
+    },
+    "plugins"   : ["plugins/markdown"],
+    "templates" : {
+        "cleverLinks"     : false,
+        "monospaceLinks"  : false,
+        "default"         : {
+            "outputSourceFiles" : true
+        },
+        "systemName"      : "better-dom",
+        "footer"          : "",
+        "copyright"       : "",
+        "navType"         : "vertical",
+        "theme"           : "spacelab",
+        "linenums"        : false,
+        "collapseSymbols" : false,
+        "inverseNav"      : false
+    },
+    "markdown"  : {
+        "parser"   : "gfm",
+        "hardwrap" : true
+    }
+}

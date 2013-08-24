@@ -29,7 +29,9 @@ module.exports = function(grunt) {
             dist: {
                 src: ["src/*.js", "jsdoc/README.md"],
                 options: {
-                    destination: "jsdoc"
+                    destination: "jsdoc",
+                    template: "node_modules/ink-docstrap/template",
+                    configure: "extra/jsdoc.conf.json"
                 }
             }
         },
@@ -127,8 +129,8 @@ module.exports = function(grunt) {
                 options: {
                     processContent: function(content) {
                         return content
-                            // remove build status indicator
-                            .replace(/\[!\[Build Status\][^\n]*/, "")
+                            // remove the first line
+                            .replace(/^# .+/, "&nbsp;")
                             // remove source code
                             .replace(/```[^`]+```/g, "");
                     }
