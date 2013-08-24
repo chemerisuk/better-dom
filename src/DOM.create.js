@@ -17,13 +17,8 @@ define(["DOM", "Element"], function(DOM, $Element, _makeError) {
          */
         DOM.create = function(value, attributes, styles) {
             if (typeof value === "string") {
-                if (value.match(rquick)) {
+                if (rquick.test(value)) {
                     value = new $Element(document.createElement(value));
-
-                    if (attributes && typeof attributes === "object") value.set(attributes);
-                    if (styles && typeof styles === "object") value.setStyle(styles);
-
-                    return value;
                 } else {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
@@ -32,18 +27,22 @@ define(["DOM", "Element"], function(DOM, $Element, _makeError) {
                     sandbox.innerHTML = value;
 
                     if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
-                        value = sandbox.removeChild(sandbox.firstChild);
-                    } else {
-                        value = sandbox; // result will be wrapped with the div
+                        // remove temporary element
+                        sandbox = sandbox.removeChild(sandbox.firstChild);
                     }
+
+                    value = new $Element(sandbox);
                 }
+
+                if (attributes) value.set(attributes);
+                if (styles) value.setStyle(styles);
+
+                return value;
             }
 
-            if (value.nodeType !== 1) {
-                throw _makeError("create", this);
-            }
+            if (value.nodeType === 1) return $Element(value);
 
-            return $Element(value);
+            throw _makeError("create", this);
         };
     })();
 });

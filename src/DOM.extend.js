@@ -49,7 +49,7 @@ define(["DOM", "Element"], function(DOM, $Element, _map, _forOwn, _forEach, _ext
                 // extending element prototype
                 _extend($Element.prototype, mixins);
             } else {
-                var clones = _map(template, DOM.create),
+                var clones = _map(template, function(html) { return DOM.create(html); }),
                     watcher = function(el) {
                         _extend(el, mixins);
 

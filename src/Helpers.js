@@ -94,7 +94,7 @@ define([], function($Element) {
             AFTER:  "return a"
         }),
         _map = makeLoopMethod({
-            BEFORE: "var out = new Array(a && a.length || 0)",
+            BEFORE: "var out = Array(a && a.length || 0)",
             BODY:   "out[i] = cb.call(that, a[i], i, a)",
             AFTER:  "return out"
         }),

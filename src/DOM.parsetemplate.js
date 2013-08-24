@@ -60,7 +60,7 @@ define(["DOM"], function(DOM, _map) {
                 i, n, str, priority, skip, node;
 
             // parse exrpression into RPN
-            
+
             for (i = 0, n = template.length; i < n; ++i) {
                 str = template[i];
                 // concat .c1.c2 into single space separated class string
@@ -149,7 +149,7 @@ define(["DOM"], function(DOM, _map) {
                         break;
 
                     case "*":
-                        node = _map(new Array(+term), indexTerm(node));
+                        node = _map(Array(+term), indexTerm(node));
                         break;
 
                     default:
