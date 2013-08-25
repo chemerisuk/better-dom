@@ -1,6 +1,6 @@
 describe("extend", function() {
     "use strict";
-    
+
     var WAIT_FOR_WATCH_TIME = 50,
         callback;
 
@@ -29,7 +29,7 @@ describe("extend", function() {
 
         DOM.extend(".extend01", callback.andCallFake(function() {
             expect(this).toBe(link);
-            
+
             link.hide();
         }));
 
@@ -72,28 +72,6 @@ describe("extend", function() {
         });
     });
 
-    it("should pass optional template into constructor", function() {
-        var template = ["<i class='x1'></i>", "b#x2"];
-
-        callback.andCallFake(function(x1, x2) {
-            expect(x1).toBeDefined();
-            expect(x1._node).toHaveClass("x1");
-            expect(x1._node).toHaveTag("i");
-
-            expect(x2).toBeDefined();
-            expect(x2._node).toHaveId("x2");
-            expect(x2._node).toHaveTag("b");
-        });
-
-        DOM.extend("#expr", template, callback);
-
-        waits(WAIT_FOR_WATCH_TIME);
-
-        runs(function() {
-            expect(callback).toHaveBeenCalled();
-        });
-    });
-
     it("should allow extending the element prototype", function() {
         DOM.extend("*", {
             test: function() {}
@@ -101,7 +79,7 @@ describe("extend", function() {
 
         expect(DOM.create("a").test).toBeDefined();
     });
-    
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.extend(1); }).toThrow();
         expect(function() { DOM.extend(" * ", function() {}); }).toThrow();
