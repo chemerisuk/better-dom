@@ -4,6 +4,12 @@ define(["DOM", "Element"], function(DOM, _forEach, _makeError, _slice) {
     // IMPORT SCRIPTS
     // --------------
 
+    /**
+     * Import external scripts on the page and call optional callback when it will be done
+     * @memberOf DOM
+     * @param {...String} url        script file urls
+     * @param {Function}  [callback] callback that is triggered when all scripts are loaded
+     */
     DOM.importScripts = function() {
         var args = _slice(arguments),
             body = DOM.find("body"),
