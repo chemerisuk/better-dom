@@ -4,82 +4,80 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
     // ELEMENT COLLECTION EXTESIONS
     // ----------------------------
 
-    _extend($Element.prototype, {
-        /**
-         * Executes callback on each element in the collection
-         * @memberOf $Element.prototype
-         * @param  {Function} callback callback function
-         * @param  {Object}   [context]  callback context
-         * @return {$Element}
-         */
-        each: function(callback, context) {
-            return _forEach(this, callback, context);
-        },
+    (function() {
+        var makeCollectionMethod = function(fn) {
+                var code = fn.toString();
+                // extract function body
+                code = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
+                // use this variable unstead of a
+                code = code.replace(/a([^\w])/g, function(a, symbol) { return "this" + symbol; });
+                // compile the function
+                return Function("cb", "that", code);
+            };
 
-        /**
-         * Checks if the callback returns true for any element in the collection
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [context]  callback context
-         * @return {Boolean} true, if any element in the collection return true
-         */
-        some: function(callback, context) {
-            return _some(this, callback, context);
-        },
+        _extend($Element.prototype, {
+            /**
+             * Executes callback on each element in the collection
+             * @memberOf $Element.prototype
+             * @param  {Function} callback callback function
+             * @param  {Object}   [context]  callback context
+             * @return {$Element}
+             */
+            each: makeCollectionMethod(_forEach),
 
-        /**
-         * Checks if the callback returns true for all elements in the collection
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [context]  callback context
-         * @return {Boolean} true, if all elements in the collection returns true
-         */
-        every: function(callback, context) {
-            return _every(this, callback, context);
-        },
+            /**
+             * Checks if the callback returns true for any element in the collection
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Boolean} true, if any element in the collection return true
+             */
+            some: makeCollectionMethod(_some),
 
-        /**
-         * Creates an array of values by running each element in the collection through the callback
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [context]  callback context
-         * @return {Array} new array of the results of each callback execution
-         */
-        map: function(callback, context) {
-            return _map(this, callback, context);
-        },
+            /**
+             * Checks if the callback returns true for all elements in the collection
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Boolean} true, if all elements in the collection returns true
+             */
+            every: makeCollectionMethod(_every),
 
-        /**
-         * Examines each element in a collection, returning an array of all elements the callback returns truthy for
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [context]  callback context
-         * @return {Array} new array with elements where callback returned true
-         */
-        filter: function(callback, context) {
-            return _filter(this, callback, context);
-        },
+            /**
+             * Creates an array of values by running each element in the collection through the callback
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Array} new array of the results of each callback execution
+             */
+            map: makeCollectionMethod(_map),
 
-        /**
-         * Boils down a list of values into a single value (from start to end)
-         * @memberOf $Element.prototype
-         * @param  {Function} callback callback function
-         * @param  {Object}   [memo]   initial value of the accumulator
-         * @return {Object} the accumulated value
-         */
-        reduce: function(callback, memo) {
-            return _foldl(this, callback, memo);
-        },
+            /**
+             * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Array} new array with elements where callback returned true
+             */
+            filter: makeCollectionMethod(_filter),
 
-        /**
-         * Boils down a list of values into a single value (from end to start)
-         * @memberOf $Element.prototype
-         * @param  {Function} callback callback function
-         * @param  {Object}   [memo]   initial value of the accumulator
-         * @return {Object} the accumulated value
-         */
-        reduceRight: function(callback, memo) {
-            return _foldr(this, callback, memo);
-        }
-    });
+            /**
+             * Boils down a list of values into a single value (from start to end)
+             * @memberOf $Element.prototype
+             * @param  {Function} callback callback function
+             * @param  {Object}   [memo]   initial value of the accumulator
+             * @return {Object} the accumulated value
+             */
+            reduce: makeCollectionMethod(_foldl),
+
+            /**
+             * Boils down a list of values into a single value (from end to start)
+             * @memberOf $Element.prototype
+             * @param  {Function} callback callback function
+             * @param  {Object}   [memo]   initial value of the accumulator
+             * @return {Object} the accumulated value
+             */
+            reduceRight: makeCollectionMethod(_foldr),
+        });
+    }());
 });
