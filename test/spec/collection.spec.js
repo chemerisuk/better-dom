@@ -2,7 +2,7 @@ describe("collection", function() {
     "use strict";
 
     var inputs, spy;
-   
+
     beforeEach(function(){
         setFixtures("<div id='collection'><input class='c1'><input class='c2'><input class='c3'></div>");
 
@@ -37,17 +37,17 @@ describe("collection", function() {
         expect(spy).toHaveBeenCalledWith("abc");
     });
 
-    it("should allow to invoke method for each element", function() {
-        inputs.invoke("on", "focus", spy);
+    // it("should allow to invoke method for each element", function() {
+    //     inputs.invoke("on", "focus", spy);
 
-        expect(inputs.invoke("fire", "focus"));
-        expect(spy.callCount).toBe(3);
+    //     expect(inputs.invoke("fire", "focus"));
+    //     expect(spy.callCount).toBe(3);
 
-        expect(inputs.invoke("hide"));
-        expect(inputs.every(function(el) { return el.isHidden(); })).toBe(true);
+    //     expect(inputs.invoke("hide"));
+    //     expect(inputs.every(function(el) { return el.isHidden(); })).toBe(true);
 
-        expect(function() { inputs.invoke(); }).toThrow();
-    });
+    //     expect(function() { inputs.invoke(); }).toThrow();
+    // });
 
     it("should have basic collection methods", function() {
         var obj = {};
@@ -83,14 +83,14 @@ describe("collection", function() {
             return el.get("options").length;
         }, obj)).toEqual([]);
 
-        expect(inputs.foldl(function(memo, el, index, a) {
+        expect(inputs.reduce(function(memo, el, index, a) {
             if (index === 0) expect(memo).toBe("");
 
             expect(a).toBe(inputs);
             return memo + el.get("className");
         }, "")).toBe("c1c2c3");
 
-        expect(inputs.foldr(function(memo, el, index, a) {
+        expect(inputs.reduceRight(function(memo, el, index, a) {
             if (index === 2) expect(memo).toBe("");
 
             expect(a).toBe(inputs);
@@ -98,16 +98,16 @@ describe("collection", function() {
         }, "")).toBe("c3c2c1");
     });
 
-    it("should have aliases", function() {
-        _.forOwn({
-            all: "every",
-            any: "some",
-            select: "filter",
-            reduce: "foldl",
-            reduceRight: "foldr",
-            collect: "map"
-        }, function(value, key) {
-            expect(inputs[key]).toBe(inputs[value]);
-        });
-    });
+    // it("should have aliases", function() {
+    //     _.forOwn({
+    //         all: "every",
+    //         any: "some",
+    //         select: "filter",
+    //         reduce: "foldl",
+    //         reduceRight: "foldr",
+    //         collect: "map"
+    //     }, function(value, key) {
+    //         expect(inputs[key]).toBe(inputs[value]);
+    //     });
+    // });
 });

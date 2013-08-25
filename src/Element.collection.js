@@ -17,7 +17,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
         },
 
         /**
-         * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
+         * Checks if the callback returns true for any element in the collection
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [context]  callback context
@@ -28,7 +28,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
         },
 
         /**
-         * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
+         * Checks if the callback returns true for all elements in the collection
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [context]  callback context
@@ -39,7 +39,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
         },
 
         /**
-         * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
+         * Creates an array of values by running each element in the collection through the callback
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [context]  callback context
@@ -50,7 +50,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
         },
 
         /**
-         * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
+         * Examines each element in a collection, returning an array of all elements the callback returns truthy for
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
          * @param  {Object}   [context]  callback context
@@ -61,10 +61,10 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
         },
 
         /**
-         * (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
+         * Boils down a list of values into a single value (from start to end)
          * @memberOf $Element.prototype
          * @param  {Function} callback callback function
-         * @param  {Object}   memo     initial value of the accumulator
+         * @param  {Object}   [memo]   initial value of the accumulator
          * @return {Object} the accumulated value
          */
         reduce: function(callback, memo) {
@@ -72,49 +72,14 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
         },
 
         /**
-         * (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
+         * Boils down a list of values into a single value (from end to start)
          * @memberOf $Element.prototype
          * @param  {Function} callback callback function
-         * @param  {Object}   memo     initial value of the accumulator
+         * @param  {Object}   [memo]   initial value of the accumulator
          * @return {Object} the accumulated value
          */
         reduceRight: function(callback, memo) {
             return _foldr(this, callback, memo);
-        },
-
-        /**
-         * Calls the method named by name on each element in the collection
-         * @memberOf $Element.prototype
-         * @param  {String}    name   name of the method
-         * @param  {...Object} [args] arguments for the method call
-         * @return {$Element}
-         */
-        invoke: function(name) {
-            var args = _slice(arguments, 1);
-
-            if (typeof name !== "string") {
-                throw _makeError("invoke", this);
-            }
-
-            return _forEach(this, function(el) {
-                if (args.length) {
-                    el[name].apply(el, args);
-                } else {
-                    el[name]();
-                }
-            });
         }
     });
-
-    // aliases
-    _forOwn({
-        all: "every",
-        any: "some",
-        collect: "map",
-        select: "filter",
-        foldl: "reduce",
-        foldr: "reduceRight"
-    }, function(value, key) {
-        this[key] = this[value];
-    }, $Element.prototype);
 });
