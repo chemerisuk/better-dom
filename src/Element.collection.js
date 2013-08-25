@@ -22,6 +22,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback callback function
              * @param  {Object}   [context]  callback context
              * @return {$Element}
+             * @function
              */
             each: makeCollectionMethod(_forEach),
 
@@ -31,6 +32,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback   callback function
              * @param  {Object}   [context]  callback context
              * @return {Boolean} true, if any element in the collection return true
+             * @function
              */
             some: makeCollectionMethod(_some),
 
@@ -40,6 +42,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback   callback function
              * @param  {Object}   [context]  callback context
              * @return {Boolean} true, if all elements in the collection returns true
+             * @function
              */
             every: makeCollectionMethod(_every),
 
@@ -49,6 +52,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback   callback function
              * @param  {Object}   [context]  callback context
              * @return {Array} new array of the results of each callback execution
+             * @function
              */
             map: makeCollectionMethod(_map),
 
@@ -58,6 +62,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback   callback function
              * @param  {Object}   [context]  callback context
              * @return {Array} new array with elements where callback returned true
+             * @function
              */
             filter: makeCollectionMethod(_filter),
 
@@ -67,6 +72,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback callback function
              * @param  {Object}   [memo]   initial value of the accumulator
              * @return {Object} the accumulated value
+             * @function
              */
             reduce: makeCollectionMethod(_foldl),
 
@@ -76,6 +82,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} callback callback function
              * @param  {Object}   [memo]   initial value of the accumulator
              * @return {Object} the accumulated value
+             * @function
              */
             reduceRight: makeCollectionMethod(_foldr),
         });

@@ -131,6 +131,8 @@ module.exports = function(grunt) {
                         return content
                             // remove the first line
                             .replace(/^# .+/, "&nbsp;")
+                            // remove docs link
+                            .replace("[API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)", "")
                             // remove source code
                             .replace(/```[^`]+```/g, "");
                     }
