@@ -180,7 +180,7 @@ module.exports = function(grunt) {
                     "Element.set", "Element.styles", "Element.traversing",
                     "Element.visibility", "Element.collection", "CompositeElement", "NullElement",
                     "DOM.watch", "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles",
-                    "DOM.ready", "DOM.importstrings", "DOM.title"
+                    "DOM.ready", "DOM.importscripts", "DOM.importstrings", "DOM.title"
                 ],
                 onBuildWrite: function(id, path, contents) {
                     return contents.replace(/^define\(.*?\{\s*"use strict";[\r\n]*([.\s\S]+)\}\);\s*$/m, "$1");

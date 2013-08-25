@@ -21,7 +21,7 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn, _makeError) {
      */
     DOM.importStrings = (function() {
         var rparam = /\{([a-z\-]+)\}/g,
-            toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\""; };
+            toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
         return function(key, pattern, lang) {
             var keyType = typeof key,
@@ -29,7 +29,7 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn, _makeError) {
 
             if (keyType === "string") {
                 selector = "[data-i18n=\"" + key + "\"]";
-                
+
                 if (lang) selector += ":lang(" + lang + ")";
 
                 content = "content:\"" + pattern.replace(rparam, toContentAttr) + "\"";
@@ -44,6 +44,8 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn, _makeError) {
             } else {
                 throw _makeError("importStrings", this);
             }
+
+            return this;
         };
     }());
 

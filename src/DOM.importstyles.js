@@ -35,8 +35,10 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
                     styleSheet.addRule(selector, styles);
                 });
             }
+
+            return this;
         };
-        
+
         if (!DOM.supports("hidden", "a")) {
             DOM.importStyles("[hidden]", "display:none");
         }
