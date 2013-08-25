@@ -14,17 +14,6 @@ define(["DOM"], function(DOM, _map, _forEach) {
                 // always wrap attribute values with quotes if they don't exist
                 return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
             },
-            indexTerm = function(term) {
-                term = toString(term);
-
-                return function(undefined, i, arr) {
-                    return term.replace(reIndex, function(expr, fmt, sign, base) {
-                        var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
-                        // make zero-padding index string
-                        return (fmt + index).slice(-fmt.length).split("$").join("0");
-                    });
-                };
-            },
             injectTerm = function(term, first) {
                 return function(el) {
                     var index = first ? el.indexOf(">") : el.lastIndexOf("<");
@@ -32,7 +21,7 @@ define(["DOM"], function(DOM, _map, _forEach) {
                     return el.substr(0, index) + term + el.substr(index);
                 };
             },
-            makeTerm = (function(){
+            makeTerm = (function() {
                 var results = {};
 
                 // populate empty tags
@@ -40,16 +29,25 @@ define(["DOM"], function(DOM, _map, _forEach) {
                     results[tag] = "<" + tag + ">";
                 });
 
-                return function(term) {
-                    var result = results[term];
+                return function(tag) {
+                    var result = results[tag];
 
                     if (!result) {
-                        results[term] = result = "<" + term + "></" + term + ">";
+                        results[tag] = result = "<" + tag + "></" + tag + ">";
                     }
 
                     return [result];
                 };
             }()),
+            makeIndexedTerm = function(term) {
+                return function(_, i, arr) {
+                    return term.replace(reIndex, function(expr, fmt, sign, base) {
+                        var index = (sign ? arr.length - i - 1 : i) + (base ? base | 0 : 1);
+                        // make zero-padding index string
+                        return (fmt + index).slice(-fmt.length).split("$").join("0");
+                    });
+                };
+            },
             toString = function(term) {
                 return typeof term === "string" ? term : term.join("");
             };
@@ -157,7 +155,7 @@ define(["DOM"], function(DOM, _map, _forEach) {
                         break;
 
                     case "*":
-                        node = _map(Array(term | 0), indexTerm(node));
+                        node = _map(Array(term | 0), makeIndexedTerm(toString(node)));
                         break;
 
                     default:
