@@ -5,9 +5,9 @@ define(["Helpers"], function() {
     // --------
 
     /**
-     * Prototype for a DOM node
+     * Used to represent a DOM node
      * @name $Node
-     * @param node native object
+     * @param node {Object} native node
      * @constructor
      * @private
      */

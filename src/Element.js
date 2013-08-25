@@ -1,15 +1,13 @@
-define(["Node"], function($Node, $CompositeElement) {
+define(["Node"], function($Node, $NullElement) {
     "use strict";
-    
+
     // DOM ELEMENT
     // -----------
 
     /**
-     * Array-like object that represents a DOM element/collection. For single element methods
-     * behaves according to their description. If an element is empty or it's a collection
-     * then getters return an undefined value
+     * Used to represent a DOM element (length == 1)
      * @name $Element
-     * @param element native element
+     * @param element {Object} native element
      * @extends $Node
      * @constructor
      * @private
@@ -18,7 +16,7 @@ define(["Node"], function($Node, $CompositeElement) {
         if (element && element.__dom__) return element.__dom__;
 
         if (!(this instanceof $Element)) {
-            return element ? new $Element(element) : new $CompositeElement();
+            return element ? new $Element(element) : new $NullElement();
         }
 
         $Node.call(this, element);

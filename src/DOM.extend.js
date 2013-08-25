@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _map, _forOwn, _forEach, _extend, _slice, _makeError) {
+define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, _forEach, _extend, _slice, _makeError) {
     "use strict";
 
     (function(){
@@ -57,7 +57,7 @@ define(["DOM", "Element"], function(DOM, $Element, _map, _forOwn, _forEach, _ext
                 throw _makeError("mock", this);
             }
 
-            var el = content ? DOM.create(content) : $Element(),
+            var el = content ? DOM.create(content) : new $NullElement(),
                 makeMock = function(el) {
                     _forOwn(watchers, function(watchers, selector) {
                         if (el.matches(selector)) {

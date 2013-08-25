@@ -176,9 +176,9 @@ module.exports = function(grunt) {
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
                     "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
                     "Element.set", "Element.styles", "Element.traversing",
-                    "Element.visibility", "Element.collection", "CompositeElement", "DOM.watch",
-                    "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.ready",
-                    "DOM.importstrings", "DOM.title"
+                    "Element.visibility", "Element.collection", "CompositeElement", "NullElement",
+                    "DOM.watch", "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles",
+                    "DOM.ready", "DOM.importstrings", "DOM.title"
                 ],
                 onBuildWrite: function(id, path, contents) {
                     return contents.replace(/^define\(.*?\{\s*"use strict";[\r\n]*([.\s\S]+)\}\);\s*$/m, "$1");

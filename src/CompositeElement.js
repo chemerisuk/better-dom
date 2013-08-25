@@ -1,13 +1,13 @@
 define(["Element"], function($Element, _forEach, _forIn, _map) {
     "use strict";
 
-    // COMPOSITE ELEMENT
-    // -----------------
-
     /**
-     * Used to represent collection of DOM elements
-     * @private
+     * Used to represent a collection of DOM elements (length >= 1)
+     * @name $CompositeElement
+     * @param elements {Array|Object} array or array-like object with native elements
+     * @extends $Element
      * @constructor
+     * @private
      */
     function $CompositeElement(elements) {
         Array.prototype.push.apply(this, _map(elements, $Element));

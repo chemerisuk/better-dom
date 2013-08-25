@@ -9,55 +9,55 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
          * Executes callback on each element in the collection
          * @memberOf $Element.prototype
          * @param  {Function} callback callback function
-         * @param  {Object}   [thisArg]  callback context
+         * @param  {Object}   [context]  callback context
          * @return {$Element}
          */
-        each: function(callback, thisArg) {
-            return _forEach(this, callback, thisArg);
+        each: function(callback, context) {
+            return _forEach(this, callback, context);
         },
 
         /**
          * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
+         * @param  {Object}   [context]  callback context
          * @return {Boolean} true, if any element in the collection return true
          */
-        some: function(callback, thisArg) {
-            return _some(this, callback, thisArg);
+        some: function(callback, context) {
+            return _some(this, callback, context);
         },
 
         /**
          * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
+         * @param  {Object}   [context]  callback context
          * @return {Boolean} true, if all elements in the collection returns true
          */
-        every: function(callback, thisArg) {
-            return _every(this, callback, thisArg);
+        every: function(callback, context) {
+            return _every(this, callback, context);
         },
 
         /**
          * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
+         * @param  {Object}   [context]  callback context
          * @return {Array} new array of the results of each callback execution
          */
-        map: function(callback, thisArg) {
-            return _map(this, callback, thisArg);
+        map: function(callback, context) {
+            return _map(this, callback, context);
         },
 
         /**
          * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
          * @memberOf $Element.prototype
          * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
+         * @param  {Object}   [context]  callback context
          * @return {Array} new array with elements where callback returned true
          */
-        filter: function(callback, thisArg) {
-            return _filter(this, callback, thisArg);
+        filter: function(callback, context) {
+            return _filter(this, callback, context);
         },
 
         /**
