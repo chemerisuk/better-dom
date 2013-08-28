@@ -81,6 +81,11 @@ jQuery has strange behavior of event handler that returns false which is a [caus
 DOM.find("a").on("click", function() { return false; });
 ```
 
+#### stopPropagation is evil
+If you need to call stopPropagation in an event handler in 95% situations you are doing something wrong. Solutions that utilize this function becomes to be complex, moreover they introduce compatability problems. Probably every experienced javascript developer had a issue where a third party script has blocked some useful event and there is no way to fix exept forking the extension's source code.
+
+That's why it's _not_ possible to call stopPropagation using better-dom. And this is not a bug _it's a feature_.
+
 #### Late binding
 Usually an event listener is bound when the `addEventListener` method is called. This causes trouble when the handler is changed. The library helps to solve the problem by allowing to listent to an event using _object property_ instead of just function.
 
