@@ -11,5 +11,4 @@ define(["CompositeElement"], function($CompositeElement) {
     function $NullElement() {}
 
     $NullElement.prototype = new $CompositeElement();
-    $NullElement.prototype.constructor = $NullElement;
 });

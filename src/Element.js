@@ -27,5 +27,4 @@ define(["Node"], function($Node, $NullElement) {
     }
 
     $Element.prototype = new $Node();
-    $Element.prototype.constructor = $Element;
 });

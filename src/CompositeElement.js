@@ -14,7 +14,6 @@ define(["Element"], function($Element, _forEach, _forIn, _map) {
     }
 
     $CompositeElement.prototype = new $Element();
-    $CompositeElement.prototype.constructor = $CompositeElement;
 
     _forIn($CompositeElement.prototype, function(value, key, proto) {
         if (typeof value === "function") {

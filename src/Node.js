@@ -19,7 +19,5 @@ define(["Helpers"], function() {
         }
     }
 
-    $Node.prototype = {
-        constructor: $Node
-    };
+    $Node.prototype = {};
 });
