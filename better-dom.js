@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.3.1 2013-08-16T12:15:20
+ * @version 1.4.0 2013-09-01T14:50:25
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -54,7 +54,7 @@
 
         // OBJECT UTILS
         // ------------
-        
+
         _forIn = function(obj, callback, thisPtr) {
             for (var prop in obj) {
                 callback.call(thisPtr, obj[prop], prop, obj);
@@ -96,14 +96,14 @@
 
         // COLLECTION UTILS
         // ----------------
-        
+
         _forEach = makeLoopMethod({
             BODY:   "cb.call(that, a[i], i, a)",
             AFTER:  "return a"
         }),
         _map = makeLoopMethod({
-            BEFORE: "var out = []",
-            BODY:   "out.push(cb.call(that, a[i], i, a))",
+            BEFORE: "var out = Array(a && a.length || 0)",
+            BODY:   "out[i] = cb.call(that, a[i], i, a)",
             AFTER:  "return out"
         }),
         _some = makeLoopMethod({
@@ -130,7 +130,7 @@
             AFTER:  "return out"
         }),
         _slice = function(list, index) {
-            return Array.prototype.slice.call(list, index || 0);
+            return Array.prototype.slice.call(list, index | 0);
         },
 
         // DOM UTILS
@@ -182,9 +182,9 @@
     // --------
 
     /**
-     * Prototype for a DOM node
+     * Used to represent a DOM node
      * @name $Node
-     * @param node native object
+     * @param node {Object} native node
      * @constructor
      * @private
      */
@@ -196,9 +196,7 @@
         }
     }
 
-    $Node.prototype = {
-        constructor: $Node
-    };
+    $Node.prototype = {};
 
     /**
      * Check element capability
@@ -246,16 +244,9 @@
         }
         
         /**
-         * Finds element by selector
+         * Find the first matched element by css selector
          * @param  {String} selector css selector
          * @return {$Element} the first matched element
-         * @example
-         * var domBody = DOM.find("body");
-         *
-         * domBody.find("#element");
-         * // returns $Element with id="element"
-         * domBody.find(".link");
-         * // returns first element with class="link"
          */
         $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
             if (typeof selector !== "string") {
@@ -319,7 +310,7 @@
         };
 
         /**
-         * Finds all elements by selector
+         * Finds all matched elements by css selector
          * @param  {String} selector css selector
          * @return {$Element} collection of matched elements
          */
@@ -469,7 +460,7 @@
                         };
                     }(this, callback));
                 }
-                
+
                 handler = EventHandler(type, selector, context, callback, props, this);
                 handler.type = selector ? type + " " + selector : type;
                 handler.callback = callback;
@@ -498,7 +489,7 @@
 
         /**
          * Bind a DOM event to the context and the callback only fire once before being removed
-         * @param  {String}   type event type with optional selector
+         * @param  {String}   type type of event with optional selector to filter by
          * @param  {Array}    [props] event properties to pass to the callback function
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
@@ -514,7 +505,7 @@
 
         /**
          * Unbind a DOM event from the context
-         * @param  {String}          type event type
+         * @param  {String}          type type of event
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
          * @return {$Node}
@@ -543,7 +534,7 @@
 
                         node.detachEvent("on" + type, handler);
                     }
-                    
+
                     delete events[index];
                 }
             }, this);
@@ -553,7 +544,7 @@
 
         /**
          * Triggers an event of specific type and executes it's default action if it exists
-         * @param  {String} eventType type of event
+         * @param  {String} type type of event
          * @param  {Object} [detail] event details
          * @return {$Node}
          * @example
@@ -601,7 +592,7 @@
             if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
                 // Prevent re-triggering of the same event
                 EventHandler.veto = type;
-                
+
                 node[type]();
 
                 EventHandler.veto = false;
@@ -837,34 +828,27 @@
         }
 
         return function(type, selector, context, callback, extras, currentTarget) {
+            extras = extras || ["target", "defaultPrevented"];
+
             var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {
+                    e = e || window.event;
+
                     if (EventHandler.veto !== type) {
-                        var event = e || window.event,
-                            fn = isCallbackProp ? context[callback] : callback,
+                        var fn = isCallbackProp ? context[callback] : callback,
                             args = _map(extras, function(name) {
                                 var hook = hooks[name];
 
-                                return hook ? hook(event, currentTarget._node) : (name === "type" ? type : event[name]);
-                            }),
-                            result;
+                                return hook ? hook(e, currentTarget._node) : (name === "type" ? type : e[name]);
+                            });
 
-                        if (!fn) return;
-
-                        // make performant call
-                        if (args.length) {
-                            result = fn.apply(context, args);
-                        } else {
-                            result = isCallbackProp ? context[callback]() : fn.call(context);
-                        }
-
-                        // prevent default if handler returns false
-                        if (result === false) {
-                            if (event.preventDefault) {
-                                event.preventDefault();
+                        if (fn && fn.apply(context, args) === false) {
+                            // prevent default if handler returns false
+                            if (e.preventDefault) {
+                                e.preventDefault();
                             } else {
-                                event.returnValue = false;
+                                e.returnValue = false;
                             }
                         }
                     }
@@ -891,16 +875,13 @@
         };
     }());
 
-    
     // DOM ELEMENT
     // -----------
 
     /**
-     * Array-like object that represents a DOM element. For single element methods behaves
-     * according to their description. If an element is null or it's a composite element
-     * then getters return an undefined value
+     * Used to represent a DOM element (length == 1)
      * @name $Element
-     * @param element native element
+     * @param element {Object} native element
      * @extends $Node
      * @constructor
      * @private
@@ -909,7 +890,7 @@
         if (element && element.__dom__) return element.__dom__;
 
         if (!(this instanceof $Element)) {
-            return element ? new $Element(element) : new $CompositeElement();
+            return element ? new $Element(element) : new $NullElement();
         }
 
         $Node.call(this, element);
@@ -920,7 +901,6 @@
     }
 
     $Element.prototype = new $Node();
-    $Element.prototype.constructor = $Element;
 
     // CLASSES MANIPULATION
     // --------------------
@@ -1025,13 +1005,13 @@
 
     // MANIPULATION
     // ------------
-    
+
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
 
-            return function(value) {
+            var manipulateContent = function(value) {
                 var valueType = typeof value,
                     node = this._node,
                     relatedNode = node.parentNode;
@@ -1058,14 +1038,18 @@
                 } else {
                     node.insertAdjacentHTML(fasterMethodName, value);
                 }
+            };
+
+            return !fasterMethodName ? manipulateContent : function() {
+                _forEach(arguments, manipulateContent, this);
 
                 return this;
             };
         }
 
         /**
-         * Insert html string or native element after the current
-         * @param {String|$Element} content HTML string or $Element
+         * Insert html string or $Element after the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1074,8 +1058,8 @@
         });
 
         /**
-         * Insert html string or native element before the current
-         * @param {String|$Element} content HTML string or $Element
+         * Insert html string or $Element before the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1084,8 +1068,8 @@
         });
 
         /**
-         * Prepend html string or native element to the current
-         * @param {String|$Element} content HTML string or $Element
+         * Prepend html string or $Element to the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1094,8 +1078,8 @@
         });
 
         /**
-         * Append html string or native element to the current
-         * @param {String|$Element} content HTML string or $Element
+         * Append html string or $Element to the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1104,8 +1088,8 @@
         });
 
         /**
-         * Replace current element with html string or native element
-         * @param {String|$Element} content HTML string or $Element
+         * Replace current element with html string or $Element
+         * @param {Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1297,18 +1281,19 @@
 
     // STYLES MANIPULATION
     // -------------------
-    
+
     (function() {
         var getStyleHooks = {},
             setStyleHooks = {},
             reDash = /\-./g,
             reCamel = /[A-Z]/g,
+            directions = ["Top", "Right", "Bottom", "Left"],
             dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
             camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = _getComputedStyle(documentElement),
             // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
             props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(reCamel, camelCaseToDashSeparated); });
-        
+
         _forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
@@ -1330,13 +1315,13 @@
             }
         });
 
-        // shortcuts
+        // normalize property shortcuts
         _forOwn({
             font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-            padding: ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"],
-            margin: ["marginTop", "marginRight", "marginBottom", "marginLeft"],
-            "border-width": ["borderTopWidth", "borderRightWidth", "borderBottomWidth", "borderLeftWidth"],
-            "border-style": ["borderTopStyle", "borderRightStyle", "borderBottomStyle", "borderLeftStyle"]
+            padding: _map(directions, function(dir) { return "padding" + dir }),
+            margin: _map(directions, function(dir) { return "margin" + dir }),
+            "border-width": _map(directions, function(dir) { return "border" + dir + "Width" }),
+            "border-style": _map(directions, function(dir) { return "border" + dir + "Style" })
         }, function(value, key) {
             getStyleHooks[key] = function(style) {
                 var result = [],
@@ -1360,7 +1345,7 @@
                 return style.styleFloat;
             };
         }
-        
+
         _forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
             // Exclude the following css properties to add px
             setStyleHooks[propName] = function(name, value) {
@@ -1370,7 +1355,7 @@
 
         /**
          * Get css style from element
-         * @param  {String} name property name
+         * @param  {String} name     property name
          * @return {String} property value
          */
         $Element.prototype.getStyle = function(name) {
@@ -1396,8 +1381,8 @@
 
         /**
          * Set css style for element
-         * @param {String} name  property name
-         * @param {String} value property value
+         * @param {String|Object} name  property name or key/value pair
+         * @param {String}        value property value
          * @return {$Element}
          */
         $Element.prototype.setStyle = function(name, value) {
@@ -1584,20 +1569,19 @@
         return this._node === document.activeElement;
     };
 
-    // COMPOSITE ELEMENT
-    // -----------------
-
     /**
-     * Used to represent collection of DOM elements
-     * @private
+     * Used to represent a collection of DOM elements (length >= 1)
+     * @name $CompositeElement
+     * @param elements {Array|Object} array or array-like object with native elements
+     * @extends $Element
      * @constructor
+     * @private
      */
     function $CompositeElement(elements) {
         Array.prototype.push.apply(this, _map(elements, $Element));
     }
 
     $CompositeElement.prototype = new $Element();
-    $CompositeElement.prototype.constructor = $CompositeElement;
 
     _forIn($CompositeElement.prototype, function(value, key, proto) {
         if (typeof value === "function") {
@@ -1614,119 +1598,112 @@
     // ELEMENT COLLECTION EXTESIONS
     // ----------------------------
 
-    _extend($Element.prototype, {
-        /**
-         * Executes callback on each element in the collection
-         * @memberOf $Element.prototype
-         * @param  {Function} callback callback function
-         * @param  {Object}   [thisArg]  callback context
-         * @return {$Element}
-         */
-        each: function(callback, thisArg) {
-            return _forEach(this, callback, thisArg);
-        },
+    (function() {
+        var makeCollectionMethod = function(fn) {
+                var code = fn.toString();
+                // extract function body
+                code = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
+                // use this variable unstead of a
+                code = code.replace(/a([^\w])/g, function(a, symbol) { return "this" + symbol; });
+                // compile the function
+                return Function("cb", "that", code);
+            };
 
-        /**
-         * (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
-         * @return {Boolean} true, if any element in the collection return true
-         */
-        some: function(callback, thisArg) {
-            return _some(this, callback, thisArg);
-        },
+        _extend($Element.prototype, {
+            /**
+             * Executes callback on each element in the collection
+             * @memberOf $Element.prototype
+             * @param  {Function} callback callback function
+             * @param  {Object}   [context]  callback context
+             * @return {$Element}
+             * @function
+             */
+            each: makeCollectionMethod(_forEach),
 
-        /**
-         * (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
-         * @return {Boolean} true, if all elements in the collection returns true
-         */
-        every: function(callback, thisArg) {
-            return _every(this, callback, thisArg);
-        },
+            /**
+             * Checks if the callback returns true for any element in the collection
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Boolean} true, if any element in the collection return true
+             * @function
+             */
+            some: makeCollectionMethod(_some),
 
-        /**
-         * (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
-         * @return {Array} new array of the results of each callback execution
-         */
-        map: function(callback, thisArg) {
-            return _map(this, callback, thisArg);
-        },
+            /**
+             * Checks if the callback returns true for all elements in the collection
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Boolean} true, if all elements in the collection returns true
+             * @function
+             */
+            every: makeCollectionMethod(_every),
 
-        /**
-         * (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
-         * @memberOf $Element.prototype
-         * @param  {Function} callback   callback function
-         * @param  {Object}   [thisArg]  callback context
-         * @return {Array} new array with elements where callback returned true
-         */
-        filter: function(callback, thisArg) {
-            return _filter(this, callback, thisArg);
-        },
+            /**
+             * Creates an array of values by running each element in the collection through the callback
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Array} new array of the results of each callback execution
+             * @function
+             */
+            map: makeCollectionMethod(_map),
 
-        /**
-         * (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
-         * @memberOf $Element.prototype
-         * @param  {Function} callback callback function
-         * @param  {Object}   memo     initial value of the accumulator
-         * @return {Object} the accumulated value
-         */
-        reduce: function(callback, memo) {
-            return _foldl(this, callback, memo);
-        },
+            /**
+             * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+             * @memberOf $Element.prototype
+             * @param  {Function} callback   callback function
+             * @param  {Object}   [context]  callback context
+             * @return {Array} new array with elements where callback returned true
+             * @function
+             */
+            filter: makeCollectionMethod(_filter),
 
-        /**
-         * (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
-         * @memberOf $Element.prototype
-         * @param  {Function} callback callback function
-         * @param  {Object}   memo     initial value of the accumulator
-         * @return {Object} the accumulated value
-         */
-        reduceRight: function(callback, memo) {
-            return _foldr(this, callback, memo);
-        },
+            /**
+             * Boils down a list of values into a single value (from start to end)
+             * @memberOf $Element.prototype
+             * @param  {Function} callback callback function
+             * @param  {Object}   [memo]   initial value of the accumulator
+             * @return {Object} the accumulated value
+             * @function
+             */
+            reduce: makeCollectionMethod(_foldl),
 
-        /**
-         * Calls the method named by name on each element in the collection
-         * @memberOf $Element.prototype
-         * @param  {String}    name   name of the method
-         * @param  {...Object} [args] arguments for the method call
-         * @return {$Element}
-         */
-        invoke: function(name) {
-            var args = _slice(arguments, 1);
+            /**
+             * Boils down a list of values into a single value (from end to start)
+             * @memberOf $Element.prototype
+             * @param  {Function} callback callback function
+             * @param  {Object}   [memo]   initial value of the accumulator
+             * @return {Object} the accumulated value
+             * @function
+             */
+            reduceRight: makeCollectionMethod(_foldr),
 
-            if (typeof name !== "string") {
-                throw _makeError("invoke", this);
+            /**
+             * Executes code in a 'unsafe' block there the first callback argument is native DOM
+             * object. Use only when you need to communicate better-dom with third party scripts!
+             * @memberOf $Element.prototype
+             * @param  {Function} block unsafe block body (nativeNode, element, index)
+             */
+            unsafe: function(block) {
+                _forEach(this, function(el, index) {
+                    block(el._node, el, index);
+                });
             }
+        });
+    }());
 
-            return _forEach(this, function(el) {
-                if (args.length) {
-                    el[name].apply(el, args);
-                } else {
-                    el[name]();
-                }
-            });
-        }
-    });
+    /**
+     * Used to indicate an empty DOM element (length == 0)
+     * @name $NullElement
+     * @extends $CompositeElement
+     * @constructor
+     * @private
+     */
+    function $NullElement() {}
 
-    // aliases
-    _forOwn({
-        all: "every",
-        any: "some",
-        collect: "map",
-        select: "filter",
-        foldl: "reduce",
-        foldr: "reduceRight"
-    }, function(value, key) {
-        this[key] = this[value];
-    }, $Element.prototype);
+    $NullElement.prototype = new $CompositeElement();
 
     // GLOBAL API
     // ----------
@@ -1738,7 +1715,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.3.1";
+    DOM.version = "1.4.0";
 
     // WATCH CALLBACK
     // --------------
@@ -1856,13 +1833,15 @@
         /**
          * Create a $Element instance
          * @memberOf DOM
-         * @param  {Element|String} value element/tag name or emmet expression
+         * @param  {Element|String} value        element/tag name or emmet expression
+         * @param  {Object}         [attributes] key/value pairs of the element attributes
+         * @param  {Object}         [styles]     key/value pairs of the element styles
          * @return {$Element} element
          */
-        DOM.create = function(value) {
+        DOM.create = function(value, attributes, styles) {
             if (typeof value === "string") {
-                if (value.match(rquick)) {
-                    value = document.createElement(value);
+                if (rquick.test(value)) {
+                    value = new $Element(document.createElement(value));
                 } else {
                     if (value[0] !== "<") value = DOM.parseTemplate(value);
 
@@ -1871,18 +1850,22 @@
                     sandbox.innerHTML = value;
 
                     if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
-                        value = sandbox.removeChild(sandbox.firstChild);
-                    } else {
-                        value = sandbox; // result will be wrapped with the div
+                        // remove temporary element
+                        sandbox = sandbox.removeChild(sandbox.firstChild);
                     }
+
+                    value = new $Element(sandbox);
                 }
+
+                if (attributes) value.set(attributes);
+                if (styles) value.setStyle(styles);
+
+                return value;
             }
 
-            if (value.nodeType !== 1) {
-                throw _makeError("create", this);
-            }
+            if (value.nodeType === 1) return $Element(value);
 
-            return $Element(value);
+            throw _makeError("create", this);
         };
     })();
 
@@ -1892,39 +1875,20 @@
         /**
          * Define a DOM extension
          * @memberOf DOM
-         * @param  {String} selector extension css selector
-         * @param  {Array}  [template] extension templates
-         * @param  {Object} mixins extension mixins
+         * @param  {String}          selector extension css selector
+         * @param  {Object|Function} mixins   extension mixins/constructor function
          * @example
-         * DOM.extend(".myplugin", [
-         *     "&#60;span&#62;myplugin text&#60;/span&#62;"
-         * ], {
-         *     constructor: function(tpl) {
-         *         // initialize extension
-         *     }
-         * });
-         *
-         * // emmet-like syntax example
-         * DOM.extend(".mycalendar", [
-         *     "table>(tr>th*7)+(tr>td*7)*6"
-         * ], {
-         *     constructor: function(tpl) {
+         * DOM.extend(".myplugin", {
+         *     constructor: function() {
          *         // initialize extension
          *     },
          *     method: function() {
-         *         // this method will be mixed into every instance
+         *         // this method will be mixed into every matched element
          *     }
          * });
          */
-        DOM.extend = function(selector, template, mixins) {
-            if (mixins === undefined) {
-                mixins = template;
-                template = undefined;
-            }
-
-            if (typeof mixins === "function") {
-                mixins = {constructor: mixins};
-            }
+        DOM.extend = function(selector, mixins) {
+            if (typeof mixins === "function") mixins = {constructor: mixins};
 
             if (!mixins || typeof mixins !== "object" || (selector !== "*" && ~selector.indexOf("*"))) {
                 throw _makeError("extend", this);
@@ -1934,12 +1898,11 @@
                 // extending element prototype
                 _extend($Element.prototype, mixins);
             } else {
-                var clones = _map(template, DOM.create),
-                    watcher = function(el) {
+                var watcher = function(el) {
                         _extend(el, mixins);
 
                         if (mixins.hasOwnProperty("constructor")) {
-                            mixins.constructor.apply(el, _map(clones, function(proto) { return proto.clone(); }));
+                            mixins.constructor.apply(el);
 
                             el.constructor = $Element;
                         }
@@ -1952,7 +1915,7 @@
         };
 
         /**
-         * Return an {@link $Element} mock specified for optional selector
+         * Synchronously return dummy {@link $Element} instance specified for optional selector
          * @memberOf DOM
          * @param  {String} [selector] selector of mock
          * @return {$Element} mock instance
@@ -1962,7 +1925,7 @@
                 throw _makeError("mock", this);
             }
 
-            var el = content ? DOM.create(content) : $Element(),
+            var el = content ? DOM.create(content) : new $NullElement(),
                 makeMock = function(el) {
                     _forOwn(watchers, function(watchers, selector) {
                         if (el.matches(selector)) {
@@ -1987,19 +1950,12 @@
     (function() {
         // operator type / priority object
         var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
-            emptyElements = " area base br col hr img input link meta param command keygen source ",
-            reEmpty = /<\?>|<\/\?>/g,
+            reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
-            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/,
-            reIndexg = new RegExp(reIndex.source, "g"),
+            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
                 return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
-            },
-            formatIndex = function(index) {
-                return function(expr, fmt) {
-                    return (fmt + index).slice(-fmt.length).split("$").join("0");
-                };
             },
             injectTerm = function(term, first) {
                 return function(el) {
@@ -2008,29 +1964,32 @@
                     return el.substr(0, index) + term + el.substr(index);
                 };
             },
-            makeTerm = function(term) {
-                var result = "<" + term + ">";
+            makeTerm = (function() {
+                var results = {};
 
-                if (emptyElements.indexOf(" " + term + " ") < 0) {
-                    result += "</" + term + ">";
-                }
+                // populate empty tags
+                _forEach("area base br col hr img input link meta param command keygen source".split(" "), function(tag) {
+                    results[tag] = "<" + tag + ">";
+                });
 
-                return [result];
-            },
-            makeTerms = function(term, n) {
-                var parsed = reIndex.exec(term) || [],
-                    step = parsed[2] ? -1 : 1,
-                    index = parsed[3] ? +parsed[3] : 1,
-                    result = new Array(n),
-                    i = 0;
+                return function(tag) {
+                    var result = results[tag];
 
-                if (step < 0) index += n - 1;
+                    if (!result) {
+                        results[tag] = result = "<" + tag + "></" + tag + ">";
+                    }
 
-                for (; i < n; ++i, index += step) {
-                    result[i] = term.replace(reIndexg, formatIndex(index));
-                }
-
-                return result;
+                    return [result];
+                };
+            }()),
+            makeIndexedTerm = function(term) {
+                return function(_, i, arr) {
+                    return term.replace(reIndex, function(expr, fmt, sign, base) {
+                        var index = (sign ? arr.length - i - 1 : i) + (base ? base | 0 : 1);
+                        // make zero-padding index string
+                        return (fmt + index).slice(-fmt.length).split("$").join("0");
+                    });
+                };
             },
             toString = function(term) {
                 return typeof term === "string" ? term : term.join("");
@@ -2050,7 +2009,7 @@
                 i, n, str, priority, skip, node;
 
             // parse exrpression into RPN
-            
+
             for (i = 0, n = template.length; i < n; ++i) {
                 str = template[i];
                 // concat .c1.c2 into single space separated class string
@@ -2139,7 +2098,7 @@
                         break;
 
                     case "*":
-                        node = makeTerms(toString(node), parseInt(term, 10));
+                        node = _map(Array(term | 0), makeIndexedTerm(toString(node)));
                         break;
 
                     default:
@@ -2160,7 +2119,7 @@
                 stack.unshift(str);
             }
 
-            return toString(stack[0]).replace(reEmpty, "");
+            return toString(stack[0]).replace(reTextTag, "");
         };
     })();
 
@@ -2172,7 +2131,7 @@
             styleSheet = styleNode.sheet || styleNode.styleSheet;
 
         /**
-         * Import global css styles on page
+         * Append global css styles
          * @memberOf DOM
          * @param {String|Object} selector css selector or object with selector/rules pairs
          * @param {String} styles css rules
@@ -2198,8 +2157,10 @@
                     styleSheet.addRule(selector, styles);
                 });
             }
+
+            return this;
         };
-        
+
         if (!DOM.supports("hidden", "a")) {
             DOM.importStyles("[hidden]", "display:none");
         }
@@ -2252,6 +2213,34 @@
         };
     })();
 
+    // IMPORT SCRIPTS
+    // --------------
+
+    /**
+     * Import external scripts on the page and call optional callback when it will be done
+     * @memberOf DOM
+     * @param {...String} url        script file urls
+     * @param {Function}  [callback] callback that is triggered when all scripts are loaded
+     */
+    DOM.importScripts = function() {
+        var args = _slice(arguments),
+            body = DOM.find("body"),
+            n = args.length - 1,
+            callback;
+
+        if (n > 0 && typeof args[n] === "function") {
+            callback = (function(callback) { if (!--n) callback() }(args.pop()));
+        }
+
+        _forEach(args, function(url) {
+            if (typeof url !== "string") throw _makeError("importScripts", this);
+
+            body.append(DOM.create("script", {src: url, onload: callback})).child(-1).remove();
+        });
+
+        return this;
+    };
+
     // IMPORT STRINGS
     // --------------
 
@@ -2272,7 +2261,7 @@
      */
     DOM.importStrings = (function() {
         var rparam = /\{([a-z\-]+)\}/g,
-            toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\""; };
+            toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
         return function(key, pattern, lang) {
             var keyType = typeof key,
@@ -2280,7 +2269,7 @@
 
             if (keyType === "string") {
                 selector = "[data-i18n=\"" + key + "\"]";
-                
+
                 if (lang) selector += ":lang(" + lang + ")";
 
                 content = "content:\"" + pattern.replace(rparam, toContentAttr) + "\"";
@@ -2295,6 +2284,8 @@
             } else {
                 throw _makeError("importStrings", this);
             }
+
+            return this;
         };
     }());
 
@@ -2329,9 +2320,9 @@
     // ------------
 
     window.DOM = DOM;
-    
+
     if (typeof define === "function" && define.amd) {
-        define("DOM", function() { return DOM; });
+        define("better-dom", function() { return DOM; });
     }
-    
+
 })(window, document, document.documentElement);
