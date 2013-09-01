@@ -83,6 +83,8 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
         }
 
         return function(type, selector, context, callback, extras, currentTarget) {
+            extras = extras || ["target", "defaultPrevented"];
+
             var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
                 defaultEventHandler = function(e) {

@@ -2,9 +2,9 @@
     // ------------
 
     window.DOM = DOM;
-    
+
     if (typeof define === "function" && define.amd) {
-        define("DOM", function() { return DOM; });
+        define("better-dom", function() { return DOM; });
     }
-    
+
 })(window, document, document.documentElement);

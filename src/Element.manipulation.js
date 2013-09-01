@@ -1,15 +1,15 @@
-define(["Element"], function($Element, _parseFragment, _makeError) {
+define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
     "use strict";
 
     // MANIPULATION
     // ------------
-    
+
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
 
-            return function(value) {
+            var manipulateContent = function(value) {
                 var valueType = typeof value,
                     node = this._node,
                     relatedNode = node.parentNode;
@@ -36,14 +36,18 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
                 } else {
                     node.insertAdjacentHTML(fasterMethodName, value);
                 }
+            };
+
+            return !fasterMethodName ? manipulateContent : function() {
+                _forEach(arguments, manipulateContent, this);
 
                 return this;
             };
         }
 
         /**
-         * Insert html string or native element after the current
-         * @param {String|$Element} content HTML string or $Element
+         * Insert html string or $Element after the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -52,8 +56,8 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
         });
 
         /**
-         * Insert html string or native element before the current
-         * @param {String|$Element} content HTML string or $Element
+         * Insert html string or $Element before the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -62,8 +66,8 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
         });
 
         /**
-         * Prepend html string or native element to the current
-         * @param {String|$Element} content HTML string or $Element
+         * Prepend html string or $Element to the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -72,8 +76,8 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
         });
 
         /**
-         * Append html string or native element to the current
-         * @param {String|$Element} content HTML string or $Element
+         * Append html string or $Element to the current
+         * @param {...Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -82,8 +86,8 @@ define(["Element"], function($Element, _parseFragment, _makeError) {
         });
 
         /**
-         * Replace current element with html string or native element
-         * @param {String|$Element} content HTML string or $Element
+         * Replace current element with html string or $Element
+         * @param {Mixed} content HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */

@@ -3,7 +3,7 @@ describe("manipulation", function() {
 
     describe("remove", function() {
         var div;
-        
+
         beforeEach(function() {
             setFixtures("<div id='test'><a></a></div>");
 
@@ -75,6 +75,14 @@ describe("manipulation", function() {
                 var arg = createDivEmmet(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+            });
+        });
+
+        it("should accept multiple arguments", function() {
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDivEmmet(strategy);
+
+                expect(checkMethod(div[strategy](createDivHtml(strategy), arg))._node).toHaveClass(strategy);
             });
         });
 

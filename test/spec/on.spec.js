@@ -1,6 +1,6 @@
 describe("on", function() {
     "use strict";
-    
+
     var link, input, form, spy;
 
     beforeEach(function() {
@@ -55,7 +55,7 @@ describe("on", function() {
         expect(location.hash).not.toBe("#test");
     });
 
-    it("should allow to pass event propertient into callback", function() {
+    it("should allow to pass event properties into callback", function() {
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
@@ -71,6 +71,16 @@ describe("on", function() {
         });
 
         input.on("focus", ["type", "defaultPrevented"], spy).fire("focus");
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it("should have default event properties", function() {
+        spy.andCallFake(function(target, defaultPrevented) {
+            expect(target).toBe(input);
+            expect(defaultPrevented).toBe(false);
+        });
+
+        input.on("focus", spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
