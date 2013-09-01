@@ -1,7 +1,7 @@
-# better-dom 
+&nbsp;
 > Sandbox for living DOM extensions
 
-[API DESCRIPTION](http://chemerisuk.github.io/better-dom/)
+
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
@@ -44,6 +44,11 @@ Event callbacks loose the event object argument that improves testability of cod
 jQuery has strange behavior of event handler that returns false which is a [cause of confusion](http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/) for a lot of people. This library has standards-based behavior and does what everybody expects.
 
 
+
+#### stopPropagation is evil
+If you need to call stopPropagation in an event handler in 95% situations you are doing something wrong. Solutions that utilize this function becomes to be complex, moreover they introduce compatability problems. Probably every experienced javascript developer had a issue where a third party script has blocked some useful event and there is no way to fix exept forking the extension's source code.
+
+That's why it's _not possible to call stopPropagation_ using better-dom. And this is not a bug _it's a feature_.
 
 #### Late binding
 Usually an event listener is bound when the `addEventListener` method is called. This causes trouble when the handler is changed. The library helps to solve the problem by allowing to listent to an event using _object property_ instead of just function.

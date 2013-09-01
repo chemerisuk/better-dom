@@ -1,41 +1,94 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Class: $Element</title>
-    
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<meta charset="utf-8">
+	<title>better-dom Class: $Element</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+	
 </head>
 
 <body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">better-dom</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
 
-<div id="main">
-    
-    <h1 class="page-title">Class: $Element</h1>
-    
-    
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="DOM.html">DOM</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="$CompositeElement.html">$CompositeElement</a>
+						</li>
+						
+						<li>
+							<a href="$Element.html">$Element</a>
+						</li>
+						
+						<li>
+							<a href="$Node.html">$Node</a>
+						</li>
+						
+						<li>
+							<a href="$NullElement.html">$NullElement</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+		<div class="span8">
+			
+				<div id="main">
+					
 
 
-
+	<h1 class="page-title">Class: $Element</h1>
 <section>
-    
+
 <header>
     <h2>
     $Element
     </h2>
     
-</header>  
+</header>
 
 <article>
     <div class="container-overview">
     
-    
+
     
         
 <dt>
@@ -47,9 +100,7 @@
     
     
     <div class="description">
-        Array-like object that represents a DOM element. For single element methods behaves
-according to their description. If an element is null or it's a composite element
-then getters return an undefined value
+        <p>Used to represent a DOM element (length == 1)</p>
     </div>
     
 
@@ -61,78 +112,84 @@ then getters return an undefined value
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>element</code></td>
             
-            
+
             <td class="type">
             
+                
+<span class="param-type">Object</span>
+
+
+            
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">native element</td>
+
+            <td class="description last"><p>native element</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.js.html">Element.js</a>, <a href="Element.js.html#line7">line 7</a>
+        <a href="Element.js.html">Element.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -152,28 +209,28 @@ then getters return an undefined value
 
     
     </div>
-    
+
     
         <h3 class="subsection-title">Extends</h3>
-        
+
         <ul>
             <li><a href="$Node.html">$Node</a></li>
         </ul>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
         <h3 class="subsection-title">Methods</h3>
-        
+
         <dl>
             
 <dt>
@@ -185,7 +242,7 @@ then getters return an undefined value
     
     
     <div class="description">
-        Add class(es) to element
+        <p>Add class(es) to element</p>
     </div>
     
 
@@ -197,33 +254,33 @@ then getters return an undefined value
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>classNames</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -232,60 +289,61 @@ then getters return an undefined value
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                     &lt;repeatable><br>
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">class name(s)</td>
+
+            <td class="description last"><p>class name(s)</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.classes.js.html">Element.classes.js</a>, <a href="Element.classes.js.html#line56">line 56</a>
+        <a href="Element.classes.js.html">Element.classes.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -315,6 +373,7 @@ then getters return an undefined value
 
 	</dd>
 </dl>
+
 
         
     
@@ -332,7 +391,7 @@ then getters return an undefined value
     
     
     <div class="description">
-        Insert html string or native element after the current
+        <p>Insert html string or $Element after the current</p>
     </div>
     
 
@@ -344,86 +403,96 @@ then getters return an undefined value
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type"><a href="$Element.html">$Element</a></span>
+<span class="param-type">Mixed</span>
 
 
             
             </td>
+
             
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">HTML string or $Element</td>
+
+            <td class="description last"><p>HTMLString or $Element or functor that returns content</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, <a href="Element.manipulation.js.html#line50">line 50</a>
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -453,6 +522,7 @@ then getters return an undefined value
 
 	</dd>
 </dl>
+
 
         
     
@@ -470,7 +540,7 @@ then getters return an undefined value
     
     
     <div class="description">
-        Append html string or native element to the current
+        <p>Append html string or $Element to the current</p>
     </div>
     
 
@@ -482,86 +552,96 @@ then getters return an undefined value
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type"><a href="$Element.html">$Element</a></span>
+<span class="param-type">Mixed</span>
 
 
             
             </td>
+
             
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">HTML string or $Element</td>
+
+            <td class="description last"><p>HTMLString or $Element or functor that returns content</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, <a href="Element.manipulation.js.html#line80">line 80</a>
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -591,6 +671,7 @@ then getters return an undefined value
 
 	</dd>
 </dl>
+
 
         
     
@@ -608,7 +689,7 @@ then getters return an undefined value
     
     
     <div class="description">
-        Insert html string or native element before the current
+        <p>Insert html string or $Element before the current</p>
     </div>
     
 
@@ -620,86 +701,96 @@ then getters return an undefined value
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type"><a href="$Element.html">$Element</a></span>
+<span class="param-type">Mixed</span>
 
 
             
             </td>
+
             
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">HTML string or $Element</td>
+
+            <td class="description last"><p>HTMLString or $Element or functor that returns content</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, <a href="Element.manipulation.js.html#line60">line 60</a>
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -729,6 +820,7 @@ then getters return an undefined value
 
 	</dd>
 </dl>
+
 
         
     
@@ -746,7 +838,7 @@ then getters return an undefined value
     
     
     <div class="description">
-        Return child element by index filtered by optional selector
+        <p>Return child element by index filtered by optional selector</p>
     </div>
     
 
@@ -758,33 +850,33 @@ then getters return an undefined value
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>index</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -793,29 +885,29 @@ then getters return an undefined value
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">child index</td>
+
+            <td class="description last"><p>child index</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -824,60 +916,61 @@ then getters return an undefined value
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line107">line 107</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -895,7 +988,7 @@ then getters return an undefined value
     
             
 <div class="param-desc">
-    matched child
+    <p>matched child</p>
 </div>
 
 
@@ -912,15 +1005,17 @@ then getters return an undefined value
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var body = DOM.find("body");
+    <pre class="sunlight-highlight-javascript">var body = DOM.find("body");
 
 body.child(0); // => first child
-body.child(-1); // => last child</code></pre>
+body.child(-1); // => last child</pre>
+
 
     
 </dd>
@@ -936,7 +1031,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        Fetch children elements filtered by optional selector
+        <p>Fetch children elements filtered by optional selector</p>
     </div>
     
 
@@ -948,33 +1043,33 @@ body.child(-1); // => last child</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -983,60 +1078,61 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line115">line 115</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1054,7 +1150,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    collection of matched elements
+    <p>collection of matched elements</p>
 </div>
 
 
@@ -1070,6 +1166,7 @@ body.child(-1); // => last child</code></pre>
 
 	</dd>
 </dl>
+
 
         
     
@@ -1087,7 +1184,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        Clone element
+        <p>Clone element</p>
     </div>
     
 
@@ -1100,34 +1197,34 @@ body.child(-1); // => last child</code></pre>
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.clone.js.html">Element.clone.js</a>, <a href="Element.clone.js.html#line8">line 8</a>
+        <a href="Element.clone.js.html">Element.clone.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1145,7 +1242,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    clone of current element
+    <p>clone of current element</p>
 </div>
 
 
@@ -1161,6 +1258,7 @@ body.child(-1); // => last child</code></pre>
 
 	</dd>
 </dl>
+
 
         
     
@@ -1178,7 +1276,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        Check if element is inside of context
+        <p>Check if element is inside of context</p>
     </div>
     
 
@@ -1190,31 +1288,31 @@ body.child(-1); // => last child</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>element</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1223,25 +1321,26 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">element to check</td>
+
+            <td class="description last"><p>element to check</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -1250,28 +1349,28 @@ body.child(-1); // => last child</code></pre>
         <a href="$Node.html#contains">$Node#contains</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.contains.js.html">Node.contains.js</a>, <a href="Node.contains.js.html#line15">line 15</a>
+        <a href="Node.contains.js.html">Node.contains.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1289,7 +1388,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    true if success
+    <p>true if success</p>
 </div>
 
 
@@ -1306,13 +1405,15 @@ body.child(-1); // => last child</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>DOM.find("html").contains(DOM.find("body"));
-// returns true</code></pre>
+    <pre class="sunlight-highlight-javascript">DOM.find("html").contains(DOM.find("body"));
+// returns true</pre>
+
 
     
 </dd>
@@ -1320,7 +1421,7 @@ body.child(-1); // => last child</code></pre>
         
             
 <dt>
-    <h4 class="name" id="each"><span class="type-signature"></span>each<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="each"><span class="type-signature"></span>each<span class="signature">(callback, <span class="optional">context</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -1328,7 +1429,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        Executes callback on each element in the collection
+        <p>Executes callback on each element in the collection</p>
     </div>
     
 
@@ -1340,33 +1441,33 @@ body.child(-1); // => last child</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1375,29 +1476,29 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
-                <td class="name"><code>thisArg</code></td>
+                <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1406,60 +1507,61 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line15">line 15</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1490,6 +1592,7 @@ body.child(-1); // => last child</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
@@ -1498,7 +1601,7 @@ body.child(-1); // => last child</code></pre>
         
             
 <dt>
-    <h4 class="name" id="every"><span class="type-signature"></span>every<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="every"><span class="type-signature"></span>every<span class="signature">(callback, <span class="optional">context</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -1506,7 +1609,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        (alias: <b>all</b>) Checks if the callback returns true for all elements in the collection
+        <p>Checks if the callback returns true for all elements in the collection</p>
     </div>
     
 
@@ -1518,33 +1621,33 @@ body.child(-1); // => last child</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1553,29 +1656,29 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
-                <td class="name"><code>thisArg</code></td>
+                <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1584,60 +1687,61 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line37">line 37</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1655,7 +1759,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    true, if all elements in the collection returns true
+    <p>true, if all elements in the collection returns true</p>
 </div>
 
 
@@ -1672,6 +1776,7 @@ body.child(-1); // => last child</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
@@ -1680,7 +1785,7 @@ body.child(-1); // => last child</code></pre>
         
             
 <dt>
-    <h4 class="name" id="filter"><span class="type-signature"></span>filter<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id="filter"><span class="type-signature"></span>filter<span class="signature">(callback, <span class="optional">context</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -1688,7 +1793,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        (alias: <b>select</b>) Examines each element in a collection, returning an array of all elements the callback returns truthy for
+        <p>Examines each element in a collection, returning an array of all elements the callback returns truthy for</p>
     </div>
     
 
@@ -1700,33 +1805,33 @@ body.child(-1); // => last child</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1735,29 +1840,29 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
-                <td class="name"><code>thisArg</code></td>
+                <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1766,60 +1871,61 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line59">line 59</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1837,7 +1943,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    new array with elements where callback returned true
+    <p>new array with elements where callback returned true</p>
 </div>
 
 
@@ -1853,6 +1959,7 @@ body.child(-1); // => last child</code></pre>
 
 	</dd>
 </dl>
+
 
         
     
@@ -1870,7 +1977,7 @@ body.child(-1); // => last child</code></pre>
     
     
     <div class="description">
-        Finds element by selector
+        <p>Find the first matched element by css selector</p>
     </div>
     
 
@@ -1882,31 +1989,31 @@ body.child(-1); // => last child</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -1915,25 +2022,26 @@ body.child(-1); // => last child</code></pre>
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -1942,28 +2050,28 @@ body.child(-1); // => last child</code></pre>
         <a href="$Node.html#find">$Node#find</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.find.js.html">Node.find.js</a>, <a href="Node.find.js.html#line34">line 34</a>
+        <a href="Node.find.js.html">Node.find.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -1981,7 +2089,7 @@ body.child(-1); // => last child</code></pre>
     
             
 <div class="param-desc">
-    the first matched element
+    <p>the first matched element</p>
 </div>
 
 
@@ -1998,18 +2106,9 @@ body.child(-1); // => last child</code></pre>
 	</dd>
 </dl>
 
+
         
     
-    
-        <h5>Example</h5>
-        
-    <pre class="prettyprint"><code>var domBody = DOM.find("body");
-
-domBody.find("#element");
-// returns $Element with id="element"
-domBody.find(".link");
-// returns first element with class="link"</code></pre>
-
     
 </dd>
 
@@ -2024,7 +2123,7 @@ domBody.find(".link");
     
     
     <div class="description">
-        Finds all elements by selector
+        <p>Finds all matched elements by css selector</p>
     </div>
     
 
@@ -2036,31 +2135,31 @@ domBody.find(".link");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2069,25 +2168,26 @@ domBody.find(".link");
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -2096,28 +2196,28 @@ domBody.find(".link");
         <a href="$Node.html#findAll">$Node#findAll</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.find.js.html">Node.find.js</a>, <a href="Node.find.js.html#line100">line 100</a>
+        <a href="Node.find.js.html">Node.find.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2135,7 +2235,7 @@ domBody.find(".link");
     
             
 <div class="param-desc">
-    collection of matched elements
+    <p>collection of matched elements</p>
 </div>
 
 
@@ -2152,6 +2252,7 @@ domBody.find(".link");
 	</dd>
 </dl>
 
+
         
     
     
@@ -2160,7 +2261,7 @@ domBody.find(".link");
         
             
 <dt>
-    <h4 class="name" id="fire"><span class="type-signature"></span>fire<span class="signature">(eventType, <span class="optional">detail</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
+    <h4 class="name" id="fire"><span class="type-signature"></span>fire<span class="signature">(type, <span class="optional">detail</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
     
     
 </dt>
@@ -2168,7 +2269,7 @@ domBody.find(".link");
     
     
     <div class="description">
-        Triggers an event of specific type and executes it's default action if it exists
+        <p>Triggers an event of specific type and executes it's default action if it exists</p>
     </div>
     
 
@@ -2180,33 +2281,33 @@ domBody.find(".link");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
-                <td class="name"><code>eventType</code></td>
+                <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2215,29 +2316,29 @@ domBody.find(".link");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">type of event</td>
+
+            <td class="description last"><p>type of event</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>detail</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2246,35 +2347,36 @@ domBody.find(".link");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event details</td>
+
+            <td class="description last"><p>event details</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -2283,28 +2385,28 @@ domBody.find(".link");
         <a href="$Node.html#fire">$Node#fire</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, <a href="Node.events.js.html#line157">line 157</a>
+        <a href="Node.events.js.html">Node.events.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2335,17 +2437,19 @@ domBody.find(".link");
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var domLink = DOM.find(".link");
+    <pre class="sunlight-highlight-javascript">var domLink = DOM.find(".link");
 
 domLink.fire("focus");
 // receive focus to the element
 domLink.fire("custom:event", {x: 1, y: 2});
-// trigger a custom:event on the element</code></pre>
+// trigger a custom:event on the element</pre>
+
 
     
 </dd>
@@ -2361,7 +2465,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
     
     <div class="description">
-        Get property or attribute by name
+        <p>Get property or attribute by name</p>
     </div>
     
 
@@ -2373,33 +2477,33 @@ domLink.fire("custom:event", {x: 1, y: 2});
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>name</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2408,60 +2512,61 @@ domLink.fire("custom:event", {x: 1, y: 2});
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">property/attribute name</td>
+
+            <td class="description last"><p>property/attribute name</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.get.js.html">Element.get.js</a>, <a href="Element.get.js.html#line22">line 22</a>
+        <a href="Element.get.js.html">Element.get.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2479,7 +2584,7 @@ domLink.fire("custom:event", {x: 1, y: 2});
     
             
 <div class="param-desc">
-    property/attribute value
+    <p>property/attribute value</p>
 </div>
 
 
@@ -2496,17 +2601,19 @@ domLink.fire("custom:event", {x: 1, y: 2});
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>// returns value of the id property (i.e. "link" string)
+    <pre class="sunlight-highlight-javascript">// returns value of the id property (i.e. "link" string)
 link.get("id");
 // returns value of "data-attr" attribute
 link.get("data-attr");
 // returns innerHTML of the element
-link.get();</code></pre>
+link.get();</pre>
+
 
     
 </dd>
@@ -2522,7 +2629,7 @@ link.get();</code></pre>
     
     
     <div class="description">
-        Read data entry value
+        <p>Read data entry value</p>
     </div>
     
 
@@ -2534,31 +2641,31 @@ link.get();</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2567,25 +2674,26 @@ link.get();</code></pre>
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">data entry key</td>
+
+            <td class="description last"><p>data entry key</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -2594,28 +2702,28 @@ link.get();</code></pre>
         <a href="$Node.html#getData">$Node#getData</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.data.js.html">Node.data.js</a>, <a href="Node.data.js.html#line21">line 21</a>
+        <a href="Node.data.js.html">Node.data.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2633,7 +2741,7 @@ link.get();</code></pre>
     
             
 <div class="param-desc">
-    data entry value
+    <p>data entry value</p>
 </div>
 
 
@@ -2650,16 +2758,18 @@ link.get();</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var domLink = DOM.find(".link");
+    <pre class="sunlight-highlight-javascript">var domLink = DOM.find(".link");
 
 domLink.setData("test", "message");
 domLink.getData("test");
-// returns string "message"</code></pre>
+// returns string "message"</pre>
+
 
     
 </dd>
@@ -2675,7 +2785,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Get css style from element
+        <p>Get css style from element</p>
     </div>
     
 
@@ -2687,31 +2797,31 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>name</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2720,50 +2830,51 @@ domLink.getData("test");
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">property name</td>
+
+            <td class="description last"><p>property name</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.styles.js.html">Element.styles.js</a>, <a href="Element.styles.js.html#line82">line 82</a>
+        <a href="Element.styles.js.html">Element.styles.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2781,7 +2892,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    property value
+    <p>property value</p>
 </div>
 
 
@@ -2797,6 +2908,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -2814,7 +2926,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Check if element contains class name(s)
+        <p>Check if element contains class name(s)</p>
     </div>
     
 
@@ -2826,33 +2938,33 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>classNames</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -2861,60 +2973,61 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                     &lt;repeatable><br>
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">class name(s)</td>
+
+            <td class="description last"><p>class name(s)</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.classes.js.html">Element.classes.js</a>, <a href="Element.classes.js.html#line46">line 46</a>
+        <a href="Element.classes.js.html">Element.classes.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -2932,7 +3045,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    true if the element contains all classes
+    <p>true if the element contains all classes</p>
 </div>
 
 
@@ -2948,6 +3061,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -2965,7 +3079,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Hide element
+        <p>Hide element</p>
     </div>
     
 
@@ -2978,34 +3092,34 @@ domLink.getData("test");
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.visibility.js.html">Element.visibility.js</a>, <a href="Element.visibility.js.html#line18">line 18</a>
+        <a href="Element.visibility.js.html">Element.visibility.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3036,185 +3150,6 @@ domLink.getData("test");
 	</dd>
 </dl>
 
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="invoke"><span class="type-signature"></span>invoke<span class="signature">(name, <span class="optional">args</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Calls the method named by name on each element in the collection
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		<th>Argument</th>
-		
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    
-                
-                    
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">name of the method</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>args</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-                    
-                
-                    
-                
-                    &lt;repeatable><br>
-                
-                </td>
-            
-            
-            
-            
-            <td class="description last">arguments for the method call</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line92">line 92</a>
-    </li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="$Element.html">$Element</a></span>
-
-
-	</dd>
-</dl>
 
         
     
@@ -3232,7 +3167,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Check if element has focus
+        <p>Check if element has focus</p>
     </div>
     
 
@@ -3245,34 +3180,34 @@ domLink.getData("test");
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.visibility.js.html">Element.visibility.js</a>, <a href="Element.visibility.js.html#line46">line 46</a>
+        <a href="Element.visibility.js.html">Element.visibility.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3290,7 +3225,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    true if current element is focused
+    <p>true if current element is focused</p>
 </div>
 
 
@@ -3306,6 +3241,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -3323,7 +3259,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Check is element is hidden
+        <p>Check is element is hidden</p>
     </div>
     
 
@@ -3336,34 +3272,34 @@ domLink.getData("test");
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.visibility.js.html">Element.visibility.js</a>, <a href="Element.visibility.js.html#line38">line 38</a>
+        <a href="Element.visibility.js.html">Element.visibility.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3381,7 +3317,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    true if element is hidden
+    <p>true if element is hidden</p>
 </div>
 
 
@@ -3398,6 +3334,7 @@ domLink.getData("test");
 	</dd>
 </dl>
 
+
         
     
     
@@ -3406,7 +3343,7 @@ domLink.getData("test");
         
             
 <dt>
-    <h4 class="name" id="map"><span class="type-signature"></span>map<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    <h4 class="name" id="map"><span class="type-signature"></span>map<span class="signature">(callback, <span class="optional">context</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
     
     
 </dt>
@@ -3414,7 +3351,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        (alias: <b>collect</b>) Creates an array of values by running each element in the collection through the callback
+        <p>Creates an array of values by running each element in the collection through the callback</p>
     </div>
     
 
@@ -3426,33 +3363,33 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3461,29 +3398,29 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
-                <td class="name"><code>thisArg</code></td>
+                <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3492,60 +3429,61 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line48">line 48</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3563,7 +3501,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    new array of the results of each callback execution
+    <p>new array of the results of each callback execution</p>
 </div>
 
 
@@ -3579,6 +3517,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -3596,7 +3535,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Check if the element matches selector
+        <p>Check if the element matches selector</p>
     </div>
     
 
@@ -3608,31 +3547,31 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3641,50 +3580,51 @@ domLink.getData("test");
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.matches.js.html">Element.matches.js</a>, <a href="Element.matches.js.html#line9">line 9</a>
+        <a href="Element.matches.js.html">Element.matches.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3714,6 +3654,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -3731,7 +3672,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Find next sibling element filtered by optional selector
+        <p>Find next sibling element filtered by optional selector</p>
     </div>
     
 
@@ -3743,33 +3684,33 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3778,60 +3719,61 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line61">line 61</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -3849,7 +3791,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    matched element
+    <p>matched element</p>
 </div>
 
 
@@ -3865,6 +3807,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -3882,7 +3825,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Find all next sibling elements filtered by optional selector
+        <p>Find all next sibling elements filtered by optional selector</p>
     </div>
     
 
@@ -3894,33 +3837,33 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3929,60 +3872,61 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line77">line 77</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4000,7 +3944,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    collection of matched elements
+    <p>collection of matched elements</p>
 </div>
 
 
@@ -4016,6 +3960,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -4033,7 +3978,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Unbind a DOM event from the context
+        <p>Unbind a DOM event from the context</p>
     </div>
     
 
@@ -4045,33 +3990,33 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4080,29 +4025,29 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event type</td>
+
+            <td class="description last"><p>type of event</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4111,31 +4056,31 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4147,35 +4092,36 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event handler</td>
+
+            <td class="description last"><p>event handler</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -4184,28 +4130,28 @@ domLink.getData("test");
         <a href="$Node.html#off">$Node#off</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, <a href="Node.events.js.html#line112">line 112</a>
+        <a href="Node.events.js.html">Node.events.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4235,6 +4181,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -4252,7 +4199,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Calculates offset of current context
+        <p>Calculates offset of current context</p>
     </div>
     
 
@@ -4265,34 +4212,34 @@ domLink.getData("test");
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.offset.js.html">Element.offset.js</a>, <a href="Element.offset.js.html#line8">line 8</a>
+        <a href="Element.offset.js.html">Element.offset.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4310,7 +4257,7 @@ domLink.getData("test");
     
             
 <div class="param-desc">
-    offset object
+    <p>offset object</p>
 </div>
 
 
@@ -4326,6 +4273,7 @@ domLink.getData("test");
 
 	</dd>
 </dl>
+
 
         
     
@@ -4343,7 +4291,7 @@ domLink.getData("test");
     
     
     <div class="description">
-        Bind a DOM event to the context
+        <p>Bind a DOM event to the context</p>
     </div>
     
 
@@ -4355,33 +4303,33 @@ domLink.getData("test");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4390,29 +4338,29 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event type with optional selector</td>
+
+            <td class="description last"><p>event type with optional selector</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>props</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4421,31 +4369,31 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event properties to pass to the callback function</td>
+
+            <td class="description last"><p>event properties to pass to the callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4454,31 +4402,31 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4490,33 +4438,34 @@ domLink.getData("test");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event callback/property name</td>
+
+            <td class="description last"><p>event callback/property name</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -4525,28 +4474,28 @@ domLink.getData("test");
         <a href="$Node.html#on">$Node#on</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, <a href="Node.events.js.html#line24">line 24</a>
+        <a href="Node.events.js.html">Node.events.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4577,15 +4526,17 @@ domLink.getData("test");
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>// NOTICE: handler don't have e as the first argument
+    <pre class="sunlight-highlight-javascript">// NOTICE: handler don't have e as the first argument
 input.on("click", function() {...});
 // NOTICE: event properties in event name
-input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code></pre>
+input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</pre>
+
 
     
 </dd>
@@ -4601,7 +4552,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Bind a DOM event to the context and the callback only fire once before being removed
+        <p>Bind a DOM event to the context and the callback only fire once before being removed</p>
     </div>
     
 
@@ -4613,33 +4564,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4648,29 +4599,29 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event type with optional selector</td>
+
+            <td class="description last"><p>type of event with optional selector to filter by</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>props</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4679,31 +4630,31 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event properties to pass to the callback function</td>
+
+            <td class="description last"><p>event properties to pass to the callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4712,31 +4663,31 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4748,33 +4699,34 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">event callback/property name</td>
+
+            <td class="description last"><p>event callback/property name</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -4783,28 +4735,28 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <a href="$Node.html#once">$Node#once</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.events.js.html">Node.events.js</a>, <a href="Node.events.js.html#line97">line 97</a>
+        <a href="Node.events.js.html">Node.events.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4834,6 +4786,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -4851,7 +4804,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Find parent element filtered by optional selector
+        <p>Find parent element filtered by optional selector</p>
     </div>
     
 
@@ -4863,33 +4816,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4898,60 +4851,61 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line93">line 93</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -4969,7 +4923,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
             
 <div class="param-desc">
-    matched element
+    <p>matched element</p>
 </div>
 
 
@@ -4985,6 +4939,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -5002,7 +4957,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Prepend html string or native element to the current
+        <p>Prepend html string or $Element to the current</p>
     </div>
     
 
@@ -5014,86 +4969,96 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type"><a href="$Element.html">$Element</a></span>
+<span class="param-type">Mixed</span>
 
 
             
             </td>
+
             
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">HTML string or $Element</td>
+
+            <td class="description last"><p>HTMLString or $Element or functor that returns content</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, <a href="Element.manipulation.js.html#line70">line 70</a>
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5123,6 +5088,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -5140,7 +5106,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Find previous sibling element filtered by optional selector
+        <p>Find previous sibling element filtered by optional selector</p>
     </div>
     
 
@@ -5152,33 +5118,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5187,60 +5153,61 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line69">line 69</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5258,7 +5225,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
             
 <div class="param-desc">
-    matched element
+    <p>matched element</p>
 </div>
 
 
@@ -5274,6 +5241,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -5291,7 +5259,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Find all previous sibling elements filtered by optional selector
+        <p>Find all previous sibling elements filtered by optional selector</p>
     </div>
     
 
@@ -5303,33 +5271,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5338,60 +5306,61 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.traversing.js.html">Element.traversing.js</a>, <a href="Element.traversing.js.html#line85">line 85</a>
+        <a href="Element.traversing.js.html">Element.traversing.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5409,7 +5378,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
             
 <div class="param-desc">
-    collection of matched elements
+    <p>collection of matched elements</p>
 </div>
 
 
@@ -5426,6 +5395,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 	</dd>
 </dl>
 
+
         
     
     
@@ -5434,7 +5404,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         
             
 <dt>
-    <h4 class="name" id="reduce"><span class="type-signature"></span>reduce<span class="signature">(callback, memo)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="reduce"><span class="type-signature"></span>reduce<span class="signature">(callback, <span class="optional">memo</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -5442,7 +5412,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        (alias: <b>foldl</b>) Boils down a list of values into a single value (from start to end)
+        <p>Boils down a list of values into a single value (from start to end)</p>
     </div>
     
 
@@ -5454,31 +5424,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5487,21 +5459,29 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
+
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>memo</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5510,50 +5490,61 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
+
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">initial value of the accumulator</td>
+
+            <td class="description last"><p>initial value of the accumulator</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line70">line 70</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5571,7 +5562,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
             
 <div class="param-desc">
-    the accumulated value
+    <p>the accumulated value</p>
 </div>
 
 
@@ -5588,6 +5579,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 	</dd>
 </dl>
 
+
         
     
     
@@ -5596,7 +5588,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         
             
 <dt>
-    <h4 class="name" id="reduceRight"><span class="type-signature"></span>reduceRight<span class="signature">(callback, memo)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="reduceRight"><span class="type-signature"></span>reduceRight<span class="signature">(callback, <span class="optional">memo</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -5604,7 +5596,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        (alias: <b>foldr</b>) Boils down a list of values into a single value (from end to start)
+        <p>Boils down a list of values into a single value (from end to start)</p>
     </div>
     
 
@@ -5616,31 +5608,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5649,21 +5643,29 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
+
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>memo</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5672,50 +5674,61 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
+
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
+
             
-            
-            
-            <td class="description last">initial value of the accumulator</td>
+
+            <td class="description last"><p>initial value of the accumulator</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line81">line 81</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5733,7 +5746,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
             
 <div class="param-desc">
-    the accumulated value
+    <p>the accumulated value</p>
 </div>
 
 
@@ -5749,6 +5762,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -5766,7 +5780,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Remove current element from DOM
+        <p>Remove current element from DOM</p>
     </div>
     
 
@@ -5779,34 +5793,34 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, <a href="Element.manipulation.js.html#line99">line 99</a>
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5836,6 +5850,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -5853,7 +5868,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Remove class(es) from element
+        <p>Remove class(es) from element</p>
     </div>
     
 
@@ -5865,33 +5880,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>classNames</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -5900,60 +5915,61 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                     &lt;repeatable><br>
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">class name(s)</td>
+
+            <td class="description last"><p>class name(s)</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.classes.js.html">Element.classes.js</a>, <a href="Element.classes.js.html#line66">line 66</a>
+        <a href="Element.classes.js.html">Element.classes.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -5983,6 +5999,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -6000,7 +6017,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Replace current element with html string or native element
+        <p>Replace current element with html string or $Element</p>
     </div>
     
 
@@ -6012,86 +6029,84 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
-<span class="param-type">String</span>
-|
-
-<span class="param-type"><a href="$Element.html">$Element</a></span>
+<span class="param-type">Mixed</span>
 
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">HTML string or $Element</td>
+
+            <td class="description last"><p>HTMLString or $Element or functor that returns content</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.manipulation.js.html">Element.manipulation.js</a>, <a href="Element.manipulation.js.html#line90">line 90</a>
+        <a href="Element.manipulation.js.html">Element.manipulation.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -6121,6 +6136,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
 	</dd>
 </dl>
+
 
         
     
@@ -6138,7 +6154,7 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
     
     
     <div class="description">
-        Set property/attribute value
+        <p>Set property/attribute value</p>
     </div>
     
 
@@ -6150,33 +6166,33 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>name</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6185,31 +6201,31 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">property/attribute name</td>
+
+            <td class="description last"><p>property/attribute name</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>value</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6218,58 +6234,59 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">property/attribute value</td>
+
+            <td class="description last"><p>property/attribute value</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.set.js.html">Element.set.js</a>, <a href="Element.set.js.html#line24">line 24</a>
+        <a href="Element.set.js.html">Element.set.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -6300,17 +6317,19 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</code><
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>// sets property href (and that action updates attribute value too)
+    <pre class="sunlight-highlight-javascript">// sets property href (and that action updates attribute value too)
 link.set("href", "/some/path");
 // sets attribute "data-attr" to "123"
 link.set("data-attr", "123");
 // sets innerHTML to "some text"
-link.set("some text");</code></pre>
+link.set("some text");</pre>
+
 
     
 </dd>
@@ -6326,7 +6345,7 @@ link.set("some text");</code></pre>
     
     
     <div class="description">
-        Store data entry value(s)
+        <p>Store data entry value(s)</p>
     </div>
     
 
@@ -6338,31 +6357,31 @@ link.set("some text");</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>key</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6374,21 +6393,21 @@ link.set("some text");</code></pre>
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">data entry key | key/value pairs</td>
+
+            <td class="description last"><p>data entry key | key/value pairs</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>value</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6397,25 +6416,26 @@ link.set("some text");</code></pre>
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">data to store</td>
+
+            <td class="description last"><p>data to store</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -6424,28 +6444,28 @@ link.set("some text");</code></pre>
         <a href="$Node.html#setData">$Node#setData</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.data.js.html">Node.data.js</a>, <a href="Node.data.js.html#line47">line 47</a>
+        <a href="Node.data.js.html">Node.data.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -6476,15 +6496,17 @@ link.set("some text");</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>var domLink = DOM.find(".link");
+    <pre class="sunlight-highlight-javascript">var domLink = DOM.find(".link");
 
 domLink.setData("test", "message");
-domLink.setData({a: "b", c: "d"});</code></pre>
+domLink.setData({a: "b", c: "d"});</pre>
+
 
     
 </dd>
@@ -6500,7 +6522,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     
     <div class="description">
-        Set css style for element
+        <p>Set css style for element</p>
     </div>
     
 
@@ -6512,54 +6534,57 @@ domLink.setData({a: "b", c: "d"});</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
+
 		
+
 		
-		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>name</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
 
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">property name</td>
+
+            <td class="description last"><p>property name or key/value pair</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>value</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6568,50 +6593,51 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
             
             </td>
+
             
+
             
-            
-            
-            
-            <td class="description last">property value</td>
+
+            <td class="description last"><p>property value</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.styles.js.html">Element.styles.js</a>, <a href="Element.styles.js.html#line109">line 109</a>
+        <a href="Element.styles.js.html">Element.styles.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -6641,6 +6667,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
 	</dd>
 </dl>
+
 
         
     
@@ -6658,7 +6685,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     
     <div class="description">
-        Show element
+        <p>Show element</p>
     </div>
     
 
@@ -6671,34 +6698,34 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.visibility.js.html">Element.visibility.js</a>, <a href="Element.visibility.js.html#line8">line 8</a>
+        <a href="Element.visibility.js.html">Element.visibility.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -6729,6 +6756,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
@@ -6737,7 +6765,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
         
             
 <dt>
-    <h4 class="name" id="some"><span class="type-signature"></span>some<span class="signature">(callback, <span class="optional">thisArg</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="some"><span class="type-signature"></span>some<span class="signature">(callback, <span class="optional">context</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -6745,7 +6773,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     
     <div class="description">
-        (alias: <b>any</b>) Checks if the callback returns true for any element in the collection
+        <p>Checks if the callback returns true for any element in the collection</p>
     </div>
     
 
@@ -6757,33 +6785,33 @@ domLink.setData({a: "b", c: "d"});</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6792,29 +6820,29 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback function</td>
+
+            <td class="description last"><p>callback function</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
-                <td class="name"><code>thisArg</code></td>
+                <td class="name"><code>context</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6823,60 +6851,61 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">callback context</td>
+
+            <td class="description last"><p>callback context</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.collection.js.html">Element.collection.js</a>, <a href="Element.collection.js.html#line26">line 26</a>
+        <a href="Element.collection.js.html">Element.collection.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -6894,7 +6923,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
             
 <div class="param-desc">
-    true, if any element in the collection return true
+    <p>true, if any element in the collection return true</p>
 </div>
 
 
@@ -6910,6 +6939,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
 	</dd>
 </dl>
+
 
         
     
@@ -6927,7 +6957,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
     
     <div class="description">
-        Check element capability
+        <p>Check element capability</p>
     </div>
     
 
@@ -6939,33 +6969,33 @@ domLink.setData({a: "b", c: "d"});</code></pre>
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>prop</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6974,29 +7004,29 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">property to check</td>
+
+            <td class="description last"><p>property to check</p></td>
         </tr>
+
 	
-	
-	
+
         <tr>
             
                 <td class="name"><code>tag</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -7005,35 +7035,36 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
                     &lt;optional><br>
                 
-                    
+
                 
-                    
+
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">name of element to test</td>
+
+            <td class="description last"><p>name of element to test</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
+
     
-    
+
     
 
     
@@ -7042,28 +7073,28 @@ domLink.setData({a: "b", c: "d"});</code></pre>
         <a href="$Node.html#supports">$Node#supports</a>
     </li></dd>
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.supports.js.html">Node.supports.js</a>, <a href="Node.supports.js.html#line17">line 17</a>
+        <a href="Node.supports.js.html">Node.supports.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -7081,7 +7112,7 @@ domLink.setData({a: "b", c: "d"});</code></pre>
     
             
 <div class="param-desc">
-    true, if feature is supported
+    <p>true, if feature is supported</p>
 </div>
 
 
@@ -7098,17 +7129,19 @@ domLink.setData({a: "b", c: "d"});</code></pre>
 	</dd>
 </dl>
 
+
         
     
     
         <h5>Example</h5>
         
-    <pre class="prettyprint"><code>input.supports("placeholder");
+    <pre class="sunlight-highlight-javascript">input.supports("placeholder");
 // => true if an input supports placeholders
 DOM.supports("addEventListener");
 // => true if browser supports document.addEventListener
 DOM.supports("oninvalid", "input");
-// => true if browser supports `invalid` event</code></pre>
+// => true if browser supports `invalid` event</pre>
+
 
     
 </dd>
@@ -7124,7 +7157,7 @@ DOM.supports("oninvalid", "input");
     
     
     <div class="description">
-        Toggle element visibility
+        <p>Toggle element visibility</p>
     </div>
     
 
@@ -7137,34 +7170,34 @@ DOM.supports("oninvalid", "input");
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.visibility.js.html">Element.visibility.js</a>, <a href="Element.visibility.js.html#line28">line 28</a>
+        <a href="Element.visibility.js.html">Element.visibility.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -7194,6 +7227,7 @@ DOM.supports("oninvalid", "input");
 
 	</dd>
 </dl>
+
 
         
     
@@ -7211,7 +7245,7 @@ DOM.supports("oninvalid", "input");
     
     
     <div class="description">
-        Toggle class(es) on element
+        <p>Toggle class(es) on element</p>
     </div>
     
 
@@ -7223,33 +7257,33 @@ DOM.supports("oninvalid", "input");
         <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
 	<tr>
 		
 		<th>Name</th>
 		
-		
+
 		<th>Type</th>
-		
+
 		
 		<th>Argument</th>
 		
+
 		
-		
-		
+
 		<th class="last">Description</th>
 	</tr>
 	</thead>
-	
+
 	<tbody>
 	
-	
+
         <tr>
             
                 <td class="name"><code>classNames</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -7258,60 +7292,61 @@ DOM.supports("oninvalid", "input");
 
             
             </td>
-            
+
             
                 <td class="attributes">
                 
-                    
+
                 
-                    
+
                 
                     &lt;repeatable><br>
                 
                 </td>
             
+
             
-            
-            
-            <td class="description last">class name(s)</td>
+
+            <td class="description last"><p>class name(s)</p></td>
         </tr>
-	
+
 	
 	</tbody>
 </table>
+
     
     
     
 <dl class="details">
     
-        
-    
-    
+
     
 
     
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
+
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Element.classes.js.html">Element.classes.js</a>, <a href="Element.classes.js.html#line78">line 78</a>
+        <a href="Element.classes.js.html">Element.classes.js</a>
     </li></ul></dd>
     
+
     
+
     
-    
-    
-    
+
     
 </dl>
 
@@ -7342,37 +7377,194 @@ DOM.supports("oninvalid", "input");
 	</dd>
 </dl>
 
+
         
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="unsafe"><span class="type-signature"></span>unsafe<span class="signature">(block)</span><span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Executes code in a 'unsafe' block there the first callback argument is native DOM
+object. Use only when you need to communicate better-dom with third party scripts!</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>block</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>unsafe block body (nativeNode, element, index)</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Element.collection.js.html">Element.collection.js</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
     
     
 </dd>
 
         </dl>
     
+
     
-    
-    
+
     
 </article>
 
-</section>  
+</section>
 
 
 
 
-</div>
+				</div>
 
-<nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
-</nav>
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
+		on Sun Sep 01 2013 14:50:33 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
 
-<br clear="both">
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
+			
+			<br clear="both">
+		</div>
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Fri Aug 16 2013 12:15:28 GMT+0300 (FET)
-</footer>
+	</div>
+	<script src="scripts/sunlight.js"></script>
+	<script src="scripts/sunlight.javascript.js"></script>
+	<script src="scripts/sunlight-plugin.doclinks.js"></script>
+	<script src="scripts/sunlight-plugin.linenumbers.js"></script>
+	<script src="scripts/sunlight-plugin.menu.js"></script>
+	<script src="scripts/jquery.min.js"></script>
+	<script src="scripts/jquery.scrollTo.js"></script>
+	<script src="scripts/jquery.localScroll.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+
+	<script>  Sunlight.highlightAll({lineNumbers:false,  showMenu: true, enableDoclinks :true}); </script>
+
+	<script>
+		$( function () {
+			$( "#toc" ).toc( {
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : 60
+			} );
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+
+		} );
+	</script>
+
+	
+
 </body>
 </html>

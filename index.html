@@ -1,119 +1,163 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>JSDoc: Index</title>
-    
-    <script src="scripts/prettify/prettify.js"> </script>
-    <script src="scripts/prettify/lang-css.js"> </script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+	<meta charset="utf-8">
+	<title>better-dom Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+	
 </head>
 
 <body>
+<div class="container-fluid">
+	<div class="navbar navbar-fixed-top ">
+		<div class="navbar-inner">
+			<a class="brand" href="index.html">better-dom</a>
+			<ul class="nav">
+				
+				<li class="dropdown">
+					<a href="namespaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Namespaces<b
+						class="caret"></b></a>
 
-<div id="main">
-    
-    <h1 class="page-title">Index</h1>
-    
-    
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="DOM.html">DOM</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="$CompositeElement.html">$CompositeElement</a>
+						</li>
+						
+						<li>
+							<a href="$Element.html">$Element</a>
+						</li>
+						
+						<li>
+							<a href="$Node.html">$Node</a>
+						</li>
+						
+						<li>
+							<a href="$NullElement.html">$NullElement</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+			</ul>
+		</div>
+	</div>
+
+	<div class="row-fluid">
+
+		
+		<div class="span8">
+			
+				<div id="main">
+					
 
 
-    
-
-
-    <h3> </h3>
-
-
-
+	
+	<span class="page-title">Index</span>
+	
+	
 
 
 
 
 
 
-    
+
+
+
+
+
+
+	
+	
+
 
 
 
 
     <section>
-        <article><h1>better-dom</h1>
-
-<blockquote><p>Sandbox for living DOM extensions</p></blockquote>
-
-<p><a href="http://chemerisuk.github.io/better-dom/">API DESCRIPTION</a></p>
-
+        <article><p>&nbsp;</p>
+<blockquote>
+<p>Sandbox for living DOM extensions</p>
+</blockquote>
 <h2>Installation</h2>
-
 <p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
-
 <pre><code>bower install better-dom</code></pre>
-
 <p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include scripts below on your web page:</p>
-
 <h2>Living extensions</h2>
-
 <p><code>DOM.extend</code> used to define a new extension and any matched element starts to be captured by it. But the coolest thing is that the same will happen even for future content inserted via <code>innerHTML</code> or using any other javascript framework.</p>
-
-<p>So as a developer you don&#39;t need to worry about when and how the extension is initialized. It just works. As a result it&#39;s much simpler to create new extensions or to write cross-browser polyfills.</p>
-
+<p>So as a developer you don't need to worry about when and how the extension is initialized. It just works. As a result it's much simpler to create new extensions or to write cross-browser polyfills.</p>
 <h4>Usage examples</h4>
-
-<ul><li><a href="https://github.com/chemerisuk/better-placeholder-polyfill">better-placeholder-polyfill</a> - Placeholder attribute polyfill</li><li><a href="https://github.com/chemerisuk/better-elastic-textarea">better-elastic-textarea</a> - Make textarea to expand on user input</li><li><a href="https://github.com/chemerisuk/better-dateinput-polyfill">better-dateinput-polyfill</a> - input[type=date] polyfill</li><li><a href="https://github.com/chemerisuk/better-form-validation">better-form-validation</a> - Form validation polyfill</li><li><a href="https://github.com/chemerisuk/better-prettydate">better-prettydate</a> - Enhances time element to update text in realtime</li><li><a href="https://github.com/chemerisuk/better-ajaxify">better-ajaxify</a> - Ajax websites engine for better-dom</li></ul>
-
+<ul>
+<li><a href="https://github.com/chemerisuk/better-placeholder-polyfill">better-placeholder-polyfill</a> - Placeholder attribute polyfill</li>
+<li><a href="https://github.com/chemerisuk/better-elastic-textarea">better-elastic-textarea</a> - Make textarea to expand on user input</li>
+<li><a href="https://github.com/chemerisuk/better-dateinput-polyfill">better-dateinput-polyfill</a> - input[type=date] polyfill</li>
+<li><a href="https://github.com/chemerisuk/better-form-validation">better-form-validation</a> - Form validation polyfill</li>
+<li><a href="https://github.com/chemerisuk/better-prettydate">better-prettydate</a> - Enhances time element to update text in realtime</li>
+<li><a href="https://github.com/chemerisuk/better-ajaxify">better-ajaxify</a> - Ajax websites engine for better-dom</li>
+</ul>
 <h2>Getter and setter</h2>
-
-<p>Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property is <em>faster</em>, but a lot of people don&#39;t know that or just always use attributes to keep code the same everywhere.</p>
-
+<p>Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property is <em>faster</em>, but a lot of people don't know that or just always use attributes to keep code the same everywhere.</p>
 <p>The library fixes this confusion and introduces <em>smart</em> getter and setter.</p>
-
 <h2>Event handling best practices</h2>
-
 <p>Event handling is a big part of coding for DOM. There are some features included into the library that help developers to avoid potential issues and keep their code easier to maintain.</p>
-
 <h4>Get rid of the event object</h4>
-
 <p>Event callbacks loose the event object argument that improves testability of code.</p>
-
 <h4>Correct return false interpretation</h4>
-
 <p>jQuery has strange behavior of event handler that returns false which is a <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. This library has standards-based behavior and does what everybody expects.</p>
-
+<h4>stopPropagation is evil</h4>
+<p>If you need to call stopPropagation in an event handler in 95% situations you are doing something wrong. Solutions that utilize this function becomes to be complex, moreover they introduce compatability problems. Probably every experienced javascript developer had a issue where a third party script has blocked some useful event and there is no way to fix exept forking the extension's source code.</p>
+<p>That's why it's <em>not possible to call stopPropagation</em> using better-dom. And this is not a bug <em>it's a feature</em>.</p>
 <h4>Late binding</h4>
-
 <p>Usually an event listener is bound when the <code>addEventListener</code> method is called. This causes trouble when the handler is changed. The library helps to solve the problem by allowing to listent to an event using <em>object property</em> instead of just function.</p>
-
 <h4>Callback systems are brittle</h4>
-
-<p>There are no callback arrays, so any event listener can&#39;t break another one (read a <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
-
+<p>There are no callback arrays, so any event listener can't break another one (read a <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
 <h2>Emmet expressions</h2>
-
-<p>HTML strings are boring and complex, they take a lot of space. Let&#39;s fix that with <a href="http://emmet.io/">emmet</a>:</p>
-
-<ul><li><code>nav&gt;ul&gt;li</code> instead of <code>&lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</code></li><li><code>form#search.wide</code> instead of <code>&lt;form id=&quot;search&quot; class=&quot;wide&quot;&gt;&lt;/form&gt;</code></li><li><code>[a=&#39;value1&#39; b=&quot;value2&quot;]</code> instead of <code>&lt;div a=&quot;value1&quot; b=&quot;value2&quot;&gt;&lt;/div&gt;</code></li><li><code>ul&gt;li.item$*3</code> instead of <code>&lt;ul&gt;&lt;li class=&quot;item1&quot;&gt;&lt;/li&gt;&lt;li class=&quot;item2&quot;&gt;&lt;/li&gt;&lt;li class=&quot;item3&quot;&gt;&lt;/li&gt;&lt;/ul&gt;</code></li></ul>
-
+<p>HTML strings are boring and complex, they take a lot of space. Let's fix that with <a href="http://emmet.io/">emmet</a>:</p>
+<ul>
+<li><code>nav&gt;ul&gt;li</code> instead of <code>&lt;nav&gt;&lt;ul&gt;&lt;li&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/nav&gt;</code></li>
+<li><code>form#search.wide</code> instead of <code>&lt;form id=&quot;search&quot; class=&quot;wide&quot;&gt;&lt;/form&gt;</code></li>
+<li><code>[a='value1' b=&quot;value2&quot;]</code> instead of <code>&lt;div a=&quot;value1&quot; b=&quot;value2&quot;&gt;&lt;/div&gt;</code></li>
+<li><code>ul&gt;li.item$*3</code> instead of <code>&lt;ul&gt;&lt;li class=&quot;item1&quot;&gt;&lt;/li&gt;&lt;li class=&quot;item2&quot;&gt;&lt;/li&gt;&lt;li class=&quot;item3&quot;&gt;&lt;/li&gt;&lt;/ul&gt;</code></li>
+</ul>
 <p>Because of code size emmet expressions support is only for HTML strings for now. Take a look at the <a href="http://docs.emmet.io/cheat-sheet/">emmet cheat sheet</a> for more examples.</p>
-
 <h2>Easy localization</h2>
-
 <p>Multilanguage support is often required for an extension. <code>DOM.importStrings</code> allows to add a localized string which may be displayed in a html element using <code>data-i18n</code> attribute with the appropriate key.</p>
-
 <p>You can use parametrized strings via special <code>{param}</code> substrings and appropriate <code>data-*</code> attributes.</p>
-
 <p>To change a string language manually use setter with <code>lang</code> parameter.</p>
-
 <h4>Behind the scenes</h4>
-
 <p>All strings are actually stored in css and <code>:before</code> pseudoelement is used to display them. So the code above actually create several css rules below:</p>
-
 <h2>Browser support</h2>
-
-<ul><li>Chrome</li><li>Safari 5.2.2+</li><li>Firefox 16+</li><li>Opera 12.10+</li><li>IE8+</li></ul></article>
+<ul>
+<li>Chrome</li>
+<li>Safari 5.2.2+</li>
+<li>Firefox 16+</li>
+<li>Opera 12.10+</li>
+<li>IE8+</li>
+</ul></article>
     </section>
 
 
@@ -121,19 +165,57 @@
 
 
 
-</div>
 
-<nav>
-    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li></ul><h3>Namespaces</h3><ul><li><a href="DOM.html">DOM</a></li></ul>
-</nav>
+				</div>
 
-<br clear="both">
+				<div class="clearfix"></div>
+				<footer>
+					
+					
+		<span class="jsdoc-message">
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
+		on Sun Sep 01 2013 14:50:32 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		</span>
+				</footer>
+			</div>
 
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a> on Fri Aug 16 2013 12:15:27 GMT+0300 (FET)
-</footer>
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
+			
+			<br clear="both">
+		</div>
 
-<script> prettyPrint(); </script>
-<script src="scripts/linenumber.js"> </script>
+	</div>
+	<script src="scripts/sunlight.js"></script>
+	<script src="scripts/sunlight.javascript.js"></script>
+	<script src="scripts/sunlight-plugin.doclinks.js"></script>
+	<script src="scripts/sunlight-plugin.linenumbers.js"></script>
+	<script src="scripts/sunlight-plugin.menu.js"></script>
+	<script src="scripts/jquery.min.js"></script>
+	<script src="scripts/jquery.scrollTo.js"></script>
+	<script src="scripts/jquery.localScroll.js"></script>
+	<script src="scripts/bootstrap-dropdown.js"></script>
+	<script src="scripts/toc.js"></script>
+
+
+	<script>  Sunlight.highlightAll({lineNumbers:false,  showMenu: true, enableDoclinks :true}); </script>
+
+	<script>
+		$( function () {
+			$( "#toc" ).toc( {
+				selectors   : "h1,h2,h3,h4",
+				showAndHide : false,
+				scrollTo    : 60
+			} );
+			$( "#toc>ul" ).addClass( "nav nav-pills nav-stacked" );
+			$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+
+		} );
+	</script>
+
+	
+
 </body>
 </html>
