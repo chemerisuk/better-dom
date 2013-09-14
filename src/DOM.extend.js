@@ -49,14 +49,10 @@ define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, 
         /**
          * Synchronously return dummy {@link $Element} instance specified for optional selector
          * @memberOf DOM
-         * @param  {HTMLString|EmmetString} [content] mock element content
+         * @param  {Mixed} [content] mock element content
          * @return {$Element} mock instance
          */
         DOM.mock = function(content) {
-            if (content && typeof content !== "string") {
-                throw _makeError("mock", this);
-            }
-
             var el = content ? DOM.create(content) : new $NullElement(),
                 applyWatchers = function(el) {
                     _forOwn(watchers, function(watchers, selector) {

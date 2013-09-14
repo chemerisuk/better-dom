@@ -9,16 +9,11 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
         // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
         // TODO: disallow to use buggy selectors?
-        var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
+        var rquickExpr = document.getElementsByClassName ? /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/ : /^(?:#([\w\-]+)|(\w+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rescape = /'|\\/g,
             tmpId = "DOM" + new Date().getTime();
 
-        if (!document.getElementsByClassName) {
-            // exclude getElementsByClassName from pattern
-            rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
-        }
-        
         /**
          * Find the first matched element by css selector
          * @param  {String} selector css selector
@@ -49,9 +44,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
                     elements = node.getElementsByClassName(m);
                 }
 
-                if (elements && !multiple) {
-                    elements = elements[0];
-                }
+                if (elements && !multiple) elements = elements[0];
             } else {
                 old = true;
                 nid = tmpId;

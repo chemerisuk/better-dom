@@ -49,7 +49,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
 
         /**
          * Insert html string or $Element after the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -59,7 +59,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
 
         /**
          * Insert html string or $Element before the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -69,7 +69,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
 
         /**
          * Prepend html string or $Element to the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -79,7 +79,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
 
         /**
          * Append html string or $Element to the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
