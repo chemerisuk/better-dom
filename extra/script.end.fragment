@@ -6,5 +6,4 @@
     if (typeof define === "function" && define.amd) {
         define("better-dom", function() { return DOM; });
     }
-
 })(window, document, document.documentElement);

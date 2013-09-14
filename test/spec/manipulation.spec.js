@@ -11,9 +11,7 @@ describe("manipulation", function() {
         });
 
         it("should remove element from DOM", function() {
-            setFixtures("<div id='test'></div>");
-
-            DOM.find("#test").remove();
+            expect(div.remove()).toBe(div);
 
             expect(document.getElementById("test")).toBeNull();
         });
@@ -21,7 +19,6 @@ describe("manipulation", function() {
         it("should throw error if argument is invalid", function() {
             expect(function() { div.remove(1); }).toThrow();
         });
-
     });
 
     describe("append, prepend, after, before", function() {
@@ -98,6 +95,13 @@ describe("manipulation", function() {
             });
         });
 
+        it("should return this", function() {
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDivHtml(strategy);
+
+                expect(div[strategy](arg)).toBe(div);
+            });
+        });
     });
 
     describe("replace", function() {
@@ -110,7 +114,7 @@ describe("manipulation", function() {
         });
 
         it("should accept html string", function() {
-            div.replace(createDivHtml("replace"));
+            expect(div.replace(createDivHtml("replace"))).toBe(div);
 
             expectToBeReplaced("test", "replace");
         });

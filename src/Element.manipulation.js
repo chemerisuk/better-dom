@@ -36,6 +36,8 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
                 } else {
                     node.insertAdjacentHTML(fasterMethodName, value);
                 }
+
+                return this;
             };
 
             return !fasterMethodName ? manipulateContent : function() {
