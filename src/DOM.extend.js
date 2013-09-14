@@ -49,7 +49,7 @@ define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, 
         /**
          * Synchronously return dummy {@link $Element} instance specified for optional selector
          * @memberOf DOM
-         * @param  {String} [selector] selector of mock
+         * @param  {HTMLString|EmmetString} [content] mock element content
          * @return {$Element} mock instance
          */
         DOM.mock = function(content) {
@@ -58,19 +58,17 @@ define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, 
             }
 
             var el = content ? DOM.create(content) : new $NullElement(),
-                makeMock = function(el) {
+                applyWatchers = function(el) {
                     _forOwn(watchers, function(watchers, selector) {
                         if (el.matches(selector)) {
                             _forEach(watchers, function(watcher) { watcher(el); });
                         }
                     });
+
+                    el.children().each(applyWatchers);
                 };
 
-            if (content) {
-                makeMock(el);
-
-                el.findAll("*").each(makeMock);
-            }
+            if (content) applyWatchers(el);
 
             return el;
         };
