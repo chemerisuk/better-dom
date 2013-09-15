@@ -5,7 +5,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
     // --------------
 
     /**
-     * Execute callback when element with specified selector matches
+     * Execute callback when element with specified selector is found in document tree
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
@@ -69,25 +69,25 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                 if (e.srcUrn === "dataavailable") {
                     _forEach(watchers, function(entry) {
                         // do not execute callback if it was previously excluded
-                        if (_some(e.detail, function(x) { return x === entry.callback; })) return;
+                        if (_some(e.detail, function(x) { return x === entry.callback })) return;
 
                         if (entry.matcher.test(node)) {
                             if (entry.once) node.attachEvent("on" + e.type, entry.once);
 
-                            _defer(function() { entry.callback($Element(node)); });
+                            _defer(function() { entry.callback($Element(node)) });
                         }
                     });
                 }
             });
 
             return function(selector, callback, once) {
-                var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector; });
-                
+                var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector });
+
                 if (behaviorExists) {
                     // do safe call of the callback for each matched element
                     // because the behaviour is already attached to selector
                     DOM.findAll(selector).each(function(el) {
-                        _defer(function() { callback(el); });
+                        _defer(function() { callback(el) });
                     });
                 }
 

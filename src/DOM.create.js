@@ -10,7 +10,7 @@ define(["DOM", "Element"], function(DOM, $Element, _makeError) {
         /**
          * Create a $Element instance
          * @memberOf DOM
-         * @param  {Element|String} value        element/tag name or emmet expression
+         * @param  {Mixed}          value        native element or HTMLString or EmmetString
          * @param  {Object}         [attributes] key/value pairs of the element attributes
          * @param  {Object}         [styles]     key/value pairs of the element styles
          * @return {$Element} element

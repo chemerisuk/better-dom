@@ -3,7 +3,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
 
     // TRAVERSING
     // ----------
-    
+
     (function() {
         function makeTraversingMethod(propertyName, multiple) {
             return function(selector) {
@@ -37,7 +37,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
 
                 if (!document.addEventListener) {
                     // fix IE8 bug with children collection
-                    children = _filter(children, function(node) { return node.nodeType === 1; });
+                    children = _filter(children, function(node) { return node.nodeType === 1 });
                 }
 
                 if (multiple) {

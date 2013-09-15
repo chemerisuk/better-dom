@@ -37,10 +37,10 @@ define([], function(documentElement, _foldl, _some) {
             test: function(el) {
                 if (this.quick) {
                     return (
-                        (!this.quick[1] || (el.nodeName || "").toLowerCase() === this.quick[1]) &&
+                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
                         (!this.quick[2] || el.id === this.quick[2]) &&
                         (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                        (!this.quick[4] || (" " + (el.className || "") + " ").indexOf(this.quick[4]) >= 0)
+                        (!this.quick[4] || (" " + el.className + " ").indexOf(this.quick[4]) >= 0)
                     );
                 }
 

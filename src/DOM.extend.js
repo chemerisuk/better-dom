@@ -22,7 +22,7 @@ define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, 
         DOM.extend = function(selector, mixins) {
             if (typeof mixins === "function") mixins = {constructor: mixins};
 
-            if (!mixins || typeof mixins !== "object" || (selector !== "*" && ~selector.indexOf("*"))) {
+            if (!mixins || typeof mixins !== "object") {
                 throw _makeError("extend", this);
             }
 
@@ -44,6 +44,8 @@ define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, 
 
                 DOM.watch(selector, watcher, true);
             }
+
+            return this;
         };
 
         /**

@@ -93,9 +93,9 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @param  {Function} block unsafe block body (nativeNode, element, index)
              */
             unsafe: function(block) {
-                _forEach(this, function(el, index) {
-                    block(el._node, el, index);
-                });
+                _forEach(this, function(el, index) { block(el._node, el, index) });
+
+                return this;
             }
         });
     }());

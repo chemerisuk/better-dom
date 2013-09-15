@@ -1,4 +1,4 @@
-describe("collection", function() {
+describe("collection methods", function() {
     "use strict";
 
     var inputs, spy;
@@ -96,6 +96,14 @@ describe("collection", function() {
             expect(a).toBe(inputs);
             return memo + el.get("className");
         }, "")).toBe("c3c2c1");
+    });
+
+    it("should pass native element into unsafe", function() {
+        inputs.unsafe(function(node, el) {
+            expect(el._node).toBe(node);
+        });
+
+        expect(inputs.unsafe(function() {})).toBe(inputs);
     });
 
     // it("should have aliases", function() {
