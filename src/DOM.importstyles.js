@@ -39,8 +39,6 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
             return this;
         };
 
-        if (!DOM.supports("hidden", "a")) {
-            DOM.importStyles("[hidden]", "display:none");
-        }
+        DOM.importStyles("[aria-hidden=true]", "display:none");
     }());
 });

@@ -35,9 +35,9 @@ So as a developer you don't need to worry about when and how the extension is in
 * [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - input[type=date] polyfill
 * [better-form-validation](https://github.com/chemerisuk/better-form-validation) - Form validation polyfill
 * [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
-* [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine for better-dom
+* [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
 
-## Getter and setter
+## Smarter getter and setter
 Standard DOM APIs have a notion of property and attribute for a element. Usually reading a property is _faster_, but a lot of people don't know that or just always use attributes to keep code the same everywhere.
 
 The library fixes this confusion and introduces _smart_ getter and setter.

@@ -6,7 +6,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.show = function() {
-        this.set("hidden", false);
+        this.set("aria-hidden", false);
 
         return this;
     };
@@ -16,7 +16,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.hide = function() {
-        this.set("hidden", true);
+        this.set("aria-hidden", true);
 
         return this;
     };
@@ -26,7 +26,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.toggle = function() {
-        this.set("hidden", !this.get("hidden"));
+        this.set("aria-hidden", !this.get("aria-hidden"));
 
         return this;
     };
@@ -36,7 +36,7 @@ define(["Element"], function($Element) {
      * @return {Boolean} true if element is hidden
      */
     $Element.prototype.isHidden = function() {
-        return !!this.get("hidden");
+        return this.get("aria-hidden") === "true";
     };
 
     /**

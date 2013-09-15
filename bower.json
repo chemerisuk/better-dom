@@ -1,20 +1,21 @@
 {
-    "name": "better-dom",
-    "version": "1.4.0",
-    "main": [
-        "better-dom.js",
-        "better-dom.htc"
-    ],
-    "ignore": [
-        ".*",
-        "test",
-        "src",
-        "extra"
-    ],
-    "dependencies": {
-        "html5shiv": "3.6.2"
-    },
-    "devDependencies": {
-        "jquery": "latest"
-    }
+  "name": "better-dom",
+  "version": "1.4.0",
+  "main": [
+    "better-dom.js",
+    "better-dom.htc"
+  ],
+  "ignore": [
+    ".*",
+    "test",
+    "src",
+    "extra"
+  ],
+  "dependencies": {
+    "html5shiv": "3.6.2"
+  },
+  "devDependencies": {
+    "jquery": "latest",
+    "jasmine": "~1.3.1"
+  }
 }
