@@ -14,7 +14,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
      */
     DOM.watch = (function() {
         var animId = 19968, // use Chinese characters for animation names starting from 4E00
-            watchers, cssPrefix, scripts, behaviorUrl;
+            watchers, cssPrefix, link;
 
         if (window.CSSKeyframesRule || !document.attachEvent) {
             // Inspired by trick discovered by Daniel Buchner:
@@ -58,9 +58,10 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                 };
             };
         } else {
-            scripts = document.scripts;
-            behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
+            link = document.querySelector("link[rel=better-dom-htc]");
             watchers = [];
+
+            if (!link) throw "You forgot to include link with rel='better-dom-htc' on your page!";
 
             document.attachEvent("ondataavailable", function() {
                 var e = window.event,
@@ -103,7 +104,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                     }
                 });
 
-                if (!behaviorExists) DOM.importStyles(selector, {behavior: "url(" + behaviorUrl + ")"});
+                if (!behaviorExists) DOM.importStyles(selector, {behavior: "url(" + link.href + ")"});
             };
         }
     }());
