@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.4.0 2013-09-01T14:50:25
+ * @version 1.4.1 2013-09-15T12:46:14
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -233,16 +233,11 @@
         // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
         // TODO: disallow to use buggy selectors?
-        var rquickExpr = /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/,
+        var rquickExpr = document.getElementsByClassName ? /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/ : /^(?:#([\w\-]+)|(\w+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rescape = /'|\\/g,
             tmpId = "DOM" + new Date().getTime();
 
-        if (!document.getElementsByClassName) {
-            // exclude getElementsByClassName from pattern
-            rquickExpr = /^(?:#([\w\-]+)|(\w+))$/;
-        }
-        
         /**
          * Find the first matched element by css selector
          * @param  {String} selector css selector
@@ -273,9 +268,7 @@
                     elements = node.getElementsByClassName(m);
                 }
 
-                if (elements && !multiple) {
-                    elements = elements[0];
-                }
+                if (elements && !multiple) elements = elements[0];
             } else {
                 old = true;
                 nid = tmpId;
@@ -730,10 +723,10 @@
             test: function(el) {
                 if (this.quick) {
                     return (
-                        (!this.quick[1] || (el.nodeName || "").toLowerCase() === this.quick[1]) &&
+                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
                         (!this.quick[2] || el.id === this.quick[2]) &&
                         (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                        (!this.quick[4] || (" " + (el.className || "") + " ").indexOf(this.quick[4]) >= 0)
+                        (!this.quick[4] || (" " + el.className + " ").indexOf(this.quick[4]) >= 0)
                     );
                 }
 
@@ -1038,6 +1031,8 @@
                 } else {
                     node.insertAdjacentHTML(fasterMethodName, value);
                 }
+
+                return this;
             };
 
             return !fasterMethodName ? manipulateContent : function() {
@@ -1049,7 +1044,7 @@
 
         /**
          * Insert html string or $Element after the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1059,7 +1054,7 @@
 
         /**
          * Insert html string or $Element before the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1069,7 +1064,7 @@
 
         /**
          * Prepend html string or $Element to the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1079,7 +1074,7 @@
 
         /**
          * Append html string or $Element to the current
-         * @param {...Mixed} content HTMLString or $Element or functor that returns content
+         * @param {...Mixed} contents HTMLString or $Element or functor that returns content
          * @return {$Element}
          * @function
          */
@@ -1411,7 +1406,7 @@
 
     // TRAVERSING
     // ----------
-    
+
     (function() {
         function makeTraversingMethod(propertyName, multiple) {
             return function(selector) {
@@ -1445,7 +1440,7 @@
 
                 if (!document.addEventListener) {
                     // fix IE8 bug with children collection
-                    children = _filter(children, function(node) { return node.nodeType === 1; });
+                    children = _filter(children, function(node) { return node.nodeType === 1 });
                 }
 
                 if (multiple) {
@@ -1528,7 +1523,7 @@
      * @return {$Element}
      */
     $Element.prototype.show = function() {
-        this.set("hidden", false);
+        this.set("aria-hidden", false);
 
         return this;
     };
@@ -1538,7 +1533,7 @@
      * @return {$Element}
      */
     $Element.prototype.hide = function() {
-        this.set("hidden", true);
+        this.set("aria-hidden", true);
 
         return this;
     };
@@ -1548,7 +1543,7 @@
      * @return {$Element}
      */
     $Element.prototype.toggle = function() {
-        this.set("hidden", !this.get("hidden"));
+        this.set("aria-hidden", !this.isHidden());
 
         return this;
     };
@@ -1558,7 +1553,7 @@
      * @return {Boolean} true if element is hidden
      */
     $Element.prototype.isHidden = function() {
-        return !!this.get("hidden");
+        return this.get("aria-hidden") === "true";
     };
 
     /**
@@ -1687,9 +1682,9 @@
              * @param  {Function} block unsafe block body (nativeNode, element, index)
              */
             unsafe: function(block) {
-                _forEach(this, function(el, index) {
-                    block(el._node, el, index);
-                });
+                _forEach(this, function(el, index) { block(el._node, el, index) });
+
+                return this;
             }
         });
     }());
@@ -1715,13 +1710,13 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.4.0";
+    DOM.version = "1.4.1";
 
     // WATCH CALLBACK
     // --------------
 
     /**
-     * Execute callback when element with specified selector matches
+     * Execute callback when element with specified selector is found in document tree
      * @memberOf DOM
      * @param {String} selector css selector
      * @param {Fuction} callback event handler
@@ -1785,25 +1780,25 @@
                 if (e.srcUrn === "dataavailable") {
                     _forEach(watchers, function(entry) {
                         // do not execute callback if it was previously excluded
-                        if (_some(e.detail, function(x) { return x === entry.callback; })) return;
+                        if (_some(e.detail, function(x) { return x === entry.callback })) return;
 
                         if (entry.matcher.test(node)) {
                             if (entry.once) node.attachEvent("on" + e.type, entry.once);
 
-                            _defer(function() { entry.callback($Element(node)); });
+                            _defer(function() { entry.callback($Element(node)) });
                         }
                     });
                 }
             });
 
             return function(selector, callback, once) {
-                var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector; });
-                
+                var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector });
+
                 if (behaviorExists) {
                     // do safe call of the callback for each matched element
                     // because the behaviour is already attached to selector
                     DOM.findAll(selector).each(function(el) {
-                        _defer(function() { callback(el); });
+                        _defer(function() { callback(el) });
                     });
                 }
 
@@ -1833,7 +1828,7 @@
         /**
          * Create a $Element instance
          * @memberOf DOM
-         * @param  {Element|String} value        element/tag name or emmet expression
+         * @param  {Mixed}          value        native element or HTMLString or EmmetString
          * @param  {Object}         [attributes] key/value pairs of the element attributes
          * @param  {Object}         [styles]     key/value pairs of the element styles
          * @return {$Element} element
@@ -1890,7 +1885,7 @@
         DOM.extend = function(selector, mixins) {
             if (typeof mixins === "function") mixins = {constructor: mixins};
 
-            if (!mixins || typeof mixins !== "object" || (selector !== "*" && ~selector.indexOf("*"))) {
+            if (!mixins || typeof mixins !== "object") {
                 throw _makeError("extend", this);
             }
 
@@ -1912,33 +1907,29 @@
 
                 DOM.watch(selector, watcher, true);
             }
+
+            return this;
         };
 
         /**
          * Synchronously return dummy {@link $Element} instance specified for optional selector
          * @memberOf DOM
-         * @param  {String} [selector] selector of mock
+         * @param  {Mixed} [content] mock element content
          * @return {$Element} mock instance
          */
         DOM.mock = function(content) {
-            if (content && typeof content !== "string") {
-                throw _makeError("mock", this);
-            }
-
             var el = content ? DOM.create(content) : new $NullElement(),
-                makeMock = function(el) {
+                applyWatchers = function(el) {
                     _forOwn(watchers, function(watchers, selector) {
                         if (el.matches(selector)) {
                             _forEach(watchers, function(watcher) { watcher(el); });
                         }
                     });
+
+                    el.children().each(applyWatchers);
                 };
 
-            if (content) {
-                makeMock(el);
-
-                el.findAll("*").each(makeMock);
-            }
+            if (content) applyWatchers(el);
 
             return el;
         };
@@ -2161,9 +2152,7 @@
             return this;
         };
 
-        if (!DOM.supports("hidden", "a")) {
-            DOM.importStyles("[hidden]", "display:none");
-        }
+        DOM.importStyles("[aria-hidden=true]", "display:none");
     }());
 
     // READY CALLBACK
@@ -2219,7 +2208,7 @@
     /**
      * Import external scripts on the page and call optional callback when it will be done
      * @memberOf DOM
-     * @param {...String} url        script file urls
+     * @param {...String} urls       script file urls
      * @param {Function}  [callback] callback that is triggered when all scripts are loaded
      */
     DOM.importScripts = function() {
@@ -2324,5 +2313,4 @@
     if (typeof define === "function" && define.amd) {
         define("better-dom", function() { return DOM; });
     }
-
 })(window, document, document.documentElement);
