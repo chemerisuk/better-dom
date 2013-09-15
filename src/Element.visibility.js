@@ -26,7 +26,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.toggle = function() {
-        this.set("aria-hidden", !this.get("aria-hidden"));
+        this.set("aria-hidden", !this.isHidden());
 
         return this;
     };

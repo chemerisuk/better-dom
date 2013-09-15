@@ -1,4 +1,4 @@
-describe("vesibility", function() {
+describe("visibility", function() {
     "use strict";
 
     var link;
@@ -21,5 +21,13 @@ describe("vesibility", function() {
         expect(link.isHidden()).toBe(false);
         expect(link.toggle().isHidden()).toBe(true);
         expect(link.toggle().isHidden()).toBe(false);
+    });
+
+    it("should handle unknown aria-hidden values as false", function() {
+        expect(link.isHidden()).toBe(false);
+        link.set("aria-hidden", "123");
+        expect(link.isHidden()).toBe(false);
+        link.toggle();
+        expect(link.isHidden()).toBe(true);
     });
 });
