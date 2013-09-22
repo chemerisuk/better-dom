@@ -179,7 +179,7 @@ module.exports = function(grunt) {
                     "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
                     "Element.set", "Element.styles", "Element.traversing",
                     "Element.visibility", "Element.collection", "CompositeElement", "NullElement",
-                    "DOM.watch", "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles",
+                    "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.watch",
                     "DOM.ready", "DOM.importscripts", "DOM.importstrings", "DOM.title"
                 ],
                 onBuildWrite: function(id, path, contents) {

@@ -1,6 +1,6 @@
 describe("watch", function() {
     "use strict";
-    
+
     var WAIT_FOR_WATCH_TIME = 50,
         callback;
 
@@ -69,6 +69,22 @@ describe("watch", function() {
         });
     });
 
+    it("should accept different selectors for the same element", function() {
+        var spy = jasmine.createSpy("callback2");
+
+        setFixtures("<a class='watch4'></a><b class='watch4'></b>");
+
+        DOM.watch(".watch4", callback);
+        DOM.watch("b", spy);
+
+        waits(WAIT_FOR_WATCH_TIME);
+
+        runs(function() {
+            expect(callback.callCount).toBe(2);
+            expect(spy.callCount).toBe(1);
+        });
+    });
+
     // FIXME: find a way to test without exception in browser
     // it("should not stop handle other listeners if any throws an error", function() {
     //     var otherCallback = jasmine.createSpy("otherCallback");
@@ -76,7 +92,7 @@ describe("watch", function() {
     //     DOM.watch(".watch5", callback.andCallFake(function() {
     //         throw "watch";
     //     }));
-        
+
     //     DOM.watch(".watch5", otherCallback);
 
     //     setFixtures("<a class='watch5'></a>");
