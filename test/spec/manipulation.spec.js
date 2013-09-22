@@ -44,6 +44,14 @@ describe("manipulation", function() {
             });
         });
 
+        it("should trim html string", function() {
+            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+                var arg = createDivHtmlWhitespaced(strategy);
+
+                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+            });
+        });
+
         it("should accept functor", function() {
             _.forOwn(checkStrategies, function(checkMethod, strategy) {
                 var arg = function() { return createDivHtml(strategy); };
@@ -126,6 +134,10 @@ describe("manipulation", function() {
 
     function createDivHtml(className) {
         return "<div class='" + className + "'></div>";
+    }
+
+    function createDivHtmlWhitespaced(className) {
+        return "   <div class='" + className + "'></div>  ";
     }
 
     function createDivEmmet(className) {

@@ -7,6 +7,10 @@ describe("DOM.parseTemplate", function() {
         });
     }
 
+    checkExpr("<a></a>", "<a></a>");
+    checkExpr("  <a></a> ", "<a></a>");
+    checkExpr("  a ", "<a></a>");
+
     describe("'+' operator", function() {
         checkExpr("a", "<a></a>");
         checkExpr("p+p", "<p></p><p></p>");
@@ -33,7 +37,7 @@ describe("DOM.parseTemplate", function() {
         checkExpr("p.one.two.three", "<p class=\"one two three\"></p>");
         checkExpr("p.one.two-three", "<p class=\"one two-three\"></p>");
     });
-    
+
     describe("id", function() {
         checkExpr("p#myid", "<p id=\"myid\"></p>");
         checkExpr("p#myid.name_with-dash32.otherclass", "<p id=\"myid\" class=\"name_with-dash32 otherclass\"></p>");
@@ -61,7 +65,7 @@ describe("DOM.parseTemplate", function() {
         checkExpr("ul#nav>li.item$$$*3", "<ul id=\"nav\"><li class=\"item001\"></li><li class=\"item002\"></li><li class=\"item003\"></li></ul>");
         checkExpr("ul#nav>li.$$item$$$*3", "<ul id=\"nav\"><li class=\"01item001\"></li><li class=\"02item002\"></li><li class=\"03item003\"></li></ul>");
         checkExpr("ul#nav>li.pre$*3+li.post$*3", "<ul id=\"nav\"><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"pre3\"></li><li class=\"post1\"></li><li class=\"post2\"></li><li class=\"post3\"></li></ul>");
-        
+
         checkExpr("div.sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
         //checkExpr(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
         checkExpr("li#id$.class$*3", "<li id=\"id1\" class=\"class1\"></li><li id=\"id2\" class=\"class2\"></li><li id=\"id3\" class=\"class3\"></li>");
@@ -69,11 +73,11 @@ describe("DOM.parseTemplate", function() {
         checkExpr("{$@3 }*3", "3 4 5 ");
         checkExpr("{$@- }*3", "3 2 1 ");
         checkExpr("{$@-5 }*3", "7 6 5 ");
-        
+
         checkExpr("ul>(li>b)*3", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>");
         checkExpr("ul>li*3>b", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>");
     });
-    
+
     describe("groups", function() {
         checkExpr("div#head+(p>span)+div#footer", "<div id=\"head\"></div><p><span></span></p><div id=\"footer\"></div>");
         checkExpr("div#head>((ul#nav>li*3)+(div.subnav>p)+(div.othernav))+div#footer", "<div id=\"head\"><ul id=\"nav\"><li></li><li></li><li></li></ul><div class=\"subnav\"><p></p></div><div class=\"othernav\"></div><div id=\"footer\"></div></div>");
@@ -100,5 +104,11 @@ describe("DOM.parseTemplate", function() {
         checkExpr("span>{Hello world}", "<span>Hello world</span>");
         checkExpr("span>{Hello}+{ world}", "<span>Hello world</span>");
         checkExpr("span>{Click }+(a[href=/url/]>{here})+{ for more info}", "<span>Click <a href=\"/url/\">here</a> for more info</span>");
+    });
+
+    it("should throw error on invalid args", function() {
+        expect(function() { DOM.parseTemplate({}); }).toThrow();
+        expect(function() { DOM.parseTemplate(it); }).toThrow();
+        expect(function() { DOM.parseTemplate(434); }).toThrow();
     });
 });

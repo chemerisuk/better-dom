@@ -20,7 +20,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
                 }
 
                 if (valueType === "string") {
-                    if (value[0] !== "<") value = DOM.parseTemplate(value);
+                    value = DOM.parseTemplate(value);
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value instanceof $Element) {

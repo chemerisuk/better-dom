@@ -1,4 +1,4 @@
-define(["DOM"], function(DOM, _map, _forEach) {
+define(["DOM"], function(DOM, _map, _forEach, _makeError) {
     "use strict";
 
     // EMMET EXPRESSIONS PARSER
@@ -10,6 +10,7 @@ define(["DOM"], function(DOM, _map, _forEach) {
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
             reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
+            reTrim = /^\s+|\s+$/g,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
                 return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
@@ -64,6 +65,12 @@ define(["DOM"], function(DOM, _map, _forEach) {
                 output = [],
                 term = "",
                 i, n, str, priority, skip, node;
+
+            if (typeof template !== "string") throw _makeError("parseTemplate", this);
+
+            template = typeof template.trim === "function" ? template.trim() : template.replace(reTrim, "");
+
+            if (template[0] === "<") return template;
 
             // parse exrpression into RPN
 

@@ -16,7 +16,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 <head>
     ...
     <!--[if IE]>
-        <link href="bower_components/better-dom/better-dom.htc" rel="better-dom-htc" />
+        <link href="bower_components/better-dom/better-dom.htc" rel="htc"/>
         <script src="bower_components/html5shiv/dist/html5shiv.js"></script>
     <![endif]-->
 </head>

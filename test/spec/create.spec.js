@@ -30,6 +30,15 @@ describe("create", function() {
         expect(el.child(0)._node).toHaveTag("span");
     });
 
+    it("should trim inner html strings", function() {
+        var el = DOM.create("   <a><span></span></a>  ");
+
+        el.unsafe(function(node) {
+            expect(node).toHaveTag("a");
+            expect(node.firstChild).toHaveTag("span");
+        });
+    });
+
     it("should wrap non-single element strings with div", function() {
         expect(DOM.create("123")._node).toHaveTag("div");
         expect(DOM.create("<b></b>123<a></a>")._node).toHaveTag("div");

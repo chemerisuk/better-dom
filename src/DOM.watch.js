@@ -58,10 +58,10 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                 };
             };
         } else {
-            link = document.querySelector("link[rel=better-dom-htc]");
+            link = document.querySelector("link[rel=htc]");
             watchers = [];
 
-            if (!link) throw "You forgot to include link with rel='better-dom-htc' on your page!";
+            if (!link) throw "You forgot to include <link> with rel='htc' on your page!";
 
             document.attachEvent("ondataavailable", function() {
                 var e = window.event,
