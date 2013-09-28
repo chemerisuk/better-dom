@@ -115,14 +115,8 @@ module.exports = function(grunt) {
         copy: {
             dist: {
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.js": ["<%= pkg.name %>.js"],
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.htc": ["<%= pkg.name %>.htc"]
-                }
-            },
-            publish: {
-                files: {
-                    "<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
-                    "<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
+                    "dist/<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
+                    "dist/<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
                 }
             },
             readme: {
@@ -219,21 +213,6 @@ module.exports = function(grunt) {
         "karma:unit"
     ]);
 
-    grunt.registerTask("default", [
-        "clean",
-        "copy:dist",
-        "uglify"
-    ]);
-
-    grunt.registerTask("dist-test", [
-        "requirejs:compile",
-        "copy:publish",
-        "copy:dist",
-        "uglify",
-        "shell:rollbackPublished",
-        "clean:dist"
-    ]);
-
     grunt.registerTask("docs", [
         "clean:jsdoc",
         "copy:readme",
@@ -264,7 +243,7 @@ module.exports = function(grunt) {
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "requirejs:compile",
-            "copy:publish",
+            "copy:dist",
             "docs",
             "shell:checkoutDocs",
             "bumpDocsBuild",
