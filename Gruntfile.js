@@ -171,7 +171,7 @@ module.exports = function(grunt) {
                     "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
                     "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
-                    "Element.set", "Element.styles", "Element.traversing", "Element.legacy",
+                    "Element.set", "Element.css", "Element.traversing", "Element.legacy",
                     "Element.visibility", "Element.collection", "CompositeElement", "NullElement",
                     "DOM.create", "DOM.extend", "DOM.parsetemplate", "DOM.importstyles", "DOM.watch",
                     "DOM.ready", "DOM.importscripts", "DOM.importstrings", "DOM.title"

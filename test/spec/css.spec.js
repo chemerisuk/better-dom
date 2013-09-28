@@ -100,6 +100,8 @@ describe("style", function() {
             link.css("line-height", function(value) {
                 spy(value);
 
+                expect(this).toBe(link);
+
                 return 7;
             });
 
