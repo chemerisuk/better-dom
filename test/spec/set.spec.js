@@ -1,6 +1,6 @@
 describe("set", function() {
     "use strict";
-    
+
     var link, input;
 
     beforeEach(function() {
@@ -41,14 +41,24 @@ describe("set", function() {
         var spy = jasmine.createSpy("setter");
 
         link.set("id", function(value) {
-            spy();
-            
-            expect(value).toBe("test");
+            spy(value);
 
             return "test_changed";
         });
 
+        expect(spy).toHaveBeenCalledWith("test");
         expect(link._node).toHaveAttr("id", "test_changed");
+
+        spy.reset();
+
+        link.set(function(value) {
+            spy(value);
+
+            return "set-test-updated";
+        });
+
+        expect(spy).toHaveBeenCalledWith("set-test");
+        expect(link._node.innerHTML).toBe("set-test-updated");
     });
 
     it("should accept object with key-value pairs", function() {
@@ -99,5 +109,5 @@ describe("set", function() {
         expect(function() { link.set(true, ""); }).toThrow();
         expect(function() { link.set(function() {}, ""); }).toThrow();
     });
-    
+
 });
