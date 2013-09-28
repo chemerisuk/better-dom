@@ -5,6 +5,7 @@
     "newcap": false,
     "evil": true,
     "onevar": true,
+    "eqnull": true,
 
     "quotmark": "double",
     "indent": 4,

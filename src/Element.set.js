@@ -28,20 +28,22 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
                 hook;
 
             if (len === 1) {
-                if (nameType === "object") {
+                if (name == null) {
+                    value = "";
+                } else if (nameType === "object") {
                     _forOwn(name, processObjectParam, this);
 
                     return this;
                 } else {
-                    // handle null, nulbers, booleans etc.
+                    // handle numbers, booleans etc.
                     value = nameType === "function" ? name : String(name);
+                }
 
-                    if (node.type && "value" in node) {
-                        // for IE use innerText because it doesn't trigger onpropertychange
-                        name = window.addEventListener ? "value" : "innerText";
-                    } else {
-                        name = "innerHTML";
-                    }
+                if (node.type && "value" in node) {
+                    // for IE use innerText because it doesn't trigger onpropertychange
+                    name = window.addEventListener ? "value" : "innerText";
+                } else {
+                    name = "innerHTML";
                 }
             } else if (len > 2 || len === 0 || nameType !== "string") {
                 throw _makeError("set", this);
@@ -53,7 +55,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
 
             if (hook = hooks[name]) {
                 hook(node, value);
-            } else if (value === null) {
+            } else if (value == null) {
                 node.removeAttribute(name);
             } else if (name in node) {
                 node[name] = value;

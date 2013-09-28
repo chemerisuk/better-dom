@@ -25,9 +25,13 @@ describe("set", function() {
         expect(link._node.href).not.toEqual("#");
     });
 
-    it("should remove attribute if value is null", function() {
+    it("should remove attribute if value is null or undefined", function() {
         expect(link.set("id", null)._node).not.toHaveAttr("id");
-        expect(link.set("href", null)._node).not.toHaveAttr("href");
+        expect(link.set("href", undefined)._node).not.toHaveAttr("href");
+
+        expect(link.set(null)._node.innerHTML).toBe("");
+        expect(link.set("12345")._node.innerHTML).not.toBe("");
+        expect(link.set(undefined)._node.innerHTML).toBe("");
     });
 
     // it("should accept space-separated property names", function() {
