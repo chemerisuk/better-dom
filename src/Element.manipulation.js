@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
+define(["Element"], function($Element, _parseFragment, _forEach, _trim, _makeError) {
     "use strict";
 
     // MANIPULATION
@@ -20,7 +20,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _makeError) {
                 }
 
                 if (valueType === "string") {
-                    value = DOM.parseTemplate(value);
+                    value = _trim(DOM.parseTemplate(value));
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value instanceof $Element) {

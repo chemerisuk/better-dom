@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _makeError) {
+define(["DOM", "Element"], function(DOM, $Element, _trim, _makeError) {
     "use strict";
 
     // CREATE ELEMENT
@@ -20,7 +20,7 @@ define(["DOM", "Element"], function(DOM, $Element, _makeError) {
                 if (rquick.test(value)) {
                     value = new $Element(document.createElement(value));
                 } else {
-                    value = DOM.parseTemplate(value);
+                    value = _trim(DOM.parseTemplate(value));
 
                     var sandbox = document.createElement("div");
 

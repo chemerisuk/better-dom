@@ -8,6 +8,17 @@ define([], function($Element) {
     var _defer = function(callback) {
             return setTimeout(callback, 0);
         },
+        _trim = (function() {
+            var reTrim = /^\s+|\s+$/g;
+
+            return function(str) {
+                if (String.prototype.trim) {
+                    return str.trim();
+                } else {
+                    return str.replace(reTrim, "");
+                }
+            };
+        }()),
         _makeError = function(method, el) {
             var type;
 

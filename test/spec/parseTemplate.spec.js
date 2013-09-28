@@ -8,8 +8,8 @@ describe("DOM.parseTemplate", function() {
     }
 
     checkExpr("<a></a>", "<a></a>");
-    checkExpr("  <a></a> ", "<a></a>");
-    checkExpr("  a ", "<a></a>");
+    checkExpr("  <a></a> ", "  <a></a> ");
+    checkExpr("  \na", "  \na");
 
     describe("'+' operator", function() {
         checkExpr("a", "<a></a>");

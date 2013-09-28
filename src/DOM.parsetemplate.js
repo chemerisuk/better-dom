@@ -10,7 +10,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
             reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
-            reTrim = /^\s+|\s+$/g,
+            reHtml = /^[\s<]/,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
                 return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
@@ -68,9 +68,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
 
             if (typeof template !== "string") throw _makeError("parseTemplate", this);
 
-            template = typeof template.trim === "function" ? template.trim() : template.replace(reTrim, "");
-
-            if (template[0] === "<") return template;
+            if (!template || reHtml.exec(template)) return template;
 
             // parse exrpression into RPN
 
