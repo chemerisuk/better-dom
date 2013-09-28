@@ -34,23 +34,11 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
                 };
             };
 
-        hooks.currentTarget = function(event, currentTarget) {
-            return $Element(currentTarget);
-        };
-
         if (document.addEventListener) {
-            hooks.target = function(event) {
-                return $Element(event.target);
-            };
-
             hooks.relatedTarget = function(event) {
                 return $Element(event.relatedTarget);
             };
         } else {
-            hooks.target = function(event) {
-                return $Element(event.srcElement);
-            };
-
             hooks.relatedTarget = function(event, currentTarget) {
                 var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
 
@@ -87,15 +75,24 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
 
             var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
-                defaultEventHandler = function(e) {
+                defaultEventHandler = function(e, target) {
                     e = e || window.event;
 
                     if (EventHandler.veto !== type) {
                         var fn = isCallbackProp ? context[callback] : callback,
                             args = _map(extras, function(name) {
+                                switch (name) {
+                                case "type":
+                                    return type;
+                                case "currentTarget":
+                                    return currentTarget;
+                                case "target":
+                                    return $Element(target || e.target || e.srcElement);
+                                }
+
                                 var hook = hooks[name];
 
-                                return hook ? hook(e, currentTarget._node) : (name === "type" ? type : e[name]);
+                                return hook ? hook(e, currentTarget._node) : e[name];
                             });
 
                         if (fn && fn.apply(context, args) === false) {
@@ -115,7 +112,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
                     root = currentTarget._node;
 
                 for (; node && node !== root; node = node.parentNode) {
-                    if (matcher.test(node)) return defaultEventHandler(e);
+                    if (matcher.test(node)) return defaultEventHandler(e, node);
                 }
             };
 

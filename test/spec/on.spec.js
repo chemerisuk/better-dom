@@ -4,7 +4,7 @@ describe("on", function() {
     var link, input, form, spy;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#test'>test element</a><form id='form'><input id='input' required='required'/></form>");
+        setFixtures("<a id='test' href='#test'>test element<i></i></a><form id='form'><input id='input' required='required'/></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#input");
@@ -28,12 +28,24 @@ describe("on", function() {
     });
 
     it("should accept optional event filter", function() {
-        DOM.on("focus input", spy);
+        DOM.once("focus input", spy);
 
         link.fire("focus");
         expect(spy).not.toHaveBeenCalled();
 
         input.fire("focus");
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it("should fix target in case of existing selector", function() {
+        spy.andCallFake(function(target) {
+            expect(target._node).toHaveTag("a");
+
+            return false;
+        });
+
+        DOM.once("click a", spy);
+        link.find("i").fire("click");
         expect(spy).toHaveBeenCalled();
     });
 
