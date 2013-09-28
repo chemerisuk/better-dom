@@ -1,13 +1,12 @@
     // node export
-    if(typeof module === "object" && typeof module.exports === "object"){
+    if (typeof module === "object" && typeof module.exports === "object"){
         module.exports = DOM;
     } else {
-        // just window export
-        window.DOM = DOM;
-
         // requireJS module definition
-        if(typeof window.define === "function" && define.amd) {
-            define("DOM", function() { return DOM; });
+        if (typeof window.define === "function" && define.amd) {
+            define("better-dom", function() { return DOM; });
         }
     }
+    // always register global variable
+    window.DOM = DOM;
 })(window, document, document.documentElement);
