@@ -1,61 +1,46 @@
-define(["Node"], function($Node, _forOwn, _makeError) {
+define(["Node"], function($Node, _extend, _makeError) {
     "use strict";
 
     // INTERNAL DATA
     // -------------
 
-    (function() {
-        var processObjectParam = function(value, name) { this.setData(name, value); };
+    /**
+     * Getter/setter of a data entry value
+     * @param  {String|Object} key     data key
+     * @param  {Object}        [value] data value to store
+     * @return {Object} data entry value or this in case of setter
+     * @example
+     * var domLink = DOM.find(".link");
+     *
+     * domLink.data("test", "message");
+     * domLink.data("test");
+     * // returns string "message"
+     */
+    $Node.prototype.data = function(key, value) {
+        var len = arguments.length,
+            node = this._node,
+            keyType = typeof key;
 
-        /**
-         * Read data entry value
-         * @param  {String} key data entry key
-         * @return {Object} data entry value
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.setData("test", "message");
-         * domLink.getData("test");
-         * // returns string "message"
-         */
-        $Node.prototype.getData = function(key) {
-            if (typeof key !== "string") {
-                throw _makeError("getData", this);
-            }
-
-            var node = this._node,
-                result = this._data[key];
-
-            if (result === undefined && node.hasAttribute("data-" + key)) {
-                result = this._data[key] = node.getAttribute("data-" + key);
-            }
-
-            return result;
-        };
-
-        /**
-         * Store data entry value(s)
-         * @param {String|Object} key data entry key | key/value pairs
-         * @param {Object} value data to store
-         * @return {$Node}
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.setData("test", "message");
-         * domLink.setData({a: "b", c: "d"});
-         */
-        $Node.prototype.setData = function(key, value) {
-            var keyType = typeof key;
-
+        if (len === 1) {
             if (keyType === "string") {
-                this._data[key] = value;
-            } else if (keyType === "object") {
-                _forOwn(key, processObjectParam, this);
-            } else {
-                throw _makeError("setData", this);
+                value = this._data[key];
+
+                if (value === undefined && node.hasAttribute("data-" + key)) {
+                    value = this._data[key] = node.getAttribute("data-" + key);
+                }
+
+                return value;
+            } else if (key && keyType === "object") {
+                _extend(this._data, key);
+
+                return this;
             }
+        } else if (len === 2 && keyType === "string") {
+            this._data[key] = value;
 
             return this;
-        };
-    })();
+        }
+
+        throw _makeError("data", this);
+    };
 });

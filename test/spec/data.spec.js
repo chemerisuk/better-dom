@@ -1,6 +1,6 @@
 describe("data", function() {
     "use strict";
-    
+
     var input;
 
     beforeEach(function() {
@@ -12,31 +12,31 @@ describe("data", function() {
     it("should store any kind of object", function() {
         var obj = {}, nmb = 123, func = function() {};
 
-        expect(input.setData("obj", obj).getData("obj")).toEqual(obj);
-        expect(input.setData("nmb", nmb).getData("nmb")).toEqual(nmb);
-        expect(input.setData("func", func).getData("func")).toEqual(func);
+        expect(input.data("obj", obj).data("obj")).toEqual(obj);
+        expect(input.data("nmb", nmb).data("nmb")).toEqual(nmb);
+        expect(input.data("func", func).data("func")).toEqual(func);
     });
 
     it("should accept object argument", function() {
         var param = {a: "b", c: 1};
 
-        input.setData(param);
+        input.data(param);
 
-        expect(input.getData("a")).toBe("b");
-        expect(input.getData("c")).toBe(1);
+        expect(input.data("a")).toBe("b");
+        expect(input.data("c")).toBe(1);
     });
 
     it("should read an appropriate data-* attribute if it exists", function() {
-        expect(input.getData("test")).toEqual("x");
+        expect(input.data("test")).toEqual("x");
     });
 
     it("should return reference to 'this' when called with 2 arguments", function() {
-        expect(input.setData("test", 123)).toEqual(input);
+        expect(input.data("test", 123)).toEqual(input);
     });
 
     it("should throw error if arguments a invalid", function() {
-        expect(function() { input.getData(123); }).toThrow();
-        expect(function() { input.setData(123); }).toThrow();
+        expect(function() { input.data(123); }).toThrow();
+        expect(function() { input.data(123); }).toThrow();
     });
 
 });
