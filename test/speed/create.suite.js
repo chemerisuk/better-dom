@@ -33,6 +33,10 @@ suite("create", function () {
         DOM.create("a#a1[rel=b2]>span+i");
     });
 
+    benchmark("DOM#create(Options)", function() {
+        DOM.create("a", {id: "a1", rel: "b2"}).append("span").append("i");
+    });
+
     benchmark("native(String)", function() {
         document.createElement("a");
     });

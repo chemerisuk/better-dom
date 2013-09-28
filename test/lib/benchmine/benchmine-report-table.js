@@ -182,7 +182,7 @@
               children:  [{
                 tagName:   'code',
                 className: 'language-javascript',
-                innerHTML: fn
+                textContent: fn
               }]
             }]
           }, {

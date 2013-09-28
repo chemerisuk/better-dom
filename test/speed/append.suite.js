@@ -23,8 +23,8 @@
             nativeSandbox.innerHTML = "";
         });
 
-        benchmark("DOM#append(Element)", function() {
-            domSandbox.append(document.createElement("span"));
+        benchmark("DOM#append(EmmetString)", function() {
+            domSandbox.append("span");
             nativeSandbox.innerHTML = "";
         });
 
