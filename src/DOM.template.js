@@ -60,13 +60,13 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
          * @return {String} HTML string
          * @see http://docs.emmet.io/cheat-sheet/
          */
-        DOM.parseTemplate = function(template) {
+        DOM.template = function(template) {
             var stack = [],
                 output = [],
                 term = "",
                 i, n, str, priority, skip, node;
 
-            if (typeof template !== "string") throw _makeError("parseTemplate", this);
+            if (typeof template !== "string") throw _makeError("template", this);
 
             if (!template || reHtml.exec(template)) return template;
 

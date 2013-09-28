@@ -20,7 +20,7 @@ define(["DOM", "Element"], function(DOM, $Element, _trim, _makeError) {
                 if (rquick.test(value)) {
                     value = new $Element(document.createElement(value));
                 } else {
-                    value = _trim(DOM.parseTemplate(value));
+                    value = _trim(DOM.template(value));
 
                     var sandbox = document.createElement("div");
 

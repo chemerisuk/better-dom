@@ -1,9 +1,9 @@
-describe("DOM.parseTemplate", function() {
+describe("DOM.template", function() {
     "use strict";
 
     function checkExpr(source, target) {
         it(source, function() {
-            expect(DOM.parseTemplate(source)).toBe(target);
+            expect(DOM.template(source)).toBe(target);
         });
     }
 
