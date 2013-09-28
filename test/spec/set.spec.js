@@ -34,6 +34,11 @@ describe("set", function() {
         expect(link.set(undefined)._node.innerHTML).toBe("");
     });
 
+    it("should accept primitive types", function() {
+        expect(link.set(1)._node.innerHTML).toBe("1");
+        expect(link.set(true)._node.innerHTML).toBe("true");
+    });
+
     // it("should accept space-separated property names", function() {
     //     link.set("id href", "changed");
 

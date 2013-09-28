@@ -36,7 +36,8 @@ describe("data", function() {
 
     it("should throw error if arguments a invalid", function() {
         expect(function() { input.data(123); }).toThrow();
-        expect(function() { input.data(123); }).toThrow();
+        expect(function() { input.data(); }).toThrow();
+        expect(function() { input.data("y", "u", "345"); }).toThrow();
     });
 
 });
