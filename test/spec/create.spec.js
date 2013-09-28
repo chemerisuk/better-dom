@@ -33,7 +33,7 @@ describe("create", function() {
     it("should trim inner html strings", function() {
         var el = DOM.create("   <a><span></span></a>  ");
 
-        el.unsafe(function(node) {
+        el.legacy(function(node) {
             expect(node).toHaveTag("a");
             expect(node.firstChild).toHaveTag("span");
         });

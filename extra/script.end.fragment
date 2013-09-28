@@ -1,5 +1,5 @@
     // node export
-    if(typeof this.module === "object" && typeof module.exports === "object"){
+    if(typeof module === "object" && typeof module.exports === "object"){
         module.exports = DOM;
     } else {
         // just window export

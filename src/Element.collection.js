@@ -84,17 +84,7 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @return {Object} the accumulated value
              * @function
              */
-            reduceRight: makeCollectionMethod(_foldr),
-
-            /**
-             * Executes code in a 'unsafe' block there the first callback argument is native DOM
-             * object. Use only when you need to communicate better-dom with third party scripts!
-             * @memberOf $Element.prototype
-             * @param  {Function} block unsafe block body (nativeNode, element, index)
-             */
-            unsafe: function(block) {
-                return _forEach(this, function(el, index) { block(el._node, el, index) });
-            }
+            reduceRight: makeCollectionMethod(_foldr)
         });
     }());
 });

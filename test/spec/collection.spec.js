@@ -98,14 +98,6 @@ describe("collection methods", function() {
         }, "")).toBe("c3c2c1");
     });
 
-    it("should pass native element into unsafe", function() {
-        inputs.unsafe(function(node, el) {
-            expect(el._node).toBe(node);
-        });
-
-        expect(inputs.unsafe(function() {})).toBe(inputs);
-    });
-
     // it("should have aliases", function() {
     //     _.forOwn({
     //         all: "every",
