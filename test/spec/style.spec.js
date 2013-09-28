@@ -1,6 +1,6 @@
 describe("style", function() {
     "use strict";
-    
+
     var link;
 
     beforeEach(function() {
@@ -9,13 +9,13 @@ describe("style", function() {
         link = DOM.find("#test");
     });
 
-    describe("getStyle", function() {
+    describe("getter", function() {
         it("should read style property", function() {
-            expect(link.getStyle("color")).toBe("red");
+            expect(link.css("color")).toBe("red");
         });
 
         it("should read properties by dash-separated key", function() {
-            expect(link.getStyle("line-height")).toBe("2");
+            expect(link.css("line-height")).toBe("2");
         });
 
         it("should handle vendor-prefixed properties", function() {
@@ -23,37 +23,37 @@ describe("style", function() {
         });
 
         it("should handle composite properties", function() {
-            expect(link.getStyle("padding")).toBe("5px 5px 5px 5px");
-            expect(link.getStyle("margin")).toBe("2px 2px 2px 2px");
-            expect(link.getStyle("border-width")).toBe("1px 1px 1px 1px");
-            expect(link.getStyle("border-style")).toBe("solid solid solid solid");
+            expect(link.css("padding")).toBe("5px 5px 5px 5px");
+            expect(link.css("margin")).toBe("2px 2px 2px 2px");
+            expect(link.css("border-width")).toBe("1px 1px 1px 1px");
+            expect(link.css("border-style")).toBe("solid solid solid solid");
         });
 
         it("should read runtime style property if style doesn't contain any value", function() {
-            expect(link.getStyle("font-size")).toBeTruthy();
+            expect(link.css("font-size")).toBeTruthy();
         });
 
         it("should fix float property name", function() {
-            expect(link.getStyle("float")).toBe("left");
+            expect(link.css("float")).toBe("left");
         });
 
         it("should throw error if arguments are invalid", function() {
-            expect(function() { link.getStyle(1); }).toThrow();
+            expect(function() { link.css(1); }).toThrow();
         });
     });
 
-    describe("setStyle", function() {
+    describe("setter", function() {
         it("should return reference to 'this'", function() {
-            expect(link.setStyle("color", "white")).toBe(link);
+            expect(link.css("color", "white")).toBe(link);
         });
 
         it("should set style properties", function() {
-            expect(link.setStyle("color", "white")._node.style.color).toBe("white");
-            expect(link.setStyle("float", "right").getStyle("float")).toBe("right");
+            expect(link.css("color", "white")._node.style.color).toBe("white");
+            expect(link.css("float", "right").css("float")).toBe("right");
         });
 
         it("should support styles object", function() {
-            link.setStyle({color: "white", padding: "5px"});
+            link.css({color: "white", padding: "5px"});
 
             expect(link._node.style.color).toBe("white");
             expect(link._node.style.padding).toBe("5px");
@@ -62,40 +62,53 @@ describe("style", function() {
         it("should support setting of composite properties", function() {
             var value = "7px";
 
-            link.setStyle("border-width", value);
+            link.css("border-width", value);
 
-            expect(link.getStyle("border-left-width")).toBe(value);
-            expect(link.getStyle("border-top-width")).toBe(value);
-            expect(link.getStyle("border-bottom-width")).toBe(value);
-            expect(link.getStyle("border-right-width")).toBe(value);
+            expect(link.css("border-left-width")).toBe(value);
+            expect(link.css("border-top-width")).toBe(value);
+            expect(link.css("border-bottom-width")).toBe(value);
+            expect(link.css("border-right-width")).toBe(value);
         });
 
         it("should support number values", function() {
-            link.setStyle("line-height", 7);
+            link.css("line-height", 7);
 
-            expect(link.getStyle("line-height")).toBe("7");
+            expect(link.css("line-height")).toBe("7");
 
-            link.setStyle("width", 50);
+            link.css("width", 50);
 
-            expect(link.getStyle("width")).toBe("50px");
+            expect(link.css("width")).toBe("50px");
         });
 
         it("should handle vendor-prefixed properties", function() {
             var offset = link.offset();
 
-            link.setStyle("box-sizing", "border-box");
+            link.css("box-sizing", "border-box");
 
             expect(link.offset()).not.toEqual(offset);
         });
 
         it("should not add px suffix to some css properties", function() {
             _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
-                expect(link.setStyle(propName, 5).getStyle(propName)).not.toBe("5px");
+                expect(link.css(propName, 5).css(propName)).not.toBe("5px");
             });
         });
 
+        it("should accept function", function() {
+            var spy = jasmine.createSpy("value");
+
+            link.css("line-height", function(value) {
+                spy(value);
+
+                return 7;
+            });
+
+            expect(spy).toHaveBeenCalledWith("2");
+            expect(link.css("line-height")).toBe("7");
+        });
+
         it("should throw error if arguments are invalid", function() {
-            expect(function() { link.setStyle(1); }).toThrow();
+            expect(function() { link.css(1); }).toThrow();
         });
     });
 

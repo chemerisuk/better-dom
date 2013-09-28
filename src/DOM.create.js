@@ -35,7 +35,7 @@ define(["DOM", "Element"], function(DOM, $Element, _makeError) {
                 }
 
                 if (attributes) value.set(attributes);
-                if (styles) value.setStyle(styles);
+                if (styles) value.css(styles);
 
                 return value;
             }

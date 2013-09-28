@@ -76,56 +76,51 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
         });
 
         /**
-         * Get css style from element
-         * @param  {String} name     property name
-         * @return {String} property value
+         * CSS getter/setter for an element
+         * @param  {String} name    style property name
+         * @param  {String} [value] style property value
+         * @return {String|Object} property value or reference to this
          */
-        $Element.prototype.getStyle = function(name) {
-            var style = this._node.style,
-                hook, result;
-
-            if (typeof name !== "string") {
-                throw _makeError("getStyle", this);
-            }
-
-            hook = getStyleHooks[name];
-
-            result = hook ? hook(style) : style[name];
-
-            if (!result) {
-                style = _getComputedStyle(this._node);
-
-                result = hook ? hook(style) : style[name];
-            }
-
-            return result;
-        };
-
-        /**
-         * Set css style for element
-         * @param {String|Object} name  property name or key/value pair
-         * @param {String}        value property value
-         * @return {$Element}
-         */
-        $Element.prototype.setStyle = function(name, value) {
-            var nameType = typeof name,
-                cssText = "", hook;
-
-            if (nameType === "string") {
-                hook = setStyleHooks[name];
-
-                cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
-            } else if (nameType === "object") {
-                _forOwn(name, function(value, key) {
+        $Element.prototype.css = function(name, value) {
+            var len = arguments.length,
+                style = this._node.style,
+                nameType = typeof name,
+                cssText = "",
+                appendCssText = function(value, key) {
                     hook = setStyleHooks[key];
 
+                    if (typeof value === "function") {
+                        value = value.call(this, value.length ? this.css(name) : undefined);
+                    }
+
                     cssText += ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
-                });
+                },
+                hook;
+
+            if (len === 1) {
+                if (nameType === "string") {
+                    hook = getStyleHooks[name];
+
+                    value = hook ? hook(style) : style[name];
+
+                    if (!value) {
+                        style = _getComputedStyle(this._node);
+                        value = hook ? hook(style) : style[name];
+                    }
+
+                    return value;
+                } else if (name && nameType === "object") {
+                    _forOwn(name, appendCssText, this);
+                } else {
+                    throw _makeError("css", this);
+                }
+            } else if (len === 2 && nameType === "string") {
+                appendCssText.call(this, value, name);
             } else {
-                throw _makeError("setStyle", this);
+                throw _makeError("css", this);
             }
 
-            this._node.style.cssText += cssText;
+            style.cssText += cssText;
 
             return this;
         };

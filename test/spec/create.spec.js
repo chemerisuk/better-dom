@@ -9,8 +9,8 @@ describe("create", function() {
         expect(link._node).toHaveTag("a");
         expect(link.get("id")).toBe("b");
         expect(link.get("title")).toBe("c");
-        expect(link.getStyle("position")).toBe("absolute");
-        expect(link.getStyle("left")).toBe("1px");
+        expect(link.css("position")).toBe("absolute");
+        expect(link.css("left")).toBe("1px");
     });
 
     it("should create new DOM element if the first argument is native element", function() {

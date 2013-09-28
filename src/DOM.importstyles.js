@@ -18,7 +18,7 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
             if (typeof styles === "object") {
                 var obj = {_node: {style: {cssText: ""}}};
 
-                $Element.prototype.setStyle.call(obj, styles);
+                $Element.prototype.css.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
             }
