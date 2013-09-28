@@ -12,19 +12,26 @@ define(["DOM", "Element"], function(DOM, _forEach, _makeError, _slice) {
      */
     DOM.importScripts = function() {
         var args = _slice(arguments),
-            body = DOM.find("body"),
-            n = args.length - 1,
-            callback;
+            context = document.scripts[0],
+            callback = function() {
+                var arg = args.shift(),
+                    argType = typeof arg,
+                    script;
 
-        if (n > 0 && typeof args[n] === "function") {
-            callback = (function(callback) { if (!--n) callback() }(args.pop()));
-        }
+                if (argType === "string") {
+                    script = document.createElement("script");
+                    script.src = arg;
+                    script.onload = callback;
+                    script.async = true;
+                    context.parentNode.insertBefore(script, context);
+                } else if (!arg.length && argType === "function") {
+                    arg();
+                } else {
+                    throw _makeError("importScripts", DOM);
+                }
+            };
 
-        _forEach(args, function(url) {
-            if (typeof url !== "string") throw _makeError("importScripts", this);
-
-            body.append(DOM.create("script", {src: url, onload: callback})).child(-1).remove();
-        });
+        callback();
 
         return this;
     };

@@ -1,18 +1,47 @@
 describe("DOM.importScripts", function() {
     "use strict";
 
-    // it("should execute optional callback", function() {
-    //     var spy = jasmine.createSpy("callback");
+    var context = document.scripts[0].parentNode,
+        bodySpy;
 
-    //     spy.andCallFake(function() {
-    //         expect(window.jQuery).toBeDefined();
-    //     });
+    beforeEach(function() {
+        bodySpy = spyOn(context, "insertBefore");
+    });
 
-    //     DOM.importScripts("../../bower_components/jquery/jquery.js", spy);
+    it("should append script element to body", function() {
+        var spy = jasmine.createSpy("callback");
 
-    //     waits(100);
-    //     runs(function() {
-    //         expect(spy).toHaveBeenCalled();
-    //     });
-    // });
+        bodySpy.andCallFake(function(el) {
+            expect(el).toHaveTag("script");
+            expect(el.src).toBe("http://test/url");
+            expect(typeof el.onload).toBe("function");
+            // trigger fake onload
+            el.onload();
+        });
+
+        DOM.importScripts("http://test/url", spy);
+        expect(bodySpy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it("should append scripts one by one", function() {
+        var spy = jasmine.createSpy("callback"),
+            index = 1;
+
+        bodySpy.andCallFake(function(el) {
+            expect(el).toHaveTag("script");
+            expect(el.src).toBe("http://test/" + index++);
+            expect(typeof el.onload).toBe("function");
+            // trigger fake onload
+            el.onload();
+        });
+
+        DOM.importScripts("http://test/1", "http://test/2", "http://test/3", "http://test/4", spy);
+        expect(bodySpy).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it("should throw error if arguments are invalid", function() {
+        expect(function() { DOM.importScripts(1) } ).toThrow();
+    });
 });
