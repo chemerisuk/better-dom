@@ -1,9 +1,13 @@
-    // REGISTER API
-    // ------------
+    // node export
+    if(typeof this.module === "object" && typeof module.exports === "object"){
+        module.exports = DOM;
+    } else {
+        // just window export
+        window.DOM = DOM;
 
-    window.DOM = DOM;
-
-    if (typeof define === "function" && define.amd) {
-        define("better-dom", function() { return DOM; });
+        // requireJS module definition
+        if(typeof window.define === "function" && define.amd) {
+            define("DOM", function() { return DOM; });
+        }
     }
 })(window, document, document.documentElement);
