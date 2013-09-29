@@ -3,18 +3,23 @@ describe("legacy", function() {
 
     it("should pass native element into callback", function() {
         var spy = jasmine.createSpy("legacy"),
-            htmlEl = DOM.find("html"),
-            links = DOM.findAll("a");
+            htmlEl = DOM.find("html");
 
         htmlEl.legacy(spy);
         expect(spy).toHaveBeenCalledWith(document.documentElement, htmlEl, 0);
+    });
 
-        spy.andCallFake(function(node, index) {
-            expect(this).toBe(links);
-            expect(node).toBe(document.links[index]);
+    it("should work for collections", function() {
+        var spy = jasmine.createSpy("legacy"),
+            scripts = DOM.findAll("script");
+
+        spy.andCallFake(function(node, el, index) {
+            expect(this).toBe(scripts);
+            expect(el).toBe(scripts[index]);
+            expect(node).toBe(scripts[index]._node);
         });
 
-        DOM.findAll("a").legacy(spy);
-        expect(spy).toHaveBeenCalled();
+        scripts.legacy(spy);
+        expect(spy.callCount).toBe(scripts.length);
     });
 });

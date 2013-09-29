@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _forEach) {
+define(["Element", "CompositeElement"], function($Element, $CompositeElement, _forEach) {
     "use strict";
 
     /**
@@ -8,6 +8,8 @@ define(["Element"], function($Element, _forEach) {
      * @param  {Function} block unsafe block body (nativeNode, index)
      */
     $Element.prototype.legacy = function(block) {
-        return _forEach(this, function(el, index) { block.call(this, el._node, el, index) }, this);
+        return _forEach(this, function(el, index) {
+            block.call(this, el._node, el, index);
+        }, this);
     };
 });
