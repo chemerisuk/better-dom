@@ -33,6 +33,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [Event handling best practices](http://chemerisuk.github.io/better-dom/tutorial-handling.html)
 * [Microtemplating via emmet](http://chemerisuk.github.io/better-dom/tutorial-Microtemplating.html)
 * [Easy localization](http://chemerisuk.github.io/better-dom/tutorial-Localization.html)
+* compact size (~22kb minified and ~5kb gzipped)
 
 ## Usage examples
 * [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
@@ -41,6 +42,17 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [better-form-validation](https://github.com/chemerisuk/better-form-validation) - Form validation polyfill
 * [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
 * [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
+
+## Notes about old IEs
+For IE8-9 support you have to incude conditional comment above into head. The excellent __html5shiv__ library is used to fix lack of support of new HTML5 elements in legacy browsers and htc file is used for implementing live extensions support.
+
+#### Verify content-type header
+HTC behaviors have to serve up with a content-type header of "text/x-component", otherwise IE will simply ignore the behavior. Many web servers are preconfigured to serve the correct content-type, but others are not.
+
+    AddType text/x-component .htc
+
+#### Same domain limitation
+IE requires that the HTC behavior file must be in the same domain as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an "Access Denied" error.
 
 ## Browser support
 * Chrome
