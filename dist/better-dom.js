@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.4.1 2013-09-15T12:46:14
+ * @version 1.5.0 2013-09-29T15:31:05
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -16,6 +16,17 @@
     var _defer = function(callback) {
             return setTimeout(callback, 0);
         },
+        _trim = (function() {
+            var reTrim = /^\s+|\s+$/g;
+
+            return function(str) {
+                if (String.prototype.trim) {
+                    return str.trim();
+                } else {
+                    return str.replace(reTrim, "");
+                }
+            };
+        }()),
         _makeError = function(method, el) {
             var type;
 
@@ -203,13 +214,7 @@
      * @param {String} prop property to check
      * @param {String} [tag] name of element to test
      * @return {Boolean} true, if feature is supported
-     * @example
-     * input.supports("placeholder");
-     * // => true if an input supports placeholders
-     * DOM.supports("addEventListener");
-     * // => true if browser supports document.addEventListener
-     * DOM.supports("oninvalid", "input");
-     * // => true if browser supports `invalid` event
+     * @tutorial Feature detection
      */
     $Node.prototype.supports = function(prop, tagName) {
         // http://perfectionkills.com/detecting-event-support-without-browser-sniffing/
@@ -221,7 +226,7 @@
 
             isSupported = typeof node[prop] === "function";
         }
-            
+
         return isSupported;
     };
 
@@ -315,60 +320,42 @@
     // INTERNAL DATA
     // -------------
 
-    (function() {
-        var processObjectParam = function(value, name) { this.setData(name, value); };
+    /**
+     * Getter/setter of a data entry value. Tries to read the appropriate
+     * HTML5 data-* attribute if it exists
+     * @param  {String|Object} key     data key
+     * @param  {Object}        [value] data value to store
+     * @return {Object} data entry value or this in case of setter
+     * @tutorial Data
+     */
+    $Node.prototype.data = function(key, value) {
+        var len = arguments.length,
+            node = this._node,
+            data = this._data,
+            keyType = typeof key;
 
-        /**
-         * Read data entry value
-         * @param  {String} key data entry key
-         * @return {Object} data entry value
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.setData("test", "message");
-         * domLink.getData("test");
-         * // returns string "message"
-         */
-        $Node.prototype.getData = function(key) {
-            if (typeof key !== "string") {
-                throw _makeError("getData", this);
-            }
-
-            var node = this._node,
-                result = this._data[key];
-
-            if (result === undefined && node.hasAttribute("data-" + key)) {
-                result = this._data[key] = node.getAttribute("data-" + key);
-            }
-
-            return result;
-        };
-
-        /**
-         * Store data entry value(s)
-         * @param {String|Object} key data entry key | key/value pairs
-         * @param {Object} value data to store
-         * @return {$Node}
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.setData("test", "message");
-         * domLink.setData({a: "b", c: "d"});
-         */
-        $Node.prototype.setData = function(key, value) {
-            var keyType = typeof key;
-
+        if (len === 1) {
             if (keyType === "string") {
-                this._data[key] = value;
-            } else if (keyType === "object") {
-                _forOwn(key, processObjectParam, this);
-            } else {
-                throw _makeError("setData", this);
+                value = data[key];
+
+                if (value === undefined && node.hasAttribute("data-" + key)) {
+                    value = data[key] = node.getAttribute("data-" + key);
+                }
+
+                return value;
+            } else if (key && keyType === "object") {
+                _extend(data, key);
+
+                return this;
             }
+        } else if (len === 2 && keyType === "string") {
+            data[key] = value;
 
             return this;
-        };
-    })();
+        }
+
+        throw _makeError("data", this);
+    };
 
     // CONTAINS
     // --------
@@ -377,9 +364,6 @@
      * Check if element is inside of context
      * @param  {$Element} element element to check
      * @return {Boolean} true if success
-     * @example
-     * DOM.find("html").contains(DOM.find("body"));
-     * // returns true
      */
     $Node.prototype.contains = function(element) {
         var node = this._node, result;
@@ -409,11 +393,7 @@
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
          * @return {$Node}
-         * @example
-         * // NOTICE: handler don't have e as the first argument
-         * input.on("click", function() {...});
-         * // NOTICE: event properties in event name
-         * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
+         * @tutorial Event handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
             var node = this._node,
@@ -487,6 +467,7 @@
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
          * @return {$Node}
+         * @tutorial Event handling
          */
         $Node.prototype.once = function() {
             var args = _slice(arguments);
@@ -502,6 +483,7 @@
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
          * @return {$Node}
+         * @tutorial Event handling
          */
         $Node.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
@@ -540,13 +522,7 @@
          * @param  {String} type type of event
          * @param  {Object} [detail] event details
          * @return {$Node}
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.fire("focus");
-         * // receive focus to the element
-         * domLink.fire("custom:event", {x: 1, y: 2});
-         * // trigger a custom:event on the element
+         * @tutorial Event handling
          */
         $Node.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {
@@ -772,23 +748,11 @@
                 };
             };
 
-        hooks.currentTarget = function(event, currentTarget) {
-            return $Element(currentTarget);
-        };
-
         if (document.addEventListener) {
-            hooks.target = function(event) {
-                return $Element(event.target);
-            };
-
             hooks.relatedTarget = function(event) {
                 return $Element(event.relatedTarget);
             };
         } else {
-            hooks.target = function(event) {
-                return $Element(event.srcElement);
-            };
-
             hooks.relatedTarget = function(event, currentTarget) {
                 var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
 
@@ -825,15 +789,24 @@
 
             var matcher = SelectorMatcher(selector),
                 isCallbackProp = typeof callback === "string",
-                defaultEventHandler = function(e) {
+                defaultEventHandler = function(e, target) {
                     e = e || window.event;
 
                     if (EventHandler.veto !== type) {
                         var fn = isCallbackProp ? context[callback] : callback,
                             args = _map(extras, function(name) {
+                                switch (name) {
+                                case "type":
+                                    return type;
+                                case "currentTarget":
+                                    return currentTarget;
+                                case "target":
+                                    return $Element(target || e.target || e.srcElement);
+                                }
+
                                 var hook = hooks[name];
 
-                                return hook ? hook(e, currentTarget._node) : (name === "type" ? type : e[name]);
+                                return hook ? hook(e, currentTarget._node) : e[name];
                             });
 
                         if (fn && fn.apply(context, args) === false) {
@@ -853,7 +826,7 @@
                     root = currentTarget._node;
 
                 for (; node && node !== root; node = node.parentNode) {
-                    if (matcher.test(node)) return defaultEventHandler(e);
+                    if (matcher.test(node)) return defaultEventHandler(e, node);
                 }
             };
 
@@ -1015,7 +988,7 @@
                 }
 
                 if (valueType === "string") {
-                    if (value[0] !== "<") value = DOM.parseTemplate(value);
+                    value = _trim(DOM.template(value));
 
                     relatedNode = fasterMethodName ? null : _parseFragment(value);
                 } else if (value instanceof $Element) {
@@ -1115,7 +1088,6 @@
         return new SelectorMatcher(selector).test(this._node);
     };
 
-    
     /**
      * Calculates offset of current context
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
@@ -1135,6 +1107,26 @@
         };
     };
 
+    /**
+     * Calculate width based on element's offset
+     * @return {Number} element width in pixels
+     */
+    $Element.prototype.width = function() {
+        var offset = this.offset();
+
+        return offset.right - offset.left;
+    };
+
+    /**
+     * Calculate height based on element's offset
+     * @return {Number} element height in pixels
+     */
+    $Element.prototype.height = function() {
+        var offset = this.offset();
+
+        return offset.bottom - offset.top;
+    };
+
     // GETTER
     // ------
 
@@ -1145,13 +1137,7 @@
          * Get property or attribute by name
          * @param  {String} [name] property/attribute name
          * @return {String} property/attribute value
-         * @example
-         * // returns value of the id property (i.e. "link" string)
-         * link.get("id");
-         * // returns value of "data-attr" attribute
-         * link.get("data-attr");
-         * // returns innerHTML of the element
-         * link.get();
+         * @tutorial Getter and setter
          */
         $Element.prototype.get = function(name) {
             var node = this._node,
@@ -1200,48 +1186,48 @@
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
          * @return {$Element}
-         * @example
-         * // sets property href (and that action updates attribute value too)
-         * link.set("href", "/some/path");
-         * // sets attribute "data-attr" to "123"
-         * link.set("data-attr", "123");
-         * // sets innerHTML to "some text"
-         * link.set("some text");
+         * @tutorial Getter and setter
          */
         $Element.prototype.set = function(name, value) {
-            var node = this._node,
+            var len = arguments.length,
+                node = this._node,
                 nameType = typeof name,
                 hook;
 
-            if (nameType === "string") {
-                if (value === undefined) {
-                    value = name;
+            if (len === 1) {
+                if (name == null) {
+                    value = "";
+                } else if (nameType === "object") {
+                    _forOwn(name, processObjectParam, this);
 
-                    if (node.type && "value" in node) {
-                        // for IE use innerText because it doesn't trigger onpropertychange
-                        name = window.addEventListener ? "value" : "innerText";
-                    } else {
-                        name = "innerHTML";
-                    }
-                }
-
-                if (typeof value === "function") {
-                    value = value.call(this, value.length ? this.get(name) : undefined);
-                }
-
-                if (hook = hooks[name]) {
-                    hook(node, value);
-                } else if (value === null) {
-                    node.removeAttribute(name);
-                } else if (name in node) {
-                    node[name] = value;
+                    return this;
                 } else {
-                    node.setAttribute(name, value);
+                    // handle numbers, booleans etc.
+                    value = nameType === "function" ? name : String(name);
                 }
-            } else if (nameType === "object") {
-                _forOwn(name, processObjectParam, this);
-            } else {
+
+                if (node.type && "value" in node) {
+                    // for IE use innerText because it doesn't trigger onpropertychange
+                    name = window.addEventListener ? "value" : "innerText";
+                } else {
+                    name = "innerHTML";
+                }
+            } else if (len > 2 || len === 0 || nameType !== "string") {
                 throw _makeError("set", this);
+            }
+
+            if (typeof value === "function") {
+                value = value.call(this, value.length ? this.get(name) : undefined);
+            }
+
+            if (hook = hooks[name]) {
+                hook(node, value);
+            } else if (value == null) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = value;
+            } else {
+                node.setAttribute(name, value);
             }
 
             return this;
@@ -1253,7 +1239,7 @@
                 node.innerHTML = "";
                 node.appendChild(_parseFragment(value));
             };
-            
+
             // fix hidden attribute for IE < 10
             hooks.hidden = function(node, value) {
                 if (typeof value !== "boolean") {
@@ -1349,56 +1335,51 @@
         });
 
         /**
-         * Get css style from element
-         * @param  {String} name     property name
-         * @return {String} property value
+         * CSS getter/setter for an element
+         * @param  {String} name    style property name
+         * @param  {String} [value] style property value
+         * @return {String|Object} property value or reference to this
          */
-        $Element.prototype.getStyle = function(name) {
-            var style = this._node.style,
-                hook, result;
-
-            if (typeof name !== "string") {
-                throw _makeError("getStyle", this);
-            }
-
-            hook = getStyleHooks[name];
-
-            result = hook ? hook(style) : style[name];
-
-            if (!result) {
-                style = _getComputedStyle(this._node);
-
-                result = hook ? hook(style) : style[name];
-            }
-
-            return result;
-        };
-
-        /**
-         * Set css style for element
-         * @param {String|Object} name  property name or key/value pair
-         * @param {String}        value property value
-         * @return {$Element}
-         */
-        $Element.prototype.setStyle = function(name, value) {
-            var nameType = typeof name,
-                cssText = "", hook;
-
-            if (nameType === "string") {
-                hook = setStyleHooks[name];
-
-                cssText = ";" + (hook ? hook(name, value) : name + ":" + (typeof value === "number" ? value + "px" : value));
-            } else if (nameType === "object") {
-                _forOwn(name, function(value, key) {
+        $Element.prototype.css = function(name, value) {
+            var len = arguments.length,
+                style = this._node.style,
+                nameType = typeof name,
+                cssText = "",
+                appendCssText = function(value, key) {
                     hook = setStyleHooks[key];
 
+                    if (typeof value === "function") {
+                        value = value.call(this, value.length ? this.css(name) : undefined);
+                    }
+
                     cssText += ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
-                });
+                },
+                hook;
+
+            if (len === 1) {
+                if (nameType === "string") {
+                    hook = getStyleHooks[name];
+
+                    value = hook ? hook(style) : style[name];
+
+                    if (!value) {
+                        style = _getComputedStyle(this._node);
+                        value = hook ? hook(style) : style[name];
+                    }
+
+                    return value;
+                } else if (name && nameType === "object") {
+                    _forOwn(name, appendCssText, this);
+                } else {
+                    throw _makeError("css", this);
+                }
+            } else if (len === 2 && nameType === "string") {
+                appendCssText.call(this, value, name);
             } else {
-                throw _makeError("setStyle", this);
+                throw _makeError("css", this);
             }
 
-            this._node.style.cssText += cssText;
+            style.cssText += cssText;
 
             return this;
         };
@@ -1501,11 +1482,7 @@
          * @param  {String} [selector] css selector
          * @return {$Element} matched child
          * @function
-         * @example
-         * var body = DOM.find("body");
-         *
-         * body.child(0); // => first child
-         * body.child(-1); // => last child
+         * @tutorial Traversing
          */
         $Element.prototype.child = makeChildTraversingMethod(false);
 
@@ -1514,9 +1491,20 @@
          * @param  {String} [selector] css selector
          * @return {$Element} collection of matched elements
          * @function
+         * @tutorial Traversing
          */
         $Element.prototype.children = makeChildTraversingMethod(true);
     })();
+
+    /**
+     * Executes code in a 'unsafe' block there the first callback argument is native DOM
+     * object. Use only when you need to communicate better-dom with third party scripts!
+     * @memberOf $Element.prototype
+     * @param  {Function} block unsafe block body (nativeNode, index)
+     */
+    $Element.prototype.legacy = function(block) {
+        return _forEach(this, function(el, index) { block.call(this, el._node, el, index) }, this);
+    };
 
     /**
      * Show element
@@ -1673,19 +1661,7 @@
              * @return {Object} the accumulated value
              * @function
              */
-            reduceRight: makeCollectionMethod(_foldr),
-
-            /**
-             * Executes code in a 'unsafe' block there the first callback argument is native DOM
-             * object. Use only when you need to communicate better-dom with third party scripts!
-             * @memberOf $Element.prototype
-             * @param  {Function} block unsafe block body (nativeNode, element, index)
-             */
-            unsafe: function(block) {
-                _forEach(this, function(el, index) { block(el._node, el, index) });
-
-                return this;
-            }
+            reduceRight: makeCollectionMethod(_foldr)
         });
     }());
 
@@ -1710,114 +1686,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.4.1";
-
-    // WATCH CALLBACK
-    // --------------
-
-    /**
-     * Execute callback when element with specified selector is found in document tree
-     * @memberOf DOM
-     * @param {String} selector css selector
-     * @param {Fuction} callback event handler
-     * @param {Boolean} [once] execute callback only at the first time
-     * @function
-     */
-    DOM.watch = (function() {
-        var animId = 19968, // use Chinese characters for animation names starting from 4E00
-            watchers, cssPrefix, scripts, behaviorUrl;
-
-        if (window.CSSKeyframesRule || !document.attachEvent) {
-            // Inspired by trick discovered by Daniel Buchner:
-            // https://github.com/csuwldcat/SelectorListener
-            cssPrefix = CSSRule.KEYFRAMES_RULE ? "" : "-webkit-";
-            watchers = {};
-
-            document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
-                var entry = watchers[e.animationName],
-                    node = e.target;
-
-                if (entry) {
-                    // MUST cancelBubbling first because of extra calls in firefox
-                    if (entry.once) node.addEventListener(e.type, entry.once, false);
-
-                    entry.callback($Element(node));
-                }
-            }, false);
-
-            return function(selector, callback, once) {
-                var animationName = String.fromCharCode(animId++),
-                    animations = [animationName];
-
-                _forOwn(watchers, function(entry, key) {
-                    if (entry.selector === selector) animations.push(key);
-                });
-
-                DOM.importStyles("@" + cssPrefix + "keyframes " + animationName, "1% {opacity: .99}");
-
-                DOM.importStyles(selector, {
-                    "animation-duration": "1ms",
-                    "animation-name": animations.join() + " !important"
-                });
-
-                watchers[animationName] = {
-                    selector: selector,
-                    callback: callback,
-                    once: once && function(e) {
-                        if (e.animationName === animationName) e.stopPropagation();
-                    }
-                };
-            };
-        } else {
-            scripts = document.scripts;
-            behaviorUrl = scripts[scripts.length - 1].getAttribute("data-htc");
-            watchers = [];
-
-            document.attachEvent("ondataavailable", function() {
-                var e = window.event,
-                    node = e.srcElement;
-
-                if (e.srcUrn === "dataavailable") {
-                    _forEach(watchers, function(entry) {
-                        // do not execute callback if it was previously excluded
-                        if (_some(e.detail, function(x) { return x === entry.callback })) return;
-
-                        if (entry.matcher.test(node)) {
-                            if (entry.once) node.attachEvent("on" + e.type, entry.once);
-
-                            _defer(function() { entry.callback($Element(node)) });
-                        }
-                    });
-                }
-            });
-
-            return function(selector, callback, once) {
-                var behaviorExists = _some(watchers, function(x) { return x.matcher.selector === selector });
-
-                if (behaviorExists) {
-                    // do safe call of the callback for each matched element
-                    // because the behaviour is already attached to selector
-                    DOM.findAll(selector).each(function(el) {
-                        _defer(function() { callback(el) });
-                    });
-                }
-
-                watchers.push({
-                    callback: callback,
-                    matcher: new SelectorMatcher(selector),
-                    once: once && function() {
-                        var e = window.event;
-
-                        if (e.srcUrn === "dataavailable") {
-                            (e.detail = e.detail || []).push(callback);
-                        }
-                    }
-                });
-
-                if (!behaviorExists) DOM.importStyles(selector, {behavior: "url(" + behaviorUrl + ")"});
-            };
-        }
-    }());
+    DOM.version = "1.5.0";
 
     // CREATE ELEMENT
     // --------------
@@ -1838,7 +1707,7 @@
                 if (rquick.test(value)) {
                     value = new $Element(document.createElement(value));
                 } else {
-                    if (value[0] !== "<") value = DOM.parseTemplate(value);
+                    value = _trim(DOM.template(value));
 
                     var sandbox = document.createElement("div");
 
@@ -1853,7 +1722,7 @@
                 }
 
                 if (attributes) value.set(attributes);
-                if (styles) value.setStyle(styles);
+                if (styles) value.css(styles);
 
                 return value;
             }
@@ -1872,15 +1741,7 @@
          * @memberOf DOM
          * @param  {String}          selector extension css selector
          * @param  {Object|Function} mixins   extension mixins/constructor function
-         * @example
-         * DOM.extend(".myplugin", {
-         *     constructor: function() {
-         *         // initialize extension
-         *     },
-         *     method: function() {
-         *         // this method will be mixed into every matched element
-         *     }
-         * });
+         * @tutorial Living extensions
          */
         DOM.extend = function(selector, mixins) {
             if (typeof mixins === "function") mixins = {constructor: mixins};
@@ -1944,6 +1805,7 @@
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
             reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
+            reHtml = /^[\s<]/,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
                 return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
@@ -1992,12 +1854,17 @@
          * @param  {String} template emmet-like expression
          * @return {String} HTML string
          * @see http://docs.emmet.io/cheat-sheet/
+         * @tutorial Microtemplating
          */
-        DOM.parseTemplate = function(template) {
+        DOM.template = function(template) {
             var stack = [],
                 output = [],
                 term = "",
                 i, n, str, priority, skip, node;
+
+            if (typeof template !== "string") throw _makeError("template", this);
+
+            if (!template || reHtml.exec(template)) return template;
 
             // parse exrpression into RPN
 
@@ -2131,7 +1998,7 @@
             if (typeof styles === "object") {
                 var obj = {_node: {style: {cssText: ""}}};
 
-                $Element.prototype.setStyle.call(obj, styles);
+                $Element.prototype.css.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
             }
@@ -2153,6 +2020,108 @@
         };
 
         DOM.importStyles("[aria-hidden=true]", "display:none");
+    }());
+
+    // WATCH CALLBACK
+    // --------------
+
+    /**
+     * Execute callback when element with specified selector is found in document tree
+     * @memberOf DOM
+     * @param {String} selector css selector
+     * @param {Fuction} callback event handler
+     * @param {Boolean} [once] execute callback only at the first time
+     * @function
+     */
+    DOM.watch = (function() {
+        // Inspired by trick discovered by Daniel Buchner:
+        // https://github.com/csuwldcat/SelectorListener
+
+        var watchers = [],
+            supportsAnimations = window.CSSKeyframesRule || !document.attachEvent,
+            handleWatcherEntry = function(e, node) {
+                return function(entry) {
+                    // do not execute callback if it was previously excluded
+                    if (_some(e.detail, function(x) { return x === entry.callback })) return;
+
+                    if (entry.matcher.test(node)) {
+                        if (entry.once) {
+                            if (supportsAnimations) {
+                                node.addEventListener(e.type, entry.once, false);
+                            } else {
+                                node.attachEvent("on" + e.type, entry.once);
+                            }
+                        }
+
+                        _defer(function() { entry.callback($Element(node)) });
+                    }
+                };
+            },
+            animId, cssPrefix, link, styles;
+
+        if (supportsAnimations) {
+            animId = "DOM" + new Date().getTime();
+            cssPrefix = CSSRule.KEYFRAMES_RULE ? "" : "-webkit-";
+
+            DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
+
+            styles = {
+                "animation-duration": "1ms",
+                "animation-name": animId + " !important"
+            };
+
+            document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
+                if (e.animationName === animId) {
+                    _forEach(watchers, handleWatcherEntry(e, e.target));
+                }
+            }, false);
+        } else {
+            link = document.querySelector("link[rel=htc]");
+
+            if (!link) throw "You forgot to include <link> with rel='htc' on your page!";
+
+            styles = {behavior: "url(" + link.href + ") !important"};
+
+            document.attachEvent("ondataavailable", function() {
+                var e = window.event;
+
+                if (e.srcUrn === "dataavailable") {
+                    _forEach(watchers, handleWatcherEntry(e, e.srcElement));
+                }
+            });
+        }
+
+        return function(selector, callback, once) {
+            if (!supportsAnimations) {
+                // do safe call of the callback for each matched element
+                // because the behaviour is already attached to selector
+                DOM.findAll(selector).each(function(el) {
+                    if (el._node.behaviorUrns.length > 0) {
+                        _defer(function() { callback(el) });
+                    }
+                });
+            }
+
+            watchers.push({
+                callback: callback,
+                matcher: new SelectorMatcher(selector),
+                once: once && function(e) {
+                    if (e) {
+                        if (e.animationName !== animId) return;
+                    } else {
+                        e = window.event;
+
+                        if (e.srcUrn !== "dataavailable") return;
+                    }
+
+                    (e.detail = e.detail || []).push(callback);
+                }
+            });
+
+            if (_some(watchers, function(x) { return x.matcher.selector === selector })) {
+                DOM.importStyles(selector, styles);
+            }
+        };
     }());
 
     // READY CALLBACK
@@ -2213,19 +2182,26 @@
      */
     DOM.importScripts = function() {
         var args = _slice(arguments),
-            body = DOM.find("body"),
-            n = args.length - 1,
-            callback;
+            context = document.scripts[0],
+            callback = function() {
+                var arg = args.shift(),
+                    argType = typeof arg,
+                    script;
 
-        if (n > 0 && typeof args[n] === "function") {
-            callback = (function(callback) { if (!--n) callback() }(args.pop()));
-        }
+                if (argType === "string") {
+                    script = document.createElement("script");
+                    script.src = arg;
+                    script.onload = callback;
+                    script.async = true;
+                    context.parentNode.insertBefore(script, context);
+                } else if (!arg.length && argType === "function") {
+                    arg();
+                } else {
+                    throw _makeError("importScripts", DOM);
+                }
+            };
 
-        _forEach(args, function(url) {
-            if (typeof url !== "string") throw _makeError("importScripts", this);
-
-            body.append(DOM.create("script", {src: url, onload: callback})).child(-1).remove();
-        });
+        callback();
 
         return this;
     };
@@ -2240,13 +2216,7 @@
      * @param {String}         pattern string pattern
      * @param {String}         [lang]  string language
      * @function
-     * @example
-     * // have element &#60;a data-i18n="str.1" data-user="Maksim"&#62;&#60;a&#62; in markup
-     * DOM.importStrings("str.1", "Hello {user}!");
-     * DOM.importStrings("str.1", "Привет!", "ru");
-     * // the link text now is "Hello Maksim!"
-     * link.set("lang", "ru");
-     * // the link text now is "Привет!"
+     * @tutorial Localization
      */
     DOM.importStrings = (function() {
         var rparam = /\{([a-z\-]+)\}/g,
@@ -2305,12 +2275,15 @@
         return this;
     };
 
-    // REGISTER API
-    // ------------
-
-    window.DOM = DOM;
-
-    if (typeof define === "function" && define.amd) {
-        define("better-dom", function() { return DOM; });
+    // node export
+    if (typeof module === "object" && typeof module.exports === "object"){
+        module.exports = DOM;
+    } else {
+        // requireJS module definition
+        if (typeof window.define === "function" && define.amd) {
+            define("better-dom", function() { return DOM; });
+        }
     }
+    // always register global variable
+    window.DOM = DOM;
 })(window, document, document.documentElement);
