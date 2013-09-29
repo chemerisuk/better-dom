@@ -71,7 +71,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
 
             if (!template || reHtml.exec(template)) return template;
 
-            // parse exrpression into RPN
+            // parse expression into RPN
 
             for (i = 0, n = template.length; i < n; ++i) {
                 str = template[i];

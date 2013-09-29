@@ -85,7 +85,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                 callback: callback,
                 matcher: new SelectorMatcher(selector),
                 once: once && function(e) {
-                    if (e) {
+                    if (supportsAnimations) {
                         if (e.animationName !== animId) return;
                     } else {
                         e = window.event;
