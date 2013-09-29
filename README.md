@@ -31,8 +31,8 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [Living extensions](http://chemerisuk.github.io/better-dom/tutorial-extensions.html)
 * [Smarter getter and setter](http://chemerisuk.github.io/better-dom/tutorial-setter.html)
 * [Event handling best practices](http://chemerisuk.github.io/better-dom/tutorial-handling.html)
-* [Microtemplating via emmet](http://chemerisuk.github.io/better-dom/microtemplating.html)
-* [Easy localization](http://chemerisuk.github.io/better-dom/localization.html)
+* [Microtemplating via emmet](http://chemerisuk.github.io/better-dom/tutorial-Microtemplating.html)
+* [Easy localization](http://chemerisuk.github.io/better-dom/tutorial-Localization.html)
 
 ## Usage examples
 * [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
