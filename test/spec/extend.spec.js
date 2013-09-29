@@ -11,14 +11,14 @@ describe("extend", function() {
     });
 
     it("should execute contructor property for each element", function() {
-        DOM.extend(".extend", {
-            constructor: callback
+        runs(function() {
+            DOM.extend(".extend", {
+                constructor: callback
+            });
         });
 
-        waits(WAIT_FOR_WATCH_TIME);
-
-        runs(function() {
-            expect(callback.callCount).toBe(3);
+        waitsFor(function() {
+            return callback.callCount === 3;
         });
     });
 

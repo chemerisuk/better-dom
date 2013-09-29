@@ -37,6 +37,7 @@
         "waits": true,
         "runs": true,
         "spyOn": true,
+        "waitsFor": true,
 
         "module": true,
         "require": true,

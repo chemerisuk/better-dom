@@ -73,9 +73,9 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
         return function(selector, callback, once) {
             if (!supportsAnimations) {
                 // do safe call of the callback for each matched element
-                // because the behaviour is already attached to selector
-                DOM.findAll(selector).each(function(el) {
-                    if (el._node.behaviorUrns.length > 0) {
+                // if the behaviour is already attached
+                DOM.findAll(selector).legacy(function(node, el) {
+                    if (node.behaviorUrns.length > 0) {
                         _defer(function() { callback(el) });
                     }
                 });
