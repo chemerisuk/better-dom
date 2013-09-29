@@ -1,6 +1,6 @@
 describe("off", function() {
     "use strict";
-    
+
     var input, link, obj = {test: function() { }, test2: function() {}}, spy;
 
     beforeEach(function() {
@@ -13,7 +13,7 @@ describe("off", function() {
     });
 
     it("should remove event callback", function() {
-        input.on("click", spy).off("click").fire("click");
+        input.on("click", spy).off("click", null).fire("click");
         expect(spy).not.toHaveBeenCalled();
 
         input.on("click", spy).off("click", spy).fire("click");

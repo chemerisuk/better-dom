@@ -111,6 +111,7 @@ describe("style", function() {
 
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.css(1); }).toThrow();
+            expect(function() { link.css("color", "red", "yellow"); }).toThrow();
         });
     });
 

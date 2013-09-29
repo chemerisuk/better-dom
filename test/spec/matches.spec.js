@@ -1,6 +1,6 @@
-describe("is", function() {
+describe("matches", function() {
     "use strict";
-    
+
     var link, input;
 
     beforeEach(function() {

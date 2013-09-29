@@ -19,6 +19,18 @@ describe("ready", function(){
     //     });
     // });
 
+    it("should call callback asynchronously after DOMContentLoaded", function() {
+        var spy = jasmine.createSpy("callback");
+
+        DOM.ready(spy);
+
+        expect(spy).not.toHaveBeenCalled();
+
+        waitsFor(function() {
+            return spy.callCount === 1;
+        });
+    });
+
     it("should throw error if arguments are invalid", function(){
         expect(function() { DOM.ready(1); }).toThrow();
     });

@@ -107,8 +107,8 @@ describe("DOM.template", function() {
     });
 
     it("should throw error on invalid args", function() {
-        expect(function() { DOM.parseTemplate({}); }).toThrow();
-        expect(function() { DOM.parseTemplate(it); }).toThrow();
-        expect(function() { DOM.parseTemplate(434); }).toThrow();
+        expect(function() { DOM.template({}); }).toThrow();
+        expect(function() { DOM.template(it); }).toThrow();
+        expect(function() { DOM.template(434); }).toThrow();
     });
 });

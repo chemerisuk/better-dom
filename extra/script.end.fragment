@@ -1,3 +1,6 @@
+    // REGISTER API
+    // ------------
+
     // node export
     if (typeof module === "object" && typeof module.exports === "object"){
         module.exports = DOM;
