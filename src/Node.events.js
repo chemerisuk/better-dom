@@ -15,11 +15,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
          * @return {$Node}
-         * @example
-         * // NOTICE: handler don't have e as the first argument
-         * input.on("click", function() {...});
-         * // NOTICE: event properties in event name
-         * input.on("keydown", ["which", "altKey"], function(which, altKey) {...});
+         * @tutorial Event handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
             var node = this._node,
@@ -93,6 +89,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
          * @return {$Node}
+         * @tutorial Event handling
          */
         $Node.prototype.once = function() {
             var args = _slice(arguments);
@@ -108,6 +105,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
          * @return {$Node}
+         * @tutorial Event handling
          */
         $Node.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") {
@@ -146,13 +144,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * @param  {String} type type of event
          * @param  {Object} [detail] event details
          * @return {$Node}
-         * @example
-         * var domLink = DOM.find(".link");
-         *
-         * domLink.fire("focus");
-         * // receive focus to the element
-         * domLink.fire("custom:event", {x: 1, y: 2});
-         * // trigger a custom:event on the element
+         * @tutorial Event handling
          */
         $Node.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {

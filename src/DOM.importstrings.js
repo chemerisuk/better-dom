@@ -11,13 +11,7 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn, _makeError) {
      * @param {String}         pattern string pattern
      * @param {String}         [lang]  string language
      * @function
-     * @example
-     * // have element &#60;a data-i18n="str.1" data-user="Maksim"&#62;&#60;a&#62; in markup
-     * DOM.importStrings("str.1", "Hello {user}!");
-     * DOM.importStrings("str.1", "Привет!", "ru");
-     * // the link text now is "Hello Maksim!"
-     * link.set("lang", "ru");
-     * // the link text now is "Привет!"
+     * @tutorial Localization
      */
     DOM.importStrings = (function() {
         var rparam = /\{([a-z\-]+)\}/g,

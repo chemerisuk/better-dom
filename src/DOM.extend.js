@@ -9,15 +9,7 @@ define(["DOM", "Element"], function(DOM, $Element, $NullElement, _map, _forOwn, 
          * @memberOf DOM
          * @param  {String}          selector extension css selector
          * @param  {Object|Function} mixins   extension mixins/constructor function
-         * @example
-         * DOM.extend(".myplugin", {
-         *     constructor: function() {
-         *         // initialize extension
-         *     },
-         *     method: function() {
-         *         // this method will be mixed into every matched element
-         *     }
-         * });
+         * @tutorial Living extensions
          */
         DOM.extend = function(selector, mixins) {
             if (typeof mixins === "function") mixins = {constructor: mixins};

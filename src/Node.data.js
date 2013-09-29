@@ -10,9 +10,7 @@ define(["Node"], function($Node, _extend, _makeError) {
      * @param  {String|Object} key     data key
      * @param  {Object}        [value] data value to store
      * @return {Object} data entry value or this in case of setter
-     * @example
-     * el.data("test", "message");
-     * el.data("test"); // => "message"
+     * @tutorial Data
      */
     $Node.prototype.data = function(key, value) {
         var len = arguments.length,

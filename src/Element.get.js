@@ -11,13 +11,7 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
          * Get property or attribute by name
          * @param  {String} [name] property/attribute name
          * @return {String} property/attribute value
-         * @example
-         * // returns value of the id property (i.e. "link" string)
-         * link.get("id");
-         * // returns value of "data-attr" attribute
-         * link.get("data-attr");
-         * // returns innerHTML of the element
-         * link.get();
+         * @tutorial Getter and setter
          */
         $Element.prototype.get = function(name) {
             var node = this._node,

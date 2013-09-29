@@ -98,11 +98,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param  {String} [selector] css selector
          * @return {$Element} matched child
          * @function
-         * @example
-         * var body = DOM.find("body");
-         *
-         * body.child(0); // => first child
-         * body.child(-1); // => last child
+         * @tutorial Traversing
          */
         $Element.prototype.child = makeChildTraversingMethod(false);
 
@@ -111,6 +107,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param  {String} [selector] css selector
          * @return {$Element} collection of matched elements
          * @function
+         * @tutorial Traversing
          */
         $Element.prototype.children = makeChildTraversingMethod(true);
     })();

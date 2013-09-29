@@ -8,9 +8,6 @@ define(["Node"], function($Node, $Element, _makeError) {
      * Check if element is inside of context
      * @param  {$Element} element element to check
      * @return {Boolean} true if success
-     * @example
-     * DOM.find("html").contains(DOM.find("body"));
-     * // returns true
      */
     $Node.prototype.contains = function(element) {
         var node = this._node, result;
