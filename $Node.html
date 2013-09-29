@@ -11,7 +11,7 @@
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
 	
-	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.united.css">
 	
 </head>
 
@@ -56,6 +56,48 @@
 						
 						<li>
 							<a href="$NullElement.html">$NullElement</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="tutorials.list.html" class="dropdown-toggle" data-toggle="dropdown">Tutorials<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="tutorial-Data.html">Data</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-handling.html">Event handling</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-detection.html">Feature detection</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-setter.html">Getter and setter</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-extensions.html">Living extensions</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-Localization.html">Localization</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-Microtemplating.html">Microtemplating</a>
+						</li>
+						
+						<li>
+							<a href="tutorial-Traversing.html">Traversing</a>
 						</li>
 						
 
@@ -364,12 +406,200 @@
         
     
     
-        <h5>Example</h5>
+</dd>
+
         
-    <pre class="sunlight-highlight-javascript">DOM.find("html").contains(DOM.find("body"));
-// returns true</pre>
+            
+<dt>
+    <h4 class="name" id="data"><span class="type-signature"></span>data<span class="signature">(key, <span class="optional">value</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Getter/setter of a data entry value. Tries to read the appropriate
+HTML5 data-* attribute if it exists</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
 
 
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>data key</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>data value to store</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Node.data.js.html">Node.data.js</a>
+    </li></ul></dd>
+    
+
+    
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><a href="tutorial-Data.html">Data</a></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>data entry value or this in case of setter</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
     
 </dd>
 
@@ -796,6 +1026,13 @@
     
 
     
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><a href="tutorial-handling.html">Event handling</a></li>
+        </ul>
+    </dd>
+    
 
     
 
@@ -832,168 +1069,6 @@
 
         
     
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">var domLink = DOM.find(".link");
-
-domLink.fire("focus");
-// receive focus to the element
-domLink.fire("custom:event", {x: 1, y: 2});
-// trigger a custom:event on the element</pre>
-
-
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="getData"><span class="type-signature"></span>getData<span class="signature">(key)</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Read data entry value</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>data entry key</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.data.js.html">Node.data.js</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>data entry value</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">Object</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">var domLink = DOM.find(".link");
-
-domLink.setData("test", "message");
-domLink.getData("test");
-// returns string "message"</pre>
-
-
     
 </dd>
 
@@ -1173,6 +1248,13 @@ domLink.getData("test");
     </li></ul></dd>
     
 
+    
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><a href="tutorial-handling.html">Event handling</a></li>
+        </ul>
+    </dd>
     
 
     
@@ -1421,6 +1503,13 @@ domLink.getData("test");
     
 
     
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><a href="tutorial-handling.html">Event handling</a></li>
+        </ul>
+    </dd>
+    
 
     
 
@@ -1457,15 +1546,6 @@ domLink.getData("test");
 
         
     
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">// NOTICE: handler don't have e as the first argument
-input.on("click", function() {...});
-// NOTICE: event properties in event name
-input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</pre>
-
-
     
 </dd>
 
@@ -1677,168 +1757,12 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</pre>
     
 
     
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="$Node.html">$Node</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="setData"><span class="type-signature"></span>setData<span class="signature">(key, value)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Store data entry value(s)</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>data entry key | key/value pairs</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>data to store</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Node.data.js.html">Node.data.js</a>
-    </li></ul></dd>
-    
-
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><a href="tutorial-handling.html">Event handling</a></li>
+        </ul>
+    </dd>
     
 
     
@@ -1876,15 +1800,6 @@ input.on("keydown", ["which", "altKey"], function(which, altKey) {...});</pre>
 
         
     
-    
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">var domLink = DOM.find(".link");
-
-domLink.setData("test", "message");
-domLink.setData({a: "b", c: "d"});</pre>
-
-
     
 </dd>
 
@@ -2029,6 +1944,13 @@ domLink.setData({a: "b", c: "d"});</pre>
     
 
     
+    <dt class="tag-tutorial">Tutorials:</dt>
+    <dd class="tag-tutorial">
+        <ul>
+            <li><a href="tutorial-detection.html">Feature detection</a></li>
+        </ul>
+    </dd>
+    
 
     
 
@@ -2070,17 +1992,6 @@ domLink.setData({a: "b", c: "d"});</pre>
         
     
     
-        <h5>Example</h5>
-        
-    <pre class="sunlight-highlight-javascript">input.supports("placeholder");
-// => true if an input supports placeholders
-DOM.supports("addEventListener");
-// => true if browser supports document.addEventListener
-DOM.supports("oninvalid", "input");
-// => true if browser supports `invalid` event</pre>
-
-
-    
 </dd>
 
         </dl>
@@ -2104,7 +2015,7 @@ DOM.supports("oninvalid", "input");
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Sun Sep 15 2013 12:46:23 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Sep 29 2013 15:31:13 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

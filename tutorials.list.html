@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: DOM.create.js</title>
+	<title>better-dom Tutorials</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -111,68 +111,106 @@
 	<div class="row-fluid">
 
 		
-			<div class="span12">
-				
+		<div class="span8">
+			
 				<div id="main">
 					
 
 
-		<h1 class="page-title">Source: DOM.create.js</h1>
+	<h1 class="page-title">Tutorials</h1>
+<section>
+
+<header>
+    <h2>
     
-    <section>
-        <article>
-            <pre class="sunlight-highlight-javascript ">define(["DOM", "Element"], function(DOM, $Element, _trim, _makeError) {
-    "use strict";
+    </h2>
+    
+</header>
 
-    // CREATE ELEMENT
-    // --------------
+<article>
+    <div class="container-overview">
+    
 
-    (function(){
-        var rquick = /^[a-z]+$/;
+    
+        
 
-        /**
-         * Create a $Element instance
-         * @memberOf DOM
-         * @param  {Mixed}          value        native element or HTMLString or EmmetString
-         * @param  {Object}         [attributes] key/value pairs of the element attributes
-         * @param  {Object}         [styles]     key/value pairs of the element styles
-         * @return {$Element} element
-         */
-        DOM.create = function(value, attributes, styles) {
-            if (typeof value === "string") {
-                if (rquick.test(value)) {
-                    value = new $Element(document.createElement(value));
-                } else {
-                    value = _trim(DOM.template(value));
+        
+<dl class="details">
+    
 
-                    var sandbox = document.createElement("div");
+    
 
-                    sandbox.innerHTML = value;
+    
 
-                    if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
-                        // remove temporary element
-                        sandbox = sandbox.removeChild(sandbox.firstChild);
-                    }
+    
 
-                    value = new $Element(sandbox);
-                }
+    
 
-                if (attributes) value.set(attributes);
-                if (styles) value.css(styles);
+    
 
-                return value;
-            }
+    
 
-            if (value.nodeType === 1) return $Element(value);
+    
 
-            throw _makeError("create", this);
-        };
-    })();
-});
-</pre>
-        </article>
-    </section>
+    
 
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="$CompositeElement.html">$CompositeElement</a></dt>
+            <dd></dd>
+        
+            <dt><a href="$Element.html">$Element</a></dt>
+            <dd></dd>
+        
+            <dt><a href="$Node.html">$Node</a></dt>
+            <dd></dd>
+        
+            <dt><a href="$NullElement.html">$NullElement</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+        <h3 class="subsection-title">Namespaces</h3>
+
+        <dl>
+            <dt><a href="namespaces.html#DOM"><a href="DOM.html">DOM</a></a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
@@ -190,6 +228,10 @@
 				</footer>
 			</div>
 
+			
+			<div class="span3">
+				<div id="toc"></div>
+			</div>
 			
 			<br clear="both">
 		</div>

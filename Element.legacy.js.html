@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: DOM.create.js</title>
+	<title>better-dom Source: Element.legacy.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -117,57 +117,22 @@
 					
 
 
-		<h1 class="page-title">Source: DOM.create.js</h1>
+		<h1 class="page-title">Source: Element.legacy.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["DOM", "Element"], function(DOM, $Element, _trim, _makeError) {
+            <pre class="sunlight-highlight-javascript ">define(["Element"], function($Element, _forEach) {
     "use strict";
 
-    // CREATE ELEMENT
-    // --------------
-
-    (function(){
-        var rquick = /^[a-z]+$/;
-
-        /**
-         * Create a $Element instance
-         * @memberOf DOM
-         * @param  {Mixed}          value        native element or HTMLString or EmmetString
-         * @param  {Object}         [attributes] key/value pairs of the element attributes
-         * @param  {Object}         [styles]     key/value pairs of the element styles
-         * @return {$Element} element
-         */
-        DOM.create = function(value, attributes, styles) {
-            if (typeof value === "string") {
-                if (rquick.test(value)) {
-                    value = new $Element(document.createElement(value));
-                } else {
-                    value = _trim(DOM.template(value));
-
-                    var sandbox = document.createElement("div");
-
-                    sandbox.innerHTML = value;
-
-                    if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
-                        // remove temporary element
-                        sandbox = sandbox.removeChild(sandbox.firstChild);
-                    }
-
-                    value = new $Element(sandbox);
-                }
-
-                if (attributes) value.set(attributes);
-                if (styles) value.css(styles);
-
-                return value;
-            }
-
-            if (value.nodeType === 1) return $Element(value);
-
-            throw _makeError("create", this);
-        };
-    })();
+    /**
+     * Executes code in a 'unsafe' block there the first callback argument is native DOM
+     * object. Use only when you need to communicate better-dom with third party scripts!
+     * @memberOf $Element.prototype
+     * @param  {Function} block unsafe block body (nativeNode, index)
+     */
+    $Element.prototype.legacy = function(block) {
+        return _forEach(this, function(el, index) { block.call(this, el._node, el, index) }, this);
+    };
 });
 </pre>
         </article>

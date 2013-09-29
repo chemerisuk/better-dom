@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: DOM.create.js</title>
+	<title>better-dom tutorialEvent handling</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -114,68 +114,46 @@
 			<div class="span12">
 				
 				<div id="main">
-					
-
-
-		<h1 class="page-title">Source: DOM.create.js</h1>
+					<section>
     
-    <section>
-        <article>
-            <pre class="sunlight-highlight-javascript ">define(["DOM", "Element"], function(DOM, $Element, _trim, _makeError) {
-    "use strict";
+<header>
+    
 
-    // CREATE ELEMENT
-    // --------------
+    <h2>Event handling</h2>
+</header>  
 
-    (function(){
-        var rquick = /^[a-z]+$/;
+<article>
+    <p>Event handling is a big part of coding for DOM. There are some features included into the library that help developers to avoid potential issues and keep their code easier to maintain.</p>
+<h3>Get rid of the event object</h3>
+<p>Event callbacks loose the event object argument that improves testability of code.</p>
+<pre><code>// NOTICE: handler don't have e as the first argument
+input.on(&quot;click&quot;, function() {...});
+// NOTICE: using of array to pass event properties into callback
+input.on(&quot;keydown&quot;, [&quot;which&quot;, &quot;altKey&quot;], function(which, altKey) {...});</code></pre>
+<h3>Correct return false interpretation</h3>
+<p>jQuery has strange behavior of event handler that returns false which is a <a href="http://fuelyourcoding.com/jquery-events-stop-misusing-return-false/">cause of confusion</a> for a lot of people. This library has standards-based behavior and does what everybody expects.</p>
+<pre><code>// NOTICE: returning false prevents ONLY default action
+DOM.find(&quot;a&quot;).on(&quot;click&quot;, function() { return false; });</code></pre>
+<h3>stopPropagation is evil</h3>
+<p>If you need to call stopPropagation in an event handler in 95% situations you are doing something wrong. Solutions that utilize this function becomes to be complex, moreover they introduce compatability problems. Probably every experienced javascript developer had a issue where a third party script has blocked some useful event and there is no way to fix exept forking the extension's source code.</p>
+<p>That's why it's <em>not possible to call stopPropagation</em> using better-dom. And this is not a bug <em>it's a feature</em>.</p>
+<h3>Late binding</h3>
+<p>Usually an event listener is bound when the <code>addEventListener</code> method is called. This causes trouble when the handler is changed. The library helps to solve the problem by allowing to listent to an event using <em>object property</em> instead of just function.</p>
+<pre><code>var link = DOM.find(&quot;.test-link&quot;),
+    obj = {handleClick: function() { console.log(&quot;Hello!&quot;); }};
 
-        /**
-         * Create a $Element instance
-         * @memberOf DOM
-         * @param  {Mixed}          value        native element or HTMLString or EmmetString
-         * @param  {Object}         [attributes] key/value pairs of the element attributes
-         * @param  {Object}         [styles]     key/value pairs of the element styles
-         * @return {$Element} element
-         */
-        DOM.create = function(value, attributes, styles) {
-            if (typeof value === "string") {
-                if (rquick.test(value)) {
-                    value = new $Element(document.createElement(value));
-                } else {
-                    value = _trim(DOM.template(value));
+link.on(&quot;click&quot;, obj, &quot;handleClick&quot;);
+// every click on the link now logs &quot;Hello!&quot; into console
+obj.handleClick = function() { console.log(&quot;Hello, Maksim!&quot;); }
+// every click on the link now logs &quot;Hello, Maksim!&quot; into console</code></pre>
+<h3>Callback systems are brittle</h3>
+<p>There are no callback arrays, so any event listener can't break another one (read a <a href="http://dean.edwards.name/weblog/2009/03/callbacks-vs-events/">nice article</a> for additional details).</p>
+<pre><code>DOM.ready(function() { throw Error(&quot;exception in a bad code&quot;); });
+// NOTICE: you'll always see the message in console
+DOM.ready(function() { console.log(&quot;Nothing can break your code&quot;) });</code></pre>
+</article>
 
-                    var sandbox = document.createElement("div");
-
-                    sandbox.innerHTML = value;
-
-                    if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
-                        // remove temporary element
-                        sandbox = sandbox.removeChild(sandbox.firstChild);
-                    }
-
-                    value = new $Element(sandbox);
-                }
-
-                if (attributes) value.set(attributes);
-                if (styles) value.css(styles);
-
-                return value;
-            }
-
-            if (value.nodeType === 1) return $Element(value);
-
-            throw _makeError("create", this);
-        };
-    })();
-});
-</pre>
-        </article>
-    </section>
-
-
-
-
+</section>  
 
 				</div>
 
@@ -185,7 +163,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Sun Sep 29 2013 15:31:12 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sun Sep 29 2013 15:31:13 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
