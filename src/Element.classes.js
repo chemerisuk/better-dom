@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _every, _forEach, _makeError, documentElement) {
+define(["Element"], function($Element, _every, _forEach, _makeError, documentElement, _trim) {
     "use strict";
 
     // CLASSES MANIPULATION
@@ -66,7 +66,7 @@ define(["Element"], function($Element, _every, _forEach, _makeError, documentEle
         $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
             className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
 
-            this._node.className = className.substr(className[0] === " " ? 1 : 0, className.length - 2);
+            this._node.className = _trim(className);
         });
 
         /**

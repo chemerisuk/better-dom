@@ -89,7 +89,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
                                 case "target":
                                     if (!target) target = e.target || e.srcElement;
                                     // handle DOM variable correctly
-                                    return target === document ? DOM : $Element(target);
+                                    return target && target !== document ? $Element(target) : DOM;
                                 }
 
                                 var hook = hooks[name];

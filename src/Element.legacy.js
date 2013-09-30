@@ -8,8 +8,8 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _f
      * @param  {Function} block unsafe block body (nativeNode, index)
      */
     $Element.prototype.legacy = function(block) {
-        return _forEach(this, function(el, index) {
-            block.call(this, el._node, el, index);
-        }, this);
+        return _forEach(this, function(el, index, context) {
+            block.call(context, el._node, el, index);
+        });
     };
 });
