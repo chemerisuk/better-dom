@@ -202,6 +202,15 @@ describe("on", function() {
         expect(spy2).toHaveBeenCalled();
     });
 
+    it("should handle global DOM as target", function() {
+        var spy = jasmine.createSpy("callback");
+
+        DOM.once("custom:event", spy);
+        DOM.fire("custom:event");
+
+        expect(spy).toHaveBeenCalledWith(DOM, false);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });

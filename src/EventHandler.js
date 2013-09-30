@@ -87,7 +87,9 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
                                 case "currentTarget":
                                     return currentTarget;
                                 case "target":
-                                    return $Element(target || e.target || e.srcElement);
+                                    if (!target) target = e.target || e.srcElement;
+                                    // handle DOM variable correctly
+                                    return target === document ? DOM : $Element(target);
                                 }
 
                                 var hook = hooks[name];
