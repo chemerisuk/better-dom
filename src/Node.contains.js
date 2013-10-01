@@ -12,6 +12,8 @@ define(["Node"], function($Node, $Element, _makeError) {
     $Node.prototype.contains = function(element) {
         var node = this._node, result;
 
+        if (!node) return;
+
         if (element instanceof $Element) {
             result = element.every(function(element) {
                 return node.contains(element._node);

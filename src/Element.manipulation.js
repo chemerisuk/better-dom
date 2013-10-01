@@ -41,9 +41,11 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _makeErr
             };
 
             return !fasterMethodName ? manipulateContent : function() {
-                _forEach(arguments, manipulateContent, this);
+                var args = arguments;
 
-                return this;
+                return _forEach(this, function(el) {
+                    _forEach(args, manipulateContent, el);
+                });
             };
         }
 

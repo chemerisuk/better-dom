@@ -6,6 +6,8 @@ define(["Element"], function($Element, documentElement) {
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     $Element.prototype.offset = function() {
+        if (!this._node) return;
+
         var boundingRect = this._node.getBoundingClientRect(),
             clientTop = documentElement.clientTop,
             clientLeft = documentElement.clientLeft,
@@ -25,6 +27,8 @@ define(["Element"], function($Element, documentElement) {
      * @return {Number} element width in pixels
      */
     $Element.prototype.width = function() {
+        if (!this._node) return;
+
         var offset = this.offset();
 
         return offset.right - offset.left;
@@ -35,6 +39,8 @@ define(["Element"], function($Element, documentElement) {
      * @return {Number} element height in pixels
      */
     $Element.prototype.height = function() {
+        if (!this._node) return;
+
         var offset = this.offset();
 
         return offset.bottom - offset.top;

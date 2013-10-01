@@ -28,6 +28,8 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
                 quickMatch = rquickExpr.exec(selector),
                 m, elem, elements, old, nid, context;
 
+            if (!node) return;
+
             if (quickMatch) {
                 // Speed-up: "#ID"
                 if (m = quickMatch[1]) {

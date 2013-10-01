@@ -11,6 +11,8 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
                     nodes = multiple ? [] : null,
                     it = this._node;
 
+                if (!it) return;
+
                 while (it = it[propertyName]) {
                     if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
                         if (!multiple) break;
@@ -30,6 +32,8 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
                 } else if (typeof index !== "number") {
                     throw _makeError("child", this);
                 }
+
+                if (!this._node) return;
 
                 var children = this._node.children,
                     matcher = SelectorMatcher(selector),

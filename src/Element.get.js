@@ -17,6 +17,8 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
             var node = this._node,
                 hook = hooks[name];
 
+            if (!node) return;
+
             if (name === undefined) {
                 if (node.tagName === "OPTION") {
                     name = node.hasAttribute("value") ? "value" : "text";

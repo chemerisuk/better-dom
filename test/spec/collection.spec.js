@@ -20,35 +20,6 @@ describe("collection methods", function() {
     //     expect(spy.callCount).toBe(1);
     // });
 
-    it("should return undefined for getters and do for each for setters", function() {
-        var links = DOM.findAll("body"),
-            link = DOM.find("body"),
-            spy = jasmine.createSpy("callback");
-
-        _.forIn(link, function(value, key) {
-            if (~("" + value).indexOf("return this;")) {
-                expect(typeof links[key]).toBe("function");
-            }
-        });
-
-        link.on("click", ["detail"], spy);
-        links.fire("click", "abc");
-
-        expect(spy).toHaveBeenCalledWith("abc");
-    });
-
-    // it("should allow to invoke method for each element", function() {
-    //     inputs.invoke("on", "focus", spy);
-
-    //     expect(inputs.invoke("fire", "focus"));
-    //     expect(spy.callCount).toBe(3);
-
-    //     expect(inputs.invoke("hide"));
-    //     expect(inputs.every(function(el) { return el.isHidden(); })).toBe(true);
-
-    //     expect(function() { inputs.invoke(); }).toThrow();
-    // });
-
     it("should have basic collection methods", function() {
         var obj = {};
 

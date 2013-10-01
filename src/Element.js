@@ -1,4 +1,4 @@
-define(["Node"], function($Node, $NullElement) {
+define(["Node"], function($Node) {
     "use strict";
 
     // DOM ELEMENT
@@ -16,14 +16,10 @@ define(["Node"], function($Node, $NullElement) {
         if (element && element.__dom__) return element.__dom__;
 
         if (!(this instanceof $Element)) {
-            return element ? new $Element(element) : new $NullElement();
+            return new $Element(element);
         }
 
         $Node.call(this, element);
-
-        if (element) {
-            Array.prototype.push.call(this, element.__dom__ = this);
-        }
     }
 
     $Element.prototype = new $Node();

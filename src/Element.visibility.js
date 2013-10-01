@@ -6,9 +6,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.show = function() {
-        this.set("aria-hidden", false);
-
-        return this;
+        return this.set("aria-hidden", false);
     };
 
     /**
@@ -16,9 +14,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.hide = function() {
-        this.set("aria-hidden", true);
-
-        return this;
+        return this.set("aria-hidden", true);
     };
 
     /**
@@ -26,9 +22,7 @@ define(["Element"], function($Element) {
      * @return {$Element}
      */
     $Element.prototype.toggle = function() {
-        this.set("aria-hidden", !this.isHidden());
-
-        return this;
+        return this.set("aria-hidden", !this.isHidden());
     };
 
     /**
@@ -36,6 +30,8 @@ define(["Element"], function($Element) {
      * @return {Boolean} true if element is hidden
      */
     $Element.prototype.isHidden = function() {
+        if (!this._node) return;
+
         return this.get("aria-hidden") === "true";
     };
 
@@ -44,6 +40,8 @@ define(["Element"], function($Element) {
      * @return {Boolean} true if current element is focused
      */
     $Element.prototype.isFocused = function() {
+        if (!this._node) return;
+
         return this._node === document.activeElement;
     };
 });

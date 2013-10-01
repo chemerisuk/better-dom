@@ -11,6 +11,8 @@ define(["Element"], function($Element, SelectorMatcher, _makeError) {
             throw _makeError("matches", this);
         }
 
+        if (!this._node) return;
+
         return new SelectorMatcher(selector).test(this._node);
     };
 });

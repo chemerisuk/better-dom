@@ -16,6 +16,8 @@ define(["Helpers"], function() {
             this._node = node;
             this._data = {};
             this._listeners = [];
+
+            Array.prototype.push.call(this, node.__dom__ = this);
         }
     }
 

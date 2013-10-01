@@ -26,13 +26,17 @@ define(["Element"], function($Element, _every, _forEach, _makeError, documentEle
 
             if (methodName === "hasClass") {
                 return function() {
+                    if (!this._node) return;
+
                     return _every(arguments, strategy, this);
                 };
             } else {
                 return function() {
-                    _forEach(arguments, strategy, this);
+                    var args = arguments;
 
-                    return this;
+                    return _forEach(this, function(el) {
+                        _forEach(args, strategy, el);
+                    });
                 };
             }
         }

@@ -1,4 +1,4 @@
-define(["Node"], function($Node, _extend, _makeError) {
+define(["Node"], function($Node, _extend, _forEach, _makeError) {
     "use strict";
 
     // INTERNAL DATA
@@ -14,28 +14,30 @@ define(["Node"], function($Node, _extend, _makeError) {
      */
     $Node.prototype.data = function(key, value) {
         var len = arguments.length,
+            keyType = typeof key,
             node = this._node,
-            data = this._data,
-            keyType = typeof key;
+            data = this._data;
 
         if (len === 1) {
             if (keyType === "string") {
-                value = data[key];
+                if (node) {
+                    value = data[key];
 
-                if (value === undefined && node.hasAttribute("data-" + key)) {
-                    value = data[key] = node.getAttribute("data-" + key);
+                    if (value === undefined && node.hasAttribute("data-" + key)) {
+                        value = data[key] = node.getAttribute("data-" + key);
+                    }
                 }
 
                 return value;
             } else if (key && keyType === "object") {
-                _extend(data, key);
-
-                return this;
+                return _forEach(this, function(el) {
+                    _extend(el._data, key);
+                });
             }
         } else if (len === 2 && keyType === "string") {
-            data[key] = value;
-
-            return this;
+            return _forEach(this, function(el) {
+                el._data[key] = value;
+            });
         }
 
         throw _makeError("data", this);

@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeError) {
+define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeError) {
     "use strict";
 
     // SETTER
@@ -17,47 +17,45 @@ define(["Element"], function($Element, _parseFragment, _forEach, _forOwn, _makeE
          */
         $Element.prototype.set = function(name, value) {
             var len = arguments.length,
-                node = this._node,
-                nameType = typeof name,
-                hook;
+                nameType = typeof name;
 
-            if (len === 1) {
-                if (name == null) {
-                    value = "";
-                } else if (nameType === "object") {
-                    _forOwn(name, processObjectParam, this);
+            return _legacy(this, function(node, el) {
+                var hook;
 
-                    return this;
-                } else {
-                    // handle numbers, booleans etc.
-                    value = nameType === "function" ? name : String(name);
+                if (len === 1) {
+                    if (name == null) {
+                        value = "";
+                    } else if (nameType === "object") {
+                        return _forOwn(name, processObjectParam, el);
+                    } else {
+                        // handle numbers, booleans etc.
+                        value = nameType === "function" ? name : String(name);
+                    }
+
+                    if (node.type && "value" in node) {
+                        // for IE use innerText because it doesn't trigger onpropertychange
+                        name = window.addEventListener ? "value" : "innerText";
+                    } else {
+                        name = "innerHTML";
+                    }
+                } else if (len > 2 || len === 0 || nameType !== "string") {
+                    throw _makeError("set", el);
                 }
 
-                if (node.type && "value" in node) {
-                    // for IE use innerText because it doesn't trigger onpropertychange
-                    name = window.addEventListener ? "value" : "innerText";
-                } else {
-                    name = "innerHTML";
+                if (typeof value === "function") {
+                    value = value.call(el, value.length ? el.get(name) : undefined);
                 }
-            } else if (len > 2 || len === 0 || nameType !== "string") {
-                throw _makeError("set", this);
-            }
 
-            if (typeof value === "function") {
-                value = value.call(this, value.length ? this.get(name) : undefined);
-            }
-
-            if (hook = hooks[name]) {
-                hook(node, value);
-            } else if (value == null) {
-                node.removeAttribute(name);
-            } else if (name in node) {
-                node[name] = value;
-            } else {
-                node.setAttribute(name, value);
-            }
-
-            return this;
+                if (hook = hooks[name]) {
+                    hook(node, value);
+                } else if (value == null) {
+                    node.removeAttribute(name);
+                } else if (name in node) {
+                    node[name] = value;
+                } else {
+                    node.setAttribute(name, value);
+                }
+            });
         };
 
         if (document.attachEvent) {
