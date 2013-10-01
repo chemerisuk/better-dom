@@ -16,9 +16,9 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
          */
         DOM.importStyles = function(selector, styles) {
             if (typeof styles === "object") {
-                var obj = {_node: {style: {cssText: ""}}};
+                var obj = new $Element({style: {cssText: ""}});
 
-                $Element.prototype.css.call(obj, styles);
+                $Element.prototype.style.call(obj, styles);
 
                 styles = obj._node.style.cssText.substr(1); // remove leading comma
             }
