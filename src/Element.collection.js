@@ -1,4 +1,4 @@
-define(["Element", "CompositeElement"], function($Element, $CompositeElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr) {
+define(["Element", "CompositeElement"], function($Element, $CompositeElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr, _legacy) {
     "use strict";
 
     // ELEMENT COLLECTION EXTESIONS
@@ -84,7 +84,15 @@ define(["Element", "CompositeElement"], function($Element, $CompositeElement, _e
              * @return {Object} the accumulated value
              * @function
              */
-            reduceRight: makeCollectionMethod(_foldr)
+            reduceRight: makeCollectionMethod(_foldr),
+
+            /**
+             * Executes code in a 'unsafe' block there the first callback argument is native DOM
+             * object. Use only when you need to communicate better-dom with third party scripts!
+             * @memberOf $Element.prototype
+             * @param  {Function} block unsafe block body (nativeNode, index)
+             */
+            legacy: makeCollectionMethod(_legacy)
         });
     }());
 });

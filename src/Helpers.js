@@ -135,6 +135,11 @@ define([], function($Element) {
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index | 0);
         },
+        _legacy = makeLoopMethod({
+            BEFORE: "that = a",
+            BODY:   "cb.call(that, a[i]._node, a[i], i)",
+            AFTER:  "return a"
+        }),
 
         // DOM UTILS
         // ---------
