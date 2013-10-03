@@ -90,7 +90,7 @@ describe("style", function() {
         });
 
         it("should not add px suffix to some css properties", function() {
-            _.forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
+            _.forEach("orphans line-height widows z-index".split(" "), function(propName) {
                 expect(link.style(propName, 5).style(propName)).not.toBe("5px");
             });
         });
@@ -114,6 +114,12 @@ describe("style", function() {
             links.style("float", "right").each(function(el) {
                 expect(el.style("float")).toBe("right");
             });
+        });
+
+        it("should allow to clear style value", function() {
+            expect(link.style("padding", "").style("padding")).toBe("0px 0px 0px 0px");
+            expect(link.style("margin", null).style("margin")).toBe("0px 0px 0px 0px");
+            expect(link.style("float", undefined).style("float")).toBe("none");
         });
 
         it("should throw error if arguments are invalid", function() {

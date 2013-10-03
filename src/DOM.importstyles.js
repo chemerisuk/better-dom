@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documentElement) {
+define(["DOM", "Element"], function(DOM, $Element, _forEach, _forOwn, _makeError, documentElement) {
     "use strict";
 
     // IMPORT STYLES
@@ -16,11 +16,17 @@ define(["DOM", "Element"], function(DOM, $Element, _forEach, _makeError, documen
          */
         DOM.importStyles = function(selector, styles) {
             if (typeof styles === "object") {
-                var obj = new $Element({style: {cssText: ""}});
+                var obj = new $Element({style: {"__dom__": true}});
 
                 $Element.prototype.style.call(obj, styles);
 
-                styles = obj._node.style.cssText.substr(1); // remove leading comma
+                styles = "";
+
+                _forOwn(obj._node.style, function(value, key) {
+                    styles += ";" + key + ":" + value;
+                });
+
+                styles = styles.substr(1);
             }
 
             if (typeof selector !== "string" || typeof styles !== "string") {
