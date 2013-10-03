@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.5.0 2013-09-29T15:31:05
+ * @version 1.5.1 2013-10-03T23:29:29
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -143,6 +143,11 @@
         _slice = function(list, index) {
             return Array.prototype.slice.call(list, index | 0);
         },
+        _legacy = makeLoopMethod({
+            BEFORE: "that = a",
+            BODY:   "cb.call(that, a[i]._node, a[i], i)",
+            AFTER:  "return a"
+        }),
 
         // DOM UTILS
         // ---------
@@ -204,6 +209,8 @@
             this._node = node;
             this._data = {};
             this._listeners = [];
+
+            Array.prototype.push.call(this, node.__dom__ = this);
         }
     }
 
@@ -256,6 +263,8 @@
             var node = this._node,
                 quickMatch = rquickExpr.exec(selector),
                 m, elem, elements, old, nid, context;
+
+            if (!node) return;
 
             if (quickMatch) {
                 // Speed-up: "#ID"
@@ -330,28 +339,30 @@
      */
     $Node.prototype.data = function(key, value) {
         var len = arguments.length,
+            keyType = typeof key,
             node = this._node,
-            data = this._data,
-            keyType = typeof key;
+            data = this._data;
 
         if (len === 1) {
             if (keyType === "string") {
-                value = data[key];
+                if (node) {
+                    value = data[key];
 
-                if (value === undefined && node.hasAttribute("data-" + key)) {
-                    value = data[key] = node.getAttribute("data-" + key);
+                    if (value === undefined && node.hasAttribute("data-" + key)) {
+                        value = data[key] = node.getAttribute("data-" + key);
+                    }
                 }
 
                 return value;
             } else if (key && keyType === "object") {
-                _extend(data, key);
-
-                return this;
+                return _forEach(this, function(el) {
+                    _extend(el._data, key);
+                });
             }
         } else if (len === 2 && keyType === "string") {
-            data[key] = value;
-
-            return this;
+            return _forEach(this, function(el) {
+                el._data[key] = value;
+            });
         }
 
         throw _makeError("data", this);
@@ -367,6 +378,8 @@
      */
     $Node.prototype.contains = function(element) {
         var node = this._node, result;
+
+        if (!node) return;
 
         if (element instanceof $Element) {
             result = element.every(function(element) {
@@ -396,68 +409,68 @@
          * @tutorial Event handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
-            var node = this._node,
-                eventType = typeof type,
-                hook, handler, selector, index;
+            var eventType = typeof type;
 
-            if (eventType === "string") {
-                index = type.indexOf(" ");
+            return _legacy(this, function(node, el) {
+                var hook, handler, selector, index;
 
-                if (~index) {
-                    selector = type.substr(index + 1);
-                    type = type.substr(0, index);
-                }
+                if (eventType === "string") {
+                    index = type.indexOf(" ");
 
-                // handle optional props argument
-                if (Object.prototype.toString.call(props) !== "[object Array]") {
-                    once = callback;
-                    callback = context;
-                    context = props;
-                    props = undefined;
-                }
+                    if (~index) {
+                        selector = type.substr(index + 1);
+                        type = type.substr(0, index);
+                    }
 
-                // handle optional context argument
-                if (typeof context !== "object") {
-                    once = callback;
-                    callback = context;
-                    context = this;
-                }
+                    // handle optional props argument
+                    if (Object.prototype.toString.call(props) !== "[object Array]") {
+                        once = callback;
+                        callback = context;
+                        context = props;
+                        props = undefined;
+                    }
 
-                if (once) {
-                    callback = (function(thisPtr, originalCallback) {
-                        return function() {
-                            // remove event listener
-                            thisPtr.off(handler.type, handler.context, callback);
+                    // handle optional context argument
+                    if (typeof context !== "object") {
+                        once = callback;
+                        callback = context;
+                        context = el;
+                    }
 
-                            return originalCallback.apply(this, arguments);
-                        };
-                    }(this, callback));
-                }
+                    if (once) {
+                        callback = (function(originalCallback) {
+                            return function() {
+                                // remove event listener
+                                el.off(handler.type, handler.context, callback);
 
-                handler = EventHandler(type, selector, context, callback, props, this);
-                handler.type = selector ? type + " " + selector : type;
-                handler.callback = callback;
-                handler.context = context;
+                                return originalCallback.apply(el, arguments);
+                            };
+                        }(callback));
+                    }
 
-                if (hook = eventHooks[type]) hook(handler);
+                    handler = EventHandler(type, selector, context, callback, props, el);
+                    handler.type = selector ? type + " " + selector : type;
+                    handler.callback = callback;
+                    handler.context = context;
 
-                if (document.addEventListener) {
-                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    if (hook = eventHooks[type]) hook(handler);
+
+                    if (document.addEventListener) {
+                        node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    } else {
+                        // IE8 doesn't support onscroll on document level
+                        if (el === DOM && type === "scroll") node = window;
+
+                        node.attachEvent("on" + (handler._type || type), handler);
+                    }
+                    // store event entry
+                    el._listeners.push(handler);
+                } else if (eventType === "object") {
+                    _forOwn(type, function(value, name) { el.on(name, value) });
                 } else {
-                    // IE8 doesn't support onscroll on document level
-                    if (this === DOM && type === "scroll") node = window;
-
-                    node.attachEvent("on" + (handler._type || type), handler);
+                    throw _makeError("on", el);
                 }
-                // store event entry
-                this._listeners.push(handler);
-            } else if (eventType === "object") {
-                _forOwn(type, function(value, name) { this.on(name, value); }, this);
-            } else {
-                throw _makeError("on", this);
-            }
-
-            return this;
+            });
         };
 
         /**
@@ -474,7 +487,7 @@
 
             args.push(true);
 
-            return $Node.prototype.on.apply(this, args);
+            return this.on.apply(this, args);
         };
 
         /**
@@ -486,35 +499,31 @@
          * @tutorial Event handling
          */
         $Node.prototype.off = function(type, context, callback) {
-            if (typeof type !== "string") {
-                throw _makeError("off", this);
-            }
+            if (typeof type !== "string") throw _makeError("off", this);
 
             if (arguments.length === 2) {
                 callback = context;
                 context = !callback ? undefined : this;
             }
 
-            _forEach(this._listeners, function(handler, index, events) {
-                var node = this._node;
+            return _legacy(this, function(node, el) {
+                _forEach(el._listeners, function(handler, index, events) {
+                    if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
+                        type = handler._type || handler.type;
 
-                if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
-                    type = handler._type || handler.type;
+                        if (document.removeEventListener) {
+                            node.removeEventListener(type, handler, !!handler.capturing);
+                        } else {
+                            // IE8 doesn't support onscroll on document level
+                            if (el === DOM && type === "scroll") node = window;
 
-                    if (document.removeEventListener) {
-                        node.removeEventListener(type, handler, !!handler.capturing);
-                    } else {
-                        // IE8 doesn't support onscroll on document level
-                        if (this === DOM && type === "scroll") node = window;
+                            node.detachEvent("on" + type, handler);
+                        }
 
-                        node.detachEvent("on" + type, handler);
+                        delete events[index];
                     }
-
-                    delete events[index];
-                }
-            }, this);
-
-            return this;
+                });
+            });
         };
 
         /**
@@ -529,45 +538,44 @@
                 throw _makeError("fire", this);
             }
 
-            var node = this._node,
-                hook = eventHooks[type],
-                handler = {},
-                isCustomEvent, canContinue, event;
+            return _legacy(this, function(node, el) {
+                var hook = eventHooks[type],
+                    handler = {},
+                    isCustomEvent, canContinue, event;
 
-            if (hook) hook(handler);
+                if (hook) hook(handler);
 
-            isCustomEvent = handler.custom || !this.supports("on" + type);
+                isCustomEvent = handler.custom || !el.supports("on" + type);
 
-            if (document.createEvent) {
-                event = document.createEvent("HTMLEvents");
+                if (document.createEvent) {
+                    event = document.createEvent("HTMLEvents");
 
-                event.initEvent(handler._type || type, true, true);
-                event.detail = detail;
+                    event.initEvent(handler._type || type, true, true);
+                    event.detail = detail;
 
-                canContinue = node.dispatchEvent(event);
-            } else {
-                event = document.createEventObject();
-                // store original event type
-                event.srcUrn = isCustomEvent ? type : undefined;
-                event.detail = detail;
+                    canContinue = node.dispatchEvent(event);
+                } else {
+                    event = document.createEventObject();
+                    // store original event type
+                    event.srcUrn = isCustomEvent ? type : undefined;
+                    event.detail = detail;
 
-                node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
+                    node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
 
-                canContinue = event.returnValue !== false;
-            }
+                    canContinue = event.returnValue !== false;
+                }
 
-            // Call a native DOM method on the target with the same name as the event
-            // IE<9 dies on focus/blur to hidden element
-            if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
-                // Prevent re-triggering of the same event
-                EventHandler.veto = type;
+                // Call a native DOM method on the target with the same name as the event
+                // IE<9 dies on focus/blur to hidden element
+                if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+                    // Prevent re-triggering of the same event
+                    EventHandler.veto = type;
 
-                node[type]();
+                    node[type]();
 
-                EventHandler.veto = false;
-            }
-
-            return this;
+                    EventHandler.veto = false;
+                }
+            });
         };
 
         // firefox doesn't support focusin/focusout events
@@ -801,7 +809,9 @@
                                 case "currentTarget":
                                     return currentTarget;
                                 case "target":
-                                    return $Element(target || e.target || e.srcElement);
+                                    if (!target) target = e.target || e.srcElement;
+                                    // handle DOM variable correctly
+                                    return target ? $Element(target) : DOM;
                                 }
 
                                 var hook = hooks[name];
@@ -856,14 +866,10 @@
         if (element && element.__dom__) return element.__dom__;
 
         if (!(this instanceof $Element)) {
-            return element ? new $Element(element) : new $NullElement();
+            return new $Element(element);
         }
 
         $Node.call(this, element);
-
-        if (element) {
-            Array.prototype.push.call(this, element.__dom__ = this);
-        }
     }
 
     $Element.prototype = new $Node();
@@ -893,13 +899,17 @@
 
             if (methodName === "hasClass") {
                 return function() {
+                    if (!this._node) return;
+
                     return _every(arguments, strategy, this);
                 };
             } else {
                 return function() {
-                    _forEach(arguments, strategy, this);
+                    var args = arguments;
 
-                    return this;
+                    return _forEach(this, function(el) {
+                        _forEach(args, strategy, el);
+                    });
                 };
             }
         }
@@ -933,7 +943,7 @@
         $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
             className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
 
-            this._node.className = className.substr(className[0] === " " ? 1 : 0, className.length - 2);
+            this._node.className = _trim(className);
         });
 
         /**
@@ -956,16 +966,18 @@
      * @return {$Element} clone of current element
      */
     $Element.prototype.clone = function() {
-        var node;
+        var node = this._node;
+
+        if (!node) return;
 
         if (document.addEventListener) {
-            node = this._node.cloneNode(true);
+            node = node.cloneNode(true);
         } else {
             node = document.createElement("div");
             node.innerHTML = this._node.outerHTML;
             node = node.firstChild;
         }
-        
+
         return new $Element(node);
     };
 
@@ -1009,9 +1021,11 @@
             };
 
             return !fasterMethodName ? manipulateContent : function() {
-                _forEach(arguments, manipulateContent, this);
+                var args = arguments;
 
-                return this;
+                return _forEach(this, function(el) {
+                    _forEach(args, manipulateContent, el);
+                });
             };
         }
 
@@ -1085,6 +1099,8 @@
             throw _makeError("matches", this);
         }
 
+        if (!this._node) return;
+
         return new SelectorMatcher(selector).test(this._node);
     };
 
@@ -1093,6 +1109,8 @@
      * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
      */
     $Element.prototype.offset = function() {
+        if (!this._node) return;
+
         var boundingRect = this._node.getBoundingClientRect(),
             clientTop = documentElement.clientTop,
             clientLeft = documentElement.clientLeft,
@@ -1112,6 +1130,8 @@
      * @return {Number} element width in pixels
      */
     $Element.prototype.width = function() {
+        if (!this._node) return;
+
         var offset = this.offset();
 
         return offset.right - offset.left;
@@ -1122,6 +1142,8 @@
      * @return {Number} element height in pixels
      */
     $Element.prototype.height = function() {
+        if (!this._node) return;
+
         var offset = this.offset();
 
         return offset.bottom - offset.top;
@@ -1142,6 +1164,8 @@
         $Element.prototype.get = function(name) {
             var node = this._node,
                 hook = hooks[name];
+
+            if (!node) return;
 
             if (name === undefined) {
                 if (node.tagName === "OPTION") {
@@ -1190,47 +1214,45 @@
          */
         $Element.prototype.set = function(name, value) {
             var len = arguments.length,
-                node = this._node,
-                nameType = typeof name,
-                hook;
+                nameType = typeof name;
 
-            if (len === 1) {
-                if (name == null) {
-                    value = "";
-                } else if (nameType === "object") {
-                    _forOwn(name, processObjectParam, this);
+            return _legacy(this, function(node, el) {
+                var hook;
 
-                    return this;
-                } else {
-                    // handle numbers, booleans etc.
-                    value = nameType === "function" ? name : String(name);
+                if (len === 1) {
+                    if (name == null) {
+                        value = "";
+                    } else if (nameType === "object") {
+                        return _forOwn(name, processObjectParam, el);
+                    } else {
+                        // handle numbers, booleans etc.
+                        value = nameType === "function" ? name : String(name);
+                    }
+
+                    if (node.type && "value" in node) {
+                        // for IE use innerText because it doesn't trigger onpropertychange
+                        name = window.addEventListener ? "value" : "innerText";
+                    } else {
+                        name = "innerHTML";
+                    }
+                } else if (len > 2 || len === 0 || nameType !== "string") {
+                    throw _makeError("set", el);
                 }
 
-                if (node.type && "value" in node) {
-                    // for IE use innerText because it doesn't trigger onpropertychange
-                    name = window.addEventListener ? "value" : "innerText";
-                } else {
-                    name = "innerHTML";
+                if (typeof value === "function") {
+                    value = value.call(el, value.length ? el.get(name) : undefined);
                 }
-            } else if (len > 2 || len === 0 || nameType !== "string") {
-                throw _makeError("set", this);
-            }
 
-            if (typeof value === "function") {
-                value = value.call(this, value.length ? this.get(name) : undefined);
-            }
-
-            if (hook = hooks[name]) {
-                hook(node, value);
-            } else if (value == null) {
-                node.removeAttribute(name);
-            } else if (name in node) {
-                node[name] = value;
-            } else {
-                node.setAttribute(name, value);
-            }
-
-            return this;
+                if (hook = hooks[name]) {
+                    hook(node, value);
+                } else if (value == null) {
+                    node.removeAttribute(name);
+                } else if (name in node) {
+                    node[name] = value;
+                } else {
+                    node.setAttribute(name, value);
+                }
+            });
         };
 
         if (document.attachEvent) {
@@ -1269,18 +1291,73 @@
             reDash = /\-./g,
             reCamel = /[A-Z]/g,
             directions = ["Top", "Right", "Bottom", "Left"],
-            dashSeparatedToCamelCase = function(str) { return str[1].toUpperCase(); },
-            camelCaseToDashSeparated = function(str) { return "-" + str.toLowerCase(); },
             computed = _getComputedStyle(documentElement),
             // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
-            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) { return key.replace(reCamel, camelCaseToDashSeparated); });
+            props = computed.length ? _slice(computed) : _map(_keys(computed), function(key) {
+                return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
+            });
+
+        /**
+         * CSS getter/setter for an element
+         * @param  {String} name    style property name
+         * @param  {String} [value] style property value
+         * @return {String|Object} property value or reference to this
+         */
+        $Element.prototype.style = function(name, value) {
+            var len = arguments.length,
+                node = this._node,
+                nameType = typeof name,
+                style, hook;
+
+            if (len === 1 && nameType === "string") {
+                if (!node) return;
+
+                style = node.style;
+                hook = getStyleHooks[name];
+
+                value = hook ? hook(style) : style[name];
+
+                if (!value) {
+                    style = _getComputedStyle(node);
+                    value = hook ? hook(style) : style[name];
+                }
+
+                return value;
+            }
+
+            return _legacy(this, function(node, el) {
+                var appendCssText = function(value, key) {
+                    var hook = setStyleHooks[key];
+
+                    if (typeof value === "function") {
+                        value = value.call(el, value.length ? el.style(key) : undefined);
+                    }
+
+                    if (value == null) value = "";
+
+                    if (hook) {
+                        hook(node.style, value);
+                    } else {
+                        node.style[key] = typeof value === "number" ? value + "px" : value.toString();
+                    }
+                };
+
+                if (len === 1 && name && nameType === "object") {
+                    _forOwn(name, appendCssText);
+                } else if (len === 2 && nameType === "string") {
+                    appendCssText(value, name);
+                } else {
+                    throw _makeError("style", el);
+                }
+            });
+        };
 
         _forEach(props, function(propName) {
             var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
                 unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-                stylePropName = propName.replace(reDash, dashSeparatedToCamelCase);
+                stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
 
-            // some browsers start vendor specific props in lowecase
+            // most of browsers starts vendor specific props in lowercase
             if (!(stylePropName in computed)) {
                 stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
             }
@@ -1289,12 +1366,37 @@
                 getStyleHooks[unprefixedName] = function(style) {
                     return style[stylePropName];
                 };
+                setStyleHooks[unprefixedName] = function(style, value) {
+                    value = typeof value === "number" ? value + "px" : value.toString();
+                    // use __dom__ property to determine DOM.importStyles call
+                    style[style.__dom__ ? propName : stylePropName] = value;
+                };
+            }
 
-                setStyleHooks[unprefixedName] = function(name, value) {
-                    return propName + ":" + value;
+            // Exclude the following css properties from adding px
+            if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
+                setStyleHooks[propName] = function(style, value) {
+                    style[style.__dom__ ? propName : stylePropName] = value.toString();
                 };
             }
         });
+
+        // normalize float css property
+        if ("cssFloat" in computed) {
+            getStyleHooks.float = function(style) {
+                return style.cssFloat;
+            };
+            setStyleHooks.float = function(style, value) {
+                style.cssFloat = value.toString();
+            };
+        } else {
+            getStyleHooks.float = function(style) {
+                return style.styleFloat;
+            };
+            setStyleHooks.float = function(style, value) {
+                style.styleFloat = value.toString();
+            };
+        }
 
         // normalize property shortcuts
         _forOwn({
@@ -1303,7 +1405,7 @@
             margin: _map(directions, function(dir) { return "margin" + dir }),
             "border-width": _map(directions, function(dir) { return "border" + dir + "Width" }),
             "border-style": _map(directions, function(dir) { return "border" + dir + "Style" })
-        }, function(value, key) {
+        }, function(props, key) {
             getStyleHooks[key] = function(style) {
                 var result = [],
                     hasEmptyStyleValue = function(prop, index) {
@@ -1312,77 +1414,14 @@
                         return !result[index];
                     };
 
-                return _some(value, hasEmptyStyleValue) ? "" : result.join(" ");
+                return _some(props, hasEmptyStyleValue) ? "" : result.join(" ");
+            };
+            setStyleHooks[key] = function(style, value) {
+                _forEach(props, function(name) {
+                    style[name] = typeof value === "number" ? value + "px" : value.toString();
+                });
             };
         });
-
-        // normalize float css property
-        if ("cssFloat" in computed) {
-            getStyleHooks.float = function(style) {
-                return style.cssFloat;
-            };
-        } else {
-            getStyleHooks.float = function(style) {
-                return style.styleFloat;
-            };
-        }
-
-        _forEach("fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" "), function(propName) {
-            // Exclude the following css properties to add px
-            setStyleHooks[propName] = function(name, value) {
-                return name + ":" + value;
-            };
-        });
-
-        /**
-         * CSS getter/setter for an element
-         * @param  {String} name    style property name
-         * @param  {String} [value] style property value
-         * @return {String|Object} property value or reference to this
-         */
-        $Element.prototype.css = function(name, value) {
-            var len = arguments.length,
-                style = this._node.style,
-                nameType = typeof name,
-                cssText = "",
-                appendCssText = function(value, key) {
-                    hook = setStyleHooks[key];
-
-                    if (typeof value === "function") {
-                        value = value.call(this, value.length ? this.css(name) : undefined);
-                    }
-
-                    cssText += ";" + (hook ? hook(key, value) : key + ":" + (typeof value === "number" ? value + "px" : value));
-                },
-                hook;
-
-            if (len === 1) {
-                if (nameType === "string") {
-                    hook = getStyleHooks[name];
-
-                    value = hook ? hook(style) : style[name];
-
-                    if (!value) {
-                        style = _getComputedStyle(this._node);
-                        value = hook ? hook(style) : style[name];
-                    }
-
-                    return value;
-                } else if (name && nameType === "object") {
-                    _forOwn(name, appendCssText, this);
-                } else {
-                    throw _makeError("css", this);
-                }
-            } else if (len === 2 && nameType === "string") {
-                appendCssText.call(this, value, name);
-            } else {
-                throw _makeError("css", this);
-            }
-
-            style.cssText += cssText;
-
-            return this;
-        };
     })();
 
     // TRAVERSING
@@ -1394,6 +1433,8 @@
                 var matcher = SelectorMatcher(selector),
                     nodes = multiple ? [] : null,
                     it = this._node;
+
+                if (!it) return;
 
                 while (it = it[propertyName]) {
                     if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
@@ -1414,6 +1455,8 @@
                 } else if (typeof index !== "number") {
                     throw _makeError("child", this);
                 }
+
+                if (!this._node) return;
 
                 var children = this._node.children,
                     matcher = SelectorMatcher(selector),
@@ -1497,23 +1540,11 @@
     })();
 
     /**
-     * Executes code in a 'unsafe' block there the first callback argument is native DOM
-     * object. Use only when you need to communicate better-dom with third party scripts!
-     * @memberOf $Element.prototype
-     * @param  {Function} block unsafe block body (nativeNode, index)
-     */
-    $Element.prototype.legacy = function(block) {
-        return _forEach(this, function(el, index) { block.call(this, el._node, el, index) }, this);
-    };
-
-    /**
      * Show element
      * @return {$Element}
      */
     $Element.prototype.show = function() {
-        this.set("aria-hidden", false);
-
-        return this;
+        return this.set("aria-hidden", false);
     };
 
     /**
@@ -1521,9 +1552,7 @@
      * @return {$Element}
      */
     $Element.prototype.hide = function() {
-        this.set("aria-hidden", true);
-
-        return this;
+        return this.set("aria-hidden", true);
     };
 
     /**
@@ -1531,9 +1560,7 @@
      * @return {$Element}
      */
     $Element.prototype.toggle = function() {
-        this.set("aria-hidden", !this.isHidden());
-
-        return this;
+        return this.set("aria-hidden", !this.isHidden());
     };
 
     /**
@@ -1541,6 +1568,8 @@
      * @return {Boolean} true if element is hidden
      */
     $Element.prototype.isHidden = function() {
+        if (!this._node) return;
+
         return this.get("aria-hidden") === "true";
     };
 
@@ -1549,6 +1578,8 @@
      * @return {Boolean} true if current element is focused
      */
     $Element.prototype.isFocused = function() {
+        if (!this._node) return;
+
         return this._node === document.activeElement;
     };
 
@@ -1565,18 +1596,6 @@
     }
 
     $CompositeElement.prototype = new $Element();
-
-    _forIn($CompositeElement.prototype, function(value, key, proto) {
-        if (typeof value === "function") {
-            var isGetter = value.toString().indexOf("return this;") < 0,
-                // this will be the arguments object
-                functor = function(el) { value.apply(el, this); };
-
-            proto[key] = isGetter ? function() {} : function() {
-                return _forEach(this, functor, arguments);
-            };
-        }
-    });
 
     // ELEMENT COLLECTION EXTESIONS
     // ----------------------------
@@ -1661,20 +1680,17 @@
              * @return {Object} the accumulated value
              * @function
              */
-            reduceRight: makeCollectionMethod(_foldr)
+            reduceRight: makeCollectionMethod(_foldr),
+
+            /**
+             * Executes code in a 'unsafe' block there the first callback argument is native DOM
+             * object. Use only when you need to communicate better-dom with third party scripts!
+             * @memberOf $Element.prototype
+             * @param  {Function} block unsafe block body (nativeNode, index)
+             */
+            legacy: makeCollectionMethod(_legacy)
         });
     }());
-
-    /**
-     * Used to indicate an empty DOM element (length == 0)
-     * @name $NullElement
-     * @extends $CompositeElement
-     * @constructor
-     * @private
-     */
-    function $NullElement() {}
-
-    $NullElement.prototype = new $CompositeElement();
 
     // GLOBAL API
     // ----------
@@ -1686,7 +1702,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.5.0";
+    DOM.version = "1.5.1";
 
     // CREATE ELEMENT
     // --------------
@@ -1722,7 +1738,7 @@
                 }
 
                 if (attributes) value.set(attributes);
-                if (styles) value.css(styles);
+                if (styles) value.style(styles);
 
                 return value;
             }
@@ -1779,7 +1795,7 @@
          * @return {$Element} mock instance
          */
         DOM.mock = function(content) {
-            var el = content ? DOM.create(content) : new $NullElement(),
+            var el = content ? DOM.create(content) : new $Element(),
                 applyWatchers = function(el) {
                     _forOwn(watchers, function(watchers, selector) {
                         if (el.matches(selector)) {
@@ -1866,7 +1882,7 @@
 
             if (!template || reHtml.exec(template)) return template;
 
-            // parse exrpression into RPN
+            // parse expression into RPN
 
             for (i = 0, n = template.length; i < n; ++i) {
                 str = template[i];
@@ -1996,11 +2012,17 @@
          */
         DOM.importStyles = function(selector, styles) {
             if (typeof styles === "object") {
-                var obj = {_node: {style: {cssText: ""}}};
+                var obj = new $Element({style: {"__dom__": true}});
 
-                $Element.prototype.css.call(obj, styles);
+                $Element.prototype.style.call(obj, styles);
 
-                styles = obj._node.style.cssText.substr(1); // remove leading comma
+                styles = "";
+
+                _forOwn(obj._node.style, function(value, key) {
+                    styles += ";" + key + ":" + value;
+                });
+
+                styles = styles.substr(1);
             }
 
             if (typeof selector !== "string" || typeof styles !== "string") {
@@ -2094,9 +2116,9 @@
         return function(selector, callback, once) {
             if (!supportsAnimations) {
                 // do safe call of the callback for each matched element
-                // because the behaviour is already attached to selector
-                DOM.findAll(selector).each(function(el) {
-                    if (el._node.behaviorUrns.length > 0) {
+                // if the behaviour is already attached
+                DOM.findAll(selector).legacy(function(node, el) {
+                    if (node.behaviorUrns.length > 0) {
                         _defer(function() { callback(el) });
                     }
                 });
@@ -2106,7 +2128,7 @@
                 callback: callback,
                 matcher: new SelectorMatcher(selector),
                 once: once && function(e) {
-                    if (e) {
+                    if (supportsAnimations) {
                         if (e.animationName !== animId) return;
                     } else {
                         e = window.event;
@@ -2274,6 +2296,9 @@
 
         return this;
     };
+
+    // REGISTER API
+    // ------------
 
     // node export
     if (typeof module === "object" && typeof module.exports === "object"){
