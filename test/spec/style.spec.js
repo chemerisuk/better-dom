@@ -4,7 +4,7 @@ describe("style", function() {
     var link, links;
 
     beforeEach(function() {
-        setFixtures("<a id='test0' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a><a id='test1' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a>");
+        setFixtures("<a id='test0' style='z-index:2;line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a><a id='test1' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a>");
 
         link = DOM.find("#test0");
         links = DOM.findAll("#test0, #test1");
@@ -117,8 +117,8 @@ describe("style", function() {
         });
 
         it("should allow to clear style value", function() {
-            expect(link.style("padding", "").style("padding")).toBe("0px 0px 0px 0px");
-            expect(link.style("margin", null).style("margin")).toBe("0px 0px 0px 0px");
+            expect(link.style("padding", null).style("padding")).toBe("0px 0px 0px 0px");
+            expect(link.style("z-index", "").style("z-index")).toBe("auto");
             expect(link.style("float", undefined).style("float")).toBe("none");
         });
 
