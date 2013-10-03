@@ -54,10 +54,6 @@
 							<a href="$Node.html">$Node</a>
 						</li>
 						
-						<li>
-							<a href="$NullElement.html">$NullElement</a>
-						</li>
-						
 
 					</ul>
 				</li>
@@ -121,7 +117,7 @@
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _forOwn, _slice, _makeError) {
+            <pre class="sunlight-highlight-javascript ">define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _legacy, _forOwn, _slice, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -141,68 +137,68 @@
          * @tutorial Event handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
-            var node = this._node,
-                eventType = typeof type,
-                hook, handler, selector, index;
+            var eventType = typeof type;
 
-            if (eventType === "string") {
-                index = type.indexOf(" ");
+            return _legacy(this, function(node, el) {
+                var hook, handler, selector, index;
 
-                if (~index) {
-                    selector = type.substr(index + 1);
-                    type = type.substr(0, index);
-                }
+                if (eventType === "string") {
+                    index = type.indexOf(" ");
 
-                // handle optional props argument
-                if (Object.prototype.toString.call(props) !== "[object Array]") {
-                    once = callback;
-                    callback = context;
-                    context = props;
-                    props = undefined;
-                }
+                    if (~index) {
+                        selector = type.substr(index + 1);
+                        type = type.substr(0, index);
+                    }
 
-                // handle optional context argument
-                if (typeof context !== "object") {
-                    once = callback;
-                    callback = context;
-                    context = this;
-                }
+                    // handle optional props argument
+                    if (Object.prototype.toString.call(props) !== "[object Array]") {
+                        once = callback;
+                        callback = context;
+                        context = props;
+                        props = undefined;
+                    }
 
-                if (once) {
-                    callback = (function(thisPtr, originalCallback) {
-                        return function() {
-                            // remove event listener
-                            thisPtr.off(handler.type, handler.context, callback);
+                    // handle optional context argument
+                    if (typeof context !== "object") {
+                        once = callback;
+                        callback = context;
+                        context = el;
+                    }
 
-                            return originalCallback.apply(this, arguments);
-                        };
-                    }(this, callback));
-                }
+                    if (once) {
+                        callback = (function(originalCallback) {
+                            return function() {
+                                // remove event listener
+                                el.off(handler.type, handler.context, callback);
 
-                handler = EventHandler(type, selector, context, callback, props, this);
-                handler.type = selector ? type + " " + selector : type;
-                handler.callback = callback;
-                handler.context = context;
+                                return originalCallback.apply(el, arguments);
+                            };
+                        }(callback));
+                    }
 
-                if (hook = eventHooks[type]) hook(handler);
+                    handler = EventHandler(type, selector, context, callback, props, el);
+                    handler.type = selector ? type + " " + selector : type;
+                    handler.callback = callback;
+                    handler.context = context;
 
-                if (document.addEventListener) {
-                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    if (hook = eventHooks[type]) hook(handler);
+
+                    if (document.addEventListener) {
+                        node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    } else {
+                        // IE8 doesn't support onscroll on document level
+                        if (el === DOM && type === "scroll") node = window;
+
+                        node.attachEvent("on" + (handler._type || type), handler);
+                    }
+                    // store event entry
+                    el._listeners.push(handler);
+                } else if (eventType === "object") {
+                    _forOwn(type, function(value, name) { el.on(name, value) });
                 } else {
-                    // IE8 doesn't support onscroll on document level
-                    if (this === DOM && type === "scroll") node = window;
-
-                    node.attachEvent("on" + (handler._type || type), handler);
+                    throw _makeError("on", el);
                 }
-                // store event entry
-                this._listeners.push(handler);
-            } else if (eventType === "object") {
-                _forOwn(type, function(value, name) { this.on(name, value); }, this);
-            } else {
-                throw _makeError("on", this);
-            }
-
-            return this;
+            });
         };
 
         /**
@@ -219,7 +215,7 @@
 
             args.push(true);
 
-            return $Node.prototype.on.apply(this, args);
+            return this.on.apply(this, args);
         };
 
         /**
@@ -231,35 +227,31 @@
          * @tutorial Event handling
          */
         $Node.prototype.off = function(type, context, callback) {
-            if (typeof type !== "string") {
-                throw _makeError("off", this);
-            }
+            if (typeof type !== "string") throw _makeError("off", this);
 
             if (arguments.length === 2) {
                 callback = context;
                 context = !callback ? undefined : this;
             }
 
-            _forEach(this._listeners, function(handler, index, events) {
-                var node = this._node;
+            return _legacy(this, function(node, el) {
+                _forEach(el._listeners, function(handler, index, events) {
+                    if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
+                        type = handler._type || handler.type;
 
-                if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
-                    type = handler._type || handler.type;
+                        if (document.removeEventListener) {
+                            node.removeEventListener(type, handler, !!handler.capturing);
+                        } else {
+                            // IE8 doesn't support onscroll on document level
+                            if (el === DOM && type === "scroll") node = window;
 
-                    if (document.removeEventListener) {
-                        node.removeEventListener(type, handler, !!handler.capturing);
-                    } else {
-                        // IE8 doesn't support onscroll on document level
-                        if (this === DOM && type === "scroll") node = window;
+                            node.detachEvent("on" + type, handler);
+                        }
 
-                        node.detachEvent("on" + type, handler);
+                        delete events[index];
                     }
-
-                    delete events[index];
-                }
-            }, this);
-
-            return this;
+                });
+            });
         };
 
         /**
@@ -274,45 +266,44 @@
                 throw _makeError("fire", this);
             }
 
-            var node = this._node,
-                hook = eventHooks[type],
-                handler = {},
-                isCustomEvent, canContinue, event;
+            return _legacy(this, function(node, el) {
+                var hook = eventHooks[type],
+                    handler = {},
+                    isCustomEvent, canContinue, event;
 
-            if (hook) hook(handler);
+                if (hook) hook(handler);
 
-            isCustomEvent = handler.custom || !this.supports("on" + type);
+                isCustomEvent = handler.custom || !el.supports("on" + type);
 
-            if (document.createEvent) {
-                event = document.createEvent("HTMLEvents");
+                if (document.createEvent) {
+                    event = document.createEvent("HTMLEvents");
 
-                event.initEvent(handler._type || type, true, true);
-                event.detail = detail;
+                    event.initEvent(handler._type || type, true, true);
+                    event.detail = detail;
 
-                canContinue = node.dispatchEvent(event);
-            } else {
-                event = document.createEventObject();
-                // store original event type
-                event.srcUrn = isCustomEvent ? type : undefined;
-                event.detail = detail;
+                    canContinue = node.dispatchEvent(event);
+                } else {
+                    event = document.createEventObject();
+                    // store original event type
+                    event.srcUrn = isCustomEvent ? type : undefined;
+                    event.detail = detail;
 
-                node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
+                    node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
 
-                canContinue = event.returnValue !== false;
-            }
+                    canContinue = event.returnValue !== false;
+                }
 
-            // Call a native DOM method on the target with the same name as the event
-            // IE&lt;9 dies on focus/blur to hidden element
-            if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
-                // Prevent re-triggering of the same event
-                EventHandler.veto = type;
+                // Call a native DOM method on the target with the same name as the event
+                // IE&lt;9 dies on focus/blur to hidden element
+                if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+                    // Prevent re-triggering of the same event
+                    EventHandler.veto = type;
 
-                node[type]();
+                    node[type]();
 
-                EventHandler.veto = false;
-            }
-
-            return this;
+                    EventHandler.veto = false;
+                }
+            });
         };
 
         // firefox doesn't support focusin/focusout events
@@ -424,7 +415,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Sun Sep 29 2013 15:31:12 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Thu Oct 03 2013 23:29:35 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
