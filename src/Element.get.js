@@ -33,7 +33,7 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
         };
 
         hooks.tagName = hooks.method = function(node, key) {
-            return node[key].toLowerCase();
+            return key in node ? node[key].toLowerCase() : "";
         };
 
         hooks.elements = hooks.options = function(node, key) {

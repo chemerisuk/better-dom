@@ -1,10 +1,10 @@
 describe("get", function() {
     "use strict";
-    
+
     var link, input, textarea, form;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form'><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
+        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
@@ -69,6 +69,13 @@ describe("get", function() {
         expect(function() { link.get(true); }).toThrow();
         expect(function() { link.get({}); }).toThrow();
         expect(function() { link.get(function() {}); }).toThrow();
+    });
+
+    it("should lowercase some properties", function() {
+        expect(form.get("method")).toBe("post");
+        expect(form.get("tagName")).toBe("form");
+        expect(link.get("method")).toBe("");
+        expect(link.get("tagName")).toBe("a");
     });
 
 });
