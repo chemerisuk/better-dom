@@ -30,12 +30,12 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ## Features
 * compact size (~22kb minified and ~5kb gzipped)
 * clearer, standards-based (if possible) APIs
-* better performance
 * [living extensions](http://chemerisuk.github.io/better-dom/tutorial-extensions.html)
 * [smarter getter and setter](http://chemerisuk.github.io/better-dom/tutorial-setter.html)
 * [event handling best practices](http://chemerisuk.github.io/better-dom/tutorial-handling.html)
 * [microtemplating via emmet-like syntax](http://chemerisuk.github.io/better-dom/tutorial-Microtemplating.html)
 * [localization support](http://chemerisuk.github.io/better-dom/tutorial-Localization.html)
+* [animations support](http://jsfiddle.net/mNBVQ/1/) via CSS3 transitions and animations
 * cross-browser `input` event
 
 ## Performance
@@ -53,15 +53,15 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
 
 ## Notes about old IEs
-For IE8-9 support you have to incude conditional comment above into head. The excellent __html5shiv__ library is used to fix lack of support of new HTML5 elements in legacy browsers and the HTC file helps to implement live extensions support.
+For IE8-9 support you have to incude conditional comment above into head. The excellent __html5shiv__ library is used to fix the HTML5 elements bug in legacy browsers and the HTC file helps to implement live extensions support.
 
-#### Verify content-type header
-HTC behaviors have to serve up with a content-type header of "text/x-component", otherwise IE will simply ignore the behavior. Many web servers are preconfigured to serve the correct content-type, but others are not.
+#### Setup content-type header
+HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.
 
     AddType text/x-component .htc
 
 #### Same domain limitation
-IE requires that the HTC behavior file must be in the same domain as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an "Access Denied" error.
+IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.
 
 ## Browser support
 * Chrome
