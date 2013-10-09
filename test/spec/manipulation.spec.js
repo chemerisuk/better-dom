@@ -2,18 +2,21 @@ describe("manipulation", function() {
     "use strict";
 
     describe("remove", function() {
-        var div;
+        var div, italics;
 
         beforeEach(function() {
-            setFixtures("<div id='test'><a></a></div>");
+            setFixtures("<div id='test'><a></a><a></a></div><i class='removeable'></i><i class='removeable'></i>");
 
             div = DOM.find("#test");
+            italics = div.nextAll(".removeable");
         });
 
-        it("should remove element from DOM", function() {
+        it("should remove element(s) from DOM", function() {
             expect(div.remove()).toBe(div);
-
             expect(document.getElementById("test")).toBeNull();
+
+            expect(italics.remove()).toBe(italics);
+            expect(DOM.findAll(".removeable").length).toBe(0);
         });
 
         it("should throw error if argument is invalid", function() {

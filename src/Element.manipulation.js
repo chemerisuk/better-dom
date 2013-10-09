@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _parseFragment, _forEach, _trim, _makeError) {
+define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy, _makeError) {
     "use strict";
 
     // MANIPULATION
@@ -10,42 +10,37 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _makeErr
             if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
 
             var manipulateContent = function(value) {
-                var valueType = typeof value,
-                    node = this._node,
-                    relatedNode = node.parentNode;
+                return _legacy(this, function(node, el) {
+                    var valueType = typeof value,
+                        relatedNode = node.parentNode;
 
-                if (valueType === "function") {
-                    value = value.call(this);
-                    valueType = typeof value;
-                }
+                    if (valueType === "function") {
+                        value = value.call(el);
+                        valueType = typeof value;
+                    }
 
-                if (valueType === "string") {
-                    value = _trim(DOM.template(value));
+                    if (valueType === "string") {
+                        value = _trim(DOM.template(value));
 
-                    relatedNode = fasterMethodName ? null : _parseFragment(value);
-                } else if (value instanceof $Element) {
-                    value.each(function(el) { strategy(node, el._node); });
+                        relatedNode = fasterMethodName ? null : _parseFragment(value);
+                    } else if (value instanceof $Element) {
+                        return value.each(function(el) { strategy(node, el._node); }, this);
+                    } else if (value !== undefined) {
+                        throw _makeError(methodName, el);
+                    }
 
-                    return this;
-                } else if (value !== undefined) {
-                    throw _makeError(methodName, this);
-                }
-
-                if (relatedNode) {
-                    strategy(node, relatedNode);
-                } else {
-                    node.insertAdjacentHTML(fasterMethodName, value);
-                }
-
-                return this;
+                    if (relatedNode) {
+                        strategy(node, relatedNode);
+                    } else {
+                        node.insertAdjacentHTML(fasterMethodName, value);
+                    }
+                });
             };
 
             return !fasterMethodName ? manipulateContent : function() {
-                var args = arguments;
+                _forEach(arguments, manipulateContent, this);
 
-                return _forEach(this, function(el) {
-                    _forEach(args, manipulateContent, el);
-                });
+                return this;
             };
         }
 
