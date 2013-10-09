@@ -9,7 +9,7 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
         // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
         // TODO: disallow to use buggy selectors?
-        var rquickExpr = document.getElementsByClassName ? /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/ : /^(?:#([\w\-]+)|(\w+))$/,
+        var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rescape = /'|\\/g,
             tmpId = "DOM" + new Date().getTime();
@@ -26,23 +26,16 @@ define(["Node"], function($Node, $Element, $CompositeElement, _makeError) {
 
             var node = this._node,
                 quickMatch = rquickExpr.exec(selector),
-                m, elem, elements, old, nid, context;
+                m, elements, old, nid, context;
 
             if (!node) return;
 
             if (quickMatch) {
-                // Speed-up: "#ID"
-                if (m = quickMatch[1]) {
-                    elem = document.getElementById(m);
-                    // Handle the case where IE, Opera, and Webkit return items by name instead of ID
-                    if ( elem && elem.parentNode && elem.id === m && (this === DOM || node.contains(elem)) ) {
-                        elements = [elem];
-                    }
                 // Speed-up: "TAG"
-                } else if (quickMatch[2]) {
+                if (quickMatch[1]) {
                     elements = node.getElementsByTagName(selector);
                 // Speed-up: ".CLASS"
-                } else if (m = quickMatch[3]) {
+                } else if (m = quickMatch[2]) {
                     elements = node.getElementsByClassName(m);
                 }
 

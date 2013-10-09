@@ -1,8 +1,14 @@
 suite("find/findAll", function () {
     "use strict";
 
+    document.body.innerHTML = "<div id='ttt'></div>";
+
     benchmark("jquery('a')", function() {
         jQuery("a");
+    });
+
+    benchmark("jquery('#ttt')", function() {
+        jQuery("#ttt");
     });
 
     benchmark("jquery('body div')", function() {
@@ -13,6 +19,9 @@ suite("find/findAll", function () {
         DOM.findAll("a");
     });
 
+    benchmark("DOM.findAll('#ttt')", function() {
+        DOM.findAll("#ttt");
+    });
 
     benchmark("DOM.findAll('body div')", function() {
         DOM.findAll("body div");
@@ -22,12 +31,20 @@ suite("find/findAll", function () {
         DOM.find("a");
     });
 
+    benchmark("DOM.find('#ttt')", function() {
+        DOM.find("#ttt");
+    });
+
     benchmark("DOM.find('body div')", function() {
         DOM.find("body div");
     });
 
     benchmark("getElementsByTagName('a')", function() {
         document.getElementsByTagName("a");
+    });
+
+    benchmark("getElementById('ttt')", function() {
+        document.getElementById("ttt");
     });
 
     benchmark("querySelectorAll('body div')", function() {

@@ -1,25 +1,32 @@
 describe("find", function() {
     "use strict";
-    
+
     it("should find an element by id", function() {
         setFixtures("<a id='test'>test</a>");
-
         expect(DOM.find("#test")._node).toHaveId("test");
 
-
         setFixtures("<a id='test'>test<span id='test1'></span></a>");
-
         expect(DOM.find("#test").find("#test1")._node).toHaveId("test1");
 
-
         setFixtures("<a id='test'>test</a><span id='test2'></span>");
-
         expect(DOM.find("#test").find("#test2")._node).toBeFalsy();
+    });
+
+    it("should find by id event if node was detached", function() {
+        setFixtures("<a id='test'>test<span id='test1'></span></a>");
+
+        var el = DOM.find("#test");
+
+        expect(el.find("#test1")._node).toHaveId("test1");
+
+        el.remove();
+
+        expect(el.find("#test1")._node).toHaveId("test1");
     });
 
     it("should find an element by class", function() {
         setFixtures("<a class='test321'>test</a>");
-        
+
         expect(DOM.find(".test321")._node).toHaveClass("test321");
     });
 
