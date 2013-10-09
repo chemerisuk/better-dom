@@ -6,39 +6,39 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
 
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            var manipulateContent = function(value) {
-                return _legacy(this, function(node, el) {
-                    var valueType = typeof value,
-                        relatedNode = node.parentNode;
+            var singleArg = !fasterMethodName,
+                manipulateContent = function(value) {
+                    return _legacy(this, function(node, el) {
+                        var valueType = typeof value,
+                            relatedNode = node.parentNode;
 
-                    if (valueType === "function") {
-                        value = value.call(el);
-                        valueType = typeof value;
-                    }
-
-                    if (valueType === "string") {
-                        value = _trim(DOM.template(value));
-                        // always use _parseFragment because of HTML5 and NoScope bugs in IE
-                        if (!fasterMethodName || document.attachEvent && !window.CSSKeyframesRule) {
-                            relatedNode = _parseFragment(value);
-                        } else {
-                            relatedNode = null;
+                        if (valueType === "function") {
+                            value = value.call(el);
+                            valueType = typeof value;
                         }
-                    } else if (value instanceof $Element) {
-                        return value.each(function(el) { strategy(node, el._node) });
-                    } else if (value !== undefined) {
-                        throw _makeError(methodName, el);
-                    }
 
-                    if (relatedNode) {
-                        strategy(node, relatedNode);
-                    } else {
-                        node.insertAdjacentHTML(fasterMethodName, value);
-                    }
-                });
-            };
+                        if (valueType === "string") {
+                            value = _trim(DOM.template(value));
 
-            return !fasterMethodName ? manipulateContent : function() {
+                            relatedNode = fasterMethodName ? null : _parseFragment(value);
+                        } else if (value instanceof $Element) {
+                            return value.legacy(function(relatedNode) { strategy(node, relatedNode); });
+                        } else if (value !== undefined) {
+                            throw _makeError(methodName, el);
+                        }
+
+                        if (relatedNode) {
+                            strategy(node, relatedNode);
+                        } else {
+                            node.insertAdjacentHTML(fasterMethodName, value);
+                        }
+                    });
+                };
+
+            // always use _parseFragment because of HTML5 and NoScope bugs in IE
+            if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
+
+            return singleArg ? manipulateContent : function() {
                 _forEach(arguments, manipulateContent, this);
 
                 return this;
@@ -100,8 +100,8 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
          * @return {$Element}
          * @function
          */
-        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
-            parentNode.removeChild(node);
+        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, relatedNode) {
+            relatedNode.removeChild(node);
         });
     })();
 });
