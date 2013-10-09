@@ -88,9 +88,10 @@ describe("manipulation", function() {
 
         it("should accept multiple arguments", function() {
             _.forOwn(checkStrategies, function(checkMethod, strategy) {
-                var arg = createDivEmmet(strategy);
-
-                expect(checkMethod(div[strategy](createDivHtml(strategy), arg))._node).toHaveClass(strategy);
+                expect(div[strategy](createDivHtml(strategy), createDivEmmet(strategy))).toBe(div);
+                expect(checkMethod(div)._node).toHaveClass(strategy);
+                checkMethod(div).remove();
+                expect(checkMethod(div)._node).toHaveClass(strategy);
             });
         });
 

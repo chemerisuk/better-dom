@@ -6,9 +6,6 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
 
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-            // always use _parseFragment because of HTML5 and NoScope bugs in IE
-            if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
-
             var manipulateContent = function(value) {
                 return _legacy(this, function(node, el) {
                     var valueType = typeof value,
@@ -21,10 +18,14 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
 
                     if (valueType === "string") {
                         value = _trim(DOM.template(value));
-
-                        relatedNode = fasterMethodName ? null : _parseFragment(value);
+                        // always use _parseFragment because of HTML5 and NoScope bugs in IE
+                        if (!fasterMethodName || document.attachEvent && !window.CSSKeyframesRule) {
+                            relatedNode = _parseFragment(value);
+                        } else {
+                            relatedNode = null;
+                        }
                     } else if (value instanceof $Element) {
-                        return value.each(function(el) { strategy(node, el._node); }, this);
+                        return value.each(function(el) { strategy(node, el._node) });
                     } else if (value !== undefined) {
                         throw _makeError(methodName, el);
                     }
