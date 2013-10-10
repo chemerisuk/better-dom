@@ -18,34 +18,37 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
          * @tutorial Event handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
-            var eventType = typeof type;
+            var eventType = typeof type,
+                selector, index;
+
+            if (eventType === "string") {
+                index = type.indexOf(" ");
+
+                if (~index) {
+                    selector = type.substr(index + 1);
+                    type = type.substr(0, index);
+                }
+
+                // handle optional props argument
+                if (Object.prototype.toString.call(props) !== "[object Array]") {
+                    once = callback;
+                    callback = context;
+                    context = props;
+                    props = undefined;
+                }
+
+                // handle optional context argument
+                if (typeof context !== "object") {
+                    once = callback;
+                    callback = context;
+                    context = undefined;
+                }
+            }
 
             return _legacy(this, function(node, el) {
-                var hook, handler, selector, index;
+                var hook, handler;
 
                 if (eventType === "string") {
-                    index = type.indexOf(" ");
-
-                    if (~index) {
-                        selector = type.substr(index + 1);
-                        type = type.substr(0, index);
-                    }
-
-                    // handle optional props argument
-                    if (Object.prototype.toString.call(props) !== "[object Array]") {
-                        once = callback;
-                        callback = context;
-                        context = props;
-                        props = undefined;
-                    }
-
-                    // handle optional context argument
-                    if (typeof context !== "object") {
-                        once = callback;
-                        callback = context;
-                        context = el;
-                    }
-
                     if (once) {
                         callback = (function(originalCallback) {
                             return function() {
@@ -60,7 +63,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                     handler = EventHandler(type, selector, context, callback, props, el);
                     handler.type = selector ? type + " " + selector : type;
                     handler.callback = callback;
-                    handler.context = context;
+                    handler.context = context || el;
 
                     if (hook = eventHooks[type]) hook(handler);
 

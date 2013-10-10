@@ -71,6 +71,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
         }
 
         return function(type, selector, context, callback, extras, currentTarget) {
+            context = context || currentTarget;
             extras = extras || ["target", "defaultPrevented"];
 
             var matcher = SelectorMatcher(selector),
