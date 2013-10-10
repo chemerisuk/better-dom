@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.5.1 2013-10-03T23:29:29
+ * @version 1.5.2 2013-10-10T14:08:03
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -245,7 +245,7 @@
         // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
         // TODO: disallow to use buggy selectors?
-        var rquickExpr = document.getElementsByClassName ? /^(?:#([\w\-]+)|(\w+)|\.([\w\-]+))$/ : /^(?:#([\w\-]+)|(\w+))$/,
+        var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
             rsibling = /[\x20\t\r\n\f]*[+~>]/,
             rescape = /'|\\/g,
             tmpId = "DOM" + new Date().getTime();
@@ -262,23 +262,16 @@
 
             var node = this._node,
                 quickMatch = rquickExpr.exec(selector),
-                m, elem, elements, old, nid, context;
+                m, elements, old, nid, context;
 
             if (!node) return;
 
             if (quickMatch) {
-                // Speed-up: "#ID"
-                if (m = quickMatch[1]) {
-                    elem = document.getElementById(m);
-                    // Handle the case where IE, Opera, and Webkit return items by name instead of ID
-                    if ( elem && elem.parentNode && elem.id === m && (this === DOM || node.contains(elem)) ) {
-                        elements = [elem];
-                    }
                 // Speed-up: "TAG"
-                } else if (quickMatch[2]) {
+                if (quickMatch[1]) {
                     elements = node.getElementsByTagName(selector);
                 // Speed-up: ".CLASS"
-                } else if (m = quickMatch[3]) {
+                } else if (m = quickMatch[2]) {
                     elements = node.getElementsByClassName(m);
                 }
 
@@ -409,34 +402,37 @@
          * @tutorial Event handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
-            var eventType = typeof type;
+            var eventType = typeof type,
+                selector, index;
+
+            if (eventType === "string") {
+                index = type.indexOf(" ");
+
+                if (~index) {
+                    selector = type.substr(index + 1);
+                    type = type.substr(0, index);
+                }
+
+                // handle optional props argument
+                if (Object.prototype.toString.call(props) !== "[object Array]") {
+                    once = callback;
+                    callback = context;
+                    context = props;
+                    props = undefined;
+                }
+
+                // handle optional context argument
+                if (typeof context !== "object") {
+                    once = callback;
+                    callback = context;
+                    context = undefined;
+                }
+            }
 
             return _legacy(this, function(node, el) {
-                var hook, handler, selector, index;
+                var hook, handler;
 
                 if (eventType === "string") {
-                    index = type.indexOf(" ");
-
-                    if (~index) {
-                        selector = type.substr(index + 1);
-                        type = type.substr(0, index);
-                    }
-
-                    // handle optional props argument
-                    if (Object.prototype.toString.call(props) !== "[object Array]") {
-                        once = callback;
-                        callback = context;
-                        context = props;
-                        props = undefined;
-                    }
-
-                    // handle optional context argument
-                    if (typeof context !== "object") {
-                        once = callback;
-                        callback = context;
-                        context = el;
-                    }
-
                     if (once) {
                         callback = (function(originalCallback) {
                             return function() {
@@ -451,7 +447,7 @@
                     handler = EventHandler(type, selector, context, callback, props, el);
                     handler.type = selector ? type + " " + selector : type;
                     handler.callback = callback;
-                    handler.context = context;
+                    handler.context = context || el;
 
                     if (hook = eventHooks[type]) hook(handler);
 
@@ -793,6 +789,7 @@
         }
 
         return function(type, selector, context, callback, extras, currentTarget) {
+            context = context || currentTarget;
             extras = extras || ["target", "defaultPrevented"];
 
             var matcher = SelectorMatcher(selector),
@@ -986,46 +983,42 @@
 
     (function() {
         function makeManipulationMethod(methodName, fasterMethodName, strategy) {
+            var singleArg = !fasterMethodName,
+                manipulateContent = function(value) {
+                    return _legacy(this, function(node, el) {
+                        var valueType = typeof value,
+                            relatedNode = node.parentNode;
+
+                        if (valueType === "function") {
+                            value = value.call(el);
+                            valueType = typeof value;
+                        }
+
+                        if (valueType === "string") {
+                            value = _trim(DOM.template(value));
+
+                            relatedNode = fasterMethodName ? null : _parseFragment(value);
+                        } else if (value instanceof $Element) {
+                            return value.legacy(function(relatedNode) { strategy(node, relatedNode); });
+                        } else if (value !== undefined) {
+                            throw _makeError(methodName, el);
+                        }
+
+                        if (relatedNode) {
+                            strategy(node, relatedNode);
+                        } else {
+                            node.insertAdjacentHTML(fasterMethodName, value);
+                        }
+                    });
+                };
+
             // always use _parseFragment because of HTML5 and NoScope bugs in IE
             if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
 
-            var manipulateContent = function(value) {
-                var valueType = typeof value,
-                    node = this._node,
-                    relatedNode = node.parentNode;
-
-                if (valueType === "function") {
-                    value = value.call(this);
-                    valueType = typeof value;
-                }
-
-                if (valueType === "string") {
-                    value = _trim(DOM.template(value));
-
-                    relatedNode = fasterMethodName ? null : _parseFragment(value);
-                } else if (value instanceof $Element) {
-                    value.each(function(el) { strategy(node, el._node); });
-
-                    return this;
-                } else if (value !== undefined) {
-                    throw _makeError(methodName, this);
-                }
-
-                if (relatedNode) {
-                    strategy(node, relatedNode);
-                } else {
-                    node.insertAdjacentHTML(fasterMethodName, value);
-                }
+            return singleArg ? manipulateContent : function() {
+                _forEach(arguments, manipulateContent, this);
 
                 return this;
-            };
-
-            return !fasterMethodName ? manipulateContent : function() {
-                var args = arguments;
-
-                return _forEach(this, function(el) {
-                    _forEach(args, manipulateContent, el);
-                });
             };
         }
 
@@ -1084,8 +1077,8 @@
          * @return {$Element}
          * @function
          */
-        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, parentNode) {
-            parentNode.removeChild(node);
+        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, relatedNode) {
+            relatedNode.removeChild(node);
         });
     })();
 
@@ -1181,7 +1174,7 @@
         };
 
         hooks.tagName = hooks.method = function(node, key) {
-            return node[key].toLowerCase();
+            return key in node ? node[key].toLowerCase() : "";
         };
 
         hooks.elements = hooks.options = function(node, key) {
@@ -1702,7 +1695,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.5.1";
+    DOM.version = "1.5.2";
 
     // CREATE ELEMENT
     // --------------
