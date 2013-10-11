@@ -1,21 +1,26 @@
 describe("set", function() {
     "use strict";
 
-    var link, input;
+    var link, input, inputs;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#'>set-test</a><input id='set_input'/>");
+        setFixtures("<a id='test' href='#'>set-test</a><input id='set_input'/><input id='set_input1'/>");
 
         link = DOM.find("#test");
         input = DOM.find("#set_input");
+        inputs = DOM.findAll("#set_input, #set_input1");
     });
 
     it("should return reference to 'this'", function() {
-        expect(link.set("id", "t")).toEqual(link);
+        expect(link.set("id", "t")).toBe(link);
+        expect(inputs.set("id", "t")).toBe(inputs);
     });
 
     it("should update an appropriate native object attribute", function() {
         expect(link.set("data-test", "t")._node).toHaveAttr("data-test", "t");
+        inputs.set("name", "abc").legacy(function(node) {
+            expect(node.name).toBe("abc");
+        });
     });
 
     it("should try to update an appropriate native object property first", function() {
@@ -38,6 +43,7 @@ describe("set", function() {
         expect(link.set(1)._node.innerHTML).toBe("1");
         expect(link.set(true)._node.innerHTML).toBe("true");
     });
+
 
     // it("should accept space-separated property names", function() {
     //     link.set("id href", "changed");
@@ -111,6 +117,10 @@ describe("set", function() {
 
         expect(link._node.innerHTML).toBe(value);
         expect(input._node.value).toBe(value);
+
+        inputs.set("qqq").legacy(function(node) {
+            expect(node.value).toBe("qqq");
+        });
     });
 
     it("should throw error if argument is invalid", function() {

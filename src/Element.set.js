@@ -5,8 +5,7 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeEr
     // ------
 
     (function() {
-        var hooks = {},
-            processObjectParam = function(value, name) { this.set(name, value); };
+        var hooks = {};
 
         /**
          * Set property/attribute value
@@ -20,17 +19,19 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeEr
                 nameType = typeof name;
 
             return _legacy(this, function(node, el) {
-                var hook;
+                var initialName, hook;
 
                 if (len === 1) {
                     if (name == null) {
                         value = "";
                     } else if (nameType === "object") {
-                        return _forOwn(name, processObjectParam, el);
+                        return _forOwn(name, function(value, name) { el.set(name, value) });
                     } else {
                         // handle numbers, booleans etc.
                         value = nameType === "function" ? name : String(name);
                     }
+
+                    initialName = name;
 
                     if (node.type && "value" in node) {
                         // for IE use innerText because it doesn't trigger onpropertychange
@@ -54,6 +55,11 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeEr
                     node[name] = value;
                 } else {
                     node.setAttribute(name, value);
+                }
+
+                if (initialName) {
+                    name = initialName;
+                    value = undefined;
                 }
             });
         };
