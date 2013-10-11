@@ -70,24 +70,6 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeEr
                 node.innerHTML = "";
                 node.appendChild(_parseFragment(value));
             };
-
-            // fix hidden attribute for IE < 10
-            hooks.hidden = function(node, value) {
-                if (typeof value !== "boolean") {
-                    throw _makeError("set", this);
-                }
-
-                node.hidden = value;
-
-                if (value) {
-                    node.setAttribute("hidden", "hidden");
-                } else {
-                    node.removeAttribute("hidden");
-                }
-
-                // trigger redraw in IE
-                node.style.zoom = value ? "1" : "0";
-            };
         }
     })();
 });
