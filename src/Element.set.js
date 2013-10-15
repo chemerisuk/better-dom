@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeError) {
+define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEach, _makeError) {
     "use strict";
 
     // SETTER
@@ -62,6 +62,20 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _makeEr
                     value = undefined;
                 }
             });
+        };
+
+        hooks.defaultValue = function(node, value) {
+            // emulate defaultValue for select via selected attribute
+            if (node.tagName === "SELECT") {
+                _forEach(node.options, function(option) {
+                    if (option.value === value) {
+                        option.selected = true;
+                        option.setAttribute("selected", "selected");
+                    }
+                });
+            }
+
+            node.defaultValue = value;
         };
 
         if (document.attachEvent) {

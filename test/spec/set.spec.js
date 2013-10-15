@@ -123,6 +123,17 @@ describe("set", function() {
         });
     });
 
+    it("should emulate defaultValue for select", function() {
+        setFixtures("<select id='test_select'><option>a</option><option>b</option><option>c</option></select>");
+
+        var select = DOM.find("#test_select"),
+            selected = function(el) { return el.get("selected") };
+
+        expect(select.children().filter(selected)[0].get()).toBe("a");
+        select.set("defaultValue", "b");
+        expect(select.children().filter(selected)[0].get()).toBe("b");
+    });
+
     it("should throw error if argument is invalid", function() {
         expect(function() { link.set(1, ""); }).toThrow();
         expect(function() { link.set(true, ""); }).toThrow();
