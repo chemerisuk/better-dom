@@ -1,4 +1,4 @@
-define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _forOwn, SelectorMatcher, CSSRule) {
+define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _forOwn, SelectorMatcher) {
     "use strict";
 
     // WATCH CALLBACK
@@ -40,7 +40,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
 
         if (supportsAnimations) {
             animId = "DOM" + new Date().getTime();
-            cssPrefix = CSSRule.KEYFRAMES_RULE ? "" : "-webkit-";
+            cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
 
             DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
 
