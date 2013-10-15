@@ -19,6 +19,10 @@ describe("manipulation", function() {
             expect(DOM.findAll(".removeable").length).toBe(0);
         });
 
+        it("should check if element has parent", function() {
+            expect(div.remove().remove()).toBe(div);
+        });
+
         it("should throw error if argument is invalid", function() {
             expect(function() { div.remove(1); }).toThrow();
         });

@@ -27,7 +27,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
                             throw _makeError(methodName, el);
                         }
 
-                        if (relatedNode) {
+                        if (singleArg || relatedNode) {
                             strategy(node, relatedNode);
                         } else {
                             node.insertAdjacentHTML(fasterMethodName, value);
@@ -101,7 +101,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
          * @function
          */
         $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, relatedNode) {
-            relatedNode.removeChild(node);
+            if (relatedNode) relatedNode.removeChild(node);
         });
     })();
 });
