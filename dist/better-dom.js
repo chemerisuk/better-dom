@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.5.2 2013-10-10T14:08:03
+ * @version 1.5.3 2013-10-15T16:32:18
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -1004,7 +1004,7 @@
                             throw _makeError(methodName, el);
                         }
 
-                        if (relatedNode) {
+                        if (singleArg || relatedNode) {
                             strategy(node, relatedNode);
                         } else {
                             node.insertAdjacentHTML(fasterMethodName, value);
@@ -1078,7 +1078,7 @@
          * @function
          */
         $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, relatedNode) {
-            relatedNode.removeChild(node);
+            if (relatedNode) relatedNode.removeChild(node);
         });
     })();
 
@@ -1086,16 +1086,34 @@
      * Check if the element matches selector
      * @param  {String} selector css selector
      * @return {$Element}
+     * @function
      */
-    $Element.prototype.matches = function(selector) {
-        if (!selector || typeof selector !== "string") {
-            throw _makeError("matches", this);
-        }
+    $Element.prototype.matches = (function() {
+        var hooks = {};
 
-        if (!this._node) return;
+        hooks[":focus"] = function(node) {
+            return node === document.activeElement;
+        };
 
-        return new SelectorMatcher(selector).test(this._node);
-    };
+        hooks[":hidden"] = function(node) {
+            return node.getAttribute("aria-hidden") === "true" ||
+                _getComputedStyle(node).display === "none" ||
+                !documentElement.contains(node);
+        };
+
+        return function(selector) {
+            if (!selector || typeof selector !== "string") {
+                throw _makeError("matches", this);
+            }
+
+            var node = this._node,
+                hook = hooks[selector];
+
+            if (!node) return;
+
+            return hook ? hook(node) : new SelectorMatcher(selector).test(node);
+        };
+    }());
 
     /**
      * Calculates offset of current context
@@ -1123,11 +1141,7 @@
      * @return {Number} element width in pixels
      */
     $Element.prototype.width = function() {
-        if (!this._node) return;
-
-        var offset = this.offset();
-
-        return offset.right - offset.left;
+        return this.get("offsetWidth");
     };
 
     /**
@@ -1135,11 +1149,7 @@
      * @return {Number} element height in pixels
      */
     $Element.prototype.height = function() {
-        if (!this._node) return;
-
-        var offset = this.offset();
-
-        return offset.bottom - offset.top;
+        return this.get("offsetHeight");
     };
 
     // GETTER
@@ -1195,8 +1205,7 @@
     // ------
 
     (function() {
-        var hooks = {},
-            processObjectParam = function(value, name) { this.set(name, value); };
+        var hooks = {};
 
         /**
          * Set property/attribute value
@@ -1210,17 +1219,19 @@
                 nameType = typeof name;
 
             return _legacy(this, function(node, el) {
-                var hook;
+                var initialName, hook;
 
                 if (len === 1) {
                     if (name == null) {
                         value = "";
                     } else if (nameType === "object") {
-                        return _forOwn(name, processObjectParam, el);
+                        return _forOwn(name, function(value, name) { el.set(name, value) });
                     } else {
                         // handle numbers, booleans etc.
                         value = nameType === "function" ? name : String(name);
                     }
+
+                    initialName = name;
 
                     if (node.type && "value" in node) {
                         // for IE use innerText because it doesn't trigger onpropertychange
@@ -1245,7 +1256,26 @@
                 } else {
                     node.setAttribute(name, value);
                 }
+
+                if (initialName) {
+                    name = initialName;
+                    value = undefined;
+                }
             });
+        };
+
+        hooks.defaultValue = function(node, value) {
+            // emulate defaultValue for select via selected attribute
+            if (node.tagName === "SELECT") {
+                _forEach(node.options, function(option) {
+                    if (option.value === value) {
+                        option.selected = true;
+                        option.setAttribute("selected", "selected");
+                    }
+                });
+            }
+
+            node.defaultValue = value;
         };
 
         if (document.attachEvent) {
@@ -1253,24 +1283,6 @@
             hooks.innerHTML = function(node, value) {
                 node.innerHTML = "";
                 node.appendChild(_parseFragment(value));
-            };
-
-            // fix hidden attribute for IE < 10
-            hooks.hidden = function(node, value) {
-                if (typeof value !== "boolean") {
-                    throw _makeError("set", this);
-                }
-
-                node.hidden = value;
-
-                if (value) {
-                    node.setAttribute("hidden", "hidden");
-                } else {
-                    node.removeAttribute("hidden");
-                }
-
-                // trigger redraw in IE
-                node.style.zoom = value ? "1" : "0";
             };
         }
     })();
@@ -1553,27 +1565,7 @@
      * @return {$Element}
      */
     $Element.prototype.toggle = function() {
-        return this.set("aria-hidden", !this.isHidden());
-    };
-
-    /**
-     * Check is element is hidden
-     * @return {Boolean} true if element is hidden
-     */
-    $Element.prototype.isHidden = function() {
-        if (!this._node) return;
-
-        return this.get("aria-hidden") === "true";
-    };
-
-    /**
-     * Check if element has focus
-     * @return {Boolean} true if current element is focused
-     */
-    $Element.prototype.isFocused = function() {
-        if (!this._node) return;
-
-        return this._node === document.activeElement;
+        return this.set("aria-hidden", function(value) { return value !== "true" });
     };
 
     /**
@@ -1695,7 +1687,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.5.2";
+    DOM.version = "1.5.3";
 
     // CREATE ELEMENT
     // --------------
@@ -2076,7 +2068,7 @@
 
         if (supportsAnimations) {
             animId = "DOM" + new Date().getTime();
-            cssPrefix = CSSRule.KEYFRAMES_RULE ? "" : "-webkit-";
+            cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
 
             DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
 
