@@ -68,7 +68,10 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEac
             // emulate defaultValue for select via selected attribute
             if (node.tagName === "SELECT") {
                 _forEach(node.options, function(option) {
-                    if (option.value === value) option.selected = true;
+                    if (option.value === value) {
+                        option.selected = true;
+                        option.setAttribute("selected", "selected");
+                    }
                 });
             }
 
