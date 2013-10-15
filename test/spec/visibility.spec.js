@@ -10,7 +10,7 @@ describe("visibility", function() {
     });
 
     it("should use aria-hidden to toggle visibility", function() {
-        expect(link.isHidden()).toBe(false);
+        expect(link.matches(":hidden")).toBe(false);
         link.hide();
         expect(link.get("aria-hidden")).toBe("true");
         link.show();
@@ -18,16 +18,16 @@ describe("visibility", function() {
     });
 
     it("should allow to toggle visibility", function() {
-        expect(link.isHidden()).toBe(false);
-        expect(link.toggle().isHidden()).toBe(true);
-        expect(link.toggle().isHidden()).toBe(false);
+        expect(link.matches(":hidden")).toBe(false);
+        expect(link.toggle().matches(":hidden")).toBe(true);
+        expect(link.toggle().matches(":hidden")).toBe(false);
     });
 
     it("should handle unknown aria-hidden values as false", function() {
-        expect(link.isHidden()).toBe(false);
+        expect(link.matches(":hidden")).toBe(false);
         link.set("aria-hidden", "123");
-        expect(link.isHidden()).toBe(false);
+        expect(link.matches(":hidden")).toBe(false);
         link.toggle();
-        expect(link.isHidden()).toBe(true);
+        expect(link.matches(":hidden")).toBe(true);
     });
 });

@@ -1,6 +1,6 @@
 describe("fire", function() {
     "use strict";
-    
+
     var input, callback;
 
     beforeEach(function() {
@@ -32,7 +32,7 @@ describe("fire", function() {
     it("should trigger native methods if they exist", function() {
         input.fire("focus");
         expect(input._node).toBe(document.activeElement);
-        expect(input.isFocused()).toBe(true);
+        expect(input.matches(":focus")).toBe(true);
     });
 
     it("should trigger custom events", function() {
