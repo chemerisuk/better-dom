@@ -20,8 +20,8 @@ describe("offset", function() {
     it("should have width and height calculated based on offset", function() {
         var offset = link.offset();
 
-        expect(link.width()).toBe(offset.right - offset.left);
-        expect(link.height()).toBe(offset.bottom - offset.top);
+        expect(link.width()).toBe(Math.floor(offset.right - offset.left));
+        expect(link.height()).toBe(Math.floor(offset.bottom - offset.top));
     });
 
     it("should not change offsets when window is scrolling", function() {

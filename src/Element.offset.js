@@ -27,11 +27,7 @@ define(["Element"], function($Element, documentElement) {
      * @return {Number} element width in pixels
      */
     $Element.prototype.width = function() {
-        if (!this._node) return;
-
-        var offset = this.offset();
-
-        return offset.right - offset.left;
+        return this.get("offsetWidth");
     };
 
     /**
@@ -39,10 +35,6 @@ define(["Element"], function($Element, documentElement) {
      * @return {Number} element height in pixels
      */
     $Element.prototype.height = function() {
-        if (!this._node) return;
-
-        var offset = this.offset();
-
-        return offset.bottom - offset.top;
+        return this.get("offsetHeight");
     };
 });
