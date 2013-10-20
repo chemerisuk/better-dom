@@ -118,6 +118,16 @@ describe("manipulation", function() {
                 expect(div[strategy](arg)).toBe(div);
             });
         });
+
+        // uncomment after using parentElement instead of parentNode
+        // it("should work properly on detached elements", function() {
+        //     div.remove();
+
+        //     expect(div.append(createDivHtml("append")).child(-1)._node).toHaveClass("append");
+        //     expect(div.prepend(createDivHtml("prepend")).child(0)._node).toHaveClass("prepend");
+        //     expect(div.after(createDivHtml("after")).next()._node).toBeUndefined();
+        //     expect(div.before(createDivHtml("before")).prev()._node).toBeUndefined();
+        // });
     });
 
     describe("replace", function() {

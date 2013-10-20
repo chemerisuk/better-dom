@@ -1,7 +1,7 @@
 describe("extend", function() {
     "use strict";
 
-    var /*WAIT_FOR_WATCH_TIME = 100,*/
+    var WAIT_FOR_WATCH_TIME = 50,
         callback;
 
     beforeEach(function() {
@@ -22,57 +22,43 @@ describe("extend", function() {
         });
     });
 
-    // FIXME: Chrome 30 fails on this test
-    // it("should not initialize twise after hide/show", function() {
-    //     setFixtures("<a class='extend01'></a>");
+    it("should not initialize twise after hide/show", function() {
+        setFixtures("<a class='extend01'></a>");
 
-    //     var link = DOM.find(".extend01");
+        var link = DOM.find(".extend01"), calledOnce;
 
-    //     DOM.extend(".extend01", callback.andCallFake(function() {
-    //         expect(this).toBe(link);
+        runs(function() {
+            DOM.extend(".extend01", callback.andCallFake(function() {
+                expect(this).toBe(link);
 
-    //         link.hide();
-    //     }));
+                link.hide();
 
-    //     waits(WAIT_FOR_WATCH_TIME);
+                setTimeout(function() {
+                    if (callback.callCount === 1) calledOnce = true;
+                }, WAIT_FOR_WATCH_TIME);
+            }));
+        });
 
-    //     runs(function() {
-    //         expect(callback).toHaveBeenCalled();
+        waitsFor(function() { return calledOnce === true });
+    });
 
-    //         link.show();
-    //     });
+    it("should not initialize twise after removing element from DOM", function() {
+        setFixtures("<a class='extend02'></a>");
 
-    //     waits(WAIT_FOR_WATCH_TIME);
+        var link = DOM.find(".extend02"), calledOnce;
 
-    //     runs(function() {
-    //         expect(callback.callCount).toBe(1);
-    //     });
-    // });
+        runs(function() {
+            DOM.extend(".extend02", callback.andCallFake(function() {
+                link.remove();
 
-    // FIXME: Chrome 30 fails on this test
-    // it("should not initialize twise after removing element from DOM", function() {
-    //     setFixtures("<a class='extend02'></a>");
+                setTimeout(function() {
+                    if (callback.callCount === 1) calledOnce = true;
+                }, WAIT_FOR_WATCH_TIME);
+            }));
+        });
 
-    //     var link = DOM.find(".extend02");
-
-    //     DOM.extend(".extend02", callback.andCallFake(function() {
-    //         link.remove();
-    //     }));
-
-    //     waits(WAIT_FOR_WATCH_TIME);
-
-    //     runs(function() {
-    //         expect(callback).toHaveBeenCalled();
-
-    //         setFixtures(link._node);
-    //     });
-
-    //     waits(WAIT_FOR_WATCH_TIME);
-
-    //     runs(function() {
-    //         expect(callback.callCount).toBe(1);
-    //     });
-    // });
+        waitsFor(function() { return calledOnce === true });
+    });
 
     it("should allow extending the element prototype", function() {
         DOM.extend("*", {
