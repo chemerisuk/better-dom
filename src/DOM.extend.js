@@ -22,11 +22,12 @@ define(["DOM", "Element"], function(DOM, $Element, _map, _forOwn, _forEach, _ext
                 // extending element prototype
                 _extend($Element.prototype, mixins);
             } else {
-                var watcher = function(el) {
+                var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
+                    watcher = function(el) {
                         _extend(el, mixins);
 
-                        if (mixins.hasOwnProperty("constructor")) {
-                            mixins.constructor.apply(el);
+                        if (ctr) {
+                            ctr.call(el);
 
                             el.constructor = $Element;
                         }
