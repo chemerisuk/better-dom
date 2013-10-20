@@ -1,6 +1,6 @@
 describe("traversing", function() {
     "use strict";
-    
+
     var link;
 
     beforeEach(function() {

@@ -18,6 +18,8 @@ define(["Helpers"], function() {
             this._listeners = [];
 
             Array.prototype.push.call(this, node.__dom__ = this);
+        } else {
+            this.length = 0;
         }
     }
 
