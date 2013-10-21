@@ -51,15 +51,16 @@ describe("get", function() {
     //     }
     // });
 
-    it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
+    it("could absent any parameter", function() {
         expect(link.get()).toBe("get-test");
         expect(input.get()).toBe("test");
         expect(textarea.get()).toBe("");
         textarea.set("value", "123");
         expect(textarea.get()).toBe("123");
 
-        setFixtures("<select id='get_select'><option value='a1'>a2</option><option>a3</option></select>");
+        setFixtures("<select id='get_select'><option value='a1'>a2</option><option selected>a3</option></select>");
         var select = DOM.find("#get_select");
+        expect(select.get()).toBe("a3");
         expect(select.child(0).get()).toBe("a1");
         expect(select.child(1).get()).toBe("a3");
     });

@@ -22,6 +22,8 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
             if (name === undefined) {
                 if (node.tagName === "OPTION") {
                     name = node.hasAttribute("value") ? "value" : "text";
+                } else if (node.tagName === "SELECT") {
+                    return node.options[node.selectedIndex].value;
                 } else {
                     name = node.type && "value" in node ? "value" : "innerHTML";
                 }
