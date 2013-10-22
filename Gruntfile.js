@@ -168,7 +168,7 @@ module.exports = function(grunt) {
                 skipPragmas: true,
                 skipModuleInsertion: true,
                 include: [
-                    "Node.supports", "Node.find", "Node.data", "Node.contains", "Node.events",
+                    "Node.find", "Node.data", "Node.contains", "Node.events",
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
                     "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
                     "Element.set", "Element.style", "Element.traversing",

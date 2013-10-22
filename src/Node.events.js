@@ -1,4 +1,4 @@
-define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _legacy, _forOwn, _slice, _makeError) {
+define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _legacy, _forOwn, _slice, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -150,14 +150,12 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
                 throw _makeError("fire", this);
             }
 
-            return _legacy(this, function(node, el) {
+            return _legacy(this, function(node) {
                 var hook = eventHooks[type],
                     handler = {},
                     isCustomEvent, canContinue, event;
 
                 if (hook) hook(handler);
-
-                isCustomEvent = handler.custom || !el.supports("on" + type);
 
                 if (document.createEvent) {
                     event = document.createEvent("HTMLEvents");
@@ -167,6 +165,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
 
                     canContinue = node.dispatchEvent(event);
                 } else {
+                    isCustomEvent = handler.custom || !("on" + type in node);
                     event = document.createEventObject();
                     // store original event type
                     event.srcUrn = isCustomEvent ? type : undefined;
@@ -191,7 +190,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
         };
 
         // firefox doesn't support focusin/focusout events
-        if ($Node.prototype.supports("onfocusin", "input")) {
+        if ("onfocusin" in document.createElement("a")) {
             _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
                 eventHooks[prop] = function(handler) { handler._type = value; };
             });
@@ -201,7 +200,7 @@ define(["Node", "Node.supports"], function($Node, $Element, SelectorMatcher, Eve
             };
         }
 
-        if ($Node.prototype.supports("validity", "input")) {
+        if (document.addEventListener) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };

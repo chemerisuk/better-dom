@@ -12,7 +12,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     ...
     <!--[if IE]>

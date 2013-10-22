@@ -114,7 +114,7 @@ describe("on", function() {
         input.fire("focus");
         expect(spy).toHaveBeenCalled();
 
-        if (DOM.supports("validity", "input")) {
+        if (document.addEventListener) {
             DOM.on("invalid", spy);
             input._node.checkValidity();
             expect(spy.callCount).toBe(2);

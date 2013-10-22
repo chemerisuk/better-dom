@@ -32,7 +32,8 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
                         });
                     }
                 };
-            };
+            },
+            testEl = document.createElement("div");
 
         if (document.addEventListener) {
             hooks.relatedTarget = function(event) {
@@ -121,7 +122,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
 
             if (~debouncedEvents.indexOf(type)) {
                 result = createDebouncedEventWrapper(result);
-            } else if (!document.addEventListener && (!currentTarget.supports("on" + type) || type === "submit")) {
+            } else if (!document.addEventListener && (type === "submit" || !("on" + type in testEl))) {
                 // handle custom events for IE8
                 result = createCustomEventWrapper(result, type);
             }
