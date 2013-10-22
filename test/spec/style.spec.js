@@ -90,9 +90,14 @@ describe("style", function() {
         });
 
         it("should not add px suffix to some css properties", function() {
-            _.forEach("orphans line-height widows z-index".split(" "), function(propName) {
+            var props = "orphans line-height widows z-index".split(" "),
+                propName, i, n;
+
+            for (i = 0, n = props.length; i < n; ++i) {
+                propName = props[i];
+
                 expect(link.style(propName, 5).style(propName)).not.toBe("5px");
-            });
+            }
         });
 
         it("should accept function", function() {

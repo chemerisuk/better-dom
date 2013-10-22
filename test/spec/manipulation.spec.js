@@ -44,7 +44,7 @@ describe("manipulation", function() {
         });
 
         it("should accept html string", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtml(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
@@ -52,7 +52,7 @@ describe("manipulation", function() {
         });
 
         it("should trim html string", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtmlWhitespaced(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
@@ -60,7 +60,7 @@ describe("manipulation", function() {
         });
 
         it("should accept functor", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = function() { return createDivHtml(strategy); };
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
@@ -68,7 +68,7 @@ describe("manipulation", function() {
         });
 
         it("should accept DOMElement", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 //var arg = DOM.create(createDiv(strategy));
                 var arg = DOM.create(createDivHtml(strategy)),
                     otherDiv = DOM.create("div");
@@ -83,7 +83,7 @@ describe("manipulation", function() {
         });
 
         it("should support emmet-like expressions", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivEmmet(strategy);
 
                 expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
@@ -91,7 +91,7 @@ describe("manipulation", function() {
         });
 
         it("should accept multiple arguments", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 expect(div[strategy](createDivHtml(strategy), createDivEmmet(strategy))).toBe(div);
                 expect(checkMethod(div)._node).toHaveClass(strategy);
                 checkMethod(div).remove();
@@ -106,13 +106,13 @@ describe("manipulation", function() {
                     };
                 };
 
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 expect(callProp(strategy)).toThrow();
             });
         });
 
         it("should return this", function() {
-            _.forOwn(checkStrategies, function(checkMethod, strategy) {
+            _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtml(strategy);
 
                 expect(div[strategy](arg)).toBe(div);
@@ -164,6 +164,12 @@ describe("manipulation", function() {
 
     function expectToBeReplaced(id) {
         expect(document.getElementById(id)).toBeNull();
+    }
+
+    function _forIn(obj, callback, thisPtr) {
+        for (var prop in obj) {
+            callback.call(thisPtr, obj[prop], prop, obj);
+        }
     }
 
 });

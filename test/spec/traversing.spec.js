@@ -17,7 +17,7 @@ describe("traversing", function() {
                     parent: "div"
                 };
 
-            _.forOwn(expectedResults, function(tagName, methodName) {
+            _forIn(expectedResults, function(tagName, methodName) {
                 expect(link[methodName]()._node).toHaveTag(tagName);
             });
         });
@@ -42,8 +42,10 @@ describe("traversing", function() {
                     };
                 };
 
-            _.forOwn(expectedResults, function(tagName, methodName) {
-                _.each(link[methodName](), isOK(methodName));
+            _forIn(expectedResults, function(tagName, methodName) {
+                for (var arr = link[methodName](), i = 0, n = arr.length; i < n; ++i) {
+                    isOK(arr[i]);
+                }
             });
         });
 
@@ -59,8 +61,10 @@ describe("traversing", function() {
                     };
                 };
 
-            _.forOwn(filters, function(tagName, methodName) {
-                _.each(link[methodName](tagName), haveTag(tagName));
+            _forIn(filters, function(tagName, methodName) {
+                for (var arr = link[methodName](tagName), i = 0, n = arr.length; i < n; ++i) {
+                    haveTag(tagName);
+                }
             });
         });
     });
@@ -77,5 +81,11 @@ describe("traversing", function() {
         });
 
     });
+
+    function _forIn(obj, callback, thisPtr) {
+        for (var prop in obj) {
+            callback.call(thisPtr, obj[prop], prop, obj);
+        }
+    }
 
 });

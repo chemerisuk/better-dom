@@ -68,17 +68,4 @@ describe("collection methods", function() {
             return memo + el.get("className");
         }, "")).toBe("c3c2c1");
     });
-
-    // it("should have aliases", function() {
-    //     _.forOwn({
-    //         all: "every",
-    //         any: "some",
-    //         select: "filter",
-    //         reduce: "foldl",
-    //         reduceRight: "foldr",
-    //         collect: "map"
-    //     }, function(value, key) {
-    //         expect(inputs[key]).toBe(inputs[value]);
-    //     });
-    // });
 });

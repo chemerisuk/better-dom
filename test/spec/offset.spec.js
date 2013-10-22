@@ -35,11 +35,17 @@ describe("offset", function() {
     function normalize(offset) {
         var result = {};
 
-        _.forOwn(offset, function(value, key) {
+        _forIn(offset, function(value, key) {
             result[key] = Math.floor(value);
         });
 
         return result;
+    }
+
+    function _forIn(obj, callback, thisPtr) {
+        for (var prop in obj) {
+            callback.call(thisPtr, obj[prop], prop, obj);
+        }
     }
 
 });
