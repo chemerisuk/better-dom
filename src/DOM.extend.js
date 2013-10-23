@@ -9,7 +9,7 @@ define(["DOM", "Element"], function(DOM, $Element, _map, _forOwn, _forEach, _ext
          * @memberOf DOM
          * @param  {String}          selector extension css selector
          * @param  {Object|Function} mixins   extension mixins/constructor function
-         * @tutorial Living extensions
+         * @see https://github.com/chemerisuk/better-dom/wiki/Living-extensions
          */
         DOM.extend = function(selector, mixins) {
             if (typeof mixins === "function") mixins = {constructor: mixins};

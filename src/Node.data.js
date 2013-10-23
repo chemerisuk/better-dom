@@ -10,7 +10,7 @@ define(["Node"], function($Node, _extend, _forEach, _makeError) {
      * @param  {String|Object} key     data key
      * @param  {Object}        [value] data value to store
      * @return {Object} data entry value or this in case of setter
-     * @tutorial Data
+     * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
      */
     $Node.prototype.data = function(key, value) {
         var len = arguments.length,

@@ -11,7 +11,7 @@ define(["DOM", "DOM.importstyles"], function(DOM, _forOwn, _makeError) {
      * @param {String}         pattern string pattern
      * @param {String}         [lang]  string language
      * @function
-     * @tutorial Localization
+     * @see https://github.com/chemerisuk/better-dom/wiki/Localization
      */
     DOM.importStrings = (function() {
         var rparam = /\{([a-z\-]+)\}/g,

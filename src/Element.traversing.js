@@ -61,6 +61,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param {String} [selector] css selector
          * @return {$Element} matched element
          * @function
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.next = makeTraversingMethod("nextSibling");
 
@@ -69,6 +70,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param {String} [selector] css selector
          * @return {$Element} matched element
          * @function
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.prev = makeTraversingMethod("previousSibling");
 
@@ -77,6 +79,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param {String} [selector] css selector
          * @return {$Element} collection of matched elements
          * @function
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 
@@ -85,6 +88,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param {String} [selector] css selector
          * @return {$Element} collection of matched elements
          * @function
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
@@ -93,6 +97,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param {String} [selector] css selector
          * @return {$Element} matched element
          * @function
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.parent = makeTraversingMethod("parentNode");
 
@@ -102,7 +107,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param  {String} [selector] css selector
          * @return {$Element} matched child
          * @function
-         * @tutorial Traversing
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.child = makeChildTraversingMethod(false);
 
@@ -111,7 +116,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
          * @param  {String} [selector] css selector
          * @return {$Element} collection of matched elements
          * @function
-         * @tutorial Traversing
+         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
          */
         $Element.prototype.children = makeChildTraversingMethod(true);
     })();

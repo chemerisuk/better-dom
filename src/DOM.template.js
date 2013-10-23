@@ -58,8 +58,8 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
          * @memberOf DOM
          * @param  {String} template emmet-like expression
          * @return {String} HTML string
+         * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
          * @see http://docs.emmet.io/cheat-sheet/
-         * @tutorial Microtemplating
          */
         DOM.template = function(template) {
             var stack = [],

@@ -12,7 +12,7 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEac
          * @param {String} [name] property/attribute name
          * @param {String} value property/attribute value
          * @return {$Element}
-         * @tutorial Getter and setter
+         * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
          */
         $Element.prototype.set = function(name, value) {
             var len = arguments.length,

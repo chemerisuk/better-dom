@@ -11,7 +11,7 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
          * Get property or attribute by name
          * @param  {String} [name] property/attribute name
          * @return {String} property/attribute value
-         * @tutorial Getter and setter
+         * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
          */
         $Element.prototype.get = function(name) {
             var node = this._node,

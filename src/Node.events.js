@@ -15,7 +15,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
          * @return {$Node}
-         * @tutorial Event handling
+         * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
          */
         $Node.prototype.on = function(type, props, context, callback, /*INTERNAL*/once) {
             var eventType = typeof type,
@@ -92,7 +92,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
          * @param  {Object}   [context] callback context
          * @param  {Function|String} callback event callback/property name
          * @return {$Node}
-         * @tutorial Event handling
+         * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
          */
         $Node.prototype.once = function() {
             var args = _slice(arguments);
@@ -108,7 +108,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
          * @param  {Object}          [context] callback context
          * @param  {Function|String} [callback] event handler
          * @return {$Node}
-         * @tutorial Event handling
+         * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
          */
         $Node.prototype.off = function(type, context, callback) {
             if (typeof type !== "string") throw _makeError("off", this);
@@ -143,7 +143,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
          * @param  {String} type type of event
          * @param  {Object} [detail] event details
          * @return {$Node}
-         * @tutorial Event handling
+         * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
          */
         $Node.prototype.fire = function(type, detail) {
             if (typeof type !== "string") {

@@ -30,11 +30,11 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ## Features
 * compact size (~22kb minified and ~5kb gzipped)
 * clearer, standards-based (if possible) APIs
-* [living extensions](http://chemerisuk.github.io/better-dom/tutorial-extensions.html)
-* [smarter getter and setter](http://chemerisuk.github.io/better-dom/tutorial-setter.html)
-* [event handling best practices](http://chemerisuk.github.io/better-dom/tutorial-handling.html)
-* [microtemplating via emmet-like syntax](http://chemerisuk.github.io/better-dom/tutorial-Microtemplating.html)
-* [localization support](http://chemerisuk.github.io/better-dom/tutorial-Localization.html)
+* [living extensions](https://github.com/chemerisuk/better-dom/wiki/Living-extensions)
+* [smarter getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
+* [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
+* [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
+* [localization support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [animations support](http://jsfiddle.net/mNBVQ/1/) via CSS3 transitions and animations
 * cross-browser `input` event
 
