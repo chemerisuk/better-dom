@@ -52,7 +52,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
          * @function
          */
         $Element.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
-            node.parentNode.insertBefore(relatedNode, node.nextSibling);
+            if (node.parentNode) node.parentNode.insertBefore(relatedNode, node.nextSibling);
         });
 
         /**
@@ -62,7 +62,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
          * @function
          */
         $Element.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
-            node.parentNode.insertBefore(relatedNode, node);
+            if (node.parentNode) node.parentNode.insertBefore(relatedNode, node);
         });
 
         /**
@@ -92,7 +92,7 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
          * @function
          */
         $Element.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
-            node.parentNode.replaceChild(relatedNode, node);
+            if (node.parentNode) node.parentNode.replaceChild(relatedNode, node);
         });
 
         /**
@@ -100,8 +100,8 @@ define(["Element"], function($Element, _parseFragment, _forEach, _trim, _legacy,
          * @return {$Element}
          * @function
          */
-        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node, relatedNode) {
-            if (relatedNode) relatedNode.removeChild(node);
+        $Element.prototype.remove = makeManipulationMethod("remove", "", function(node) {
+            if (node.parentNode) node.parentNode.removeChild(node);
         });
     })();
 });
