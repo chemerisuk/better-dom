@@ -58,14 +58,34 @@ describe("collection methods", function() {
             if (index === 0) expect(memo).toBe("");
 
             expect(a).toBe(inputs);
+
             return memo + el.get("className");
         }, "")).toBe("c1c2c3");
+
+        expect(inputs[0].reduce(function(memo, el, index, a) {
+            expect(memo).toBe(inputs[0]);
+            expect(el).toBe(undefined);
+            expect(index).toBe(0);
+            expect(a).toBe(inputs[0]);
+
+            return 123;
+        })).toBe(123);
 
         expect(inputs.reduceRight(function(memo, el, index, a) {
             if (index === 2) expect(memo).toBe("");
 
             expect(a).toBe(inputs);
+
             return memo + el.get("className");
         }, "")).toBe("c3c2c1");
+
+        expect(inputs[1].reduceRight(function(memo, el, index, a) {
+            expect(memo).toBe(inputs[1]);
+            expect(el).toBe(undefined);
+            expect(index).toBe(0);
+            expect(a).toBe(inputs[1]);
+
+            return 321;
+        })).toBe(321);
     });
 });

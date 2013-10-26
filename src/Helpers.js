@@ -119,12 +119,13 @@ define([], function($Element) {
             AFTER:  "return out"
         }),
         _foldl = makeLoopMethod({
-            BODY:   "that = (!i && that === undefined ? a[i] : cb(that, a[i], i, a))",
+            BEFORE: "if (a && arguments.length < 2) that = a[0]",
+            BODY:   "that = cb(that, a[arguments.length < 2 ? i + 1 : i], i, a)",
             AFTER:  "return that"
         }),
         _foldr = makeLoopMethod({
-            BEFORE: "var j",
-            BODY:   "j = n - i - 1; that = (!i && that === undefined ? a[j] : cb(that, a[j], j, a))",
+            BEFORE: "var j; if (a && arguments.length < 2) that = a[a.length - 1]",
+            BODY:   "j = n - i - 1; that = cb(that, a[arguments.length < 2 ? j - 1 : j], j, a)",
             AFTER:  "return that"
         }),
         _every = makeLoopMethod({
