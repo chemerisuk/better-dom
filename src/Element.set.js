@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEach, _makeError) {
+define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEach, documentElement, _makeError) {
     "use strict";
 
     // SETTER
@@ -78,11 +78,9 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEac
             node.defaultValue = value;
         };
 
-        if (document.attachEvent) {
-            // fix NoScope elements in IE < 10
-            hooks.innerHTML = function(node, value) {
-                node.innerHTML = "";
-                node.appendChild(_parseFragment(value));
+        if (!("textContent" in documentElement)) {
+            hooks.textContent = function(node, value) {
+                node.innerText = value;
             };
         }
     })();

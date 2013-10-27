@@ -1,4 +1,4 @@
-define(["Element"], function($Element, $CompositeElement, _makeError) {
+define(["Element"], function($Element, $CompositeElement, documentElement, _makeError) {
     "use strict";
 
     // GETTER
@@ -50,5 +50,9 @@ define(["Element"], function($Element, $CompositeElement, _makeError) {
             // some browsers don't recognize input[type=email] etc.
             return node.getAttribute("type") || node.type;
         };
+
+        if (!("textContent" in documentElement)) {
+            hooks.textContent = function(node) { return node.innerText };
+        }
     })();
 });
