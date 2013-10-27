@@ -1,21 +1,21 @@
-define(["Element", "CompositeElement"], function($Element, $CompositeElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr, _legacy) {
+define(["Node", "CompositeElement"], function($Node, $CompositeElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr, _legacy) {
     "use strict";
 
-    // ELEMENT COLLECTION EXTESIONS
-    // ----------------------------
+    // NODE FUNCTIONAL
+    // ---------------
 
     (function() {
-        var makeCollectionMethod = function(fn) {
-                var code = fn.toString();
-                // extract function body
-                code = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
-                // use this variable unstead of a
-                code = code.replace(/a([^\w])/g, function(a, symbol) { return "this" + symbol; });
-                // compile the function
-                return Function("cb", "that", code);
-            };
+        function makeCollectionMethod(fn) {
+            var code = fn.toString();
+            // extract function body
+            code = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
+            // use this variable unstead of a
+            code = code.replace(/a([^\w])/g, function(a, symbol) { return "this" + symbol; });
+            // compile the function
+            return Function("cb", "that", code);
+        }
 
-        _extend($Element.prototype, {
+        _extend($Node.prototype, {
             /**
              * Executes callback on each element in the collection
              * @memberOf $Element.prototype
