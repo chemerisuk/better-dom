@@ -83,32 +83,6 @@ describe("set", function() {
         expect(link._node).toHaveAttr("data-test2", "test2");
     });
 
-    // it("should not allow to access to legacy objects", function() {
-    //     var protectedProps = {
-    //             children: true,
-    //             childNodes: true,
-    //             firstChild: true,
-    //             lastChild: true,
-    //             nextSibling: true,
-    //             previousSibling: true,
-    //             firstElementChild: true,
-    //             lastElementChild: true,
-    //             nextElementSibling: true,
-    //             previousElementSibling: true,
-    //             parentNode: true,
-    //             elements: true
-    //         },
-    //         setProp = function(propName) {
-    //             return function() {
-    //                 link.set(propName, "t");
-    //             };
-    //         };
-
-    //     for (var propName in protectedProps) {
-    //         expect(setProp(propName)).toThrow();
-    //     }
-    // });
-
     it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
         var value = "set-test-changed";
 
@@ -132,6 +106,13 @@ describe("set", function() {
         expect(select.children().filter(selected)[0].get()).toBe("a");
         select.set("defaultValue", "b");
         expect(select.children().filter(selected)[0].get()).toBe("b");
+    });
+
+    it("should polyfill textContent", function() {
+        expect(link.get("textContent")).toBe("set-test");
+        link.set("textContent", "<i>changed</i>");
+        expect(link.get("textContent")).toBe("<i>changed</i>");
+        expect(link.get()).toBe("&lt;i&gt;changed&lt;/i&gt;");
     });
 
     it("should throw error if argument is invalid", function() {

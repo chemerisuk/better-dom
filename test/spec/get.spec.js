@@ -25,32 +25,6 @@ describe("get", function() {
 
     });
 
-    // it("should not allow to access to legacy objects", function() {
-    //     var protectedProps = {
-    //             children: true,
-    //             childNodes: true,
-    //             firstChild: true,
-    //             lastChild: true,
-    //             nextSibling: true,
-    //             previousSibling: true,
-    //             firstElementChild: true,
-    //             lastElementChild: true,
-    //             nextElementSibling: true,
-    //             previousElementSibling: true,
-    //             parentNode: true,
-    //             elements: true
-    //         },
-    //         readProp = function(propName) {
-    //             return function() {
-    //                 link.get(propName);
-    //             };
-    //         };
-
-    //     for (var propName in protectedProps) {
-    //         expect(readProp(propName)).toThrow();
-    //     }
-    // });
-
     it("could absent any parameter", function() {
         expect(link.get()).toBe("get-test");
         expect(input.get()).toBe("test");
@@ -77,6 +51,11 @@ describe("get", function() {
         expect(form.get("tagName")).toBe("form");
         expect(link.get("method")).toBe("");
         expect(link.get("tagName")).toBe("a");
+    });
+
+    it("should polyfill textContent", function() {
+        expect(link.get("textContent")).toBe("get-test");
+        expect(form.get("textContent")).toBe("");
     });
 
 });

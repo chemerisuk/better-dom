@@ -83,5 +83,13 @@ define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEac
                 node.innerText = value;
             };
         }
+
+        if (document.attachEvent) {
+            // fix NoScope elements in IE < 10
+            hooks.innerHTML = function(node, value) {
+                node.innerHTML = "";
+                node.appendChild(_parseFragment(value));
+            };
+        }
     })();
 });
