@@ -169,12 +169,13 @@ module.exports = function(grunt) {
                 skipModuleInsertion: true,
                 include: [
                     "Node.find", "Node.data", "Node.contains", "Node.events", "Node.functional",
+                    "Node.get", "Node.set",
                     "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
                     "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
                     "Element.set", "Element.style", "Element.traversing", "Element.visibility",
                     "CompositeElement",
                     "DOM.create", "DOM.extend", "DOM.template", "DOM.importstyles", "DOM.watch",
-                    "DOM.ready", "DOM.importscripts", "DOM.importstrings", "DOM.title"
+                    "DOM.ready", "DOM.importscripts", "DOM.importstrings"
                 ],
                 onBuildWrite: function(id, path, contents) {
                     return contents.replace(/^define\(.*?\{\s*"use strict";[\r\n]*([.\s\S]+)\}\);\s*$/m, "$1");

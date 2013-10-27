@@ -121,4 +121,17 @@ describe("set", function() {
         expect(function() { link.set(function() {}, ""); }).toThrow();
     });
 
+    it("should read/write current page title", function() {
+        expect(DOM.get("title")).toBe(document.title);
+
+        expect(DOM.set("title", "abc")).toBe(DOM);
+        expect(document.title).toBe("abc");
+    });
+
+    it("should throw error if title is not a string", function() {
+        expect(function() { DOM.set("title"); }).toThrow();
+        expect(function() { DOM.set("title", 123); }).toThrow();
+        expect(function() { DOM.set("title", function() {}); }).toThrow();
+    });
+
 });
