@@ -7,13 +7,13 @@ define(["Element"], function($Element, _makeError) {
      * @return {$Element} clone of current element
      */
     $Element.prototype.clone = function(deep) {
+        if (!arguments.length) deep = true;
+
         if (typeof deep !== "boolean") throw _makeError("clone", this);
 
         var node = this._node;
 
         if (node) {
-            if (!arguments.length) deep = true;
-
             if (document.addEventListener) {
                 node = node.cloneNode(deep);
             } else {

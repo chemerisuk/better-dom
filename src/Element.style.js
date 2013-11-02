@@ -106,14 +106,14 @@ define(["Element"], function($Element, _slice, _foldl, _map, _some, _keys, _forE
                 return style.cssFloat;
             };
             setStyleHooks.float = function(style, value) {
-                style.cssFloat = value.toString();
+                style.cssFloat = value;
             };
         } else {
             getStyleHooks.float = function(style) {
                 return style.styleFloat;
             };
             setStyleHooks.float = function(style, value) {
-                style.styleFloat = value.toString();
+                style.styleFloat = value;
             };
         }
 
