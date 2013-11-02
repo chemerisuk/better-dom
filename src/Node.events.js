@@ -200,7 +200,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
             };
         }
 
-        if (document.addEventListener) {
+        if (document.createElement("input").validity) {
             eventHooks.invalid = function(handler) {
                 handler.capturing = true;
             };
