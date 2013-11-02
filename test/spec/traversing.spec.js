@@ -9,23 +9,46 @@ describe("traversing", function() {
         link = DOM.find("#test");
     });
 
-    describe("next, prev, parent", function() {
-        it("should return an appropriate element", function() {
-            var expectedResults = {
-                    next: "b",
-                    prev: "i",
-                    parent: "div"
-                };
+    describe("next, prev, parent, child", function() {
+        describe("next, prev, parent", function() {
+            it("should return an appropriate element", function() {
+                var expectedResults = {
+                        next: "b",
+                        prev: "i",
+                        parent: "div"
+                    };
 
-            _forIn(expectedResults, function(tagName, methodName) {
-                expect(link[methodName]()._node).toHaveTag(tagName);
+                _forIn(expectedResults, function(tagName, methodName) {
+                    expect(link[methodName]()._node).toHaveTag(tagName);
+                });
+            });
+
+            it("should search for the first matching element if selector exists", function() {
+                expect(link.next("i")._node).toHaveTag("i");
+                expect(link.prev("b")._node).toHaveTag("b");
+                expect(link.parent("body")._node).toHaveTag("body");
             });
         });
 
-        it("should search for the first matching element if selector exists", function() {
-            expect(link.next("i")._node).toHaveTag("i");
-            expect(link.prev("b")._node).toHaveTag("b");
-            expect(link.parent("body")._node).toHaveTag("body");
+        describe("child", function() {
+            it("should accept optional filter", function() {
+                expect(link.child(0)._node).toHaveTag("strong");
+                expect(link.child(0, "a")._node).toBeFalsy();
+            });
+
+            it("should throw error if the first arg is not a number", function() {
+                expect(function() { link.child({}); }).toThrow();
+            });
+
+        });
+
+        it("should return empty element if value is not found", function() {
+            var unknownEl = link.find("unknown");
+
+            expect(unknownEl.next().length).toBe(0);
+            expect(unknownEl.prev().length).toBe(0);
+            expect(unknownEl.parent().length).toBe(0);
+            expect(unknownEl.child(0).length).toBe(0);
         });
     });
 
@@ -67,19 +90,14 @@ describe("traversing", function() {
                 }
             });
         });
-    });
 
-    describe("child", function() {
+        it("should return empty element if value is not found", function() {
+            var unknownEl = link.find("unknown");
 
-        it("should accept optional filter", function() {
-            expect(link.child(0)._node).toHaveTag("strong");
-            expect(link.child(0, "a")._node).toBeFalsy();
+            expect(unknownEl.nextAll().length).toBe(0);
+            expect(unknownEl.prevAll().length).toBe(0);
+            expect(unknownEl.children().length).toBe(0);
         });
-
-        it("should throw error if the first arg is not a number", function() {
-            expect(function() { link.child({}); }).toThrow();
-        });
-
     });
 
     function _forIn(obj, callback, thisPtr) {

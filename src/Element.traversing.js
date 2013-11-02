@@ -11,13 +11,13 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
                     nodes = multiple ? [] : null,
                     it = this._node;
 
-                if (!it) return;
+                if (it) {
+                    while (it = it[propertyName]) {
+                        if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
+                            if (!multiple) break;
 
-                while (it = it[propertyName]) {
-                    if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
-                        if (!multiple) break;
-
-                        nodes.push(it);
+                            nodes.push(it);
+                        }
                     }
                 }
 
@@ -33,7 +33,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
                     throw _makeError("child", this);
                 }
 
-                if (!this._node) return;
+                if (!this._node) return multiple ? new $Element() : new $CompositeElement();
 
                 var children = this._node.children,
                     matcher = SelectorMatcher(selector),
