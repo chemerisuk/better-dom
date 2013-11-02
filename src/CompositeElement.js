@@ -1,4 +1,4 @@
-define(["Element"], function($Element, _forEach, _forIn, _map) {
+define(["Element"], function($Element, _map) {
     "use strict";
 
     /**

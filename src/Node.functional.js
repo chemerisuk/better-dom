@@ -1,4 +1,4 @@
-define(["Node", "CompositeElement"], function($Node, $CompositeElement, _extend, _forIn, _map, _forEach, _slice, _forOwn, _makeError, _some, _every, _filter, _foldl, _foldr, _legacy) {
+define(["Node"], function($Node, _extend, _map, _forEach, _makeError, _some, _every, _filter, _foldl, _foldr, _legacy) {
     "use strict";
 
     // NODE FUNCTIONAL
