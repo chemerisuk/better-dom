@@ -1,4 +1,4 @@
-define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _legacy, _forOwn, _slice, _makeError) {
+define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEach, _legacy, _forOwn, _slice, _every, _makeError) {
     "use strict";
 
     // DOM EVENTS
@@ -150,8 +150,9 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
                 throw _makeError("fire", this);
             }
 
-            return _legacy(this, function(node) {
-                var hook = eventHooks[type],
+            return _every(this, function(el) {
+                var node = el._node,
+                    hook = eventHooks[type],
                     handler = {},
                     isCustomEvent, canContinue, event;
 
@@ -186,6 +187,8 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
 
                     EventHandler.veto = false;
                 }
+
+                return canContinue;
             });
         };
 

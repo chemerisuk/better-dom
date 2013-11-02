@@ -57,8 +57,12 @@ describe("fire", function() {
         expect(callback.callCount).toBe(2);
     });
 
-    it("should return reference to 'this'", function() {
-        expect(input.fire("focus")).toBe(input);
+    it("should return false if default action was prevented", function() {
+        expect(input.fire("focus")).toBe(true);
+
+        input.on("focus", function() { return false });
+
+        expect(input.fire("focus")).toBe(false);
     });
 
     it("should throw error if arguments are invalid", function() {
