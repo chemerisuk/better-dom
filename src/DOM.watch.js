@@ -23,7 +23,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                     // do not execute callback if it was previously excluded
                     if (_some(e.detail, function(x) { return x === entry.callback })) return;
 
-                    if (entry.matcher.test(node)) {
+                    if (entry.matcher(node)) {
                         if (entry.once) {
                             if (supportsAnimations) {
                                 node.addEventListener(e.type, entry.once, false);
@@ -83,7 +83,8 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
 
             watchers.push({
                 callback: callback,
-                matcher: new SelectorMatcher(selector),
+                matcher: SelectorMatcher(selector),
+                selector: selector,
                 once: once && function(e) {
                     if (supportsAnimations) {
                         if (e.animationName !== animId) return;
@@ -97,7 +98,7 @@ define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _for
                 }
             });
 
-            if (_some(watchers, function(x) { return x.matcher.selector === selector })) {
+            if (_some(watchers, function(x) { return x.selector === selector })) {
                 DOM.importStyles(selector, styles);
             }
         };

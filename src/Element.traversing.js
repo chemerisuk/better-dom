@@ -13,7 +13,7 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
 
                 if (it) {
                     while (it = it[propertyName]) {
-                        if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
+                        if (it.nodeType === 1 && (!matcher || matcher(it))) {
                             if (!multiple) break;
 
                             nodes.push(it);
@@ -45,14 +45,14 @@ define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filt
                 }
 
                 if (multiple) {
-                    return new $CompositeElement(!matcher ? children : _filter(children, matcher.test, matcher));
+                    return new $CompositeElement(!matcher ? children : _filter(children, matcher));
                 }
 
                 if (index < 0) index = children.length + index;
 
                 node = children[index];
 
-                return $Element(!matcher || matcher.test(node) ? node : null);
+                return $Element(!matcher || matcher(node) ? node : null);
             };
         }
 

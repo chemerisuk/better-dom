@@ -116,7 +116,7 @@ define(["SelectorMatcher"], function(SelectorMatcher, $Element, documentElement,
                     root = currentTarget._node;
 
                 for (; node && node !== root; node = node.parentNode) {
-                    if (matcher.test(node)) return defaultEventHandler(e, node);
+                    if (matcher(node)) return defaultEventHandler(e, node);
                 }
             };
 

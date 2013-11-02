@@ -28,9 +28,9 @@ define(["Element"], function($Element, SelectorMatcher, documentElement, _getCom
             var node = this._node,
                 hook = hooks[selector];
 
-            if (!node) return;
-
-            return hook ? hook(node) : new SelectorMatcher(selector).test(node);
+            if (node) {
+                return hook ? hook(node) : SelectorMatcher(selector)(node);
+            }
         };
     }());
 });
