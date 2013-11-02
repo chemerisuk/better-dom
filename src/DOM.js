@@ -1,8 +1,8 @@
 define(["Node"], function($Node) {
     "use strict";
 
-    // GLOBAL API
-    // ----------
+    // GLOBAL NAMESPACE
+    // ----------------
 
     /**
      * Global object to access DOM

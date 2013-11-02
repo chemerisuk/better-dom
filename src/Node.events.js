@@ -5,7 +5,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
     // ----------
 
     (function() {
-        var eventHooks = {},
+        var hooks = {},
             legacyCustomEventName = "dataavailable";
 
         /**
@@ -65,7 +65,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
                     handler.callback = callback;
                     handler.context = context || el;
 
-                    if (hook = eventHooks[type]) hook(handler);
+                    if (hook = hooks[type]) hook(handler);
 
                     if (document.addEventListener) {
                         node.addEventListener(handler._type || type, handler, !!handler.capturing);
@@ -152,29 +152,29 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
 
             return _every(this, function(el) {
                 var node = el._node,
-                    hook = eventHooks[type],
+                    hook = hooks[type],
                     handler = {},
-                    isCustomEvent, canContinue, event;
+                    isCustomEvent, canContinue, e;
 
                 if (hook) hook(handler);
 
                 if (document.createEvent) {
-                    event = document.createEvent("HTMLEvents");
+                    e = document.createEvent("HTMLEvents");
 
-                    event.initEvent(handler._type || type, true, true);
-                    event.detail = detail;
+                    e.initEvent(handler._type || type, true, true);
+                    e.detail = detail;
 
-                    canContinue = node.dispatchEvent(event);
+                    canContinue = node.dispatchEvent(e);
                 } else {
                     isCustomEvent = handler.custom || !("on" + type in node);
-                    event = document.createEventObject();
+                    e = document.createEventObject();
                     // store original event type
-                    event.srcUrn = isCustomEvent ? type : undefined;
-                    event.detail = detail;
+                    e.srcUrn = isCustomEvent ? type : undefined;
+                    e.detail = detail;
 
-                    node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
+                    node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), e);
 
-                    canContinue = event.returnValue !== false;
+                    canContinue = e.returnValue !== false;
                 }
 
                 // Call a native DOM method on the target with the same name as the event
@@ -195,16 +195,16 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
         // firefox doesn't support focusin/focusout events
         if ("onfocusin" in document.createElement("a")) {
             _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
-                eventHooks[prop] = function(handler) { handler._type = value; };
+                hooks[prop] = function(handler) { handler._type = value };
             });
         } else {
-            eventHooks.focus = eventHooks.blur = function(handler) {
+            hooks.focus = hooks.blur = function(handler) {
                 handler.capturing = true;
             };
         }
 
         if (document.createElement("input").validity) {
-            eventHooks.invalid = function(handler) {
+            hooks.invalid = function(handler) {
                 handler.capturing = true;
             };
         }
@@ -278,7 +278,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
                     };
                 })());
 
-                eventHooks.submit = function(handler) {
+                hooks.submit = function(handler) {
                     handler.custom = true;
                 };
             }
