@@ -20,17 +20,21 @@ define(["Element"], function($Element, SelectorMatcher, documentElement, _getCom
                 !documentElement.contains(node);
         };
 
-        return function(selector) {
-            if (!selector || typeof selector !== "string") {
+        return function(selector, deep) {
+            if (!selector || typeof selector !== "string" || deep !== undefined && typeof deep !== "boolean") {
                 throw _makeError("matches", this);
             }
 
             var node = this._node,
-                hook = hooks[selector];
+                checker = hooks[selector] || SelectorMatcher(selector);
 
-            if (node) {
-                return hook ? hook(node) : SelectorMatcher(selector)(node);
+            while (node && node !== document) {
+                if (checker(node)) return true;
+
+                node = deep ? node.parentNode : null;
             }
+
+            return false;
         };
     }());
 });

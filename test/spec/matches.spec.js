@@ -4,7 +4,7 @@ describe("matches", function() {
     var link, input;
 
     beforeEach(function() {
-        setFixtures("<a id='is1' href='#matches' class='test1'></a><input type='checkbox' id='is2' required checked>");
+        setFixtures("<a id='is1' href='#matches' class='test1'><i></i></a><input type='checkbox' id='is2' required checked>");
 
         link = DOM.find("#is1");
         input = DOM.find("#is2");
@@ -34,4 +34,8 @@ describe("matches", function() {
         expect(function() { link.matches(1); }).toThrow();
     });
 
+    it("should accept optional deep argument", function() {
+        expect(link.child(0).matches("a")).toBe(false);
+        expect(link.child(0).matches("a", true)).toBe(true);
+    });
 });
