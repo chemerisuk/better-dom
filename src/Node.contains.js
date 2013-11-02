@@ -10,18 +10,10 @@ define(["Node"], function($Node, $Element, _makeError) {
      * @return {Boolean} true if success
      */
     $Node.prototype.contains = function(element) {
-        var node = this._node, result;
+        var node = this._node;
 
-        if (!node) return;
+        if (!(element instanceof $Element)) throw _makeError("contains", this);
 
-        if (element instanceof $Element) {
-            result = element.every(function(element) {
-                return node.contains(element._node);
-            });
-        } else {
-            throw _makeError("contains", this);
-        }
-
-        return result;
+        if (node) return element.every(function(el) { return node.contains(el._node) });
     };
 });

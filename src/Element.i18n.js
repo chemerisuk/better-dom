@@ -1,6 +1,9 @@
 define(["Element"], function($Element, _forEach, _foldl, _keys, _makeError) {
     "use strict";
 
+    // I18N
+    // ----
+
     /**
      * Localize element value
      * @param  {String} [value]  resource string key

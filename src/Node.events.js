@@ -142,7 +142,7 @@ define(["Node"], function($Node, $Element, SelectorMatcher, EventHandler, _forEa
          * Triggers an event of specific type and executes it's default action if it exists
          * @param  {String} type type of event
          * @param  {Object} [detail] event details
-         * @return {$Node}
+         * @return {Boolean} true if default action wasn't prevented
          * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
          */
         $Node.prototype.fire = function(type, detail) {
