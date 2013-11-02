@@ -51,7 +51,7 @@ describe("collection methods", function() {
         expect(inputs.filter(function(el) {
             expect(this).toBe(obj);
 
-            return el.get("options").length;
+            return el.children("option").length;
         }, obj)).toEqual([]);
 
         expect(inputs.reduce(function(memo, el, index, a) {

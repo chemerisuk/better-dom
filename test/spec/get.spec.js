@@ -15,14 +15,13 @@ describe("get", function() {
     it("should read an attribute value", function() {
         expect(link.get("id")).toBe("test");
         expect(link.get("data-attr")).toBe("val");
-        expect(link.get("tagName")).toBe("a");
+        expect(link.get("tagName")).toBe("A");
     });
 
     it("should try to read property value first", function() {
         expect(link.get("href")).not.toBe("test.html");
         expect(input.get("tabIndex")).toBe(0);
-        expect(input.get("form")).toBe(form);
-
+        expect(input.get("form").nodeType).toBe(1);
     });
 
     it("could absent any parameter", function() {
@@ -44,13 +43,6 @@ describe("get", function() {
         expect(function() { link.get(true); }).toThrow();
         expect(function() { link.get({}); }).toThrow();
         expect(function() { link.get(function() {}); }).toThrow();
-    });
-
-    it("should lowercase some properties", function() {
-        expect(form.get("method")).toBe("post");
-        expect(form.get("tagName")).toBe("form");
-        expect(link.get("method")).toBe("");
-        expect(link.get("tagName")).toBe("a");
     });
 
     it("should polyfill textContent", function() {

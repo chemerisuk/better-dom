@@ -34,18 +34,6 @@ define(["Element"], function($Element, $CompositeElement, documentElement, _make
             return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
         };
 
-        hooks.tagName = hooks.method = function(node, key) {
-            return key in node ? node[key].toLowerCase() : "";
-        };
-
-        hooks.elements = hooks.options = function(node, key) {
-            return new $CompositeElement(node[key]);
-        };
-
-        hooks.form = function(node) {
-            return $Element(node.form);
-        };
-
         hooks.type = function(node) {
             // some browsers don't recognize input[type=email] etc.
             return node.getAttribute("type") || node.type;
