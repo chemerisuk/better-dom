@@ -5,6 +5,4 @@ jsdoc
 coverage
 *.log
 build
-reports
-.grunt
-_SpecRunner.html
+*.sublime-workspace
