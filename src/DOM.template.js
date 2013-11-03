@@ -9,7 +9,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
         var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
-            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
+            reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
             reHtml = /^[\s<]/,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
@@ -43,7 +43,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
             makeIndexedTerm = function(term) {
                 return function(_, i, arr) {
                     return term.replace(reIndex, function(expr, fmt, sign, base) {
-                        var index = (sign ? arr.length - i - 1 : i) + (base ? base | 0 : 1);
+                        var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
                         // make zero-padding index string
                         return (fmt + index).slice(-fmt.length).split("$").join("0");
                     });
@@ -58,11 +58,12 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
          * Parse emmet-like template to HTML string
          * @memberOf DOM
          * @param  {String} template emmet-like expression
+         * @param {Object} vars macroses map
          * @return {String} HTML string
          * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
          * @see http://docs.emmet.io/cheat-sheet/
          */
-        DOM.template = function(template) {
+        DOM.template = function(template, vars) {
             var stack = [],
                 output = [],
                 term = "",
@@ -164,7 +165,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
                         break;
 
                     case "*":
-                        node = _map(Array(term | 0), makeIndexedTerm(toString(node)));
+                        node = _map(Array(+term), makeIndexedTerm(toString(node)));
                         break;
 
                     default:
@@ -185,7 +186,13 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
                 stack.unshift(str);
             }
 
-            return cache[template] = toString(stack[0]).replace(reTextTag, "");
+            output = toString(stack[0]).replace(reTextTag, "");
+
+            for (i in vars || {}) {
+                output = output.split("$" + i).join(vars[i]);
+            }
+
+            return cache[template] = output;
         };
     })();
 });
