@@ -51,7 +51,8 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
             },
             toString = function(term) {
                 return typeof term === "string" ? term : term.join("");
-            };
+            },
+            cache = {};
 
         /**
          * Parse emmet-like template to HTML string
@@ -68,6 +69,8 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
                 i, n, str, priority, skip, node;
 
             if (typeof template !== "string") throw _makeError("template", this);
+
+            if (template in cache) return cache[template];
 
             if (!template || reHtml.exec(template)) return template;
 
@@ -182,7 +185,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
                 stack.unshift(str);
             }
 
-            return toString(stack[0]).replace(reTextTag, "");
+            return cache[template] = toString(stack[0]).replace(reTextTag, "");
         };
     })();
 });
