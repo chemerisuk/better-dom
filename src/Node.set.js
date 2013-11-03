@@ -3,8 +3,8 @@ define(["Node"], function($Node, _makeError) {
 
     /**
      * Set property value
-     * @param  {String} name property name
-     * @param {String} property value
+     * @param  {String} name  property name
+     * @param  {String} value property value
      */
     $Node.prototype.set = function(name, value) {
         if (typeof name !== "string" || typeof value !== "string") throw _makeError(this, "set");

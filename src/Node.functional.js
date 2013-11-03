@@ -91,6 +91,7 @@ define(["Node"], function($Node, _extend, _map, _forEach, _makeError, _some, _ev
              * object. Use only when you need to communicate better-dom with third party scripts!
              * @memberOf $Element.prototype
              * @param  {Function} block unsafe block body (nativeNode, index)
+             * @function
              */
             legacy: makeCollectionMethod(_legacy)
         });

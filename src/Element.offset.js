@@ -23,7 +23,7 @@ define(["Element"], function($Element, documentElement) {
     };
 
     /**
-     * Calculate width based on element's offset
+     * Calculate element's width in pixels
      * @return {Number} element width in pixels
      */
     $Element.prototype.width = function() {
@@ -31,7 +31,7 @@ define(["Element"], function($Element, documentElement) {
     };
 
     /**
-     * Calculate height based on element's offset
+     * Calculate element's height in pixels
      * @return {Number} element height in pixels
      */
     $Element.prototype.height = function() {
