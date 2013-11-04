@@ -22,9 +22,7 @@
     "lastsemic": true,
 
     "globals": {
-        "_": true,
         "DOM": true,
-        "define": true,
 
         "beforeEach": true,
         "afterEach": true,
