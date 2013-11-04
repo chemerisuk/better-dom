@@ -200,6 +200,21 @@ module.exports = function(grunt) {
             compile: {
                 files: {
                     "build/better-dom-new.js": ["src-new/*.js"]
+                },
+                options: {
+                    // transform: function()
+                    postBundleCB: function(err, src, next) {
+                        next(err, grunt.template.process(
+                            "/**\n" +
+                            " * @file <%= pkg.name %>\n" +
+                            " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
+                            " * @overview <%= pkg.description %>\n" +
+                            " * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>\n" +
+                            " * @license <%= pkg.license %>\n" +
+                            " * @see <%= pkg.repository.url %>\n" +
+                            " */\n"
+                        ) + src);
+                    }
                 }
             }
         }
