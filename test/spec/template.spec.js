@@ -60,14 +60,14 @@ describe("DOM.template", function() {
         checkExpr("a[b c='d\\'f']", "<a b=\"\" c='d\\'f'></a>");
     });
 
-    describe("counters", function() {
+    describe("variables", function() {
         checkExpr("ul#nav>li.item$*3", "<ul id=\"nav\"><li class=\"item1\"></li><li class=\"item2\"></li><li class=\"item3\"></li></ul>");
         checkExpr("ul#nav>li.item$$$*3", "<ul id=\"nav\"><li class=\"item001\"></li><li class=\"item002\"></li><li class=\"item003\"></li></ul>");
-        // checkExpr("ul#nav>li.$$item$$$*3", "<ul id=\"nav\"><li class=\"01item001\"></li><li class=\"02item002\"></li><li class=\"03item003\"></li></ul>");
+        checkExpr("ul#nav>li.$$item$$$*3", "<ul id=\"nav\"><li class=\"01item001\"></li><li class=\"02item002\"></li><li class=\"03item003\"></li></ul>");
         checkExpr("ul#nav>li.pre$*3+li.post$*3", "<ul id=\"nav\"><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"pre3\"></li><li class=\"post1\"></li><li class=\"post2\"></li><li class=\"post3\"></li></ul>");
 
         checkExpr("div.sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
-        //checkExpr(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
+        // checkExpr(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
         checkExpr("li#id$.class$*3", "<li id=\"id1\" class=\"class1\"></li><li id=\"id2\" class=\"class2\"></li><li id=\"id3\" class=\"class3\"></li>");
 
         checkExpr("{$@3 }*3", "3 4 5 ");

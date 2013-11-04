@@ -10,6 +10,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
             reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
+            reVar = /\$\w+/g,
             reHtml = /^[\s<]/,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
@@ -188,9 +189,7 @@ define(["DOM"], function(DOM, _map, _forEach, _makeError) {
 
             output = toString(stack[0]).replace(reTextTag, "");
 
-            for (i in vars || {}) {
-                output = output.split("$" + i).join(vars[i]);
-            }
+            if (vars) output = output.replace(reVar, function(x) { return vars[x.substr(1)] || x });
 
             return cache[template] = output;
         };
