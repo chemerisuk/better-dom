@@ -16,7 +16,7 @@ module.exports = function(grunt) {
             },
             build: {
                 files: ["src/*.js"],
-                tasks: ["requirejs", "karma:coverage:run"]
+                tasks: ["browserify", "karma:coverage:run"]
             }
         },
         jshint: {
@@ -156,54 +156,16 @@ module.exports = function(grunt) {
                 }
             }
         },
-        requirejs: {
-            options: {
-                optimize: "none",
-                optimizeCss: "none",
-                useStrict: true,
-                baseUrl: "src",
-                name: "DOM",
-                create: true,
-                logLevel: 2,
-                skipPragmas: true,
-                skipModuleInsertion: true,
-                include: [
-                    "Node.find", "Node.data", "Node.contains", "Node.events", "Node.functional",
-                    "Node.get", "Node.set",
-                    "SelectorMatcher", "EventHandler", "Element.classes", "Element.clone",
-                    "Element.manipulation", "Element.matches", "Element.offset", "Element.get",
-                    "Element.set", "Element.style", "Element.traversing", "Element.visibility",
-                    "Element.i18n", "CompositeElement",
-                    "DOM.create", "DOM.extend", "DOM.template", "DOM.importstyles", "DOM.watch",
-                    "DOM.ready", "DOM.importscripts", "DOM.importstrings"
-                ],
-                onBuildWrite: function(id, path, contents) {
-                    return contents.replace(/^define\(.*?\{\s*"use strict";[\r\n]*([.\s\S]+)\}\);\s*$/m, "$1");
-                }
-            },
-            compile: {
-                options: {
-                    wrap: {
-                        startFile: "extra/script.start.fragment",
-                        endFile: "extra/script.end.fragment"
-                    },
-                    out: function(text) {
-                        // replace empty define with correct declaration
-                        text = text.replace("define(\"DOM\", function(){});\n", "");
-                        // write file
-                        grunt.file.write(grunt.config.process("build/<%= pkg.name %>.js"), grunt.config.process(text));
-                    }
-                }
-            }
-        },
         browserify: {
             compile: {
                 files: {
-                    "build/better-dom-new.js": ["src-new/*.js"]
+                    "build/better-dom.js": ["src/*.js"]
                 },
                 options: {
-                    // transform: function()
                     postBundleCB: function(err, src, next) {
+                        // apeend strict mode
+                        src = src.replace("{", "{\"use strict\";");
+                        // append copyrights header
                         next(err, grunt.template.process(
                             "/**\n" +
                             " * @file <%= pkg.name %>\n" +
@@ -223,7 +185,7 @@ module.exports = function(grunt) {
     Object.keys(pkg.devDependencies).filter(gruntDeps).forEach(grunt.loadNpmTasks);
 
     grunt.registerTask("dev", [
-        "requirejs:compile",
+        "browserify",
         "jshint",
         "connect",
         "karma:coverage",
@@ -231,7 +193,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("test", [
-        "requirejs:compile",
+        "browserify",
         "jshint",
         "karma:unit"
     ]);
@@ -265,7 +227,7 @@ module.exports = function(grunt) {
             "karma:all",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
-            "requirejs:compile",
+            "browserify",
             "copy:dist",
             "docs",
             "shell:checkoutDocs",

@@ -1,15 +1,15 @@
-define(["Node"], function($Node) {
-    "use strict";
+// GLOBAL NAMESPACE
+// ----------------
 
-    // GLOBAL NAMESPACE
-    // ----------------
-
+var $Node = require("./node"),
     /**
      * Global object to access DOM
      * @namespace DOM
      * @extends $Node
      */
-    var DOM = new $Node(document);
+    DOM = new $Node(document);
 
-    DOM.version = "<%= pkg.version %>";
-});
+DOM.version = "<%= pkg.version %>";
+
+// register global variable
+module.exports = window.DOM = DOM;

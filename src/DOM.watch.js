@@ -1,106 +1,102 @@
-define(["DOM", "Element"], function(DOM, $Element, _some, _defer, _forEach, _forOwn, SelectorMatcher) {
-    "use strict";
+// WATCH CALLBACK
+// --------------
 
-    // WATCH CALLBACK
-    // --------------
+var _ = require("./utils"),
+    $Element = require("./element"),
+    DOM = require("./dom"),
+    SelectorMatcher = require("./selectormatcher"),
+    // Inspired by trick discovered by Daniel Buchner:
+    // https://github.com/csuwldcat/SelectorListener
+    watchers = [],
+    supportsAnimations = window.CSSKeyframesRule || !document.attachEvent,
+    handleWatcherEntry = function(e, node) {
+        return function(entry) {
+            // do not execute callback if it was previously excluded
+            if (_.some(e.detail, function(x) { return x === entry.callback })) return;
 
-    /**
-     * Execute callback when element with specified selector is found in document tree
-     * @memberOf DOM
-     * @param {String} selector css selector
-     * @param {Fuction} callback event handler
-     * @param {Boolean} [once] execute callback only at the first time
-     * @function
-     */
-    DOM.watch = (function() {
-        // Inspired by trick discovered by Daniel Buchner:
-        // https://github.com/csuwldcat/SelectorListener
-
-        var watchers = [],
-            supportsAnimations = window.CSSKeyframesRule || !document.attachEvent,
-            handleWatcherEntry = function(e, node) {
-                return function(entry) {
-                    // do not execute callback if it was previously excluded
-                    if (_some(e.detail, function(x) { return x === entry.callback })) return;
-
-                    if (entry.matcher(node)) {
-                        if (entry.once) {
-                            if (supportsAnimations) {
-                                node.addEventListener(e.type, entry.once, false);
-                            } else {
-                                node.attachEvent("on" + e.type, entry.once);
-                            }
-                        }
-
-                        _defer(function() { entry.callback($Element(node)) });
-                    }
-                };
-            },
-            animId, cssPrefix, link, styles;
-
-        if (supportsAnimations) {
-            animId = "DOM" + new Date().getTime();
-            cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
-
-            DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
-
-            styles = {
-                "animation-duration": "1ms",
-                "animation-name": animId + " !important"
-            };
-
-            document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
-                if (e.animationName === animId) {
-                    _forEach(watchers, handleWatcherEntry(e, e.target));
-                }
-            }, false);
-        } else {
-            link = document.querySelector("link[rel=htc]");
-
-            if (!link) throw "You forgot to include <link> with rel='htc' on your page!";
-
-            styles = {behavior: "url(" + link.href + ") !important"};
-
-            document.attachEvent("ondataavailable", function() {
-                var e = window.event;
-
-                if (e.srcUrn === "dataavailable") {
-                    _forEach(watchers, handleWatcherEntry(e, e.srcElement));
-                }
-            });
-        }
-
-        return function(selector, callback, once) {
-            if (!supportsAnimations) {
-                // do safe call of the callback for each matched element
-                // if the behaviour is already attached
-                DOM.findAll(selector).legacy(function(node, el) {
-                    if (node.behaviorUrns.length > 0) {
-                        _defer(function() { callback(el) });
-                    }
-                });
-            }
-
-            watchers.push({
-                callback: callback,
-                matcher: SelectorMatcher(selector),
-                selector: selector,
-                once: once && function(e) {
+            if (entry.matcher(node)) {
+                if (entry.once) {
                     if (supportsAnimations) {
-                        if (e.animationName !== animId) return;
+                        node.addEventListener(e.type, entry.once, false);
                     } else {
-                        e = window.event;
-
-                        if (e.srcUrn !== "dataavailable") return;
+                        node.attachEvent("on" + e.type, entry.once);
                     }
-
-                    (e.detail = e.detail || []).push(callback);
                 }
-            });
 
-            if (_some(watchers, function(x) { return x.selector === selector })) {
-                DOM.importStyles(selector, styles);
+                _.defer(function() { entry.callback($Element(node)) });
             }
         };
-    }());
-});
+    },
+    animId, cssPrefix, link, styles;
+
+if (supportsAnimations) {
+    animId = "DOM" + new Date().getTime();
+    cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
+
+    DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
+
+    styles = {
+        "animation-duration": "1ms",
+        "animation-name": animId + " !important"
+    };
+
+    document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
+        if (e.animationName === animId) {
+            _.forEach(watchers, handleWatcherEntry(e, e.target));
+        }
+    }, false);
+} else {
+    link = document.querySelector("link[rel=htc]");
+
+    if (!link) throw "You forgot to include <link> with rel='htc' on your page!";
+
+    styles = {behavior: "url(" + link.href + ") !important"};
+
+    document.attachEvent("ondataavailable", function() {
+        var e = window.event;
+
+        if (e.srcUrn === "dataavailable") {
+            _.forEach(watchers, handleWatcherEntry(e, e.srcElement));
+        }
+    });
+}
+
+/**
+ * Execute callback when element with specified selector is found in document tree
+ * @memberOf DOM
+ * @param {String} selector css selector
+ * @param {Fuction} callback event handler
+ * @param {Boolean} [once] execute callback only at the first time
+ */
+DOM.watch = function(selector, callback, once) {
+    if (!supportsAnimations) {
+        // do safe call of the callback for each matched element
+        // if the behaviour is already attached
+        DOM.findAll(selector).legacy(function(node, el) {
+            if (node.behaviorUrns.length > 0) {
+                _.defer(function() { callback(el) });
+            }
+        });
+    }
+
+    watchers.push({
+        callback: callback,
+        matcher: SelectorMatcher(selector),
+        selector: selector,
+        once: once && function(e) {
+            if (supportsAnimations) {
+                if (e.animationName !== animId) return;
+            } else {
+                e = window.event;
+
+                if (e.srcUrn !== "dataavailable") return;
+            }
+
+            (e.detail = e.detail || []).push(callback);
+        }
+    });
+
+    if (_.some(watchers, function(x) { return x.selector === selector })) {
+        DOM.importStyles(selector, styles);
+    }
+};

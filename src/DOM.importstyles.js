@@ -1,50 +1,45 @@
-define(["DOM", "Element"], function(DOM, $Element, _forEach, _forOwn, _makeError, documentElement) {
-    "use strict";
+var _ = require("./utils"),
+    $Element = require("./element"),
+    DOM = require("./dom"),
+    styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
+    styleSheet = styleNode.sheet || styleNode.styleSheet;
 
-    // IMPORT STYLES
-    // -------------
+/**
+ * Append global css styles
+ * @memberOf DOM
+ * @param {String|Object} selector css selector or object with selector/rules pairs
+ * @param {String} styles css rules
+ */
+DOM.importStyles = function(selector, styles) {
+    if (typeof styles === "object") {
+        var obj = new $Element({style: {"__dom__": true}});
 
-    (function() {
-        var styleNode = documentElement.firstChild.appendChild(document.createElement("style")),
-            styleSheet = styleNode.sheet || styleNode.styleSheet;
+        $Element.prototype.style.call(obj, styles);
 
-        /**
-         * Append global css styles
-         * @memberOf DOM
-         * @param {String|Object} selector css selector or object with selector/rules pairs
-         * @param {String} styles css rules
-         */
-        DOM.importStyles = function(selector, styles) {
-            if (typeof styles === "object") {
-                var obj = new $Element({style: {"__dom__": true}});
+        styles = "";
 
-                $Element.prototype.style.call(obj, styles);
+        _.forOwn(obj._node.style, function(value, key) {
+            styles += ";" + key + ":" + value;
+        });
 
-                styles = "";
+        styles = styles.substr(1);
+    }
 
-                _forOwn(obj._node.style, function(value, key) {
-                    styles += ";" + key + ":" + value;
-                });
+    if (typeof selector !== "string" || typeof styles !== "string") {
+        throw _.makeError("importStyles", this);
+    }
 
-                styles = styles.substr(1);
-            }
+    if (styleSheet.cssRules) {
+        styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
+    } else {
+        // ie doesn't support multiple selectors in addRule
+        _.forEach(selector.split(","), function(selector) {
+            styleSheet.addRule(selector, styles);
+        });
+    }
 
-            if (typeof selector !== "string" || typeof styles !== "string") {
-                throw _makeError("importStyles", this);
-            }
+    return this;
+};
 
-            if (styleSheet.cssRules) {
-                styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
-            } else {
-                // ie doesn't support multiple selectors in addRule
-                _forEach(selector.split(","), function(selector) {
-                    styleSheet.addRule(selector, styles);
-                });
-            }
-
-            return this;
-        };
-
-        DOM.importStyles("[aria-hidden=true]", "display:none");
-    }());
-});
+DOM.importStyles("[aria-hidden=true]", "display:none");
+DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
