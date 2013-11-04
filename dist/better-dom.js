@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.5.4 2013-10-27T20:37:41
+ * @version 1.5.5 2013-11-04T07:14:45
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -352,26 +352,18 @@
      * @return {Boolean} true if success
      */
     $Node.prototype.contains = function(element) {
-        var node = this._node, result;
+        var node = this._node;
 
-        if (!node) return;
+        if (!(element instanceof $Element)) throw _makeError("contains", this);
 
-        if (element instanceof $Element) {
-            result = element.every(function(element) {
-                return node.contains(element._node);
-            });
-        } else {
-            throw _makeError("contains", this);
-        }
-
-        return result;
+        if (node) return element.every(function(el) { return node.contains(el._node) });
     };
 
     // DOM EVENTS
     // ----------
 
     (function() {
-        var eventHooks = {},
+        var hooks = {},
             legacyCustomEventName = "dataavailable";
 
         /**
@@ -431,7 +423,7 @@
                     handler.callback = callback;
                     handler.context = context || el;
 
-                    if (hook = eventHooks[type]) hook(handler);
+                    if (hook = hooks[type]) hook(handler);
 
                     if (document.addEventListener) {
                         node.addEventListener(handler._type || type, handler, !!handler.capturing);
@@ -508,7 +500,7 @@
          * Triggers an event of specific type and executes it's default action if it exists
          * @param  {String} type type of event
          * @param  {Object} [detail] event details
-         * @return {$Node}
+         * @return {Boolean} true if default action wasn't prevented
          * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
          */
         $Node.prototype.fire = function(type, detail) {
@@ -516,30 +508,31 @@
                 throw _makeError("fire", this);
             }
 
-            return _legacy(this, function(node) {
-                var hook = eventHooks[type],
+            return _every(this, function(el) {
+                var node = el._node,
+                    hook = hooks[type],
                     handler = {},
-                    isCustomEvent, canContinue, event;
+                    isCustomEvent, canContinue, e;
 
                 if (hook) hook(handler);
 
                 if (document.createEvent) {
-                    event = document.createEvent("HTMLEvents");
+                    e = document.createEvent("HTMLEvents");
 
-                    event.initEvent(handler._type || type, true, true);
-                    event.detail = detail;
+                    e.initEvent(handler._type || type, true, true);
+                    e.detail = detail;
 
-                    canContinue = node.dispatchEvent(event);
+                    canContinue = node.dispatchEvent(e);
                 } else {
                     isCustomEvent = handler.custom || !("on" + type in node);
-                    event = document.createEventObject();
+                    e = document.createEventObject();
                     // store original event type
-                    event.srcUrn = isCustomEvent ? type : undefined;
-                    event.detail = detail;
+                    e.srcUrn = isCustomEvent ? type : undefined;
+                    e.detail = detail;
 
-                    node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), event);
+                    node.fireEvent("on" + (isCustomEvent ? legacyCustomEventName : handler._type || type), e);
 
-                    canContinue = event.returnValue !== false;
+                    canContinue = e.returnValue !== false;
                 }
 
                 // Call a native DOM method on the target with the same name as the event
@@ -552,22 +545,24 @@
 
                     EventHandler.veto = false;
                 }
+
+                return canContinue;
             });
         };
 
         // firefox doesn't support focusin/focusout events
         if ("onfocusin" in document.createElement("a")) {
             _forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
-                eventHooks[prop] = function(handler) { handler._type = value; };
+                hooks[prop] = function(handler) { handler._type = value };
             });
         } else {
-            eventHooks.focus = eventHooks.blur = function(handler) {
+            hooks.focus = hooks.blur = function(handler) {
                 handler.capturing = true;
             };
         }
 
-        if (document.addEventListener) {
-            eventHooks.invalid = function(handler) {
+        if (document.createElement("input").validity) {
+            hooks.invalid = function(handler) {
                 handler.capturing = true;
             };
         }
@@ -641,49 +636,12 @@
                     };
                 })());
 
-                eventHooks.submit = function(handler) {
+                hooks.submit = function(handler) {
                     handler.custom = true;
                 };
             }
         }
     }());
-
-    // DOM ELEMENT
-    // -----------
-
-    /**
-     * Used to represent a DOM element (length == 1)
-     * @name $Element
-     * @param element {Object} native element
-     * @extends $Node
-     * @constructor
-     * @private
-     */
-    function $Element(element) {
-        if (element && element.__dom__) return element.__dom__;
-
-        if (!(this instanceof $Element)) {
-            return new $Element(element);
-        }
-
-        $Node.call(this, element);
-    }
-
-    $Element.prototype = new $Node();
-
-    /**
-     * Used to represent a collection of DOM elements (length >= 1)
-     * @name $CompositeElement
-     * @param elements {Array|Object} array or array-like object with native elements
-     * @extends $Element
-     * @constructor
-     * @private
-     */
-    function $CompositeElement(elements) {
-        Array.prototype.push.apply(this, _map(elements, $Element));
-    }
-
-    $CompositeElement.prototype = new $Element();
 
     // NODE FUNCTIONAL
     // ---------------
@@ -775,6 +733,7 @@
              * object. Use only when you need to communicate better-dom with third party scripts!
              * @memberOf $Element.prototype
              * @param  {Function} block unsafe block body (nativeNode, index)
+             * @function
              */
             legacy: makeCollectionMethod(_legacy)
         });
@@ -793,8 +752,8 @@
 
     /**
      * Set property value
-     * @param  {String} name property name
-     * @param {String} property value
+     * @param  {String} name  property name
+     * @param  {String} value property value
      */
     $Node.prototype.set = function(name, value) {
         if (typeof name !== "string" || typeof value !== "string") throw _makeError(this, "set");
@@ -809,51 +768,45 @@
      * @private
      * @constructor
      */
+    // jshint unused:false
     var SelectorMatcher = (function() {
         // Quick matching inspired by
         // https://github.com/jquery/jquery
         var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,
-            ctor =  function(selector) {
-                if (!(this instanceof SelectorMatcher)) {
-                    return selector ? new SelectorMatcher(selector) : null;
-                }
-
-                this.selector = selector;
-
-                var quick = rquickIs.exec(selector);
-                // TODO: support attribute value check
-                if (this.quick = quick) {
-                    //   0  1    2   3          4
-                    // [ _, tag, id, attribute, class ]
-                    if (quick[1]) quick[1] = quick[1].toLowerCase();
-                    if (quick[4]) quick[4] = " " + quick[4] + " ";
-                }
-            },
             matchesProp = _foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
                 var propertyName = prefix + "atchesSelector";
 
                 if (!result) return documentElement[propertyName] && propertyName;
             }, null),
-            isEqual = function(val) { return val === this; };
+            isEqual = function(val) { return val === this };
 
-        ctor.prototype = {
-            test: function(el) {
-                if (this.quick) {
+        return function(selector) {
+            if (typeof selector !== "string") return null;
+
+            var quick = rquickIs.exec(selector);
+            // TODO: support attribute value check
+            if (quick) {
+                //   0  1    2   3          4
+                // [ _, tag, id, attribute, class ]
+                if (quick[1]) quick[1] = quick[1].toLowerCase();
+                if (quick[4]) quick[4] = " " + quick[4] + " ";
+            }
+
+            return function(el) {
+                if (quick) {
                     return (
-                        (!this.quick[1] || el.nodeName.toLowerCase() === this.quick[1]) &&
-                        (!this.quick[2] || el.id === this.quick[2]) &&
-                        (!this.quick[3] || el.hasAttribute(this.quick[3])) &&
-                        (!this.quick[4] || (" " + el.className + " ").indexOf(this.quick[4]) >= 0)
+                        (!quick[1] || el.nodeName.toLowerCase() === quick[1]) &&
+                        (!quick[2] || el.id === quick[2]) &&
+                        (!quick[3] || el.hasAttribute(quick[3])) &&
+                        (!quick[4] || (" " + el.className + " ").indexOf(quick[4]) >= 0)
                     );
                 }
 
-                if (matchesProp) return el[matchesProp](this.selector);
+                if (matchesProp) return el[matchesProp](selector);
 
-                return _some(document.querySelectorAll(this.selector), isEqual, el);
-            }
+                return _some(document.querySelectorAll(selector), isEqual, el);
+            };
         };
-
-        return ctor;
     }());
 
     /**
@@ -971,7 +924,7 @@
                     root = currentTarget._node;
 
                 for (; node && node !== root; node = node.parentNode) {
-                    if (matcher.test(node)) return defaultEventHandler(e, node);
+                    if (matcher(node)) return defaultEventHandler(e, node);
                 }
             };
 
@@ -985,6 +938,29 @@
             return result;
         };
     }());
+
+    // DOM ELEMENT
+    // -----------
+
+    /**
+     * Used to represent a DOM element (length == 1)
+     * @name $Element
+     * @param element {Object} native element
+     * @extends $Node
+     * @constructor
+     * @private
+     */
+    function $Element(element) {
+        if (element && element.__dom__) return element.__dom__;
+
+        if (!(this instanceof $Element)) {
+            return new $Element(element);
+        }
+
+        $Node.call(this, element);
+    }
+
+    $Element.prototype = new $Node();
 
     // CLASSES MANIPULATION
     // --------------------
@@ -1079,25 +1055,25 @@
      * @return {$Element} clone of current element
      */
     $Element.prototype.clone = function(deep) {
-        var node = this._node;
-
-        if (!node) return;
-
         if (!arguments.length) deep = true;
 
         if (typeof deep !== "boolean") throw _makeError("clone", this);
 
-        if (document.addEventListener) {
-            node = node.cloneNode(deep);
-        } else {
-            node = document.createElement("div");
-            node.innerHTML = this._node.outerHTML;
-            node = node.firstChild;
+        var node = this._node;
 
-            if (!deep) node.innerHTML = "";
+        if (node) {
+            if (document.addEventListener) {
+                node = node.cloneNode(deep);
+            } else {
+                node = document.createElement("div");
+                node.innerHTML = this._node.outerHTML;
+                node = node.firstChild;
+
+                if (!deep) node.innerHTML = "";
+            }
+
+            return new $Element(node);
         }
-
-        return new $Element(node);
     };
 
     // MANIPULATION
@@ -1223,17 +1199,21 @@
                 !documentElement.contains(node);
         };
 
-        return function(selector) {
-            if (!selector || typeof selector !== "string") {
+        return function(selector, deep) {
+            if (!selector || typeof selector !== "string" || deep !== undefined && typeof deep !== "boolean") {
                 throw _makeError("matches", this);
             }
 
             var node = this._node,
-                hook = hooks[selector];
+                checker = hooks[selector] || SelectorMatcher(selector);
 
-            if (!node) return;
+            while (node && node !== document) {
+                if (checker(node)) return true;
 
-            return hook ? hook(node) : new SelectorMatcher(selector).test(node);
+                node = deep ? node.parentNode : null;
+            }
+
+            return false;
         };
     }());
 
@@ -1259,7 +1239,7 @@
     };
 
     /**
-     * Calculate width based on element's offset
+     * Calculate element's width in pixels
      * @return {Number} element width in pixels
      */
     $Element.prototype.width = function() {
@@ -1267,7 +1247,7 @@
     };
 
     /**
-     * Calculate height based on element's offset
+     * Calculate element's height in pixels
      * @return {Number} element height in pixels
      */
     $Element.prototype.height = function() {
@@ -1305,18 +1285,6 @@
             }
 
             return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
-        };
-
-        hooks.tagName = hooks.method = function(node, key) {
-            return key in node ? node[key].toLowerCase() : "";
-        };
-
-        hooks.elements = hooks.options = function(node, key) {
-            return new $CompositeElement(node[key]);
-        };
-
-        hooks.form = function(node) {
-            return $Element(node.form);
         };
 
         hooks.type = function(node) {
@@ -1526,14 +1494,14 @@
                 return style.cssFloat;
             };
             setStyleHooks.float = function(style, value) {
-                style.cssFloat = value.toString();
+                style.cssFloat = value;
             };
         } else {
             getStyleHooks.float = function(style) {
                 return style.styleFloat;
             };
             setStyleHooks.float = function(style, value) {
-                style.styleFloat = value.toString();
+                style.styleFloat = value;
             };
         }
 
@@ -1573,13 +1541,13 @@
                     nodes = multiple ? [] : null,
                     it = this._node;
 
-                if (!it) return;
+                if (it) {
+                    while (it = it[propertyName]) {
+                        if (it.nodeType === 1 && (!matcher || matcher(it))) {
+                            if (!multiple) break;
 
-                while (it = it[propertyName]) {
-                    if (it.nodeType === 1 && (!matcher || matcher.test(it))) {
-                        if (!multiple) break;
-
-                        nodes.push(it);
+                            nodes.push(it);
+                        }
                     }
                 }
 
@@ -1595,7 +1563,7 @@
                     throw _makeError("child", this);
                 }
 
-                if (!this._node) return;
+                if (!this._node) return multiple ? new $Element() : new $CompositeElement();
 
                 var children = this._node.children,
                     matcher = SelectorMatcher(selector),
@@ -1607,14 +1575,14 @@
                 }
 
                 if (multiple) {
-                    return new $CompositeElement(!matcher ? children : _filter(children, matcher.test, matcher));
+                    return new $CompositeElement(!matcher ? children : _filter(children, matcher));
                 }
 
                 if (index < 0) index = children.length + index;
 
                 node = children[index];
 
-                return $Element(!matcher || matcher.test(node) ? node : null);
+                return $Element(!matcher || matcher(node) ? node : null);
             };
         }
 
@@ -1707,8 +1675,46 @@
         return this.set("aria-hidden", function(value) { return value !== "true" });
     };
 
-    // GLOBAL API
-    // ----------
+    // I18N
+    // ----
+
+    /**
+     * Localize element value
+     * @param  {String} [value]  resource string key
+     * @param  {Object} [args]   resource string arguments
+     */
+    $Element.prototype.i18n = function(value, args) {
+        var len = arguments.length;
+
+        if (!len) return this.get("data-i18n");
+
+        if (len > 2 || typeof value !== "string" || args && typeof args !== "object") throw _makeError("i18n", this);
+
+        args = _foldl(_keys(args || {}), function(memo, key) {
+            memo["data-" + key] = args[key];
+
+            return memo;
+        }, {"data-i18n": value});
+
+        return this.set(args).set("");
+    };
+
+    /**
+     * Used to represent a collection of DOM elements (length >= 1)
+     * @name $CompositeElement
+     * @param elements {Array|Object} array or array-like object with native elements
+     * @extends $Element
+     * @constructor
+     * @private
+     */
+    function $CompositeElement(elements) {
+        Array.prototype.push.apply(this, _map(elements, $Element));
+    }
+
+    $CompositeElement.prototype = new $Element();
+
+    // GLOBAL NAMESPACE
+    // ----------------
 
     /**
      * Global object to access DOM
@@ -1717,7 +1723,7 @@
      */
     var DOM = new $Node(document);
 
-    DOM.version = "1.5.4";
+    DOM.version = "1.5.5";
 
     // CREATE ELEMENT
     // --------------
@@ -1836,7 +1842,8 @@
         var operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
             reTextTag = /<\?>|<\/\?>/g,
             reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
-            reIndex = /(\$+)(?:@(-)?([0-9]+)?)?/g,
+            reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
+            reVar = /\$\w+/g,
             reHtml = /^[\s<]/,
             normalizeAttrs = function(term, name, value, a, b, simple) {
                 // always wrap attribute values with quotes if they don't exist
@@ -1870,7 +1877,7 @@
             makeIndexedTerm = function(term) {
                 return function(_, i, arr) {
                     return term.replace(reIndex, function(expr, fmt, sign, base) {
-                        var index = (sign ? arr.length - i - 1 : i) + (base ? base | 0 : 1);
+                        var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
                         // make zero-padding index string
                         return (fmt + index).slice(-fmt.length).split("$").join("0");
                     });
@@ -1878,23 +1885,27 @@
             },
             toString = function(term) {
                 return typeof term === "string" ? term : term.join("");
-            };
+            },
+            cache = {};
 
         /**
          * Parse emmet-like template to HTML string
          * @memberOf DOM
          * @param  {String} template emmet-like expression
+         * @param {Object} vars macroses map
          * @return {String} HTML string
          * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
          * @see http://docs.emmet.io/cheat-sheet/
          */
-        DOM.template = function(template) {
+        DOM.template = function(template, vars) {
             var stack = [],
                 output = [],
                 term = "",
                 i, n, str, priority, skip, node;
 
             if (typeof template !== "string") throw _makeError("template", this);
+
+            if (template in cache) return cache[template];
 
             if (!template || reHtml.exec(template)) return template;
 
@@ -1988,7 +1999,7 @@
                         break;
 
                     case "*":
-                        node = _map(Array(term | 0), makeIndexedTerm(toString(node)));
+                        node = _map(Array(+term), makeIndexedTerm(toString(node)));
                         break;
 
                     default:
@@ -2009,7 +2020,11 @@
                 stack.unshift(str);
             }
 
-            return toString(stack[0]).replace(reTextTag, "");
+            output = toString(stack[0]).replace(reTextTag, "");
+
+            if (vars) output = output.replace(reVar, function(x) { return vars[x.substr(1)] || x });
+
+            return cache[template] = output;
         };
     })();
 
@@ -2082,7 +2097,7 @@
                     // do not execute callback if it was previously excluded
                     if (_some(e.detail, function(x) { return x === entry.callback })) return;
 
-                    if (entry.matcher.test(node)) {
+                    if (entry.matcher(node)) {
                         if (entry.once) {
                             if (supportsAnimations) {
                                 node.addEventListener(e.type, entry.once, false);
@@ -2142,7 +2157,8 @@
 
             watchers.push({
                 callback: callback,
-                matcher: new SelectorMatcher(selector),
+                matcher: SelectorMatcher(selector),
+                selector: selector,
                 once: once && function(e) {
                     if (supportsAnimations) {
                         if (e.animationName !== animId) return;
@@ -2156,7 +2172,7 @@
                 }
             });
 
-            if (_some(watchers, function(x) { return x.matcher.selector === selector })) {
+            if (_some(watchers, function(x) { return x.selector === selector })) {
                 DOM.importStyles(selector, styles);
             }
         };
