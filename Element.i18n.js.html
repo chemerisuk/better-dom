@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: Node.data.js</title>
+	<title>better-dom Source: Element.i18n.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -71,53 +71,35 @@
 					
 
 
-		<h1 class="page-title">Source: Node.data.js</h1>
+		<h1 class="page-title">Source: Element.i18n.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["Node"], function($Node, _extend, _forEach, _makeError) {
+            <pre class="sunlight-highlight-javascript ">define(["Element"], function($Element, _forEach, _foldl, _keys, _makeError) {
     "use strict";
 
-    // INTERNAL DATA
-    // -------------
+    // I18N
+    // ----
 
     /**
-     * Getter/setter of a data entry value. Tries to read the appropriate
-     * HTML5 data-* attribute if it exists
-     * @param  {String|Object} key     data key
-     * @param  {Object}        [value] data value to store
-     * @return {Object} data entry value or this in case of setter
-     * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
+     * Localize element value
+     * @param  {String} [value]  resource string key
+     * @param  {Object} [args]   resource string arguments
      */
-    $Node.prototype.data = function(key, value) {
-        var len = arguments.length,
-            keyType = typeof key,
-            node = this._node,
-            data = this._data;
+    $Element.prototype.i18n = function(value, args) {
+        var len = arguments.length;
 
-        if (len === 1) {
-            if (keyType === "string") {
-                if (node) {
-                    value = data[key];
+        if (!len) return this.get("data-i18n");
 
-                    if (value === undefined && node.hasAttribute("data-" + key)) {
-                        value = data[key] = node.getAttribute("data-" + key);
-                    }
-                }
+        if (len > 2 || typeof value !== "string" || args && typeof args !== "object") throw _makeError("i18n", this);
 
-                return value;
-            } else if (key && keyType === "object") {
-                return _forEach(this, function(el) {
-                    _extend(el._data, key);
-                });
-            }
-        } else if (len === 2 && keyType === "string") {
-            return _forEach(this, function(el) {
-                el._data[key] = value;
-            });
-        }
+        args = _foldl(_keys(args || {}), function(memo, key) {
+            memo["data-" + key] = args[key];
 
-        throw _makeError("data", this);
+            return memo;
+        }, {"data-i18n": value});
+
+        return this.set(args).set("");
     };
 });
 </pre>
