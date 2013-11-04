@@ -4,7 +4,7 @@
 var _ = require("utils"),
     $Node = require("node"),
     $Element = require("element"),
-    $CompositeElement = require("nelement");
+    $Elements = require("elements");
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -71,7 +71,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
         }
     }
 
-    return multiple ? new $CompositeElement(elements) : $Element(elements);
+    return multiple ? new $Elements(elements) : $Element(elements);
 };
 
 /**
