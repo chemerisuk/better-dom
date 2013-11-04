@@ -1,6 +1,3 @@
-// EMMET EXPRESSIONS PARSER
-// ------------------------
-
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object

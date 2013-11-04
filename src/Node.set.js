@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     $Node = require("./node");
+
 /**
  * Set property value
  * @param  {String} name  property name

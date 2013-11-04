@@ -1,6 +1,7 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element");
+
 /**
  * Check if element is inside of context
  * @param  {$Element} element element to check

@@ -1,6 +1,3 @@
-// WATCH CALLBACK
-// --------------
-
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),

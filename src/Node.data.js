@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     $Node = require("./node");
+
 /**
  * Getter/setter of a data entry value. Tries to read the appropriate
  * HTML5 data-* attribute if it exists

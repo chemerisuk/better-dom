@@ -174,8 +174,8 @@ module.exports = function(grunt) {
                             " * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>\n" +
                             " * @license <%= pkg.license %>\n" +
                             " * @see <%= pkg.repository.url %>\n" +
-                            " */\n"
-                        ) + src);
+                            " */\n" +
+                        src));
                     }
                 }
             }

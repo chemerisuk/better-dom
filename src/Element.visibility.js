@@ -1,4 +1,5 @@
 var $Element = require("./element");
+
 /**
  * Show element
  * @return {$Element}

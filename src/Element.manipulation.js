@@ -1,6 +1,3 @@
-// MANIPULATION
-// ------------
-
 var _ = require("./utils"),
     $Element = require("./element");
 

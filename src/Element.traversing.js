@@ -1,6 +1,3 @@
-// TRAVERSING
-// ----------
-
 var _ = require("./utils"),
     $Element = require("./element"),
     $Elements = require("./elements"),

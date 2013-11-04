@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     $Element = require("./element");
+
 /**
  * Used to represent a collection of DOM elements (length >= 1)
  * @name $Elements

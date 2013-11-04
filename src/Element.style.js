@@ -1,6 +1,3 @@
-// STYLES MANIPULATION
-// -------------------
-
 var _ = require("./utils"),
     $Element = require("./element"),
     getStyleHooks = {},

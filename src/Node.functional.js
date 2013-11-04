@@ -1,6 +1,3 @@
-// NODE FUNCTIONAL
-// ---------------
-
 var _ = require("./utils"),
     $Node = require("./node");
 

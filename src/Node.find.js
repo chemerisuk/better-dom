@@ -1,6 +1,3 @@
-// SEARCH BY QUERY
-// ---------------
-
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element"),

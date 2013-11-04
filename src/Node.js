@@ -1,6 +1,3 @@
-// DOM NODE
-// --------
-
 /**
  * Used to represent a DOM node
  * @name $Node
