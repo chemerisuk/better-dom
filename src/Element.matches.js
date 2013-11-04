@@ -1,17 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    hooks = {};
-
-hooks[":focus"] = function(node) {
-    return node === document.activeElement;
-};
-
-hooks[":hidden"] = function(node) {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.getComputedStyle(node).display === "none" ||
-            !document.documentElement.contains(node);
-};
+    hooks = require("./element.matches.hooks");
 
 /**
  * Check if the element matches selector

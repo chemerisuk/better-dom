@@ -1,6 +1,6 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = {};
+    hooks = require("./element.get.hooks");
 
 /**
  * Get property or attribute by name
@@ -28,12 +28,3 @@ $Element.prototype.get = function(name) {
 
     return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
 };
-
-hooks.type = function(node) {
-    // some browsers don't recognize input[type=email] etc.
-    return node.getAttribute("type") || node.type;
-};
-
-if (!("textContent" in document.documentElement)) {
-    hooks.textContent = function(node) { return node.innerText };
-}
