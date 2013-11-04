@@ -56,5 +56,3 @@ $Element.prototype.style = function(name, value) {
         }
     });
 };
-
-
