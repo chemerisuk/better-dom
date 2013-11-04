@@ -12,4 +12,4 @@ var $Node = require("node"),
 DOM.version = "<%= pkg.version %>";
 
 // register global variable
-window.DOM = DOM;
+module.exports = window.DOM = DOM;
