@@ -10,7 +10,6 @@
     "quotmark": "double",
     "indent": 4,
     "eqeqeq": true,
-    "strict": true,
     "undef": true,
     "noarg": true,
     "noempty": true,

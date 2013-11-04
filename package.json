@@ -29,7 +29,8 @@
         "karma-coverage": "0.1.0",
         "karma-firefox-launcher": "0.1.0",
         "karma-safari-launcher": "0.1.1",
-        "karma-opera-launcher": "0.1.0"
+        "karma-opera-launcher": "0.1.0",
+        "grunt-browserify": "~1.2.1"
     },
     "scripts": {
         "test": "grunt test"
