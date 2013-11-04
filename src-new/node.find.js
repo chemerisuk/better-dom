@@ -1,10 +1,10 @@
 // SEARCH BY QUERY
 // ---------------
 
-var _ = require("utils"),
-    $Node = require("node"),
-    $Element = require("element"),
-    $Elements = require("elements");
+var _ = require("./utils"),
+    $Node = require("./node"),
+    $Element = require("./element"),
+    $Elements = require("./elements");
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js

@@ -1,8 +1,8 @@
 // MANIPULATION
 // ------------
 
-var _ = require("utils"),
-    $Element = require("element");
+var _ = require("./utils"),
+    $Element = require("./element");
 
 function makeManipulationMethod(methodName, fasterMethodName, strategy) {
     var singleArg = !fasterMethodName,

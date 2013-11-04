@@ -1,6 +1,6 @@
-var _ = require("utils"),
-    $Element = require("element"),
-    SelectorMatcher = require("selectormatcher"),
+var _ = require("./utils"),
+    $Element = require("./element"),
+    SelectorMatcher = require("./selectormatcher"),
     hooks = {};
 
 hooks[":focus"] = function(node) {

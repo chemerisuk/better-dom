@@ -1,8 +1,8 @@
 // CLASSES MANIPULATION
 // --------------------
 
-var _ = require("utils"),
-    $Element = require("element"),
+var _ = require("./utils"),
+    $Element = require("./element"),
     rclass = /[\n\t\r]/g;
 
 function makeClassesMethod(nativeStrategyName, strategy) {

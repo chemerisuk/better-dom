@@ -1,5 +1,5 @@
-var _ = require("utils"),
-    DOM = require("dom");
+var _ = require("./utils"),
+    DOM = require("./dom");
 
 /**
  * Import external scripts on the page and call optional callback when it will be done

@@ -1,5 +1,5 @@
-var _ = require("utils"),
-    DOM = require("dom"),
+var _ = require("./utils"),
+    DOM = require("./dom"),
     readyCallbacks = [],
     readyState = document.readyState,
     pageLoaded = function() {

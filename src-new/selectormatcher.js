@@ -1,4 +1,4 @@
-var _ = require("utils"),
+var _ = require("./utils"),
     // Quick matching inspired by
     // https://github.com/jquery/jquery
     rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-]+)\])?(?:\.([\w\-]+))?$/,

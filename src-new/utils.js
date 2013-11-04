@@ -1,4 +1,4 @@
-var $Element = require("element"),
+var $Element = require("./element"),
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {

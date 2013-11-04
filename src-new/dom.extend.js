@@ -1,6 +1,6 @@
-var _ = require("utils"),
-    $Element = require("element"),
-    DOM = require("dom"),
+var _ = require("./utils"),
+    $Element = require("./element"),
+    DOM = require("./dom"),
     watchers = {};
 
 /**

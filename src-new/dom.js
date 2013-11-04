@@ -1,7 +1,7 @@
 // GLOBAL NAMESPACE
 // ----------------
 
-var $Node = require("node"),
+var $Node = require("./node"),
     /**
      * Global object to access DOM
      * @namespace DOM

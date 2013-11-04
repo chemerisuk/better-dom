@@ -1,8 +1,8 @@
 // NODE FUNCTIONAL
 // ---------------
 
-var _ = require("utils"),
-    $Node = require("node");
+var _ = require("./utils"),
+    $Node = require("./node");
 
 function makeCollectionMethod(fn) {
     var code = fn.toString();

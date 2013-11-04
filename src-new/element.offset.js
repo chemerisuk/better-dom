@@ -1,4 +1,4 @@
-var $Element = require("element"),
+var $Element = require("./element"),
     documentElement = document.documentElement;
 /**
  * Calculates offset of current context

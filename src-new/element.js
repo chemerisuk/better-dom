@@ -1,7 +1,7 @@
 // DOM ELEMENT
 // -----------
 
-var $Node = require("node");
+var $Node = require("./node");
 /**
  * Used to represent a DOM element (length == 1)
  * @name $Element

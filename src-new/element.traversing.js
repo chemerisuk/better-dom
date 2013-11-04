@@ -1,10 +1,10 @@
 // TRAVERSING
 // ----------
 
-var _ = require("utils"),
-    $Element = require("element"),
-    $Elements = require("elements"),
-    SelectorMatcher = require("selectormatcher");
+var _ = require("./utils"),
+    $Element = require("./element"),
+    $Elements = require("./elements"),
+    SelectorMatcher = require("./selectormatcher");
 
 function makeTraversingMethod(propertyName, multiple) {
     return function(selector) {

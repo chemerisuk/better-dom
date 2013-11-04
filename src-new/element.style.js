@@ -1,8 +1,8 @@
 // STYLES MANIPULATION
 // -------------------
 
-var _ = require("utils"),
-    $Element = require("element"),
+var _ = require("./utils"),
+    $Element = require("./element"),
     getStyleHooks = {},
     setStyleHooks = {},
     reDash = /\-./g,

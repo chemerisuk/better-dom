@@ -200,14 +200,6 @@ module.exports = function(grunt) {
             compile: {
                 files: {
                     "build/better-dom-new.js": ["src-new/*.js"]
-                },
-                options: {
-                    aliasMappings: [{
-                        expand: true,
-                        cwd: "src-new/",
-                        src: ["*.js"],
-                        dest: ""
-                    }],
                 }
             }
         }

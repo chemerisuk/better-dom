@@ -1,5 +1,5 @@
-var _ = require("utils"),
-    DOM = require("dom"),
+var _ = require("./utils"),
+    DOM = require("./dom"),
     rparam = /\{([a-z\-]+)\}/g,
     toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 

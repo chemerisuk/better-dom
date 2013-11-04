@@ -1,8 +1,8 @@
 // EMMET EXPRESSIONS PARSER
 // ------------------------
 
-var _ = require("utils"),
-    DOM = require("dom"),
+var _ = require("./utils"),
+    DOM = require("./dom"),
     // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
     reTextTag = /<\?>|<\/\?>/g,

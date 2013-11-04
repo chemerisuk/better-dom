@@ -1,10 +1,10 @@
 // WATCH CALLBACK
 // --------------
 
-var _ = require("utils"),
-    $Element = require("element"),
-    DOM = require("dom"),
-    SelectorMatcher = require("selectormatcher"),
+var _ = require("./utils"),
+    $Element = require("./element"),
+    DOM = require("./dom"),
+    SelectorMatcher = require("./selectormatcher"),
     // Inspired by trick discovered by Daniel Buchner:
     // https://github.com/csuwldcat/SelectorListener
     watchers = [],

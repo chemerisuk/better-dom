@@ -1,7 +1,7 @@
-var _ = require("utils"),
-    $Node = require("node"),
-    $Element = require("element"),
-    EventHandler = require("eventhandler"),
+var _ = require("./utils"),
+    $Node = require("./node"),
+    $Element = require("./element"),
+    EventHandler = require("./eventhandler"),
     hooks = {},
     CUSTOM_EVENT_NAME = "dataavailable";
 
