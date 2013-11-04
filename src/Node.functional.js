@@ -87,6 +87,7 @@ _.extend($Node.prototype, {
      * object. Use only when you need to communicate better-dom with third party scripts!
      * @memberOf $Element.prototype
      * @param  {Function} block unsafe block body (nativeNode, index)
+     * @return {$Element}
      * @function
      */
     legacy: makeCollectionMethod(_.legacy)

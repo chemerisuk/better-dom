@@ -2,9 +2,10 @@ var _ = require("./utils"),
     $Element = require("./element");
 
 /**
- * Localize element value
+ * Get/set localized value
  * @param  {String} [value]  resource string key
  * @param  {Object} [args]   resource string arguments
+ * @return {String|$Element}
  */
 $Element.prototype.i18n = function(value, args) {
     var len = arguments.length;

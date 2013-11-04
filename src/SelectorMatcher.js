@@ -1,3 +1,6 @@
+/*
+ * Helper for css selectors
+ */
 var _ = require("./utils"),
     // Quick matching inspired by
     // https://github.com/jquery/jquery
@@ -9,9 +12,6 @@ var _ = require("./utils"),
     }, null),
     isEqual = function(val) { return val === this };
 
-/**
- * Helper for css selectors
- */
 module.exports = function(selector) {
     if (typeof selector !== "string") return null;
 

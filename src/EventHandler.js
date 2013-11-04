@@ -1,3 +1,6 @@
+/*
+ * Helper type to create an event handler
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
@@ -66,9 +69,6 @@ if (document.addEventListener) {
     };
 }
 
-/**
- * Helper type to create an event handler
- */
 function EventHandler(type, selector, context, callback, extras, currentTarget) {
     context = context || currentTarget;
     extras = extras || ["target", "defaultPrevented"];

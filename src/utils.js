@@ -50,7 +50,6 @@ module.exports = {
     },
 
     // OBJECT UTILS
-    // ------------
 
     forIn: function(obj, callback, thisPtr) {
         for (var prop in obj) {
@@ -92,7 +91,6 @@ module.exports = {
     },
 
     // COLLECTION UTILS
-    // ----------------
 
     forEach: makeLoopMethod({
         BODY:   "cb.call(that, a[i], i, a)",
@@ -137,7 +135,6 @@ module.exports = {
     }),
 
     // DOM UTILS
-    // ---------
 
     getComputedStyle: function(el) {
         return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;

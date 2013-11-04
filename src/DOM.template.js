@@ -54,12 +54,12 @@ var _ = require("./utils"),
  * Parse emmet-like template to HTML string
  * @memberOf DOM
  * @param  {String} template emmet-like expression
- * @param {Object} vars macroses map
+ * @param {Object} [aliases] key/value map of aliases
  * @return {String} HTML string
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
  */
-DOM.template = function(template, vars) {
+DOM.template = function(template, aliases) {
     var stack = [],
         output = [],
         term = "",
@@ -184,7 +184,7 @@ DOM.template = function(template, vars) {
 
     output = toString(stack[0]).replace(reTextTag, "");
 
-    if (vars) output = output.replace(reVar, function(x) { return vars[x.substr(1)] || x });
+    if (aliases) output = output.replace(reVar, function(x) { return aliases[x.substr(1)] || x });
 
     return cache[template] = output;
 };

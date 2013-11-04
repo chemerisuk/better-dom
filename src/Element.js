@@ -1,7 +1,7 @@
 var $Node = require("./node");
 
 /**
- * Used to represent a DOM element (length == 1)
+ * Used to represent a DOM element
  * @name $Element
  * @param element {Object} native element
  * @extends $Node

@@ -2,7 +2,7 @@ var _ = require("./utils"),
     $Element = require("./element");
 
 /**
- * Used to represent a collection of DOM elements (length >= 1)
+ * Used to represent a collection of DOM elements
  * @name $Elements
  * @param elements {Array|Object} array or array-like object with native elements
  * @extends $Element
