@@ -19,14 +19,8 @@ if (document.addEventListener) {
 
     hooks.which = function(event) {
         var button = event.button;
-
-        if (button !== undefined) {
-            // click: 1 === left; 2 === middle; 3 === right
-            return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
-        } else {
-            // add which for key events
-            return event.charCode || event.keyCode || undefined;
-        }
+        // click: 1 === left; 2 === middle; 3 === right
+        return event.keyCode || ( button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) ) );
     };
 
     hooks.pageX = function(event) {
