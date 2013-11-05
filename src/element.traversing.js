@@ -30,7 +30,7 @@ function makeChildTraversingMethod(multiple) {
             throw _.makeError("child", this);
         }
 
-        if (!this._node) return new $Element(null, multiple);
+        if (!this._node) return new $Element();
 
         var children = this._node.children,
             matcher = SelectorMatcher(selector),

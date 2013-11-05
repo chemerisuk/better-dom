@@ -67,7 +67,7 @@ DOM.template = function(template, aliases) {
 
     if (typeof template !== "string") throw _.makeError("template", this);
 
-    if (template in cache) return cache[template];
+    if (!aliases && template in cache) return cache[template];
 
     if (!template || reHtml.exec(template)) return template;
 
@@ -180,7 +180,11 @@ DOM.template = function(template, aliases) {
 
     output = toString(stack[0]).replace(reTextTag, "");
 
-    if (aliases) output = output.replace(reVar, function(x) { return aliases[x.substr(1)] || x });
+    if (aliases) {
+        output = output.replace(reVar, function(x) { return aliases[x.substr(1)] || x });
+    } else {
+        cache[template] = output;
+    }
 
-    return cache[template] = output;
+    return output;
 };
