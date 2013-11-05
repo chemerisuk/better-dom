@@ -1,4 +1,4 @@
-var $Element = require("./element"),
+var DOM = require("./dom"),
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
@@ -40,10 +40,10 @@ module.exports = {
     makeError: function(method, el) {
         var type;
 
-        if (el instanceof $Element) {
-            type = "$Element";
-        } else {
+        if (el === DOM) {
             type = "DOM";
+        } else {
+            type = "$Element";
         }
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the function call";

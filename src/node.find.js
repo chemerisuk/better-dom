@@ -1,7 +1,6 @@
 var _ = require("./utils"),
     $Node = require("./node"),
-    $Element = require("./element"),
-    $Elements = require("./elements");
+    $Element = require("./element");
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -26,7 +25,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
         quickMatch = rquickExpr.exec(selector),
         m, elements, old, nid, context;
 
-    if (!node) return multiple ? new $Elements() : new $Element();
+    if (!node) return new $Element(null, multiple);
 
     if (quickMatch) {
         // Speed-up: "TAG"
@@ -68,7 +67,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
         }
     }
 
-    return multiple ? new $Elements(elements) : $Element(elements);
+    return $Element(elements, multiple);
 };
 
 /**

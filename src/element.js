@@ -1,4 +1,5 @@
-var $Node = require("./node");
+var _ = require("./utils"),
+    $Node = require("./node");
 
 /**
  * Used to represent a DOM element
@@ -8,14 +9,16 @@ var $Node = require("./node");
  * @constructor
  * @private
  */
-function $Element(element) {
+function $Element(element, /*INTERNAL*/collection) {
     if (element && element.__dom__) return element.__dom__;
 
-    if (!(this instanceof $Element)) {
-        return new $Element(element);
-    }
+    if (!(this instanceof $Element)) return new $Element(element, collection);
 
-    $Node.call(this, element);
+    if (element && collection === true) {
+        Array.prototype.push.apply(this, _.map(element, $Element));
+    } else {
+        $Node.call(this, element);
+    }
 }
 
 $Element.prototype = new $Node();
