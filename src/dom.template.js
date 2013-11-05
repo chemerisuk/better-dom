@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
-    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8,":": 9},
+    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reTextTag = /<\?>|<\/\?>/g,
     reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
@@ -146,10 +146,6 @@ DOM.template = function(template, aliases) {
 
             case "#":
                 term = injectTerm(" id=\"" + term + "\"", true);
-                break;
-
-            case ":":
-                term = injectTerm(" type=\"" + term + "\"", true);
                 break;
 
             case "[":

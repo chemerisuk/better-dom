@@ -95,13 +95,13 @@ describe("DOM.template", function() {
         checkExpr("(a.c[d=$@2]>b>{Card $@-5})*3", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
     });
 
-    describe("type attribute", function() {
+    // describe("type attribute", function() {
         // checkExpr("ul>.t>a", "<input type=\"radio\">");
-        checkExpr("input:radio", "<input type=\"radio\">");
-        checkExpr("input:email#a.b", "<input type=\"email\" id=\"a\" class=\"b\">");
+        // checkExpr("input:radio", "<input type=\"radio\">");
+        // checkExpr("input:email#a.b", "<input type=\"email\" id=\"a\" class=\"b\">");
         // checkExpr(":date", "<input type=\"date\">");
         // checkExpr("a>:date+b", "<a><input type=\"date\"><b></b></a>");
-    });
+    // });
 
     describe("text nodes", function() {
         checkExpr("span{Hello world}", "<span>Hello world</span>");
