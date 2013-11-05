@@ -51,6 +51,13 @@ describe("find", function() {
         // TODO: make a cotext bug fix test
     });
 
+    it("should return at least empty element(s)", function() {
+        var xxx = DOM.find("xxx");
+
+        expect(xxx.find("a").length).toBe(0);
+        expect(xxx.findAll("a").length).toBe(0);
+    });
+
     it("should throw error if the first argument is not a string", function() {
         expect(function() { DOM.find(1); }).toThrow();
     });

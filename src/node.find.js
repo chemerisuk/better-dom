@@ -26,7 +26,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
         quickMatch = rquickExpr.exec(selector),
         m, elements, old, nid, context;
 
-    if (!node) return;
+    if (!node) return multiple ? new $Elements() : new $Element();
 
     if (quickMatch) {
         // Speed-up: "TAG"
