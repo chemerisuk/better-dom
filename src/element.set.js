@@ -30,7 +30,7 @@ $Element.prototype.set = function(name, value) {
 
             if (node.type && "value" in node) {
                 // for IE use innerText because it doesn't trigger onpropertychange
-                name = window.addEventListener ? "value" : "innerText";
+                name = window.addEventListener || node.tagName === "SELECT" ? "value" : "innerText";
             } else {
                 name = "innerHTML";
             }

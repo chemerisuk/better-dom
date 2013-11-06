@@ -97,10 +97,16 @@ describe("set", function() {
         });
     });
 
-    it("should emulate defaultValue for select", function() {
-        setFixtures("<select id='test_select'><option>a</option><option>b</option><option>c</option></select>");
+    it("should set select value properly", function() {
+        var select = DOM.create("select>option>{AM}^option>{PM})");
 
-        var select = DOM.find("#test_select"),
+        expect(select.get()).toBe("AM");
+        select.set("PM");
+        expect(select.get()).toBe("PM");
+    });
+
+    it("should emulate defaultValue for select", function() {
+        var select = DOM.create("<select><option>a</option><option>b</option><option>c</option></select>"),
             selected = function(el) { return el.get("selected") };
 
         expect(select.children().filter(selected)[0].get()).toBe("a");

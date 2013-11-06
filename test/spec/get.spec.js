@@ -41,8 +41,6 @@ describe("get", function() {
 
         select.set("selectedIndex", -1);
         expect(select.get()).toBe("");
-
-        expect(select.get()).toBe("");
     });
 
     it("should handle option value correctly", function() {

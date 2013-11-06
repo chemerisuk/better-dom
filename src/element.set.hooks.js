@@ -1,8 +1,9 @@
 var _ = require("./utils"),
     hooks = {};
 
-hooks.defaultValue = function(node, value) {
-    // emulate defaultValue for select via selected attribute
+hooks.value = function(node, value) {
+    node.value = value;
+
     if (node.tagName === "SELECT") {
         _.forEach(node.options, function(option) {
             if (option.value === value) {
@@ -11,8 +12,19 @@ hooks.defaultValue = function(node, value) {
             }
         });
     }
+};
 
+hooks.defaultValue = function(node, value) {
     node.defaultValue = value;
+
+    if (node.tagName === "SELECT") {
+        _.forEach(node.options, function(option) {
+            if (option.value === value) {
+                option.selected = true;
+                option.setAttribute("selected", "selected");
+            }
+        });
+    }
 };
 
 if (!("textContent" in document.documentElement)) {
