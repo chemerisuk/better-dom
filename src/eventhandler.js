@@ -17,17 +17,15 @@ var _ = require("./utils"),
 
         return handler;
     },
-    createDebouncedEventWrapper = function(originalHandler) {
-        var canProcess = true;
-
+    createDebouncedEventWrapper = function(originalHandler, debouncing) {
         return function(e) {
-            if (canProcess) {
-                canProcess = false;
+            if (!debouncing) {
+                debouncing = true;
 
                 _.requestAnimationFrame(function() {
                     originalHandler(e);
 
-                    canProcess = true;
+                    debouncing = false;
                 });
             }
         };
@@ -47,13 +45,15 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
                     args = extras || (e.detail != null ? detailedDefaultArgs : defaultArgs);
 
                 args = _.map(args, function(name) {
+                    if (typeof name !== "string") return name;
+
                     switch (name) {
                     case "type":
                         return type;
                     case "currentTarget":
                         return currentTarget;
                     case "target":
-                        if (!target) target = e.target || e.srcElement;
+                        target = target || e.target || e.srcElement;
                         // handle DOM variable correctly
                         return target ? $Element(target) : DOM;
                     }

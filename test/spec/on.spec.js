@@ -67,7 +67,9 @@ describe("on", function() {
         expect(location.hash).not.toBe("#test");
     });
 
-    it("should allow to pass event properties into callback", function() {
+    it("should allow to pass extra args into callback", function() {
+        var data = {};
+
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
@@ -77,12 +79,13 @@ describe("on", function() {
         input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.andCallFake(function(type, defaultPrevented) {
+        spy.andCallFake(function(type, defaultPrevented, value) {
             expect(type).toBe("focus");
             expect(defaultPrevented).toBe(false);
+            expect(value).toBe(data);
         });
 
-        input.on("focus", ["type", "defaultPrevented"], spy).fire("focus");
+        input.on("focus", ["type", "defaultPrevented", data], spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
