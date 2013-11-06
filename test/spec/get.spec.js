@@ -30,10 +30,23 @@ describe("get", function() {
         expect(textarea.get()).toBe("");
         textarea.set("value", "123");
         expect(textarea.get()).toBe("123");
+    });
 
-        setFixtures("<select id='get_select'><option value='a1'>a2</option><option selected>a3</option></select>");
-        var select = DOM.find("#get_select");
+    it("should handle select value correctly", function() {
+        var select = DOM.create("<select><option>a2</option><option>a3</option></select>");
+        expect(select.get()).toBe("a2");
+
+        select = DOM.create("<select><option>a2</option><option selected>a3</option></select>");
         expect(select.get()).toBe("a3");
+
+        select.set("selectedIndex", -1);
+        expect(select.get()).toBe("");
+
+        expect(select.get()).toBe("");
+    });
+
+    it("should handle option value correctly", function() {
+        var select = DOM.create("<select><option value='a1'>a2</option><option selected>a3</option></select>");
         expect(select.child(0).get()).toBe("a1");
         expect(select.child(1).get()).toBe("a3");
     });

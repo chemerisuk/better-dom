@@ -18,7 +18,7 @@ $Element.prototype.get = function(name) {
         if (node.tagName === "OPTION") {
             name = node.hasAttribute("value") ? "value" : "text";
         } else if (node.tagName === "SELECT") {
-            return node.options[node.selectedIndex].value;
+            return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
         } else {
             name = node.type && "value" in node ? "value" : "innerHTML";
         }
