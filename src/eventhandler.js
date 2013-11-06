@@ -6,6 +6,8 @@ var _ = require("./utils"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = require("./eventhandler.hooks"),
     debouncedEvents = "scroll mousemove",
+    defaultArgs = ["target", "defaultPrevented"],
+    detailedDefaultArgs = ["detail", "target", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() {
                 if (window.event.srcUrn === type) originalHandler();
@@ -34,7 +36,6 @@ var _ = require("./utils"),
 
 function EventHandler(type, selector, context, callback, extras, currentTarget) {
     context = context || currentTarget;
-    extras = extras || ["target", "defaultPrevented"];
 
     var matcher = SelectorMatcher(selector),
         isCallbackProp = typeof callback === "string",
@@ -43,22 +44,24 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
             if (EventHandler.veto !== type) {
                 var fn = isCallbackProp ? context[callback] : callback,
-                    args = _.map(extras, function(name) {
-                        switch (name) {
-                        case "type":
-                            return type;
-                        case "currentTarget":
-                            return currentTarget;
-                        case "target":
-                            if (!target) target = e.target || e.srcElement;
-                            // handle DOM variable correctly
-                            return target ? $Element(target) : DOM;
-                        }
+                    args = extras || (e.detail != null ? detailedDefaultArgs : defaultArgs);
 
-                        var hook = hooks[name];
+                args = _.map(args, function(name) {
+                    switch (name) {
+                    case "type":
+                        return type;
+                    case "currentTarget":
+                        return currentTarget;
+                    case "target":
+                        if (!target) target = e.target || e.srcElement;
+                        // handle DOM variable correctly
+                        return target ? $Element(target) : DOM;
+                    }
 
-                        return hook ? hook(e, currentTarget._node) : e[name];
-                    });
+                    var hook = hooks[name];
+
+                    return hook ? hook(e, currentTarget._node) : e[name];
+                });
 
                 if (fn && fn.apply(context, args) === false) {
                     // prevent default if handler returns false

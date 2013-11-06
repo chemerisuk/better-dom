@@ -37,7 +37,7 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should fix target in case of existing selector", function() {
+    it("should fix target in case of event filter", function() {
         spy.andCallFake(function(target) {
             expect(target._node).toHaveTag("a");
 
@@ -49,7 +49,7 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should accept event object", function() {
+    it("should accept key-value object", function() {
         var otherSpy = jasmine.createSpy("callback2");
 
         input.on({focus: spy, click: otherSpy}).fire("focus");
@@ -93,6 +93,19 @@ describe("on", function() {
         });
 
         input.on("focus", spy).fire("focus");
+        expect(spy).toHaveBeenCalled();
+
+        var detail = {a: 1};
+
+        spy.reset();
+
+        spy.andCallFake(function(detail, target, defaultPrevented) {
+            expect(detail).toBe(detail);
+            expect(target).toBe(input);
+            expect(defaultPrevented).toBe(false);
+        });
+
+        input.fire("focus", detail);
         expect(spy).toHaveBeenCalled();
     });
 
@@ -161,29 +174,32 @@ describe("on", function() {
     it("should optionally support extra context", function() {
         var obj = {callback: function() {}};
 
-        spy = spyOn(obj, "callback");
-        spy.andCallFake(function() {
-            expect(this).toBe(obj);
-        });
+        spy.andCallFake(function() { expect(this).toBe(obj) });
 
-        input.on("click", obj, "callback").fire("click");
+        input.on("click", obj, spy).fire("click");
         expect(spy).toHaveBeenCalled();
-
-        obj.callback = null;
-        expect(function() { input.on("click", obj, "callback").fire("click"); }).not.toThrow();
     });
 
     it("should support late binding", function() {
-        var obj = {callback: spy},
-            spy2 = jasmine.createSpy("spy2");
+        var obj = {callback: spy};
 
+        spy.andCallFake(function() { expect(this).toBe(input) });
+        input.callback = spy;
+        input.on("focus", "callback").fire("focus");
+        expect(spy).toHaveBeenCalled();
+
+        delete input.callback;
+        input.fire("focus");
+        expect(spy.callCount).toBe(1);
+
+
+        spy.reset();
+        spy.andCallFake(function() { expect(this).toBe(obj) });
         input.on("click", obj, "callback").fire("click");
         expect(spy).toHaveBeenCalled();
 
-        obj.callback = spy2;
-
-        input.fire("click");
-        expect(spy2).toHaveBeenCalled();
+        delete obj.callback;
+        input.fire("focus");
         expect(spy.callCount).toBe(1);
     });
 
