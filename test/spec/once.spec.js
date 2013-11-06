@@ -1,6 +1,6 @@
 describe("once", function() {
     "use strict";
-    
+
     var link, input, form, spy;
 
     beforeEach(function() {
@@ -49,7 +49,7 @@ describe("once", function() {
             expect(relatedTarget._node).toBeUndefined();
         });
 
-        input.once("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
+        input.once("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy.andCallFake(function(type, defaultPrevented) {
@@ -60,7 +60,7 @@ describe("once", function() {
         input.fire("click");
         expect(spy.callCount).toBe(1);
 
-        input.once("focus", ["type", "defaultPrevented"], spy).fire("focus");
+        input.once("focus", spy, ["type", "defaultPrevented"]).fire("focus");
         expect(spy).toHaveBeenCalled();
 
         input.fire("focus");

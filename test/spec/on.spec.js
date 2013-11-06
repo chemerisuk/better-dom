@@ -76,7 +76,7 @@ describe("on", function() {
             expect(relatedTarget._node).toBeUndefined();
         });
 
-        input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
+        input.on("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy.andCallFake(function(type, defaultPrevented, value) {
@@ -85,7 +85,7 @@ describe("on", function() {
             expect(value).toBe(data);
         });
 
-        input.on("focus", ["type", "defaultPrevented", data], spy).fire("focus");
+        input.on("focus", spy, ["type", "defaultPrevented", data]).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
@@ -209,7 +209,7 @@ describe("on", function() {
     it("should allow to prevent custom events", function() {
         var spy2 = jasmine.createSpy("spy2");
 
-        form.on("custom:on", ["defaultPrevented"], spy);
+        form.on("custom:on", spy, ["defaultPrevented"]);
         input.on("custom:on", spy2.andReturn(false));
 
         spy.andCallFake(function(defaultPrevented) {
