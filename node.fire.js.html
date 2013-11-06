@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: node.data.js</title>
+	<title>better-dom Source: node.fire.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -67,50 +67,67 @@
 					
 
 
-		<h1 class="page-title">Source: node.data.js</h1>
+		<h1 class="page-title">Source: node.fire.js</h1>
     
     <section>
         <article>
             <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
-    $Node = require("./node");
+    $Node = require("./node"),
+    EventHandler = require("./eventhandler"),
+    hooks = require("./node.on.hooks");
 
 /**
- * Getter/setter of a data entry value. Tries to read the appropriate
- * HTML5 data-* attribute if it exists
- * @param  {String|Object} key     data key
- * @param  {Object}        [value] data value to store
- * @return {Object} data entry value or this in case of setter
- * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
+ * Triggers an event of specific type and executes it's default action if it exists
+ * @param  {String} type type of event
+ * @param  {Object} [detail] event details
+ * @return {Boolean} true if default action wasn't prevented
+ * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-$Node.prototype.data = function(key, value) {
-    var len = arguments.length,
-        keyType = typeof key,
-        node = this._node,
-        data = this._data;
-
-    if (len === 1) {
-        if (keyType === "string") {
-            if (node) {
-                value = data[key];
-
-                if (value === undefined && node.hasAttribute("data-" + key)) {
-                    value = data[key] = node.getAttribute("data-" + key);
-                }
-            }
-
-            return value;
-        } else if (key && keyType === "object") {
-            return _.forEach(this, function(el) {
-                _.extend(el._data, key);
-            });
-        }
-    } else if (len === 2 && keyType === "string") {
-        return _.forEach(this, function(el) {
-            el._data[key] = value;
-        });
+$Node.prototype.fire = function(type, detail) {
+    if (typeof type !== "string") {
+        throw _.makeError("fire", this);
     }
 
-    throw _.makeError("data", this);
+    return _.every(this, function(el) {
+        var node = el._node,
+            hook = hooks[type],
+            handler = {},
+            isCustomEvent, canContinue, e;
+
+        if (hook) hook(handler);
+
+        if (document.createEvent) {
+            e = document.createEvent("HTMLEvents");
+
+            e.initEvent(handler._type || type, true, true);
+            e.detail = detail;
+
+            canContinue = node.dispatchEvent(e);
+        } else {
+            isCustomEvent = handler.custom || !("on" + type in node);
+            e = document.createEventObject();
+            // store original event type
+            e.srcUrn = isCustomEvent ? type : undefined;
+            e.detail = detail;
+
+            node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), e);
+
+            canContinue = e.returnValue !== false;
+        }
+
+        // Call a native DOM method on the target with the same name as the event
+        // IE&lt;9 dies on focus/blur to hidden element
+        if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+            // Prevent re-triggering of the same event
+            EventHandler.veto = type;
+
+            node[type]();
+
+            EventHandler.veto = false;
+        }
+
+        return canContinue;
+    });
 };
 </pre>
         </article>

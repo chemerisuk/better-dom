@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: DOM.extend.js</title>
+	<title>better-dom Source: dom.extend.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -43,10 +43,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="$CompositeElement.html">$CompositeElement</a>
-						</li>
-						
-						<li>
 							<a href="$Element.html">$Element</a>
 						</li>
 						
@@ -71,77 +67,74 @@
 					
 
 
-		<h1 class="page-title">Source: DOM.extend.js</h1>
+		<h1 class="page-title">Source: dom.extend.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["DOM", "Element"], function(DOM, $Element, _map, _forOwn, _forEach, _extend, _slice, _makeError) {
-    "use strict";
+            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+    $Element = require("./element"),
+    DOM = require("./dom"),
+    watchers = {};
 
-    (function(){
-        var watchers = {};
+/**
+ * Define a DOM extension
+ * @memberOf DOM
+ * @param  {String}          selector extension css selector
+ * @param  {Object|Function} mixins   extension mixins/constructor function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Living-extensions
+ */
+DOM.extend = function(selector, mixins) {
+    if (typeof mixins === "function") mixins = {constructor: mixins};
 
-        /**
-         * Define a DOM extension
-         * @memberOf DOM
-         * @param  {String}          selector extension css selector
-         * @param  {Object|Function} mixins   extension mixins/constructor function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Living-extensions
-         */
-        DOM.extend = function(selector, mixins) {
-            if (typeof mixins === "function") mixins = {constructor: mixins};
+    if (!mixins || typeof mixins !== "object") {
+        throw _.makeError("extend", this);
+    }
 
-            if (!mixins || typeof mixins !== "object") {
-                throw _makeError("extend", this);
-            }
+    if (selector === "*") {
+        // extending element prototype
+        _.extend($Element.prototype, mixins);
+    } else {
+        var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
+            watcher = function(el) {
+                _.extend(el, mixins);
 
-            if (selector === "*") {
-                // extending element prototype
-                _extend($Element.prototype, mixins);
-            } else {
-                var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
-                    watcher = function(el) {
-                        _extend(el, mixins);
+                if (ctr) {
+                    ctr.call(el);
 
-                        if (ctr) {
-                            ctr.call(el);
+                    el.constructor = $Element;
+                }
+            };
 
-                            el.constructor = $Element;
-                        }
-                    };
+        (watchers[selector] = watchers[selector] || []).push(watcher);
 
-                (watchers[selector] = watchers[selector] || []).push(watcher);
+        DOM.watch(selector, watcher, true);
+    }
 
-                DOM.watch(selector, watcher, true);
-            }
+    return this;
+};
 
-            return this;
+/**
+ * Synchronously return dummy {@link $Element} instance specified for optional selector
+ * @memberOf DOM
+ * @param  {Mixed} [content] mock element content
+ * @return {$Element} mock instance
+ */
+DOM.mock = function(content) {
+    var el = content ? DOM.create(content) : new $Element(),
+        applyWatchers = function(el) {
+            _.forOwn(watchers, function(watchers, selector) {
+                if (el.matches(selector)) {
+                    _.forEach(watchers, function(watcher) { watcher(el); });
+                }
+            });
+
+            el.children().each(applyWatchers);
         };
 
-        /**
-         * Synchronously return dummy {@link $Element} instance specified for optional selector
-         * @memberOf DOM
-         * @param  {Mixed} [content] mock element content
-         * @return {$Element} mock instance
-         */
-        DOM.mock = function(content) {
-            var el = content ? DOM.create(content) : new $Element(),
-                applyWatchers = function(el) {
-                    _forOwn(watchers, function(watchers, selector) {
-                        if (el.matches(selector)) {
-                            _forEach(watchers, function(watcher) { watcher(el); });
-                        }
-                    });
+    if (content) applyWatchers(el);
 
-                    el.children().each(applyWatchers);
-                };
-
-            if (content) applyWatchers(el);
-
-            return el;
-        };
-    }());
-});
+    return el;
+};
 </pre>
         </article>
     </section>
@@ -158,7 +151,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Nov 04 2013 07:14:52 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Nov 06 2013 10:55:59 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

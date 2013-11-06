@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: Element.set.js</title>
+	<title>better-dom Source: element.set.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -43,10 +43,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="$CompositeElement.html">$CompositeElement</a>
-						</li>
-						
-						<li>
 							<a href="$Element.html">$Element</a>
 						</li>
 						
@@ -71,105 +67,70 @@
 					
 
 
-		<h1 class="page-title">Source: Element.set.js</h1>
+		<h1 class="page-title">Source: element.set.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["Element"], function($Element, _parseFragment, _legacy, _forOwn, _forEach, documentElement, _makeError) {
-    "use strict";
+            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+    $Element = require("./element"),
+    hooks = require("./element.set.hooks");
 
-    // SETTER
-    // ------
+/**
+ * Set property/attribute value
+ * @param {String} [name] property/attribute name
+ * @param {String} value property/attribute value
+ * @return {$Element}
+ * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
+ */
+$Element.prototype.set = function(name, value) {
+    var len = arguments.length,
+        nameType = typeof name;
 
-    (function() {
-        var hooks = {};
+    return _.legacy(this, function(node, el) {
+        var initialName, hook;
 
-        /**
-         * Set property/attribute value
-         * @param {String} [name] property/attribute name
-         * @param {String} value property/attribute value
-         * @return {$Element}
-         * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
-         */
-        $Element.prototype.set = function(name, value) {
-            var len = arguments.length,
-                nameType = typeof name;
-
-            return _legacy(this, function(node, el) {
-                var initialName, hook;
-
-                if (len === 1) {
-                    if (name == null) {
-                        value = "";
-                    } else if (nameType === "object") {
-                        return _forOwn(name, function(value, name) { el.set(name, value) });
-                    } else {
-                        // handle numbers, booleans etc.
-                        value = nameType === "function" ? name : String(name);
-                    }
-
-                    initialName = name;
-
-                    if (node.type && "value" in node) {
-                        // for IE use innerText because it doesn't trigger onpropertychange
-                        name = window.addEventListener ? "value" : "innerText";
-                    } else {
-                        name = "innerHTML";
-                    }
-                } else if (len > 2 || len === 0 || nameType !== "string") {
-                    throw _makeError("set", el);
-                }
-
-                if (typeof value === "function") {
-                    value = value.call(el, value.length ? el.get(name) : undefined);
-                }
-
-                if (hook = hooks[name]) {
-                    hook(node, value);
-                } else if (value == null) {
-                    node.removeAttribute(name);
-                } else if (name in node) {
-                    node[name] = value;
-                } else {
-                    node.setAttribute(name, value);
-                }
-
-                if (initialName) {
-                    name = initialName;
-                    value = undefined;
-                }
-            });
-        };
-
-        hooks.defaultValue = function(node, value) {
-            // emulate defaultValue for select via selected attribute
-            if (node.tagName === "SELECT") {
-                _forEach(node.options, function(option) {
-                    if (option.value === value) {
-                        option.selected = true;
-                        option.setAttribute("selected", "selected");
-                    }
-                });
+        if (len === 1) {
+            if (name == null) {
+                value = "";
+            } else if (nameType === "object") {
+                return _.forOwn(name, function(value, name) { el.set(name, value) });
+            } else {
+                // handle numbers, booleans etc.
+                value = nameType === "function" ? name : String(name);
             }
 
-            node.defaultValue = value;
-        };
+            initialName = name;
 
-        if (!("textContent" in documentElement)) {
-            hooks.textContent = function(node, value) {
-                node.innerText = value;
-            };
+            if (node.type && "value" in node) {
+                // for IE use innerText because it doesn't trigger onpropertychange
+                name = window.addEventListener || node.tagName === "SELECT" ? "value" : "innerText";
+            } else {
+                name = "innerHTML";
+            }
+        } else if (len > 2 || len === 0 || nameType !== "string") {
+            throw _.makeError("set", el);
         }
 
-        if (document.attachEvent) {
-            // fix NoScope elements in IE &lt; 10
-            hooks.innerHTML = function(node, value) {
-                node.innerHTML = "";
-                node.appendChild(_parseFragment(value));
-            };
+        if (typeof value === "function") {
+            value = value.call(el, value.length ? el.get(name) : undefined);
         }
-    })();
-});
+
+        if (hook = hooks[name]) {
+            hook(node, value);
+        } else if (value == null) {
+            node.removeAttribute(name);
+        } else if (name in node) {
+            node[name] = value;
+        } else {
+            node.setAttribute(name, value);
+        }
+
+        if (initialName) {
+            name = initialName;
+            value = undefined;
+        }
+    });
+};
 </pre>
         </article>
     </section>
@@ -186,7 +147,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Nov 04 2013 07:14:52 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Nov 06 2013 10:55:59 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

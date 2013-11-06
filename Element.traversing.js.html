@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: Element.traversing.js</title>
+	<title>better-dom Source: element.traversing.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -43,10 +43,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="$CompositeElement.html">$CompositeElement</a>
-						</li>
-						
-						<li>
 							<a href="$Element.html">$Element</a>
 						</li>
 						
@@ -71,133 +67,128 @@
 					
 
 
-		<h1 class="page-title">Source: Element.traversing.js</h1>
+		<h1 class="page-title">Source: element.traversing.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["Element"], function($Element, $CompositeElement, SelectorMatcher, _filter, _makeError) {
-    "use strict";
+            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+    $Element = require("./element"),
+    SelectorMatcher = require("./selectormatcher");
 
-    // TRAVERSING
-    // ----------
+function makeTraversingMethod(propertyName, multiple) {
+    return function(selector) {
+        var matcher = SelectorMatcher(selector),
+            nodes = multiple ? [] : null,
+            it = this._node;
 
-    (function() {
-        function makeTraversingMethod(propertyName, multiple) {
-            return function(selector) {
-                var matcher = SelectorMatcher(selector),
-                    nodes = multiple ? [] : null,
-                    it = this._node;
+        if (it) {
+            while (it = it[propertyName]) {
+                if (it.nodeType === 1 && (!matcher || matcher(it))) {
+                    if (!multiple) break;
 
-                if (it) {
-                    while (it = it[propertyName]) {
-                        if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                            if (!multiple) break;
-
-                            nodes.push(it);
-                        }
-                    }
+                    nodes.push(it);
                 }
-
-                return multiple ? new $CompositeElement(nodes) : $Element(it);
-            };
+            }
         }
 
-        function makeChildTraversingMethod(multiple) {
-            return function(index, selector) {
-                if (multiple) {
-                    selector = index;
-                } else if (typeof index !== "number") {
-                    throw _makeError("child", this);
-                }
+        return multiple ? new $Element(nodes, multiple) : $Element(it);
+    };
+}
 
-                if (!this._node) return multiple ? new $Element() : new $CompositeElement();
-
-                var children = this._node.children,
-                    matcher = SelectorMatcher(selector),
-                    node;
-
-                if (!document.addEventListener) {
-                    // fix IE8 bug with children collection
-                    children = _filter(children, function(node) { return node.nodeType === 1 });
-                }
-
-                if (multiple) {
-                    return new $CompositeElement(!matcher ? children : _filter(children, matcher));
-                }
-
-                if (index &lt; 0) index = children.length + index;
-
-                node = children[index];
-
-                return $Element(!matcher || matcher(node) ? node : null);
-            };
+function makeChildTraversingMethod(multiple) {
+    return function(index, selector) {
+        if (multiple) {
+            selector = index;
+        } else if (typeof index !== "number") {
+            throw _.makeError("child", this);
         }
 
-        /**
-         * Find next sibling element filtered by optional selector
-         * @param {String} [selector] css selector
-         * @return {$Element} matched element
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.next = makeTraversingMethod("nextSibling");
+        if (!this._node) return new $Element();
 
-        /**
-         * Find previous sibling element filtered by optional selector
-         * @param {String} [selector] css selector
-         * @return {$Element} matched element
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.prev = makeTraversingMethod("previousSibling");
+        var children = this._node.children,
+            matcher = SelectorMatcher(selector),
+            node;
 
-        /**
-         * Find all next sibling elements filtered by optional selector
-         * @param {String} [selector] css selector
-         * @return {$Element} collection of matched elements
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
+        if (!document.addEventListener) {
+            // fix IE8 bug with children collection
+            children = _.filter(children, function(node) { return node.nodeType === 1 });
+        }
 
-        /**
-         * Find all previous sibling elements filtered by optional selector
-         * @param {String} [selector] css selector
-         * @return {$Element} collection of matched elements
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
+        if (multiple) {
+            return new $Element(!matcher ? children : _.filter(children, matcher), true);
+        }
 
-        /**
-         * Find parent element filtered by optional selector
-         * @param {String} [selector] css selector
-         * @return {$Element} matched element
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.parent = makeTraversingMethod("parentNode");
+        if (index &lt; 0) index = children.length + index;
 
-        /**
-         * Return child element by index filtered by optional selector
-         * @param  {Number} index child index
-         * @param  {String} [selector] css selector
-         * @return {$Element} matched child
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.child = makeChildTraversingMethod(false);
+        node = children[index];
 
-        /**
-         * Fetch children elements filtered by optional selector
-         * @param  {String} [selector] css selector
-         * @return {$Element} collection of matched elements
-         * @function
-         * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
-         */
-        $Element.prototype.children = makeChildTraversingMethod(true);
-    })();
-});
+        return $Element(!matcher || matcher(node) ? node : null);
+    };
+}
+
+/**
+ * Find next sibling element filtered by optional selector
+ * @param {String} [selector] css selector
+ * @return {$Element} matched element
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.next = makeTraversingMethod("nextSibling");
+
+/**
+ * Find previous sibling element filtered by optional selector
+ * @param {String} [selector] css selector
+ * @return {$Element} matched element
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.prev = makeTraversingMethod("previousSibling");
+
+/**
+ * Find all next sibling elements filtered by optional selector
+ * @param {String} [selector] css selector
+ * @return {$Element} collection of matched elements
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
+
+/**
+ * Find all previous sibling elements filtered by optional selector
+ * @param {String} [selector] css selector
+ * @return {$Element} collection of matched elements
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
+
+/**
+ * Find parent element filtered by optional selector
+ * @param {String} [selector] css selector
+ * @return {$Element} matched element
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.parent = makeTraversingMethod("parentNode");
+
+/**
+ * Return child element by index filtered by optional selector
+ * @param  {Number} index child index
+ * @param  {String} [selector] css selector
+ * @return {$Element} matched child
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.child = makeChildTraversingMethod(false);
+
+/**
+ * Fetch children elements filtered by optional selector
+ * @param  {String} [selector] css selector
+ * @return {$Element} collection of matched elements
+ * @function
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
+$Element.prototype.children = makeChildTraversingMethod(true);
 </pre>
         </article>
     </section>
@@ -214,7 +205,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Nov 04 2013 07:14:52 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Nov 06 2013 10:55:59 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

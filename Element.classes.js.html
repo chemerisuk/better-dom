@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: Element.classes.js</title>
+	<title>better-dom Source: element.classes.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -43,10 +43,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="$CompositeElement.html">$CompositeElement</a>
-						</li>
-						
-						<li>
 							<a href="$Element.html">$Element</a>
 						</li>
 						
@@ -71,99 +67,92 @@
 					
 
 
-		<h1 class="page-title">Source: Element.classes.js</h1>
+		<h1 class="page-title">Source: element.classes.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">define(["Element"], function($Element, _every, _forEach, _makeError, documentElement, _trim) {
-    "use strict";
+            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+    $Element = require("./element"),
+    rclass = /[\n\t\r]/g;
 
-    // CLASSES MANIPULATION
-    // --------------------
+function makeClassesMethod(nativeStrategyName, strategy) {
+    var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-    (function() {
-        var rclass = /[\n\t\r]/g;
+    if (document.documentElement.classList) {
+        strategy = function(className) {
+            return this._node.classList[nativeStrategyName](className);
+        };
+    }
 
-        function makeClassesMethod(nativeStrategyName, strategy) {
-            var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+    strategy = (function(strategy){
+        return function(className) {
+            if (typeof className !== "string") throw _.makeError(methodName, this);
 
-            if (documentElement.classList) {
-                strategy = function(className) {
-                    return this._node.classList[nativeStrategyName](className);
-                };
-            }
+            return strategy.call(this, className);
+        };
+    })(strategy);
 
-            strategy = (function(strategy){
-                return function(className) {
-                    if (typeof className !== "string") throw _makeError(methodName, this);
+    if (methodName === "hasClass") {
+        return function() {
+            if (!this._node) return;
 
-                    return strategy.call(this, className);
-                };
-            })(strategy);
+            return _.every(arguments, strategy, this);
+        };
+    } else {
+        return function() {
+            var args = arguments;
 
-            if (methodName === "hasClass") {
-                return function() {
-                    if (!this._node) return;
+            return _.forEach(this, function(el) {
+                _.forEach(args, strategy, el);
+            });
+        };
+    }
+}
 
-                    return _every(arguments, strategy, this);
-                };
-            } else {
-                return function() {
-                    var args = arguments;
+/**
+ * Check if element contains class name(s)
+ * @param  {...String} classNames class name(s)
+ * @return {Boolean}   true if the element contains all classes
+ * @function
+ */
+$Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
+    return (" " + this._node.className + " ").replace(rclass, " ").indexOf(" " + className + " ") >= 0;
+});
 
-                    return _forEach(this, function(el) {
-                        _forEach(args, strategy, el);
-                    });
-                };
-            }
-        }
+/**
+ * Add class(es) to element
+ * @param  {...String} classNames class name(s)
+ * @return {$Element}
+ * @function
+ */
+$Element.prototype.addClass = makeClassesMethod("add", function(className) {
+    if (!this.hasClass(className)) this._node.className += " " + className;
+});
 
-        /**
-         * Check if element contains class name(s)
-         * @param  {...String} classNames class name(s)
-         * @return {Boolean}   true if the element contains all classes
-         * @function
-         */
-        $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
-            return (" " + this._node.className + " ").replace(rclass, " ").indexOf(" " + className + " ") >= 0;
-        });
+/**
+ * Remove class(es) from element
+ * @param  {...String} classNames class name(s)
+ * @return {$Element}
+ * @function
+ */
+$Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
+    className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
 
-        /**
-         * Add class(es) to element
-         * @param  {...String} classNames class name(s)
-         * @return {$Element}
-         * @function
-         */
-        $Element.prototype.addClass = makeClassesMethod("add", function(className) {
-            if (!this.hasClass(className)) this._node.className += " " + className;
-        });
+    this._node.className = _.trim(className);
+});
 
-        /**
-         * Remove class(es) from element
-         * @param  {...String} classNames class name(s)
-         * @return {$Element}
-         * @function
-         */
-        $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
-            className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
+/**
+ * Toggle class(es) on element
+ * @param  {...String}  classNames class name(s)
+ * @return {$Element}
+ * @function
+ */
+$Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
+    var oldClassName = this._node.className;
 
-            this._node.className = _trim(className);
-        });
+    this.addClass(className);
 
-        /**
-         * Toggle class(es) on element
-         * @param  {...String}  classNames class name(s)
-         * @return {$Element}
-         * @function
-         */
-        $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
-            var oldClassName = this._node.className;
-
-            this.addClass(className);
-
-            if (oldClassName === this._node.className) this.removeClass(className);
-        });
-    })();
+    if (oldClassName === this._node.className) this.removeClass(className);
 });
 </pre>
         </article>
@@ -181,7 +170,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Nov 04 2013 07:14:52 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Nov 06 2013 10:55:59 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
