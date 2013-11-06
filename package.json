@@ -1,6 +1,6 @@
 {
     "name": "better-dom",
-    "version": "1.5.5",
+    "version": "1.6.0-rc.1",
     "author": "Maksim Chemerisuk",
     "description": "Sandbox for living DOM extensions",
     "license": "MIT",
