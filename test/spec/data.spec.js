@@ -4,9 +4,7 @@ describe("data", function() {
     var input;
 
     beforeEach(function() {
-        setFixtures("<input id='test' data-test='x'/>");
-
-        input = DOM.find("#test");
+        input = DOM.mock("input[data-a1=x data-a2=n1=v1;n2=1 data-a3=1=2=3]");
     });
 
     it("should store any kind of object", function() {
@@ -27,11 +25,13 @@ describe("data", function() {
     });
 
     it("should read an appropriate data-* attribute if it exists", function() {
-        expect(input.data("test")).toEqual("x");
+        expect(input.data("a1")).toEqual("x");
+        expect(input.data("a2")).toEqual({ n1: "v1", n2: "1" });
+        expect(input.data("a3")).toBe("1=2=3");
     });
 
     it("should return reference to 'this' when called with 2 arguments", function() {
-        expect(input.data("test", 123)).toEqual(input);
+        expect(input.data("a1", 123)).toEqual(input);
     });
 
     it("should throw error if arguments a invalid", function() {

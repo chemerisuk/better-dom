@@ -21,7 +21,13 @@ $Node.prototype.data = function(key, value) {
                 value = data[key];
 
                 if (value === undefined && node.hasAttribute("data-" + key)) {
-                    value = data[key] = node.getAttribute("data-" + key);
+                    value = node.getAttribute("data-" + key);
+
+                    try {
+                        value = JSON.parse("{\"" + value.split(";").join("\",\"").split("=").join("\":\"") + "\"}");
+                    } catch (err) {}
+
+                    data[key] = value;
                 }
             }
 
