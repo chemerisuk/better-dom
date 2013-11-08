@@ -234,4 +234,17 @@ describe("on", function() {
         expect(function() { input.on(123); }).toThrow();
     });
 
+    describe("once", function() {
+        it("should trigger callback only one time", function() {
+            spy.andCallFake(function() {
+                expect(this).toBe(input);
+            });
+
+            input.once("focus", spy).fire("focus");
+            expect(spy).toHaveBeenCalled();
+
+            input.fire("focus");
+            expect(spy.callCount).toBe(1);
+        });
+    });
 });
