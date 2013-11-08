@@ -34,6 +34,12 @@ describe("data", function() {
         expect(input.data("a1", 123)).toEqual(input);
     });
 
+    it("should work for DOM as well", function() {
+        expect(DOM.data("a1")).toBeUndefined();
+        expect(DOM.data("a1", "test")).toBe(DOM);
+        expect(DOM.data("a1")).toBe("test");
+    });
+
     it("should throw error if arguments a invalid", function() {
         expect(function() { input.data(123); }).toThrow();
         expect(function() { input.data(); }).toThrow();

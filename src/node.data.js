@@ -20,10 +20,9 @@ $Node.prototype.data = function(key, value) {
             if (node) {
                 value = data[key];
 
-                if (value === undefined && node.hasAttribute("data-" + key)) {
-                    value = node.getAttribute("data-" + key);
-
+                if (value === undefined) {
                     try {
+                        value = node.getAttribute("data-" + key);
                         value = JSON.parse("{\"" + value.split(";").join("\",\"").split("=").join("\":\"") + "\"}");
                     } catch (err) {}
 
