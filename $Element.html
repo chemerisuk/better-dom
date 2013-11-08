@@ -92,7 +92,7 @@
     
     
     <div class="description">
-        <p>Used to represent a DOM element</p>
+        <p>Used to represent a DOM element or collection</p>
     </div>
     
 
@@ -142,7 +142,7 @@
 
             
 
-            <td class="description last"><p>native element</p></td>
+            <td class="description last"><p>native element(s)</p></td>
         </tr>
 
 	
@@ -1251,7 +1251,7 @@
                 </td>
             
 
-            <td class="description last"><p>true if the children should also be cloned, or false to do shallow copy</p></td>
+            <td class="description last"><p>true if children should also be cloned, or false otherwise</p></td>
         </tr>
 
 	
@@ -1799,6 +1799,11 @@ HTML5 data-* attribute if it exists</p>
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#each">$Node#each</a>
+    </li></dd>
+    
 
     
 
@@ -1978,6 +1983,11 @@ HTML5 data-* attribute if it exists</p>
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#every">$Node#every</a>
+    </li></dd>
     
 
     
@@ -2162,6 +2172,11 @@ HTML5 data-* attribute if it exists</p>
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#filter">$Node#filter</a>
+    </li></dd>
     
 
     
@@ -2520,7 +2535,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="fire"><span class="type-signature"></span>fire<span class="signature">(type, <span class="optional">detail</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    <h4 class="name" id="fire"><span class="type-signature"></span>fire<span class="signature">(type, <span class="optional">data</span>)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
     
     
 </dt>
@@ -2528,7 +2543,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Triggers an event of specific type and executes it's default action if it exists</p>
+        <p>Triggers an event of specific type</p>
     </div>
     
 
@@ -2595,7 +2610,7 @@ HTML5 data-* attribute if it exists</p>
 
         <tr>
             
-                <td class="name"><code>detail</code></td>
+                <td class="name"><code>data</code></td>
             
 
             <td class="type">
@@ -2621,7 +2636,7 @@ HTML5 data-* attribute if it exists</p>
 
             
 
-            <td class="description last"><p>event details</p></td>
+            <td class="description last"><p>event data</p></td>
         </tr>
 
 	
@@ -3402,8 +3417,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Executes code in a 'unsafe' block there the first callback argument is native DOM
-object. Use only when you need to communicate better-dom with third party scripts!</p>
+        <p>Executes code in a 'unsafe' block where the first callback argument is native object.</p>
     </div>
     
 
@@ -3470,6 +3484,11 @@ object. Use only when you need to communicate better-dom with third party script
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#legacy">$Node#legacy</a>
+    </li></dd>
     
 
     
@@ -3650,6 +3669,11 @@ object. Use only when you need to communicate better-dom with third party script
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#map">$Node#map</a>
+    </li></dd>
     
 
     
@@ -4544,6 +4568,9 @@ object. Use only when you need to communicate better-dom with third party script
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Array</span>
 
 
             
@@ -4561,7 +4588,7 @@ object. Use only when you need to communicate better-dom with third party script
 
             
 
-            <td class="description last"><p>event type with optional selector</p></td>
+            <td class="description last"><p>event type(s) with optional selector</p></td>
         </tr>
 
 	
@@ -5759,6 +5786,11 @@ object. Use only when you need to communicate better-dom with third party script
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#reduce">$Node#reduce</a>
+    </li></dd>
+    
 
     
 
@@ -5942,6 +5974,11 @@ object. Use only when you need to communicate better-dom with third party script
 
     
 
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#reduceRight">$Node#reduceRight</a>
+    </li></dd>
     
 
     
@@ -6776,6 +6813,11 @@ object. Use only when you need to communicate better-dom with third party script
     
 
     
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="$Node.html#some">$Node#some</a>
+    </li></dd>
+    
 
     
 
@@ -6841,7 +6883,7 @@ object. Use only when you need to communicate better-dom with third party script
         
             
 <dt>
-    <h4 class="name" id="style"><span class="type-signature"></span>style<span class="signature">(name, <span class="optional">value</span>)</span><span class="type-signature"> &rarr; {String|Object}</span></h4>
+    <h4 class="name" id="style"><span class="type-signature"></span>style<span class="signature">(name, <span class="optional">value</span>)</span><span class="type-signature"> &rarr; {String|<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -6892,6 +6934,9 @@ object. Use only when you need to communicate better-dom with third party script
             
                 
 <span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
 
 
             
@@ -6909,7 +6954,7 @@ object. Use only when you need to communicate better-dom with third party script
 
             
 
-            <td class="description last"><p>style property name</p></td>
+            <td class="description last"><p>style property name or key/value object</p></td>
         </tr>
 
 	
@@ -7013,7 +7058,7 @@ object. Use only when you need to communicate better-dom with third party script
 <span class="param-type">String</span>
 |
 
-<span class="param-type">Object</span>
+<span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
 	</dd>
@@ -7375,7 +7420,7 @@ object. Use only when you need to communicate better-dom with third party script
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Wed Nov 06 2013 10:55:59 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Fri Nov 08 2013 10:38:18 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
