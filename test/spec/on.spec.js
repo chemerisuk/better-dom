@@ -49,14 +49,23 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should accept key-value object", function() {
-        var otherSpy = jasmine.createSpy("callback2");
+    it("should accept array or key-value object", function() {
+        var otherSpy = jasmine.createSpy("otherSpy"),
+            arraySpy = jasmine.createSpy("arraySpy");
 
-        input.on({focus: spy, click: otherSpy}).fire("focus");
+        input.on({focus: spy, click: otherSpy});
+
+        input.fire("focus");
         expect(spy).toHaveBeenCalled();
 
         input.fire("click");
         expect(otherSpy).toHaveBeenCalled();
+
+        input.on(["focus", "click"], arraySpy);
+
+        input.fire("focus");
+        input.fire("click");
+        expect(arraySpy.callCount).toBe(2);
     });
 
     it("should prevent default if handler returns false", function() {

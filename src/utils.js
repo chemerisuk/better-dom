@@ -125,14 +125,17 @@ module.exports = {
         BODY:   "out = cb.call(that, a[i], i, a) && out",
         AFTER:  "return out"
     }),
-    slice: function(list, index) {
-        return Array.prototype.slice.call(list, index | 0);
-    },
     legacy: makeLoopMethod({
         BEFORE: "that = a",
         BODY:   "cb.call(that, a[i]._node, a[i], i)",
         AFTER:  "return a"
     }),
+    slice: function(list, index) {
+        return Array.prototype.slice.call(list, index | 0);
+    },
+    isArray: Array.isArray || function(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+    },
 
     // DOM UTILS
 

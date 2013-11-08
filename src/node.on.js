@@ -5,7 +5,7 @@ var _ = require("./utils"),
 
 /**
  * Bind a DOM event to the context
- * @param  {String}          type event type with optional selector
+ * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Object}          [context] callback context
  * @param  {Function|String} callback event callback/property name
  * @param  {Array}           [props] event properties to pass to the callback function
@@ -14,7 +14,7 @@ var _ = require("./utils"),
  */
 $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) {
     var eventType = typeof type,
-        selector, index;
+        selector, index, args;
 
     if (eventType === "string") {
         index = type.indexOf(" ");
@@ -37,7 +37,13 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
             props = undefined;
         }
     } else if (eventType === "object") {
-        _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+        if (_.isArray(type)) {
+            args = _.slice(arguments, 1);
+
+            _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
+        } else {
+            _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+        }
 
         return this;
     } else {
