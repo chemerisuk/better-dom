@@ -14,21 +14,21 @@ var _ = require("./utils"),
 DOM.create = function(value, attributes, styles) {
     if (typeof value === "string") {
         if (rquick.test(value)) {
-            value = new $Element(document.createElement(value));
+            value = document.createElement(value);
         } else {
-            value = _.trim(DOM.template(value));
-
             var sandbox = document.createElement("div");
 
-            sandbox.innerHTML = value;
+            sandbox.innerHTML = _.trim(DOM.template(value));
 
             if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
                 // remove temporary element
-                sandbox = sandbox.removeChild(sandbox.firstChild);
+                value = sandbox.removeChild(sandbox.firstChild);
+            } else {
+                value = sandbox;
             }
-
-            value = new $Element(sandbox);
         }
+
+        value = new $Element(value);
 
         if (attributes) value.set(attributes);
         if (styles) value.style(styles);

@@ -32,14 +32,10 @@ $Node.prototype.data = function(key, value) {
 
             return value;
         } else if (key && keyType === "object") {
-            return _.forEach(this, function(el) {
-                _.extend(el._data, key);
-            });
+            return _.forEach(this, function(el) { _.extend(el._data, key) });
         }
     } else if (len === 2 && keyType === "string") {
-        return _.forEach(this, function(el) {
-            el._data[key] = value;
-        });
+        return _.forEach(this, function(el) { el._data[key] = value });
     }
 
     throw _.makeError("data", this);

@@ -45,5 +45,4 @@ describe("data", function() {
         expect(function() { input.data(); }).toThrow();
         expect(function() { input.data("y", "u", "345"); }).toThrow();
     });
-
 });

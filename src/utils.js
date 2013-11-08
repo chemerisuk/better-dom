@@ -30,21 +30,11 @@ module.exports = {
         var reTrim = /^\s+|\s+$/g;
 
         return function(str) {
-            if (String.prototype.trim) {
-                return str.trim();
-            } else {
-                return str.replace(reTrim, "");
-            }
+            return String.prototype.trim ? str.trim() : str.replace(reTrim, "");
         };
     }()),
     makeError: function(method, el) {
-        var type;
-
-        if (el === DOM) {
-            type = "DOM";
-        } else {
-            type = "$Element";
-        }
+        var type = el === DOM ? "DOM" : "$Element";
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the function call";
     },
@@ -83,9 +73,7 @@ module.exports = {
         };
     }()),
     extend: function(obj, mixins) {
-        this.forOwn(mixins, function(value, key) {
-            obj[key] = value;
-        });
+        this.forOwn(mixins, function(value, key) { obj[key] = value });
 
         return obj;
     },
@@ -152,20 +140,16 @@ module.exports = {
             parser.innerHTML = "<br>" + html;
             parser.removeChild(parser.firstChild);
 
-            while (parser.firstChild) {
-                fragment.appendChild(parser.firstChild);
-            }
+            while (parser.firstChild) fragment.appendChild(parser.firstChild);
 
             return fragment;
         };
     })(),
     requestAnimationFrame: (function() {
-        var lastTime = 0,
-            raf = window.requestAnimationFrame ||
-                window.mozRequestAnimationFrame ||
-                window.webkitRequestAnimationFrame;
+        var lastTime = 0;
 
-        return raf || function(callback) {
+        return window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+            window.webkitRequestAnimationFrame || function(callback) {
             var currTime = new Date().getTime(),
                 timeToCall = Math.max(0, 16 - (currTime - lastTime));
 
