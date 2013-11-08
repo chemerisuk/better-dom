@@ -7,7 +7,7 @@ var _ = require("./utils"),
     hooks = require("./eventhandler.hooks"),
     debouncedEvents = "scroll mousemove",
     defaultArgs = ["target", "defaultPrevented"],
-    detailedDefaultArgs = ["detail", "target", "defaultPrevented"],
+    defaultArgsWithData = ["_data", "target", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() {
                 if (window.event.srcUrn === type) originalHandler();
@@ -42,7 +42,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
             if (EventHandler.veto !== type) {
                 var fn = isCallbackProp ? context[callback] : callback,
-                    args = extras || (e.detail != null ? detailedDefaultArgs : defaultArgs);
+                    args = extras || (e._data ? defaultArgsWithData : defaultArgs);
 
                 args = _.map(args, function(name) {
                     if (typeof name !== "string") return name;

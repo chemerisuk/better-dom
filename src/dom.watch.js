@@ -9,7 +9,7 @@ var _ = require("./utils"),
     handleWatcherEntry = function(e, node) {
         return function(entry) {
             // do not execute callback if it was previously excluded
-            if (_.some(e.detail, function(x) { return x === entry.callback })) return;
+            if (_.some(e._callbacks, function(x) { return x === entry.callback })) return;
 
             if (entry.matcher(node)) {
                 if (entry.once) {
@@ -89,7 +89,7 @@ DOM.watch = function(selector, callback, once) {
                 if (e.srcUrn !== "dataavailable") return;
             }
 
-            (e.detail = e.detail || []).push(callback);
+            (e._callbacks = e._callbacks || []).push(callback);
         }
     });
 
