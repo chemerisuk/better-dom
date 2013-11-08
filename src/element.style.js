@@ -4,9 +4,9 @@ var _ = require("./utils"),
 
 /**
  * CSS getter/setter for an element
- * @param  {String} name    style property name
- * @param  {String} [value] style property value
- * @return {String|Object} property value or reference to this
+ * @param  {String|Object} name    style property name or key/value object
+ * @param  {String}        [value] style property value
+ * @return {String|$Element} property value or reference to this
  */
 $Element.prototype.style = function(name, value) {
     var len = arguments.length,

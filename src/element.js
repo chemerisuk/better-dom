@@ -2,9 +2,9 @@ var _ = require("./utils"),
     $Node = require("./node");
 
 /**
- * Used to represent a DOM element
+ * Used to represent a DOM element or collection
  * @name $Element
- * @param element {Object} native element
+ * @param element {Object} native element(s)
  * @extends $Node
  * @constructor
  * @private

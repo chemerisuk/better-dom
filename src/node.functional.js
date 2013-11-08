@@ -14,7 +14,7 @@ function makeCollectionMethod(fn) {
 _.extend($Node.prototype, {
     /**
      * Executes callback on each element in the collection
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [context]  callback context
      * @return {$Element}
@@ -24,7 +24,7 @@ _.extend($Node.prototype, {
 
     /**
      * Checks if the callback returns true for any element in the collection
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if any element in the collection return true
@@ -34,7 +34,7 @@ _.extend($Node.prototype, {
 
     /**
      * Checks if the callback returns true for all elements in the collection
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if all elements in the collection returns true
@@ -44,7 +44,7 @@ _.extend($Node.prototype, {
 
     /**
      * Creates an array of values by running each element in the collection through the callback
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Array} new array of the results of each callback execution
@@ -54,7 +54,7 @@ _.extend($Node.prototype, {
 
     /**
      * Examines each element in a collection, returning an array of all elements the callback returns truthy for
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Array} new array with elements where callback returned true
@@ -64,7 +64,7 @@ _.extend($Node.prototype, {
 
     /**
      * Boils down a list of values into a single value (from start to end)
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
@@ -74,7 +74,7 @@ _.extend($Node.prototype, {
 
     /**
      * Boils down a list of values into a single value (from end to start)
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
@@ -83,9 +83,8 @@ _.extend($Node.prototype, {
     reduceRight: makeCollectionMethod(_.foldr),
 
     /**
-     * Executes code in a 'unsafe' block there the first callback argument is native DOM
-     * object. Use only when you need to communicate better-dom with third party scripts!
-     * @memberOf $Element.prototype
+     * Executes code in a 'unsafe' block where the first callback argument is native object.
+     * @memberOf $Node.prototype
      * @param  {Function} block unsafe block body (nativeNode, index)
      * @return {$Element}
      * @function

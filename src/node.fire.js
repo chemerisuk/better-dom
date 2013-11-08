@@ -4,7 +4,7 @@ var _ = require("./utils"),
     hooks = require("./node.on.hooks");
 
 /**
- * Triggers an event of specific type and executes it's default action if it exists
+ * Triggers an event of specific type
  * @param  {String} type type of event
  * @param  {Object} [detail] event details
  * @return {Boolean} true if default action wasn't prevented
