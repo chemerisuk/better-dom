@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.6.0-rc.1 2013-11-06T10:55:53
+ * @version 1.6.0-rc.2 2013-11-08T10:38:11
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -242,7 +242,7 @@ DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.0-rc.1";
+DOM.version = "1.6.0-rc.2";
 
 /**
  * Global object to access DOM
@@ -523,7 +523,7 @@ var _ = require("./utils"),
     handleWatcherEntry = function(e, node) {
         return function(entry) {
             // do not execute callback if it was previously excluded
-            if (_.some(e.detail, function(x) { return x === entry.callback })) return;
+            if (_.some(e._callbacks, function(x) { return x === entry.callback })) return;
 
             if (entry.matcher(node)) {
                 if (entry.once) {
@@ -603,7 +603,7 @@ DOM.watch = function(selector, callback, once) {
                 if (e.srcUrn !== "dataavailable") return;
             }
 
-            (e.detail = e.detail || []).push(callback);
+            (e._callbacks = e._callbacks || []).push(callback);
         }
     });
 
@@ -703,7 +703,7 @@ var _ = require("./utils"),
 
 /**
  * Clone element
- * @param {Boolean} [deep=true] true if the children should also be cloned, or false to do shallow copy
+ * @param {Boolean} [deep=true] true if children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */
 $Element.prototype.clone = function(deep) {
@@ -805,9 +805,9 @@ var _ = require("./utils"),
     $Node = require("./node");
 
 /**
- * Used to represent a DOM element
+ * Used to represent a DOM element or collection
  * @name $Element
- * @param element {Object} native element
+ * @param element {Object} native element(s)
  * @extends $Node
  * @constructor
  * @private
@@ -1220,9 +1220,9 @@ var _ = require("./utils"),
 
 /**
  * CSS getter/setter for an element
- * @param  {String} name    style property name
- * @param  {String} [value] style property value
- * @return {String|Object} property value or reference to this
+ * @param  {String|Object} name    style property name or key/value object
+ * @param  {String}        [value] style property value
+ * @return {String|$Element} property value or reference to this
  */
 $Element.prototype.style = function(name, value) {
     var len = arguments.length,
@@ -1467,7 +1467,7 @@ var _ = require("./utils"),
     hooks = require("./eventhandler.hooks"),
     debouncedEvents = "scroll mousemove",
     defaultArgs = ["target", "defaultPrevented"],
-    detailedDefaultArgs = ["detail", "target", "defaultPrevented"],
+    defaultArgsWithData = ["_data", "target", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() {
                 if (window.event.srcUrn === type) originalHandler();
@@ -1502,7 +1502,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
             if (EventHandler.veto !== type) {
                 var fn = isCallbackProp ? context[callback] : callback,
-                    args = extras || (e.detail != null ? detailedDefaultArgs : defaultArgs);
+                    args = extras || (e._data ? defaultArgsWithData : defaultArgs);
 
                 args = _.map(args, function(name) {
                     if (typeof name !== "string") return name;
@@ -1598,7 +1598,13 @@ $Node.prototype.data = function(key, value) {
                 value = data[key];
 
                 if (value === undefined && node.hasAttribute("data-" + key)) {
-                    value = data[key] = node.getAttribute("data-" + key);
+                    value = node.getAttribute("data-" + key);
+
+                    try {
+                        value = JSON.parse("{\"" + value.split(";").join("\",\"").split("=").join("\":\"") + "\"}");
+                    } catch (err) {}
+
+                    data[key] = value;
                 }
             }
 
@@ -1705,13 +1711,13 @@ var _ = require("./utils"),
     hooks = require("./node.on.hooks");
 
 /**
- * Triggers an event of specific type and executes it's default action if it exists
+ * Triggers an event of specific type
  * @param  {String} type type of event
- * @param  {Object} [detail] event details
+ * @param  {Object} [data] event data
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-$Node.prototype.fire = function(type, detail) {
+$Node.prototype.fire = function(type, data) {
     if (typeof type !== "string") {
         throw _.makeError("fire", this);
     }
@@ -1728,7 +1734,7 @@ $Node.prototype.fire = function(type, detail) {
             e = document.createEvent("HTMLEvents");
 
             e.initEvent(handler._type || type, true, true);
-            e.detail = detail;
+            e._data = data;
 
             canContinue = node.dispatchEvent(e);
         } else {
@@ -1736,7 +1742,7 @@ $Node.prototype.fire = function(type, detail) {
             e = document.createEventObject();
             // store original event type
             e.srcUrn = isCustomEvent ? type : undefined;
-            e.detail = detail;
+            e._data = data;
 
             node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), e);
 
@@ -1775,7 +1781,7 @@ function makeCollectionMethod(fn) {
 _.extend($Node.prototype, {
     /**
      * Executes callback on each element in the collection
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [context]  callback context
      * @return {$Element}
@@ -1785,7 +1791,7 @@ _.extend($Node.prototype, {
 
     /**
      * Checks if the callback returns true for any element in the collection
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if any element in the collection return true
@@ -1795,7 +1801,7 @@ _.extend($Node.prototype, {
 
     /**
      * Checks if the callback returns true for all elements in the collection
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if all elements in the collection returns true
@@ -1805,7 +1811,7 @@ _.extend($Node.prototype, {
 
     /**
      * Creates an array of values by running each element in the collection through the callback
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Array} new array of the results of each callback execution
@@ -1815,7 +1821,7 @@ _.extend($Node.prototype, {
 
     /**
      * Examines each element in a collection, returning an array of all elements the callback returns truthy for
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
      * @return {Array} new array with elements where callback returned true
@@ -1825,7 +1831,7 @@ _.extend($Node.prototype, {
 
     /**
      * Boils down a list of values into a single value (from start to end)
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
@@ -1835,7 +1841,7 @@ _.extend($Node.prototype, {
 
     /**
      * Boils down a list of values into a single value (from end to start)
-     * @memberOf $Element.prototype
+     * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
@@ -1844,9 +1850,8 @@ _.extend($Node.prototype, {
     reduceRight: makeCollectionMethod(_.foldr),
 
     /**
-     * Executes code in a 'unsafe' block there the first callback argument is native DOM
-     * object. Use only when you need to communicate better-dom with third party scripts!
-     * @memberOf $Element.prototype
+     * Executes code in a 'unsafe' block where the first callback argument is native object.
+     * @memberOf $Node.prototype
      * @param  {Function} block unsafe block body (nativeNode, index)
      * @return {$Element}
      * @function
@@ -2038,7 +2043,7 @@ var _ = require("./utils"),
 
 /**
  * Bind a DOM event to the context
- * @param  {String}          type event type with optional selector
+ * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Object}          [context] callback context
  * @param  {Function|String} callback event callback/property name
  * @param  {Array}           [props] event properties to pass to the callback function
@@ -2047,7 +2052,7 @@ var _ = require("./utils"),
  */
 $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) {
     var eventType = typeof type,
-        selector, index;
+        selector, index, args;
 
     if (eventType === "string") {
         index = type.indexOf(" ");
@@ -2070,7 +2075,13 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
             props = undefined;
         }
     } else if (eventType === "object") {
-        _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+        if (_.isArray(type)) {
+            args = _.slice(arguments, 1);
+
+            _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
+        } else {
+            _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+        }
 
         return this;
     } else {
@@ -2316,14 +2327,17 @@ module.exports = {
         BODY:   "out = cb.call(that, a[i], i, a) && out",
         AFTER:  "return out"
     }),
-    slice: function(list, index) {
-        return Array.prototype.slice.call(list, index | 0);
-    },
     legacy: makeLoopMethod({
         BEFORE: "that = a",
         BODY:   "cb.call(that, a[i]._node, a[i], i)",
         AFTER:  "return a"
     }),
+    slice: function(list, index) {
+        return Array.prototype.slice.call(list, index | 0);
+    },
+    isArray: Array.isArray || function(obj) {
+        return Object.prototype.toString.call(obj) === "[object Array]";
+    },
 
     // DOM UTILS
 
@@ -2368,5 +2382,5 @@ module.exports = {
     }())
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,17,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40])
+},{"./dom":6}]},{},[1,2,3,4,6,5,7,8,9,10,11,12,14,15,13,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40])
 ;
