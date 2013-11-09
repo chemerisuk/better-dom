@@ -105,15 +105,6 @@ describe("set", function() {
         expect(select.get()).toBe("PM");
     });
 
-    it("should emulate defaultValue for select", function() {
-        var select = DOM.create("<select><option>a</option><option>b</option><option>c</option></select>"),
-            selected = function(el) { return el.get("selected") };
-
-        expect(select.children().filter(selected)[0].get()).toBe("a");
-        select.set("defaultValue", "b");
-        expect(select.children().filter(selected)[0].get()).toBe("b");
-    });
-
     it("should polyfill textContent", function() {
         expect(link.get("textContent")).toBe("set-test");
         link.set("textContent", "<i>changed</i>");

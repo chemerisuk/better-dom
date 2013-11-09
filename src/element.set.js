@@ -1,6 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = require("./element.set.hooks");
+    hooks = require("./element.set.hooks"),
+    features = require("./features");
 
 /**
  * Set property/attribute value
@@ -11,10 +12,15 @@ var _ = require("./utils"),
  */
 $Element.prototype.set = function(name, value) {
     var len = arguments.length,
+        originalName = name,
+        originalValue = value,
         nameType = typeof name;
 
     return _.legacy(this, function(node, el) {
-        var initialName, hook;
+        var hook;
+
+        name = originalName;
+        value = originalValue;
 
         if (len === 1) {
             if (name == null) {
@@ -26,11 +32,18 @@ $Element.prototype.set = function(name, value) {
                 value = nameType === "function" ? name : String(name);
             }
 
-            initialName = name;
+            if (node.tagName === "SELECT") {
+                // selectbox has special case
+                _.forEach(node.options, function(option) {
+                    option.selected = option.value === value;
+                });
 
-            if (node.type && "value" in node) {
+                if (value == null) node.selectedIndex = -1;
+
+                return;
+            } else if (node.type && "value" in node) {
                 // for IE use innerText because it doesn't trigger onpropertychange
-                name = window.addEventListener || node.tagName === "SELECT" ? "value" : "innerText";
+                name = features.DOM2_EVENTS ? "value" : "innerText";
             } else {
                 name = "innerHTML";
             }
@@ -50,11 +63,6 @@ $Element.prototype.set = function(name, value) {
             node[name] = value;
         } else {
             node.setAttribute(name, value);
-        }
-
-        if (initialName) {
-            name = initialName;
-            value = undefined;
         }
     });
 };
