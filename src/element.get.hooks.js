@@ -1,11 +1,12 @@
-var hooks = {};
+var features = require("./features"),
+    hooks = {};
 
 hooks.type = function(node) {
     // some browsers don't recognize input[type=email] etc.
     return node.getAttribute("type") || node.type;
 };
 
-if (!("textContent" in document.documentElement)) {
+if (!features.DOM2_EVENTS) {
     hooks.textContent = function(node) { return node.innerText };
 }
 

@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     $Element = require("./element"),
+    features = require("./features"),
     hooks = {};
 
 // firefox doesn't support focusin/focusout events
@@ -19,7 +20,7 @@ if (document.createElement("input").validity) {
     };
 }
 
-if (document.attachEvent && !window.CSSKeyframesRule) {
+if (!features.CSS3_ANIMATIONS) {
     // input event fix via propertychange
     document.attachEvent("onfocusin", (function() {
         var legacyEventHandler = function() {
@@ -31,7 +32,7 @@ if (document.attachEvent && !window.CSSKeyframesRule) {
             },
             capturedNode, capturedNodeValue;
 
-        if (window.addEventListener) {
+        if (features.DOM2_EVENTS) {
             // IE9 doesn't fire oninput when text is deleted, so use
             // legacy onselectionchange event to detect such cases
             // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
@@ -53,7 +54,7 @@ if (document.attachEvent && !window.CSSKeyframesRule) {
         };
     })());
 
-    if (!window.addEventListener) {
+    if (!features.DOM2_EVENTS) {
         // submit event bubbling fix
         document.attachEvent("onkeydown", function() {
             var e = window.event,

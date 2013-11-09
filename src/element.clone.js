@@ -1,5 +1,6 @@
 var _ = require("./utils"),
-    $Element = require("./element");
+    $Element = require("./element"),
+    features = require("./features");
 
 /**
  * Clone element
@@ -14,7 +15,7 @@ $Element.prototype.clone = function(deep) {
     var node = this._node;
 
     if (node) {
-        if (document.addEventListener) {
+        if (features.DOM2_EVENTS) {
             node = node.cloneNode(deep);
         } else {
             node = document.createElement("div");

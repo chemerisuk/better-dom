@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
+    features = require("./features"),
     readyCallbacks = [],
     readyState = document.readyState,
     isTop, testDiv, scrollIntervalId;
@@ -17,7 +18,7 @@ function pageLoaded() {
     }
 }
 
-if (document.addEventListener) {
+if (features.DOM2_EVENTS) {
     document.addEventListener("DOMContentLoaded", pageLoaded, false);
     window.addEventListener("load", pageLoaded, false);
 } else {

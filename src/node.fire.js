@@ -1,7 +1,8 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    hooks = require("./node.on.hooks");
+    hooks = require("./node.on.hooks"),
+    features = require("./features");
 
 /**
  * Triggers an event of specific type
@@ -11,9 +12,7 @@ var _ = require("./utils"),
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.fire = function(type, data) {
-    if (typeof type !== "string") {
-        throw _.makeError("fire", this);
-    }
+    if (typeof type !== "string") throw _.makeError("fire", this);
 
     return _.every(this, function(el) {
         var node = el._node,
@@ -23,7 +22,7 @@ $Node.prototype.fire = function(type, data) {
 
         if (hook) hook(handler);
 
-        if (document.createEvent) {
+        if (features.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
 
             e.initEvent(handler._type || type, true, true);

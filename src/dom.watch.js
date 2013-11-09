@@ -1,11 +1,12 @@
+// Inspired by trick discovered by Daniel Buchner:
+// https://github.com/csuwldcat/SelectorListener
+
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
-    // Inspired by trick discovered by Daniel Buchner:
-    // https://github.com/csuwldcat/SelectorListener
+    features = require("./features"),
     watchers = [],
-    supportsAnimations = window.CSSKeyframesRule || !document.attachEvent,
     handleWatcherEntry = function(e, node) {
         return function(entry) {
             // do not execute callback if it was previously excluded
@@ -13,7 +14,7 @@ var _ = require("./utils"),
 
             if (entry.matcher(node)) {
                 if (entry.once) {
-                    if (supportsAnimations) {
+                    if (features.CSS3_ANIMATIONS) {
                         node.addEventListener(e.type, entry.once, false);
                     } else {
                         node.attachEvent("on" + e.type, entry.once);
@@ -26,7 +27,7 @@ var _ = require("./utils"),
     },
     animId, cssPrefix, link, styles;
 
-if (supportsAnimations) {
+if (features.CSS3_ANIMATIONS) {
     animId = "DOM" + new Date().getTime();
     cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
 
@@ -66,7 +67,7 @@ if (supportsAnimations) {
  * @param {Boolean} [once] execute callback only at the first time
  */
 DOM.watch = function(selector, callback, once) {
-    if (!supportsAnimations) {
+    if (!features.CSS3_ANIMATIONS) {
         // do safe call of the callback for each matched element
         // if the behaviour is already attached
         DOM.findAll(selector).legacy(function(node, el) {
@@ -81,7 +82,7 @@ DOM.watch = function(selector, callback, once) {
         matcher: SelectorMatcher(selector),
         selector: selector,
         once: once && function(e) {
-            if (supportsAnimations) {
+            if (features.CSS3_ANIMATIONS) {
                 if (e.animationName !== animId) return;
             } else {
                 e = window.event;

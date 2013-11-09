@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    supportsAnimations = window.CSSKeyframesRule || !document.attachEvent,
+    features = require("./features"),
     styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet;
 
@@ -43,5 +43,5 @@ DOM.importStyles = function(selector, styles) {
 };
 
 // [aria-hidden=true] could be overriden only if browser supports animations
-DOM.importStyles("[aria-hidden=true]", "display:none" + (supportsAnimations ? "" : " !important"));
+DOM.importStyles("[aria-hidden=true]", "display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
 DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
