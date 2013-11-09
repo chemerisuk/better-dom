@@ -1,5 +1,6 @@
 var _ = require("./utils"),
-    $Element = require("./element");
+    $Element = require("./element"),
+    features = require("./features");
 
 function makeManipulationMethod(methodName, fasterMethodName, strategy) {
     var singleArg = !fasterMethodName,
@@ -32,7 +33,7 @@ function makeManipulationMethod(methodName, fasterMethodName, strategy) {
         };
 
     // always use _parseFragment because of HTML5 and NoScope bugs in IE
-    if (document.attachEvent && !window.CSSKeyframesRule) fasterMethodName = false;
+    if (!features.CSS3_ANIMATIONS) fasterMethodName = false;
 
     return singleArg ? manipulateContent : function() {
         _.forEach(arguments, manipulateContent, this);

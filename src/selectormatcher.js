@@ -9,8 +9,7 @@ var _ = require("./utils"),
         var propertyName = prefix + "atchesSelector";
 
         if (!result) return document.documentElement[propertyName] && propertyName;
-    }, null),
-    isEqual = function(val) { return val === this };
+    }, null);
 
 module.exports = function(selector) {
     if (typeof selector !== "string") return null;
@@ -25,17 +24,17 @@ module.exports = function(selector) {
     }
 
     return function(el) {
-        if (quick) {
-            return (
-                (!quick[1] || el.nodeName.toLowerCase() === quick[1]) &&
-                (!quick[2] || el.id === quick[2]) &&
-                (!quick[3] || el.hasAttribute(quick[3])) &&
-                (!quick[4] || (" " + el.className + " ").indexOf(quick[4]) >= 0)
-            );
+        if (!quick) {
+            if (matchesProp) return el[matchesProp](selector);
+
+            return _.some(document.querySelectorAll(selector), function(x) { return x === el });
         }
 
-        if (matchesProp) return el[matchesProp](selector);
-
-        return _.some(document.querySelectorAll(selector), isEqual, el);
+        return (
+            (!quick[1] || el.nodeName.toLowerCase() === quick[1]) &&
+            (!quick[2] || el.id === quick[2]) &&
+            (!quick[3] || el.hasAttribute(quick[3])) &&
+            (!quick[4] || (" " + el.className + " ").indexOf(quick[4]) >= 0)
+        );
     };
 };

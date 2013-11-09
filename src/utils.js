@@ -41,11 +41,6 @@ module.exports = {
 
     // OBJECT UTILS
 
-    forIn: function(obj, callback, thisPtr) {
-        for (var prop in obj) {
-            callback.call(thisPtr, obj[prop], prop, obj);
-        }
-    },
     forOwn: (function() {
         if (Object.keys) {
             return makeLoopMethod({
