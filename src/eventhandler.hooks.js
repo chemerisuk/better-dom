@@ -10,7 +10,7 @@ if (features.DOM2_EVENTS) {
         return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
     };
 
-    hooks.defaultPreed = function(e) { return e.returnValue === false };
+    hooks.defaultPrevented = function(e) { return e.returnValue === false };
 
     hooks.which = function(e) { return e.keyCode };
 

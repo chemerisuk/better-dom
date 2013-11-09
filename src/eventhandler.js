@@ -45,8 +45,6 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
                     args = extras || (e._data ? defaultArgsWithData : defaultArgs);
 
                 args = _.map(args, function(name) {
-                    if (typeof name !== "string") return name;
-
                     switch (name) {
                     case "type":
                         return type;

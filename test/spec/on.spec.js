@@ -77,8 +77,6 @@ describe("on", function() {
     });
 
     it("should allow to pass extra args into callback", function() {
-        var data = {};
-
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
@@ -88,13 +86,12 @@ describe("on", function() {
         input.on("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.andCallFake(function(type, defaultPrevented, value) {
+        spy.andCallFake(function(type, defaultPrevented) {
             expect(type).toBe("focus");
             expect(defaultPrevented).toBe(false);
-            expect(value).toBe(data);
         });
 
-        input.on("focus", spy, ["type", "defaultPrevented", data]).fire("focus");
+        input.on("focus", spy, ["type", "defaultPrevented"]).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
