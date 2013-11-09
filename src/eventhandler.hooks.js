@@ -1,34 +1,31 @@
 var hooks = {},
     $Element = require("./element"),
-    documentElement = document.documentElement;
+    features = require("./features"),
+    docEl = document.documentElement;
 
-if (document.addEventListener) {
-    hooks.relatedTarget = function(event) {
-        return $Element(event.relatedTarget);
-    };
+if (features.DOM2_EVENTS) {
+    hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
 } else {
-    hooks.relatedTarget = function(event, currentTarget) {
-        var propName = ( event.toElement === currentTarget ? "from" : "to" ) + "Element";
-
-        return $Element(event[propName]);
+    hooks.relatedTarget = function(e, currentTarget) {
+        return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
     };
 
-    hooks.defaultPrevented = function(event) {
-        return event.returnValue === false;
-    };
+    hooks.defaultPreed = function(e) { return e.returnValue === false };
 
-    hooks.which = function(event) {
-        var button = event.button;
+    hooks.which = function(e) { return e.keyCode };
+
+    hooks.button = function(e) {
+        var button = e.button;
         // click: 1 === left; 2 === middle; 3 === right
-        return event.keyCode || ( button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) ) );
+        return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
     };
 
-    hooks.pageX = function(event) {
-        return event.clientX + documentElement.scrollLeft - documentElement.clientLeft;
+    hooks.pageX = function(e) {
+        return e.clientX + docEl.scrollLeft - docEl.clientLeft;
     };
 
-    hooks.pageY = function(event) {
-        return event.clientY + documentElement.scrollTop - documentElement.clientTop;
+    hooks.pageY = function(e) {
+        return e.clientY + docEl.scrollTop - docEl.clientTop;
     };
 }
 

@@ -1,4 +1,5 @@
 var _ = require("./utils"),
+    features = require("./features"),
     hooks = {};
 
 hooks.value = function(node, value) {
@@ -27,13 +28,13 @@ hooks.defaultValue = function(node, value) {
     }
 };
 
-if (!("textContent" in document.documentElement)) {
+if (!features.DOM2_EVENTS) {
     hooks.textContent = function(node, value) {
         node.innerText = value;
     };
 }
 
-if (document.attachEvent) {
+if (!features.CSS3_ANIMATIONS) {
     // fix NoScope elements in IE < 10
     hooks.innerHTML = function(node, value) {
         node.innerHTML = "";

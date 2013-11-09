@@ -1,6 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    SelectorMatcher = require("./selectormatcher");
+    SelectorMatcher = require("./selectormatcher"),
+    features = require("./features");
 
 function makeTraversingMethod(propertyName, multiple) {
     return function(selector) {
@@ -36,7 +37,7 @@ function makeChildTraversingMethod(multiple) {
             matcher = SelectorMatcher(selector),
             node;
 
-        if (!document.addEventListener) {
+        if (!features.DOM2_EVENTS) {
             // fix IE8 bug with children collection
             children = _.filter(children, function(node) { return node.nodeType === 1 });
         }
