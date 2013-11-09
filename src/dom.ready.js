@@ -12,9 +12,7 @@ function pageLoaded() {
         // cleanup
         readyCallbacks = null;
 
-        if (scrollIntervalId) {
-            clearInterval(scrollIntervalId);
-        }
+        if (scrollIntervalId) clearInterval(scrollIntervalId);
     }
 }
 
@@ -55,9 +53,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
  * @param {Function} callback event listener
  */
 DOM.ready = function(callback) {
-    if (typeof callback !== "function") {
-        throw _.makeError("ready", this);
-    }
+    if (typeof callback !== "function") throw _.makeError("ready", this);
 
     if (readyCallbacks) {
         readyCallbacks.push(callback);

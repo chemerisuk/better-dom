@@ -34,11 +34,9 @@ $Element.prototype.set = function(name, value) {
 
             if (node.tagName === "SELECT") {
                 // selectbox has special case
-                _.forEach(node.options, function(option) {
-                    option.selected = option.value === value;
-                });
-
-                if (value == null) node.selectedIndex = -1;
+                if (_.every(node.options, function(o) { return !(o.selected = o.value === value) })) {
+                    node.selectedIndex = -1;
+                }
 
                 return;
             } else if (node.type && "value" in node) {
