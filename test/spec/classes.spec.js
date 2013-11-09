@@ -54,18 +54,18 @@ describe("classes manipulation", function() {
         });
     });
 
-    it("should throw error if the first arg is not a string", function() {
-        var strategies = ["addClass", "hasClass", "removeClass", "toHaveClass"],
-            makeExpectation = function(strategy, arg) { return function() { link[strategy](arg) } },
-            i, n, strategy;
+    // it("should throw error if the first arg is not a string", function() {
+    //     var strategies = ["addClass", "hasClass", "removeClass", "toHaveClass"],
+    //         makeExpectation = function(strategy, arg) { return function() { link[strategy](arg) } },
+    //         i, n, strategy;
 
-        for (i = 0, n = strategies.length; i < n; ++i) {
-            strategy = strategies[i];
+    //     for (i = 0, n = strategies.length; i < n; ++i) {
+    //         strategy = strategies[i];
 
-            expect(makeExpectation(strategy, {})).toThrow();
-            expect(makeExpectation(strategy, 1)).toThrow();
-            expect(makeExpectation(strategy, null)).toThrow();
-            expect(makeExpectation(strategy, undefined)).toThrow();
-        }
-    });
+    //         expect(makeExpectation(strategy, {})).toThrow();
+    //         expect(makeExpectation(strategy, 1)).toThrow();
+    //         expect(makeExpectation(strategy, null)).toThrow();
+    //         expect(makeExpectation(strategy, undefined)).toThrow();
+    //     }
+    // });
 });

@@ -3,7 +3,8 @@ var _ = require("./utils"),
     rclass = /[\n\t\r]/g;
 
 function makeClassesMethod(nativeStrategyName, strategy) {
-    var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+    var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class",
+        processClasses = function(el) { _.forEach(this, strategy, el) }; /* this = arguments */
 
     if (document.documentElement.classList) {
         strategy = function(className) {
@@ -11,28 +12,10 @@ function makeClassesMethod(nativeStrategyName, strategy) {
         };
     }
 
-    strategy = (function(strategy){
-        return function(className) {
-            if (typeof className !== "string") throw _.makeError(methodName, this);
-
-            return strategy.call(this, className);
-        };
-    })(strategy);
-
     if (methodName === "hasClass") {
-        return function() {
-            if (!this._node) return;
-
-            return _.every(arguments, strategy, this);
-        };
+        return function() { if (this._node) return _.every(arguments, strategy, this) };
     } else {
-        return function() {
-            var args = arguments;
-
-            return _.forEach(this, function(el) {
-                _.forEach(args, strategy, el);
-            });
-        };
+        return function() { return _.forEach(this, processClasses, arguments) };
     }
 }
 
