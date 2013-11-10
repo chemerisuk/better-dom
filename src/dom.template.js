@@ -5,7 +5,7 @@ var _ = require("./utils"),
     reTextTag = /<\?>|<\/\?>/g,
     reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    reVar = /\$\w+/g,
+    reVar = /\$\{(\w+)\}/g,
     reHtml = /^[\s<]/,
     normalizeAttrs = function(term, name, value, a, b, simple) {
         // always wrap attribute values with quotes if they don't exist
@@ -54,12 +54,12 @@ var _ = require("./utils"),
  * Parse emmet-like template to HTML string
  * @memberOf DOM
  * @param  {String} template emmet-like expression
- * @param {Object} [aliases] key/value map of aliases
+ * @param {Object} [vars] key/value map of variables
  * @return {String} HTML string
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
  */
-DOM.template = function(template, aliases) {
+DOM.template = function(template, vars) {
     var stack = [],
         output = [],
         term = "",
@@ -67,9 +67,12 @@ DOM.template = function(template, aliases) {
 
     if (typeof template !== "string") throw _.makeError("template", this);
 
-    if (!aliases && template in cache) return cache[template];
+    if (!vars && template in cache) return cache[template];
 
     if (!template || reHtml.exec(template)) return template;
+
+    // handle vars
+    if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
 
     // parse expression into RPN
 
@@ -178,13 +181,5 @@ DOM.template = function(template, aliases) {
         stack.unshift(str);
     }
 
-    output = toString(stack[0]).replace(reTextTag, "");
-
-    if (aliases) {
-        output = output.replace(reVar, function(x) { return aliases[x.substr(1)] || x });
-    } else {
-        cache[template] = output;
-    }
-
-    return output;
+    return cache[template] = toString(stack[0]).replace(reTextTag, "");
 };
