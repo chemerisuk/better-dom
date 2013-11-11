@@ -5,10 +5,8 @@ describe("manipulation", function() {
         var div, italics;
 
         beforeEach(function() {
-            setFixtures("<div id='test'><a></a><a></a></div><i class='removeable'></i><i class='removeable'></i>");
-
-            div = DOM.find("#test");
-            italics = div.nextAll(".removeable");
+            div = DOM.create("div>a*2^i.removable*2");
+            italics = div.nextAll(".removable");
         });
 
         it("should remove element(s) from DOM", function() {
@@ -16,7 +14,7 @@ describe("manipulation", function() {
             expect(document.getElementById("test")).toBeNull();
 
             expect(italics.remove()).toBe(italics);
-            expect(DOM.findAll(".removeable").length).toBe(0);
+            expect(DOM.findAll(".removable").length).toBe(0);
         });
 
         it("should check if element has parent", function() {
@@ -119,15 +117,14 @@ describe("manipulation", function() {
             });
         });
 
-        // uncomment after using parentElement instead of parentNode
-        // it("should work properly on detached elements", function() {
-        //     div.remove();
+        it("should work properly on detached elements", function() {
+            div.remove();
 
-        //     expect(div.append(createDivHtml("append")).child(-1)._node).toHaveClass("append");
-        //     expect(div.prepend(createDivHtml("prepend")).child(0)._node).toHaveClass("prepend");
-        //     expect(div.after(createDivHtml("after")).next()._node).toBeUndefined();
-        //     expect(div.before(createDivHtml("before")).prev()._node).toBeUndefined();
-        // });
+            expect(div.append(createDivHtml("append")).child(-1)._node).toHaveClass("append");
+            expect(div.prepend(createDivHtml("prepend")).child(0)._node).toHaveClass("prepend");
+            expect(div.after(createDivHtml("after")).next()._node).toBeUndefined();
+            expect(div.before(createDivHtml("before")).prev()._node).toBeUndefined();
+        });
     });
 
     describe("replace", function() {

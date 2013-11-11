@@ -3,8 +3,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 function makeManipulationMethod(methodName, fasterMethodName, strategy) {
-    var singleArg = !fasterMethodName,
-        manipulateContent = function(value) {
+    var manipulateContent = function(value) {
             return _.legacy(this, function(node, el) {
                 var valueType = typeof value,
                     relatedNode = node.parentNode;
@@ -16,15 +15,15 @@ function makeManipulationMethod(methodName, fasterMethodName, strategy) {
 
                 if (valueType === "string") {
                     value = _.trim(DOM.template(value));
-
-                    relatedNode = fasterMethodName ? null : _.parseFragment(value);
+                    // always use _parseFragment because of HTML5 and NoScope bugs in IE
+                    relatedNode = features.CSS3_ANIMATIONS && fasterMethodName ? null : _.parseFragment(value);
                 } else if (value instanceof $Element) {
                     return value.legacy(function(relatedNode) { strategy(node, relatedNode); });
                 } else if (value !== undefined) {
                     throw _.makeError(methodName, el);
                 }
 
-                if (singleArg || relatedNode) {
+                if (!fasterMethodName || relatedNode) {
                     strategy(node, relatedNode);
                 } else {
                     node.insertAdjacentHTML(fasterMethodName, value);
@@ -32,10 +31,7 @@ function makeManipulationMethod(methodName, fasterMethodName, strategy) {
             });
         };
 
-    // always use _parseFragment because of HTML5 and NoScope bugs in IE
-    if (!features.CSS3_ANIMATIONS) fasterMethodName = false;
-
-    return singleArg ? manipulateContent : function() {
+    return !fasterMethodName ? manipulateContent : function() {
         _.forEach(arguments, manipulateContent, this);
 
         return this;
@@ -49,7 +45,7 @@ function makeManipulationMethod(methodName, fasterMethodName, strategy) {
  * @function
  */
 $Element.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
-    if (node.parentNode) node.parentNode.insertBefore(relatedNode, node.nextSibling);
+    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.insertBefore(relatedNode, node.nextSibling);
 });
 
 /**
@@ -59,7 +55,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", function(
  * @function
  */
 $Element.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
-    if (node.parentNode) node.parentNode.insertBefore(relatedNode, node);
+    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.insertBefore(relatedNode, node);
 });
 
 /**
@@ -89,7 +85,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", functi
  * @function
  */
 $Element.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
-    if (node.parentNode) node.parentNode.replaceChild(relatedNode, node);
+    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.replaceChild(relatedNode, node);
 });
 
 /**
@@ -98,5 +94,5 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", function(node
  * @function
  */
 $Element.prototype.remove = makeManipulationMethod("remove", "", function(node) {
-    if (node.parentNode) node.parentNode.removeChild(node);
+    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.removeChild(node);
 });

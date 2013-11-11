@@ -39,7 +39,12 @@ describe("traversing", function() {
             it("should throw error if the first arg is not a number", function() {
                 expect(function() { link.child({}); }).toThrow();
             });
+        });
 
+        describe("parent", function() {
+            it("should return empty node for html node", function() {
+                expect(DOM.find("html").parent().length).toBe(0);
+            });
         });
 
         it("should return empty element if value is not found", function() {
