@@ -141,11 +141,11 @@ module.exports = function(grunt) {
                 options: {
                     preserveComments: "some",
                     report: "gzip",
-                    sourceMap: "dist/<%= pkg.name %>-<%= pkg.version %>.min.src",
-                    sourceMappingURL: "<%= pkg.name %>-<%= pkg.version %>.min.src"
+                    sourceMap: "build/<%= pkg.name %>.min.src",
+                    sourceMappingURL: "<%= pkg.name %>.min.src"
                 },
                 files: {
-                    "dist/<%= pkg.name %>-<%= pkg.version %>.min.js": ["dist/<%= pkg.name %>-<%= pkg.version %>.js"]
+                    "build/<%= pkg.name %>.min.js": ["build/<%= pkg.name %>.js"]
                 }
             }
         },

@@ -21,9 +21,9 @@ DOM.importScripts = function() {
                 script.onload = callback;
                 script.async = true;
                 context.parentNode.insertBefore(script, context);
-            } else if (!arg.length && argType === "function") {
+            } else if (argType === "function") {
                 arg();
-            } else {
+            } else if (arg) {
                 throw _.makeError("importScripts", DOM);
             }
         };

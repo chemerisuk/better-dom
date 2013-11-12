@@ -41,6 +41,19 @@ describe("DOM.importScripts", function() {
         expect(spy).toHaveBeenCalled();
     });
 
+    it("should accept just strings", function() {
+        bodySpy.andCallFake(function(el) {
+            // trigger fake onload
+            el.onload();
+        });
+
+        DOM.importScripts("test");
+        expect(bodySpy).toHaveBeenCalled();
+
+        DOM.importScripts("test1", "test2", "test3");
+        expect(bodySpy.callCount).toBe(4);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importScripts(1) } ).toThrow();
     });
