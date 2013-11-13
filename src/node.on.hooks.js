@@ -1,7 +1,16 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features"),
-    hooks = {};
+    hooks = {},
+    props = Object.getOwnPropertyNames;
+
+if (props) {
+    _.filter(props(document).concat(props(window), props(Object.getPrototypeOf(window))), function(prop) {
+        var match = /on((?:webkit|moz|ms)(.+))/.exec(prop);
+
+        if (match) hooks[match[2]] = function(handler) { handler._type = match[1] };
+    });
+}
 
 // firefox doesn't support focusin/focusout events
 if ("onfocusin" in document.createElement("a")) {
@@ -9,15 +18,11 @@ if ("onfocusin" in document.createElement("a")) {
         hooks[prop] = function(handler) { handler._type = value };
     });
 } else {
-    hooks.focus = hooks.blur = function(handler) {
-        handler.capturing = true;
-    };
+    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
 }
 
 if (document.createElement("input").validity) {
-    hooks.invalid = function(handler) {
-        handler.capturing = true;
-    };
+    hooks.invalid = function(handler) { handler.capturing = true };
 }
 
 if (!features.CSS3_ANIMATIONS) {
@@ -89,9 +94,7 @@ if (!features.CSS3_ANIMATIONS) {
             };
         })());
 
-        hooks.submit = function(handler) {
-            handler.custom = true;
-        };
+        hooks.submit = function(handler) { handler.custom = true };
     }
 }
 
