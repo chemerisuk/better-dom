@@ -5,6 +5,7 @@ var _ = require("./utils"),
     props = Object.getOwnPropertyNames;
 
 if (props) {
+    // handle vendor-prefixed event names
     _.filter(props(document).concat(props(window), props(Object.getPrototypeOf(window))), function(prop) {
         var match = /on((?:webkit|moz|ms)(.+))/.exec(prop);
 

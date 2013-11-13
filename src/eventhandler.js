@@ -46,7 +46,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
                 args = extras || (e._data ? defaultArgsWithData : defaultArgs);
 
             for (; matcher && !matcher(target); target = target.parentNode) {
-                if (!target || target === root) return;
+                if (!target || target === root) return; // no matched element was found
             }
 
             args = _.map(args, function(name) {
@@ -65,9 +65,9 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
                 return hook ? hook(e, root) : e[name];
             });
 
-            if (fn && fn.apply(context, args) === false) {
+            if (typeof fn === "function" && fn.apply(context, args) === false) {
                 // prevent default if handler returns false
-                if (e.preventDefault) {
+                if (features.DOM2_EVENTS) {
                     e.preventDefault();
                 } else {
                     e.returnValue = false;

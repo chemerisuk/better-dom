@@ -34,7 +34,7 @@ if (features.CSS3_ANIMATIONS) {
     DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
-        "animation-duration": "1ms",
+        "animation-duration": "1ms !important",
         "animation-name": animId + " !important"
     };
 
@@ -46,7 +46,7 @@ if (features.CSS3_ANIMATIONS) {
 } else {
     link = document.querySelector("link[rel=htc]");
 
-    if (!link) throw "You forgot to include <link> with rel='htc' on your page!";
+    if (!link) throw "You forgot to include <link rel=htc> for IE<10!";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
