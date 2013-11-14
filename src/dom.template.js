@@ -60,19 +60,18 @@ var _ = require("./utils"),
  * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.template = function(template, vars) {
+    if (typeof template !== "string") throw _.makeError("template", this);
+    // handle vars
+    if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
+
     var stack = [],
         output = [],
         term = "",
         i, n, str, priority, skip, node;
 
-    if (typeof template !== "string") throw _.makeError("template", this);
-
-    if (!vars && template in cache) return cache[template];
+    if (template in cache) return cache[template];
 
     if (!template || reHtml.exec(template)) return template;
-
-    // handle vars
-    if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
 
     // parse expression into RPN
 

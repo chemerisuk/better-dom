@@ -36,7 +36,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
     var matcher = SelectorMatcher(selector),
         handler = function(e) {
-            if (EventHandler.veto === type) return;
+            if (EventHandler.veto === type) return; // early stop in case of default action
 
             e = e || window.event;
 
@@ -44,6 +44,8 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
                 root = currentTarget._node,
                 fn = typeof callback === "string" ? context[callback] : callback,
                 args = extras || (e._data ? defaultArgsWithData : defaultArgs);
+
+            if (typeof fn !== "function") return; // early stop in case of late binding
 
             for (; matcher && !matcher(target); target = target.parentNode) {
                 if (!target || target === root) return; // no matched element was found
@@ -65,7 +67,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
                 return hook ? hook(e, root) : e[name];
             });
 
-            if (typeof fn === "function" && fn.apply(context, args) === false) {
+            if (fn.apply(context, args) === false) {
                 // prevent default if handler returns false
                 if (features.DOM2_EVENTS) {
                     e.preventDefault();
