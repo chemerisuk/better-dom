@@ -2,11 +2,13 @@ var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features");
 
-function makeManipulationMethod(methodName, fasterMethodName, strategy) {
+function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     var manipulateContent = function(value) {
             return _.legacy(this, function(node, el) {
                 var valueType = typeof value,
                     relatedNode = node.parentNode;
+
+                if (!(standalone || relatedNode && relatedNode.nodeType === 1)) return;
 
                 if (valueType === "function") {
                     value = value.call(el);
@@ -44,8 +46,8 @@ function makeManipulationMethod(methodName, fasterMethodName, strategy) {
  * @return {$Element}
  * @function
  */
-$Element.prototype.after = makeManipulationMethod("after", "afterend", function(node, relatedNode) {
-    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.insertBefore(relatedNode, node.nextSibling);
+$Element.prototype.after = makeManipulationMethod("after", "afterend", false, function(node, relatedNode) {
+    node.parentNode.insertBefore(relatedNode, node.nextSibling);
 });
 
 /**
@@ -54,8 +56,8 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", function(
  * @return {$Element}
  * @function
  */
-$Element.prototype.before = makeManipulationMethod("before", "beforebegin", function(node, relatedNode) {
-    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.insertBefore(relatedNode, node);
+$Element.prototype.before = makeManipulationMethod("before", "beforebegin", false, function(node, relatedNode) {
+    node.parentNode.insertBefore(relatedNode, node);
 });
 
 /**
@@ -64,7 +66,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", func
  * @return {$Element}
  * @function
  */
-$Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", function(node, relatedNode) {
+$Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", true, function(node, relatedNode) {
     node.insertBefore(relatedNode, node.firstChild);
 });
 
@@ -74,7 +76,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", fun
  * @return {$Element}
  * @function
  */
-$Element.prototype.append = makeManipulationMethod("append", "beforeend", function(node, relatedNode) {
+$Element.prototype.append = makeManipulationMethod("append", "beforeend", true, function(node, relatedNode) {
     node.appendChild(relatedNode);
 });
 
@@ -84,8 +86,8 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", functi
  * @return {$Element}
  * @function
  */
-$Element.prototype.replace = makeManipulationMethod("replace", "", function(node, relatedNode) {
-    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.replaceChild(relatedNode, node);
+$Element.prototype.replace = makeManipulationMethod("replace", "", false, function(node, relatedNode) {
+    node.parentNode.replaceChild(relatedNode, node);
 });
 
 /**
@@ -93,6 +95,6 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", function(node
  * @return {$Element}
  * @function
  */
-$Element.prototype.remove = makeManipulationMethod("remove", "", function(node) {
-    if (node.parentNode && node.parentNode.nodeType === 1) node.parentNode.removeChild(node);
+$Element.prototype.remove = makeManipulationMethod("remove", "", false, function(node) {
+    node.parentNode.removeChild(node);
 });
