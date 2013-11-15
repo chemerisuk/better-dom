@@ -73,9 +73,7 @@ DOM.watch = function(selector, callback, once) {
         // do safe call of the callback for each matched element
         // if the behaviour is already attached
         DOM.findAll(selector).legacy(function(node, el) {
-            if (node.behaviorUrns.length > 0) {
-                _.defer(function() { callback(el) });
-            }
+            if (node.behaviorUrns.length) _.defer(function() { callback(el) });
         });
     }
 
@@ -84,15 +82,11 @@ DOM.watch = function(selector, callback, once) {
         accept: SelectorMatcher(selector),
         selector: selector,
         once: once && function(e) {
-            if (features.CSS3_ANIMATIONS) {
-                if (e.animationName !== animId) return;
-            } else {
-                e = window.event;
+            e = e || window.event;
 
-                if (e.srcUrn !== "dataavailable") return;
+            if (e.animationName === animId || e.srcUrn === "dataavailable")  {
+                (e._accepted = e._accepted || {})[index] = true;
             }
-
-            (e._accepted = e._accepted || {})[index] = true;
         }
     });
 
