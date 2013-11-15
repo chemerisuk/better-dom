@@ -7,19 +7,23 @@ var _ = require("./utils"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
     watchers = [],
-    handleWatcherEntry = function(e, node) {
+    processEntries = function(e, node) {
+        var type = e.type,
+            el = $Element(node),
+            accepted = e._accepted || {};
+
         return function(entry, index) {
-            // skip previously excluded and mismatched elements
-            if (!(e._done && e._done[index]) && entry.accept(node)) {
+            // skip previously excluded or mismatched elements
+            if (!accepted[index] && entry.accept(node)) {
                 if (entry.once) {
                     if (features.CSS3_ANIMATIONS) {
-                        node.addEventListener(e.type, entry.once, false);
+                        node.addEventListener(type, entry.once, false);
                     } else {
-                        node.attachEvent("on" + e.type, entry.once);
+                        node.attachEvent("on" + type, entry.once);
                     }
                 }
 
-                _.defer(function() { entry.callback($Element(node)) });
+                _.defer(function() { entry.callback(el) });
             }
         };
     },
@@ -38,7 +42,7 @@ if (features.CSS3_ANIMATIONS) {
 
     document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
-            _.forEach(watchers, handleWatcherEntry(e, e.target));
+            _.forEach(watchers, processEntries(e, e.target));
         }
     }, false);
 } else {
@@ -52,7 +56,7 @@ if (features.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(watchers, handleWatcherEntry(e, e.srcElement));
+            _.forEach(watchers, processEntries(e, e.srcElement));
         }
     });
 }
@@ -88,7 +92,7 @@ DOM.watch = function(selector, callback, once) {
                 if (e.srcUrn !== "dataavailable") return;
             }
 
-            (e._done = e._done || {})[index] = true;
+            (e._accepted = e._accepted || {})[index] = true;
         }
     });
 
