@@ -8,11 +8,9 @@ var _ = require("./utils"),
     features = require("./features"),
     watchers = [],
     handleWatcherEntry = function(e, node) {
-        return function(entry) {
-            // do not execute callback if it was previously excluded
-            if (_.some(e._callbacks, function(x) { return x === entry.callback })) return;
-
-            if (entry.matcher(node)) {
+        return function(entry, index) {
+            // skip previously excluded and mismatched elements
+            if (!(e._done && e._done[index]) && entry.accept(node)) {
                 if (entry.once) {
                     if (features.CSS3_ANIMATIONS) {
                         node.addEventListener(e.type, entry.once, false);
@@ -77,9 +75,9 @@ DOM.watch = function(selector, callback, once) {
         });
     }
 
-    watchers.push({
+    var index = watchers.push({
         callback: callback,
-        matcher: SelectorMatcher(selector),
+        accept: SelectorMatcher(selector),
         selector: selector,
         once: once && function(e) {
             if (features.CSS3_ANIMATIONS) {
@@ -90,7 +88,7 @@ DOM.watch = function(selector, callback, once) {
                 if (e.srcUrn !== "dataavailable") return;
             }
 
-            (e._callbacks = e._callbacks || []).push(callback);
+            (e._done = e._done || {})[index] = true;
         }
     });
 
