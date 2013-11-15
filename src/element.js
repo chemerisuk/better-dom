@@ -16,6 +16,8 @@ function $Element(element, /*INTERNAL*/collection) {
 
     if (element && collection === true) {
         Array.prototype.push.apply(this, _.map(element, $Element));
+        // negative index support
+        for (var i = 1, n = this.length; i <= n; ++i) this[-i] = this[n - i];
     } else {
         $Node.call(this, element);
     }
