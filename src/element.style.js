@@ -25,9 +25,11 @@ $Element.prototype.style = function(name, value) {
                 style = _.getComputedStyle(node);
                 value = hook ? hook(style) : style[name];
             }
-
-            return value;
+        } else {
+            if (this.length) value = _.map(this, function(el) { return el.style(name) });
         }
+
+        return value;
     }
 
     return _.legacy(this, function(node, el) {

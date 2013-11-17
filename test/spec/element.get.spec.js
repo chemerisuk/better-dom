@@ -1,7 +1,7 @@
 describe("get", function() {
     "use strict";
 
-    var link, input, textarea, form;
+    var link, input, textarea, form, links;
 
     beforeEach(function() {
         setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
@@ -10,12 +10,16 @@ describe("get", function() {
         input = DOM.find("#get_input");
         textarea = DOM.find("#get_textarea");
         form = DOM.find("#get_form");
+
+        links = DOM.create("a[data-test=$]*3").children();
     });
 
-    it("should read an attribute value", function() {
+    it("should read an attribute value(s)", function() {
         expect(link.get("id")).toBe("test");
         expect(link.get("data-attr")).toBe("val");
         expect(link.get("tagName")).toBe("A");
+
+        expect(links.get("data-test")).toEqual(["1", "2", "3"]);
     });
 
     it("should try to read property value first", function() {

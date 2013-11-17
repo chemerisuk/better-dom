@@ -28,6 +28,8 @@ $Node.prototype.data = function(key, value) {
 
                     data[key] = value;
                 }
+            } else {
+                if (this.length) value = _.map(this, function(el) { return el.data(key) });
             }
 
             return value;

@@ -12,7 +12,7 @@ $Element.prototype.get = function(name) {
     var node = this._node,
         hook = hooks[name];
 
-    if (!node) return;
+    if (!node) return this.length ? _.map(this, function(el) { return el.get(name) }) : undefined;
 
     if (name === undefined) {
         if (node.tagName === "OPTION") {
