@@ -3,7 +3,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Unbind a DOM event from the context
+ * Unbind an event from the element
  * @param  {String}          type type of event
  * @param  {Object}          [context] callback context
  * @param  {Function|String} [callback] event handler

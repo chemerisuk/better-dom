@@ -6,7 +6,7 @@ var _ = require("./utils"),
 /**
  * Create a $Element instance
  * @memberOf DOM
- * @param  {Mixed}   value        native element or HTMLString or EmmetString
+ * @param  {Mixed}   value        HTMLString, EmmetString or native element
  * @param  {Object}  [attributes] key/value pairs of the element attributes
  * @param  {Object}  [styles]     key/value pairs of the element styles
  * @return {$Element} element

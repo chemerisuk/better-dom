@@ -85,7 +85,7 @@ _.extend($Node.prototype, {
     /**
      * Executes code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
-     * @param  {Function} block unsafe block body (nativeNode, index)
+     * @param  {Function} callback function that accepts native node as the first argument
      * @return {$Element}
      * @function
      */

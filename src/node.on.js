@@ -9,7 +9,7 @@ var _ = require("./utils"),
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Object}          [context] callback context
  * @param  {Function|String} callback event callback/property name
- * @param  {Array}           [props] event properties to pass to the callback function
+ * @param  {Array}           [props] array of event properties to pass to the callback
  * @return {$Node}
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */

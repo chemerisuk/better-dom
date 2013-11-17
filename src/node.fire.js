@@ -5,7 +5,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Triggers an event of specific type
+ * Triggers an event of specific type with optional data
  * @param  {String} type type of event
  * @param  {Object} [data] event data
  * @return {Boolean} true if default action wasn't prevented
