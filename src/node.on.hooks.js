@@ -1,17 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features"),
-    hooks = {},
-    props = Object.getOwnPropertyNames;
-
-if (props) {
-    // handle vendor-prefixed event names
-    _.filter(props(document).concat(props(window), props(Object.getPrototypeOf(window))), function(prop) {
-        var match = /on((?:webkit|moz|ms)(.+))/.exec(prop);
-
-        if (match) hooks[match[2]] = function(handler) { handler._type = match[1] };
-    });
-}
+    hooks = {};
 
 // firefox doesn't support focusin/focusout events
 if ("onfocusin" in document.createElement("a")) {
