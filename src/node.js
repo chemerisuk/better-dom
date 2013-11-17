@@ -11,10 +11,10 @@ function $Node(node) {
         this._data = {};
         this._listeners = [];
 
-        Array.prototype.push.call(this, node.__dom__ = this);
-    } else {
-        this.length = 0;
+        this[0] = node.__dom__ = this;
     }
+
+    this.length = node ? 1 : 0;
 }
 
 module.exports = $Node;

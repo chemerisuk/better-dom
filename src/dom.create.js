@@ -7,8 +7,8 @@ var _ = require("./utils"),
  * Create a $Element instance
  * @memberOf DOM
  * @param  {Mixed}   value        HTMLString, EmmetString or native element
- * @param  {Object}  [attributes] key/value pairs of the element attributes
- * @param  {Object}  [styles]     key/value pairs of the element styles
+ * @param  {Object}  [attributes] map of the element attributes
+ * @param  {Object}  [styles]     map of the element styles
  * @return {$Element} element
  */
 DOM.create = function(value, attributes, styles) {
