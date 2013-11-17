@@ -43,7 +43,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
             var target = e.target || e.srcElement,
                 root = currentTarget._node,
                 fn = typeof callback === "string" ? context[callback] : callback,
-                args = extras || (e._data ? defaultArgsWithData : defaultArgs);
+                args = extras || (typeof e._data === "undefined" ? defaultArgs : defaultArgsWithData);
 
             if (typeof fn !== "function") return; // early stop in case of late binding
 

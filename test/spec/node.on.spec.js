@@ -116,6 +116,11 @@ describe("on", function() {
 
         input.fire("focus", detail);
         expect(spy).toHaveBeenCalled();
+
+        detail = 0;
+
+        input.fire("focus", detail);
+        expect(spy).toHaveBeenCalled();
     });
 
     // FIXME: find a way to test without exception in browser
