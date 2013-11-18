@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.6.0-rc.3 2013-11-15T23:42:43
+ * @version 1.6.0-rc.4 2013-11-19T00:48:53
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -15,19 +15,18 @@ var _ = require("./utils"),
 /**
  * Create a $Element instance
  * @memberOf DOM
- * @param  {Mixed}   value        native element or HTMLString or EmmetString
- * @param  {Object}  [attributes] key/value pairs of the element attributes
- * @param  {Object}  [styles]     key/value pairs of the element styles
+ * @param  {Mixed}  value   HTMLString, EmmetString or native element
+ * @param  {Object} [vars]  key/value map of variables in emmet template
  * @return {$Element} element
  */
-DOM.create = function(value, attributes, styles) {
+DOM.create = function(value, vars) {
     if (typeof value === "string") {
         if (rquick.test(value)) {
             value = document.createElement(value);
         } else {
             var sandbox = document.createElement("div");
 
-            sandbox.innerHTML = _.trim(DOM.template(value));
+            sandbox.innerHTML = _.trim(DOM.template(value, vars));
 
             if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
                 // remove temporary element
@@ -37,12 +36,7 @@ DOM.create = function(value, attributes, styles) {
             }
         }
 
-        value = new $Element(value);
-
-        if (attributes) value.set(attributes);
-        if (styles) value.style(styles);
-
-        return value;
+        return new $Element(value);
     }
 
     if (value.nodeType === 1) return $Element(value);
@@ -155,35 +149,28 @@ DOM.importScripts = function() {
 },{"./dom":6,"./utils":41}],4:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
-    rparam = /\{([a-z\-]+)\}/g,
+    rparam = /\$\{([a-z\-]+)\}/g,
     toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
  * Import global i18n string(s)
  * @memberOf DOM
- * @param {String|Object}  key     string key
- * @param {String}         pattern string pattern
- * @param {String}         [lang]  string language
+ * @param {String}         lang    target language
+ * @param {String|Object}  key     localized string key
+ * @param {String}         value   localized string value
  * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
-DOM.importStrings = function(key, pattern, lang) {
+DOM.importStrings = function(lang, key, value) {
     var keyType = typeof key,
         selector, content;
 
     if (keyType === "string") {
-        selector = "[data-i18n=\"" + key + "\"]";
+        selector = "[data-i18n=\"" + key + "\"]:lang(" + lang + "):before";
+        content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
 
-        if (lang) selector += ":lang(" + lang + ")";
-
-        content = "content:\"" + pattern.replace(rparam, toContentAttr) + "\"";
-
-        DOM.importStyles(selector + ":before", content);
+        DOM.importStyles(selector, content);
     } else if (keyType === "object") {
-        lang = pattern;
-
-        _.forOwn(key, function(pattern, key) {
-            DOM.importStrings(key, pattern, lang);
-        });
+        _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
         throw _.makeError("importStrings", this);
     }
@@ -238,13 +225,13 @@ DOM.importStyles = function(selector, styles) {
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 DOM.importStyles("[aria-hidden=true]", "display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
-DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
+DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");
 
 },{"./dom":6,"./element":15,"./features":28,"./utils":41}],6:[function(require,module,exports){
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.0-rc.3";
+DOM.version = "1.6.0-rc.4";
 
 /**
  * Global object to access DOM
@@ -375,7 +362,7 @@ var _ = require("./utils"),
  * Parse emmet-like template to HTML string
  * @memberOf DOM
  * @param  {String} template emmet-like expression
- * @param {Object} [vars] key/value map of variables
+ * @param  {Object} [vars] key/value map of variables
  * @return {String} HTML string
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
@@ -732,7 +719,7 @@ $Element.prototype.get = function(name) {
     var node = this._node,
         hook = hooks[name];
 
-    if (!node) return;
+    if (!node) return this.length ? _.map(this, function(el) { return el.get(name) }) : undefined;
 
     if (name === undefined) {
         if (node.tagName === "OPTION") {
@@ -776,8 +763,7 @@ $Element.prototype.i18n = function(value, args) {
 };
 
 },{"./element":15,"./utils":41}],15:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node");
+var $Node = require("./node");
 
 /**
  * Used to represent a DOM element or collection
@@ -793,9 +779,9 @@ function $Element(element, /*INTERNAL*/collection) {
     if (!(this instanceof $Element)) return new $Element(element, collection);
 
     if (element && collection === true) {
-        Array.prototype.push.apply(this, _.map(element, $Element));
-        // negative index support
-        for (var i = 1, n = this.length; i <= n; ++i) this[-i] = this[n - i];
+        for (var i = 0, n = this.length = element.length; i < n; ++i) {
+            this[i] = this[i - n] = $Element(element[i]);
+        }
     } else {
         $Node.call(this, element);
     }
@@ -805,7 +791,7 @@ $Element.prototype = new $Node();
 
 module.exports = $Element;
 
-},{"./node":35,"./utils":41}],16:[function(require,module,exports){
+},{"./node":35}],16:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features");
@@ -850,7 +836,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 
 /**
  * Insert html string or $Element after the current
- * @param {...Mixed} contents HTMLString or $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -860,7 +846,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, fu
 
 /**
  * Insert html string or $Element before the current
- * @param {...Mixed} contents HTMLString or $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -870,7 +856,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
 
 /**
  * Prepend html string or $Element to the current
- * @param {...Mixed} contents HTMLString or $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -880,7 +866,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
 
 /**
  * Append html string or $Element to the current
- * @param {...Mixed} contents HTMLString or $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -890,7 +876,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
 
 /**
  * Replace current element with html string or $Element
- * @param {Mixed} content HTMLString or $Element or functor that returns content
+ * @param {Mixed} content HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -1198,9 +1184,11 @@ $Element.prototype.style = function(name, value) {
                 style = _.getComputedStyle(node);
                 value = hook ? hook(style) : style[name];
             }
-
-            return value;
+        } else {
+            if (this.length) value = _.map(this, function(el) { return el.style(name) });
         }
+
+        return value;
     }
 
     return _.legacy(this, function(node, el) {
@@ -1458,7 +1446,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
             var target = e.target || e.srcElement,
                 root = currentTarget._node,
                 fn = typeof callback === "string" ? context[callback] : callback,
-                args = extras || (e._data ? defaultArgsWithData : defaultArgs);
+                args = extras || (typeof e._data === "undefined" ? defaultArgs : defaultArgsWithData);
 
             if (typeof fn !== "function") return; // early stop in case of late binding
 
@@ -1562,6 +1550,8 @@ $Node.prototype.data = function(key, value) {
 
                     data[key] = value;
                 }
+            } else {
+                if (this.length) value = _.map(this, function(el) { return el.data(key) });
             }
 
             return value;
@@ -1664,7 +1654,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Triggers an event of specific type
+ * Triggers an event of specific type with optional data
  * @param  {String} type type of event
  * @param  {Object} [data] event data
  * @return {Boolean} true if default action wasn't prevented
@@ -1803,7 +1793,7 @@ _.extend($Node.prototype, {
     /**
      * Executes code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
-     * @param  {Function} block unsafe block body (nativeNode, index)
+     * @param  {Function} callback function that accepts native node as the first argument
      * @return {$Element}
      * @function
      */
@@ -1839,10 +1829,10 @@ function $Node(node) {
         this._data = {};
         this._listeners = [];
 
-        Array.prototype.push.call(this, node.__dom__ = this);
-    } else {
-        this.length = 0;
+        this[0] = node.__dom__ = this;
     }
+
+    this.length = node ? 1 : 0;
 }
 
 module.exports = $Node;
@@ -1853,7 +1843,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Unbind a DOM event from the context
+ * Unbind an event from the element
  * @param  {String}          type type of event
  * @param  {Object}          [context] callback context
  * @param  {Function|String} [callback] event handler
@@ -1892,17 +1882,7 @@ $Node.prototype.off = function(type, context, callback) {
 var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features"),
-    hooks = {},
-    props = Object.getOwnPropertyNames;
-
-if (props) {
-    // handle vendor-prefixed event names
-    _.filter(props(document).concat(props(window), props(Object.getPrototypeOf(window))), function(prop) {
-        var match = /on((?:webkit|moz|ms)(.+))/.exec(prop);
-
-        if (match) hooks[match[2]] = function(handler) { handler._type = match[1] };
-    });
-}
+    hooks = {};
 
 // firefox doesn't support focusin/focusout events
 if ("onfocusin" in document.createElement("a")) {
@@ -2004,7 +1984,7 @@ var _ = require("./utils"),
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Object}          [context] callback context
  * @param  {Function|String} callback event callback/property name
- * @param  {Array}           [props] event properties to pass to the callback function
+ * @param  {Array}           [props] array of event properties to pass to the callback
  * @return {$Node}
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
