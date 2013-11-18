@@ -44,4 +44,4 @@ DOM.importStyles = function(selector, styles) {
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 DOM.importStyles("[aria-hidden=true]", "display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
-DOM.importStyles("[data-i18n]:before", "content:'???'attr(data-i18n)'???'");
+DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");

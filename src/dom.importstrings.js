@@ -1,34 +1,27 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
-    rparam = /\{([a-z\-]+)\}/g,
+    rparam = /\$\{([a-z\-]+)\}/g,
     toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
  * Import global i18n string(s)
  * @memberOf DOM
- * @param {String|Object}  key     string key
- * @param {String}         pattern string pattern
- * @param {String}         [lang]  string language
+ * @param {String}         lang    target language
+ * @param {String|Object}  key     localized string key
+ * @param {String}         value   localized string value
  * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
-DOM.importStrings = function(key, pattern, lang) {
+DOM.importStrings = function(lang, key, value) {
     var keyType = typeof key,
         selector, content;
 
     if (keyType === "string") {
-        selector = "[data-i18n=\"" + key + "\"]";
+        selector = "[data-i18n=\"" + key + "\"]:lang(" + lang + "):before";
+        content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
 
-        if (lang) selector += ":lang(" + lang + ")";
-
-        content = "content:\"" + pattern.replace(rparam, toContentAttr) + "\"";
-
-        DOM.importStyles(selector + ":before", content);
+        DOM.importStyles(selector, content);
     } else if (keyType === "object") {
-        lang = pattern;
-
-        _.forOwn(key, function(pattern, key) {
-            DOM.importStrings(key, pattern, lang);
-        });
+        _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
         throw _.makeError("importStrings", this);
     }
