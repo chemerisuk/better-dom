@@ -6,19 +6,18 @@ var _ = require("./utils"),
 /**
  * Create a $Element instance
  * @memberOf DOM
- * @param  {Mixed}   value        HTMLString, EmmetString or native element
- * @param  {Object}  [attributes] map of the element attributes
- * @param  {Object}  [styles]     map of the element styles
+ * @param  {Mixed}  value   HTMLString, EmmetString or native element
+ * @param  {Object} [vars]  key/value map of variables in emmet template
  * @return {$Element} element
  */
-DOM.create = function(value, attributes, styles) {
+DOM.create = function(value, vars) {
     if (typeof value === "string") {
         if (rquick.test(value)) {
             value = document.createElement(value);
         } else {
             var sandbox = document.createElement("div");
 
-            sandbox.innerHTML = _.trim(DOM.template(value));
+            sandbox.innerHTML = _.trim(DOM.template(value, vars));
 
             if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
                 // remove temporary element
@@ -28,12 +27,7 @@ DOM.create = function(value, attributes, styles) {
             }
         }
 
-        value = new $Element(value);
-
-        if (attributes) value.set(attributes);
-        if (styles) value.style(styles);
-
-        return value;
+        return new $Element(value);
     }
 
     if (value.nodeType === 1) return $Element(value);

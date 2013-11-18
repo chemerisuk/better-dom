@@ -54,7 +54,7 @@ var _ = require("./utils"),
  * Parse emmet-like template to HTML string
  * @memberOf DOM
  * @param  {String} template emmet-like expression
- * @param {Object} [vars] key/value map of variables
+ * @param  {Object} [vars] key/value map of variables
  * @return {String} HTML string
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/

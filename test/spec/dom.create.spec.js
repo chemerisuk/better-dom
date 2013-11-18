@@ -2,15 +2,13 @@ describe("create", function() {
     "use strict";
 
     it("should create single DOM element if parameter is not an HTML string", function() {
-        var link = DOM.create("a", {id: "b", title: "c"}, {position: "absolute", left: "1px"});
+        var link = DOM.create("a#${id}[title=${title}]", {id: "b", title: "c"});
 
         setFixtures(link._node);
 
         expect(link._node).toHaveTag("a");
         expect(link.get("id")).toBe("b");
         expect(link.get("title")).toBe("c");
-        expect(link.style("position")).toBe("absolute");
-        expect(link.style("left")).toBe("1px");
     });
 
     it("should create new DOM element if the first argument is native element", function() {
