@@ -39,10 +39,10 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * cross-browser `input` event
 
 ## Performance
-* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/16)
+* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/17)
 * [emmet vs DOM.template](http://jsperf.com/emmet-vs-dom-parsetemplate/9)
-* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find)
-* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop)
+* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/2)
+* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/2)
 
 ## Usage examples
 * [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
