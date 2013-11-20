@@ -56,8 +56,6 @@ describe("set", function() {
         var spy = jasmine.createSpy("setter");
 
         link.set("id", function(value, index, el) {
-            expect(this).toBe(undefined);
-
             spy(value, index, el);
 
             return "test_changed";

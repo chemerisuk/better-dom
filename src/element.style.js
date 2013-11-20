@@ -4,8 +4,8 @@ var _ = require("./utils"),
 
 /**
  * CSS getter/setter for an element
- * @param  {String|Object} name    style property name or key/value object
- * @param  {String}        [value] style property value
+ * @param  {String|Object}   name    style property name or key/value object
+ * @param  {String|Function} [value] style property value
  * @return {String|$Element} property value or reference to this
  */
 $Element.prototype.style = function(name, value) {
@@ -32,12 +32,12 @@ $Element.prototype.style = function(name, value) {
         return value;
     }
 
-    return _.legacy(this, function(node, el) {
+    return _.legacy(this, function(node, el, index) {
         var appendCssText = function(value, key) {
             var hook = hooks.set[key];
 
             if (typeof value === "function") {
-                value = value.call(el, value.length ? el.style(key) : undefined);
+                value = value(value.length ? el.style(key) : undefined, index, el);
             }
 
             if (value == null) value = "";
