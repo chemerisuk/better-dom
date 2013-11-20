@@ -1,6 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
+    rquick = /^[a-z]+$/,
     sandbox = document.createElement("div");
 
 /**
@@ -12,13 +13,19 @@ var _ = require("./utils"),
  */
 DOM.create = function(value, vars) {
     if (typeof value === "string") {
-        sandbox.innerHTML = _.trim(DOM.template(value, vars));
+        if (rquick.test(value)) {
+            value = document.createElement(value);
+        } else {
+            sandbox.innerHTML = _.trim(DOM.template(value, vars));
 
-        if (sandbox.childNodes.length !== 1) {
-            return $Element(sandbox).children().remove();
+            if (sandbox.childNodes.length !== 1 || sandbox.firstChild.nodeType !== 1) {
+                return $Element(sandbox).children().remove();
+            }
+
+            value = sandbox.removeChild(sandbox.firstChild);
         }
 
-        value = sandbox.removeChild(sandbox.firstChild);
+        return new $Element(value);
     }
 
     if (value.nodeType === 1) return $Element(value);
