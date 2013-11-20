@@ -21,7 +21,7 @@ var _ = require("./utils"),
                     node.attachEvent("on" + type, watcher.stop);
                 }
 
-                _.defer(function() { watcher(el) });
+                watcher(el);
             }
         };
     },
@@ -79,18 +79,26 @@ DOM.extend = function(selector, mixins) {
             // do safe call of the callback for each matched element
             // if the behaviour is already attached
             DOM.findAll(selector).legacy(function(node, el) {
-                if (node.behaviorUrns.length) _.defer(function() { watcher(el) });
+                if (node.behaviorUrns.length) watcher(el);
             });
         }
 
         var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
-            watcher = function(el) {
-                _.extend(el, mixins);
+            watcher = function(el, /*INTERNAL*/sync) {
+                var command = function() {
+                    _.extend(el, mixins);
 
-                if (ctr) {
-                    ctr.call(el);
+                    if (ctr) {
+                        ctr.call(el);
 
-                    el.constructor = $Element;
+                        el.constructor = $Element;
+                    }
+                };
+
+                if (sync) {
+                    command();
+                } else {
+                    _.defer(command);
                 }
             },
             index = watchers.push(watcher);
@@ -111,23 +119,4 @@ DOM.extend = function(selector, mixins) {
     }
 };
 
-/**
- * Synchronously return dummy {@link $Element} instance specified for optional selector
- * @memberOf DOM
- * @param  {Mixed} [content] mock element content
- * @return {$Element} mock instance
- */
-DOM.mock = function(content) {
-    var el = content ? DOM.create(content) : new $Element(),
-        applyWatchers = function(el) {
-            _.forEach(watchers, function(watcher) {
-                if (watcher.accept(el._node)) watcher(el);
-            });
-
-            el.children().each(applyWatchers);
-        };
-
-    if (content) applyWatchers(el);
-
-    return el;
-};
+module.exports = watchers;

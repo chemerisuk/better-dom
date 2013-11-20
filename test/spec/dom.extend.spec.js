@@ -5,8 +5,6 @@ describe("extend", function() {
         callback;
 
     beforeEach(function() {
-        setFixtures("<div id='expr'></div><a class='extend'></a><span class='extend'></span><b class='extend'></b>");
-
         callback = jasmine.createSpy("callback");
     });
 
@@ -71,21 +69,22 @@ describe("extend", function() {
         });
     });
 
-    // it("should not match parent elements", function() {
-    //     var spy1 = jasmine.createSpy("spy1"),
-    //         spy2 = jasmine.createSpy("spy2");
+    it("should not match parent elements", function() {
+        var spy1 = jasmine.createSpy("spy1"),
+            spy2 = jasmine.createSpy("spy2");
 
-    //     setFixtures("<form id='watch7'><input id='watch8'/></form>");
+        setFixtures("<form id='watch7'><input id='watch8'/></form>");
 
-    //     runs(function() {
-    //         DOM.extend("#watch7", spy1);
-    //         DOM.extend("#watch8", spy2);
-    //     });
+        runs(function() {
+            // FIXME: strange behavior if to reverse extend calls order
+            DOM.extend("#watch8", spy2);
+            DOM.extend("#watch7", spy1);
+        });
 
-    //     waitsFor(function() {
-    //         return spy1.callCount === 1 && spy2.callCount === 1;
-    //     });
-    // });
+        waitsFor(function() {
+            return spy1.callCount === 1 && spy2.callCount === 1;
+        });
+    });
 
     it("should not initialize twise after hide/show", function() {
         setFixtures("<a class='extend01'></a>");
