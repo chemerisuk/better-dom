@@ -7,6 +7,7 @@ var _ = require("./utils"),
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
     reVar = /\$\{(\w+)\}/g,
     reHtml = /^[\s<]/,
+    cache = {},
     normalizeAttrs = function(term, name, value, a, b, simple) {
         // always wrap attribute values with quotes if they don't exist
         return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
@@ -18,24 +19,13 @@ var _ = require("./utils"),
             return el.substr(0, index) + term + el.substr(index);
         };
     },
-    makeTerm = (function() {
-        var results = {};
+    makeTerm = function(tag) {
+        var result = cache[tag];
 
-        // populate empty tags
-        _.forEach("area base br col hr img input link meta param command keygen source".split(" "), function(tag) {
-            results[tag] = "<" + tag + ">";
-        });
+        if (!result) result = cache[tag] = "<" + tag + "></" + tag + ">";
 
-        return function(tag) {
-            var result = results[tag];
-
-            if (!result) {
-                results[tag] = result = "<" + tag + "></" + tag + ">";
-            }
-
-            return [result];
-        };
-    }()),
+        return [result];
+    },
     makeIndexedTerm = function(term) {
         return function(_, i, arr) {
             return term.replace(reIndex, function(expr, fmt, sign, base) {
@@ -47,8 +37,12 @@ var _ = require("./utils"),
     },
     toString = function(term) {
         return typeof term === "string" ? term : term.join("");
-    },
-    cache = {};
+    };
+
+// populate empty tags
+_.forEach("area base br col hr img input link meta param command keygen source".split(" "), function(tag) {
+    cache[tag] = "<" + tag + ">";
+});
 
 /**
  * Parse emmet-like template to HTML string
