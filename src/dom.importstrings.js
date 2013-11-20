@@ -30,3 +30,6 @@ DOM.importStrings = function(lang, key, value) {
 
     return this;
 };
+
+// by default just show data-i18n string
+DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");

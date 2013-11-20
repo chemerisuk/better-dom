@@ -1,4 +1,6 @@
-var $Element = require("./element");
+var $Element = require("./element"),
+    DOM = require("./dom"),
+    features = require("./features");
 
 /**
  * Show element
@@ -23,3 +25,7 @@ $Element.prototype.hide = function() {
 $Element.prototype.toggle = function() {
     return this.set("aria-hidden", function(value) { return value !== "true" });
 };
+
+// [aria-hidden=true] could be overriden only if browser supports animations
+// pointer-events:none helps to solve accidental clicks on a hidden element
+DOM.importStyles("[aria-hidden=true]", "pointer-events:none; display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
