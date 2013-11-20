@@ -5,8 +5,8 @@ var _ = require("./utils"),
 
 /**
  * Set property/attribute value
- * @param {String} [name] property/attribute name
- * @param {String} value property/attribute value
+ * @param {String}           [name]  property/attribute name
+ * @param {String|Function}  value   property/attribute value
  * @return {$Element}
  * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
  */
@@ -16,7 +16,7 @@ $Element.prototype.set = function(name, value) {
         originalValue = value,
         nameType = typeof name;
 
-    return _.legacy(this, function(node, el) {
+    return _.legacy(this, function(node, el, index) {
         var hook;
 
         name = originalName;
@@ -50,7 +50,7 @@ $Element.prototype.set = function(name, value) {
         }
 
         if (typeof value === "function") {
-            value = value.call(el, value.length ? el.get(name) : undefined);
+            value = value(value.length ? el.get(name) : undefined, index, el);
         }
 
         if (hook = hooks[name]) {

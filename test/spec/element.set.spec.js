@@ -55,13 +55,15 @@ describe("set", function() {
     it("should accept function", function() {
         var spy = jasmine.createSpy("setter");
 
-        link.set("id", function(value) {
-            spy(value);
+        link.set("id", function(value, index, el) {
+            expect(this).toBe(undefined);
+
+            spy(value, index, el);
 
             return "test_changed";
         });
 
-        expect(spy).toHaveBeenCalledWith("test");
+        expect(spy).toHaveBeenCalledWith("test", 0, link);
         expect(link._node).toHaveAttr("id", "test_changed");
 
         spy.reset();
