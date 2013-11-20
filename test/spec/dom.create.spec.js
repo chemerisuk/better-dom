@@ -26,6 +26,8 @@ describe("create", function() {
 
         expect(el._node).toHaveTag("a");
         expect(el.child(0)._node).toHaveTag("span");
+
+        expect(DOM.create("<b></b><a></a>").length).toBe(2);
     });
 
     it("should trim inner html strings", function() {
@@ -35,12 +37,6 @@ describe("create", function() {
             expect(node).toHaveTag("a");
             expect(node.firstChild).toHaveTag("span");
         });
-    });
-
-    it("should wrap non-single element strings with div", function() {
-        expect(DOM.create("123")._node).toHaveTag("div");
-        expect(DOM.create("<b></b>123<a></a>")._node).toHaveTag("div");
-        expect(DOM.create("<b></b><a></a>")._node).toHaveTag("div");
     });
 
     it("should parse emmet-like expressions", function() {
@@ -55,11 +51,8 @@ describe("create", function() {
     it("should wrap element to div if HTML string has several root nodes", function() {
         var el = DOM.create("<a></a><b></b>");
 
-        setFixtures(el._node);
-
-        expect(el._node).toHaveTag("div");
-        expect(el.child(0)._node).toHaveTag("a");
-        expect(el.child(1)._node).toHaveTag("b");
+        expect(el[0]._node).toHaveTag("a");
+        expect(el[1]._node).toHaveTag("b");
     });
 
     it("should throw error if argument is invalid", function() {

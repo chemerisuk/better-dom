@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    rquick = /^[a-z]+$/;
+    sandbox = document.createElement("div");
 
 /**
  * Create a $Element instance
@@ -12,22 +12,13 @@ var _ = require("./utils"),
  */
 DOM.create = function(value, vars) {
     if (typeof value === "string") {
-        if (rquick.test(value)) {
-            value = document.createElement(value);
-        } else {
-            var sandbox = document.createElement("div");
+        sandbox.innerHTML = _.trim(DOM.template(value, vars));
 
-            sandbox.innerHTML = _.trim(DOM.template(value, vars));
-
-            if (sandbox.childNodes.length === 1 && sandbox.firstChild.nodeType === 1) {
-                // remove temporary element
-                value = sandbox.removeChild(sandbox.firstChild);
-            } else {
-                value = sandbox;
-            }
+        if (sandbox.childNodes.length !== 1) {
+            return $Element(sandbox).children().remove();
         }
 
-        return new $Element(value);
+        value = sandbox.removeChild(sandbox.firstChild);
     }
 
     if (value.nodeType === 1) return $Element(value);

@@ -11,7 +11,7 @@ describe("get", function() {
         textarea = DOM.find("#get_textarea");
         form = DOM.find("#get_form");
 
-        links = DOM.create("a[data-test=$]*3").children();
+        links = DOM.create("a[data-test=$]*3");
     });
 
     it("should read an attribute value(s)", function() {
