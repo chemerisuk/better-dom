@@ -16,10 +16,12 @@ DOM.importStrings = function(lang, key, value) {
         selector, content;
 
     if (keyType === "string") {
-        selector = "[data-i18n=\"" + key + "\"]:lang(" + lang + "):before";
+        selector = "[data-i18n=\"" + key + "\"]";
         content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
+        // empty lang is for internal use only
+        if (lang) selector += ":lang(" + lang + ")";
 
-        DOM.importStyles(selector, content);
+        DOM.importStyles(selector + ":before", content);
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {

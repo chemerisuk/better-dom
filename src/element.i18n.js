@@ -1,5 +1,6 @@
 var _ = require("./utils"),
-    $Element = require("./element");
+    $Element = require("./element"),
+    initialized = {};
 
 /**
  * Get/set localized value
@@ -13,6 +14,13 @@ $Element.prototype.i18n = function(value, args) {
     if (!len) return this.get("data-i18n");
 
     if (len > 2 || value && typeof value !== "string" || args && typeof args !== "object") throw _.makeError("i18n", this);
+
+    if (args && !initialized[value]) {
+        // "str ${param}" requires different default css
+        DOM.importStrings("", value, value);
+
+        initialized[value] = true;
+    }
 
     args = _.foldl(_.keys(args || {}), function(memo, key) {
         memo["data-" + key] = args[key];
