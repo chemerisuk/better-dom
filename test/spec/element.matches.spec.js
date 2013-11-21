@@ -22,6 +22,7 @@ describe("matches", function() {
         expect(input.matches("[required]")).toBe(true);
         expect(input.matches("[unknown]")).toBe(false);
         expect(input.matches("[checked]")).toBe(true);
+        expect(input.matches("[type=checkbox]")).toBe(true);
     });
 
     it("should match element by a complex selector", function() {

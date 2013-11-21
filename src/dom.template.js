@@ -124,8 +124,6 @@ DOM.template = function(template, vars) {
 
     stack = [];
 
-    if (output.length === 1) output.push(">");
-
     for (i = 0, n = output.length; i < n; ++i) {
         str = output[i];
 

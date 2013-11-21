@@ -39,6 +39,32 @@ describe("extend", function() {
         });
     });
 
+    // it("should not execute the same extension twice", function() {
+    //     var link = DOM.create("a.ext1.ext2"),
+    //         spy = jasmine.createSpy("ext2"),
+    //         calledOnce;
+
+    //     DOM.find("body").append(link);
+
+    //     runs(function() {
+    //         DOM.extend(".ext1", callback);
+
+    //         setTimeout(function() {
+    //             DOM.extend(".ext2", spy);
+    //         }, WAIT_FOR_WATCH_TIME);
+
+    //         setTimeout(function() {
+    //             link.remove();
+
+    //             console.log(callback.callCount, spy.callCount)
+
+    //             if (callback.callCount === 1 && spy.callCount === 1) calledOnce = true;
+    //         }, WAIT_FOR_WATCH_TIME * 5);
+    //     });
+
+    //     waitsFor(function() { return calledOnce; });
+    // });
+
     it("should accept several watchers of the same selector", function() {
         var spy = jasmine.createSpy("callback2");
 
@@ -126,55 +152,25 @@ describe("extend", function() {
 
     it("should allow extending the element prototype", function() {
         DOM.extend("*", {
-            test: function() {}
+            test: 555
         });
 
-        expect(DOM.create("a").test).toBeDefined();
+        expect(DOM.create("a").test).toBe(555);
     });
 
     // FIXME: find a way to test without exception in browser
     // it("should not stop handle other listeners if any throws an error", function() {
     //     var otherCallback = jasmine.createSpy("otherCallback");
 
-    //     DOM.watch(".watch5", callback.andCallFake(function() {
-    //         throw "watch";
-    //     }));
+    //     callback.andThrow("stop listeners");
 
-    //     DOM.watch(".watch5", otherCallback);
+    //     DOM.extend(".watch5", callback);
+    //     DOM.extend(".watch5", otherCallback);
 
     //     setFixtures("<a class='watch5'></a>");
 
-    //     waits(WAIT_FOR_WATCH_TIME);
-
-    //     runs(function() {
-    //         expect(callback).toHaveBeenCalled();
-    //         expect(otherCallback).toHaveBeenCalled();
-    //     });
-    // });
-
-    // FIXME: Chrome 30 fails on this test
-    // it("should accept callbacks with different once argument for the same selector", function() {
-    //     var otherCallback = jasmine.createSpy("otherCallback");
-
-    //     runs(function() {
-    //         DOM.watch("#watch6", callback, true);
-    //         DOM.watch("#watch6", otherCallback);
-
-    //         setFixtures("<a id='watch6'></a>");
-    //     });
-
     //     waitsFor(function() {
-    //         if (callback.callCount === 1) {
-    //             if (otherCallback.callCount === 1) {
-    //                 var link = DOM.find("#watch6");
-
-    //                 link.remove();
-
-    //                 setFixtures(link._node);
-    //             } else if (otherCallback.callCount === 2) {
-    //                 return true;
-    //             }
-    //         }
+    //         return callback.callCount === 1 && otherCallback.callCount === 1;
     //     });
     // });
 
