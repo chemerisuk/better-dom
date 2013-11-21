@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: element.i18n.js</title>
+	<title>better-dom Source: dom.mock.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -67,41 +67,32 @@
 					
 
 
-		<h1 class="page-title">Source: element.i18n.js</h1>
+		<h1 class="page-title">Source: dom.mock.js</h1>
     
     <section>
         <article>
             <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
     $Element = require("./element"),
-    initialized = {};
+    DOM = require("./dom"),
+    extensions = require("./dom.extend");
 
 /**
- * Get/set localized value
- * @param  {String} [value]  resource string key
- * @param  {Object} [args]   resource string arguments
- * @return {String|$Element}
+ * Synchronously return dummy {@link $Element} instance specified for optional selector
+ * @memberOf DOM
+ * @param  {Mixed} [content] mock element content
+ * @return {$Element} mock instance
  */
-$Element.prototype.i18n = function(value, args) {
-    var len = arguments.length;
+DOM.mock = function(content) {
+    var el = content ? DOM.create(content) : new $Element(),
+        applyWatchers = function(el) {
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el) });
 
-    if (!len) return this.get("data-i18n");
+            el.children().each(applyWatchers);
+        };
 
-    if (len > 2 || value && typeof value !== "string" || args && typeof args !== "object") throw _.makeError("i18n", this);
+    if (content) applyWatchers(el);
 
-    if (args && !initialized[value]) {
-        // "str ${param}" requires different default css
-        DOM.importStrings("", value, value);
-
-        initialized[value] = true;
-    }
-
-    args = _.foldl(_.keys(args || {}), function(memo, key) {
-        memo["data-" + key] = args[key];
-
-        return memo;
-    }, {"data-i18n": value});
-
-    return this.set(args).set("");
+    return el;
 };
 </pre>
         </article>

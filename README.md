@@ -3,18 +3,9 @@
 
 
 
-## Installation
-The simplest way is to use [bower](http://bower.io/):
-
-    bower install better-dom --save
-
-This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
-
-
-
 ## Features
-* compact size (~22kb minified and ~5kb gzipped)
-* clearer, standards-based (if possible) APIs
+* compact size (~28kb minified and ~6kb gzipped)
+* clean, standards-based (if possible) APIs
 * [living extensions](https://github.com/chemerisuk/better-dom/wiki/Living-extensions)
 * [smarter getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
@@ -24,19 +15,28 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * cross-browser `input` event
 
 ## Performance
-* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/16)
-* [emmet vs DOM.template](http://jsperf.com/emmet-vs-dom-parsetemplate/9)
-* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find)
-* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop)
+* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/17)
+* [emmet vs DOM.template](http://jsperf.com/emmet-vs-dom-parsetemplate/10)
+* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/2)
+* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/2)
+
+## Installation
+The simplest way is to use [bower](http://bower.io/):
+
+    bower install better-dom --save
+
+This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
+
+
 
 ## Usage examples
-* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
-* [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
+* [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
 * [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - input[type=date] polyfill
 * [better-timeinput-polyfill](https://github.com/chemerisuk/better-timeinput-polyfill) - input[type=time] polyfill
 * [better-form-validation](https://github.com/chemerisuk/better-form-validation) - Form validation polyfill
 * [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
-* [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
+* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
+* [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
 
 ## Notes about old IEs
 For IE8-9 support you have to incude conditional comment above into head. The excellent __html5shiv__ library is used to fix the HTML5 elements bug in legacy browsers and the HTC file helps to implement live extensions support.
