@@ -17,9 +17,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @return {$Element} the first matched element
  */
 $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
-    if (typeof selector !== "string") {
-        throw _.makeError("find", this);
-    }
+    if (typeof selector !== "string") throw _.makeError("find", this);
 
     var node = this._node,
         quickMatch = rquickExpr.exec(selector),

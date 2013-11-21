@@ -4,7 +4,7 @@ describe("get", function() {
     var link, input, textarea, form, links;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='text' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
+        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='email' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
@@ -18,6 +18,9 @@ describe("get", function() {
         expect(link.get("id")).toBe("test");
         expect(link.get("data-attr")).toBe("val");
         expect(link.get("tagName")).toBe("A");
+
+        expect(input.get("type")).toBe("email");
+        expect(textarea.get("type")).toBe("textarea");
 
         expect(links.get("data-test")).toEqual(["1", "2", "3"]);
     });

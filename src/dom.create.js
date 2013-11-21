@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    rquick = /^[a-z]+$/,
+    rquick = /^\w+$/,
     sandbox = document.createElement("div");
 
 /**

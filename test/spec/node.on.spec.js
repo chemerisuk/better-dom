@@ -241,6 +241,18 @@ describe("on", function() {
         expect(spy).toHaveBeenCalledWith(DOM, false);
     });
 
+    it("should debounce some events", function() {
+        var spy = jasmine.createSpy("callback");
+
+        form.on("scroll", spy);
+        form.fire("scroll");
+        form.fire("scroll");
+        form.fire("scroll");
+
+        expect(spy).toHaveBeenCalledWith(form, false);
+        expect(spy.callCount).toBe(1);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });
