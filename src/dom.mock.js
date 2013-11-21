@@ -13,7 +13,7 @@ DOM.mock = function(content) {
     var el = content ? DOM.create(content) : new $Element(),
         applyWatchers = function(el) {
             _.forEach(watchers, function(watcher) {
-                if (watcher.accept(el._node)) watcher(el, true);
+                if (watcher.accept(el._node)) watcher(el);
             });
 
             el.children().each(applyWatchers);

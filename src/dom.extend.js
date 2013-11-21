@@ -21,7 +21,7 @@ var _ = require("./utils"),
                     node.attachEvent("on" + type, watcher.stop);
                 }
 
-                watcher(el);
+                _.defer(function() { watcher(el) });
             }
         };
     },
@@ -79,26 +79,18 @@ DOM.extend = function(selector, mixins) {
             // do safe call of the callback for each matched element
             // if the behaviour is already attached
             DOM.findAll(selector).legacy(function(node, el) {
-                if (node.behaviorUrns.length) watcher(el);
+                if (node.behaviorUrns.length) _.defer(function() { watcher(el) });
             });
         }
 
         var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
-            watcher = function(el, /*INTERNAL*/sync) {
-                var command = function() {
-                    _.extend(el, mixins);
+            watcher = function(el) {
+                _.extend(el, mixins);
 
-                    if (ctr) {
-                        ctr.call(el);
+                if (ctr) {
+                    ctr.call(el);
 
-                        el.constructor = $Element;
-                    }
-                };
-
-                if (sync) {
-                    command();
-                } else {
-                    _.defer(command);
+                    el.constructor = $Element;
                 }
             },
             index = watchers.push(watcher);
