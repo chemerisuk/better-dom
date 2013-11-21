@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    watchers = require("./dom.extend");
+    extensions = require("./dom.extend");
 
 /**
  * Synchronously return dummy {@link $Element} instance specified for optional selector
@@ -12,9 +12,7 @@ var _ = require("./utils"),
 DOM.mock = function(content) {
     var el = content ? DOM.create(content) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(watchers, function(watcher) {
-                if (watcher.accept(el._node)) watcher(el);
-            });
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el) });
 
             el.children().each(applyWatchers);
         };

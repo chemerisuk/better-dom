@@ -6,22 +6,22 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
-    watchers = [],
-    processWatchers = function(e, node) {
+    extensions = [],
+    makeExtHandler = function(e, node) {
         var type = e.type,
             el = $Element(node),
             accepted = e._accepted || {};
 
-        return function(watcher, index) {
+        return function(ext, index) {
             // skip previously excluded or mismatched elements
-            if (!accepted[index] && watcher.accept(node)) {
+            if (!accepted[index] && ext.accept(node)) {
                 if (features.CSS3_ANIMATIONS) {
-                    node.addEventListener(type, watcher.stop, false);
+                    node.addEventListener(type, ext.stop, false);
                 } else {
-                    node.attachEvent("on" + type, watcher.stop);
+                    node.attachEvent("on" + type, ext.stop);
                 }
 
-                _.defer(function() { watcher(el) });
+                _.defer(function() { ext(el) });
             }
         };
     },
@@ -40,7 +40,7 @@ if (features.CSS3_ANIMATIONS) {
 
     document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
-            _.forEach(watchers, processWatchers(e, e.target));
+            _.forEach(extensions, makeExtHandler(e, e.target));
         }
     }, false);
 } else {
@@ -54,7 +54,7 @@ if (features.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(watchers, processWatchers(e, e.srcElement));
+            _.forEach(extensions, makeExtHandler(e, e.srcElement));
         }
     });
 }
@@ -79,12 +79,12 @@ DOM.extend = function(selector, mixins) {
             // do safe call of the callback for each matched element
             // if the behaviour is already attached
             DOM.findAll(selector).legacy(function(node, el) {
-                if (node.behaviorUrns.length) _.defer(function() { watcher(el) });
+                if (node.behaviorUrns.length) _.defer(function() { ext(el) });
             });
         }
 
         var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
-            watcher = function(el) {
+            ext = function(el) {
                 _.extend(el, mixins);
 
                 if (ctr) {
@@ -93,11 +93,11 @@ DOM.extend = function(selector, mixins) {
                     el.constructor = $Element;
                 }
             },
-            index = watchers.push(watcher);
+            index = extensions.push(ext);
 
-        watcher.accept = SelectorMatcher(selector);
-        watcher.selector = selector;
-        watcher.stop = function(e) {
+        ext.accept = SelectorMatcher(selector);
+        ext.selector = selector;
+        ext.stop = function(e) {
             e = e || window.event;
 
             if (e.animationName === animId || e.srcUrn === "dataavailable")  {
@@ -105,10 +105,10 @@ DOM.extend = function(selector, mixins) {
             }
         };
 
-        if (_.some(watchers, function(x) { return x.selector === selector })) {
+        if (_.some(extensions, function(x) { return x.selector === selector })) {
             DOM.importStyles(selector, styles);
         }
     }
 };
 
-module.exports = watchers;
+module.exports = extensions;
