@@ -58,6 +58,16 @@ describe("find", function() {
         expect(xxx.findAll("a").length).toBe(0);
     });
 
+    it("should fix querySelectorAll on element with context", function() {
+        setFixtures("<div><p class='foo'><span></span></p></div>");
+
+        var foo = DOM.find(".foo");
+
+        expect(foo._node.querySelectorAll("div span").length).toBe(1);
+        expect(foo.findAll("div span").length).toBe(0);
+        expect(foo.get("id")).toBeFalsy();
+    });
+
     it("should throw error if the first argument is not a string", function() {
         expect(function() { DOM.find(1); }).toThrow();
     });

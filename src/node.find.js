@@ -52,16 +52,14 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 
             nid = "[id='" + nid + "'] ";
 
-            context = rsibling.test(selector) && node.parentNode || node;
+            context = rsibling.test(selector) ? node.parentNode : node;
             selector = nid + selector.split(",").join("," + nid);
         }
 
         try {
             elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
         } finally {
-            if ( !old ) {
-                node.removeAttribute("id");
-            }
+            if (!old) node.removeAttribute("id");
         }
     }
 
