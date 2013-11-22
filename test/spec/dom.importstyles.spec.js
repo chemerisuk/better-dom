@@ -34,5 +34,6 @@ describe("DOM.importStyles", function() {
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStyles(1); }).toThrow();
         expect(function() { DOM.importStyles("a"); }).toThrow();
+        expect(function() { DOM.importStyles("a", null); }).toThrow();
     });
 });

@@ -13,7 +13,7 @@ var _ = require("./utils"),
  * @param {String}        cssText  css rules
  */
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
-    if (typeof cssText === "object") {
+    if (cssText && typeof cssText === "object") {
         var styleObj = {};
         // make a temporary element to populate styleObj
         // with values that could be insterted into document
@@ -23,8 +23,6 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
 
         _.forOwn(styleObj, function(styles, selector) {
             cssText.push(selector + ":" + styles);
-
-            // cssText += ";" + selector + ":" + styles;
         });
 
         cssText = cssText.join(";");
