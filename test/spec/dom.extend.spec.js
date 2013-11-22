@@ -14,6 +14,8 @@ describe("extend", function() {
         callback.andCallFake(function() {
             expect(this).toBeDefined();
             expect(this.length).toBe(1);
+            // ??? proto is undefined in PhantomJS
+            // expect(proto).toBe(Object.getPrototypeOf(this));
         });
 
         runs(function() {

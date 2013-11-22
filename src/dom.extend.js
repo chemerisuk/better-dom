@@ -83,17 +83,17 @@ DOM.extend = function(selector, mixins) {
             });
         }
 
-        var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
-            ext = function(el) {
+        var ext = function(el) {
                 _.extend(el, mixins);
 
-                if (ctr) {
-                    ctr.call(el);
-
-                    el.constructor = $Element;
-                }
+                if (ctr) ctr.call(el, $Element.prototype);
             },
-            index = extensions.push(ext);
+            index = extensions.push(ext), ctr;
+
+        if (mixins.hasOwnProperty("constructor")) {
+            ctr = mixins.constructor;
+            delete mixins.constructor;
+        }
 
         ext.accept = SelectorMatcher(selector);
         ext.selector = selector;
