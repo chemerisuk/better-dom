@@ -68,7 +68,7 @@ module.exports = {
         };
     }()),
     extend: function(obj, mixins) {
-        this.forOwn(mixins, function(value, key) { obj[key] = value });
+        this.forOwn(mixins || {}, function(value, key) { obj[key] = value });
 
         return obj;
     },

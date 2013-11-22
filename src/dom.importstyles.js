@@ -12,7 +12,7 @@ var _ = require("./utils"),
  * @param {String|Object} selector css selector or object with selector/rules pairs
  * @param {String}        cssText  css rules
  */
-DOM.importStyles = function(selector, cssText, /*INTENAL*/ unique) {
+DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (typeof cssText === "object") {
         var obj = new $Element({style: {"__dom__": true}});
 

@@ -96,7 +96,6 @@ DOM.extend = function(selector, mixins) {
         }
 
         ext.accept = SelectorMatcher(selector);
-        ext.selector = selector;
         ext.stop = function(e) {
             e = e || window.event;
 
@@ -105,9 +104,7 @@ DOM.extend = function(selector, mixins) {
             }
         };
 
-        if (_.some(extensions, function(x) { return x.selector === selector })) {
-            DOM.importStyles(selector, styles);
-        }
+        DOM.importStyles(selector, styles, true);
     }
 };
 
