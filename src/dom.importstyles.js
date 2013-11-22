@@ -3,40 +3,48 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
+    styleRules = styleSheet.cssRules || styleSheet.rules,
     args = DOM.importStyles.args;
 
 /**
  * Append global css styles
  * @memberOf DOM
  * @param {String|Object} selector css selector or object with selector/rules pairs
- * @param {String} styles css rules
+ * @param {String}        cssText  css rules
  */
-DOM.importStyles = function(selector, styles) {
-    if (typeof styles === "object") {
+DOM.importStyles = function(selector, cssText, /*INTENAL*/ unique) {
+    if (typeof cssText === "object") {
         var obj = new $Element({style: {"__dom__": true}});
 
-        $Element.prototype.style.call(obj, styles);
+        $Element.prototype.style.call(obj, cssText);
 
-        styles = "";
+        cssText = "";
 
         _.forOwn(obj._node.style, function(value, key) {
-            styles += ";" + key + ":" + value;
+            cssText += ";" + key + ":" + value;
         });
 
-        styles = styles.substr(1);
+        cssText = cssText.substr(2);
     }
 
-    if (typeof selector !== "string" || typeof styles !== "string") {
+    if (typeof selector !== "string" || typeof cssText !== "string") {
         throw _.makeError("importStyles", this);
     }
 
-    if (styleSheet.cssRules) {
-        styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
-    } else {
-        // ie doesn't support multiple selectors in addRule
-        _.forEach(selector.split(","), function(selector) {
-            styleSheet.addRule(selector, styles);
-        });
+    // check if the rule already exists
+    if (!unique || !_.some(styleRules, function(rule) {
+        var selText = (rule.selectorText || "").replace("::", ":");
+        // normalize pseudoelement selectors and ignore quotes
+        return selText === selector || selText === selector.split("\"").join("'");
+    })) {
+        if (styleSheet.cssRules) {
+            styleSheet.insertRule(selector + " {" + cssText + "}", styleSheet.cssRules.length);
+        } else {
+            // ie doesn't support multiple selectors in addRule
+            _.forEach(selector.split(","), function(selector) {
+                styleSheet.addRule(selector, cssText);
+            });
+        }
     }
 
     return this;

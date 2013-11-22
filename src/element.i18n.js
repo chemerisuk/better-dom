@@ -1,33 +1,28 @@
 var _ = require("./utils"),
-    $Element = require("./element"),
-    initialized = {};
+    $Element = require("./element");
 
 /**
  * Get/set localized value
  * @param  {String} [value]  resource string key
- * @param  {Object} [args]   resource string arguments
+ * @param  {Object} [vars]   resource string variables
  * @return {String|$Element}
  */
-$Element.prototype.i18n = function(value, args) {
+$Element.prototype.i18n = function(value, vars) {
     var len = arguments.length;
 
     if (!len) return this.get("data-i18n");
 
-    if (len > 2 || value && typeof value !== "string" || args && typeof args !== "object") throw _.makeError("i18n", this);
+    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n", this);
 
-    if (args && !initialized[value]) {
-        // "str ${param}" requires different default css
-        DOM.importStrings("", value, value);
-
-        initialized[value] = true;
-    }
-
-    args = _.foldl(_.keys(args || {}), function(memo, key) {
-        memo["data-" + key] = args[key];
-
-        return memo;
-    }, {"data-i18n": value});
+    // localized srings with variables require different css
+    if (vars) DOM.importStrings("", value, value);
+    // cleanup existing content
+    this.set("");
+    // process variables
+    _.forOwn(_.extend({i18n: value}, vars), function(value, key) {
+        this.set("data-" + key, value);
+    }, this);
 
     // IMPORTANT: set empty value twice to fix IE8 quirks
-    return this.set("").set(args).set("");
+    return this.set("");
 };
