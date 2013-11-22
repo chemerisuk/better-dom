@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.6.0-rc.5 2013-11-21T13:09:42
+ * @version 1.6.0-rc.6 2013-11-22T23:40:12
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -128,20 +128,19 @@ DOM.extend = function(selector, mixins) {
             });
         }
 
-        var ctr = mixins.hasOwnProperty("constructor") ? mixins.constructor : null,
-            ext = function(el) {
+        var ext = function(el) {
                 _.extend(el, mixins);
 
-                if (ctr) {
-                    ctr.call(el);
-
-                    el.constructor = $Element;
-                }
+                if (ctr) ctr.call(el, $Element.prototype);
             },
-            index = extensions.push(ext);
+            index = extensions.push(ext), ctr;
+
+        if (mixins.hasOwnProperty("constructor")) {
+            ctr = mixins.constructor;
+            delete mixins.constructor;
+        }
 
         ext.accept = SelectorMatcher(selector);
-        ext.selector = selector;
         ext.stop = function(e) {
             e = e || window.event;
 
@@ -150,9 +149,7 @@ DOM.extend = function(selector, mixins) {
             }
         };
 
-        if (_.some(extensions, function(x) { return x.selector === selector })) {
-            DOM.importStyles(selector, styles);
-        }
+        DOM.importStyles(selector, styles, true);
     }
 };
 
@@ -218,7 +215,7 @@ DOM.importStrings = function(lang, key, value) {
         // empty lang is for internal use only
         if (lang) selector += ":lang(" + lang + ")";
 
-        DOM.importStyles(selector + ":before", content);
+        DOM.importStyles(selector + ":before", content, true);
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
@@ -237,40 +234,49 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
+    styleRules = styleSheet.cssRules || styleSheet.rules,
     args = DOM.importStyles.args;
 
 /**
  * Append global css styles
  * @memberOf DOM
  * @param {String|Object} selector css selector or object with selector/rules pairs
- * @param {String} styles css rules
+ * @param {String}        cssText  css rules
  */
-DOM.importStyles = function(selector, styles) {
-    if (typeof styles === "object") {
-        var obj = new $Element({style: {"__dom__": true}});
+DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
+    if (cssText && typeof cssText === "object") {
+        var styleObj = {};
+        // make a temporary element to populate styleObj
+        // with values that could be insterted into document
+        new $Element({style: styleObj}).style(cssText);
 
-        $Element.prototype.style.call(obj, styles);
+        cssText = [];
 
-        styles = "";
-
-        _.forOwn(obj._node.style, function(value, key) {
-            styles += ";" + key + ":" + value;
+        _.forOwn(styleObj, function(styles, selector) {
+            cssText.push(selector + ":" + styles);
         });
 
-        styles = styles.substr(1);
+        cssText = cssText.join(";");
     }
 
-    if (typeof selector !== "string" || typeof styles !== "string") {
+    if (typeof selector !== "string" || typeof cssText !== "string") {
         throw _.makeError("importStyles", this);
     }
 
-    if (styleSheet.cssRules) {
-        styleSheet.insertRule(selector + " {" + styles + "}", styleSheet.cssRules.length);
-    } else {
-        // ie doesn't support multiple selectors in addRule
-        _.forEach(selector.split(","), function(selector) {
-            styleSheet.addRule(selector, styles);
-        });
+    // check if the rule already exists
+    if (!unique || !_.some(styleRules, function(rule) {
+        var selText = (rule.selectorText || "").replace("::", ":");
+        // normalize pseudoelement selectors and ignore quotes
+        return selText === selector || selText === selector.split("\"").join("'");
+    })) {
+        if (styleSheet.cssRules) {
+            styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
+        } else {
+            // ie doesn't support multiple selectors in addRule
+            _.forEach(selector.split(","), function(selector) {
+                styleSheet.addRule(selector, cssText);
+            });
+        }
     }
 
     return this;
@@ -283,7 +289,7 @@ _.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.0-rc.5";
+DOM.version = "1.6.0-rc.6";
 
 DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
 DOM.importStyles.args = [];
@@ -712,36 +718,32 @@ $Element.prototype.get = function(name) {
 
 },{"./element":15,"./element.get.hooks":12,"./utils":41}],14:[function(require,module,exports){
 var _ = require("./utils"),
-    $Element = require("./element"),
-    initialized = {};
+    $Element = require("./element");
 
 /**
  * Get/set localized value
  * @param  {String} [value]  resource string key
- * @param  {Object} [args]   resource string arguments
+ * @param  {Object} [vars]   resource string variables
  * @return {String|$Element}
  */
-$Element.prototype.i18n = function(value, args) {
+$Element.prototype.i18n = function(value, vars) {
     var len = arguments.length;
 
     if (!len) return this.get("data-i18n");
 
-    if (len > 2 || value && typeof value !== "string" || args && typeof args !== "object") throw _.makeError("i18n", this);
+    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n", this);
 
-    if (args && !initialized[value]) {
-        // "str ${param}" requires different default css
-        DOM.importStrings("", value, value);
+    // localized srings with variables require different css
+    if (vars) DOM.importStrings("", value, value);
+    // cleanup existing content
+    this.set("");
+    // process variables
+    _.forOwn(_.extend({i18n: value}, vars), function(value, key) {
+        this.set("data-" + key, value);
+    }, this);
 
-        initialized[value] = true;
-    }
-
-    args = _.foldl(_.keys(args || {}), function(memo, key) {
-        memo["data-" + key] = args[key];
-
-        return memo;
-    }, {"data-i18n": value});
-
-    return this.set(args).set("");
+    // IMPORTANT: set empty value twice to fix IE8 quirks
+    return this.set("");
 };
 
 },{"./element":15,"./utils":41}],15:[function(require,module,exports){
@@ -1078,15 +1080,15 @@ _.forEach(props, function(propName) {
         };
         setStyleHooks[unprefixedName] = function(style, value) {
             value = typeof value === "number" ? value + "px" : value.toString();
-            // use __dom__ property to determine DOM.importStyles call
-            style[style.__dom__ ? propName : stylePropName] = value;
+            // use cssText property to determine DOM.importStyles call
+            style["cssText" in style ? stylePropName : propName] = value;
         };
     }
 
     // Exclude the following css properties from adding px
     if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
         setStyleHooks[propName] = function(style, value) {
-            style[style.__dom__ ? propName : stylePropName] = value.toString();
+            style["cssText" in style ? stylePropName : propName] = value.toString();
         };
     }
 });
@@ -2192,7 +2194,7 @@ module.exports = {
         };
     }()),
     extend: function(obj, mixins) {
-        this.forOwn(mixins, function(value, key) { obj[key] = value });
+        this.forOwn(mixins || {}, function(value, key) { obj[key] = value });
 
         return obj;
     },
@@ -2283,5 +2285,5 @@ module.exports = {
     }())
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[1,3,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
 ;

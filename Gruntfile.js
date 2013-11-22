@@ -97,15 +97,6 @@ module.exports = function(grunt) {
                     stdout: true,
                     stderr: true
                 }
-            },
-            showCoverage: {
-                command: "ls -lrt -d -1 $PWD/coverage",
-                options: {
-                    stdout: true
-                }
-            },
-            rollbackPublished: {
-                command: "git checkout HEAD -- <%= pkg.name %>.js <%= pkg.name %>.htc"
             }
         },
         clean: {
@@ -224,7 +215,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "shell:checkVersionTag",
-            "karma:all",
+            "karma:unit",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "browserify",
