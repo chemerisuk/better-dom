@@ -26,15 +26,15 @@ _.forEach(props, function(propName) {
         };
         setStyleHooks[unprefixedName] = function(style, value) {
             value = typeof value === "number" ? value + "px" : value.toString();
-            // use __dom__ property to determine DOM.importStyles call
-            style[style.__dom__ ? propName : stylePropName] = value;
+            // use cssText property to determine DOM.importStyles call
+            style["cssText" in style ? stylePropName : propName] = value;
         };
     }
 
     // Exclude the following css properties from adding px
     if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
         setStyleHooks[propName] = function(style, value) {
-            style[style.__dom__ ? propName : stylePropName] = value.toString();
+            style["cssText" in style ? stylePropName : propName] = value.toString();
         };
     }
 });

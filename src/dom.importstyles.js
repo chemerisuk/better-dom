@@ -14,17 +14,20 @@ var _ = require("./utils"),
  */
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (typeof cssText === "object") {
-        var obj = new $Element({style: {"__dom__": true}});
+        var styleObj = {};
+        // make a temporary element to populate styleObj
+        // with values that could be insterted into document
+        new $Element({style: styleObj}).style(cssText);
 
-        $Element.prototype.style.call(obj, cssText);
+        cssText = [];
 
-        cssText = "";
+        _.forOwn(styleObj, function(styles, selector) {
+            cssText.push(selector + ":" + styles);
 
-        _.forOwn(obj._node.style, function(value, key) {
-            cssText += ";" + key + ":" + value;
+            // cssText += ";" + selector + ":" + styles;
         });
 
-        cssText = cssText.substr(2);
+        cssText = cssText.join(";");
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -38,7 +41,7 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
         return selText === selector || selText === selector.split("\"").join("'");
     })) {
         if (styleSheet.cssRules) {
-            styleSheet.insertRule(selector + " {" + cssText + "}", styleSheet.cssRules.length);
+            styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
         } else {
             // ie doesn't support multiple selectors in addRule
             _.forEach(selector.split(","), function(selector) {
