@@ -11,7 +11,7 @@
 * [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [localization support](https://github.com/chemerisuk/better-dom/wiki/Localization)
-* [animations support](http://jsfiddle.net/mNBVQ/1/) via CSS3 transitions and animations
+* [css3 animations support](http://jsfiddle.net/C3WeM/)
 * cross-browser `input` event
 
 ## Performance
