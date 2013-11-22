@@ -28,5 +28,6 @@ $Element.prototype.i18n = function(value, args) {
         return memo;
     }, {"data-i18n": value});
 
-    return this.set(args).set("");
+    // IMPORTANT: set empty value twice to fix IE8 quirks
+    return this.set("").set(args).set("");
 };
