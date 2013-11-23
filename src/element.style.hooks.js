@@ -75,9 +75,14 @@ _.forOwn({
         return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
     };
     setStyleHooks[key] = function(style, value) {
-        _.forEach(props, function(name) {
-            style[name] = typeof value === "number" ? value + "px" : value.toString();
-        });
+        if (value) {
+            // normalize setting complex property across browsers
+            style.cssText += ";" + key + ":" + value;
+        } else {
+            _.forEach(props, function(name) {
+                style[name] = typeof value === "number" ? value + "px" : value.toString();
+            });
+        }
     };
 });
 
