@@ -141,7 +141,9 @@ describe("extend", function() {
 
         runs(function() {
             DOM.extend(".extend02", callback.andCallFake(function() {
-                link.remove();
+                var parent = link.parent();
+
+                parent.append(link.remove());
 
                 setTimeout(function() {
                     if (callback.callCount === 1) calledOnce = true;

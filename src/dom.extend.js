@@ -88,12 +88,10 @@ DOM.extend = function(selector, mixins) {
 
                 if (ctr) ctr.call(el, $Element.prototype);
             },
-            index = extensions.push(ext), ctr;
+            index = extensions.push(ext) - 1,
+            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
 
-        if (mixins.hasOwnProperty("constructor")) {
-            ctr = mixins.constructor;
-            delete mixins.constructor;
-        }
+        if (ctr) delete mixins.constructor;
 
         ext.accept = SelectorMatcher(selector);
         ext.stop = function(e) {

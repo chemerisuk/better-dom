@@ -75,7 +75,7 @@ _.forOwn({
         return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
     };
     setStyleHooks[key] = function(style, value) {
-        if (value) {
+        if (value && "cssText" in style) {
             // normalize setting complex property across browsers
             style.cssText += ";" + key + ":" + value;
         } else {
