@@ -75,14 +75,6 @@ DOM.extend = function(selector, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        if (!features.CSS3_ANIMATIONS) {
-            // do safe call of the callback for each matched element
-            // if the behaviour is already attached
-            DOM.findAll(selector).legacy(function(node, el) {
-                if (node.behaviorUrns.length) _.defer(function() { ext(el) });
-            });
-        }
-
         var ext = function(el) {
                 _.extend(el, mixins);
 
@@ -102,7 +94,29 @@ DOM.extend = function(selector, mixins) {
             }
         };
 
-        DOM.importStyles(selector, styles, true);
+        DOM.ready(function() {
+            // initialize extension manually to make sure that all elements
+            // have appropriate methods before they are used in other DOM.ready.
+            // Also fixes legacy IE in case when the behaviour is already attached
+            DOM.findAll(selector).legacy(function(node) {
+                var e;
+
+                if (features.CSS3_ANIMATIONS) {
+                    e = document.createEvent("HTMLEvents");
+                    e.initEvent(cssPrefix ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.animationName = animId;
+
+                    node.dispatchEvent(e);
+                } else {
+                    e = document.createEventObject();
+                    e.srcUrn = "dataavailable";
+                    node.fireEvent("ondataavailable", e);
+                }
+            });
+            // make sure that any extension is initialized after DOM.ready
+            // MUST be after DOM.findAll because of IE behavior
+            DOM.importStyles(selector, styles, true);
+        });
     }
 };
 

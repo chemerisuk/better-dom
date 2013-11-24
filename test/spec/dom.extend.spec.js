@@ -68,13 +68,14 @@ describe("extend", function() {
     // });
 
     it("should accept several watchers of the same selector", function() {
-        var spy = jasmine.createSpy("callback2");
+        var spy = jasmine.createSpy("callback2"),
+            cls = "ext" + new Date().getTime();
 
-        setFixtures("<a class='watch4'></a><b class='watch4'></b>");
+        setFixtures("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
         runs(function() {
-            DOM.extend(".watch4", callback);
-            DOM.extend(".watch4", spy);
+            DOM.extend("." + cls, callback);
+            DOM.extend("." + cls, spy);
         });
 
         waitsFor(function() {
@@ -83,12 +84,13 @@ describe("extend", function() {
     });
 
     it("should accept different selectors for the same element", function() {
-        var spy = jasmine.createSpy("callback2");
+        var spy = jasmine.createSpy("callback2"),
+            cls = "ext" + new Date().getTime();
 
-        setFixtures("<a class='watch4'></a><b class='watch4'></b>");
+        setFixtures("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
         runs(function() {
-            DOM.extend(".watch4", callback);
+            DOM.extend("." + cls, callback);
             DOM.extend("b", spy);
         });
 
