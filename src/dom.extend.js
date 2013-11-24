@@ -10,7 +10,7 @@ var _ = require("./utils"),
     makeExtHandler = function(e, node) {
         var type = e.type,
             el = $Element(node),
-            accepted = e._accepted || {};
+            accepted = e._done || {};
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
@@ -20,8 +20,9 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent("on" + type, ext.stop);
                 }
-
-                _.defer(function() { ext(el) });
+                // 1 event for 1 element, so _.some could be used
+                // to reduce number of unnecessary iterations
+                return !ext(el);
             }
         };
     },
@@ -40,7 +41,7 @@ if (features.CSS3_ANIMATIONS) {
 
     document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e, e.target));
+            _.some(extensions, makeExtHandler(e, e.target));
         }
     }, false);
 } else {
@@ -54,7 +55,7 @@ if (features.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e, e.srcElement));
+            _.some(extensions, makeExtHandler(e, e.srcElement));
         }
     });
 }
@@ -90,7 +91,8 @@ DOM.extend = function(selector, mixins) {
             e = e || window.event;
 
             if (e.animationName === animId || e.srcUrn === "dataavailable")  {
-                (e._accepted = e._accepted || {})[index] = true;
+                // mark extension as processed via _done bitmask
+                (e._done = e._done || {})[index] = true;
             }
         };
 
