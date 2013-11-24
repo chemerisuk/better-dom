@@ -18,19 +18,15 @@ describe("extend", function() {
             // expect(proto).toBe(Object.getPrototypeOf(this));
         });
 
-        runs(function() {
-            DOM.extend(".watch", callback);
-        });
+        DOM.extend(".watch", callback);
 
         waitsFor(function() {
             return callback.callCount === 3;
         });
     });
 
-    it("should execute for each matched future element on page", function() {
-        runs(function() {
-            DOM.extend(".watch1", callback);
-        });
+    it("should capture any future element on page", function() {
+        DOM.extend(".watch1", callback);
 
         runs(function() {
             setFixtures("<a class='watch1'></a><span class='watch1'></span>");
@@ -41,31 +37,24 @@ describe("extend", function() {
         });
     });
 
-    // it("should not execute the same extension twice", function() {
-    //     var link = DOM.create("a.ext1.ext2"),
-    //         spy = jasmine.createSpy("ext2"),
-    //         calledOnce;
+    it("should not execute the same extension twice", function() {
+        var link = DOM.create("a.ext1.ext2"),
+            spy = jasmine.createSpy("ext2"),
+            calledOnce;
 
-    //     DOM.find("body").append(link);
+        DOM.find("body").append(link);
 
-    //     runs(function() {
-    //         DOM.extend(".ext1", callback);
+        DOM.extend(".ext1", callback);
+        DOM.extend(".ext2", spy);
 
-    //         setTimeout(function() {
-    //             DOM.extend(".ext2", spy);
-    //         }, WAIT_FOR_WATCH_TIME);
+        setTimeout(function() {
+            link.remove();
 
-    //         setTimeout(function() {
-    //             link.remove();
+            if (callback.callCount === 1 && spy.callCount === 1) calledOnce = true;
+        }, WAIT_FOR_WATCH_TIME * 5);
 
-    //             console.log(callback.callCount, spy.callCount)
-
-    //             if (callback.callCount === 1 && spy.callCount === 1) calledOnce = true;
-    //         }, WAIT_FOR_WATCH_TIME * 5);
-    //     });
-
-    //     waitsFor(function() { return calledOnce; });
-    // });
+        waitsFor(function() { return calledOnce; });
+    });
 
     it("should accept several watchers of the same selector", function() {
         var spy = jasmine.createSpy("callback2"),
@@ -73,10 +62,8 @@ describe("extend", function() {
 
         setFixtures("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
-        runs(function() {
-            DOM.extend("." + cls, callback);
-            DOM.extend("." + cls, spy);
-        });
+        DOM.extend("." + cls, callback);
+        DOM.extend("." + cls, spy);
 
         waitsFor(function() {
             return callback.callCount === 2 && spy.callCount === 2;
@@ -89,10 +76,8 @@ describe("extend", function() {
 
         setFixtures("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
-        runs(function() {
-            DOM.extend("." + cls, callback);
-            DOM.extend("b", spy);
-        });
+        DOM.extend("." + cls, callback);
+        DOM.extend("b", spy);
 
         waitsFor(function() {
             return callback.callCount === 2 && spy.callCount === 1;
@@ -105,11 +90,9 @@ describe("extend", function() {
 
         setFixtures("<form id='watch7'><input id='watch8'/></form>");
 
-        runs(function() {
-            // FIXME: strange behavior if to reverse extend calls order
-            DOM.extend("#watch8", spy2);
-            DOM.extend("#watch7", spy1);
-        });
+        // FIXME: strange behavior if to reverse extend calls order
+        DOM.extend("#watch8", spy2);
+        DOM.extend("#watch7", spy1);
 
         waitsFor(function() {
             return spy1.callCount === 1 && spy2.callCount === 1;
@@ -121,17 +104,15 @@ describe("extend", function() {
 
         var link = DOM.find(".extend01"), calledOnce;
 
-        runs(function() {
-            DOM.extend(".extend01", callback.andCallFake(function() {
-                expect(this).toBe(link);
+        DOM.extend(".extend01", callback.andCallFake(function() {
+            expect(this).toBe(link);
 
-                link.hide();
+            link.hide();
 
-                setTimeout(function() {
-                    if (callback.callCount === 1) calledOnce = true;
-                }, WAIT_FOR_WATCH_TIME);
-            }));
-        });
+            setTimeout(function() {
+                if (callback.callCount === 1) calledOnce = true;
+            }, WAIT_FOR_WATCH_TIME);
+        }));
 
         waitsFor(function() { return calledOnce === true });
     });
@@ -141,17 +122,15 @@ describe("extend", function() {
 
         var link = DOM.find(".extend02"), calledOnce;
 
-        runs(function() {
-            DOM.extend(".extend02", callback.andCallFake(function() {
-                var parent = link.parent();
+        DOM.extend(".extend02", callback.andCallFake(function() {
+            var parent = link.parent();
 
-                parent.append(link.remove());
+            parent.append(link.remove());
 
-                setTimeout(function() {
-                    if (callback.callCount === 1) calledOnce = true;
-                }, WAIT_FOR_WATCH_TIME);
-            }));
-        });
+            setTimeout(function() {
+                if (callback.callCount === 1) calledOnce = true;
+            }, WAIT_FOR_WATCH_TIME);
+        }));
 
         waitsFor(function() { return calledOnce === true });
     });

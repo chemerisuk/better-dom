@@ -77,6 +77,7 @@ describe("DOM.template", function() {
         checkExpr("ul>(li>b)*3", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>");
         checkExpr("ul>li*3>b", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>");
 
+        // checkExpr("a>{${c}}", "<a>${c}</a>", {b: "test"});
         checkExpr("a>{${c}}", "<a>test</a>", {c: "test"});
         checkExpr("a.${c}>{${c}}", "<a class=\"test\">test</a>", {c: "test"});
         checkExpr("a#${b}>{${c}}", "<a id=\"bbb\">test</a>", {c: "test", b: "bbb"});
