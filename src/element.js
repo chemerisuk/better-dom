@@ -1,4 +1,5 @@
-var $Node = require("./node");
+var _ = require("./utils"),
+    $Node = require("./node");
 
 /**
  * Used to represent a DOM element or collection
@@ -14,9 +15,7 @@ function $Element(element, /*INTERNAL*/collection) {
     if (!(this instanceof $Element)) return new $Element(element, collection);
 
     if (element && collection === true) {
-        for (var i = 0, n = this.length = element.length; i < n; ++i) {
-            this[i] = this[i - n] = $Element(element[i]);
-        }
+        Array.prototype.push.apply(this, _.map(element, $Element));
     } else {
         $Node.call(this, element);
     }
