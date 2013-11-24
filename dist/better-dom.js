@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.6.0-rc.6 2013-11-22T23:40:12
+ * @version 1.6.0-rc.7 2013-11-24T13:14:38
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -51,11 +51,12 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
+    reEventHandler = /^on[A-Z]/,
     extensions = [],
     makeExtHandler = function(e, node) {
         var type = e.type,
             el = $Element(node),
-            accepted = e._accepted || {};
+            accepted = e._done || {};
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
@@ -65,8 +66,9 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent("on" + type, ext.stop);
                 }
-
-                _.defer(function() { ext(el) });
+                // 1 event for 1 element, so _.some could be used
+                // to reduce number of unnecessary iterations
+                return !ext(el);
             }
         };
     },
@@ -85,7 +87,7 @@ if (features.CSS3_ANIMATIONS) {
 
     document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e, e.target));
+            _.some(extensions, makeExtHandler(e, e.target));
         }
     }, false);
 } else {
@@ -99,7 +101,7 @@ if (features.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e, e.srcElement));
+            _.some(extensions, makeExtHandler(e, e.srcElement));
         }
     });
 }
@@ -120,36 +122,52 @@ DOM.extend = function(selector, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        if (!features.CSS3_ANIMATIONS) {
-            // do safe call of the callback for each matched element
-            // if the behaviour is already attached
-            DOM.findAll(selector).legacy(function(node, el) {
-                if (node.behaviorUrns.length) _.defer(function() { ext(el) });
-            });
-        }
-
-        var ext = function(el) {
+        var eventHandlers = _.filter(_.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
+            ext = function(el, mock) {
                 _.extend(el, mixins);
-
+                // invoke constructor if it exists
                 if (ctr) ctr.call(el, $Element.prototype);
+                // cleanup event handlers
+                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
             },
-            index = extensions.push(ext), ctr;
+            index = extensions.push(ext) - 1,
+            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
 
-        if (mixins.hasOwnProperty("constructor")) {
-            ctr = mixins.constructor;
-            delete mixins.constructor;
-        }
+        if (ctr) delete mixins.constructor;
 
         ext.accept = SelectorMatcher(selector);
         ext.stop = function(e) {
             e = e || window.event;
 
             if (e.animationName === animId || e.srcUrn === "dataavailable")  {
-                (e._accepted = e._accepted || {})[index] = true;
+                // mark extension as processed via _done bitmask
+                (e._done = e._done || {})[index] = true;
             }
         };
 
-        DOM.importStyles(selector, styles, true);
+        DOM.ready(function() {
+            // initialize extension manually to make sure that all elements
+            // have appropriate methods before they are used in other DOM.ready.
+            // Also fixes legacy IE in case when the behaviour is already attached
+            DOM.findAll(selector).legacy(function(node) {
+                var e;
+
+                if (features.CSS3_ANIMATIONS) {
+                    e = document.createEvent("HTMLEvents");
+                    e.initEvent(cssPrefix ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.animationName = animId;
+
+                    node.dispatchEvent(e);
+                } else {
+                    e = document.createEventObject();
+                    e.srcUrn = "dataavailable";
+                    node.fireEvent("ondataavailable", e);
+                }
+            });
+            // make sure that any extension is initialized after DOM.ready
+            // MUST be after DOM.findAll because of IE behavior
+            DOM.importStyles(selector, styles, true);
+        });
     }
 };
 
@@ -289,7 +307,7 @@ _.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.0-rc.6";
+DOM.version = "1.6.0-rc.7";
 
 DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
 DOM.importStyles.args = [];
@@ -316,7 +334,7 @@ var _ = require("./utils"),
 DOM.mock = function(content) {
     var el = content ? DOM.create(content) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el) });
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
 
             el.children().each(applyWatchers);
         };
@@ -1129,9 +1147,14 @@ _.forOwn({
         return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
     };
     setStyleHooks[key] = function(style, value) {
-        _.forEach(props, function(name) {
-            style[name] = typeof value === "number" ? value + "px" : value.toString();
-        });
+        if (value && "cssText" in style) {
+            // normalize setting complex property across browsers
+            style.cssText += ";" + key + ":" + value;
+        } else {
+            _.forEach(props, function(name) {
+                style[name] = typeof value === "number" ? value + "px" : value.toString();
+            });
+        }
     };
 });
 
@@ -2285,5 +2308,5 @@ module.exports = {
     }())
 };
 
-},{"./dom":6}]},{},[1,3,2,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
 ;
