@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    rquick = /^\w+$/,
+    reSingleTag = /^\w+$/,
     sandbox = document.createElement("div");
 
 /**
@@ -13,13 +13,19 @@ var _ = require("./utils"),
  */
 DOM.create = function(value, vars) {
     if (typeof value === "string") {
-        if (rquick.test(value)) {
+        if (reSingleTag.test(value)) {
             value = document.createElement(value);
         } else {
             sandbox.innerHTML = _.trim(DOM.template(value, vars));
 
-            if (sandbox.childNodes.length !== 1 || sandbox.firstChild.nodeType !== 1) {
-                return $Element(sandbox).children().remove();
+            if (sandbox.children.length !== 1) {
+                value = [];
+
+                for (var node; node = sandbox.firstChild; sandbox.removeChild(node)) {
+                    if (node.nodeType === 1) value.push(node);
+                }
+
+                return new $Element(value, true);
             }
 
             value = sandbox.removeChild(sandbox.firstChild);
