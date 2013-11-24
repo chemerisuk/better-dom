@@ -12,7 +12,7 @@ var _ = require("./utils"),
 DOM.mock = function(content) {
     var el = content ? DOM.create(content) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el) });
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
 
             el.children().each(applyWatchers);
         };

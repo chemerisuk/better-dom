@@ -35,6 +35,22 @@ describe("DOM.mock", function() {
         expect(el.child(0).field).toBe(field);
     });
 
+    it("should expose event handlers", function() {
+        var spy = jasmine.createSpy("callback2"),
+            cls = "ext" + new Date().getTime(), link;
+
+        setFixtures("<a class=" + cls + "></a>");
+
+        link = DOM.find("." + cls);
+
+        DOM.extend("." + cls, {
+            constructor: spy,
+            onClick: function() {}
+        });
+
+        expect(typeof DOM.mock("a." + cls).onClick).toBe("function");
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.mock(1); }).toThrow();
     });

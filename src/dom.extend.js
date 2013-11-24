@@ -6,6 +6,7 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
+    reEventHandler = /^on[A-Z]/,
     extensions = [],
     makeExtHandler = function(e, node) {
         var type = e.type,
@@ -76,10 +77,13 @@ DOM.extend = function(selector, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var ext = function(el) {
+        var eventHandlers = _.filter(_.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
+            ext = function(el, mock) {
                 _.extend(el, mixins);
-
+                // invoke constructor if it exists
                 if (ctr) ctr.call(el, $Element.prototype);
+                // cleanup event handlers
+                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
             },
             index = extensions.push(ext) - 1,
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;

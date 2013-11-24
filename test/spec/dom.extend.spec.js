@@ -164,6 +164,22 @@ describe("extend", function() {
         expect(DOM.create("a").test).toBe(555);
     });
 
+    it("should not expose event handlers", function() {
+        var spy = jasmine.createSpy("callback2"),
+            cls = "ext" + new Date().getTime(), link;
+
+        setFixtures("<a class=" + cls + "></a>");
+
+        link = DOM.find("." + cls);
+
+        DOM.extend("." + cls, {
+            constructor: spy,
+            onClick: function() {}
+        });
+
+        waitsFor(function() { return spy.callCount === 1 && typeof link.onClick === "undefined" });
+    });
+
     // FIXME: find a way to test without exception in browser
     // it("should not stop handle other listeners if any throws an error", function() {
     //     var otherCallback = jasmine.createSpy("otherCallback");
