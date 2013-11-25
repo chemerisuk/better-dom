@@ -9,7 +9,7 @@ var _ = require("./utils"),
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Object}          [context] callback context
  * @param  {Function|String} callback event callback/property name
- * @param  {Array}           [props] array of event properties to pass to the callback
+ * @param  {Array}           [props] array of event properties to pass into the callback
  * @return {$Node}
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
@@ -86,7 +86,7 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
 };
 
 /**
- * Bind a DOM event to the context and the callback only fire once before being removed
+ * Bind a DOM event but fire once before being removed
  * @param  {String}   type type of event with optional selector to filter by
  * @param  {Array}    [props] event properties to pass to the callback function
  * @param  {Object}   [context] callback context

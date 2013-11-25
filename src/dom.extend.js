@@ -65,7 +65,7 @@ if (features.CSS3_ANIMATIONS) {
  * Define a DOM extension
  * @memberOf DOM
  * @param  {String}          selector extension css selector
- * @param  {Object|Function} mixins   extension mixins/constructor function
+ * @param  {Object|Function} mixins   extension mixins or just a constructor function
  * @see https://github.com/chemerisuk/better-dom/wiki/Living-extensions
  */
 DOM.extend = function(selector, mixins) {

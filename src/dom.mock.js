@@ -4,10 +4,10 @@ var _ = require("./utils"),
     extensions = require("./dom.extend");
 
 /**
- * Synchronously return dummy {@link $Element} instance specified for optional selector
+ * Return initialized {@link $Element} with private event handlers. Useful for testing
  * @memberOf DOM
- * @param  {Mixed} [content] mock element content
- * @return {$Element} mock instance
+ * @param  {Mixed} [content] HTMLString, EmmetString
+ * @return {$Element} mocked instance
  */
 DOM.mock = function(content) {
     var el = content ? DOM.create(content) : new $Element(),

@@ -25,9 +25,9 @@ if (features.DOM2_EVENTS) {
         isTop = window.frameElement === null;
     } catch (e) {}
 
-    //DOMContentLoaded approximation that uses a doScroll, as found by
-    //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-    //but modified by other contributors, including jdalton
+    // DOMContentLoaded approximation that uses a doScroll, as found by
+    // Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+    // but modified by other contributors, including jdalton
     if (testDiv.doScroll && isTop && window.external) {
         scrollIntervalId = setInterval(function () {
             try {
@@ -46,7 +46,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
 }
 
 /**
- * Execute callback when DOM will be ready
+ * Execute callback when DOM is ready
  * @memberOf DOM
  * @param {Function} callback event listener
  */

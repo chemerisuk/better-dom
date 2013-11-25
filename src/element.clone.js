@@ -4,7 +4,7 @@ var _ = require("./utils"),
 
 /**
  * Clone element
- * @param {Boolean} [deep=true] true if children should also be cloned, or false otherwise
+ * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */
 $Element.prototype.clone = function(deep) {

@@ -215,7 +215,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "shell:checkVersionTag",
-            "karma:unit",
+            "karma:all",
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "browserify",

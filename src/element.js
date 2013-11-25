@@ -4,12 +4,11 @@ var _ = require("./utils"),
 /**
  * Used to represent a DOM element or collection
  * @name $Element
- * @param element {Object} native element(s)
  * @extends $Node
  * @constructor
  * @private
  */
-function $Element(element, /*INTERNAL*/collection) {
+function $Element(element, collection) {
     if (element && element.__dom__) return element.__dom__;
 
     if (!(this instanceof $Element)) return new $Element(element, collection);

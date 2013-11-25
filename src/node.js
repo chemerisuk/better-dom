@@ -1,7 +1,6 @@
 /**
  * Used to represent a DOM node
  * @name $Node
- * @param node {Object} native node
  * @constructor
  * @private
  */
