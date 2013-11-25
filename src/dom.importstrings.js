@@ -27,8 +27,6 @@ DOM.importStrings = function(lang, key, value) {
     } else {
         throw _.makeError("importStrings", this);
     }
-
-    return this;
 };
 
 // by default just show data-i18n string

@@ -29,6 +29,4 @@ DOM.importScripts = function() {
         };
 
     callback();
-
-    return this;
 };

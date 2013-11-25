@@ -47,8 +47,6 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
             });
         }
     }
-
-    return this;
 };
 
 // populate existing calls
