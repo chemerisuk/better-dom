@@ -13,7 +13,7 @@ function makeCollectionMethod(fn) {
 
 _.extend($Node.prototype, {
     /**
-     * Executes callback on each element in the collection
+     * Execute callback on each element in the collection
      * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [context]  callback context
@@ -23,7 +23,7 @@ _.extend($Node.prototype, {
     each: makeCollectionMethod(_.forEach),
 
     /**
-     * Checks if the callback returns true for any element in the collection
+     * Check if the callback returns true for any element in the collection
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -33,7 +33,7 @@ _.extend($Node.prototype, {
     some: makeCollectionMethod(_.some),
 
     /**
-     * Checks if the callback returns true for all elements in the collection
+     * Check if the callback returns true for all elements in the collection
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -43,7 +43,7 @@ _.extend($Node.prototype, {
     every: makeCollectionMethod(_.every),
 
     /**
-     * Creates an array of values by running each element in the collection through the callback
+     * Create an array of values by running each element in the collection through the callback
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -53,7 +53,7 @@ _.extend($Node.prototype, {
     map: makeCollectionMethod(_.map),
 
     /**
-     * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+     * Examine each element in a collection, returning an array of all elements the callback returns truthy for
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -63,7 +63,7 @@ _.extend($Node.prototype, {
     filter: makeCollectionMethod(_.filter),
 
     /**
-     * Boils down a list of values into a single value (from start to end)
+     * Boil down a list of values into a single value (from start to end)
      * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
@@ -73,7 +73,7 @@ _.extend($Node.prototype, {
     reduce: makeCollectionMethod(_.foldl),
 
     /**
-     * Boils down a list of values into a single value (from end to start)
+     * Boil down a list of values into a single value (from end to start)
      * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
@@ -83,7 +83,7 @@ _.extend($Node.prototype, {
     reduceRight: makeCollectionMethod(_.foldr),
 
     /**
-     * Executes code in a 'unsafe' block where the first callback argument is native object.
+     * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
      * @param  {Function} callback function that accepts native node as the first argument
      * @return {$Element}

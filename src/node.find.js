@@ -67,9 +67,9 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 };
 
 /**
- * Finds all matched elements by css selector
+ * Find all matched elements by css selector
  * @param  {String} selector css selector
- * @return {$Element} collection of matched elements
+ * @return {$Element} matched elements
  */
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);

@@ -4,7 +4,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Set property/attribute value
+ * Set property/attribute value by name
  * @param {String}           [name]  property/attribute name
  * @param {String|Function}  value   property/attribute value
  * @return {$Element}

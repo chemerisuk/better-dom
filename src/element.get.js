@@ -3,7 +3,7 @@ var _ = require("./utils"),
     hooks = require("./element.get.hooks");
 
 /**
- * Get property or attribute by name
+ * Get property or attribute value by name
  * @param  {String} [name] property/attribute name
  * @return {String} property/attribute value
  * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter

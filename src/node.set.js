@@ -2,7 +2,7 @@ var _ = require("./utils"),
     $Node = require("./node");
 
 /**
- * Set property value
+ * Set property value by name
  * @param  {String} name  property name
  * @param  {String} value property value
  */

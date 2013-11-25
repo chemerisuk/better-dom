@@ -9,8 +9,8 @@ var _ = require("./utils"),
 /**
  * Append global css styles
  * @memberOf DOM
- * @param {String}  selector  css selector
- * @param {String}  cssText   css rules
+ * @param {String}         selector  css selector
+ * @param {String|Object}  cssText   css rules
  */
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {

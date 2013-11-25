@@ -2,7 +2,7 @@ var _ = require("./utils"),
     $Node = require("./node");
 
 /**
- * Get property by name
+ * Get property value by name
  * @param  {String} name property name
  * @return {String} property value
  */

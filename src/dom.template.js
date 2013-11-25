@@ -45,7 +45,7 @@ _.forEach("area base br col hr img input link meta param command keygen source".
 });
 
 /**
- * Parse emmet-like template to HTML string
+ * Parse emmet-like template to a HTML string
  * @memberOf DOM
  * @param  {String} template emmet-like expression
  * @param  {Object} [vars] key/value map of variables
