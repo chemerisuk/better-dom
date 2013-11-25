@@ -25,7 +25,6 @@ var DOM = require("./dom"),
     })();
 
 module.exports = {
-    defer: function(callback) { return setTimeout(callback, 0) },
     trim: (function() {
         var reTrim = /^\s+|\s+$/g;
 

@@ -6,14 +6,12 @@ var _ = require("./utils"),
     isTop, testDiv, scrollIntervalId;
 
 function pageLoaded() {
-    if (readyCallbacks) {
-        // safely trigger callbacks
-        _.forEach(readyCallbacks, _.defer);
-        // cleanup
-        readyCallbacks = null;
+    // safely trigger callbacks
+    _.forEach(readyCallbacks, function(callback) { setTimeout(callback, 0) });
+    // cleanup
+    readyCallbacks = null;
 
-        if (scrollIntervalId) clearInterval(scrollIntervalId);
-    }
+    if (scrollIntervalId) clearInterval(scrollIntervalId);
 }
 
 if (features.DOM2_EVENTS) {
@@ -58,6 +56,6 @@ DOM.ready = function(callback) {
     if (readyCallbacks) {
         readyCallbacks.push(callback);
     } else {
-        _.defer(callback);
+        setTimeout(callback, 0);
     }
 };
