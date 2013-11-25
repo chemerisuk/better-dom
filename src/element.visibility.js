@@ -1,6 +1,7 @@
 var $Element = require("./element"),
     DOM = require("./dom"),
-    features = require("./features");
+    features = require("./features"),
+    visibleFn = function(el) { return el.get("aria-hidden") !== "true" };
 
 /**
  * Show element
@@ -20,13 +21,20 @@ $Element.prototype.hide = function() {
 
 /**
  * Toggle element visibility
- * @param {Boolean} [visible] true if the element should be visible and false otherwise
+ * @param {Boolean|Function} [visible] true if the element should be visible and false otherwise
  * @return {$Element}
  */
 $Element.prototype.toggle = function(visible) {
-    visible = arguments.length ? !visible : function(el) { return el.get("aria-hidden") !== "true" };
+    var visibleType = typeof visible,
+        value = visibleFn;
 
-    return this.set("aria-hidden", visible);
+    if (visibleType === "boolean") {
+        value = !visible;
+    } else if (visibleType === "function") {
+        value = function(el, index) { return !visible(el, index) };
+    }
+
+    return this.set("aria-hidden", value);
 };
 
 // [aria-hidden=true] could be overriden only if browser supports animations
