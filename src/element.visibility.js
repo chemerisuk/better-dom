@@ -20,10 +20,13 @@ $Element.prototype.hide = function() {
 
 /**
  * Toggle element visibility
+ * @param {Boolean} [visible] true if the element should be visible and false otherwise
  * @return {$Element}
  */
-$Element.prototype.toggle = function() {
-    return this.set("aria-hidden", function(value) { return value !== "true" });
+$Element.prototype.toggle = function(visible) {
+    visible = arguments.length ? !visible : function(value) { return value !== "true" };
+
+    return this.set("aria-hidden", visible);
 };
 
 // [aria-hidden=true] could be overriden only if browser supports animations

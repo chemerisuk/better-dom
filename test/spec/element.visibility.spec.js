@@ -23,6 +23,12 @@ describe("visibility", function() {
         expect(link.toggle().matches(":hidden")).toBe(false);
     });
 
+    it("should accept optional visible argument", function() {
+        expect(link.matches(":hidden")).toBe(false);
+        expect(link.toggle(true).matches(":hidden")).toBe(false);
+        expect(link.toggle(false).matches(":hidden")).toBe(true);
+    });
+
     it("should handle unknown aria-hidden values as false", function() {
         expect(link.matches(":hidden")).toBe(false);
         link.set("aria-hidden", "123");
