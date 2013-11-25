@@ -24,7 +24,7 @@ $Element.prototype.hide = function() {
  * @return {$Element}
  */
 $Element.prototype.toggle = function(visible) {
-    visible = arguments.length ? !visible : function(value) { return value !== "true" };
+    visible = arguments.length ? !visible : function(el) { return el.get("aria-hidden") !== "true" };
 
     return this.set("aria-hidden", visible);
 };

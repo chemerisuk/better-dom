@@ -104,13 +104,13 @@ describe("style", function() {
         it("should accept function", function() {
             var spy = jasmine.createSpy("value");
 
-            link.style("line-height", function(value, index, el) {
-                spy(value, index, el);
+            link.style("line-height", function(el, index) {
+                spy(el, index);
 
                 return 7;
             });
 
-            expect(spy).toHaveBeenCalledWith("2", 0, link);
+            expect(spy).toHaveBeenCalledWith(link, 0);
             expect(link.style("line-height")).toBe("7");
         });
 

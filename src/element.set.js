@@ -49,9 +49,7 @@ $Element.prototype.set = function(name, value) {
             throw _.makeError("set", el);
         }
 
-        if (typeof value === "function") {
-            value = value(value.length ? el.get(name) : undefined, index, el);
-        }
+        if (typeof value === "function") value = value(el, index);
 
         if (hook = hooks[name]) {
             hook(node, value);

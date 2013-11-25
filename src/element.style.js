@@ -36,9 +36,7 @@ $Element.prototype.style = function(name, value) {
         var appendCssText = function(value, key) {
             var hook = hooks.set[key];
 
-            if (typeof value === "function") {
-                value = value(value.length ? el.style(key) : undefined, index, el);
-            }
+            if (typeof value === "function") value = value(el, index);
 
             if (value == null) value = "";
 

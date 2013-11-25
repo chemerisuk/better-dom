@@ -55,25 +55,14 @@ describe("set", function() {
     it("should accept function", function() {
         var spy = jasmine.createSpy("setter");
 
-        link.set("id", function(value, index, el) {
-            spy(value, index, el);
+        link.set("id", function(el, index) {
+            spy(el, index);
 
             return "test_changed";
         });
 
-        expect(spy).toHaveBeenCalledWith("test", 0, link);
+        expect(spy).toHaveBeenCalledWith(link, 0);
         expect(link._node).toHaveAttr("id", "test_changed");
-
-        spy.reset();
-
-        link.set(function(value) {
-            spy(value);
-
-            return "set-test-updated";
-        });
-
-        expect(spy).toHaveBeenCalledWith("set-test");
-        expect(link._node.innerHTML).toBe("set-test-updated");
     });
 
     it("should accept object with key-value pairs", function() {
