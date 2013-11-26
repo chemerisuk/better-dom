@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.6.0-rc.7 2013-11-24T13:14:38
+ * @version 1.6.0-rc.8 2013-11-26T15:13:06
  * @overview Sandbox for living DOM extensions
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -10,7 +10,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    rquick = /^\w+$/,
+    reSingleTag = /^\w+$/,
     sandbox = document.createElement("div");
 
 /**
@@ -22,13 +22,19 @@ var _ = require("./utils"),
  */
 DOM.create = function(value, vars) {
     if (typeof value === "string") {
-        if (rquick.test(value)) {
+        if (reSingleTag.test(value)) {
             value = document.createElement(value);
         } else {
             sandbox.innerHTML = _.trim(DOM.template(value, vars));
 
-            if (sandbox.childNodes.length !== 1 || sandbox.firstChild.nodeType !== 1) {
-                return $Element(sandbox).children().remove();
+            if (sandbox.children.length !== 1) {
+                value = [];
+
+                for (var node; node = sandbox.firstChild; sandbox.removeChild(node)) {
+                    if (node.nodeType === 1) value.push(node);
+                }
+
+                return new $Element(value, true);
             }
 
             value = sandbox.removeChild(sandbox.firstChild);
@@ -110,7 +116,7 @@ if (features.CSS3_ANIMATIONS) {
  * Define a DOM extension
  * @memberOf DOM
  * @param  {String}          selector extension css selector
- * @param  {Object|Function} mixins   extension mixins/constructor function
+ * @param  {Object|Function} mixins   extension mixins or just a constructor function
  * @see https://github.com/chemerisuk/better-dom/wiki/Living-extensions
  */
 DOM.extend = function(selector, mixins) {
@@ -205,8 +211,6 @@ DOM.importScripts = function() {
         };
 
     callback();
-
-    return this;
 };
 
 },{"./dom":6,"./utils":41}],4:[function(require,module,exports){
@@ -219,7 +223,7 @@ var _ = require("./utils"),
  * Import global i18n string(s)
  * @memberOf DOM
  * @param {String}         lang    target language
- * @param {String|Object}  key     localized string key
+ * @param {String|Object}  key     localized string key or key/value object
  * @param {String}         value   localized string value
  * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
@@ -239,8 +243,6 @@ DOM.importStrings = function(lang, key, value) {
     } else {
         throw _.makeError("importStrings", this);
     }
-
-    return this;
 };
 
 // by default just show data-i18n string
@@ -258,8 +260,8 @@ var _ = require("./utils"),
 /**
  * Append global css styles
  * @memberOf DOM
- * @param {String|Object} selector css selector or object with selector/rules pairs
- * @param {String}        cssText  css rules
+ * @param {String}         selector  css selector
+ * @param {String|Object}  cssText   css rules
  */
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
@@ -296,8 +298,6 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
             });
         }
     }
-
-    return this;
 };
 
 // populate existing calls
@@ -307,7 +307,7 @@ _.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.0-rc.7";
+DOM.version = "1.6.0-rc.8";
 
 DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
 DOM.importStyles.args = [];
@@ -326,10 +326,11 @@ var _ = require("./utils"),
     extensions = require("./dom.extend");
 
 /**
- * Synchronously return dummy {@link $Element} instance specified for optional selector
+ * Return {@link $Element} initialized with all existing DOM extensions.
+ * Also contains private event handlers that doesn't usually present
  * @memberOf DOM
- * @param  {Mixed} [content] mock element content
- * @return {$Element} mock instance
+ * @param  {Mixed} [content] HTMLString, EmmetString
+ * @return {$Element} mocked instance
  */
 DOM.mock = function(content) {
     var el = content ? DOM.create(content) : new $Element(),
@@ -353,14 +354,12 @@ var _ = require("./utils"),
     isTop, testDiv, scrollIntervalId;
 
 function pageLoaded() {
-    if (readyCallbacks) {
-        // safely trigger callbacks
-        _.forEach(readyCallbacks, _.defer);
-        // cleanup
-        readyCallbacks = null;
+    // safely trigger callbacks
+    _.forEach(readyCallbacks, function(callback) { setTimeout(callback, 0) });
+    // cleanup
+    readyCallbacks = null;
 
-        if (scrollIntervalId) clearInterval(scrollIntervalId);
-    }
+    if (scrollIntervalId) clearInterval(scrollIntervalId);
 }
 
 if (features.DOM2_EVENTS) {
@@ -374,9 +373,9 @@ if (features.DOM2_EVENTS) {
         isTop = window.frameElement === null;
     } catch (e) {}
 
-    //DOMContentLoaded approximation that uses a doScroll, as found by
-    //Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-    //but modified by other contributors, including jdalton
+    // DOMContentLoaded approximation that uses a doScroll, as found by
+    // Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+    // but modified by other contributors, including jdalton
     if (testDiv.doScroll && isTop && window.external) {
         scrollIntervalId = setInterval(function () {
             try {
@@ -395,7 +394,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
 }
 
 /**
- * Execute callback when DOM will be ready
+ * Execute callback when DOM is ready
  * @memberOf DOM
  * @param {Function} callback event listener
  */
@@ -405,7 +404,7 @@ DOM.ready = function(callback) {
     if (readyCallbacks) {
         readyCallbacks.push(callback);
     } else {
-        _.defer(callback);
+        setTimeout(callback, 0);
     }
 };
 
@@ -457,7 +456,7 @@ _.forEach("area base br col hr img input link meta param command keygen source".
 });
 
 /**
- * Parse emmet-like template to HTML string
+ * Parse emmet-like template to a HTML string
  * @memberOf DOM
  * @param  {String} template emmet-like expression
  * @param  {Object} [vars] key/value map of variables
@@ -662,7 +661,7 @@ var _ = require("./utils"),
 
 /**
  * Clone element
- * @param {Boolean} [deep=true] true if children should also be cloned, or false otherwise
+ * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */
 $Element.prototype.clone = function(deep) {
@@ -708,7 +707,7 @@ var _ = require("./utils"),
     hooks = require("./element.get.hooks");
 
 /**
- * Get property or attribute by name
+ * Get property or attribute value by name
  * @param  {String} [name] property/attribute name
  * @return {String} property/attribute value
  * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
@@ -765,25 +764,23 @@ $Element.prototype.i18n = function(value, vars) {
 };
 
 },{"./element":15,"./utils":41}],15:[function(require,module,exports){
-var $Node = require("./node");
+var _ = require("./utils"),
+    $Node = require("./node");
 
 /**
  * Used to represent a DOM element or collection
  * @name $Element
- * @param element {Object} native element(s)
  * @extends $Node
  * @constructor
  * @private
  */
-function $Element(element, /*INTERNAL*/collection) {
+function $Element(element, collection) {
     if (element && element.__dom__) return element.__dom__;
 
     if (!(this instanceof $Element)) return new $Element(element, collection);
 
     if (element && collection === true) {
-        for (var i = 0, n = this.length = element.length; i < n; ++i) {
-            this[i] = this[i - n] = $Element(element[i]);
-        }
+        Array.prototype.push.apply(this, _.map(element, $Element));
     } else {
         $Node.call(this, element);
     }
@@ -793,7 +790,7 @@ $Element.prototype = new $Node();
 
 module.exports = $Element;
 
-},{"./node":35}],16:[function(require,module,exports){
+},{"./node":35,"./utils":41}],16:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features");
@@ -1008,7 +1005,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Set property/attribute value
+ * Set property/attribute value by name
  * @param {String}           [name]  property/attribute name
  * @param {String|Function}  value   property/attribute value
  * @return {$Element}
@@ -1053,9 +1050,7 @@ $Element.prototype.set = function(name, value) {
             throw _.makeError("set", el);
         }
 
-        if (typeof value === "function") {
-            value = value(value.length ? el.get(name) : undefined, index, el);
-        }
+        if (typeof value === "function") value = value(el, index);
 
         if (hook = hooks[name]) {
             hook(node, value);
@@ -1202,9 +1197,7 @@ $Element.prototype.style = function(name, value) {
         var appendCssText = function(value, key) {
             var hook = hooks.set[key];
 
-            if (typeof value === "function") {
-                value = value(value.length ? el.style(key) : undefined, index, el);
-            }
+            if (typeof value === "function") value = value(el, index);
 
             if (value == null) value = "";
 
@@ -1349,7 +1342,8 @@ $Element.prototype.children = makeChildTraversingMethod(true);
 },{"./element":15,"./features":28,"./selectormatcher":40,"./utils":41}],25:[function(require,module,exports){
 var $Element = require("./element"),
     DOM = require("./dom"),
-    features = require("./features");
+    features = require("./features"),
+    visibleFn = function(el) { return el.get("aria-hidden") !== "true" };
 
 /**
  * Show element
@@ -1369,10 +1363,20 @@ $Element.prototype.hide = function() {
 
 /**
  * Toggle element visibility
+ * @param {Boolean|Function} [visible] true if the element should be visible and false otherwise
  * @return {$Element}
  */
-$Element.prototype.toggle = function() {
-    return this.set("aria-hidden", function(value) { return value !== "true" });
+$Element.prototype.toggle = function(visible) {
+    var visibleType = typeof visible,
+        value = visibleFn;
+
+    if (visibleType === "boolean") {
+        value = !visible;
+    } else if (visibleType === "function") {
+        value = function(el, index) { return !visible(el, index) };
+    }
+
+    return this.set("aria-hidden", value);
 };
 
 // [aria-hidden=true] could be overriden only if browser supports animations
@@ -1539,8 +1543,8 @@ var _ = require("./utils"),
 /**
  * Getter/setter of a data entry value. Tries to read the appropriate
  * HTML5 data-* attribute if it exists
- * @param  {String|Object} key     data key
- * @param  {Object}        [value] data value to store
+ * @param  {String|Object}  key     data key or key/value object
+ * @param  {Object}         [value] data value to store
  * @return {Object} data entry value or this in case of setter
  * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
  */
@@ -1648,9 +1652,9 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 };
 
 /**
- * Finds all matched elements by css selector
+ * Find all matched elements by css selector
  * @param  {String} selector css selector
- * @return {$Element} collection of matched elements
+ * @return {$Element} matched elements
  */
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);
@@ -1730,7 +1734,7 @@ function makeCollectionMethod(fn) {
 
 _.extend($Node.prototype, {
     /**
-     * Executes callback on each element in the collection
+     * Execute callback on each element in the collection
      * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [context]  callback context
@@ -1740,7 +1744,7 @@ _.extend($Node.prototype, {
     each: makeCollectionMethod(_.forEach),
 
     /**
-     * Checks if the callback returns true for any element in the collection
+     * Check if the callback returns true for any element in the collection
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -1750,7 +1754,7 @@ _.extend($Node.prototype, {
     some: makeCollectionMethod(_.some),
 
     /**
-     * Checks if the callback returns true for all elements in the collection
+     * Check if the callback returns true for all elements in the collection
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -1760,7 +1764,7 @@ _.extend($Node.prototype, {
     every: makeCollectionMethod(_.every),
 
     /**
-     * Creates an array of values by running each element in the collection through the callback
+     * Create an array of values by running each element in the collection through the callback
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -1770,7 +1774,7 @@ _.extend($Node.prototype, {
     map: makeCollectionMethod(_.map),
 
     /**
-     * Examines each element in a collection, returning an array of all elements the callback returns truthy for
+     * Examine each element in a collection, returning an array of all elements the callback returns truthy for
      * @memberOf $Node.prototype
      * @param  {Function} callback   callback function
      * @param  {Object}   [context]  callback context
@@ -1780,7 +1784,7 @@ _.extend($Node.prototype, {
     filter: makeCollectionMethod(_.filter),
 
     /**
-     * Boils down a list of values into a single value (from start to end)
+     * Boil down a list of values into a single value (from start to end)
      * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
@@ -1790,7 +1794,7 @@ _.extend($Node.prototype, {
     reduce: makeCollectionMethod(_.foldl),
 
     /**
-     * Boils down a list of values into a single value (from end to start)
+     * Boil down a list of values into a single value (from end to start)
      * @memberOf $Node.prototype
      * @param  {Function} callback callback function
      * @param  {Object}   [memo]   initial value of the accumulator
@@ -1800,7 +1804,7 @@ _.extend($Node.prototype, {
     reduceRight: makeCollectionMethod(_.foldr),
 
     /**
-     * Executes code in a 'unsafe' block where the first callback argument is native object.
+     * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
      * @param  {Function} callback function that accepts native node as the first argument
      * @return {$Element}
@@ -1814,7 +1818,7 @@ var _ = require("./utils"),
     $Node = require("./node");
 
 /**
- * Get property by name
+ * Get property value by name
  * @param  {String} name property name
  * @return {String} property value
  */
@@ -1828,7 +1832,6 @@ $Node.prototype.get = function(name) {
 /**
  * Used to represent a DOM node
  * @name $Node
- * @param node {Object} native node
  * @constructor
  * @private
  */
@@ -1993,7 +1996,7 @@ var _ = require("./utils"),
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Object}          [context] callback context
  * @param  {Function|String} callback event callback/property name
- * @param  {Array}           [props] array of event properties to pass to the callback
+ * @param  {Array}           [props] array of event properties to pass into the callback
  * @return {$Node}
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
@@ -2070,7 +2073,7 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
 };
 
 /**
- * Bind a DOM event to the context and the callback only fire once before being removed
+ * Bind a DOM event but fire once before being removed
  * @param  {String}   type type of event with optional selector to filter by
  * @param  {Array}    [props] event properties to pass to the callback function
  * @param  {Object}   [context] callback context
@@ -2091,7 +2094,7 @@ var _ = require("./utils"),
     $Node = require("./node");
 
 /**
- * Set property value
+ * Set property value by name
  * @param  {String} name  property name
  * @param  {String} value property value
  */
@@ -2174,7 +2177,6 @@ var DOM = require("./dom"),
     })();
 
 module.exports = {
-    defer: function(callback) { return setTimeout(callback, 0) },
     trim: (function() {
         var reTrim = /^\s+|\s+$/g;
 
@@ -2308,5 +2310,5 @@ module.exports = {
     }())
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,27,26,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
 ;
