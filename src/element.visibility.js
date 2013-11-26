@@ -1,23 +1,42 @@
-var $Element = require("./element"),
+var _ = require("./utils"),
+    $Element = require("./element"),
     DOM = require("./dom"),
     features = require("./features"),
-    visibleFn = function(el) { return el.get("aria-hidden") !== "true" };
+    visibleFn = function(el) { return el.get("aria-hidden") !== "true" },
+    makeVisibilityMethod = function(name) {
+        var createCallback = function(el) {
+                return function() { el.set("aria-hidden", name === "hide") };
+            };
+
+        return function(delay) {
+            if (delay && (typeof delay !== "number" || delay < 0)) _.makeError(name, this);
+
+            if (delay) {
+                setTimeout(createCallback(this), delay);
+
+                return this;
+            }
+
+            return this.set("aria-hidden", name === "hide");
+        };
+
+    };
 
 /**
  * Show element
+ * @param {Number} [delay=0] time in miliseconds to wait
  * @return {$Element}
+ * @function
  */
-$Element.prototype.show = function() {
-    return this.set("aria-hidden", false);
-};
+$Element.prototype.show = makeVisibilityMethod("show");
 
 /**
  * Hide element
+ * @param {Number} [delay=0] time in miliseconds to wait
  * @return {$Element}
+ * @function
  */
-$Element.prototype.hide = function() {
-    return this.set("aria-hidden", true);
-};
+$Element.prototype.hide = makeVisibilityMethod("hide");
 
 /**
  * Toggle element visibility

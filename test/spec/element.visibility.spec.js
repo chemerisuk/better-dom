@@ -17,6 +17,37 @@ describe("visibility", function() {
         expect(link.get("aria-hidden")).toBe("false");
     });
 
+    describe("hide", function() {
+        it("should support optional delay argument", function() {
+            var delay = 50,
+                start = new Date();
+
+            expect(link.get("aria-hidden")).not.toBe("true");
+            expect(link.hide(delay)).toBe(link);
+            expect(link.get("aria-hidden")).not.toBe("true");
+
+            waitsFor(function() {
+                return link.get("aria-hidden") === "true" && (new Date() - start) >= delay;
+            });
+        });
+    });
+
+    describe("show", function() {
+        it("show should support optional delay argument", function() {
+            var delay = 50,
+                start = new Date();
+
+            link.hide();
+            expect(link.get("aria-hidden")).toBe("true");
+            expect(link.show(delay)).toBe(link);
+            expect(link.get("aria-hidden")).toBe("true");
+
+            waitsFor(function() {
+                return link.get("aria-hidden") !== "true" && (new Date() - start) >= delay;
+            });
+        });
+    });
+
     it("should allow to toggle visibility", function() {
         expect(link.matches(":hidden")).toBe(false);
         expect(link.toggle().matches(":hidden")).toBe(true);
