@@ -81,7 +81,7 @@ DOM.extend = function(selector, mixins) {
             ext = function(el, mock) {
                 _.extend(el, mixins);
                 // invoke constructor if it exists
-                if (ctr) ctr.call(el, $Element.prototype);
+                if (ctr) ctr.call(el);
                 // cleanup event handlers
                 if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
             },
