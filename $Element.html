@@ -84,7 +84,7 @@
     
         
 <dt>
-    <h4 class="name" id="$Element"><span class="type-signature">&lt;private> </span>new $Element<span class="signature">(element)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="$Element"><span class="type-signature">&lt;private> </span>new $Element<span class="signature">()</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -100,55 +100,6 @@
     
     
     
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>element</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>native element(s)</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
     
     
     
@@ -1251,7 +1202,7 @@
                 </td>
             
 
-            <td class="description last"><p>true if children should also be cloned, or false otherwise</p></td>
+            <td class="description last"><p>true if all children should also be cloned, or false otherwise</p></td>
         </tr>
 
 	
@@ -1552,7 +1503,7 @@ HTML5 data-* attribute if it exists</p>
 
             
 
-            <td class="description last"><p>data key</p></td>
+            <td class="description last"><p>data key or key/value object</p></td>
         </tr>
 
 	
@@ -1688,7 +1639,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Executes callback on each element in the collection</p>
+        <p>Execute callback on each element in the collection</p>
     </div>
     
 
@@ -1873,7 +1824,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Checks if the callback returns true for all elements in the collection</p>
+        <p>Check if the callback returns true for all elements in the collection</p>
     </div>
     
 
@@ -2062,7 +2013,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Examines each element in a collection, returning an array of all elements the callback returns truthy for</p>
+        <p>Examine each element in a collection, returning an array of all elements the callback returns truthy for</p>
     </div>
     
 
@@ -2397,7 +2348,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Finds all matched elements by css selector</p>
+        <p>Find all matched elements by css selector</p>
     </div>
     
 
@@ -2509,7 +2460,7 @@ HTML5 data-* attribute if it exists</p>
     
             
 <div class="param-desc">
-    <p>collection of matched elements</p>
+    <p>matched elements</p>
 </div>
 
 
@@ -2739,7 +2690,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Get property or attribute by name</p>
+        <p>Get property or attribute value by name</p>
     </div>
     
 
@@ -3417,7 +3368,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Executes code in a 'unsafe' block where the first callback argument is native object.</p>
+        <p>Execute code in a 'unsafe' block where the first callback argument is native object.</p>
     </div>
     
 
@@ -3559,7 +3510,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Creates an array of values by running each element in the collection through the callback</p>
+        <p>Create an array of values by running each element in the collection through the callback</p>
     </div>
     
 
@@ -4688,7 +4639,7 @@ HTML5 data-* attribute if it exists</p>
 
             
 
-            <td class="description last"><p>array of event properties to pass to the callback</p></td>
+            <td class="description last"><p>array of event properties to pass into the callback</p></td>
         </tr>
 
 	
@@ -4787,7 +4738,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Bind a DOM event to the context and the callback only fire once before being removed</p>
+        <p>Bind a DOM event but fire once before being removed</p>
     </div>
     
 
@@ -5675,7 +5626,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Boils down a list of values into a single value (from start to end)</p>
+        <p>Boil down a list of values into a single value (from start to end)</p>
     </div>
     
 
@@ -5864,7 +5815,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Boils down a list of values into a single value (from end to start)</p>
+        <p>Boil down a list of values into a single value (from end to start)</p>
     </div>
     
 
@@ -6427,7 +6378,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Set property/attribute value</p>
+        <p>Set property/attribute value by name</p>
     </div>
     
 
@@ -6705,7 +6656,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Checks if the callback returns true for any element in the collection</p>
+        <p>Check if the callback returns true for any element in the collection</p>
     </div>
     
 
@@ -7079,7 +7030,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="toggle"><span class="type-signature"></span>toggle<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="toggle"><span class="type-signature"></span>toggle<span class="signature">(<span class="optional">visible</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -7095,6 +7046,70 @@ HTML5 data-* attribute if it exists</p>
     
     
     
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>visible</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>true if the element should be visible and false otherwise</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
     
     
     
@@ -7426,7 +7441,7 @@ HTML5 data-* attribute if it exists</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Sun Nov 24 2013 13:14:45 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Tue Nov 26 2013 15:13:13 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
