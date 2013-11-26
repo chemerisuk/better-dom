@@ -2,14 +2,16 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     features = require("./features"),
-    visibleFn = function(el) { return el.get("aria-hidden") !== "true" },
+    toggleFn = function(el) { return el.get("aria-hidden") !== "true" },
     makeVisibilityMethod = function(name) {
         var createCallback = function(el) {
                 return function() { el.set("aria-hidden", name === "hide") };
             };
 
         return function(delay) {
-            if (delay && (typeof delay !== "number" || delay < 0)) _.makeError(name, this);
+            if (delay && (typeof delay !== "number" || delay < 0)) {
+                throw _.makeError(name, this);
+            }
 
             if (delay) {
                 setTimeout(createCallback(this), delay);
@@ -45,12 +47,14 @@ $Element.prototype.hide = makeVisibilityMethod("hide");
  */
 $Element.prototype.toggle = function(visible) {
     var visibleType = typeof visible,
-        value = visibleFn;
+        value = toggleFn;
 
     if (visibleType === "boolean") {
         value = !visible;
     } else if (visibleType === "function") {
         value = function(el, index) { return !visible(el, index) };
+    } else if (visible) {
+        throw _.makeError("toggle", this);
     }
 
     return this.set("aria-hidden", value);
