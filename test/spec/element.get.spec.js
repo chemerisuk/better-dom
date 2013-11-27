@@ -68,4 +68,9 @@ describe("get", function() {
         expect(form.get("textContent")).toBe("");
     });
 
+    it("should return null if attribute doesn't exist", function() {
+        expect(link.get("xxx")).toBeNull();
+        expect(link.get("data-test")).toBeNull();
+    });
+
 });
