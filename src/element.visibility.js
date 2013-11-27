@@ -21,7 +21,6 @@ var _ = require("./utils"),
 
             return this.set("aria-hidden", name === "hide");
         };
-
     };
 
 /**

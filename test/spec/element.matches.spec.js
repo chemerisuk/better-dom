@@ -39,4 +39,16 @@ describe("matches", function() {
         expect(link.child(0).matches("a")).toBe(false);
         expect(link.child(0).matches("a", true)).toBe(true);
     });
+
+    it("should support special :hidden pseudoselector", function() {
+        expect(link.matches(":hidden")).toBe(false);
+        expect(link.hide().matches(":hidden")).toBe(true);
+        expect(link.show().matches(":hidden")).toBe(false);
+
+        link.style("display", "block");
+
+        expect(link.matches(":hidden")).toBe(false);
+        expect(link.hide().matches(":hidden")).toBe(true);
+        expect(link.show().matches(":hidden")).toBe(false);
+    });
 });
