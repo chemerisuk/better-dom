@@ -46,11 +46,11 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 
 ## Usage examples
 * [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
-* [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - input[type=date] polyfill
-* [better-timeinput-polyfill](https://github.com/chemerisuk/better-timeinput-polyfill) - input[type=time] polyfill
+* [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - `input[type=date]` polyfill
+* [better-timeinput-polyfill](https://github.com/chemerisuk/better-timeinput-polyfill) - `input[type=time]` polyfill
 * [better-form-validation](https://github.com/chemerisuk/better-form-validation) - Form validation polyfill
 * [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
-* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - Placeholder attribute polyfill
+* [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - `[placeholder]` polyfill
 * [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
 
 ## Notes about old IEs
