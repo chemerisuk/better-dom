@@ -12,29 +12,25 @@ var _ = require("./utils"),
  * @return {$Element} element
  */
 DOM.create = function(value, vars) {
-    if (typeof value === "string") {
-        if (reSingleTag.test(value)) {
-            value = document.createElement(value);
-        } else {
-            sandbox.innerHTML = _.trim(DOM.template(value, vars));
-
-            if (sandbox.children.length !== 1) {
-                value = [];
-
-                for (var node; node = sandbox.firstChild; sandbox.removeChild(node)) {
-                    if (node.nodeType === 1) value.push(node);
-                }
-
-                return new $Element(value, true);
-            }
-
-            value = sandbox.removeChild(sandbox.firstChild);
-        }
-
-        return new $Element(value);
-    }
-
     if (value.nodeType === 1) return $Element(value);
 
-    throw _.makeError("create", this);
+    if (typeof value !== "string") throw _.makeError("create", this);
+
+    var node, multiple;
+
+    if (reSingleTag.test(value)) {
+        value = document.createElement(value);
+    } else {
+        sandbox.innerHTML = DOM.template(value, vars);
+
+        for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
+            if (node.nodeType === 1) value.push(node);
+        }
+
+        multiple = value.length !== 1;
+
+        if (!multiple) value = value[0];
+    }
+
+    return new $Element(value, multiple);
 };
