@@ -1,8 +1,8 @@
 {
     "name": "better-dom",
-    "version": "1.6.0-rc.8",
+    "version": "1.6.0-rc.9",
     "author": "Maksim Chemerisuk",
-    "description": "Live DOM extensions forge",
+    "description": "Live extension playground",
     "license": "MIT",
     "repository": {
         "type": "git",
