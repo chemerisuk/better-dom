@@ -4,13 +4,13 @@ describe("visibility", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='vis'></a>");
+        setFixtures("<a id='vis'>123</a>");
 
         link = DOM.find("#vis");
     });
 
     it("should use aria-hidden to toggle visibility", function() {
-        expect(link.matches(":hidden")).toBe(false);
+        expect(link.get("aria-hidden")).toBeFalsy();
         link.hide();
         expect(link.get("aria-hidden")).toBe("true");
         link.show();
@@ -49,19 +49,19 @@ describe("visibility", function() {
     });
 
     it("should allow to toggle visibility", function() {
-        expect(link.matches(":hidden")).toBe(false);
+        expect(link.get("aria-hidden")).toBeFalsy();
         expect(link.toggle().matches(":hidden")).toBe(true);
         expect(link.toggle().matches(":hidden")).toBe(false);
     });
 
     it("should accept optional visible boolean argument", function() {
-        expect(link.matches(":hidden")).toBe(false);
+        expect(link.get("aria-hidden")).toBeFalsy();
         expect(link.toggle(true).matches(":hidden")).toBe(false);
         expect(link.toggle(false).matches(":hidden")).toBe(true);
     });
 
     it("should accept optional visible functor", function() {
-        var links = DOM.create("a*3");
+        var links = DOM.create("a*3>{444}");
 
         DOM.find("body").append(links);
 

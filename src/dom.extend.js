@@ -21,8 +21,7 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent("on" + type, ext.stop);
                 }
-                // 1 event for 1 element, so _.some could be used
-                // to reduce number of unnecessary iterations
+                // return true to reduce number of unnecessary iterations
                 return !ext(el);
             }
         };
@@ -48,7 +47,7 @@ if (features.CSS3_ANIMATIONS) {
 } else {
     link = document.querySelector("link[rel=htc]");
 
-    if (!link) throw "You forgot to include <link rel=htc> for IE<10!";
+    if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
@@ -80,7 +79,7 @@ DOM.extend = function(selector, mixins) {
         var eventHandlers = _.filter(_.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
             ext = function(el, mock) {
                 _.extend(el, mixins);
-                // invoke constructor if it exists
+
                 if (ctr) ctr.call(el);
                 // cleanup event handlers
                 if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
@@ -120,7 +119,7 @@ DOM.extend = function(selector, mixins) {
                 }
             });
             // make sure that any extension is initialized after DOM.ready
-            // MUST be after DOM.findAll because of IE behavior
+            // MUST be after DOM.findAll because of legacy IE behavior
             DOM.importStyles(selector, styles, true);
         });
     }

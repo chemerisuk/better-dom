@@ -41,15 +41,14 @@ $Node.prototype.fire = function(type, data) {
             canContinue = e.returnValue !== false;
         }
 
-        // Call a native DOM method on the target with the same name as the event
-        // IE<9 dies on focus/blur to hidden element
+        // Call native method. IE<9 dies on focus/blur to hidden element
         if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
             // Prevent re-triggering of the same event
-            EventHandler.veto = type;
+            EventHandler.skip = type;
 
             node[type]();
 
-            EventHandler.veto = false;
+            EventHandler.skip = null;
         }
 
         return canContinue;

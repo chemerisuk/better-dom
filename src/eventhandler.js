@@ -36,7 +36,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
     var matcher = SelectorMatcher(selector),
         handler = function(e) {
-            if (EventHandler.veto === type) return; // early stop in case of default action
+            if (EventHandler.skip === type) return; // early stop in case of default action
 
             e = e || window.event;
 

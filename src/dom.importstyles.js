@@ -1,9 +1,12 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
+    features = require("./features"),
     styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
+    // normalize pseudoelement selectors or quotes
+    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"],
     args = DOM.importStyles.args;
 
 /**
@@ -15,8 +18,7 @@ var _ = require("./utils"),
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
-        // make a temporary element to populate styleObj
-        // with values that could be insterted into document
+        // make a temporary element and populate style properties
         new $Element({style: styleObj}).style(cssText);
 
         cssText = [];
@@ -34,9 +36,7 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
 
     // check if the rule already exists
     if (!unique || !_.some(styleRules, function(rule) {
-        var selText = (rule.selectorText || "").replace("::", ":");
-        // normalize pseudoelement selectors and ignore quotes
-        return selText === selector || selText === selector.split("\"").join("'");
+        return selector === (rule.selectorText || "").split(norm[0]).join(norm[1]);
     })) {
         if (styleSheet.cssRules) {
             styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);

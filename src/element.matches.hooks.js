@@ -1,5 +1,4 @@
 var _ = require("./utils"),
-    documentElement = document.documentElement,
     hooks = {};
 
 hooks[":focus"] = function(node) {
@@ -7,9 +6,7 @@ hooks[":focus"] = function(node) {
 };
 
 hooks[":hidden"] = function(node) {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.getComputedStyle(node).display === "none" ||
-            !documentElement.contains(node);
+    return _.getComputedStyle(node).display === "none" || !node.offsetWidth;
 };
 
 module.exports = hooks;
