@@ -1,12 +1,12 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
-> Sandbox for living DOM extensions
+> Live DOM extensions forge
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
 * compact size (~28kb minified and ~6kb gzipped)
 * clean, standards-based (if possible) APIs
-* [living extensions](https://github.com/chemerisuk/better-dom/wiki/Living-extensions)
+* [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [smarter getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)

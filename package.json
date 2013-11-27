@@ -2,7 +2,7 @@
     "name": "better-dom",
     "version": "1.6.0-rc.8",
     "author": "Maksim Chemerisuk",
-    "description": "Sandbox for living DOM extensions",
+    "description": "Live DOM extensions forge",
     "license": "MIT",
     "repository": {
         "type": "git",

@@ -4,8 +4,8 @@ var _ = require("./utils"),
     extensions = require("./dom.extend");
 
 /**
- * Return {@link $Element} initialized with all existing DOM extensions.
- * Also contains private event handlers that doesn't usually present
+ * Return {@link $Element} initialized with all existing live extensions.
+ * Also exposes private event handler functions that aren't usually presented
  * @memberOf DOM
  * @param  {Mixed} [content] HTMLString, EmmetString
  * @return {$Element} mocked instance
