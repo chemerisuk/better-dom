@@ -5,9 +5,9 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Triggers an event of specific type with optional data
+ * Triggers an event of specific type with optional extra arguments
  * @param  {String}    type   type of event
- * @param  {...Object} [args] extra event data arguments
+ * @param  {...Object} [args] extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */

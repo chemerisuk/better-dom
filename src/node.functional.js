@@ -15,8 +15,8 @@ _.extend($Node.prototype, {
     /**
      * Execute callback on each element in the collection
      * @memberOf $Node.prototype
-     * @param  {Function} callback callback function
-     * @param  {Object}   [context]  callback context
+     * @param  {Function} callback  function that accepts (element, index, this)
+     * @param  {Object}   [context] callback context
      * @return {$Element}
      * @function
      */
@@ -25,7 +25,7 @@ _.extend($Node.prototype, {
     /**
      * Check if the callback returns true for any element in the collection
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if any element in the collection return true
      * @function
@@ -35,7 +35,7 @@ _.extend($Node.prototype, {
     /**
      * Check if the callback returns true for all elements in the collection
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if all elements in the collection returns true
      * @function
@@ -45,7 +45,7 @@ _.extend($Node.prototype, {
     /**
      * Create an array of values by running each element in the collection through the callback
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Array} new array of the results of each callback execution
      * @function
@@ -55,7 +55,7 @@ _.extend($Node.prototype, {
     /**
      * Examine each element in a collection, returning an array of all elements the callback returns truthy for
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Array} new array with elements where callback returned true
      * @function
@@ -65,7 +65,7 @@ _.extend($Node.prototype, {
     /**
      * Boil down a list of values into a single value (from start to end)
      * @memberOf $Node.prototype
-     * @param  {Function} callback callback function
+     * @param  {Function} callback function that accepts (memo, element, index, this)
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
      * @function
@@ -75,7 +75,7 @@ _.extend($Node.prototype, {
     /**
      * Boil down a list of values into a single value (from end to start)
      * @memberOf $Node.prototype
-     * @param  {Function} callback callback function
+     * @param  {Function} callback function that accepts (memo, element, index, this)
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
      * @function
@@ -85,7 +85,7 @@ _.extend($Node.prototype, {
     /**
      * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
-     * @param  {Function} callback function that accepts native node as the first argument
+     * @param  {Function} callback function that accepts (node, element, index, this)
      * @return {$Element}
      * @function
      */
