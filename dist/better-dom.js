@@ -1,6 +1,6 @@
 /**
  * @file better-dom
- * @version 1.6.0-rc.9 2013-11-27T21:15:07
+ * @version 1.6.0 2013-11-28T15:12:35
  * @overview Live extension playground
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -302,7 +302,7 @@ _.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.0-rc.9";
+DOM.version = "1.6.0";
 
 DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
 DOM.importStyles.args = [];
@@ -889,14 +889,14 @@ $Element.prototype.remove = makeManipulationMethod("remove", "", false, function
 
 },{"./element":15,"./features":28,"./utils":41}],17:[function(require,module,exports){
 var _ = require("./utils"),
+    docEl = document.documentElement,
     hooks = {};
 
-hooks[":focus"] = function(node) {
-    return node === document.activeElement;
-};
+hooks[":focus"] = function(node) { return node === document.activeElement };
 
 hooks[":hidden"] = function(node) {
-    return _.getComputedStyle(node).display === "none" || !node.offsetWidth;
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.getComputedStyle(node).display === "none" || !docEl.contains(node);
 };
 
 module.exports = hooks;
@@ -1355,7 +1355,6 @@ var _ = require("./utils"),
 
             return this.set("aria-hidden", name === "hide");
         };
-
     };
 
 /**
@@ -1442,8 +1441,6 @@ var _ = require("./utils"),
     features = require("./features"),
     hooks = require("./eventhandler.hooks"),
     debouncedEvents = "scroll mousemove",
-    defaultArgs = ["target", "defaultPrevented"],
-    defaultArgsWithData = ["_data", "target", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -1466,7 +1463,7 @@ var _ = require("./utils"),
     },
     testEl = document.createElement("div");
 
-function EventHandler(type, selector, context, callback, extras, currentTarget) {
+function EventHandler(type, selector, context, callback, props, currentTarget) {
     context = context || currentTarget;
 
     var matcher = SelectorMatcher(selector),
@@ -1478,7 +1475,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
             var target = e.target || e.srcElement,
                 root = currentTarget._node,
                 fn = typeof callback === "string" ? context[callback] : callback,
-                args = extras || (typeof e._data === "undefined" ? defaultArgs : defaultArgsWithData);
+                args = props || ["target", "defaultPrevented"];
 
             if (typeof fn !== "function") return; // early stop in case of late binding
 
@@ -1501,6 +1498,9 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
                 return hook ? hook(e, root) : e[name];
             });
+
+            // prepend extra arguments if they exist
+            if (e._args && e._args.length) args = e._args.concat(args);
 
             if (fn.apply(context, args) === false) {
                 // prevent default if handler returns false
@@ -1682,14 +1682,16 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Triggers an event of specific type with optional data
- * @param  {String} type type of event
- * @param  {Object} [data] event data
+ * Triggers an event of specific type with optional extra arguments
+ * @param  {String}    type   type of event
+ * @param  {...Object} [args] extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-$Node.prototype.fire = function(type, data) {
+$Node.prototype.fire = function(type) {
     if (typeof type !== "string") throw _.makeError("fire", this);
+
+    var args = _.slice(arguments, 1);
 
     return _.every(this, function(el) {
         var node = el._node,
@@ -1703,7 +1705,7 @@ $Node.prototype.fire = function(type, data) {
             e = document.createEvent("HTMLEvents");
 
             e.initEvent(handler._type || type, true, true);
-            e._data = data;
+            e._args = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
@@ -1711,7 +1713,7 @@ $Node.prototype.fire = function(type, data) {
             e = document.createEventObject();
             // store original event type
             e.srcUrn = isCustomEvent ? type : undefined;
-            e._data = data;
+            e._args = args;
 
             node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), e);
 
@@ -1750,8 +1752,8 @@ _.extend($Node.prototype, {
     /**
      * Execute callback on each element in the collection
      * @memberOf $Node.prototype
-     * @param  {Function} callback callback function
-     * @param  {Object}   [context]  callback context
+     * @param  {Function} callback  function that accepts (element, index, this)
+     * @param  {Object}   [context] callback context
      * @return {$Element}
      * @function
      */
@@ -1760,7 +1762,7 @@ _.extend($Node.prototype, {
     /**
      * Check if the callback returns true for any element in the collection
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if any element in the collection return true
      * @function
@@ -1770,7 +1772,7 @@ _.extend($Node.prototype, {
     /**
      * Check if the callback returns true for all elements in the collection
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Boolean} true, if all elements in the collection returns true
      * @function
@@ -1780,7 +1782,7 @@ _.extend($Node.prototype, {
     /**
      * Create an array of values by running each element in the collection through the callback
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Array} new array of the results of each callback execution
      * @function
@@ -1790,7 +1792,7 @@ _.extend($Node.prototype, {
     /**
      * Examine each element in a collection, returning an array of all elements the callback returns truthy for
      * @memberOf $Node.prototype
-     * @param  {Function} callback   callback function
+     * @param  {Function} callback   function that accepts (element, index, this)
      * @param  {Object}   [context]  callback context
      * @return {Array} new array with elements where callback returned true
      * @function
@@ -1800,7 +1802,7 @@ _.extend($Node.prototype, {
     /**
      * Boil down a list of values into a single value (from start to end)
      * @memberOf $Node.prototype
-     * @param  {Function} callback callback function
+     * @param  {Function} callback function that accepts (memo, element, index, this)
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
      * @function
@@ -1810,7 +1812,7 @@ _.extend($Node.prototype, {
     /**
      * Boil down a list of values into a single value (from end to start)
      * @memberOf $Node.prototype
-     * @param  {Function} callback callback function
+     * @param  {Function} callback function that accepts (memo, element, index, this)
      * @param  {Object}   [memo]   initial value of the accumulator
      * @return {Object} the accumulated value
      * @function
@@ -1820,7 +1822,7 @@ _.extend($Node.prototype, {
     /**
      * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
-     * @param  {Function} callback function that accepts native node as the first argument
+     * @param  {Function} callback function that accepts (node, element, index, this)
      * @return {$Element}
      * @function
      */
@@ -2324,5 +2326,5 @@ module.exports = {
     }())
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[2,1,3,4,5,6,7,8,9,11,10,12,13,14,16,17,15,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
 ;
