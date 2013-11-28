@@ -6,8 +6,8 @@ var _ = require("./utils"),
 
 /**
  * Triggers an event of specific type with optional data
- * @param  {String} type type of event
- * @param  {Object} [...args] extra event data arguments
+ * @param  {String}    type   type of event
+ * @param  {...Object} [args] extra event data arguments
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
