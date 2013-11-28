@@ -4,21 +4,20 @@
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
-* compact size (~28kb minified and ~6kb gzipped)
+* compact size (~29kb minified and ~6kb gzipped)
 * clean, standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [smarter getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
-* [localization support](https://github.com/chemerisuk/better-dom/wiki/Localization)
+* [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [css3 animations support](http://jsfiddle.net/C3WeM/)
 * cross-browser `input` event
 
 ## Performance
-* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/17)
-* [emmet vs DOM.template](http://jsperf.com/emmet-vs-dom-parsetemplate/10)
-* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/2)
-* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/2)
+* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)
+* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/3)
+* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/3)
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
