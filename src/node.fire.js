@@ -7,12 +7,14 @@ var _ = require("./utils"),
 /**
  * Triggers an event of specific type with optional data
  * @param  {String} type type of event
- * @param  {Object} [data] event data
+ * @param  {Object} [...args] extra event data arguments
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-$Node.prototype.fire = function(type, data) {
+$Node.prototype.fire = function(type) {
     if (typeof type !== "string") throw _.makeError("fire", this);
+
+    var args = _.slice(arguments, 1);
 
     return _.every(this, function(el) {
         var node = el._node,
@@ -26,7 +28,7 @@ $Node.prototype.fire = function(type, data) {
             e = document.createEvent("HTMLEvents");
 
             e.initEvent(handler._type || type, true, true);
-            e._data = data;
+            e._args = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
@@ -34,7 +36,7 @@ $Node.prototype.fire = function(type, data) {
             e = document.createEventObject();
             // store original event type
             e.srcUrn = isCustomEvent ? type : undefined;
-            e._data = data;
+            e._args = args;
 
             node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), e);
 

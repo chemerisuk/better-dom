@@ -7,8 +7,6 @@ var _ = require("./utils"),
     features = require("./features"),
     hooks = require("./eventhandler.hooks"),
     debouncedEvents = "scroll mousemove",
-    defaultArgs = ["target", "defaultPrevented"],
-    defaultArgsWithData = ["_data", "target", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -31,7 +29,7 @@ var _ = require("./utils"),
     },
     testEl = document.createElement("div");
 
-function EventHandler(type, selector, context, callback, extras, currentTarget) {
+function EventHandler(type, selector, context, callback, props, currentTarget) {
     context = context || currentTarget;
 
     var matcher = SelectorMatcher(selector),
@@ -43,7 +41,7 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
             var target = e.target || e.srcElement,
                 root = currentTarget._node,
                 fn = typeof callback === "string" ? context[callback] : callback,
-                args = extras || (typeof e._data === "undefined" ? defaultArgs : defaultArgsWithData);
+                args = props || ["target", "defaultPrevented"];
 
             if (typeof fn !== "function") return; // early stop in case of late binding
 
@@ -66,6 +64,9 @@ function EventHandler(type, selector, context, callback, extras, currentTarget) 
 
                 return hook ? hook(e, root) : e[name];
             });
+
+            // prepend extra arguments if they exist
+            if (e._args && e._args.length) args = e._args.concat(args);
 
             if (fn.apply(context, args) === false) {
                 // prevent default if handler returns false

@@ -41,20 +41,16 @@ describe("fire", function() {
         expect(callback).toHaveBeenCalled();
     });
 
-    it("should accept optional data object", function() {
-        var detail = {x: 1, y: 2};
+    it("should prepend extra arguments if they exist", function() {
+        var data1 = {x: 1, y: 2}, data2 = function() {};
 
-        callback.andCallFake(function(param) {
-            expect(param).toBe(detail);
-        });
+        input.on("my:click", callback);
+        input.fire("my:click", data1);
+        expect(callback).toHaveBeenCalledWith(data1, input, false);
 
-        input.on("my:click", ["detail"], callback);
-        input.fire("my:click", detail);
-        expect(callback).toHaveBeenCalled();
-
-        input.on("click", ["detail"], callback);
-        input.fire("click", detail);
-        expect(callback.callCount).toBe(2);
+        input.on("click", callback);
+        input.fire("click", data1, data2);
+        expect(callback).toHaveBeenCalledWith(data1, data2, input, false);
     });
 
     it("should return false if default action was prevented", function() {
