@@ -14,7 +14,7 @@
     "noarg": true,
     "noempty": true,
     "trailing": true,
-    "maxdepth": 5,
+    "maxdepth": 6,
     "unused": true,
     "immed": true,
     "latedef": true,

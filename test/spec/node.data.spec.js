@@ -4,8 +4,7 @@ describe("data", function() {
     var input, links;
 
     beforeEach(function() {
-        input = DOM.mock("input[data-a1=x data-a2=n1=v1;n2=1 data-a3=1=2=3]");
-
+        input = DOM.create("input[data-a1=x data-a2='{\"a\":\"b\",\"c\":1,\"d\":null}' data-a3=1=2=3 data-a4=/url?q=:q]");
         links = DOM.create("a[data-test=$]*3");
     });
 
@@ -28,8 +27,9 @@ describe("data", function() {
 
     it("should read an appropriate data-* attribute if it exists", function() {
         expect(input.data("a1")).toEqual("x");
-        expect(input.data("a2")).toEqual({ n1: "v1", n2: "1" });
+        expect(input.data("a2")).toEqual({ a: "b", c: 1, d: null });
         expect(input.data("a3")).toBe("1=2=3");
+        expect(input.data("a4")).toBe("/url?q=:q");
 
         expect(links.data("test")).toEqual(["1", "2", "3"]);
     });
