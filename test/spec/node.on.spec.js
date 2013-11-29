@@ -235,10 +235,15 @@ describe("on", function() {
     it("should handle global DOM as target", function() {
         var spy = jasmine.createSpy("callback");
 
-        DOM.once("custom:event", spy);
-        DOM.fire("custom:event");
+        DOM.once("custom:event1", spy);
+        DOM.fire("custom:event1");
 
         expect(spy).toHaveBeenCalledWith(DOM, false);
+
+        spy.reset();
+        DOM.once("custom:event2 ul > li", spy);
+        DOM.fire("custom:event2");
+        expect(spy).not.toHaveBeenCalled();
     });
 
     // it("should debounce some events", function() {

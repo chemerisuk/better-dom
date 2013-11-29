@@ -25,6 +25,8 @@ module.exports = function(selector) {
     }
 
     return function(el) {
+        if (el.nodeType !== 1) return false;
+
         if (!quick) {
             if (matchesProp) return el[matchesProp](selector);
 
