@@ -7,8 +7,8 @@ var _ = require("./utils"),
  * Import global i18n string(s)
  * @memberOf DOM
  * @param {String}         lang    target language
- * @param {String|Object}  key     localized string key or key/value object
- * @param {String}         value   localized string value
+ * @param {String|Object}  key     english string to localize or key/value object
+ * @param {String}         value   localized string
  * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
 DOM.importStrings = function(lang, key, value) {

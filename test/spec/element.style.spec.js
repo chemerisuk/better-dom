@@ -13,7 +13,6 @@ describe("style", function() {
     describe("getter", function() {
         it("should read style property", function() {
             expect(link.style("color")).toBe("red");
-            expect(links.style("line-height")).toEqual(["2", "2"]);
         });
 
         it("should read properties by dash-separated key", function() {

@@ -17,22 +17,20 @@ $Node.prototype.data = function(key, value) {
 
     if (len === 1) {
         if (keyType === "string") {
-            if (node) {
-                value = data[key];
+            if (!node) return;
 
-                if (value === undefined) {
-                    try {
-                        value = node.getAttribute("data-" + key);
-                        // parse object notation syntax
-                        if (value[0] === "{" && value[value.length - 1] === "}") {
-                            value = JSON.parse(value);
-                        }
-                    } catch (err) {}
+            value = data[key];
 
-                    data[key] = value;
-                }
-            } else {
-                if (this.length) value = _.map(this, function(el) { return el.data(key) });
+            if (value === undefined) {
+                try {
+                    value = node.getAttribute("data-" + key);
+                    // parse object notation syntax
+                    if (value[0] === "{" && value[value.length - 1] === "}") {
+                        value = JSON.parse(value);
+                    }
+                } catch (err) {}
+
+                data[key] = value;
             }
 
             return value;

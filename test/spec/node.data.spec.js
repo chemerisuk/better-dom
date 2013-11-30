@@ -1,11 +1,10 @@
 describe("data", function() {
     "use strict";
 
-    var input, links;
+    var input;
 
     beforeEach(function() {
         input = DOM.create("input[data-a1=x data-a2='{\"a\":\"b\",\"c\":1,\"d\":null}' data-a3=1=2=3 data-a4=/url?q=:q]");
-        links = DOM.create("a[data-test=$]*3");
     });
 
     it("should store any kind of object", function() {
@@ -30,8 +29,6 @@ describe("data", function() {
         expect(input.data("a2")).toEqual({ a: "b", c: 1, d: null });
         expect(input.data("a3")).toBe("1=2=3");
         expect(input.data("a4")).toBe("/url?q=:q");
-
-        expect(links.data("test")).toEqual(["1", "2", "3"]);
     });
 
     it("should return reference to 'this' when called with 2 arguments", function() {
