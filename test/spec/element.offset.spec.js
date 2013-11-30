@@ -9,17 +9,14 @@ describe("offset", function() {
         link = DOM.find("#test");
     });
 
-    it("should return object with valid left, right, top, bottom properties", function() {
+    it("should return object with valid properties", function() {
         var offset = link.offset();
 
         expect(offset).toBeDefined();
         expect(offset.left).toBeLessThan(offset.right);
         expect(offset.top).toBeLessThan(offset.bottom);
-    });
-
-    it("should have width and height calculated based on offset", function() {
-        expect(link.width()).toBe(link._node.offsetWidth);
-        expect(link.height()).toBe(link._node.offsetHeight);
+        expect(offset.width).toBe(offset.right - offset.left);
+        expect(offset.height).toBe(offset.bottom - offset.top);
     });
 
     it("should not change offsets when window is scrolling", function() {

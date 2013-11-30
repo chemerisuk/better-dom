@@ -1,8 +1,8 @@
 var $Element = require("./element"),
     documentElement = document.documentElement;
 /**
- * Calculates offset of current context
- * @return {{top: Number, left: Number, right: Number, bottom: Number}} offset object
+ * Calculates offset of the current element
+ * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
     if (!this._node) return;
@@ -17,22 +17,8 @@ $Element.prototype.offset = function() {
         top: boundingRect.top + scrollTop - clientTop,
         left: boundingRect.left + scrollLeft - clientLeft,
         right: boundingRect.right + scrollLeft - clientLeft,
-        bottom: boundingRect.bottom + scrollTop - clientTop
+        bottom: boundingRect.bottom + scrollTop - clientTop,
+        width: boundingRect.right - boundingRect.left,
+        height: boundingRect.bottom - boundingRect.top
     };
-};
-
-/**
- * Calculate element's width in pixels
- * @return {Number} element width in pixels
- */
-$Element.prototype.width = function() {
-    return this.get("offsetWidth");
-};
-
-/**
- * Calculate element's height in pixels
- * @return {Number} element height in pixels
- */
-$Element.prototype.height = function() {
-    return this.get("offsetHeight");
 };
