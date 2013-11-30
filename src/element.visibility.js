@@ -24,7 +24,7 @@ var _ = require("./utils"),
     };
 
 /**
- * Show element
+ * Show element with optional delay
  * @param {Number} [delay=0] time in miliseconds to wait
  * @return {$Element}
  * @function
@@ -32,7 +32,7 @@ var _ = require("./utils"),
 $Element.prototype.show = makeVisibilityMethod("show");
 
 /**
- * Hide element
+ * Hide element with optional delay
  * @param {Number} [delay=0] time in miliseconds to wait
  * @return {$Element}
  * @function

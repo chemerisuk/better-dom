@@ -6,7 +6,7 @@ var _ = require("./utils"),
 /**
  * Set property/attribute value by name
  * @param {String}           [name]  property/attribute name
- * @param {String|Function}  value   property/attribute value
+ * @param {String|Function}  value   property/attribute value or function that returns it
  * @return {$Element}
  * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
  */

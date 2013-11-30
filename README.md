@@ -18,6 +18,8 @@
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)
 * [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/3)
 * [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/3)
+* [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation)
+* [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/2)
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
