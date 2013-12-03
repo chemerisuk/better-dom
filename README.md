@@ -11,8 +11,8 @@
 * [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
-* [css3 animations support](http://jsfiddle.net/C3WeM/)
-* cross-browser `input` event
+* [css3 animations support](http://jsfiddle.net/C3WeM/2/)
+* [DOM level 4 mutation methods support](https://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#mutation-methods)
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)
