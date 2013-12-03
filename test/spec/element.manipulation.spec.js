@@ -90,10 +90,12 @@ describe("manipulation", function() {
 
         it("should accept multiple arguments", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
-                expect(div[strategy](createDivHtml(strategy), createDivEmmet(strategy))).toBe(div);
-                expect(checkMethod(div)._node).toHaveClass(strategy);
+                expect(div[strategy](createDivHtml(strategy + 1), createDivEmmet(strategy + 2))).toBe(div);
+
+                expect(checkMethod(div)._node).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
                 checkMethod(div).remove();
-                expect(checkMethod(div)._node).toHaveClass(strategy);
+                expect(checkMethod(div)._node).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 2 : 1));
+                checkMethod(div).remove();
             });
         });
 
