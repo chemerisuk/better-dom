@@ -7,12 +7,11 @@
 * compact size (~29kb minified and ~6kb gzipped)
 * clean, standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
-* [smarter getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
-* [event handling best practices](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
+* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
+* [better event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [css3 animations support](http://jsfiddle.net/C3WeM/2/)
-* [DOM level 4 mutation methods support](https://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#mutation-methods)
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)

@@ -51,7 +51,7 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
         throw _.makeError("on", this);
     }
 
-    return _.legacy(this, function(node, el) {
+    return this.legacy(function(node, el) {
         var hook, handler;
 
         if (once) {

@@ -16,7 +16,7 @@ $Element.prototype.set = function(name, value) {
         originalValue = value,
         nameType = typeof name;
 
-    return _.legacy(this, function(node, el, index) {
+    return this.legacy(function(node, el, index) {
         var hook;
 
         name = originalName;

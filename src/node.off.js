@@ -18,7 +18,7 @@ $Node.prototype.off = function(type, context, callback) {
         context = !callback ? undefined : this;
     }
 
-    return _.legacy(this, function(node, el) {
+    return this.legacy(function(node, el) {
         _.forEach(el._listeners, function(handler, index, events) {
             if (handler && type === handler.type && (!context || context === handler.context) && (!callback || callback === handler.callback)) {
                 type = handler._type || handler.type;
