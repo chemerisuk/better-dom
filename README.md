@@ -66,7 +66,7 @@ IE requires that the HTC file must be in the same domain with as the HTML page w
 
 ## Browser support
 * Chrome
-* Safari 5.2.2+
+* Safari 6.0+
 * Firefox 16+
 * Opera 12.10+
 * IE8+

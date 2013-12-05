@@ -108,21 +108,8 @@ module.exports = {
             return fragment;
         };
     })(),
-    requestAnimationFrame: (function() {
-        var lastTime = 0;
-
-        return window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-            window.webkitRequestAnimationFrame || function(callback) {
-            var currTime = new Date().getTime(),
-                timeToCall = Math.max(0, 16 - (currTime - lastTime));
-
-            lastTime = currTime + timeToCall;
-
-            if (timeToCall) {
-                setTimeout(callback, timeToCall);
-            } else {
-                callback(currTime + timeToCall);
-            }
-        };
-    }())
+    requestAnimationFrame: window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame
 };
