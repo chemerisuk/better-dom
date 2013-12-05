@@ -5,7 +5,6 @@ var _ = require("./utils"),
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-// TODO: disallow to use buggy selectors?
 var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
@@ -21,17 +20,17 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 
     var node = this._node,
         quickMatch = rquickExpr.exec(selector),
-        m, elements, old, nid, context;
+        elements, old, nid, context;
 
     if (!node) return new $Element();
 
     if (quickMatch) {
-        // Speed-up: "TAG"
         if (quickMatch[1]) {
+            // speed-up: "TAG"
             elements = node.getElementsByTagName(selector);
-        // Speed-up: ".CLASS"
-        } else if (m = quickMatch[2]) {
-            elements = node.getElementsByClassName(m);
+        } else {
+            // speed-up: ".CLASS"
+            elements = node.getElementsByClassName(quickMatch[2]);
         }
 
         if (elements && !multiple) elements = elements[0];
