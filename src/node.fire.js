@@ -32,7 +32,7 @@ $Node.prototype.fire = function(type) {
 
             canContinue = node.dispatchEvent(e);
         } else {
-            isCustomEvent = handler.custom || !("on" + type in node);
+            isCustomEvent = type === "submit" || !("on" + type in node);
             e = document.createEventObject();
             // store original event type
             e.srcUrn = isCustomEvent ? type : undefined;
