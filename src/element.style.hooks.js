@@ -6,7 +6,7 @@ var _ = require("./utils"),
     directions = ["Top", "Right", "Bottom", "Left"],
     computed = _.getComputedStyle(document.documentElement),
     // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
-    props = computed.length ? _.slice(computed) : _.map(_.keys(computed), function(key) {
+    props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
         return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
     });
 

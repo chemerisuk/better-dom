@@ -48,7 +48,7 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
 $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
     className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
 
-    this._node.className = _.trim(className);
+    this._node.className = className.trim();
 });
 
 /**

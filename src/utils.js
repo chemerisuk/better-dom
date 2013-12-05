@@ -25,13 +25,6 @@ var DOM = require("./dom"),
     })();
 
 module.exports = {
-    trim: (function() {
-        var reTrim = /^\s+|\s+$/g;
-
-        return function(str) {
-            return String.prototype.trim ? str.trim() : str.replace(reTrim, "");
-        };
-    }()),
     makeError: function(method, el) {
         var type = el === DOM ? "DOM" : "$Element";
 
@@ -40,32 +33,11 @@ module.exports = {
 
     // OBJECT UTILS
 
-    forOwn: (function() {
-        if (Object.keys) {
-            return makeLoopMethod({
-                BEFORE: "var keys = Object.keys(a), k",
-                COUNT:  "keys.length",
-                BODY:   "k = keys[i]; cb.call(that, a[k], k, a)"
-            });
-        } else {
-            return function(obj, callback, thisPtr) {
-                for (var prop in obj) {
-                    if (Object.prototype.hasOwnProperty.call(obj, prop)) callback.call(thisPtr, obj[prop], prop, obj);
-                }
-            };
-        }
-    }()),
-    keys: Object.keys || (function() {
-        var collectKeys = function(value, key) { this.push(key); };
-
-        return function(obj) {
-            var result = [];
-
-            this.forOwn(obj, collectKeys, result);
-
-            return result;
-        };
-    }()),
+    forOwn: makeLoopMethod({
+        BEFORE: "var keys = Object.keys(a), k",
+        COUNT:  "keys.length",
+        BODY:   "k = keys[i]; cb.call(that, a[k], k, a)"
+    }),
     extend: function(obj, mixins) {
         this.forOwn(mixins || {}, function(value, key) { obj[key] = value });
 
@@ -114,9 +86,6 @@ module.exports = {
     }),
     slice: function(list, index) {
         return Array.prototype.slice.call(list, index | 0);
-    },
-    isArray: Array.isArray || function(obj) {
-        return Object.prototype.toString.call(obj) === "[object Array]";
     },
 
     // DOM UTILS

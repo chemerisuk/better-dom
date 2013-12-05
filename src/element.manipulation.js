@@ -15,7 +15,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 if (typeof arg === "function") arg = arg(el, index);
 
                 if (typeof arg === "string") {
-                    html += _.trim(DOM.template(arg));
+                    html += DOM.template(arg).trim();
                 } else if (arg instanceof $Element) {
                     if (html) {
                         html = _.parseFragment(html);

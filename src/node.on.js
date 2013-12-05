@@ -38,7 +38,7 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
             props = undefined;
         }
     } else if (eventType === "object") {
-        if (_.isArray(type)) {
+        if (Array.isArray(type)) {
             args = _.slice(arguments, 1);
 
             _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
