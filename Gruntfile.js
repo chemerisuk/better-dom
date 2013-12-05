@@ -155,6 +155,21 @@ module.exports = function(grunt) {
                         "bower_components/html5shiv/src/html5shiv.js",
                         "bower_components/es5-shim/es5-shim.js"
                     ]
+                },
+                options: {
+                    postBundleCB: function(err, src, next) {
+                        // append copyrights header
+                        next(err, grunt.template.process(
+                            "/**\n" +
+                            " * @file <%= pkg.name %>-legacy.js\n" +
+                            " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
+                            " * @overview <%= pkg.description %>\n" +
+                            " * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>\n" +
+                            " * @license <%= pkg.license %>\n" +
+                            " * @see <%= pkg.repository.url %>\n" +
+                            " */\n" +
+                        src));
+                    }
                 }
             },
             compile: {
@@ -168,7 +183,7 @@ module.exports = function(grunt) {
                         // append copyrights header
                         next(err, grunt.template.process(
                             "/**\n" +
-                            " * @file <%= pkg.name %>\n" +
+                            " * @file <%= pkg.name %>.js\n" +
                             " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
                             " * @overview <%= pkg.description %>\n" +
                             " * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>\n" +
