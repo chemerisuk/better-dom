@@ -1,6 +1,10 @@
 describe("ready", function(){
     "use strict";
 
+    var done1, done2, index = 0;
+
+    DOM.ready(function() { done1 = ++index });
+    DOM.ready(function() { done2 = ++index });
     // FIXME: find a way to test without exception in browser
     // it("should trigger callbacks if DOM is ready", function(){
     //     var spy1 = jasmine.createSpy("callback1"),
@@ -18,6 +22,12 @@ describe("ready", function(){
     //         expect(spy2.callCount).toBe(1);
     //     });
     // });
+
+    it("should execute callbacks when DOM is ready", function() {
+        expect(done1).toBeTruthy();
+        expect(done2).toBeTruthy();
+        expect(done1 < done2).toBeTruthy();
+    });
 
     it("should call callback asynchronously after DOMContentLoaded", function() {
         var spy = jasmine.createSpy("callback");

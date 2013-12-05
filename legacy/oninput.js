@@ -9,7 +9,7 @@ var capturedNode, capturedNodeValue,
         }
     };
 
-if (document.createElement("input").oninput) {
+if (document.createElement("input").oninput === null) {
     // IE9 doesn't fire oninput when text is deleted, so use
     // legacy onselectionchange event to detect such cases
     // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html

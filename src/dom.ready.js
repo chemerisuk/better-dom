@@ -7,7 +7,7 @@ var _ = require("./utils"),
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, function(callback) { setTimeout(callback, 0) });
+    _.forEach(readyCallbacks, setTimeout);
     // cleanup
     readyCallbacks = null;
 
