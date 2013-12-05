@@ -4,7 +4,7 @@
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
-* compact size (~29kb minified and ~6kb gzipped)
+* compact size (~27kb minified and ~6kb gzipped)
 * clean, standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
@@ -54,9 +54,9 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
 
 ## Notes about old IEs
-For IE8-9 support you have to incude conditional comment with 2 extra elements above into `<head>`. The excellent [html5shiv](https://github.com/aFarkas/html5shiv) provides the fix for new HTML5 tags and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions. Theses projects are bundled into **better-dom-legacy.js** with other necessary fixes.
+For IE8-9 support you have to incude the conditional comment above with 2 extra elements into `<head>`. The excellent [html5shiv](https://github.com/aFarkas/html5shiv) provides fix for new HTML5 tags and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions. These projects are bundled into **better-dom-legacy.js** with other fixes.
 
-The **better-dom-legacy.htc** file hepls to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This applies several important limitations that you must if legacy browser support is required.
+The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
 
 #### Setup content-type header
 HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.
