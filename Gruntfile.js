@@ -107,7 +107,7 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     "dist/<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
-                    "dist/<%= pkg.name %>.htc": ["extra/<%= pkg.name %>.htc"]
+                    "dist/<%= pkg.name %>-legacy.js": ["build/<%= pkg.name %>-legacy.js"],
                 }
             },
             readme: {
