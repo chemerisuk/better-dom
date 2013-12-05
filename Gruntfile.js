@@ -227,7 +227,7 @@ module.exports = function(grunt) {
 
             json.version = version;
 
-            grunt.file.write(filename, JSON.stringify(json, null, 4));
+            grunt.file.write(filename, JSON.stringify(json, null, 2));
         });
 
         grunt.registerTask("bumpDocsBuild", function () {

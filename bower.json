@@ -10,7 +10,8 @@
         ".*",
         "test",
         "src",
-        "extra"
+        "extra",
+        "legacy"
     ],
     "devDependencies": {
         "jquery": "latest",
