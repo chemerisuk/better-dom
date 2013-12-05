@@ -148,6 +148,14 @@ module.exports = function(grunt) {
             }
         },
         browserify: {
+            legacy: {
+                files: {
+                    "build/better-dom-legacy.js": [
+                        "bower_components/html5shiv/src/html5shiv.js",
+                        "bower_components/es5-shim/es5-shim.js"
+                    ]
+                }
+            },
             compile: {
                 files: {
                     "build/better-dom.js": ["src/*.js"]

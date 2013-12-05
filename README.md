@@ -11,7 +11,7 @@
 * [better event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
-* [css3 animations support](http://jsfiddle.net/C3WeM/2/)
+* [css3 animations support](http://jsfiddle.net/C3WeM/4/)
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)
@@ -33,8 +33,8 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 <head>
     ...
     <!--[if IE]>
-        <link href="bower_components/better-dom/dist/better-dom.htc" rel="htc"/>
-        <script src="bower_components/html5shiv/dist/html5shiv.js"></script>
+        <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
+        <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
     <![endif]-->
 </head>
 <body>
