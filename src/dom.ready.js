@@ -2,16 +2,13 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     features = require("./features"),
     readyCallbacks = [],
-    readyState = document.readyState,
-    isTop, testDiv, scrollIntervalId;
+    readyState = document.readyState;
 
 function pageLoaded() {
     // safely trigger callbacks
     _.forEach(readyCallbacks, setTimeout);
     // cleanup
     readyCallbacks = null;
-
-    if (scrollIntervalId) clearInterval(scrollIntervalId);
 }
 
 if (features.DOM2_EVENTS) {
@@ -19,23 +16,11 @@ if (features.DOM2_EVENTS) {
     window.addEventListener("load", pageLoaded, false);
 } else {
     window.attachEvent("onload", pageLoaded);
-
-    testDiv = document.createElement("div");
-    try {
-        isTop = window.frameElement === null;
-    } catch (e) {}
-
-    // DOMContentLoaded approximation that uses a doScroll, as found by
-    // Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-    // but modified by other contributors, including jdalton
-    if (testDiv.doScroll && isTop && window.external) {
-        scrollIntervalId = setInterval(function () {
-            try {
-                testDiv.doScroll();
-                pageLoaded();
-            } catch (e) {}
-        }, 30);
-    }
+    document.attachEvent("ondataavailable", function() {
+        if (window.event.srcUrn === "DOMContentLoaded") {
+            pageLoaded();
+        }
+    });
 }
 
 // Catch cases where ready is called after the browser event has already occurred.
