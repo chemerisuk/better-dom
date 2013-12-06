@@ -17,7 +17,7 @@ describe("set", function() {
     });
 
     it("should update an appropriate native object attribute", function() {
-        expect(link.set("data-test", "t")._node).toHaveAttr("data-test", "t");
+        expect(link.set("data-test", "t")).toHaveAttrEx("data-test", "t");
         inputs.set("name", "abc").legacy(function(node) {
             expect(node.name).toBe("abc");
         });
@@ -26,30 +26,30 @@ describe("set", function() {
     it("should try to update an appropriate native object property first", function() {
         link.set("href", "#test");
 
-        expect(link._node).toHaveAttr("href", "#test");
+        expect(link).toHaveAttrEx("href", "#test");
         expect(link._node.href).not.toEqual("#");
     });
 
     it("should remove attribute if value is null or undefined", function() {
-        expect(link.set("id", null)._node).not.toHaveAttr("id");
-        expect(link.set("href", undefined)._node).not.toHaveAttr("href");
+        expect(link.set("id", null)).not.toHaveAttrEx("id");
+        expect(link.set("href", undefined)).not.toHaveAttrEx("href");
 
-        expect(link.set(null)._node.innerHTML).toBe("");
+        expect(link.set(null)).toHaveHtmlEx("");
         expect(link.set("12345")._node.innerHTML).not.toBe("");
-        expect(link.set(undefined)._node.innerHTML).toBe("");
+        expect(link.set(undefined)).toHaveHtmlEx("");
     });
 
     it("should accept primitive types", function() {
-        expect(link.set(1)._node.innerHTML).toBe("1");
-        expect(link.set(true)._node.innerHTML).toBe("true");
+        expect(link.set(1)).toHaveHtmlEx("1");
+        expect(link.set(true)).toHaveHtmlEx("true");
     });
 
 
     // it("should accept space-separated property names", function() {
     //     link.set("id href", "changed");
 
-    //     expect(link._node).toHaveId("changed");
-    //     expect(link._node).toHaveAttr("href", "changed");
+    //     expect(link).toHaveIdEx("changed");
+    //     expect(link).toHaveAttrEx("href", "changed");
     // });
 
     it("should accept function", function() {
@@ -62,14 +62,14 @@ describe("set", function() {
         });
 
         expect(spy).toHaveBeenCalledWith(link, 0);
-        expect(link._node).toHaveAttr("id", "test_changed");
+        expect(link).toHaveAttrEx("id", "test_changed");
     });
 
     it("should accept object with key-value pairs", function() {
         link.set({"data-test1": "test1", "data-test2": "test2"});
 
-        expect(link._node).toHaveAttr("data-test1", "test1");
-        expect(link._node).toHaveAttr("data-test2", "test2");
+        expect(link).toHaveAttrEx("data-test1", "test1");
+        expect(link).toHaveAttrEx("data-test2", "test2");
     });
 
     it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
@@ -78,7 +78,7 @@ describe("set", function() {
         link.set(value);
         input.set(value);
 
-        expect(link._node.innerHTML).toBe(value);
+        expect(link).toHaveHtmlEx(value);
         expect(input._node.value).toBe(value);
 
         inputs.set("qqq").legacy(function(node) {

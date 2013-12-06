@@ -19,20 +19,20 @@ describe("traversing", function() {
                     };
 
                 _forIn(expectedResults, function(tagName, methodName) {
-                    expect(link[methodName]()._node).toHaveTag(tagName);
+                    expect(link[methodName]()).toHaveTagEx(tagName);
                 });
             });
 
             it("should search for the first matching element if selector exists", function() {
-                expect(link.next("i")._node).toHaveTag("i");
-                expect(link.prev("b")._node).toHaveTag("b");
-                expect(link.parent("body")._node).toHaveTag("body");
+                expect(link.next("i")).toHaveTagEx("i");
+                expect(link.prev("b")).toHaveTagEx("b");
+                expect(link.parent("body")).toHaveTagEx("body");
             });
         });
 
         describe("child", function() {
             it("should accept optional filter", function() {
-                expect(link.child(0)._node).toHaveTag("strong");
+                expect(link.child(0)).toHaveTagEx("strong");
                 expect(link.child(0, "a")._node).toBeFalsy();
             });
 
@@ -66,7 +66,7 @@ describe("traversing", function() {
                 },
                 isOK = function(methodName) {
                     return function(el, index) {
-                        expect(el._node).toHaveTag(expectedResults[methodName][index]);
+                        expect(el).toHaveTagEx(expectedResults[methodName][index]);
                     };
                 };
 
@@ -85,7 +85,7 @@ describe("traversing", function() {
                 },
                 haveTag = function(tagName) {
                     return function(el) {
-                        expect(el._node).toHaveTag(tagName);
+                        expect(el).toHaveTagEx(tagName);
                     };
                 };
 

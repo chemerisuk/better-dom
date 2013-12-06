@@ -39,7 +39,7 @@ describe("on", function() {
 
     it("should fix target in case of event filter", function() {
         spy.andCallFake(function(target) {
-            expect(target._node).toHaveTag("a");
+            expect(target).toHaveTagEx("a");
 
             return false;
         });

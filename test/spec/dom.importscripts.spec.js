@@ -12,7 +12,7 @@ describe("DOM.importScripts", function() {
         var spy = jasmine.createSpy("callback");
 
         bodySpy.andCallFake(function(el) {
-            expect(el).toHaveTag("script");
+            expect(el.tagName.toLowerCase()).toBe("script");
             expect(el.src).toBe("http://test/url");
             expect(typeof el.onload).toBe("function");
             // trigger fake onload
@@ -29,7 +29,7 @@ describe("DOM.importScripts", function() {
             index = 1;
 
         bodySpy.andCallFake(function(el) {
-            expect(el).toHaveTag("script");
+            expect(el.tagName.toLowerCase()).toBe("script");
             expect(el.src).toBe("http://test/" + index++);
             expect(typeof el.onload).toBe("function");
             // trigger fake onload

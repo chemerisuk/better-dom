@@ -15,21 +15,21 @@ describe("clone", function() {
 
         setFixtures(clone._node);
 
-        expect(clone._node).not.toBe(link._node);
-        expect(clone._node).toHaveTag("a");
-        expect(clone._node).toHaveId("link");
+        expect(clone).not.toBe(link);
+        expect(clone).toHaveTagEx("a");
+        expect(clone).toHaveIdEx("link");
 
-        expect(child._node).not.toBe(link.child(0)._node);
-        expect(child._node).toHaveTag("input");
-        expect(child._node).toHaveId("input");
+        expect(child).not.toBe(link.child(0));
+        expect(child).toHaveTagEx("input");
+        expect(child).toHaveIdEx("input");
     });
 
     it("should allow to do a shallow copy", function() {
         var clone = link.clone(false);
 
-        expect(clone._node).not.toBe(link._node);
-        expect(clone._node).toHaveTag("a");
-        expect(clone._node).toHaveId("link");
+        expect(clone).not.toBe(link);
+        expect(clone).toHaveTagEx("a");
+        expect(clone).toHaveIdEx("link");
 
         expect(clone.children().length).toBe(0);
     });

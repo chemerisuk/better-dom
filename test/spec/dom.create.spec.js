@@ -6,7 +6,7 @@ describe("create", function() {
 
         setFixtures(link._node);
 
-        expect(link._node).toHaveTag("a");
+        expect(link).toHaveTagEx("a");
         expect(link.get("id")).toBe("b");
         expect(link.get("title")).toBe("c");
     });
@@ -16,7 +16,7 @@ describe("create", function() {
 
         setFixtures(el._node);
 
-        expect(el._node).toHaveTag("em");
+        expect(el).toHaveTagEx("em");
     });
 
     it("should parse HTML strings", function() {
@@ -24,8 +24,8 @@ describe("create", function() {
 
         setFixtures(el._node);
 
-        expect(el._node).toHaveTag("a");
-        expect(el.child(0)._node).toHaveTag("span");
+        expect(el).toHaveTagEx("a");
+        expect(el.child(0)).toHaveTagEx("span");
 
         expect(DOM.create("<b></b><a></a>").length).toBe(2);
     });
@@ -33,10 +33,8 @@ describe("create", function() {
     it("should trim inner html strings", function() {
         var el = DOM.create("   <a><span></span></a>  ");
 
-        el.legacy(function(node) {
-            expect(node).toHaveTag("a");
-            expect(node.firstChild).toHaveTag("span");
-        });
+        expect(el).toHaveTagEx("a");
+        expect(el.child(0)).toHaveTagEx("span");
     });
 
     it("should parse emmet-like expressions", function() {
@@ -44,15 +42,15 @@ describe("create", function() {
 
         setFixtures(el._node);
 
-        expect(el._node).toHaveTag("ul");
-        expect(el.child(0)._node).toHaveTag("li");
+        expect(el).toHaveTagEx("ul");
+        expect(el.child(0)).toHaveTagEx("li");
     });
 
     it("should wrap element to div if HTML string has several root nodes", function() {
         var el = DOM.create("<a></a><b></b>");
 
-        expect(el[0]._node).toHaveTag("a");
-        expect(el[1]._node).toHaveTag("b");
+        expect(el[0]).toHaveTagEx("a");
+        expect(el[1]).toHaveTagEx("b");
     });
 
     it("should throw error if argument is invalid", function() {

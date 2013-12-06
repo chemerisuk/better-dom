@@ -45,7 +45,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtml(strategy);
 
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
             });
         });
 
@@ -53,7 +53,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtmlWhitespaced(strategy);
 
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
             });
         });
 
@@ -61,7 +61,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = function() { return createDivHtml(strategy); };
 
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
             });
         });
 
@@ -71,12 +71,12 @@ describe("manipulation", function() {
                 var arg = DOM.create(createDivHtml(strategy)),
                     otherDiv = DOM.create("div");
 
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
 
                 otherDiv.set("<section>This <mark>highlighted</mark>?</section>");
 
-                expect(checkMethod(div[strategy](otherDiv))._node).toHaveTag("div");
-                expect(otherDiv.find("section")._node).toHaveTag("section");
+                expect(checkMethod(div[strategy](otherDiv))).toHaveTagEx("div");
+                expect(otherDiv.find("section")).toHaveTagEx("section");
             });
         });
 
@@ -84,7 +84,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivEmmet(strategy);
 
-                expect(checkMethod(div[strategy](arg))._node).toHaveClass(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
             });
         });
 
@@ -92,9 +92,9 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 expect(div[strategy](createDivHtml(strategy + 1), createDivEmmet(strategy + 2))).toBe(div);
 
-                expect(checkMethod(div)._node).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
+                expect(checkMethod(div)).toHaveClassEx(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
                 checkMethod(div).remove();
-                expect(checkMethod(div)._node).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 2 : 1));
+                expect(checkMethod(div)).toHaveClassEx(strategy + (strategy === "prepend" || strategy === "after" ? 2 : 1));
                 checkMethod(div).remove();
             });
         });
@@ -122,8 +122,8 @@ describe("manipulation", function() {
         it("should work properly on detached elements", function() {
             div.remove();
 
-            expect(div.append(createDivHtml("append")).child(-1)._node).toHaveClass("append");
-            expect(div.prepend(createDivHtml("prepend")).child(0)._node).toHaveClass("prepend");
+            expect(div.append(createDivHtml("append")).child(-1)).toHaveClassEx("append");
+            expect(div.prepend(createDivHtml("prepend")).child(0)).toHaveClassEx("prepend");
             expect(div.after(createDivHtml("after")).next()._node).toBeUndefined();
             expect(div.before(createDivHtml("before")).prev()._node).toBeUndefined();
         });

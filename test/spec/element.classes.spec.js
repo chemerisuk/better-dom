@@ -30,27 +30,27 @@ describe("classes manipulation", function() {
         });
 
         it("should make appropriate changes with single class", function() {
-            expect(link.addClass("test2")._node).toHaveClass("test2");
-            expect(link.removeClass("test2")._node).not.toHaveClass("test2");
-            expect(link.toggleClass("test3")._node).toHaveClass("test3");
-            expect(link.toggleClass("test3")._node).not.toHaveClass("test3");
+            expect(link.addClass("test2")).toHaveClassEx("test2");
+            expect(link.removeClass("test2")).not.toHaveClassEx("test2");
+            expect(link.toggleClass("test3")).toHaveClassEx("test3");
+            expect(link.toggleClass("test3")).not.toHaveClassEx("test3");
         });
 
         it("should make appropriate changes with multiple classes", function() {
             link.addClass("test2", "test3");
 
-            expect(link._node).toHaveClass("test2");
-            expect(link._node).toHaveClass("test3");
+            expect(link).toHaveClassEx("test2");
+            expect(link).toHaveClassEx("test3");
 
             link.removeClass("test2", "test3");
 
-            expect(link._node).not.toHaveClass("test2");
-            expect(link._node).not.toHaveClass("test3");
+            expect(link).not.toHaveClassEx("test2");
+            expect(link).not.toHaveClassEx("test3");
 
             link.toggleClass("test1", "test4");
 
-            expect(link._node).not.toHaveClass("test1");
-            expect(link._node).toHaveClass("test4");
+            expect(link).not.toHaveClassEx("test1");
+            expect(link).toHaveClassEx("test4");
         });
     });
 
