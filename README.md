@@ -1,11 +1,13 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Live extension playground
 
+In jQuery there is a notion of **live events**. Behind the scenes they use event delegation to handle existing and future elements. But there are a lot of cases when more flexibility is required. For instance, if initially a widget has to create extra elements in the document tree and they should interact or replace existing ones then *live events don't work*. To solve the problem I'd like to introduce **live extensions** and better-dom - the framework for working with them.
+
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
 * compact size (~27kb minified and ~6kb gzipped)
-* clean, standards-based (if possible) APIs
+* clean, minimalistic and standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [better event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
@@ -44,7 +46,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 </html>
 ```
 
-## Usage examples
+## Projects that use better-dom
 * [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
 * [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - `input[type=date]` polyfill
 * [better-timeinput-polyfill](https://github.com/chemerisuk/better-timeinput-polyfill) - `input[type=time]` polyfill
