@@ -4,7 +4,7 @@ describe("clone", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='link'><input id='input'></a>");
+        jasmine.sandbox.set("<a id='link'><input id='input'></a>");
 
         link = DOM.find("#link");
     });
@@ -13,23 +13,23 @@ describe("clone", function() {
         var clone = link.clone(),
             child = clone.child(0);
 
-        setFixtures(clone._node);
+        jasmine.sandbox.set(clone);
 
         expect(clone).not.toBe(link);
-        expect(clone).toHaveTagEx("a");
-        expect(clone).toHaveIdEx("link");
+        expect(clone).toHaveTag("a");
+        expect(clone).toHaveId("link");
 
         expect(child).not.toBe(link.child(0));
-        expect(child).toHaveTagEx("input");
-        expect(child).toHaveIdEx("input");
+        expect(child).toHaveTag("input");
+        expect(child).toHaveId("input");
     });
 
     it("should allow to do a shallow copy", function() {
         var clone = link.clone(false);
 
         expect(clone).not.toBe(link);
-        expect(clone).toHaveTagEx("a");
-        expect(clone).toHaveIdEx("link");
+        expect(clone).toHaveTag("a");
+        expect(clone).toHaveId("link");
 
         expect(clone.children().length).toBe(0);
     });

@@ -4,7 +4,7 @@ describe("off", function() {
     var input, link, obj = {test: function() { }, test2: function() {}}, spy;
 
     beforeEach(function() {
-        setFixtures("<a id='link'><input id='input'></a>");
+        jasmine.sandbox.set("<a id='link'><input id='input'></a>");
 
         input = DOM.find("#input");
         link = DOM.find("#link");

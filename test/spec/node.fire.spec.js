@@ -4,7 +4,7 @@ describe("fire", function() {
     var input, callback;
 
     beforeEach(function() {
-        setFixtures("<input id='input'/>");
+        jasmine.sandbox.set("<input id='input'/>");
 
         input = DOM.find("#input");
 

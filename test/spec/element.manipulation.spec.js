@@ -36,7 +36,7 @@ describe("manipulation", function() {
             div;
 
         beforeEach(function() {
-            setFixtures("<div id='test'><a></a></div>");
+            jasmine.sandbox.set("<div id='test'><a></a></div>");
 
             div = DOM.find("#test");
         });
@@ -45,7 +45,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtml(strategy);
 
-                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
             });
         });
 
@@ -53,7 +53,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtmlWhitespaced(strategy);
 
-                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
             });
         });
 
@@ -61,7 +61,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = function() { return createDivHtml(strategy); };
 
-                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
             });
         });
 
@@ -71,12 +71,12 @@ describe("manipulation", function() {
                 var arg = DOM.create(createDivHtml(strategy)),
                     otherDiv = DOM.create("div");
 
-                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
 
                 otherDiv.set("<section>This <mark>highlighted</mark>?</section>");
 
-                expect(checkMethod(div[strategy](otherDiv))).toHaveTagEx("div");
-                expect(otherDiv.find("section")).toHaveTagEx("section");
+                expect(checkMethod(div[strategy](otherDiv))).toHaveTag("div");
+                expect(otherDiv.find("section")).toHaveTag("section");
             });
         });
 
@@ -84,7 +84,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivEmmet(strategy);
 
-                expect(checkMethod(div[strategy](arg))).toHaveClassEx(strategy);
+                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
             });
         });
 
@@ -92,9 +92,9 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 expect(div[strategy](createDivHtml(strategy + 1), createDivEmmet(strategy + 2))).toBe(div);
 
-                expect(checkMethod(div)).toHaveClassEx(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
+                expect(checkMethod(div)).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
                 checkMethod(div).remove();
-                expect(checkMethod(div)).toHaveClassEx(strategy + (strategy === "prepend" || strategy === "after" ? 2 : 1));
+                expect(checkMethod(div)).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 2 : 1));
                 checkMethod(div).remove();
             });
         });
@@ -122,10 +122,10 @@ describe("manipulation", function() {
         it("should work properly on detached elements", function() {
             div.remove();
 
-            expect(div.append(createDivHtml("append")).child(-1)).toHaveClassEx("append");
-            expect(div.prepend(createDivHtml("prepend")).child(0)).toHaveClassEx("prepend");
-            expect(div.after(createDivHtml("after")).next()).toBeEmptyEx();
-            expect(div.before(createDivHtml("before")).prev()).toBeEmptyEx();
+            expect(div.append(createDivHtml("append")).child(-1)).toHaveClass("append");
+            expect(div.prepend(createDivHtml("prepend")).child(0)).toHaveClass("prepend");
+            expect(div.after(createDivHtml("after")).next()).toBeEmpty();
+            expect(div.before(createDivHtml("before")).prev()).toBeEmpty();
         });
     });
 
@@ -133,7 +133,7 @@ describe("manipulation", function() {
         var div;
 
         beforeEach(function() {
-            setFixtures("<div id='test'><a></a></div>");
+            jasmine.sandbox.set("<div id='test'><a></a></div>");
 
             div = DOM.find("#test");
         });

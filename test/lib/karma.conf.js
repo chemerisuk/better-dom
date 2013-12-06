@@ -7,7 +7,6 @@ module.exports = function(config) {
         browsers: ["PhantomJS"],
         logLevel: config.LOG_DISABLE,
         files: [
-            "./test/lib/jasmine-dom/*.js",
             "./test/lib/jasmine-better-dom-matchers.js",
             "./build/better-dom.js",
             "./test/spec/*.spec.js"

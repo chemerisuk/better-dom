@@ -1,10 +1,10 @@
 describe("contains", function() {
     "use strict";
-    
+
     var testEl;
 
     beforeEach(function() {
-        setFixtures("<div id='test'><a></a><a></a></div>");
+        jasmine.sandbox.set("<div id='test'><a></a><a></a></div>");
 
         testEl = DOM.find("#test");
     });

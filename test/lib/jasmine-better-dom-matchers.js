@@ -1,27 +1,28 @@
 (function() {
-    var matchers = {
-        toHaveTagEx: function(tagName) {
+    var sandbox = document.createElement("div"),
+        matchers = {
+        toHaveTag: function(tagName) {
             if (this.actual && this.actual._node) {
                 return this.actual._node.nodeName.toLowerCase() === tagName;
             }
 
             return false;
         },
-        toHaveClassEx: function(className) {
+        toHaveClass: function(className) {
             if (this.actual && this.actual._node) {
                 return ~(" " + this.actual._node.className + " ").indexOf(" " + className + " ");
             }
 
             return false;
         },
-        toHaveIdEx: function(value) {
+        toHaveId: function(value) {
             if (this.actual && this.actual._node) {
                 return this.actual._node.id === value;
             }
 
             return false;
         },
-        toHaveAttrEx: function(name, value) {
+        toHaveAttr: function(name, value) {
             if (this.actual && this.actual._node) {
                 if (arguments.length === 1) {
                     return this.actual._node.hasAttribute(name);
@@ -32,10 +33,10 @@
 
             return false;
         },
-        toBeEmptyEx: function() {
+        toBeEmpty: function() {
             return this.actual && !this.actual._node;
         },
-        toHaveHtmlEx: function(value) {
+        toHaveHtml: function(value) {
             if (this.actual && this.actual._node) {
                 return this.actual._node.innerHTML === value;
             }
@@ -51,7 +52,29 @@
         }
     };
 
+    jasmine.sandbox = {
+        set: function(content) {
+            if (typeof content === "string") {
+                sandbox.innerHTML = content;
+            } else if (typeof content === "object") {
+                sandbox.innerHTML = "";
+                sandbox.appendChild(content._node);
+            }
+        },
+        get: function() {
+            return sandbox.innerHTML;
+        }
+    };
+
     beforeEach(function() {
         this.addMatchers(matchers);
+
+        sandbox.id = "sssss";
+
+        document.body.appendChild(sandbox);
+    });
+
+    afterEach(function() {
+        sandbox.innerHTML = "";
     });
 }());

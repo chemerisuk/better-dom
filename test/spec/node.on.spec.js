@@ -4,7 +4,7 @@ describe("on", function() {
     var link, input, form, spy;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#test'>test element<i></i></a><form id='form'><input id='input' required='required'/></form>");
+        jasmine.sandbox.set("<a id='test' href='#test'>test element<i></i></a><form id='form'><input id='input' required='required'/></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#input");
@@ -39,7 +39,7 @@ describe("on", function() {
 
     it("should fix target in case of event filter", function() {
         spy.andCallFake(function(target) {
-            expect(target).toHaveTagEx("a");
+            expect(target).toHaveTag("a");
 
             return false;
         });
@@ -80,7 +80,7 @@ describe("on", function() {
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
-            expect(relatedTarget).toBeEmptyEx();
+            expect(relatedTarget).toBeEmpty();
         });
 
         input.on("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");

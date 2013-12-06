@@ -2,7 +2,7 @@ describe("DOM.importStyles", function() {
     "use strict";
 
     it("should accept selector with style string", function() {
-        setFixtures("<a id='importStyles1'></a>");
+        jasmine.sandbox.set("<a id='importStyles1'></a>");
 
         var link = DOM.find("#importStyles1");
 
@@ -12,7 +12,7 @@ describe("DOM.importStyles", function() {
     });
 
     it("should accept selector with style object", function() {
-        setFixtures("<a id='importStyles2'></a>");
+        jasmine.sandbox.set("<a id='importStyles2'></a>");
 
         var link = DOM.find("#importStyles2");
 
@@ -22,7 +22,7 @@ describe("DOM.importStyles", function() {
     });
 
     it("should handle vendor prefixed properties", function() {
-        setFixtures("<a id='importStyles3'></a>");
+        jasmine.sandbox.set("<a id='importStyles3'></a>");
 
         var link = DOM.find("#importStyles3");
 

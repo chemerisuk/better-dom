@@ -4,7 +4,7 @@ describe("get", function() {
     var link, input, textarea, form;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='email' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
+        jasmine.sandbox.set("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='email' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");

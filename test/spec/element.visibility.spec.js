@@ -4,7 +4,7 @@ describe("visibility", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='vis'>123</a>");
+        jasmine.sandbox.set("<a id='vis'>123</a>");
 
         link = DOM.find("#vis");
     });

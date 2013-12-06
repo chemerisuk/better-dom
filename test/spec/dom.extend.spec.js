@@ -9,7 +9,7 @@ describe("extend", function() {
     });
 
     it("should execute contructor for each element", function() {
-        setFixtures("<a class='watch'></a><span class='watch'></span><b class='watch'></b>");
+        jasmine.sandbox.set("<a class='watch'></a><span class='watch'></span><b class='watch'></b>");
 
         callback.andCallFake(function() {
             expect(this).toBeDefined();
@@ -27,7 +27,7 @@ describe("extend", function() {
         DOM.extend(".watch1", callback);
 
         runs(function() {
-            setFixtures("<a class='watch1'></a><span class='watch1'></span>");
+            jasmine.sandbox.set("<a class='watch1'></a><span class='watch1'></span>");
         });
 
         waitsFor(function() {
@@ -58,7 +58,7 @@ describe("extend", function() {
         var spy = jasmine.createSpy("callback2"),
             cls = "ext" + new Date().getTime();
 
-        setFixtures("<a class=" + cls + "></a><b class=" + cls + "></b>");
+        jasmine.sandbox.set("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
         DOM.extend("." + cls, callback);
         DOM.extend("." + cls, spy);
@@ -72,7 +72,7 @@ describe("extend", function() {
         var spy = jasmine.createSpy("callback2"),
             cls = "ext" + new Date().getTime();
 
-        setFixtures("<a class=" + cls + "></a><b class=" + cls + "></b>");
+        jasmine.sandbox.set("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
         DOM.extend("." + cls, callback);
         DOM.extend("b", spy);
@@ -86,7 +86,7 @@ describe("extend", function() {
         var spy1 = jasmine.createSpy("spy1"),
             spy2 = jasmine.createSpy("spy2");
 
-        setFixtures("<form id='watch7'><input id='watch8'/></form>");
+        jasmine.sandbox.set("<form id='watch7'><input id='watch8'/></form>");
 
         // FIXME: strange behavior if to reverse extend calls order
         DOM.extend("#watch8", spy2);
@@ -98,7 +98,7 @@ describe("extend", function() {
     });
 
     it("should not initialize twise after hide/show", function() {
-        setFixtures("<a class='extend01'></a>");
+        jasmine.sandbox.set("<a class='extend01'></a>");
 
         var link = DOM.find(".extend01"), calledOnce;
 
@@ -116,7 +116,7 @@ describe("extend", function() {
     });
 
     it("should not initialize twise after removing element from DOM", function() {
-        setFixtures("<a class='extend02'></a>");
+        jasmine.sandbox.set("<a class='extend02'></a>");
 
         var link = DOM.find(".extend02"), calledOnce;
 
@@ -145,7 +145,7 @@ describe("extend", function() {
         var spy = jasmine.createSpy("callback2"),
             cls = "ext" + new Date().getTime(), link;
 
-        setFixtures("<a class=" + cls + "></a>");
+        jasmine.sandbox.set("<a class=" + cls + "></a>");
 
         link = DOM.find("." + cls);
 
@@ -166,7 +166,7 @@ describe("extend", function() {
     //     DOM.extend(".watch5", callback);
     //     DOM.extend(".watch5", otherCallback);
 
-    //     setFixtures("<a class='watch5'></a>");
+    jasmine.sandbox.set("<a class='watch5'></a>");
 
     //     waitsFor(function() {
     //         return callback.callCount === 1 && otherCallback.callCount === 1;

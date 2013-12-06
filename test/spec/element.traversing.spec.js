@@ -4,7 +4,7 @@ describe("traversing", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<div><b></b><b></b><i></i><a id='test'><strong></strong><em></em></a><b></b><i></i><i></i></div>");
+        jasmine.sandbox.set("<div><b></b><b></b><i></i><a id='test'><strong></strong><em></em></a><b></b><i></i><i></i></div>");
 
         link = DOM.find("#test");
     });
@@ -19,21 +19,21 @@ describe("traversing", function() {
                     };
 
                 _forIn(expectedResults, function(tagName, methodName) {
-                    expect(link[methodName]()).toHaveTagEx(tagName);
+                    expect(link[methodName]()).toHaveTag(tagName);
                 });
             });
 
             it("should search for the first matching element if selector exists", function() {
-                expect(link.next("i")).toHaveTagEx("i");
-                expect(link.prev("b")).toHaveTagEx("b");
-                expect(link.parent("body")).toHaveTagEx("body");
+                expect(link.next("i")).toHaveTag("i");
+                expect(link.prev("b")).toHaveTag("b");
+                expect(link.parent("body")).toHaveTag("body");
             });
         });
 
         describe("child", function() {
             it("should accept optional filter", function() {
-                expect(link.child(0)).toHaveTagEx("strong");
-                expect(link.child(0, "a")).toBeEmptyEx();
+                expect(link.child(0)).toHaveTag("strong");
+                expect(link.child(0, "a")).toBeEmpty();
             });
 
             it("should throw error if the first arg is not a number", function() {
@@ -66,7 +66,7 @@ describe("traversing", function() {
                 },
                 isOK = function(methodName) {
                     return function(el, index) {
-                        expect(el).toHaveTagEx(expectedResults[methodName][index]);
+                        expect(el).toHaveTag(expectedResults[methodName][index]);
                     };
                 };
 
@@ -85,7 +85,7 @@ describe("traversing", function() {
                 },
                 haveTag = function(tagName) {
                     return function(el) {
-                        expect(el).toHaveTagEx(tagName);
+                        expect(el).toHaveTag(tagName);
                     };
                 };
 

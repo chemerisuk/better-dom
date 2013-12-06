@@ -4,7 +4,7 @@ describe("matches", function() {
     var link, input;
 
     beforeEach(function() {
-        setFixtures("<a id='is1' href='#matches' class='test1'><i></i></a><input type='checkbox' id='is2' required checked>");
+        jasmine.sandbox.set("<a id='is1' href='#matches' class='test1'><i></i></a><input type='checkbox' id='is2' required checked>");
 
         link = DOM.find("#is1");
         input = DOM.find("#is2");

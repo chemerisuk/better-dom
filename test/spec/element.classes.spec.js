@@ -4,7 +4,7 @@ describe("classes manipulation", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' class='test test1'></a>");
+        jasmine.sandbox.set("<a id='test' class='test test1'></a>");
 
         link = DOM.find("#test");
     });
@@ -30,27 +30,27 @@ describe("classes manipulation", function() {
         });
 
         it("should make appropriate changes with single class", function() {
-            expect(link.addClass("test2")).toHaveClassEx("test2");
-            expect(link.removeClass("test2")).not.toHaveClassEx("test2");
-            expect(link.toggleClass("test3")).toHaveClassEx("test3");
-            expect(link.toggleClass("test3")).not.toHaveClassEx("test3");
+            expect(link.addClass("test2")).toHaveClass("test2");
+            expect(link.removeClass("test2")).not.toHaveClass("test2");
+            expect(link.toggleClass("test3")).toHaveClass("test3");
+            expect(link.toggleClass("test3")).not.toHaveClass("test3");
         });
 
         it("should make appropriate changes with multiple classes", function() {
             link.addClass("test2", "test3");
 
-            expect(link).toHaveClassEx("test2");
-            expect(link).toHaveClassEx("test3");
+            expect(link).toHaveClass("test2");
+            expect(link).toHaveClass("test3");
 
             link.removeClass("test2", "test3");
 
-            expect(link).not.toHaveClassEx("test2");
-            expect(link).not.toHaveClassEx("test3");
+            expect(link).not.toHaveClass("test2");
+            expect(link).not.toHaveClass("test3");
 
             link.toggleClass("test1", "test4");
 
-            expect(link).not.toHaveClassEx("test1");
-            expect(link).toHaveClassEx("test4");
+            expect(link).not.toHaveClass("test1");
+            expect(link).toHaveClass("test4");
         });
     });
 

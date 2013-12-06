@@ -4,7 +4,7 @@ describe("offset", function() {
     var link;
 
     beforeEach(function() {
-        setFixtures("<a id='test' href='#'>test</a>");
+        jasmine.sandbox.set("<a id='test' href='#'>test</a>");
 
         link = DOM.find("#test");
     });

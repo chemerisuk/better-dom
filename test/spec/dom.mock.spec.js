@@ -5,7 +5,7 @@ describe("DOM.mock", function() {
         var el = DOM.mock();
 
         expect(el).toBeDefined();
-        expect(el).toBeEmptyEx();
+        expect(el).toBeEmpty();
     });
 
     it("should populate instance with extension methods", function() {
@@ -39,7 +39,7 @@ describe("DOM.mock", function() {
         var spy = jasmine.createSpy("callback2"),
             cls = "ext" + new Date().getTime(), link;
 
-        setFixtures("<a class=" + cls + "></a>");
+        jasmine.sandbox.set("<a class=" + cls + "></a>");
 
         link = DOM.find("." + cls);
 
