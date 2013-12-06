@@ -1,5 +1,5 @@
 (function() {
-    var sandbox = document.createElement("div"),
+    var sandbox = null,
         matchers = {
         toHaveTag: function(tagName) {
             if (this.actual && this.actual._node) {
@@ -66,12 +66,15 @@
         }
     };
 
+    sandbox = document.createElement("div");
+    sandbox.id = "sandbox";
+
+    window.onload = function() {
+        document.body.appendChild(sandbox);
+    };
+
     beforeEach(function() {
         this.addMatchers(matchers);
-
-        sandbox.id = "sssss";
-
-        document.body.appendChild(sandbox);
     });
 
     afterEach(function() {
