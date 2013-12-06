@@ -103,7 +103,7 @@ describe("visibility", function() {
             expect(function() { link.toggle(-10) }).toThrow();
             expect(function() { link.toggle({}) }).toThrow();
         });
-    })
+    });
 
     it("should handle unknown aria-hidden values as false", function() {
         expect(link.matches(":hidden")).toBe(false);
