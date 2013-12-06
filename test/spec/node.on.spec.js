@@ -80,7 +80,7 @@ describe("on", function() {
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
-            expect(relatedTarget._node).toBeUndefined();
+            expect(relatedTarget).toBeEmptyEx();
         });
 
         input.on("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");

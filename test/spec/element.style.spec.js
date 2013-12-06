@@ -49,15 +49,15 @@ describe("style", function() {
         });
 
         it("should set style properties", function() {
-            expect(link.style("color", "white")._node.style.color).toBe("white");
+            expect(link.style("color", "white")).toHaveStyle("color", "white");
             expect(link.style("float", "right").style("float")).toBe("right");
         });
 
         it("should support styles object", function() {
             link.style({color: "white", padding: "5px"});
 
-            expect(link._node.style.color).toBe("white");
-            expect(link._node.style.padding).toBe("5px");
+            expect(link).toHaveStyle("color", "white");
+            expect(link).toHaveStyle("padding", "5px");
         });
 
         it("should support setting of composite properties", function() {

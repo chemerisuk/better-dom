@@ -27,7 +27,7 @@ describe("set", function() {
         link.set("href", "#test");
 
         expect(link).toHaveAttrEx("href", "#test");
-        expect(link._node.href).not.toEqual("#");
+        expect(link).not.toHaveAttrEx("href", "#");
     });
 
     it("should remove attribute if value is null or undefined", function() {
@@ -35,7 +35,7 @@ describe("set", function() {
         expect(link.set("href", undefined)).not.toHaveAttrEx("href");
 
         expect(link.set(null)).toHaveHtmlEx("");
-        expect(link.set("12345")._node.innerHTML).not.toBe("");
+        expect(link.set("12345")).not.toHaveHtml("");
         expect(link.set(undefined)).toHaveHtmlEx("");
     });
 

@@ -39,6 +39,15 @@
             if (this.actual && this.actual._node) {
                 return this.actual._node.innerHTML === value;
             }
+
+            return false;
+        },
+        toHaveStyle: function(name, value) {
+            if (this.actual && this.actual._node) {
+                return this.actual._node.style[name] === value;
+            }
+
+            return false;
         }
     };
 

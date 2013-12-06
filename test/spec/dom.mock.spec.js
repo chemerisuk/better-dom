@@ -5,7 +5,7 @@ describe("DOM.mock", function() {
         var el = DOM.mock();
 
         expect(el).toBeDefined();
-        expect(el._node).toBeFalsy();
+        expect(el).toBeEmptyEx();
     });
 
     it("should populate instance with extension methods", function() {

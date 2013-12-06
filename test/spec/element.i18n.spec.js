@@ -11,7 +11,7 @@ describe("i18n", function() {
         expect(span.i18n("key")).toBe(span);
         expect(span.get("data-i18n")).toBe("key");
 
-        expect(span.i18n(null)._node.hasAttribute("data-i18n")).toBe(false);
+        expect(span.i18n(null)).not.toHaveAttrEx("data-i18n");
     });
 
     it("should set data-i18n and args", function() {

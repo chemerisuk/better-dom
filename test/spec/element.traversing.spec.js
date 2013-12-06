@@ -33,7 +33,7 @@ describe("traversing", function() {
         describe("child", function() {
             it("should accept optional filter", function() {
                 expect(link.child(0)).toHaveTagEx("strong");
-                expect(link.child(0, "a")._node).toBeFalsy();
+                expect(link.child(0, "a")).toBeEmptyEx();
             });
 
             it("should throw error if the first arg is not a number", function() {

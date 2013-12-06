@@ -124,8 +124,8 @@ describe("manipulation", function() {
 
             expect(div.append(createDivHtml("append")).child(-1)).toHaveClassEx("append");
             expect(div.prepend(createDivHtml("prepend")).child(0)).toHaveClassEx("prepend");
-            expect(div.after(createDivHtml("after")).next()._node).toBeUndefined();
-            expect(div.before(createDivHtml("before")).prev()._node).toBeUndefined();
+            expect(div.after(createDivHtml("after")).next()).toBeEmptyEx();
+            expect(div.before(createDivHtml("before")).prev()).toBeEmptyEx();
         });
     });
 
