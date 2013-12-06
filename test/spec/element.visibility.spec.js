@@ -30,6 +30,13 @@ describe("visibility", function() {
                 return link.get("aria-hidden") === "true" && (new Date() - start) >= delay;
             });
         });
+
+        it("should throw error if arguments are invalid", function() {
+            expect(function() { link.hide("123") }).toThrow();
+            expect(function() { link.hide(function() { }) }).toThrow();
+            expect(function() { link.hide(-10) }).toThrow();
+            expect(function() { link.hide(true) }).toThrow();
+        });
     });
 
     describe("show", function() {
@@ -46,41 +53,57 @@ describe("visibility", function() {
                 return link.get("aria-hidden") !== "true" && (new Date() - start) >= delay;
             });
         });
+
+        it("should throw error if arguments are invalid", function() {
+            expect(function() { link.show("123") }).toThrow();
+            expect(function() { link.show(function() { }) }).toThrow();
+            expect(function() { link.show(-10) }).toThrow();
+            expect(function() { link.show(true) }).toThrow();
+        });
     });
 
-    it("should allow to toggle visibility", function() {
-        expect(link.get("aria-hidden")).toBeFalsy();
-        expect(link.toggle().matches(":hidden")).toBe(true);
-        expect(link.toggle().matches(":hidden")).toBe(false);
-    });
-
-    it("should accept optional visible boolean argument", function() {
-        expect(link.get("aria-hidden")).toBeFalsy();
-        expect(link.toggle(true).matches(":hidden")).toBe(false);
-        expect(link.toggle(false).matches(":hidden")).toBe(true);
-    });
-
-    it("should accept optional visible functor", function() {
-        var links = DOM.create("a*3>{444}");
-
-        DOM.find("body").append(links);
-
-        links.each(function(el) {
-            expect(el.matches(":hidden")).toBe(false);
+    describe("toggle", function() {
+        it("should allow to toggle visibility", function() {
+            expect(link.get("aria-hidden")).toBeFalsy();
+            expect(link.toggle().matches(":hidden")).toBe(true);
+            expect(link.toggle().matches(":hidden")).toBe(false);
         });
 
-        links.toggle(function(el, index) {
-            expect(el).toBe(links[index]);
-
-            return false;
+        it("should accept optional visible boolean argument", function() {
+            expect(link.get("aria-hidden")).toBeFalsy();
+            expect(link.toggle(true).matches(":hidden")).toBe(false);
+            expect(link.toggle(false).matches(":hidden")).toBe(true);
         });
 
-        links.each(function(el) {
-            expect(el.matches(":hidden")).toBe(true);
+        it("should accept optional visible functor", function() {
+            var links = DOM.create("a*3>{444}");
+
+            DOM.find("body").append(links);
+
+            links.each(function(el) {
+                expect(el.matches(":hidden")).toBe(false);
+            });
+
+            links.toggle(function(el, index) {
+                expect(el).toBe(links[index]);
+
+                return false;
+            });
+
+            links.each(function(el) {
+                expect(el.matches(":hidden")).toBe(true);
+            });
+
+            links.remove();
         });
 
-        links.remove();
-    });
+        it("should throw error if arguments are invalid", function() {
+            expect(function() { link.toggle("123") }).toThrow();
+            expect(function() { link.toggle(10) }).toThrow();
+            expect(function() { link.toggle(-10) }).toThrow();
+            expect(function() { link.toggle({}) }).toThrow();
+        });
+    })
 
     it("should handle unknown aria-hidden values as false", function() {
         expect(link.matches(":hidden")).toBe(false);

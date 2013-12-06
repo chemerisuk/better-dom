@@ -24,20 +24,20 @@ module.exports = function(selector) {
         if (quick[4]) quick[4] = " " + quick[4] + " ";
     }
 
-    return function(el) {
-        if (el.nodeType !== 1) return false;
+    return function(node) {
+        if (!node || node.nodeType !== 1) return false;
 
         if (!quick) {
-            if (matchesProp) return el[matchesProp](selector);
+            if (matchesProp) return node[matchesProp](selector);
 
-            return _.some(document.querySelectorAll(selector), function(x) { return x === el });
+            return _.some(document.querySelectorAll(selector), function(x) { return x === node });
         }
 
         return (
-            (!quick[1] || el.nodeName.toLowerCase() === quick[1]) &&
-            (!quick[2] || el.id === quick[2]) &&
-            (!quick[3] || (quick[3][1] ? el.getAttribute(quick[3][0]) === quick[3][1] : el.hasAttribute(quick[3][0]))) &&
-            (!quick[4] || (" " + el.className + " ").indexOf(quick[4]) >= 0)
+            (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
+            (!quick[2] || node.id === quick[2]) &&
+            (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
+            (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
         );
     };
 };
