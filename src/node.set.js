@@ -1,5 +1,4 @@
-var _ = require("./utils"),
-    $Node = require("./node");
+var $Node = require("./node");
 
 /**
  * Set property value by name
@@ -7,8 +6,6 @@ var _ = require("./utils"),
  * @param  {String} value property value
  */
 $Node.prototype.set = function(name, value) {
-    if (typeof name !== "string" || typeof value !== "string") throw _.makeError(this, "set");
-
     this._node[name] = value;
 
     return this;

@@ -1,5 +1,4 @@
-var _ = require("./utils"),
-    $Node = require("./node");
+var $Node = require("./node");
 
 /**
  * Get property value by name
@@ -7,7 +6,5 @@ var _ = require("./utils"),
  * @return {String} property value
  */
 $Node.prototype.get = function(name) {
-    if (typeof name !== "string") throw _.makeError(this, "get");
-
     return this._node[name];
 };

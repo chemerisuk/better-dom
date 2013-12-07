@@ -114,10 +114,4 @@ describe("set", function() {
         expect(document.title).toBe("abc");
     });
 
-    it("should throw error if title is not a string", function() {
-        expect(function() { DOM.set("title"); }).toThrow();
-        expect(function() { DOM.set("title", 123); }).toThrow();
-        expect(function() { DOM.set("title", function() {}); }).toThrow();
-    });
-
 });

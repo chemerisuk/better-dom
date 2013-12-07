@@ -73,18 +73,16 @@
         }
     };
 
-    sandbox = document.createElement("div");
-    sandbox.id = "sandbox";
-
-    window.onload = function() {
-        document.body.appendChild(sandbox);
-    };
-
     beforeEach(function() {
         this.addMatchers(matchers);
+
+        sandbox = document.createElement("div");
+        sandbox.id = "sandbox" + new Date().getTime();
+
+        document.body.appendChild(sandbox);
     });
 
     afterEach(function() {
-        sandbox.innerHTML = "";
+        document.body.removeChild(sandbox);
     });
 }());

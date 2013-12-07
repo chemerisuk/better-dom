@@ -166,7 +166,7 @@ describe("extend", function() {
     //     DOM.extend(".watch5", callback);
     //     DOM.extend(".watch5", otherCallback);
 
-    jasmine.sandbox.set("<a class='watch5'></a>");
+    //     jasmine.sandbox.set("<a class='watch5'></a>");
 
     //     waitsFor(function() {
     //         return callback.callCount === 1 && otherCallback.callCount === 1;
