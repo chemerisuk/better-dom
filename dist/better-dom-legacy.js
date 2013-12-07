@@ -1,6 +1,6 @@
 /**
  * @file better-dom-legacy.js
- * @version 1.6.1 2013-12-05T22:57:05
+ * @version 1.6.2 2013-12-07T13:32:21
  * @overview Live extension playground
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -1623,40 +1623,79 @@ var toObject = function (o) {
 
 }(this, document));
 },{}],3:[function(require,module,exports){
-// input event implementation/fixes for IE8-9
+// DOMContentLoaded implementation
 
-var capturedNode, capturedNodeValue,
-    legacyEventHandler = function() {
-        if (capturedNode && capturedNode.value !== capturedNodeValue) {
-            capturedNodeValue = capturedNode.value;
-            // trigger special event that bubbles
-            DOM.create(capturedNode).fire("input");
-        }
-    };
+if (!document.addEventListener) {
+    var testDiv = document.createElement("div"),
+        isTop, scrollIntervalId, e;
 
-if (document.createElement("input").oninput) {
-    // IE9 doesn't fire oninput when text is deleted, so use
-    // legacy onselectionchange event to detect such cases
-    // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
-    document.attachEvent("onselectionchange", legacyEventHandler);
+    try {
+        isTop = window.frameElement === null;
+    } catch (ex) {}
+
+    // DOMContentLoaded approximation that uses a doScroll, as found by
+    // Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
+    // but modified by other contributors, including jdalton
+    if (testDiv.doScroll && isTop && window.external) {
+        scrollIntervalId = setInterval(function() {
+            var done = true;
+
+            try {
+                testDiv.doScroll();
+            } catch (ex) {
+                done = false;
+            }
+
+            if (done) {
+                clearInterval(scrollIntervalId);
+
+                e = document.createEventObject();
+                e.srcUrn = "DOMContentLoaded";
+
+                // use ondataavailable to notify about the event
+                document.fireEvent("ondataavailable", e);
+            }
+        }, 30);
+    }
 }
 
-// input event fix via propertychange
-document.attachEvent("onfocusin", function() {
-    var target = window.event.srcElement,
-        type = target.type;
-
-    if (capturedNode) {
-        capturedNode.detachEvent("onpropertychange", legacyEventHandler);
-        capturedNode = undefined;
-    }
-
-    if (type === "text" || type === "password" || type === "textarea") {
-        (capturedNode = target).attachEvent("onpropertychange", legacyEventHandler);
-    }
-});
-
 },{}],4:[function(require,module,exports){
+// input event implementation/fixes for IE8-9
+
+if (document.attachEvent) {
+    var capturedNode, capturedNodeValue,
+        legacyEventHandler = function() {
+            if (capturedNode && capturedNode.value !== capturedNodeValue) {
+                capturedNodeValue = capturedNode.value;
+                // trigger special event that bubbles
+                DOM.create(capturedNode).fire("input");
+            }
+        };
+
+    if (document.createElement("input").oninput === null) {
+        // IE9 doesn't fire oninput when text is deleted, so use
+        // legacy onselectionchange event to detect such cases
+        // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
+        document.attachEvent("onselectionchange", legacyEventHandler);
+    }
+
+    // input event fix via propertychange
+    document.attachEvent("onfocusin", function() {
+        var target = window.event.srcElement,
+            type = target.type;
+
+        if (capturedNode) {
+            capturedNode.detachEvent("onpropertychange", legacyEventHandler);
+            capturedNode = undefined;
+        }
+
+        if (type === "text" || type === "password" || type === "textarea") {
+            (capturedNode = target).attachEvent("onpropertychange", legacyEventHandler);
+        }
+    });
+}
+
+},{}],5:[function(require,module,exports){
 // submit event bubbling fix for IE<9
 
 var handleSubmit = function() {
@@ -1691,23 +1730,25 @@ if (!document.addEventListener) {
     });
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // requestAnimationFrame implementation
 
-var lastTime = 0;
+if (!window.requestAnimationFrame) {
+    var lastTime = 0;
 
-window.requestAnimationFrame = function(callback) {
-    var currTime = new Date().getTime(),
-        timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    window.requestAnimationFrame = function(callback) {
+        var currTime = new Date().getTime(),
+            timeToCall = Math.max(0, 16 - (currTime - lastTime));
 
-    lastTime = currTime + timeToCall;
+        lastTime = currTime + timeToCall;
 
-    if (timeToCall) {
-        setTimeout(callback, timeToCall);
-    } else {
-        callback(currTime + timeToCall);
-    }
-};
+        if (timeToCall) {
+            setTimeout(callback, timeToCall);
+        } else {
+            callback(currTime + timeToCall);
+        }
+    };
+}
 
-},{}]},{},[3,4,5,2,1])
+},{}]},{},[3,4,5,6,2,1])
 ;

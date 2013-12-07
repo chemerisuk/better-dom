@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 1.6.1 2013-12-05T22:56:01
+ * @version 1.6.2 2013-12-07T13:32:21
  * @overview Live extension playground
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -302,7 +302,7 @@ _.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.1";
+DOM.version = "1.6.2";
 
 DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
 DOM.importStyles.args = [];
@@ -345,40 +345,13 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     features = require("./features"),
     readyCallbacks = [],
-    readyState = document.readyState,
-    isTop, testDiv, scrollIntervalId;
+    readyState = document.readyState;
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, function(callback) { setTimeout(callback, 0) });
+    _.forEach(readyCallbacks, setTimeout);
     // cleanup
     readyCallbacks = null;
-
-    if (scrollIntervalId) clearInterval(scrollIntervalId);
-}
-
-if (features.DOM2_EVENTS) {
-    document.addEventListener("DOMContentLoaded", pageLoaded, false);
-    window.addEventListener("load", pageLoaded, false);
-} else {
-    window.attachEvent("onload", pageLoaded);
-
-    testDiv = document.createElement("div");
-    try {
-        isTop = window.frameElement === null;
-    } catch (e) {}
-
-    // DOMContentLoaded approximation that uses a doScroll, as found by
-    // Diego Perini: http://javascript.nwbox.com/IEContentLoaded/,
-    // but modified by other contributors, including jdalton
-    if (testDiv.doScroll && isTop && window.external) {
-        scrollIntervalId = setInterval(function () {
-            try {
-                testDiv.doScroll();
-                pageLoaded();
-            } catch (e) {}
-        }, 30);
-    }
 }
 
 // Catch cases where ready is called after the browser event has already occurred.
@@ -386,6 +359,18 @@ if (features.DOM2_EVENTS) {
 // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
 if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
     pageLoaded();
+} else {
+    if (features.DOM2_EVENTS) {
+        window.addEventListener("load", pageLoaded, false);
+        document.addEventListener("DOMContentLoaded", pageLoaded, false);
+    } else {
+        window.attachEvent("onload", pageLoaded);
+        document.attachEvent("ondataavailable", function() {
+            if (window.event.srcUrn === "DOMContentLoaded") {
+                pageLoaded();
+            }
+        });
+    }
 }
 
 /**
@@ -676,9 +661,9 @@ $Element.prototype.clone = function(deep) {
 
             if (!deep) node.innerHTML = "";
         }
-
-        return new $Element(node);
     }
+
+    return new $Element(node);
 };
 
 },{"./element":15,"./features":28,"./utils":41}],12:[function(require,module,exports){
@@ -826,7 +811,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
             });
 
             // always use _parseFragment because of HTML5 and NoScope bugs in legacy IE
-            if ((!fasterMethodName || features.CSS3_ANIMATIONS) && html) value = _.parseFragment(html);
+            if (!(fasterMethodName && features.CSS3_ANIMATIONS) && html) value = _.parseFragment(html);
 
             if (!fasterMethodName || value) {
                 strategy(node, value);
@@ -946,22 +931,22 @@ var $Element = require("./element"),
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
-    if (!this._node) return;
+    if (this._node) {
+        var boundingRect = this._node.getBoundingClientRect(),
+            clientTop = documentElement.clientTop,
+            clientLeft = documentElement.clientLeft,
+            scrollTop = window.pageYOffset || documentElement.scrollTop,
+            scrollLeft = window.pageXOffset || documentElement.scrollLeft;
 
-    var boundingRect = this._node.getBoundingClientRect(),
-        clientTop = documentElement.clientTop,
-        clientLeft = documentElement.clientLeft,
-        scrollTop = window.pageYOffset || documentElement.scrollTop,
-        scrollLeft = window.pageXOffset || documentElement.scrollLeft;
-
-    return {
-        top: boundingRect.top + scrollTop - clientTop,
-        left: boundingRect.left + scrollLeft - clientLeft,
-        right: boundingRect.right + scrollLeft - clientLeft,
-        bottom: boundingRect.bottom + scrollTop - clientTop,
-        width: boundingRect.right - boundingRect.left,
-        height: boundingRect.bottom - boundingRect.top
-    };
+        return {
+            top: boundingRect.top + scrollTop - clientTop,
+            left: boundingRect.left + scrollLeft - clientLeft,
+            right: boundingRect.right + scrollLeft - clientLeft,
+            bottom: boundingRect.bottom + scrollTop - clientTop,
+            width: boundingRect.right - boundingRect.left,
+            height: boundingRect.bottom - boundingRect.top
+        };
+    }
 };
 
 },{"./element":15}],20:[function(require,module,exports){
@@ -1163,16 +1148,16 @@ $Element.prototype.style = function(name, value) {
         style, hook;
 
     if (len === 1 && nameType === "string") {
-        if (!node) return;
+        if (node) {
+            style = node.style;
+            hook = hooks.get[name];
 
-        style = node.style;
-        hook = hooks.get[name];
-
-        value = hook ? hook(style) : style[name];
-
-        if (!value) {
-            style = _.getComputedStyle(node);
             value = hook ? hook(style) : style[name];
+
+            if (!value) {
+                style = _.getComputedStyle(node);
+                value = hook ? hook(style) : style[name];
+            }
         }
 
         return value;
@@ -1564,20 +1549,20 @@ $Node.prototype.data = function(key, value) {
 
     if (len === 1) {
         if (keyType === "string") {
-            if (!node) return;
+            if (node) {
+                value = data[key];
 
-            value = data[key];
+                if (value === undefined) {
+                    try {
+                        value = node.getAttribute("data-" + key);
+                        // parse object notation syntax
+                        if (value[0] === "{" && value[value.length - 1] === "}") {
+                            value = JSON.parse(value);
+                        }
+                    } catch (err) {}
 
-            if (value === undefined) {
-                try {
-                    value = node.getAttribute("data-" + key);
-                    // parse object notation syntax
-                    if (value[0] === "{" && value[value.length - 1] === "}") {
-                        value = JSON.parse(value);
-                    }
-                } catch (err) {}
-
-                data[key] = value;
+                    data[key] = value;
+                }
             }
 
             return value;
@@ -1823,8 +1808,7 @@ _.extend($Node.prototype, {
 });
 
 },{"./node":35,"./utils":41}],34:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node");
+var $Node = require("./node");
 
 /**
  * Get property value by name
@@ -1832,12 +1816,10 @@ var _ = require("./utils"),
  * @return {String} property value
  */
 $Node.prototype.get = function(name) {
-    if (typeof name !== "string") throw _.makeError(this, "get");
-
     return this._node[name];
 };
 
-},{"./node":35,"./utils":41}],35:[function(require,module,exports){
+},{"./node":35}],35:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -2024,8 +2006,7 @@ $Node.prototype.once = function() {
 };
 
 },{"./eventhandler":27,"./features":28,"./node":35,"./node.on.hooks":37,"./utils":41}],39:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node");
+var $Node = require("./node");
 
 /**
  * Set property value by name
@@ -2033,14 +2014,12 @@ var _ = require("./utils"),
  * @param  {String} value property value
  */
 $Node.prototype.set = function(name, value) {
-    if (typeof name !== "string" || typeof value !== "string") throw _.makeError(this, "set");
-
     this._node[name] = value;
 
     return this;
 };
 
-},{"./node":35,"./utils":41}],40:[function(require,module,exports){
+},{"./node":35}],40:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
@@ -2067,20 +2046,20 @@ module.exports = function(selector) {
         if (quick[4]) quick[4] = " " + quick[4] + " ";
     }
 
-    return function(el) {
-        if (el.nodeType !== 1) return false;
+    return function(node) {
+        if (!node || node.nodeType !== 1) return false;
 
         if (!quick) {
-            if (matchesProp) return el[matchesProp](selector);
+            if (matchesProp) return node[matchesProp](selector);
 
-            return _.some(document.querySelectorAll(selector), function(x) { return x === el });
+            return _.some(document.querySelectorAll(selector), function(x) { return x === node });
         }
 
         return (
-            (!quick[1] || el.nodeName.toLowerCase() === quick[1]) &&
-            (!quick[2] || el.id === quick[2]) &&
-            (!quick[3] || (quick[3][1] ? el.getAttribute(quick[3][0]) === quick[3][1] : el.hasAttribute(quick[3][0]))) &&
-            (!quick[4] || (" " + el.className + " ").indexOf(quick[4]) >= 0)
+            (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
+            (!quick[2] || node.id === quick[2]) &&
+            (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
+            (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
         );
     };
 };
@@ -2202,5 +2181,5 @@ module.exports = {
         window.webkitRequestAnimationFrame
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,9,10,11,12,8,13,14,15,16,17,18,19,20,21,23,22,24,25,27,26,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,10,11,9,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
 ;
