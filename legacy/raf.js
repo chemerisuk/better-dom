@@ -1,16 +1,18 @@
 // requestAnimationFrame implementation
 
-var lastTime = 0;
+if (!window.requestAnimationFrame) {
+    var lastTime = 0;
 
-window.requestAnimationFrame = function(callback) {
-    var currTime = new Date().getTime(),
-        timeToCall = Math.max(0, 16 - (currTime - lastTime));
+    window.requestAnimationFrame = function(callback) {
+        var currTime = new Date().getTime(),
+            timeToCall = Math.max(0, 16 - (currTime - lastTime));
 
-    lastTime = currTime + timeToCall;
+        lastTime = currTime + timeToCall;
 
-    if (timeToCall) {
-        setTimeout(callback, timeToCall);
-    } else {
-        callback(currTime + timeToCall);
-    }
-};
+        if (timeToCall) {
+            setTimeout(callback, timeToCall);
+        } else {
+            callback(currTime + timeToCall);
+        }
+    };
+}

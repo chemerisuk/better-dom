@@ -1,7 +1,7 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Live extension playground
 
-In jQuery there is a notion of **live events**. Behind the scenes they use event delegation to handle existing and future elements. But there are a lot of cases when more flexibility is required. For instance, if initially a widget has to create extra elements in the document tree and they should interact or replace existing ones then *live events don't work*. To solve the problem I'd like to introduce **live extensions** and better-dom - the framework for working with them.
+In jQuery there is a notion of **live events**. They allow to attach listeners on future elements but do not cover all possible cases. Therefore I'd like to introduce **live extensions** and **better-dom** - a next-level library for working with DOM.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
