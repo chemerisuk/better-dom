@@ -49,6 +49,14 @@ describe("manipulation", function() {
             });
         });
 
+        it("should accept empty string", function() {
+            var link = div.child(0);
+
+            _forIn(checkStrategies, function(checkMethod, strategy) {
+                expect(checkMethod(link[strategy](""))).toBeEmpty();
+            });
+        });
+
         it("should trim html string", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 var arg = createDivHtmlWhitespaced(strategy);

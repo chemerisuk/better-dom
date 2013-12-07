@@ -33,6 +33,13 @@
 
             return false;
         },
+        toHaveProp: function(name, value) {
+            if (this.actual && this.actual._node) {
+                return this.actual._node[name] === value;
+            }
+
+            return false;
+        },
         toBeEmpty: function() {
             return this.actual && !this.actual._node;
         },

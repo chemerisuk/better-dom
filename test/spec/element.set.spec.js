@@ -79,7 +79,7 @@ describe("set", function() {
         input.set(value);
 
         expect(link).toHaveHtml(value);
-        expect(input._node.value).toBe(value);
+        expect(input).toHaveProp("value", value);
 
         inputs.set("qqq").legacy(function(node) {
             expect(node.value).toBe("qqq");

@@ -15,16 +15,16 @@ $Element.prototype.style = function(name, value) {
         style, hook;
 
     if (len === 1 && nameType === "string") {
-        if (!node) return;
+        if (node) {
+            style = node.style;
+            hook = hooks.get[name];
 
-        style = node.style;
-        hook = hooks.get[name];
-
-        value = hook ? hook(style) : style[name];
-
-        if (!value) {
-            style = _.getComputedStyle(node);
             value = hook ? hook(style) : style[name];
+
+            if (!value) {
+                style = _.getComputedStyle(node);
+                value = hook ? hook(style) : style[name];
+            }
         }
 
         return value;

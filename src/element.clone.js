@@ -24,7 +24,7 @@ $Element.prototype.clone = function(deep) {
 
             if (!deep) node.innerHTML = "";
         }
-
-        return new $Element(node);
     }
+
+    return new $Element(node);
 };
