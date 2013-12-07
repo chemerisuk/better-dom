@@ -1,11 +1,13 @@
 &nbsp;
 > Live extension playground
 
+In jQuery there is a notion of **live events**. They allow to attach listeners on future elements but do not cover all possible cases. Therefore I'd like to introduce **live extensions** and **better-dom** - a next-level library for working with DOM.
+
 
 
 ## Features
 * compact size (~27kb minified and ~6kb gzipped)
-* clean, standards-based (if possible) APIs
+* clean, minimalistic and standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [better event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
@@ -29,7 +31,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 
 
 
-## Usage examples
+## Projects that use better-dom
 * [better-ajaxify](https://github.com/chemerisuk/better-ajaxify) - Ajax websites engine
 * [better-dateinput-polyfill](https://github.com/chemerisuk/better-dateinput-polyfill) - `input[type=date]` polyfill
 * [better-timeinput-polyfill](https://github.com/chemerisuk/better-timeinput-polyfill) - `input[type=time]` polyfill
