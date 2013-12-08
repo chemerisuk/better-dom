@@ -21,7 +21,7 @@ DOM.importStrings = function(lang, key, value) {
         // empty lang is for internal use only
         if (lang) selector += ":lang(" + lang + ")";
 
-        DOM.importStyles(selector + ":before", content, true);
+        DOM.importStyles(selector + ":before", content, !lang);
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {

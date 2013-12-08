@@ -8,21 +8,21 @@ describe("DOM.importStrings", function(){
         expect(spy).toHaveBeenCalledWith(
             "[data-i18n=\"str0\"]:lang(en):before",
             "content:\"Hello \"attr(data-user)\"!\"",
-            true
+            false
         );
 
         DOM.importStrings("en", "str1", "Hello ${user}! I'm ${friend}.");
         expect(spy).toHaveBeenCalledWith(
             "[data-i18n=\"str1\"]:lang(en):before",
             "content:\"Hello \"attr(data-user)\"! I'm \"attr(data-friend)\".\"",
-            true
+            false
         );
 
         DOM.importStrings("ru", "str3", "Hello!");
         expect(spy).toHaveBeenCalledWith(
             "[data-i18n=\"str3\"]:lang(ru):before",
             "content:\"Hello!\"",
-            true
+            false
         );
     });
 
@@ -33,12 +33,12 @@ describe("DOM.importStrings", function(){
         expect(spy).toHaveBeenCalledWith(
             "[data-i18n=\"str4\"]:lang(en):before",
             "content:\"test1\"",
-            true
+            false
         );
         expect(spy).toHaveBeenCalledWith(
             "[data-i18n=\"str5\"]:lang(en):before",
             "content:\"test2\"",
-            true
+            false
         );
     });
 

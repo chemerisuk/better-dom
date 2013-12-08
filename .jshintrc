@@ -29,7 +29,6 @@
         "describe": true,
         "it": true,
         "expect": true,
-        "setFixtures": true,
         "jasmine": true,
         "waits": true,
         "runs": true,
