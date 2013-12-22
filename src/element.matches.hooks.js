@@ -9,4 +9,6 @@ hooks[":hidden"] = function(node) {
         _.getComputedStyle(node).display === "none" || !docEl.contains(node);
 };
 
+hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
+
 module.exports = hooks;

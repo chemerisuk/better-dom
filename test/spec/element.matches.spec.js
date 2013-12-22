@@ -40,15 +40,21 @@ describe("matches", function() {
         expect(link.child(0).matches("a", true)).toBe(true);
     });
 
-    it("should support special :hidden pseudoselector", function() {
+    it("should support special :hidden and :visible pseudoselector", function() {
         expect(link.matches(":hidden")).toBe(false);
+        expect(link.matches(":visible")).toBe(true);
         expect(link.hide().matches(":hidden")).toBe(true);
+        expect(link.matches(":visible")).toBe(false);
         expect(link.show().matches(":hidden")).toBe(false);
+        expect(link.matches(":visible")).toBe(true);
 
         link.style("display", "block");
 
         expect(link.matches(":hidden")).toBe(false);
+        expect(link.matches(":visible")).toBe(true);
         expect(link.hide().matches(":hidden")).toBe(true);
+        expect(link.matches(":visible")).toBe(false);
         expect(link.show().matches(":hidden")).toBe(false);
+        expect(link.matches(":visible")).toBe(true);
     });
 });
