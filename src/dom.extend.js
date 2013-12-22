@@ -21,8 +21,8 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent("on" + type, ext.stop);
                 }
-                // return true to reduce number of unnecessary iterations
-                return !ext(el);
+
+                setTimeout(function() { ext(el) }, 0);
             }
         };
     },
@@ -41,7 +41,7 @@ if (features.CSS3_ANIMATIONS) {
 
     document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
-            _.some(extensions, makeExtHandler(e, e.target));
+            _.forEach(extensions, makeExtHandler(e, e.target));
         }
     }, false);
 } else {
@@ -55,7 +55,7 @@ if (features.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.some(extensions, makeExtHandler(e, e.srcElement));
+            _.forEach(extensions, makeExtHandler(e, e.srcElement));
         }
     });
 }

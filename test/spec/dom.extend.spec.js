@@ -4,6 +4,14 @@ describe("extend", function() {
     var WAIT_FOR_WATCH_TIME = 50,
         callback;
 
+    DOM.extend(".watch11", function() {
+        this.removeClass("watch11");
+    });
+
+    DOM.extend(".watch12", function() {
+        this.removeClass("watch12");
+    });
+
     beforeEach(function() {
         callback = jasmine.createSpy("callback");
     });
@@ -79,6 +87,18 @@ describe("extend", function() {
 
         waitsFor(function() {
             return callback.callCount === 2 && spy.callCount === 1;
+        });
+    });
+
+    it("should accept different selectors for the same element before ready", function() {
+        var el = DOM.create("div.watch11.watch12");
+
+        DOM.ready(function() {
+            jasmine.sandbox.set(el);
+        });
+
+        waitsFor(function() {
+            return !el.hasClass("watch11") && !el.hasClass("watch12");
         });
     });
 
