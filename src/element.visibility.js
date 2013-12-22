@@ -2,10 +2,9 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     features = require("./features"),
-    toggleFn = function(el) { return el.get("aria-hidden") !== "true" },
-    makeVisibilityMethod = function(name) {
+    makeVisibilityMethod = function(name, fn) {
         var createCallback = function(el) {
-                return function() { el.set("aria-hidden", name === "hide") };
+                return function() { el.set("aria-hidden", fn) };
             };
 
         return function(delay) {
@@ -19,7 +18,7 @@ var _ = require("./utils"),
                 return this;
             }
 
-            return this.set("aria-hidden", name === "hide");
+            return this.set("aria-hidden", fn);
         };
     };
 
@@ -29,7 +28,9 @@ var _ = require("./utils"),
  * @return {$Element}
  * @function
  */
-$Element.prototype.show = makeVisibilityMethod("show");
+$Element.prototype.show = makeVisibilityMethod("show", function() {
+    return false;
+});
 
 /**
  * Hide element with optional delay
@@ -37,27 +38,18 @@ $Element.prototype.show = makeVisibilityMethod("show");
  * @return {$Element}
  * @function
  */
-$Element.prototype.hide = makeVisibilityMethod("hide");
+$Element.prototype.hide = makeVisibilityMethod("hide", function() {
+    return true;
+});
 
 /**
  * Toggle element visibility
- * @param {Boolean|Function} [visible] true if the element should be visible and false otherwise
+ * @param {Number} [delay=0] time in miliseconds to wait
  * @return {$Element}
  */
-$Element.prototype.toggle = function(visible) {
-    var visibleType = typeof visible,
-        value = toggleFn;
-
-    if (visibleType === "boolean") {
-        value = !visible;
-    } else if (visibleType === "function") {
-        value = function(el, index) { return !visible(el, index) };
-    } else if (visible) {
-        throw _.makeError("toggle", this);
-    }
-
-    return this.set("aria-hidden", value);
-};
+$Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
+    return el.get("aria-hidden") !== "true";
+});
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 // pointer-events:none helps to solve accidental clicks on a hidden element

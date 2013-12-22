@@ -3,5 +3,6 @@ var doc = document,
 
 module.exports = {
     CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
-    DOM2_EVENTS: !!doc.addEventListener
+    DOM2_EVENTS: !!doc.addEventListener,
+    WEBKIT_PREFIX: window.WebKitAnimationEvent ? "-webkit-" : ""
 };

@@ -26,20 +26,19 @@ var _ = require("./utils"),
             }
         };
     },
-    animId, cssPrefix, link, styles;
+    animId, link, styles;
 
 if (features.CSS3_ANIMATIONS) {
     animId = "DOM" + new Date().getTime();
-    cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
 
-    DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
+    DOM.importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
+    document.addEventListener(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
             _.forEach(extensions, makeExtHandler(e, e.target));
         }
@@ -108,7 +107,7 @@ DOM.extend = function(selector, mixins) {
 
                 if (features.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
-                    e.initEvent(cssPrefix ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.initEvent(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", true, true);
                     e.animationName = animId;
 
                     node.dispatchEvent(e);
