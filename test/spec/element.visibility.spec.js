@@ -31,9 +31,61 @@ describe("visibility", function() {
             });
         });
 
+        it("should support exec callback when no animation is defined", function() {
+            var spy = jasmine.createSpy();
+
+            link.hide(spy);
+            expect(spy).not.toHaveBeenCalled();
+
+            waitsFor(function() {
+                return spy.callCount === 1;
+            });
+        });
+
+        it("should support exec callback when animation is defined", function() {
+            var spy = jasmine.createSpy();
+
+            try {
+                DOM.importStyles("@keyframes show", "from {opacity: 1} to {opacity: 0}");
+            } catch (e1) {
+                try {
+                    DOM.importStyles("@-webkit-keyframes show", "from {opacity: 1} to {opacity: 0}");
+                } catch (e2) {
+                    // do nothing for IE
+                }
+            }
+
+            link = DOM.create("a[style=animation-duration:.1s;-webkit-animation-duration:.1s;display:block]>{abc}");
+            jasmine.sandbox.set(link);
+
+            link.style("animation-name", "show").hide(spy);
+
+            expect(spy).not.toHaveBeenCalled();
+
+            waitsFor(function() {
+                return spy.callCount === 1;
+            });
+        });
+
+        it("should support exec callback when transition is defined", function() {
+            var spy = jasmine.createSpy();
+
+            DOM.importStyles(".show[aria-hidden=true]", {opacity: 0, display: "block"});
+
+            link = DOM.create("a.show[style=transition:all .1s;-webkit-transition:all .1s;opacity:1]>{abc}");
+            jasmine.sandbox.set(link);
+
+            link.hide(spy);
+
+            expect(spy).not.toHaveBeenCalled();
+
+            waitsFor(function() {
+                return spy.callCount === 1;
+            });
+        });
+
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.hide("123") }).toThrow();
-            expect(function() { link.hide(function() { }) }).toThrow();
             expect(function() { link.hide(-10) }).toThrow();
             expect(function() { link.hide(true) }).toThrow();
         });
@@ -56,7 +108,6 @@ describe("visibility", function() {
 
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.show("123") }).toThrow();
-            expect(function() { link.show(function() { }) }).toThrow();
             expect(function() { link.show(-10) }).toThrow();
             expect(function() { link.show(true) }).toThrow();
         });

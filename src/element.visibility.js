@@ -2,23 +2,52 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     features = require("./features"),
-    makeVisibilityMethod = function(name, fn) {
-        var createCallback = function(el) {
-                return function() { el.set("aria-hidden", fn) };
-            };
+    animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    createCallback = function(el, callback, fn) {
+        return function() {
+            el.set("aria-hidden", fn);
 
-        return function(delay) {
-            if (delay && (typeof delay !== "number" || delay < 0)) {
+            if (callback) {
+                el.each(function(el, index) {
+                    var transitionDelay = parseFloat(el.style("transition-duration")),
+                        animationDelay = parseFloat(el.style("animation-duration"));
+
+                    if (el.get("offsetWidth") && (transitionDelay || animationDelay)) {
+                        // choose max delay
+                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], function() {
+                            callback(el, index);
+                        });
+                    } else {
+                        // use setTimeout to make a safe call
+                        setTimeout(function() { callback(el, index) }, 0);
+                    }
+                });
+            }
+        };
+    },
+    makeVisibilityMethod = function(name, fn) {
+        return function(delay, callback) {
+            var delayType = typeof delay;
+
+            if (arguments.length === 1 && delayType === "function") {
+                callback = delay;
+                delay = 0;
+            }
+
+            if (delay && (delayType !== "number" || delay < 0) ||
+                callback && typeof callback !== "function") {
                 throw _.makeError(name, this);
             }
 
-            if (delay) {
-                setTimeout(createCallback(this), delay);
+            callback = createCallback(this, callback, fn);
 
-                return this;
+            if (delay) {
+                setTimeout(callback, delay);
+            } else {
+                callback();
             }
 
-            return this.set("aria-hidden", fn);
+            return this;
         };
     };
 
@@ -28,9 +57,7 @@ var _ = require("./utils"),
  * @return {$Element}
  * @function
  */
-$Element.prototype.show = makeVisibilityMethod("show", function() {
-    return false;
-});
+$Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
  * Hide element with optional delay
@@ -38,9 +65,7 @@ $Element.prototype.show = makeVisibilityMethod("show", function() {
  * @return {$Element}
  * @function
  */
-$Element.prototype.hide = makeVisibilityMethod("hide", function() {
-    return true;
-});
+$Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
  * Toggle element visibility
