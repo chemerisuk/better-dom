@@ -2997,7 +2997,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="hide"><span class="type-signature"></span>hide<span class="signature">(<span class="optional">delay</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="hide"><span class="type-signature"></span>hide<span class="signature">(<span class="optional">delay</span>, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -3005,7 +3005,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Hide element with optional delay</p>
+        <p>Hide element with optional callback and delay</p>
     </div>
     
 
@@ -3076,6 +3076,43 @@ HTML5 data-* attribute if it exists</p>
             
 
             <td class="description last"><p>time in miliseconds to wait</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>function that executes when animation is done</p></td>
         </tr>
 
 	
@@ -6527,7 +6564,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="show"><span class="type-signature"></span>show<span class="signature">(<span class="optional">delay</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="show"><span class="type-signature"></span>show<span class="signature">(<span class="optional">delay</span>, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -6535,7 +6572,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Show element with optional delay</p>
+        <p>Show element with optional callback and delay</p>
     </div>
     
 
@@ -6606,6 +6643,43 @@ HTML5 data-* attribute if it exists</p>
             
 
             <td class="description last"><p>time in miliseconds to wait</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>function that executes when animation is done</p></td>
         </tr>
 
 	
@@ -7066,7 +7140,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="toggle"><span class="type-signature"></span>toggle<span class="signature">(<span class="optional">visible</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="toggle"><span class="type-signature"></span>toggle<span class="signature">(<span class="optional">delay</span>, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -7074,7 +7148,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Toggle element visibility</p>
+        <p>Toggle element visibility with optional callback and delay</p>
     </div>
     
 
@@ -7100,6 +7174,8 @@ HTML5 data-* attribute if it exists</p>
 		
 
 		
+		<th>Default</th>
+		
 
 		<th class="last">Description</th>
 	</tr>
@@ -7110,15 +7186,51 @@ HTML5 data-* attribute if it exists</p>
 
         <tr>
             
-                <td class="name"><code>visible</code></td>
+                <td class="name"><code>delay</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Boolean</span>
-|
+<span class="param-type">Number</span>
 
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    0
+                
+                </td>
+            
+
+            <td class="description last"><p>time in miliseconds to wait</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
 <span class="param-type">Function</span>
 
 
@@ -7138,8 +7250,12 @@ HTML5 data-* attribute if it exists</p>
             
 
             
+                <td class="default">
+                
+                </td>
+            
 
-            <td class="description last"><p>true if the element should be visible and false otherwise</p></td>
+            <td class="description last"><p>function that executes when animation is done</p></td>
         </tr>
 
 	
@@ -7385,7 +7501,7 @@ HTML5 data-* attribute if it exists</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Sat Dec 07 2013 13:32:27 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Mon Dec 23 2013 05:13:04 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
