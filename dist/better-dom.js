@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 1.6.2 2013-12-07T13:32:21
+ * @version 1.6.3 2013-12-23T05:12:58
  * @overview Live extension playground
  * @copyright Maksim Chemerisuk 2013
  * @license MIT
@@ -68,27 +68,26 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent("on" + type, ext.stop);
                 }
-                // return true to reduce number of unnecessary iterations
-                return !ext(el);
+
+                setTimeout(function() { ext(el) }, 0);
             }
         };
     },
-    animId, cssPrefix, link, styles;
+    animId, link, styles;
 
 if (features.CSS3_ANIMATIONS) {
     animId = "DOM" + new Date().getTime();
-    cssPrefix = window.WebKitAnimationEvent ? "-webkit-" : "";
 
-    DOM.importStyles("@" + cssPrefix + "keyframes " + animId, "1% {opacity: .99}");
+    DOM.importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(cssPrefix ? "webkitAnimationStart" : "animationstart", function(e) {
+    document.addEventListener(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e) {
         if (e.animationName === animId) {
-            _.some(extensions, makeExtHandler(e, e.target));
+            _.forEach(extensions, makeExtHandler(e, e.target));
         }
     }, false);
 } else {
@@ -102,7 +101,7 @@ if (features.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.some(extensions, makeExtHandler(e, e.srcElement));
+            _.forEach(extensions, makeExtHandler(e, e.srcElement));
         }
     });
 }
@@ -155,7 +154,7 @@ DOM.extend = function(selector, mixins) {
 
                 if (features.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
-                    e.initEvent(cssPrefix ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.initEvent(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", true, true);
                     e.animationName = animId;
 
                     node.dispatchEvent(e);
@@ -232,7 +231,7 @@ DOM.importStrings = function(lang, key, value) {
         // empty lang is for internal use only
         if (lang) selector += ":lang(" + lang + ")";
 
-        DOM.importStyles(selector + ":before", content, true);
+        DOM.importStyles(selector + ":before", content, !lang);
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
@@ -302,7 +301,7 @@ _.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.2";
+DOM.version = "1.6.3";
 
 DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
 DOM.importStyles.args = [];
@@ -893,6 +892,8 @@ hooks[":hidden"] = function(node) {
         _.getComputedStyle(node).display === "none" || !docEl.contains(node);
 };
 
+hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
+
 module.exports = hooks;
 
 },{"./utils":41}],18:[function(require,module,exports){
@@ -1314,62 +1315,83 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     features = require("./features"),
-    toggleFn = function(el) { return el.get("aria-hidden") !== "true" },
-    makeVisibilityMethod = function(name) {
-        var createCallback = function(el) {
-                return function() { el.set("aria-hidden", name === "hide") };
-            };
+    animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    createCallback = function(el, callback, fn) {
+        return function() {
+            el.set("aria-hidden", fn);
 
-        return function(delay) {
-            if (delay && (typeof delay !== "number" || delay < 0)) {
+            if (callback) {
+                el.each(function(el, index) {
+                    var transitionDelay = parseFloat(el.style("transition-duration")),
+                        animationDelay = parseFloat(el.style("animation-duration"));
+
+                    if (el.get("offsetWidth") && (transitionDelay || animationDelay)) {
+                        // choose max delay
+                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], function() {
+                            callback(el, index);
+                        });
+                    } else {
+                        // use setTimeout to make a safe call
+                        setTimeout(function() { callback(el, index) }, 0);
+                    }
+                });
+            }
+        };
+    },
+    makeVisibilityMethod = function(name, fn) {
+        return function(delay, callback) {
+            var delayType = typeof delay;
+
+            if (arguments.length === 1 && delayType === "function") {
+                callback = delay;
+                delay = 0;
+            }
+
+            if (delay && (delayType !== "number" || delay < 0) ||
+                callback && typeof callback !== "function") {
                 throw _.makeError(name, this);
             }
 
-            if (delay) {
-                setTimeout(createCallback(this), delay);
+            callback = createCallback(this, callback, fn);
 
-                return this;
+            if (delay) {
+                setTimeout(callback, delay);
+            } else {
+                callback();
             }
 
-            return this.set("aria-hidden", name === "hide");
+            return this;
         };
     };
 
 /**
- * Show element with optional delay
- * @param {Number} [delay=0] time in miliseconds to wait
+ * Show element with optional callback and delay
+ * @param {Number}   [delay=0]  time in miliseconds to wait
+ * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function
  */
-$Element.prototype.show = makeVisibilityMethod("show");
+$Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
- * Hide element with optional delay
- * @param {Number} [delay=0] time in miliseconds to wait
+ * Hide element with optional callback and delay
+ * @param {Number}   [delay=0]  time in miliseconds to wait
+ * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function
  */
-$Element.prototype.hide = makeVisibilityMethod("hide");
+$Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
- * Toggle element visibility
- * @param {Boolean|Function} [visible] true if the element should be visible and false otherwise
+ * Toggle element visibility with optional callback and delay
+ * @param {Number}   [delay=0]  time in miliseconds to wait
+ * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
+ * @function
  */
-$Element.prototype.toggle = function(visible) {
-    var visibleType = typeof visible,
-        value = toggleFn;
-
-    if (visibleType === "boolean") {
-        value = !visible;
-    } else if (visibleType === "function") {
-        value = function(el, index) { return !visible(el, index) };
-    } else if (visible) {
-        throw _.makeError("toggle", this);
-    }
-
-    return this.set("aria-hidden", value);
-};
+$Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
+    return el.get("aria-hidden") !== "true";
+});
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 // pointer-events:none helps to solve accidental clicks on a hidden element
@@ -1441,7 +1463,7 @@ var _ = require("./utils"),
     },
     testEl = document.createElement("div");
 
-function EventHandler(type, selector, context, callback, props, currentTarget) {
+function EventHandler(type, selector, context, callback, props, currentTarget, once) {
     context = context || currentTarget;
 
     var matcher = SelectorMatcher(selector),
@@ -1460,6 +1482,9 @@ function EventHandler(type, selector, context, callback, props, currentTarget) {
             for (; matcher && !matcher(target); target = target.parentNode) {
                 if (!target || target === root) return; // no matched element was found
             }
+
+            // off callback even if it throws an exception later
+            if (once) currentTarget.off(type, handler.context, callback);
 
             args = _.map(args, function(name) {
                 switch (name) {
@@ -1508,7 +1533,8 @@ var doc = document,
 
 module.exports = {
     CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
-    DOM2_EVENTS: !!doc.addEventListener
+    DOM2_EVENTS: !!doc.addEventListener,
+    WEBKIT_PREFIX: window.WebKitAnimationEvent ? "-webkit-" : ""
 };
 
 },{}],29:[function(require,module,exports){
@@ -1955,25 +1981,14 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
     }
 
     return this.legacy(function(node, el) {
-        var hook, handler;
+        var handler = EventHandler(type, selector, context, callback, props, el, once),
+            hook = hooks[type];
 
-        if (once) {
-            callback = (function(originalCallback) {
-                return function() {
-                    // remove event listener
-                    el.off(handler.type, handler.context, callback);
-
-                    return originalCallback.apply(el, arguments);
-                };
-            }(callback));
-        }
-
-        handler = EventHandler(type, selector, context, callback, props, el);
         handler.type = selector ? type + " " + selector : type;
         handler.callback = callback;
         handler.context = context || el;
 
-        if (hook = hooks[type]) hook(handler);
+        if (hook) hook(handler);
 
         if (features.DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
@@ -2181,5 +2196,5 @@ module.exports = {
         window.webkitRequestAnimationFrame
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,10,11,9,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
 ;
