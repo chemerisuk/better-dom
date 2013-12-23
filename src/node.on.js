@@ -52,25 +52,14 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
     }
 
     return this.legacy(function(node, el) {
-        var hook, handler;
+        var handler = EventHandler(type, selector, context, callback, props, el, once),
+            hook = hooks[type];
 
-        if (once) {
-            callback = (function(originalCallback) {
-                return function() {
-                    // remove event listener
-                    el.off(handler.type, handler.context, callback);
-
-                    return originalCallback.apply(el, arguments);
-                };
-            }(callback));
-        }
-
-        handler = EventHandler(type, selector, context, callback, props, el);
         handler.type = selector ? type + " " + selector : type;
         handler.callback = callback;
         handler.context = context || el;
 
-        if (hook = hooks[type]) hook(handler);
+        if (hook) hook(handler);
 
         if (features.DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);

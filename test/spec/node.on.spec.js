@@ -274,5 +274,12 @@ describe("on", function() {
             input.fire("focus");
             expect(spy.callCount).toBe(1);
         });
+
+        it("should work for with late binding", function() {
+            spy.andCallFake(function() { expect(this).toBe(input) });
+            input.callback = spy;
+            input.once("focus", "callback").fire("focus");
+            expect(spy).toHaveBeenCalled();
+        });
     });
 });

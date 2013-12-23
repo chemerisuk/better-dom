@@ -29,7 +29,7 @@ var _ = require("./utils"),
     },
     testEl = document.createElement("div");
 
-function EventHandler(type, selector, context, callback, props, currentTarget) {
+function EventHandler(type, selector, context, callback, props, currentTarget, once) {
     context = context || currentTarget;
 
     var matcher = SelectorMatcher(selector),
@@ -48,6 +48,9 @@ function EventHandler(type, selector, context, callback, props, currentTarget) {
             for (; matcher && !matcher(target); target = target.parentNode) {
                 if (!target || target === root) return; // no matched element was found
             }
+
+            // off callback even if it throws an exception later
+            if (once) currentTarget.off(type, handler.context, callback);
 
             args = _.map(args, function(name) {
                 switch (name) {
