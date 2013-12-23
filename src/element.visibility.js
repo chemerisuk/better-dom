@@ -52,25 +52,29 @@ var _ = require("./utils"),
     };
 
 /**
- * Show element with optional delay
- * @param {Number} [delay=0] time in miliseconds to wait
+ * Show element with optional callback and delay
+ * @param {Number}   [delay=0]  time in miliseconds to wait
+ * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function
  */
 $Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
- * Hide element with optional delay
- * @param {Number} [delay=0] time in miliseconds to wait
+ * Hide element with optional callback and delay
+ * @param {Number}   [delay=0]  time in miliseconds to wait
+ * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function
  */
 $Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
- * Toggle element visibility
- * @param {Number} [delay=0] time in miliseconds to wait
+ * Toggle element visibility with optional callback and delay
+ * @param {Number}   [delay=0]  time in miliseconds to wait
+ * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
+ * @function
  */
 $Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
     return el.get("aria-hidden") !== "true";
