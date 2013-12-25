@@ -11,7 +11,8 @@ var _ = require("./utils"),
     makeExtHandler = function(e, node) {
         var type = e.type,
             el = $Element(node),
-            accepted = e._done || {};
+            accepted = e._done || {},
+            delay = 0;
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
@@ -21,8 +22,8 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent("on" + type, ext.stop);
                 }
-
-                setTimeout(function() { ext(el) }, 0);
+                // IMPORTANT: delay helps to use right extension order
+                setTimeout(function() { ext(el) }, delay++);
             }
         };
     },

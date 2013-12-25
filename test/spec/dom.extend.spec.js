@@ -108,9 +108,8 @@ describe("extend", function() {
 
         jasmine.sandbox.set("<form id='watch7'><input id='watch8'/></form>");
 
-        // FIXME: strange behavior if to reverse extend calls order
-        DOM.extend("#watch8", spy2);
         DOM.extend("#watch7", spy1);
+        DOM.extend("#watch8", spy2);
 
         waitsFor(function() {
             return spy1.callCount === 1 && spy2.callCount === 1;
