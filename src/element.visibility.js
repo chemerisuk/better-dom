@@ -8,18 +8,18 @@ var _ = require("./utils"),
             el.set("aria-hidden", fn);
 
             if (callback) {
-                el.each(function(el, index) {
+                el.each(function(el, index, ref) {
                     var transitionDelay = parseFloat(el.style("transition-duration")),
                         animationDelay = parseFloat(el.style("animation-duration"));
 
                     if (el.get("offsetWidth") && (transitionDelay || animationDelay)) {
                         // choose max delay
                         el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], function() {
-                            callback(el, index);
+                            callback(el, index, ref);
                         });
                     } else {
                         // use setTimeout to make a safe call
-                        setTimeout(function() { callback(el, index) }, 0);
+                        setTimeout(function() { callback(el, index, ref) }, 0);
                     }
                 });
             }

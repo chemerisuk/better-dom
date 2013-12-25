@@ -16,7 +16,7 @@ $Element.prototype.set = function(name, value) {
         originalValue = value,
         nameType = typeof name;
 
-    return this.legacy(function(node, el, index) {
+    return this.legacy(function(node, el, index, ref) {
         var hook;
 
         name = originalName;
@@ -49,7 +49,7 @@ $Element.prototype.set = function(name, value) {
             throw _.makeError("set", el);
         }
 
-        if (typeof value === "function") value = value(el, index);
+        if (typeof value === "function") value = value(el, index, ref);
 
         if (hook = hooks[name]) {
             hook(node, value);

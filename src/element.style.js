@@ -30,11 +30,11 @@ $Element.prototype.style = function(name, value) {
         return value;
     }
 
-    return this.legacy(function(node, el, index) {
+    return this.legacy(function(node, el, index, ref) {
         var appendCssText = function(value, key) {
             var hook = hooks.set[key];
 
-            if (typeof value === "function") value = value(el, index);
+            if (typeof value === "function") value = value(el, index, ref);
 
             if (value == null) value = "";
 

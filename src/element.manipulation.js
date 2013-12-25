@@ -6,13 +6,13 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
     return function() {
         var args = arguments;
 
-        return this.legacy(function(node, el, index) {
+        return this.legacy(function(node, el, index, ref) {
             if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return;
 
             var html = "", value;
 
             _.forEach(args, function(arg) {
-                if (typeof arg === "function") arg = arg(el, index);
+                if (typeof arg === "function") arg = arg(el, index, ref);
 
                 if (typeof arg === "string") {
                     html += DOM.template(arg).trim();
