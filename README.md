@@ -1,7 +1,11 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Live extension playground
 
-In jQuery there is a notion of **live events**. They allow to attach listeners on future elements but do not cover all possible cases. Therefore I'd like to introduce **live extensions** and **better-dom** - a next-level library for working with DOM.
+jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of cases when more flexibility is required. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. Therefore I'd like to introduce **live extensions**.
+
+There is a section in the [Web Components](http://www.w3.org/TR/components-intro/) spec called “[Decorators](http://www.w3.org/TR/components-intro/#decorator-section)” which is trying to solve a similar problem. Currently it uses a markup-based implementation with a special syntax for attaching event listeners on child elements. But the concept is still an early draft:
+
+> Decorators, unlike other parts of Web Components, do not have a specification yet.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 

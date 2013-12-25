@@ -29,10 +29,10 @@ var _ = require("./utils"),
     },
     testEl = document.createElement("div");
 
-function EventHandler(type, selector, callback, props, el, once) {
+module.exports = function(type, selector, callback, props, el, once) {
     var matcher = SelectorMatcher(selector),
         handler = function(e) {
-            if (EventHandler.skip === type) return; // early stop in case of default action
+            if (module.exports.skip === type) return; // early stop in case of default action
 
             e = e || window.event;
 
@@ -56,10 +56,10 @@ function EventHandler(type, selector, callback, props, el, once) {
                 switch (name) {
                 case "type":
                     return type;
-                case "currentTarget":
-                    return $Element(currentTarget);
                 case "target":
                     return $Element(target);
+                case "currentTarget":
+                    return $Element(currentTarget);
                 }
 
                 var hook = hooks[name];
@@ -88,6 +88,4 @@ function EventHandler(type, selector, callback, props, el, once) {
     }
 
     return handler;
-}
-
-module.exports = EventHandler;
+};
