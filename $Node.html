@@ -1992,7 +1992,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(type, <span class="optional">context</span>, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
+    <h4 class="name" id="off"><span class="type-signature"></span>off<span class="signature">(type, <span class="optional">callback</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
     
     
 </dt>
@@ -2061,39 +2061,6 @@ HTML5 data-* attribute if it exists</p>
             
 
             <td class="description last"><p>type of event</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>context</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>callback context</p></td>
         </tr>
 
 	
@@ -2215,7 +2182,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(type, <span class="optional">context</span>, callback, <span class="optional">props</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
+    <h4 class="name" id="on"><span class="type-signature"></span>on<span class="signature">(type, callback, <span class="optional">props</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
     
     
 </dt>
@@ -2223,7 +2190,7 @@ HTML5 data-* attribute if it exists</p>
     
     
     <div class="description">
-        <p>Bind a DOM event to the context</p>
+        <p>Bind a DOM event</p>
     </div>
     
 
@@ -2293,39 +2260,6 @@ HTML5 data-* attribute if it exists</p>
 
         <tr>
             
-                <td class="name"><code>context</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>callback context</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
                 <td class="name"><code>callback</code></td>
             
 
@@ -2353,7 +2287,7 @@ HTML5 data-* attribute if it exists</p>
 
             
 
-            <td class="description last"><p>event callback/property name</p></td>
+            <td class="description last"><p>event callback or property name (for late binding)</p></td>
         </tr>
 
 	
@@ -2472,7 +2406,7 @@ HTML5 data-* attribute if it exists</p>
         
             
 <dt>
-    <h4 class="name" id="once"><span class="type-signature"></span>once<span class="signature">(type, <span class="optional">props</span>, <span class="optional">context</span>, callback)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
+    <h4 class="name" id="once"><span class="type-signature"></span>once<span class="signature">(type, callback, <span class="optional">props</span>)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
     
     
 </dt>
@@ -2523,36 +2457,8 @@ HTML5 data-* attribute if it exists</p>
             
                 
 <span class="param-type">String</span>
+|
 
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>type of event with optional selector to filter by</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>props</code></td>
-            
-
-            <td class="type">
-            
-                
 <span class="param-type">Array</span>
 
 
@@ -2562,8 +2468,6 @@ HTML5 data-* attribute if it exists</p>
             
                 <td class="attributes">
                 
-                    &lt;optional><br>
-                
 
                 
 
@@ -2573,40 +2477,7 @@ HTML5 data-* attribute if it exists</p>
 
             
 
-            <td class="description last"><p>event properties to pass to the callback function</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>context</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>callback context</p></td>
+            <td class="description last"><p>event type(s) with optional selector</p></td>
         </tr>
 
 	
@@ -2640,7 +2511,40 @@ HTML5 data-* attribute if it exists</p>
 
             
 
-            <td class="description last"><p>event callback/property name</p></td>
+            <td class="description last"><p>event callback or property name (for late binding)</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>props</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>array of event properties to pass into the callback</p></td>
         </tr>
 
 	
@@ -3437,7 +3341,7 @@ HTML5 data-* attribute if it exists</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Dec 23 2013 05:13:05 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Dec 25 2013 18:37:46 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
