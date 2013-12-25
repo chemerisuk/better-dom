@@ -185,34 +185,13 @@ describe("on", function() {
         expect(location.hash).not.toBe("#test");
     });
 
-    it("should optionally support extra context", function() {
-        var obj = {callback: function() {}};
-
-        spy.andCallFake(function() { expect(this).toBe(obj) });
-
-        input.on("click", obj, spy).fire("click");
-        expect(spy).toHaveBeenCalled();
-    });
-
     it("should support late binding", function() {
-        var obj = {callback: spy};
-
         spy.andCallFake(function() { expect(this).toBe(input) });
         input.callback = spy;
         input.on("focus", "callback").fire("focus");
         expect(spy).toHaveBeenCalled();
 
         delete input.callback;
-        input.fire("focus");
-        expect(spy.callCount).toBe(1);
-
-
-        spy.reset();
-        spy.andCallFake(function() { expect(this).toBe(obj) });
-        input.on("click", obj, "callback").fire("click");
-        expect(spy).toHaveBeenCalled();
-
-        delete obj.callback;
         input.fire("focus");
         expect(spy.callCount).toBe(1);
     });

@@ -29,9 +29,7 @@ var _ = require("./utils"),
     },
     testEl = document.createElement("div");
 
-function EventHandler(type, selector, context, callback, props, currentTarget, once) {
-    context = context || currentTarget;
-
+function EventHandler(type, selector, callback, props, el, once) {
     var matcher = SelectorMatcher(selector),
         handler = function(e) {
             if (EventHandler.skip === type) return; // early stop in case of default action
@@ -39,25 +37,25 @@ function EventHandler(type, selector, context, callback, props, currentTarget, o
             e = e || window.event;
 
             var target = e.target || e.srcElement,
-                root = currentTarget._node,
-                fn = typeof callback === "string" ? context[callback] : callback,
+                root = el._node,
+                fn = typeof callback === "string" ? el[callback] : callback,
                 args = props || ["target", "defaultPrevented"];
 
-            if (typeof fn !== "function") return; // early stop in case of late binding
+            if (typeof fn !== "function") return; // early stop for late binding
 
             for (; matcher && !matcher(target); target = target.parentNode) {
                 if (!target || target === root) return; // no matched element was found
             }
 
             // off callback even if it throws an exception later
-            if (once) currentTarget.off(type, handler.context, callback);
+            if (once) el.off(type, callback);
 
             args = _.map(args, function(name) {
                 switch (name) {
                 case "type":
                     return type;
                 case "currentTarget":
-                    return currentTarget;
+                    return el;
                 case "target":
                     // handle DOM variable correctly
                     return target ? $Element(target) : DOM;
@@ -71,7 +69,7 @@ function EventHandler(type, selector, context, callback, props, currentTarget, o
             // prepend extra arguments if they exist
             if (e._args && e._args.length) args = e._args.concat(args);
 
-            if (fn.apply(context, args) === false) {
+            if (fn.apply(el, args) === false) {
                 // prevent default if handler returns false
                 if (features.DOM2_EVENTS) {
                     e.preventDefault();

@@ -7,13 +7,12 @@ var _ = require("./utils"),
 /**
  * Bind a DOM event to the context
  * @param  {String|Array}    type event type(s) with optional selector
- * @param  {Object}          [context] callback context
- * @param  {Function|String} callback event callback/property name
+ * @param  {Function|String} callback event callback or property name (for late binding)
  * @param  {Array}           [props] array of event properties to pass into the callback
  * @return {$Node}
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-$Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) {
+$Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
     var eventType = typeof type,
         selector, index, args;
 
@@ -25,15 +24,7 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
             type = type.substr(0, index);
         }
 
-        // handle optional context argument
-        if (typeof context !== "object") {
-            once = props;
-            props = callback;
-            callback = context;
-            context = undefined;
-        }
-
-        if (typeof props !== "object") {
+        if (!Array.isArray(props)) {
             once = props;
             props = undefined;
         }
@@ -52,12 +43,11 @@ $Node.prototype.on = function(type, context, callback, props, /*INTERNAL*/once) 
     }
 
     return this.legacy(function(node, el) {
-        var handler = EventHandler(type, selector, context, callback, props, el, once),
+        var handler = EventHandler(type, selector, callback, props, el, once),
             hook = hooks[type];
 
         handler.type = selector ? type + " " + selector : type;
         handler.callback = callback;
-        handler.context = context || el;
 
         if (hook) hook(handler);
 
