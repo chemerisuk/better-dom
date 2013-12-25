@@ -36,15 +36,17 @@ function EventHandler(type, selector, callback, props, el, once) {
 
             e = e || window.event;
 
-            var target = e.target || e.srcElement,
-                root = el._node,
+            // srcElement could be null in legacy IE when target is document
+            var node = el._node,
+                target = e.target || e.srcElement || document,
+                currentTarget = selector ? target : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
-                args = props || ["target", "defaultPrevented"];
+                args = props || [selector ? "currentTarget" : "target", "defaultPrevented"];
 
             if (typeof fn !== "function") return; // early stop for late binding
 
-            for (; matcher && !matcher(target); target = target.parentNode) {
-                if (!target || target === root) return; // no matched element was found
+            for (; matcher && !matcher(currentTarget); currentTarget = currentTarget.parentNode) {
+                if (!currentTarget || currentTarget === node) return; // no matched element was found
             }
 
             // off callback even if it throws an exception later
@@ -55,15 +57,14 @@ function EventHandler(type, selector, callback, props, el, once) {
                 case "type":
                     return type;
                 case "currentTarget":
-                    return el;
+                    return $Element(currentTarget);
                 case "target":
-                    // handle DOM variable correctly
-                    return target ? $Element(target) : DOM;
+                    return $Element(target);
                 }
 
                 var hook = hooks[name];
 
-                return hook ? hook(e, root) : e[name];
+                return hook ? hook(e, node) : e[name];
             });
 
             // prepend extra arguments if they exist

@@ -5,7 +5,7 @@ var _ = require("./utils"),
     features = require("./features");
 
 /**
- * Bind a DOM event to the context
+ * Bind a DOM event
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Function|String} callback event callback or property name (for late binding)
  * @param  {Array}           [props] array of event properties to pass into the callback
@@ -66,10 +66,9 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
 /**
  * Bind a DOM event but fire once before being removed
- * @param  {String}   type type of event with optional selector to filter by
- * @param  {Array}    [props] event properties to pass to the callback function
- * @param  {Object}   [context] callback context
- * @param  {Function|String} callback event callback/property name
+ * @param  {String|Array}    type event type(s) with optional selector
+ * @param  {Function|String} callback event callback or property name (for late binding)
+ * @param  {Array}           [props] array of event properties to pass into the callback
  * @return {$Node}
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
