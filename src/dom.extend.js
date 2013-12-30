@@ -8,28 +8,41 @@ var _ = require("./utils"),
     features = require("./features"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
-    makeExtHandler = function(e, node) {
-        var type = e.type,
-            el = $Element(node),
-            accepted = e._done || {},
-            delay = 0;
+    nativeEventType, animId, link, styles,
+    makeExtHandler = function(node, skip) {
+        var el = $Element(node);
+
+        skip = skip || {};
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
-            if (!accepted[index] && ext.accept(node)) {
+            if (!skip[index] && ext.accept(node)) {
                 if (features.CSS3_ANIMATIONS) {
-                    node.addEventListener(type, ext.stop, false);
+                    node.addEventListener(nativeEventType, ext.stop, false);
                 } else {
-                    node.attachEvent("on" + type, ext.stop);
+                    node.attachEvent(nativeEventType, ext.stop);
                 }
-                // IMPORTANT: delay helps to use right extension order
-                setTimeout(function() { ext(el) }, delay++);
+
+                var e, handler = function() { ext(el) };
+                // every extension executes in event handler function
+                // so they can't break each other
+                if (features.CSS3_ANIMATIONS) {
+                    e = document.createEvent("HTMLEvents");
+                    e.initEvent("onfilterchange", false, false);
+                    node.addEventListener("onfilterchange", handler, false);
+                    node.dispatchEvent(e);
+                    node.removeEventListener("onfilterchange", handler);
+                } else {
+                    node.attachEvent("onfilterchange", handler);
+                    node.fireEvent("onfilterchange");
+                    node.detachEvent("onfilterchange", handler);
+                }
             }
         };
-    },
-    animId, link, styles;
+    };
 
 if (features.CSS3_ANIMATIONS) {
+    nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
     DOM.importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
@@ -39,23 +52,24 @@ if (features.CSS3_ANIMATIONS) {
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e) {
+    document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e, e.target));
+            _.forEach(extensions, makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
+    nativeEventType = "ondataavailable";
     link = document.querySelector("link[rel=htc]");
 
     if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
-    document.attachEvent("ondataavailable", function() {
+    document.attachEvent(nativeEventType, function() {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e, e.srcElement));
+            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -94,8 +108,8 @@ DOM.extend = function(selector, mixins) {
             e = e || window.event;
 
             if (e.animationName === animId || e.srcUrn === "dataavailable")  {
-                // mark extension as processed via _done bitmask
-                (e._done = e._done || {})[index] = true;
+                // mark extension as processed via _skip bitmask
+                (e._skip = e._skip || {})[index] = true;
             }
         };
 
@@ -108,14 +122,14 @@ DOM.extend = function(selector, mixins) {
 
                 if (features.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
-                    e.initEvent(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.initEvent(nativeEventType, true, true);
                     e.animationName = animId;
 
                     node.dispatchEvent(e);
                 } else {
                     e = document.createEventObject();
                     e.srcUrn = "dataavailable";
-                    node.fireEvent("ondataavailable", e);
+                    node.fireEvent(nativeEventType, e);
                 }
             });
             // make sure that any extension is initialized after DOM.ready
