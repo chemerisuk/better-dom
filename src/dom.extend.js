@@ -8,6 +8,7 @@ var _ = require("./utils"),
     features = require("./features"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
+    safeEventType = "onfilterchange",
     nativeEventType, animId, link, styles,
     makeExtHandler = function(node, skip) {
         var el = $Element(node);
@@ -28,14 +29,14 @@ var _ = require("./utils"),
                 // so they can't break each other
                 if (features.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
-                    e.initEvent("onfilterchange", false, false);
-                    node.addEventListener("onfilterchange", handler, false);
+                    e.initEvent(safeEventType, false, false);
+                    node.addEventListener(safeEventType, handler, false);
                     node.dispatchEvent(e);
-                    node.removeEventListener("onfilterchange", handler);
+                    node.removeEventListener(safeEventType, handler);
                 } else {
-                    node.attachEvent("onfilterchange", handler);
-                    node.fireEvent("onfilterchange");
-                    node.detachEvent("onfilterchange", handler);
+                    node.attachEvent(safeEventType, handler);
+                    node.fireEvent(safeEventType);
+                    node.detachEvent(safeEventType, handler);
                 }
             }
         };
@@ -94,9 +95,12 @@ DOM.extend = function(selector, mixins) {
             ext = function(el, mock) {
                 _.extend(el, mixins);
 
-                if (ctr) ctr.call(el);
-                // cleanup event handlers
-                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                try {
+                    if (ctr) ctr.call(el);
+                } finally {
+                    // remove event handlers from element's interface
+                    if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                }
             },
             index = extensions.push(ext) - 1,
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
