@@ -1,6 +1,5 @@
 var _ = require("./utils"),
-    $Element = require("./element"),
-    features = require("./features");
+    $Element = require("./element");
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function() {
@@ -17,18 +16,6 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 if (typeof arg === "string") {
                     html += DOM.template(arg).trim();
                 } else if (arg instanceof $Element) {
-                    if (html) {
-                        html = _.parseFragment(html);
-
-                        if (value) {
-                            value.appendChild(html);
-                        } else {
-                            value = html;
-                        }
-
-                        html = "";
-                    }
-
                     if (!value) value = document.createDocumentFragment();
                     // populate fragment
                     arg.legacy(function(node) { value.appendChild(node) });
@@ -37,8 +24,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 }
             });
 
-            // always use _parseFragment because of HTML5 and NoScope bugs in legacy IE
-            if (!(fasterMethodName && features.CSS3_ANIMATIONS) && html) value = _.parseFragment(html);
+            if (!fasterMethodName && html) value = DOM.create(html)._node;
 
             if (!fasterMethodName || value) {
                 strategy(node, value);

@@ -7,6 +7,11 @@ var _ = require("./utils"),
     features = require("./features"),
     hooks = require("./eventhandler.hooks"),
     debouncedEvents = "scroll mousemove",
+    testEl = document.createElement("div"),
+    requestAnimationFrame = window.requestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.webkitRequestAnimationFrame,
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -19,15 +24,14 @@ var _ = require("./utils"),
             if (!debouncing) {
                 debouncing = true;
 
-                _.requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
                     originalHandler(e);
 
                     debouncing = false;
                 });
             }
         };
-    },
-    testEl = document.createElement("div");
+    };
 
 module.exports = function(type, selector, callback, props, el, once) {
     var matcher = SelectorMatcher(selector),

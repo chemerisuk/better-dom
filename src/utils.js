@@ -92,24 +92,5 @@ module.exports = {
 
     getComputedStyle: function(el) {
         return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;
-    },
-    parseFragment: (function() {
-        var parser = document.createElement("body");
-
-        return function(html) {
-            var fragment = document.createDocumentFragment();
-
-            // fix NoScope bug
-            parser.innerHTML = "<br>" + html;
-            parser.removeChild(parser.firstChild);
-
-            while (parser.firstChild) fragment.appendChild(parser.firstChild);
-
-            return fragment;
-        };
-    })(),
-    requestAnimationFrame: window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame
+    }
 };
