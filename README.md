@@ -1,16 +1,12 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Live extension playground
 
-jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of cases when more flexibility is required. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. Therefore I'd like to introduce **live extensions**.
-
-There is a section in the [Web Components](http://www.w3.org/TR/components-intro/) spec called “[Decorators](http://www.w3.org/TR/components-intro/#decorator-section)” which is trying to solve a similar problem. Currently it uses a markup-based implementation with a special syntax for attaching event listeners on child elements. But the concept is still an early draft:
-
-> Decorators, unlike other parts of Web Components, do not have a specification yet.
+jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce **live extensions** and **better-dom** - a next-level library for working with the DOM.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
-* compact size (~27kb minified and ~6kb gzipped)
+* compact size (~26,5kb minified and ~5,8kb gzipped)
 * clean, minimalistic and standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
@@ -29,7 +25,7 @@ There is a section in the [Web Components](http://www.w3.org/TR/components-intro
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
 
-    bower install better-dom --save
+    bower install better-dom
 
 This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
 

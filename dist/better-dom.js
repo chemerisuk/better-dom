@@ -1,8 +1,8 @@
 /**
  * @file better-dom.js
- * @version 1.6.4 2013-12-25T18:37:40
+ * @version 1.6.5 2014-01-04T01:15:35
  * @overview Live extension playground
- * @copyright Maksim Chemerisuk 2013
+ * @copyright Maksim Chemerisuk 2014
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
@@ -44,7 +44,7 @@ DOM.create = function(value, vars) {
     return new $Element(value, multiple);
 };
 
-},{"./dom":6,"./element":15,"./utils":41}],2:[function(require,module,exports){
+},{"./dom":6,"./element":14,"./utils":35}],2:[function(require,module,exports){
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
@@ -53,56 +53,72 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
+    importStyles = require("./dom.importstyles"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
-    makeExtHandler = function(e, node) {
-        var type = e.type,
-            el = $Element(node),
-            accepted = e._done || {},
-            delay = 0;
+    safeEventType = "onfilterchange",
+    nativeEventType, animId, link, styles,
+    makeExtHandler = function(node, skip) {
+        var el = $Element(node);
+
+        skip = skip || {};
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
-            if (!accepted[index] && ext.accept(node)) {
+            if (!skip[index] && ext.accept(node)) {
                 if (features.CSS3_ANIMATIONS) {
-                    node.addEventListener(type, ext.stop, false);
+                    node.addEventListener(nativeEventType, ext.stop, false);
                 } else {
-                    node.attachEvent("on" + type, ext.stop);
+                    node.attachEvent(nativeEventType, ext.stop);
                 }
-                // IMPORTANT: delay helps to use right extension order
-                setTimeout(function() { ext(el) }, delay++);
+
+                var e, handler = function() { ext(el) };
+                // every extension executes in event handler function
+                // so they can't break each other
+                if (features.CSS3_ANIMATIONS) {
+                    e = document.createEvent("HTMLEvents");
+                    e.initEvent(safeEventType, false, false);
+                    node.addEventListener(safeEventType, handler, false);
+                    node.dispatchEvent(e);
+                    node.removeEventListener(safeEventType, handler);
+                } else {
+                    node.attachEvent(safeEventType, handler);
+                    node.fireEvent(safeEventType);
+                    node.detachEvent(safeEventType, handler);
+                }
             }
         };
-    },
-    animId, link, styles;
+    };
 
 if (features.CSS3_ANIMATIONS) {
+    nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
-    DOM.importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e) {
+    document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e, e.target));
+            _.forEach(extensions, makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
+    nativeEventType = "ondataavailable";
     link = document.querySelector("link[rel=htc]");
 
     if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
-    document.attachEvent("ondataavailable", function() {
+    document.attachEvent(nativeEventType, function() {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e, e.srcElement));
+            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -127,9 +143,12 @@ DOM.extend = function(selector, mixins) {
             ext = function(el, mock) {
                 _.extend(el, mixins);
 
-                if (ctr) ctr.call(el);
-                // cleanup event handlers
-                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                try {
+                    if (ctr) ctr.call(el);
+                } finally {
+                    // remove event handlers from element's interface
+                    if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                }
             },
             index = extensions.push(ext) - 1,
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
@@ -141,8 +160,8 @@ DOM.extend = function(selector, mixins) {
             e = e || window.event;
 
             if (e.animationName === animId || e.srcUrn === "dataavailable")  {
-                // mark extension as processed via _done bitmask
-                (e._done = e._done || {})[index] = true;
+                // mark extension as processed via _skip bitmask
+                (e._skip = e._skip || {})[index] = true;
             }
         };
 
@@ -155,26 +174,26 @@ DOM.extend = function(selector, mixins) {
 
                 if (features.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
-                    e.initEvent(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.initEvent(nativeEventType, true, true);
                     e.animationName = animId;
 
                     node.dispatchEvent(e);
                 } else {
                     e = document.createEventObject();
                     e.srcUrn = "dataavailable";
-                    node.fireEvent("ondataavailable", e);
+                    node.fireEvent(nativeEventType, e);
                 }
             });
             // make sure that any extension is initialized after DOM.ready
             // MUST be after DOM.findAll because of legacy IE behavior
-            DOM.importStyles(selector, styles, true);
+            importStyles(selector, styles, true);
         });
     }
 };
 
 module.exports = extensions;
 
-},{"./dom":6,"./element":15,"./features":28,"./selectormatcher":40,"./utils":41}],3:[function(require,module,exports){
+},{"./dom":6,"./dom.importstyles":5,"./element":14,"./features":23,"./selectormatcher":34,"./utils":35}],3:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom");
 
@@ -208,9 +227,10 @@ DOM.importScripts = function() {
     callback();
 };
 
-},{"./dom":6,"./utils":41}],4:[function(require,module,exports){
+},{"./dom":6,"./utils":35}],4:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
+    importStyles = require("./dom.importstyles"),
     rparam = /\$\{([a-z\-]+)\}/g,
     toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
@@ -241,9 +261,9 @@ DOM.importStrings = function(lang, key, value) {
 };
 
 // by default just show data-i18n string
-DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");
+importStyles("[data-i18n]:before", "content:attr(data-i18n)");
 
-},{"./dom":6,"./utils":41}],5:[function(require,module,exports){
+},{"./dom":6,"./dom.importstyles":5,"./utils":35}],5:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -252,8 +272,7 @@ var _ = require("./utils"),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
     // normalize pseudoelement selectors or quotes
-    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"],
-    args = DOM.importStyles.args;
+    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
 
 /**
  * Append global css styles
@@ -261,7 +280,7 @@ var _ = require("./utils"),
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  */
-DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
+module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
         // make a temporary element and populate style properties
@@ -295,17 +314,11 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     }
 };
 
-// populate existing calls
-_.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });
-
-},{"./dom":6,"./element":15,"./features":28,"./utils":41}],6:[function(require,module,exports){
+},{"./dom":6,"./element":14,"./features":23,"./utils":35}],6:[function(require,module,exports){
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.4";
-
-DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
-DOM.importStyles.args = [];
+DOM.version = "1.6.5";
 
 /**
  * Global object to access DOM
@@ -314,7 +327,7 @@ DOM.importStyles.args = [];
  */
 module.exports = window.DOM = DOM;
 
-},{"./node":35}],7:[function(require,module,exports){
+},{"./node":30}],7:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -340,7 +353,7 @@ DOM.mock = function(content) {
     return el;
 };
 
-},{"./dom":6,"./dom.extend":2,"./element":15,"./utils":41}],8:[function(require,module,exports){
+},{"./dom":6,"./dom.extend":2,"./element":14,"./utils":35}],8:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     features = require("./features"),
@@ -388,7 +401,7 @@ DOM.ready = function(callback) {
     }
 };
 
-},{"./dom":6,"./features":28,"./utils":41}],9:[function(require,module,exports){
+},{"./dom":6,"./features":23,"./utils":35}],9:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
@@ -566,7 +579,7 @@ DOM.template = function(template, vars) {
     return cache[template] = toString(stack[0]).replace(reTextTag, "");
 };
 
-},{"./dom":6,"./utils":41}],10:[function(require,module,exports){
+},{"./dom":6,"./utils":35}],10:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     rclass = /[\n\t\r]/g;
@@ -634,7 +647,7 @@ $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className)
     if (oldClassName === this._node.className) this.removeClass(className);
 });
 
-},{"./element":15,"./utils":41}],11:[function(require,module,exports){
+},{"./element":14,"./utils":35}],11:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features");
@@ -666,25 +679,11 @@ $Element.prototype.clone = function(deep) {
     return new $Element(node);
 };
 
-},{"./element":15,"./features":28,"./utils":41}],12:[function(require,module,exports){
-var features = require("./features"),
-    hooks = {};
-
-hooks.type = function(node) {
-    // some browsers don't recognize input[type=email] etc.
-    return node.getAttribute("type") || node.type;
-};
-
-if (!features.DOM2_EVENTS) {
-    hooks.textContent = function(node) { return node.innerText };
-}
-
-module.exports = hooks;
-
-},{"./features":28}],13:[function(require,module,exports){
+},{"./element":14,"./features":23,"./utils":35}],12:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = require("./element.get.hooks");
+    features = require("./features"),
+    hooks = {};
 
 /**
  * Get property or attribute value by name
@@ -713,7 +712,20 @@ $Element.prototype.get = function(name) {
     return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
 };
 
-},{"./element":15,"./element.get.hooks":12,"./utils":41}],14:[function(require,module,exports){
+// $Element.get hooks
+
+hooks.type = function(node) {
+    // some browsers don't recognize input[type=email] etc.
+    return node.getAttribute("type") || node.type;
+};
+
+if (!features.DOM2_EVENTS) {
+    hooks.textContent = function(node) { return node.innerText };
+}
+
+module.exports = hooks;
+
+},{"./element":14,"./features":23,"./utils":35}],13:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element");
 
@@ -743,7 +755,7 @@ $Element.prototype.i18n = function(value, vars) {
     return this.set("");
 };
 
-},{"./element":15,"./utils":41}],15:[function(require,module,exports){
+},{"./element":14,"./utils":35}],14:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -770,10 +782,9 @@ $Element.prototype = new $Node();
 
 module.exports = $Element;
 
-},{"./node":35,"./utils":41}],16:[function(require,module,exports){
+},{"./node":30,"./utils":35}],15:[function(require,module,exports){
 var _ = require("./utils"),
-    $Element = require("./element"),
-    features = require("./features");
+    $Element = require("./element");
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function() {
@@ -790,18 +801,6 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 if (typeof arg === "string") {
                     html += DOM.template(arg).trim();
                 } else if (arg instanceof $Element) {
-                    if (html) {
-                        html = _.parseFragment(html);
-
-                        if (value) {
-                            value.appendChild(html);
-                        } else {
-                            value = html;
-                        }
-
-                        html = "";
-                    }
-
                     if (!value) value = document.createDocumentFragment();
                     // populate fragment
                     arg.legacy(function(node) { value.appendChild(node) });
@@ -810,8 +809,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 }
             });
 
-            // always use _parseFragment because of HTML5 and NoScope bugs in legacy IE
-            if (!(fasterMethodName && features.CSS3_ANIMATIONS) && html) value = _.parseFragment(html);
+            if (!fasterMethodName && html) value = DOM.create(html)._node;
 
             if (!fasterMethodName || value) {
                 strategy(node, value);
@@ -881,27 +879,12 @@ $Element.prototype.remove = makeManipulationMethod("remove", "", false, function
     node.parentNode.removeChild(node);
 });
 
-},{"./element":15,"./features":28,"./utils":41}],17:[function(require,module,exports){
-var _ = require("./utils"),
-    docEl = document.documentElement,
-    hooks = {};
-
-hooks[":focus"] = function(node) { return node === document.activeElement };
-
-hooks[":hidden"] = function(node) {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.getComputedStyle(node).display === "none" || !docEl.contains(node);
-};
-
-hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
-
-module.exports = hooks;
-
-},{"./utils":41}],18:[function(require,module,exports){
+},{"./element":14,"./utils":35}],16:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    hooks = require("./element.matches.hooks");
+    hooks = {},
+    docEl = document.documentElement;
 
 /**
  * Check if the element matches selector
@@ -925,7 +908,20 @@ $Element.prototype.matches = function(selector, deep) {
     return false;
 };
 
-},{"./element":15,"./element.matches.hooks":17,"./selectormatcher":40,"./utils":41}],19:[function(require,module,exports){
+// $Element.matches hooks
+
+hooks[":focus"] = function(node) { return node === document.activeElement };
+
+hooks[":hidden"] = function(node) {
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.getComputedStyle(node).display === "none" || !docEl.contains(node);
+};
+
+hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
+
+module.exports = hooks;
+
+},{"./element":14,"./selectormatcher":34,"./utils":35}],17:[function(require,module,exports){
 var $Element = require("./element"),
     documentElement = document.documentElement;
 /**
@@ -951,32 +947,11 @@ $Element.prototype.offset = function() {
     }
 };
 
-},{"./element":15}],20:[function(require,module,exports){
-var _ = require("./utils"),
-    features = require("./features"),
-    hooks = {};
-
-if (!features.DOM2_EVENTS) {
-    hooks.textContent = function(node, value) {
-        node.innerText = value;
-    };
-}
-
-if (!features.CSS3_ANIMATIONS) {
-    // fix NoScope elements in IE < 10
-    hooks.innerHTML = function(node, value) {
-        node.innerHTML = "";
-        node.appendChild(_.parseFragment(value));
-    };
-}
-
-module.exports = hooks;
-
-},{"./features":28,"./utils":41}],21:[function(require,module,exports){
+},{"./element":14}],18:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = require("./element.set.hooks"),
-    features = require("./features");
+    features = require("./features"),
+    hooks = {};
 
 /**
  * Set property/attribute value by name
@@ -1038,10 +1013,20 @@ $Element.prototype.set = function(name, value) {
     });
 };
 
-},{"./element":15,"./element.set.hooks":20,"./features":28,"./utils":41}],22:[function(require,module,exports){
+// $Element.set hooks
+
+if (!features.DOM2_EVENTS) {
+    hooks.textContent = function(node, value) {
+        node.innerText = value;
+    };
+}
+
+module.exports = hooks;
+
+},{"./element":14,"./features":23,"./utils":35}],19:[function(require,module,exports){
 var _ = require("./utils"),
-    getStyleHooks = {},
-    setStyleHooks = {},
+    $Element = require("./element"),
+    hooks = {get: {}, set: {}},
     reDash = /\-./g,
     reCamel = /[A-Z]/g,
     directions = ["Top", "Right", "Bottom", "Left"],
@@ -1050,92 +1035,6 @@ var _ = require("./utils"),
     props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
         return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
     });
-
-_.forEach(props, function(propName) {
-    var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
-        unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-        stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
-
-    // most of browsers starts vendor specific props in lowercase
-    if (!(stylePropName in computed)) {
-        stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
-    }
-
-    if (stylePropName !== propName) {
-        getStyleHooks[unprefixedName] = function(style) {
-            return style[stylePropName];
-        };
-        setStyleHooks[unprefixedName] = function(style, value) {
-            value = typeof value === "number" ? value + "px" : value.toString();
-            // use cssText property to determine DOM.importStyles call
-            style["cssText" in style ? stylePropName : propName] = value;
-        };
-    }
-
-    // Exclude the following css properties from adding px
-    if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
-        setStyleHooks[propName] = function(style, value) {
-            style["cssText" in style ? stylePropName : propName] = value.toString();
-        };
-    }
-});
-
-// normalize float css property
-if ("cssFloat" in computed) {
-    getStyleHooks.float = function(style) {
-        return style.cssFloat;
-    };
-    setStyleHooks.float = function(style, value) {
-        style.cssFloat = value;
-    };
-} else {
-    getStyleHooks.float = function(style) {
-        return style.styleFloat;
-    };
-    setStyleHooks.float = function(style, value) {
-        style.styleFloat = value;
-    };
-}
-
-// normalize property shortcuts
-_.forOwn({
-    font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-    padding: _.map(directions, function(dir) { return "padding" + dir }),
-    margin: _.map(directions, function(dir) { return "margin" + dir }),
-    "border-width": _.map(directions, function(dir) { return "border" + dir + "Width" }),
-    "border-style": _.map(directions, function(dir) { return "border" + dir + "Style" })
-}, function(props, key) {
-    getStyleHooks[key] = function(style) {
-        var result = [],
-            hasEmptyStyleValue = function(prop, index) {
-                result.push(prop === "/" ? prop : style[prop]);
-
-                return !result[index];
-            };
-
-        return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
-    };
-    setStyleHooks[key] = function(style, value) {
-        if (value && "cssText" in style) {
-            // normalize setting complex property across browsers
-            style.cssText += ";" + key + ":" + value;
-        } else {
-            _.forEach(props, function(name) {
-                style[name] = typeof value === "number" ? value + "px" : value.toString();
-            });
-        }
-    };
-});
-
-module.exports = {
-    get: getStyleHooks,
-    set: setStyleHooks
-};
-
-},{"./utils":41}],23:[function(require,module,exports){
-var _ = require("./utils"),
-    $Element = require("./element"),
-    hooks = require("./element.style.hooks");
 
 /**
  * CSS getter/setter for an element
@@ -1190,7 +1089,87 @@ $Element.prototype.style = function(name, value) {
     });
 };
 
-},{"./element":15,"./element.style.hooks":22,"./utils":41}],24:[function(require,module,exports){
+// $Element.style hooks
+
+_.forEach(props, function(propName) {
+    var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
+        unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
+        stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
+
+    // most of browsers starts vendor specific props in lowercase
+    if (!(stylePropName in computed)) {
+        stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
+    }
+
+    if (stylePropName !== propName) {
+        hooks.get[unprefixedName] = function(style) {
+            return style[stylePropName];
+        };
+        hooks.set[unprefixedName] = function(style, value) {
+            value = typeof value === "number" ? value + "px" : value.toString();
+            // use cssText property to determine DOM.importStyles call
+            style["cssText" in style ? stylePropName : propName] = value;
+        };
+    }
+
+    // Exclude the following css properties from adding px
+    if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
+        hooks.set[propName] = function(style, value) {
+            style["cssText" in style ? stylePropName : propName] = value.toString();
+        };
+    }
+});
+
+// normalize float css property
+if ("cssFloat" in computed) {
+    hooks.get.float = function(style) {
+        return style.cssFloat;
+    };
+    hooks.set.float = function(style, value) {
+        style.cssFloat = value;
+    };
+} else {
+    hooks.get.float = function(style) {
+        return style.styleFloat;
+    };
+    hooks.set.float = function(style, value) {
+        style.styleFloat = value;
+    };
+}
+
+// normalize property shortcuts
+_.forOwn({
+    font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
+    padding: _.map(directions, function(dir) { return "padding" + dir }),
+    margin: _.map(directions, function(dir) { return "margin" + dir }),
+    "border-width": _.map(directions, function(dir) { return "border" + dir + "Width" }),
+    "border-style": _.map(directions, function(dir) { return "border" + dir + "Style" })
+}, function(props, key) {
+    hooks.get[key] = function(style) {
+        var result = [],
+            hasEmptyStyleValue = function(prop, index) {
+                result.push(prop === "/" ? prop : style[prop]);
+
+                return !result[index];
+            };
+
+        return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
+    };
+    hooks.set[key] = function(style, value) {
+        if (value && "cssText" in style) {
+            // normalize setting complex property across browsers
+            style.cssText += ";" + key + ":" + value;
+        } else {
+            _.forEach(props, function(name) {
+                style[name] = typeof value === "number" ? value + "px" : value.toString();
+            });
+        }
+    };
+});
+
+module.exports = hooks;
+
+},{"./element":14,"./utils":35}],20:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
@@ -1311,11 +1290,11 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
 
-},{"./element":15,"./features":28,"./selectormatcher":40,"./utils":41}],25:[function(require,module,exports){
+},{"./element":14,"./features":23,"./selectormatcher":34,"./utils":35}],21:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    DOM = require("./dom"),
     features = require("./features"),
+    importStyles = require("./dom.importstyles"),
     animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     createCallback = function(el, callback, fn) {
         return function() {
@@ -1396,43 +1375,9 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 // pointer-events:none helps to solve accidental clicks on a hidden element
-DOM.importStyles("[aria-hidden=true]", "pointer-events:none; display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
+importStyles("[aria-hidden=true]", "pointer-events:none; display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
 
-},{"./dom":6,"./element":15,"./features":28,"./utils":41}],26:[function(require,module,exports){
-var hooks = {},
-    $Element = require("./element"),
-    features = require("./features"),
-    docEl = document.documentElement;
-
-if (features.DOM2_EVENTS) {
-    hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
-} else {
-    hooks.relatedTarget = function(e, currentTarget) {
-        return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
-    };
-
-    hooks.defaultPrevented = function(e) { return e.returnValue === false };
-
-    hooks.which = function(e) { return e.keyCode };
-
-    hooks.button = function(e) {
-        var button = e.button;
-        // click: 1 === left; 2 === middle; 3 === right
-        return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
-    };
-
-    hooks.pageX = function(e) {
-        return e.clientX + docEl.scrollLeft - docEl.clientLeft;
-    };
-
-    hooks.pageY = function(e) {
-        return e.clientY + docEl.scrollTop - docEl.clientTop;
-    };
-}
-
-module.exports = hooks;
-
-},{"./element":15,"./features":28}],27:[function(require,module,exports){
+},{"./dom.importstyles":5,"./element":14,"./features":23,"./utils":35}],22:[function(require,module,exports){
 /*
  * Helper type to create an event handler
  */
@@ -1440,8 +1385,13 @@ var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
-    hooks = require("./eventhandler.hooks"),
+    hooks = {},
+    docEl = document.documentElement,
     debouncedEvents = "scroll mousemove",
+    testEl = document.createElement("div"),
+    requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+        return memo || window[name + "equestAnimationFrame"];
+    }, null),
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -1454,15 +1404,14 @@ var _ = require("./utils"),
             if (!debouncing) {
                 debouncing = true;
 
-                _.requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
                     originalHandler(e);
 
                     debouncing = false;
                 });
             }
         };
-    },
-    testEl = document.createElement("div");
+    };
 
 module.exports = function(type, selector, callback, props, el, once) {
     var matcher = SelectorMatcher(selector),
@@ -1525,7 +1474,35 @@ module.exports = function(type, selector, callback, props, el, once) {
     return handler;
 };
 
-},{"./element":15,"./eventhandler.hooks":26,"./features":28,"./selectormatcher":40,"./utils":41}],28:[function(require,module,exports){
+// EventHandler hooks
+
+if (features.DOM2_EVENTS) {
+    hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
+} else {
+    hooks.relatedTarget = function(e, currentTarget) {
+        return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
+    };
+
+    hooks.defaultPrevented = function(e) { return e.returnValue === false };
+
+    hooks.which = function(e) { return e.keyCode };
+
+    hooks.button = function(e) {
+        var button = e.button;
+        // click: 1 === left; 2 === middle; 3 === right
+        return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+    };
+
+    hooks.pageX = function(e) {
+        return e.clientX + docEl.scrollLeft - docEl.clientLeft;
+    };
+
+    hooks.pageY = function(e) {
+        return e.clientY + docEl.scrollTop - docEl.clientTop;
+    };
+}
+
+},{"./element":14,"./features":23,"./selectormatcher":34,"./utils":35}],23:[function(require,module,exports){
 var doc = document,
     win = window;
 
@@ -1535,7 +1512,7 @@ module.exports = {
     WEBKIT_PREFIX: window.WebKitAnimationEvent ? "-webkit-" : ""
 };
 
-},{}],29:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element");
@@ -1553,7 +1530,7 @@ $Node.prototype.contains = function(element) {
     if (node) return element.every(function(el) { return node.contains(el._node) });
 };
 
-},{"./element":15,"./node":35,"./utils":41}],30:[function(require,module,exports){
+},{"./element":14,"./node":30,"./utils":35}],25:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -1600,7 +1577,7 @@ $Node.prototype.data = function(key, value) {
     throw _.makeError("data", this);
 };
 
-},{"./node":35,"./utils":41}],31:[function(require,module,exports){
+},{"./node":30,"./utils":35}],26:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element");
@@ -1676,12 +1653,12 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);
 };
-},{"./element":15,"./node":35,"./utils":41}],32:[function(require,module,exports){
+},{"./element":14,"./node":30,"./utils":35}],27:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    hooks = require("./node.on.hooks"),
-    features = require("./features");
+    features = require("./features"),
+    hooks = require("./node.on");
 
 /**
  * Triggers an event of specific type with optional extra arguments
@@ -1736,7 +1713,7 @@ $Node.prototype.fire = function(type) {
     });
 };
 
-},{"./eventhandler":27,"./features":28,"./node":35,"./node.on.hooks":37,"./utils":41}],33:[function(require,module,exports){
+},{"./eventhandler":22,"./features":23,"./node":30,"./node.on":32,"./utils":35}],28:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -1831,7 +1808,7 @@ _.extend($Node.prototype, {
     legacy: makeCollectionMethod(_.legacy)
 });
 
-},{"./node":35,"./utils":41}],34:[function(require,module,exports){
+},{"./node":30,"./utils":35}],29:[function(require,module,exports){
 var $Node = require("./node");
 
 /**
@@ -1843,7 +1820,7 @@ $Node.prototype.get = function(name) {
     return this._node[name];
 };
 
-},{"./node":35}],35:[function(require,module,exports){
+},{"./node":30}],30:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -1864,7 +1841,7 @@ function $Node(node) {
 
 module.exports = $Node;
 
-},{}],36:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     features = require("./features");
@@ -1899,31 +1876,12 @@ $Node.prototype.off = function(type, callback) {
     });
 };
 
-},{"./features":28,"./node":35,"./utils":41}],37:[function(require,module,exports){
-var _ = require("./utils"),
-    hooks = {};
-
-// firefox doesn't support focusin/focusout events
-if ("onfocusin" in document.createElement("a")) {
-    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
-        hooks[prop] = function(handler) { handler._type = value };
-    });
-} else {
-    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
-}
-
-if (document.createElement("input").validity) {
-    hooks.invalid = function(handler) { handler.capturing = true };
-}
-
-module.exports = hooks;
-
-},{"./utils":41}],38:[function(require,module,exports){
+},{"./features":23,"./node":30,"./utils":35}],32:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    hooks = require("./node.on.hooks"),
-    features = require("./features");
+    features = require("./features"),
+    hooks = {};
 
 /**
  * Bind a DOM event
@@ -2001,7 +1959,24 @@ $Node.prototype.once = function() {
     return this.on.apply(this, args);
 };
 
-},{"./eventhandler":27,"./features":28,"./node":35,"./node.on.hooks":37,"./utils":41}],39:[function(require,module,exports){
+// $Node.on hooks
+
+if ("onfocusin" in document.createElement("a")) {
+    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+        hooks[prop] = function(handler) { handler._type = value };
+    });
+} else {
+    // firefox doesn't support focusin/focusout events
+    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
+}
+
+if (document.createElement("input").validity) {
+    hooks.invalid = function(handler) { handler.capturing = true };
+}
+
+module.exports = hooks;
+
+},{"./eventhandler":22,"./features":23,"./node":30,"./utils":35}],33:[function(require,module,exports){
 var $Node = require("./node");
 
 /**
@@ -2015,7 +1990,7 @@ $Node.prototype.set = function(name, value) {
     return this;
 };
 
-},{"./node":35}],40:[function(require,module,exports){
+},{"./node":30}],34:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
@@ -2060,7 +2035,7 @@ module.exports = function(selector) {
     };
 };
 
-},{"./utils":41}],41:[function(require,module,exports){
+},{"./utils":35}],35:[function(require,module,exports){
 var DOM = require("./dom"),
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
@@ -2155,27 +2130,8 @@ module.exports = {
 
     getComputedStyle: function(el) {
         return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;
-    },
-    parseFragment: (function() {
-        var parser = document.createElement("body");
-
-        return function(html) {
-            var fragment = document.createDocumentFragment();
-
-            // fix NoScope bug
-            parser.innerHTML = "<br>" + html;
-            parser.removeChild(parser.firstChild);
-
-            while (parser.firstChild) fragment.appendChild(parser.firstChild);
-
-            return fragment;
-        };
-    })(),
-    requestAnimationFrame: window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame
+    }
 };
 
-},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41])
+},{"./dom":6}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35])
 ;
