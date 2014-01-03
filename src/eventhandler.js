@@ -5,13 +5,13 @@ var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
-    hooks = require("./eventhandler.hooks"),
+    hooks = {},
+    docEl = document.documentElement,
     debouncedEvents = "scroll mousemove",
     testEl = document.createElement("div"),
-    requestAnimationFrame = window.requestAnimationFrame ||
-        window.mozRequestAnimationFrame ||
-        window.oRequestAnimationFrame ||
-        window.webkitRequestAnimationFrame,
+    requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+        return memo || window[name + "equestAnimationFrame"];
+    }, null),
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -93,3 +93,31 @@ module.exports = function(type, selector, callback, props, el, once) {
 
     return handler;
 };
+
+// EventHandler hooks
+
+if (features.DOM2_EVENTS) {
+    hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
+} else {
+    hooks.relatedTarget = function(e, currentTarget) {
+        return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
+    };
+
+    hooks.defaultPrevented = function(e) { return e.returnValue === false };
+
+    hooks.which = function(e) { return e.keyCode };
+
+    hooks.button = function(e) {
+        var button = e.button;
+        // click: 1 === left; 2 === middle; 3 === right
+        return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+    };
+
+    hooks.pageX = function(e) {
+        return e.clientX + docEl.scrollLeft - docEl.clientLeft;
+    };
+
+    hooks.pageY = function(e) {
+        return e.clientY + docEl.scrollTop - docEl.clientTop;
+    };
+}

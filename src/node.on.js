@@ -1,8 +1,8 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    hooks = require("./node.on.hooks"),
-    features = require("./features");
+    features = require("./features"),
+    hooks = {};
 
 /**
  * Bind a DOM event
@@ -79,3 +79,20 @@ $Node.prototype.once = function() {
 
     return this.on.apply(this, args);
 };
+
+// $Node.on hooks
+
+if ("onfocusin" in document.createElement("a")) {
+    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+        hooks[prop] = function(handler) { handler._type = value };
+    });
+} else {
+    // firefox doesn't support focusin/focusout events
+    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
+}
+
+if (document.createElement("input").validity) {
+    hooks.invalid = function(handler) { handler.capturing = true };
+}
+
+module.exports = hooks;

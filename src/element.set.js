@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = require("./element.set.hooks"),
-    features = require("./features");
+    features = require("./features"),
+    hooks = {};
 
 /**
  * Set property/attribute value by name
@@ -62,3 +62,13 @@ $Element.prototype.set = function(name, value) {
         }
     });
 };
+
+// $Element.set hooks
+
+if (!features.DOM2_EVENTS) {
+    hooks.textContent = function(node, value) {
+        node.innerText = value;
+    };
+}
+
+module.exports = hooks;

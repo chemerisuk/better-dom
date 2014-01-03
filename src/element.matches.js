@@ -1,7 +1,8 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    hooks = require("./element.matches.hooks");
+    hooks = {},
+    docEl = document.documentElement;
 
 /**
  * Check if the element matches selector
@@ -24,3 +25,16 @@ $Element.prototype.matches = function(selector, deep) {
 
     return false;
 };
+
+// $Element.matches hooks
+
+hooks[":focus"] = function(node) { return node === document.activeElement };
+
+hooks[":hidden"] = function(node) {
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.getComputedStyle(node).display === "none" || !docEl.contains(node);
+};
+
+hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
+
+module.exports = hooks;

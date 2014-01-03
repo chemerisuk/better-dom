@@ -1,8 +1,8 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    hooks = require("./node.on.hooks"),
-    features = require("./features");
+    features = require("./features"),
+    hooks = require("./node.on");
 
 /**
  * Triggers an event of specific type with optional extra arguments

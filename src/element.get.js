@@ -1,6 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = require("./element.get.hooks");
+    features = require("./features"),
+    hooks = {};
 
 /**
  * Get property or attribute value by name
@@ -28,3 +29,16 @@ $Element.prototype.get = function(name) {
 
     return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
 };
+
+// $Element.get hooks
+
+hooks.type = function(node) {
+    // some browsers don't recognize input[type=email] etc.
+    return node.getAttribute("type") || node.type;
+};
+
+if (!features.DOM2_EVENTS) {
+    hooks.textContent = function(node) { return node.innerText };
+}
+
+module.exports = hooks;
