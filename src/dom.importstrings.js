@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
+    importStyles = require("./dom.importstyles"),
     rparam = /\$\{([a-z\-]+)\}/g,
     toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
@@ -30,4 +31,4 @@ DOM.importStrings = function(lang, key, value) {
 };
 
 // by default just show data-i18n string
-DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");
+importStyles("[data-i18n]:before", "content:attr(data-i18n)");

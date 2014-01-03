@@ -6,6 +6,7 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
+    importStyles = require("./dom.importstyles"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
     safeEventType = "onfilterchange",
@@ -46,7 +47,7 @@ if (features.CSS3_ANIMATIONS) {
     nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
-    DOM.importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
@@ -138,7 +139,7 @@ DOM.extend = function(selector, mixins) {
             });
             // make sure that any extension is initialized after DOM.ready
             // MUST be after DOM.findAll because of legacy IE behavior
-            DOM.importStyles(selector, styles, true);
+            importStyles(selector, styles, true);
         });
     }
 };

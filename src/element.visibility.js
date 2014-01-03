@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    DOM = require("./dom"),
     features = require("./features"),
+    importStyles = require("./dom.importstyles"),
     animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     createCallback = function(el, callback, fn) {
         return function() {
@@ -82,4 +82,4 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 // pointer-events:none helps to solve accidental clicks on a hidden element
-DOM.importStyles("[aria-hidden=true]", "pointer-events:none; display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
+importStyles("[aria-hidden=true]", "pointer-events:none; display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));

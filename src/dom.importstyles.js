@@ -6,8 +6,7 @@ var _ = require("./utils"),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
     // normalize pseudoelement selectors or quotes
-    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"],
-    args = DOM.importStyles.args;
+    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
 
 /**
  * Append global css styles
@@ -15,7 +14,7 @@ var _ = require("./utils"),
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  */
-DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
+module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
         // make a temporary element and populate style properties
@@ -48,6 +47,3 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
         }
     }
 };
-
-// populate existing calls
-_.forEach(args, function(args) { DOM.importStyles.apply(DOM, args) });

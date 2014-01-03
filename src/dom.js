@@ -3,9 +3,6 @@ var $Node = require("./node"),
 
 DOM.version = "<%= pkg.version %>";
 
-DOM.importStyles = function() { DOM.importStyles.args.push(arguments) };
-DOM.importStyles.args = [];
-
 /**
  * Global object to access DOM
  * @namespace DOM
