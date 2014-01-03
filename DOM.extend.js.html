@@ -79,56 +79,72 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
+    importStyles = require("./dom.importstyles"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
-    makeExtHandler = function(e, node) {
-        var type = e.type,
-            el = $Element(node),
-            accepted = e._done || {},
-            delay = 0;
+    safeEventType = "onfilterchange",
+    nativeEventType, animId, link, styles,
+    makeExtHandler = function(node, skip) {
+        var el = $Element(node);
+
+        skip = skip || {};
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
-            if (!accepted[index] && ext.accept(node)) {
+            if (!skip[index] && ext.accept(node)) {
                 if (features.CSS3_ANIMATIONS) {
-                    node.addEventListener(type, ext.stop, false);
+                    node.addEventListener(nativeEventType, ext.stop, false);
                 } else {
-                    node.attachEvent("on" + type, ext.stop);
+                    node.attachEvent(nativeEventType, ext.stop);
                 }
-                // IMPORTANT: delay helps to use right extension order
-                setTimeout(function() { ext(el) }, delay++);
+
+                var e, handler = function() { ext(el) };
+                // every extension executes in event handler function
+                // so they can't break each other
+                if (features.CSS3_ANIMATIONS) {
+                    e = document.createEvent("HTMLEvents");
+                    e.initEvent(safeEventType, false, false);
+                    node.addEventListener(safeEventType, handler, false);
+                    node.dispatchEvent(e);
+                    node.removeEventListener(safeEventType, handler);
+                } else {
+                    node.attachEvent(safeEventType, handler);
+                    node.fireEvent(safeEventType);
+                    node.detachEvent(safeEventType, handler);
+                }
             }
         };
-    },
-    animId, link, styles;
+    };
 
 if (features.CSS3_ANIMATIONS) {
+    nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
-    DOM.importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e) {
+    document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e, e.target));
+            _.forEach(extensions, makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
+    nativeEventType = "ondataavailable";
     link = document.querySelector("link[rel=htc]");
 
     if (!link) throw "You forgot to include &lt;link rel='htc'> for IE &lt; 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
-    document.attachEvent("ondataavailable", function() {
+    document.attachEvent(nativeEventType, function() {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e, e.srcElement));
+            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -153,9 +169,12 @@ DOM.extend = function(selector, mixins) {
             ext = function(el, mock) {
                 _.extend(el, mixins);
 
-                if (ctr) ctr.call(el);
-                // cleanup event handlers
-                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                try {
+                    if (ctr) ctr.call(el);
+                } finally {
+                    // remove event handlers from element's interface
+                    if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                }
             },
             index = extensions.push(ext) - 1,
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
@@ -167,8 +186,8 @@ DOM.extend = function(selector, mixins) {
             e = e || window.event;
 
             if (e.animationName === animId || e.srcUrn === "dataavailable")  {
-                // mark extension as processed via _done bitmask
-                (e._done = e._done || {})[index] = true;
+                // mark extension as processed via _skip bitmask
+                (e._skip = e._skip || {})[index] = true;
             }
         };
 
@@ -181,19 +200,19 @@ DOM.extend = function(selector, mixins) {
 
                 if (features.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
-                    e.initEvent(features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", true, true);
+                    e.initEvent(nativeEventType, true, true);
                     e.animationName = animId;
 
                     node.dispatchEvent(e);
                 } else {
                     e = document.createEventObject();
                     e.srcUrn = "dataavailable";
-                    node.fireEvent("ondataavailable", e);
+                    node.fireEvent(nativeEventType, e);
                 }
             });
             // make sure that any extension is initialized after DOM.ready
             // MUST be after DOM.findAll because of legacy IE behavior
-            DOM.importStyles(selector, styles, true);
+            importStyles(selector, styles, true);
         });
     }
 };
@@ -215,7 +234,7 @@ module.exports = extensions;
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Wed Dec 25 2013 18:37:46 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sat Jan 04 2014 01:15:41 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
