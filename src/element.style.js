@@ -20,38 +20,47 @@ $Element.prototype.style = function(name, value) {
     var len = arguments.length,
         node = this._node,
         nameType = typeof name,
-        style, hook;
+        style, hook, computed;
 
-    if (len === 1 && nameType === "string") {
+    if (len === 1 && (nameType === "string" || Array.isArray(name))) {
         if (node) {
             style = node.style;
-            hook = hooks.get[name];
 
-            value = hook ? hook(style) : style[name];
-
-            if (!value) {
-                style = window.getComputedStyle(node);
+            value = _.foldl(nameType === "string" ? [name] : name, function(memo, name) {
+                hook = hooks.get[name];
                 value = hook ? hook(style) : style[name];
-            }
+
+                if (!computed && !value) {
+                    style = window.getComputedStyle(node);
+                    value = hook ? hook(style) : style[name];
+
+                    computed = true;
+                }
+
+                memo[name] = value;
+
+                return memo;
+            }, {});
         }
 
-        return value;
+        return node && nameType === "string" ? value[name] : value;
     }
 
     return this.legacy(function(node, el, index, ref) {
-        var appendCssText = function(value, key) {
-            var hook = hooks.set[key];
+        var style = node.style,
+            appendCssText = function(value, key) {
+                var hook = hooks.set[key];
 
-            if (typeof value === "function") value = value(el, index, ref);
+                if (typeof value === "function") value = value(el, index, ref);
 
-            if (value == null) value = "";
+                if (value == null) value = "";
 
-            if (hook) {
-                hook(node.style, value);
-            } else {
-                node.style[key] = typeof value === "number" ? value + "px" : value.toString();
-            }
-        };
+                if (hook) {
+                    hook(style, value);
+                } else {
+                    style[key] = typeof value === "number" ? value + "px" : value.toString();
+                }
+            };
 
         if (len === 1 && name && nameType === "object") {
             _.forOwn(name, appendCssText);

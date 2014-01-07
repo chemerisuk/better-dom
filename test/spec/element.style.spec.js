@@ -41,6 +41,10 @@ describe("style", function() {
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.style(1); }).toThrow();
         });
+
+        it("should support array", function() {
+            expect(link.style(["float","line-height"])).toEqual({"float": "left", "line-height": "2"});
+        });
     });
 
     describe("setter", function() {
