@@ -55,10 +55,10 @@ describe("visibility", function() {
                 }
             }
 
-            link = DOM.create("a[style=animation-duration:.1s;-webkit-animation-duration:.1s;display:block]>{abc}");
+            link = DOM.create("a[style=animation:show .1s;-webkit-animation:show .1s;display:block]>{abc}");
             jasmine.sandbox.set(link);
 
-            link.style("animation-name", "show").hide(spy);
+            link.hide(spy);
 
             expect(spy).not.toHaveBeenCalled();
 
@@ -81,6 +81,23 @@ describe("visibility", function() {
 
             waitsFor(function() {
                 return spy.callCount === 1;
+            });
+        });
+
+        it("should work properly in legacy browsers", function() {
+            var spy = jasmine.createSpy();
+
+            link.style("transition-duration", "1");
+            link.hide(spy);
+
+            link.style("animation-duration", "1");
+            link.show(spy);
+
+            link.style("transition-duration", null);
+            link.hide(spy);
+
+            waitsFor(function() {
+                return spy.callCount === 3;
             });
         });
 

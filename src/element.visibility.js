@@ -5,24 +5,47 @@ var _ = require("./utils"),
     animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     createCallback = function(el, callback, fn) {
         return function() {
-            el.set("aria-hidden", fn);
+            el.legacy(function(node, el, index, ref) {
+                var value = typeof fn === "function" ? fn(el) : fn,
+                    transitionDelay = parseFloat(el.style("transition-duration")),
+                    animationDelay = parseFloat(el.style("animation-duration"));
 
-            if (callback) {
-                el.each(function(el, index, ref) {
-                    var transitionDelay = parseFloat(el.style("transition-duration")),
-                        animationDelay = parseFloat(el.style("animation-duration"));
+                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay)) {
+                    if (value) {
+                        // store inline styles
+                        el._oldstyle = {
+                            visibility: node.style.visibility,
+                            position: node.style.position
+                        };
 
-                    if (el.get("offsetWidth") && (transitionDelay || animationDelay)) {
+                        el.style({
+                            visibility: el.style("visibility"),
+                            position: el.style("position")
+                        });
+                    }
+
+                    if (callback || value) {
                         // choose max delay
                         el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], function() {
-                            callback(el, index, ref);
+                            if (value) el.style({ visibility: null, position: null });
+
+                            if (callback) callback(el, index, ref);
                         });
-                    } else {
-                        // use setTimeout to make a safe call
-                        setTimeout(function() { callback(el, index, ref) }, 0);
                     }
-                });
-            }
+                } else if (callback) {
+                    // use setTimeout to make a safe call
+                    setTimeout(function() { callback(el, index, ref) }, 0);
+                }
+
+                el.set("aria-hidden", value);
+
+                if (!value && el._oldstyle) {
+                    // restore inline styles
+                    el.style(el._oldstyle);
+
+                    delete el._oldstyle;
+                }
+            });
         };
     },
     makeVisibilityMethod = function(name, fn) {
@@ -82,4 +105,4 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 // pointer-events:none helps to solve accidental clicks on a hidden element
-importStyles("[aria-hidden=true]", "pointer-events:none; display:none" + (features.CSS3_ANIMATIONS ? "" : " !important"));
+importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute");
