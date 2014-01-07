@@ -86,11 +86,5 @@ module.exports = {
     }),
     slice: function(list, index) {
         return Array.prototype.slice.call(list, index | 0);
-    },
-
-    // DOM UTILS
-
-    getComputedStyle: function(el) {
-        return window.getComputedStyle ? window.getComputedStyle(el) : el.currentStyle;
     }
 };
