@@ -2,7 +2,8 @@ describe("extend", function() {
     "use strict";
 
     var WAIT_FOR_WATCH_TIME = 50,
-        callback;
+        callback,
+        CLS_INDEX = 0;
 
     DOM.extend(".watch11", function() {
         this.removeClass("watch11");
@@ -31,12 +32,36 @@ describe("extend", function() {
         });
     });
 
+    it("should not change interface if constructor returned false", function() {
+        var cls = "watchhh" + CLS_INDEX++,
+            spy = jasmine.createSpy("ctr");
+
+        spy.andReturn(false);
+
+        jasmine.sandbox.set("<a class=" + cls + "></a>");
+
+        DOM.extend("." + cls, {
+            constructor: spy,
+            method: function() {},
+            onEvent: function() {}
+        });
+
+        waitsFor(function() {
+            if (spy.callCount === 1) {
+                var el = spy.calls[0].object;
+
+                expect(el.method).toBeUndefined();
+                expect(el.onEvent).toBeUndefined();
+
+                return true;
+            }
+        });
+    });
+
     it("should capture any future element on page", function() {
         DOM.extend(".watch1", callback);
 
-        runs(function() {
-            jasmine.sandbox.set("<a class='watch1'></a><span class='watch1'></span>");
-        });
+        jasmine.sandbox.set("<a class='watch1'></a><span class='watch1'></span>");
 
         waitsFor(function() {
             return callback.callCount === 2;

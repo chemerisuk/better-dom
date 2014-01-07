@@ -94,13 +94,15 @@ DOM.extend = function(selector, mixins) {
     } else {
         var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
             ext = function(el, mock) {
+                var removable = mock ? [] : eventHandlers;
+
                 _.extend(el, mixins);
 
                 try {
-                    if (ctr) ctr.call(el);
+                    if (ctr && ctr.call(el) === false) removable = Object.keys(mixins);
                 } finally {
                     // remove event handlers from element's interface
-                    if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                    _.forEach(removable, function(prop) { delete el[prop] });
                 }
             },
             index = extensions.push(ext) - 1,
