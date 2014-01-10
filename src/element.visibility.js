@@ -17,7 +17,7 @@ var _ = require("./utils"),
                         if (callback) callback(el, index, ref);
                     };
 
-                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount !== "infinite")) {
+                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount >= 1)) {
                     if (completeCallback) {
                         // choose max delay
                         el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], completeCallback);
