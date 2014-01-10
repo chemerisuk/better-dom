@@ -1,6 +1,6 @@
 /**
  * @file better-dom-legacy.js
- * @version 1.6.5 2014-01-04T01:15:35
+ * @version 1.6.6 2014-01-10T22:39:11
  * @overview Live extension playground
  * @copyright Maksim Chemerisuk 2014
  * @license MIT
@@ -1623,6 +1623,15 @@ var toObject = function (o) {
 
 }(this, document));
 },{}],3:[function(require,module,exports){
+// getComputedStyle implementation
+
+if (!window.getComputedStyle) {
+    window.getComputedStyle = function(node) {
+        return node.currentStyle;
+    };
+}
+
+},{}],4:[function(require,module,exports){
 // DOMContentLoaded implementation
 
 if (!document.addEventListener) {
@@ -1659,7 +1668,7 @@ if (!document.addEventListener) {
     }
 }
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // input event implementation/fixes for IE8-9
 
 if (document.attachEvent) {
@@ -1695,7 +1704,7 @@ if (document.attachEvent) {
     });
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // submit event bubbling fix for IE<9
 
 var handleSubmit = function() {
@@ -1730,7 +1739,7 @@ if (!document.addEventListener) {
     });
 }
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 // requestAnimationFrame implementation
 
 if (!window.requestAnimationFrame) {
@@ -1750,5 +1759,5 @@ if (!window.requestAnimationFrame) {
     };
 }
 
-},{}]},{},[3,4,5,6,2,1])
+},{}]},{},[3,4,5,6,7,1,2])
 ;

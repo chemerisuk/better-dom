@@ -1,7 +1,7 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Live extension playground
 
-jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce **live extensions** and **better-dom** - a next-level library for working with the DOM.
+jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce **live extensions** and **better-dom** - a new library for working with the DOM.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
@@ -11,9 +11,9 @@ jQuery knows a concept called “**live events**”. Using the idea of event del
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [better event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
-* [microtemplating via emmet-like syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
+* [microtemplating using the emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
-* [css3 animations support](http://jsfiddle.net/C3WeM/4/)
+* [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)
@@ -54,6 +54,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [better-prettydate](https://github.com/chemerisuk/better-prettydate) - Enhances time element to update text in realtime
 * [better-placeholder-polyfill](https://github.com/chemerisuk/better-placeholder-polyfill) - `[placeholder]` polyfill
 * [better-elastic-textarea](https://github.com/chemerisuk/better-elastic-textarea) - Make textarea to expand on user input
+* [better-details-polyfill](https://github.com/chemerisuk/better-details-polyfill) - `<details>` polyfill
 
 ## Notes about old IEs
 For IE8-9 support you have to incude the conditional comment above with 2 extra elements into `<head>`. The excellent [html5shiv](https://github.com/aFarkas/html5shiv) provides fix for new HTML5 tags and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions. These projects are bundled into **better-dom-legacy.js** with other fixes.
