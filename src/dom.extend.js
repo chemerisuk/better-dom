@@ -9,8 +9,23 @@ var _ = require("./utils"),
     importStyles = require("./dom.importstyles"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
-    safeEventType = "onfilterchange",
-    nativeEventType, animId, link, styles, stopExt,
+    safeEventType = "filterchange",
+    nativeEventType, animId, link, styles,
+    stopExt = function(node, index) {
+        return function(e) {
+            var stop;
+
+            e = e || window.event;
+            // mark extension as processed via _skip bitmask
+            if (features.CSS3_ANIMATIONS) {
+                stop = e.animationName === animId && e.target === node;
+            } else {
+                stop = e.srcUrn === "dataavailable" && e.srcElement === node;
+            }
+
+            if (stop) (e._skip = e._skip || {})[index] = true;
+        };
+    },
     makeExtHandler = function(node, skip) {
         var el = $Element(node);
 
@@ -24,21 +39,9 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent(nativeEventType, stopExt(node, index));
                 }
-
-                var e, handler = function() { ext(el) };
                 // every extension executes in event handler function
                 // so they can't break each other
-                if (features.CSS3_ANIMATIONS) {
-                    e = document.createEvent("HTMLEvents");
-                    e.initEvent(safeEventType, false, false);
-                    node.addEventListener(safeEventType, handler, false);
-                    node.dispatchEvent(e);
-                    node.removeEventListener(safeEventType, handler);
-                } else {
-                    node.attachEvent(safeEventType, handler);
-                    node.fireEvent(safeEventType);
-                    node.detachEvent(safeEventType, handler);
-                }
+                el.once(safeEventType, ext).fire(safeEventType);
             }
         };
     };
@@ -54,15 +57,6 @@ if (features.CSS3_ANIMATIONS) {
         "animation-name": animId + " !important"
     };
 
-    stopExt = function(node, index) {
-        return function(e) {
-            if (e.animationName === animId && e.target === node)  {
-                // mark extension as processed via _skip bitmask
-                (e._skip = e._skip || {})[index] = true;
-            }
-        };
-    };
-
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
             _.forEach(extensions, makeExtHandler(e.target, e._skip));
@@ -75,17 +69,6 @@ if (features.CSS3_ANIMATIONS) {
     if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
-
-    stopExt = function(node, index) {
-        return function() {
-            var e = window.event;
-
-            if (e.srcUrn === "dataavailable" && e.srcElement === node)  {
-                // mark extension as processed via _skip bitmask
-                (e._skip = e._skip || {})[index] = true;
-            }
-        };
-    };
 
     document.attachEvent(nativeEventType, function() {
         var e = window.event;
