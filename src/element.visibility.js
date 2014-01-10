@@ -8,43 +8,48 @@ var _ = require("./utils"),
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(el) : fn,
                     transitionDelay = parseFloat(el.style("transition-duration")),
-                    animationDelay = parseFloat(el.style("animation-duration"));
+                    animationDelay = parseFloat(el.style("animation-duration")),
+                    iterationCount = el.style("animation-iteration-count"),
+                    completeCallback = function() {
+                        // always use inline style because they have the highest priority
+                        if (value) el.style({ visibility: "hidden", position: "absolute" });
 
-                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay)) {
-                    if (value) {
-                        // store inline styles
-                        el._oldstyle = {
-                            visibility: node.style.visibility,
-                            position: node.style.position
-                        };
+                        if (callback) callback(el, index, ref);
+                    };
 
-                        el.style({
-                            visibility: el.style("visibility"),
-                            position: el.style("position")
-                        });
-                    }
-
+                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount !== "infinite")) {
                     if (callback || value) {
                         // choose max delay
-                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], function() {
-                            if (value) el.style({ visibility: null, position: null });
-
-                            if (callback) callback(el, index, ref);
-                        });
+                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], completeCallback);
                     }
-                } else if (callback) {
-                    // use setTimeout to make a safe call
-                    setTimeout(function() { callback(el, index, ref) }, 0);
+                } else {
+                    if (callback || value) {
+                        // use setTimeout to make a safe call
+                        setTimeout(completeCallback, 0);
+                    }
+                }
+
+                if (value) {
+                    // store inline styles
+                    el._oldstyle = {
+                        visibility: node.style.visibility,
+                        position: node.style.position
+                    };
+
+                    el.style({
+                        visibility: el.style("visibility"),
+                        position: el.style("position")
+                    });
+                } else {
+                    if (el._oldstyle) {
+                        // restore inline styles
+                        el.style(el._oldstyle);
+
+                        delete el._oldstyle;
+                    }
                 }
 
                 el.set("aria-hidden", value);
-
-                if (!value && el._oldstyle) {
-                    // restore inline styles
-                    el.style(el._oldstyle);
-
-                    delete el._oldstyle;
-                }
             });
         };
     },

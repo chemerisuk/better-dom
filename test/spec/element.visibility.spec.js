@@ -17,6 +17,16 @@ describe("visibility", function() {
         expect(link.get("aria-hidden")).toBe("false");
     });
 
+    try {
+        DOM.importStyles("@keyframes show", "from {opacity: 1} to {opacity: 0}");
+    } catch (e1) {
+        try {
+            DOM.importStyles("@-webkit-keyframes show", "from {opacity: 1} to {opacity: 0}");
+        } catch (e2) {
+            // do nothing for IE
+        }
+    }
+
     describe("hide", function() {
         it("should support optional delay argument", function() {
             var delay = 50,
@@ -44,16 +54,6 @@ describe("visibility", function() {
 
         it("should support exec callback when animation is defined", function() {
             var spy = jasmine.createSpy();
-
-            try {
-                DOM.importStyles("@keyframes show", "from {opacity: 1} to {opacity: 0}");
-            } catch (e1) {
-                try {
-                    DOM.importStyles("@-webkit-keyframes show", "from {opacity: 1} to {opacity: 0}");
-                } catch (e2) {
-                    // do nothing for IE
-                }
-            }
 
             link = DOM.create("a[style=animation:show .1s;-webkit-animation:show .1s;display:block]>{abc}");
             jasmine.sandbox.set(link);
@@ -98,6 +98,21 @@ describe("visibility", function() {
 
             waitsFor(function() {
                 return spy.callCount === 3;
+            });
+        });
+
+        it("should skip infinite animations", function() {
+            var spy = jasmine.createSpy();
+
+            link = DOM.create("a#inf[style='animation:show .1s infinite;-webkit-animation:show .1s infinite;display:block']>{abc}");
+            jasmine.sandbox.set(link);
+
+            link.hide(spy);
+
+            expect(spy).not.toHaveBeenCalled();
+
+            waitsFor(function() {
+                return spy.callCount === 1;
             });
         });
 
