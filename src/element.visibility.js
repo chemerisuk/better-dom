@@ -6,40 +6,33 @@ var _ = require("./utils"),
     createCallback = function(el, callback, fn) {
         return function() {
             el.legacy(function(node, el, index, ref) {
-                var value = typeof fn === "function" ? fn(el) : fn,
+                var hidden = typeof fn === "function" ? fn(el) : fn,
                     transitionDelay = parseFloat(el.style("transition-duration")),
                     animationDelay = parseFloat(el.style("animation-duration")),
                     iterationCount = el.style("animation-iteration-count"),
-                    completeCallback = function() {
-                        // always use inline style because they have the highest priority
-                        if (value) el.style({ visibility: "hidden", position: "absolute" });
+                    completeCallback = (callback || hidden) && function() {
+                        // remove temporary inline styles
+                        if (hidden) el.style({ visibility: null, position: null });
 
                         if (callback) callback(el, index, ref);
                     };
 
                 if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount !== "infinite")) {
-                    if (callback || value) {
+                    if (completeCallback) {
                         // choose max delay
                         el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], completeCallback);
                     }
                 } else {
-                    if (callback || value) {
-                        // use setTimeout to make a safe call
-                        setTimeout(completeCallback, 0);
-                    }
+                    // use setTimeout to make a safe call
+                    if (completeCallback) setTimeout(completeCallback, 0);
                 }
 
-                if (value) {
-                    // store inline styles
-                    el._oldstyle = {
-                        visibility: node.style.visibility,
-                        position: node.style.position
-                    };
-
-                    el.style({
-                        visibility: el.style("visibility"),
-                        position: el.style("position")
-                    });
+                if (hidden) {
+                    // store inline styles because they'll be temporary overwritten
+                    el._oldstyle = { visibility: node.style.visibility, position: node.style.position };
+                    // set current styles inline to override inherited from
+                    // the [aria-hidden=true] rule until the element animation ends
+                    el.style(el.style(["visibility", "position"]));
                 } else {
                     if (el._oldstyle) {
                         // restore inline styles
@@ -49,7 +42,7 @@ var _ = require("./utils"),
                     }
                 }
 
-                el.set("aria-hidden", value);
+                el.set("aria-hidden", hidden);
             });
         };
     },
