@@ -201,6 +201,18 @@ describe("extend", function() {
         waitsFor(function() { return spy.callCount === 1 && typeof link.onClick === "undefined" });
     });
 
+    it("should catch nested elements", function() {
+        var cls = "watchhh" + CLS_INDEX++;
+
+        DOM.extend("." + cls, callback);
+
+        jasmine.sandbox.set("<div class='" + cls + "'><div class='" + cls + "'></div></div>");
+
+        waitsFor(function() {
+            return callback.callCount === 2;
+        });
+    });
+
     // FIXME: find a way to test without exception in browser
     // it("should not stop handle other listeners if any throws an error", function() {
     //     var otherCallback = jasmine.createSpy("otherCallback");

@@ -10,7 +10,7 @@ var _ = require("./utils"),
     reEventHandler = /^on[A-Z]/,
     extensions = [],
     safeEventType = "onfilterchange",
-    nativeEventType, animId, link, styles,
+    nativeEventType, animId, link, styles, stopExt,
     makeExtHandler = function(node, skip) {
         var el = $Element(node);
 
@@ -20,9 +20,9 @@ var _ = require("./utils"),
             // skip previously excluded or mismatched elements
             if (!skip[index] && ext.accept(node)) {
                 if (features.CSS3_ANIMATIONS) {
-                    node.addEventListener(nativeEventType, ext.stop, false);
+                    node.addEventListener(nativeEventType, stopExt(node, index), false);
                 } else {
-                    node.attachEvent(nativeEventType, ext.stop);
+                    node.attachEvent(nativeEventType, stopExt(node, index));
                 }
 
                 var e, handler = function() { ext(el) };
@@ -54,6 +54,15 @@ if (features.CSS3_ANIMATIONS) {
         "animation-name": animId + " !important"
     };
 
+    stopExt = function(node, index) {
+        return function(e) {
+            if (e.animationName === animId && e.target === node)  {
+                // mark extension as processed via _skip bitmask
+                (e._skip = e._skip || {})[index] = true;
+            }
+        };
+    };
+
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
             _.forEach(extensions, makeExtHandler(e.target, e._skip));
@@ -66,6 +75,17 @@ if (features.CSS3_ANIMATIONS) {
     if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
+
+    stopExt = function(node, index) {
+        return function() {
+            var e = window.event;
+
+            if (e.srcUrn === "dataavailable" && e.srcElement === node)  {
+                // mark extension as processed via _skip bitmask
+                (e._skip = e._skip || {})[index] = true;
+            }
+        };
+    };
 
     document.attachEvent(nativeEventType, function() {
         var e = window.event;
@@ -105,25 +125,17 @@ DOM.extend = function(selector, mixins) {
                     _.forEach(removable, function(prop) { delete el[prop] });
                 }
             },
-            index = extensions.push(ext) - 1,
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
 
         if (ctr) delete mixins.constructor;
 
         ext.accept = SelectorMatcher(selector);
-        ext.stop = function(e) {
-            e = e || window.event;
-
-            if (e.animationName === animId || e.srcUrn === "dataavailable")  {
-                // mark extension as processed via _skip bitmask
-                (e._skip = e._skip || {})[index] = true;
-            }
-        };
+        extensions.push(ext);
 
         DOM.ready(function() {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
-            // Also fixes legacy IE in case when the behaviour is already attached
+            // Also fixes legacy IE in case when the lib behavior is already attached
             DOM.findAll(selector).legacy(function(node) {
                 var e;
 
