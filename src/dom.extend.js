@@ -89,7 +89,7 @@ if (features.CSS3_ANIMATIONS) {
 DOM.extend = function(selector, mixins) {
     if (typeof mixins === "function") mixins = {constructor: mixins};
 
-    if (!mixins || typeof mixins !== "object") throw _.makeError("extend", this);
+    if (!mixins || typeof mixins !== "object") throw _.makeError("extend", true);
 
     if (selector === "*") {
         // extending element prototype

@@ -28,7 +28,7 @@ function makeChildTraversingMethod(multiple) {
         if (multiple) {
             selector = index;
         } else if (typeof index !== "number") {
-            throw _.makeError("child", this);
+            throw _.makeError("child");
         }
 
         if (!this._node) return new $Element();

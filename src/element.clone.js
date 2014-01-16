@@ -10,7 +10,7 @@ var _ = require("./utils"),
 $Element.prototype.clone = function(deep) {
     if (!arguments.length) deep = true;
 
-    if (typeof deep !== "boolean") throw _.makeError("clone", this);
+    if (typeof deep !== "boolean") throw _.makeError("clone");
 
     var node = this._node;
 

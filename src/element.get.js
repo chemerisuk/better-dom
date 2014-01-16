@@ -24,7 +24,7 @@ $Element.prototype.get = function(name) {
             name = node.type && "value" in node ? "value" : "innerHTML";
         }
     } else if (typeof name !== "string") {
-        throw _.makeError("get", this);
+        throw _.makeError("get");
     }
 
     return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));

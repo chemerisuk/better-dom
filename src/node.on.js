@@ -39,7 +39,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
         return this;
     } else {
-        throw _.makeError("on", this);
+        throw _.makeError("on");
     }
 
     return this.legacy(function(node, el) {

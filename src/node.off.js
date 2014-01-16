@@ -10,7 +10,7 @@ var _ = require("./utils"),
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.off = function(type, callback) {
-    if (typeof type !== "string") throw _.makeError("off", this);
+    if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy(function(node, el) {
         _.forEach(el._listeners, function(handler, index, events) {

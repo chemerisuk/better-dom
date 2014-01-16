@@ -26,7 +26,7 @@ DOM.importStrings = function(lang, key, value) {
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
-        throw _.makeError("importStrings", this);
+        throw _.makeError("importStrings", true);
     }
 };
 

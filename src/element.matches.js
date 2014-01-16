@@ -11,7 +11,7 @@ var _ = require("./utils"),
  */
 $Element.prototype.matches = function(selector, deep) {
     if (!selector || typeof selector !== "string" || deep !== undefined && typeof deep !== "boolean") {
-        throw _.makeError("matches", this);
+        throw _.makeError("matches");
     }
 
     var node = this._node,

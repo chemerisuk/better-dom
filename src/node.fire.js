@@ -12,7 +12,7 @@ var _ = require("./utils"),
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.fire = function(type) {
-    if (typeof type !== "string") throw _.makeError("fire", this);
+    if (typeof type !== "string") throw _.makeError("fire");
 
     var args = _.slice(arguments, 1);
 

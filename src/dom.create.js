@@ -14,7 +14,7 @@ var _ = require("./utils"),
 DOM.create = function(value, vars) {
     if (value.nodeType === 1) return $Element(value);
 
-    if (typeof value !== "string") throw _.makeError("create", this);
+    if (typeof value !== "string") throw _.makeError("create", true);
 
     var node, multiple;
 

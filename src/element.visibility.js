@@ -57,7 +57,7 @@ var _ = require("./utils"),
 
             if (delay && (delayType !== "number" || delay < 0) ||
                 callback && typeof callback !== "function") {
-                throw _.makeError(name, this);
+                throw _.makeError(name);
             }
 
             callback = createCallback(this, callback, fn);

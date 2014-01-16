@@ -54,7 +54,7 @@ _.forEach("area base br col hr img input link meta param command keygen source".
  * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.template = function(template, vars) {
-    if (typeof template !== "string") throw _.makeError("template", this);
+    if (typeof template !== "string") throw _.makeError("template", true);
     // handle vars
     if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
 

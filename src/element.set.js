@@ -46,7 +46,7 @@ $Element.prototype.set = function(name, value) {
                 name = "innerHTML";
             }
         } else if (len > 2 || len === 0 || nameType !== "string") {
-            throw _.makeError("set", el);
+            throw _.makeError("set");
         }
 
         if (typeof value === "function") value = value(el, index, ref);

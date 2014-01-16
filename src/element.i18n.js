@@ -12,7 +12,7 @@ $Element.prototype.i18n = function(value, vars) {
 
     if (!len) return this.get("data-i18n");
 
-    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n", this);
+    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
 
     // localized srings with variables require different css
     if (vars) DOM.importStrings("", value, value);

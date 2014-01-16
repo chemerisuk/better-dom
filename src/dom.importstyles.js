@@ -30,7 +30,7 @@ module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/uniqu
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {
-        throw _.makeError("importStyles", this);
+        throw _.makeError("importStyles", true);
     }
 
     // check if the rule already exists

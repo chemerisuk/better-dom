@@ -24,7 +24,7 @@ DOM.importScripts = function() {
             } else if (argType === "function") {
                 arg();
             } else if (arg) {
-                throw _.makeError("importScripts", DOM);
+                throw _.makeError("importScripts", true);
             }
         };
 

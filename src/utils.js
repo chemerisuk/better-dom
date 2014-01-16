@@ -25,8 +25,8 @@ var DOM = require("./dom"),
     })();
 
 module.exports = {
-    makeError: function(method, el) {
-        var type = el === DOM ? "DOM" : "$Element";
+    makeError: function(method, DOM) {
+        var type = DOM ? "DOM" : "$Element";
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the function call";
     },

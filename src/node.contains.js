@@ -10,7 +10,7 @@ var _ = require("./utils"),
 $Node.prototype.contains = function(element) {
     var node = this._node;
 
-    if (!(element instanceof $Element)) throw _.makeError("contains", this);
+    if (!(element instanceof $Element)) throw _.makeError("contains");
 
     if (node) return element.every(function(el) { return node.contains(el._node) });
 };

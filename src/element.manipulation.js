@@ -20,7 +20,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                     // populate fragment
                     arg.legacy(function(node) { value.appendChild(node) });
                 } else {
-                    throw _.makeError(methodName, el);
+                    throw _.makeError(methodName);
                 }
             });
 
