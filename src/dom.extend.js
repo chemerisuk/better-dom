@@ -7,7 +7,7 @@ var _ = require("./utils"),
     SelectorMatcher = require("./selectormatcher"),
     features = require("./features"),
     importStyles = require("./dom.importstyles"),
-    reEventHandler = /^on[A-Z]/,
+    reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
     safeEventType = "filterchange",
     nativeEventType, animId, link, styles,
@@ -95,7 +95,7 @@ DOM.extend = function(selector, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
+        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
             ext = function(el, mock) {
                 var removable = mock ? [] : eventHandlers;
 

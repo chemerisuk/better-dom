@@ -103,4 +103,4 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
 
 // [aria-hidden=true] could be overriden only if browser supports animations
 // pointer-events:none helps to solve accidental clicks on a hidden element
-importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute");
+importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute;pointer-events:none");

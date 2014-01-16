@@ -162,7 +162,7 @@ module.exports = function(grunt) {
                         next(err, grunt.template.process(
                             "/**\n" +
                             " * @file <%= pkg.name %>-legacy.js\n" +
-                            " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
+                            " * @version <%= pkg.version %> 2013-<%= grunt.template.today('isoDateTime') %>\n" +
                             " * @overview <%= pkg.description %>\n" +
                             " * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>\n" +
                             " * @license <%= pkg.license %>\n" +
@@ -184,7 +184,7 @@ module.exports = function(grunt) {
                         next(err, grunt.template.process(
                             "/**\n" +
                             " * @file <%= pkg.name %>.js\n" +
-                            " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
+                            " * @version <%= pkg.version %> 2013-<%= grunt.template.today('isoDateTime') %>\n" +
                             " * @overview <%= pkg.description %>\n" +
                             " * @copyright <%= pkg.author %> <%= grunt.template.today('yyyy') %>\n" +
                             " * @license <%= pkg.license %>\n" +

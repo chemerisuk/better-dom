@@ -185,7 +185,7 @@ describe("extend", function() {
         expect(DOM.create("a").test).toBe(555);
     });
 
-    it("should not expose event handlers", function() {
+    it("should not expose removable methods", function() {
         var spy = jasmine.createSpy("callback2"),
             cls = "ext" + new Date().getTime(), link;
 
@@ -195,10 +195,15 @@ describe("extend", function() {
 
         DOM.extend("." + cls, {
             constructor: spy,
-            onClick: function() {}
+            onClick: function() {},
+            doSmth: function() {}
         });
 
-        waitsFor(function() { return spy.callCount === 1 && typeof link.onClick === "undefined" });
+        waitsFor(function() {
+            if (spy.callCount !== 1) return false;
+
+            return typeof link.onClick === "undefined" && typeof link.doSmth === "undefined";
+        });
     });
 
     it("should catch nested elements", function() {
