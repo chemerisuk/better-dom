@@ -2,7 +2,7 @@ var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features"),
     et = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
-    animatioProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
     prevDisplayValue = "_" + Date.now(),
     makeVisibilityMethod = function(name, fn) {
         return function(delay, callback) {
@@ -20,11 +20,11 @@ var _ = require("./utils"),
 
             return this.legacy(function(node, el, index, ref) {
                 var hidden = typeof fn === "function" ? fn(node) : fn,
-                    styles = el.style(animatioProps),
-                    transitionDelay = parseFloat(styles[animatioProps[0]]),
-                    animationDelay = parseFloat(styles[animatioProps[1]]),
-                    iterationCount = parseFloat(styles[animatioProps[2]]),
-                    hasAnimation = transitionDelay || iterationCount >= 1 && animationDelay,
+                    styles = el.style(animationProps),
+                    transitionDelay = parseFloat(styles[animationProps[0]]),
+                    animationDelay = parseFloat(styles[animationProps[1]]),
+                    iterationCount = parseFloat(styles[animationProps[2]]),
+                    hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
                     completeCallback = function() {
                         if (hidden) {
                             // store current display value in private property
@@ -36,15 +36,15 @@ var _ = require("./utils"),
 
                         node.style.pointerEvents = "";
 
-                        if (callback) callback(el, index, ref);
+                        if (callback) setTimeout(function() { callback(el, index, ref) }, 0);
                     };
 
                 if (features.CSS3_ANIMATIONS && hasAnimation) {
                     // choose max delay to determine appropriate event type
                     el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
                 } else {
-                    // use setTimeout to make a safe call when there is no animation
-                    setTimeout(completeCallback, 0);
+                    // execute completeCallback safely
+                    el.fire(completeCallback);
                 }
 
                 if (hidden) {

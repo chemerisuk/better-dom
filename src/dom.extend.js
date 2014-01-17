@@ -9,7 +9,6 @@ var _ = require("./utils"),
     importStyles = require("./dom.importstyles"),
     reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
-    safeEventType = "filterchange",
     nativeEventType, animId, link, styles,
     stopExt = function(node, index) {
         return function(e) {
@@ -39,9 +38,8 @@ var _ = require("./utils"),
                 } else {
                     node.attachEvent(nativeEventType, stopExt(node, index));
                 }
-                // every extension executes in event handler function
-                // so they can't break each other
-                el.once(safeEventType, ext).fire(safeEventType);
+                // make a safe call so live extensions can't break each other
+                el.fire(ext);
             }
         };
     };
