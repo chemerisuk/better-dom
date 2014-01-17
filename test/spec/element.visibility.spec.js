@@ -118,25 +118,6 @@ describe("visibility", function() {
             });
         });
 
-        // it("should add pointer-events:none during animation", function() {
-        //     var spy = jasmine.createSpy();
-
-        //     spy.andCallFake(function() {
-        //         expect(link.style("pointer-events")).not.toBe("none");
-        //     });
-
-        //     link = DOM.create("a#inf[style='animation:show .1s;-webkit-animation:show .1s;display:block']>{abc}");
-        //     jasmine.sandbox.set(link);
-
-        //     link.hide(spy);
-
-        //     expect(link.style("pointer-events")).toBe("none");
-
-        //     waitsFor(function() {
-        //         return spy.callCount === 1;
-        //     });
-        // });
-
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.hide("123") }).toThrow();
             expect(function() { link.hide(-10) }).toThrow();
@@ -184,41 +165,6 @@ describe("visibility", function() {
 
             expect(link.style("display")).toBe("inline");
         });
-
-        // it("should accept optional visible boolean argument", function() {
-        //     expect(link.get("aria-hidden")).toBeFalsy();
-        //     expect(link.toggle(true).matches(":hidden")).toBe(false);
-        //     expect(link.toggle(false).matches(":hidden")).toBe(true);
-        // });
-
-        // it("should accept optional visible functor", function() {
-        //     var links = DOM.create("a*3>{444}");
-
-        //     DOM.find("body").append(links);
-
-        //     links.each(function(el) {
-        //         expect(el.matches(":hidden")).toBe(false);
-        //     });
-
-        //     links.toggle(function(el, index) {
-        //         expect(el).toBe(links[index]);
-
-        //         return false;
-        //     });
-
-        //     links.each(function(el) {
-        //         expect(el.matches(":hidden")).toBe(true);
-        //     });
-
-        //     links.remove();
-        // });
-
-        // it("should throw error if arguments are invalid", function() {
-        //     expect(function() { link.toggle("123") }).toThrow();
-        //     expect(function() { link.toggle(10) }).toThrow();
-        //     expect(function() { link.toggle(-10) }).toThrow();
-        //     expect(function() { link.toggle({}) }).toThrow();
-        // });
     });
 
     it("should handle unknown aria-hidden values as false", function() {

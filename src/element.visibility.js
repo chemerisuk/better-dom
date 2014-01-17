@@ -39,14 +39,6 @@ var _ = require("./utils"),
                         if (callback) setTimeout(function() { callback(el, index, ref) }, 0);
                     };
 
-                if (features.CSS3_ANIMATIONS && hasAnimation) {
-                    // choose max delay to determine appropriate event type
-                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
-                } else {
-                    // execute completeCallback safely
-                    el.fire(completeCallback);
-                }
-
                 if (hidden) {
                     // set visibility inline to override inherited from [aria-hidden=true]
                     node.style.visibility = "visible";
@@ -58,8 +50,16 @@ var _ = require("./utils"),
                     delete el[prevDisplayValue];
                 }
 
-                // set pointer-events:none during animation to prevent unexpected actions
+                // prevent accidental user actions
                 node.style.pointerEvents = "none";
+
+                if (features.CSS3_ANIMATIONS && hasAnimation) {
+                    // choose max delay to determine appropriate event type
+                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
+                } else {
+                    // execute completeCallback safely
+                    el.fire(completeCallback);
+                }
 
                 // trigger native CSS animation
                 if (hasAnimation || delay) {
