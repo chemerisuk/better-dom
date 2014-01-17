@@ -61,6 +61,14 @@ describe("fire", function() {
         expect(input.fire("focus")).toBe(false);
     });
 
+    it("should support a function to make a safe sync call", function() {
+        var obj = {};
+
+        input.fire(callback, 1, obj);
+
+        expect(callback).toHaveBeenCalledWith(1, obj, input, false);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.fire(1); }).toThrow();
     });

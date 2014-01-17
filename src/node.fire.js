@@ -6,39 +6,44 @@ var _ = require("./utils"),
 
 /**
  * Triggers an event of specific type with optional extra arguments
- * @param  {String}    type   type of event
- * @param  {...Object} [args] extra arguments to pass into each event handler
+ * @param  {String|Function}  type    type of event or function for a safe call
+ * @param  {...Object}        [args]  extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.fire = function(type) {
-    if (typeof type !== "string") throw _.makeError("fire");
+    var args = _.slice(arguments, 1),
+        isSafeCall = typeof type === "function";
 
-    var args = _.slice(arguments, 1);
+    if (typeof type !== "string" && !isSafeCall) throw _.makeError("fire");
 
     return _.every(this, function(el) {
         var node = el._node,
-            hook = hooks[type],
+            hook = hooks[type.toString()],
             handler = {},
-            isCustomEvent, canContinue, e;
+            isCustomEvent, eventType, canContinue, e;
 
         if (hook) hook(handler);
 
+        eventType = handler._type || type;
+
+        if (isSafeCall) el.once(eventType = "filterchange", type);
+
         if (features.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
-
-            e.initEvent(handler._type || type, true, true);
+            e.initEvent(eventType, !isSafeCall, !isSafeCall);
             e._args = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
-            isCustomEvent = type === "submit" || !("on" + type in node);
             e = document.createEventObject();
-            // store original event type
-            e.srcUrn = isCustomEvent ? type : undefined;
             e._args = args;
 
-            node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), e);
+            isCustomEvent = eventType === "submit" || !("on" + eventType in node);
+            // store original event type
+            if (isCustomEvent) e.srcUrn = type;
+
+            node.fireEvent("on" + (isCustomEvent ? "dataavailable" : eventType), e);
 
             canContinue = e.returnValue !== false;
         }
