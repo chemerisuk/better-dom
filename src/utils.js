@@ -1,5 +1,4 @@
-var DOM = require("./dom"),
-    makeLoopMethod = (function(){
+var makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
                 BEFORE: "",

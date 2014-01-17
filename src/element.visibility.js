@@ -2,47 +2,61 @@ var _ = require("./utils"),
     $Element = require("./element"),
     features = require("./features"),
     importStyles = require("./dom.importstyles"),
-    animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    et = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    animatioProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    prevDisplay = "_" + Date.now(),
     createCallback = function(el, callback, fn) {
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var hidden = typeof fn === "function" ? fn(el) : fn,
-                    transitionDelay = parseFloat(el.style("transition-duration")),
-                    animationDelay = parseFloat(el.style("animation-duration")),
-                    iterationCount = el.style("animation-iteration-count"),
-                    completeCallback = (callback || hidden) && function() {
-                        // remove temporary inline styles
-                        if (hidden) el.style({ visibility: null, position: null });
+                    styles = el.style(animatioProps),
+                    transitionDelay = parseFloat(styles[animatioProps[0]]),
+                    animationDelay = parseFloat(styles[animatioProps[1]]),
+                    iterationCount = parseFloat(styles[animatioProps[2]]),
+                    completeCallback = function() {
+                        if (hidden) {
+                            // store current display value in private property
+                            el[prevDisplay] = node.style.display;
+                            // hide element and remove it from flow
+                            node.style.display = "none";
+                            node.style.visibility = "";
+                        }
+
+                        node.style.pointerEvents = "";
 
                         if (callback) callback(el, index, ref);
                     };
 
-                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount >= 1)) {
-                    if (completeCallback) {
-                        // choose max delay
-                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], completeCallback);
-                    }
+                if (features.CSS3_ANIMATIONS) {
+                    // choose max delay to determine appropriate event type
+                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
                 } else {
                     // use setTimeout to make a safe call
-                    if (completeCallback) setTimeout(completeCallback, 0);
+                    setTimeout(completeCallback, 0);
                 }
 
                 if (hidden) {
-                    // store inline styles because they'll be temporary overwritten
-                    el._oldstyle = { visibility: node.style.visibility, position: node.style.position };
-                    // set current styles inline to override inherited from
-                    // the [aria-hidden=true] rule until the element animation ends
-                    el.style(el.style(["visibility", "position"]));
+                    // set visibility inline to override inherited from [aria-hidden=true]
+                    node.style.visibility = "visible";
                 } else {
-                    if (el._oldstyle) {
-                        // restore inline styles
-                        el.style(el._oldstyle);
+                    if (!el[prevDisplay] || el[prevDisplay] === "none") el[prevDisplay] = "";
 
-                        delete el._oldstyle;
-                    }
+                    node.style.display = el[prevDisplay];
+
+                    delete el[prevDisplay];
                 }
 
-                el.set("aria-hidden", hidden);
+                // set pointer-events:none during animation to prevent unexpected actions
+                node.style.pointerEvents = "none";
+
+                // trigger native CSS animation
+                if (hidden) {
+                    node.setAttribute("aria-hidden", hidden);
+                } else {
+                    // toggle aria-hidden async to apply inline styles above
+                    // before starting an animation
+                    setTimeout(function() { node.setAttribute("aria-hidden", hidden) }, 0);
+                }
             });
         };
     },
@@ -100,7 +114,3 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 $Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
     return el.get("aria-hidden") !== "true";
 });
-
-// [aria-hidden=true] could be overriden only if browser supports animations
-// pointer-events:none helps to solve accidental clicks on a hidden element
-importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute;pointer-events:none");
