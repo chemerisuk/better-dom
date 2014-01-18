@@ -79,13 +79,11 @@ if (_.CSS3_ANIMATIONS) {
 /**
  * Define a live extension
  * @memberOf DOM
- * @param  {String}          selector extension css selector
- * @param  {Object|Function} mixins   extension mixins or just a constructor function
+ * @param  {String} selector extension css selector
+ * @param  {Object} mixins   extension mixins
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
 DOM.extend = function(selector, mixins) {
-    if (typeof mixins === "function") mixins = {constructor: mixins};
-
     if (!mixins || typeof mixins !== "object") throw _.makeError("extend", true);
 
     if (selector === "*") {

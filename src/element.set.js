@@ -60,8 +60,11 @@ $Element.prototype.set = function(name, value) {
         } else {
             node.setAttribute(name, value);
         }
-        // trigger reflow manually in legacy IE
-        if (!_.DOM2_EVENTS) el.toggleClass(fakeClass).removeClass(fakeClass);
+        // trigger reflow manually in IE8
+        if (!_.DOM2_EVENTS) {
+            value = (node.className += " " + fakeClass);
+            node.className = value.replace(" " + fakeClass, "");
+        }
     });
 };
 

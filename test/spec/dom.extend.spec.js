@@ -5,12 +5,16 @@ describe("extend", function() {
         callback,
         CLS_INDEX = 0;
 
-    DOM.extend(".watch11", function() {
-        this.removeClass("watch11");
+    DOM.extend(".watch11", {
+        constructor: function() {
+            this.removeClass("watch11");
+        }
     });
 
-    DOM.extend(".watch12", function() {
-        this.removeClass("watch12");
+    DOM.extend(".watch12", {
+        constructor: function() {
+            this.removeClass("watch12");
+        }
     });
 
     beforeEach(function() {
@@ -25,7 +29,9 @@ describe("extend", function() {
             expect(this.length).toBe(1);
         });
 
-        DOM.extend(".watch", callback);
+        DOM.extend(".watch", {
+            constructor: callback
+        });
 
         waitsFor(function() {
             return callback.callCount === 3;
@@ -59,7 +65,7 @@ describe("extend", function() {
     });
 
     it("should capture any future element on page", function() {
-        DOM.extend(".watch1", callback);
+        DOM.extend(".watch1", {constructor: callback});
 
         jasmine.sandbox.set("<a class='watch1'></a><span class='watch1'></span>");
 
@@ -75,8 +81,8 @@ describe("extend", function() {
 
         DOM.find("body").append(link);
 
-        DOM.extend(".ext1", callback);
-        DOM.extend(".ext2", spy);
+        DOM.extend(".ext1", {constructor: callback});
+        DOM.extend(".ext2", {constructor: spy});
 
         setTimeout(function() {
             link.remove();
@@ -93,8 +99,8 @@ describe("extend", function() {
 
         jasmine.sandbox.set("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
-        DOM.extend("." + cls, callback);
-        DOM.extend("." + cls, spy);
+        DOM.extend("." + cls, {constructor: callback});
+        DOM.extend("." + cls, {constructor: spy});
 
         waitsFor(function() {
             return callback.callCount === 2 && spy.callCount === 2;
@@ -107,8 +113,8 @@ describe("extend", function() {
 
         jasmine.sandbox.set("<a class=" + cls + "></a><b class=" + cls + "></b>");
 
-        DOM.extend("." + cls, callback);
-        DOM.extend("b", spy);
+        DOM.extend("." + cls, {constructor: callback});
+        DOM.extend("b", {constructor: spy});
 
         waitsFor(function() {
             return callback.callCount === 2 && spy.callCount === 1;
@@ -133,8 +139,8 @@ describe("extend", function() {
 
         jasmine.sandbox.set("<form id='watch7'><input id='watch8'/></form>");
 
-        DOM.extend("#watch7", spy1);
-        DOM.extend("#watch8", spy2);
+        DOM.extend("#watch7", {constructor: spy1});
+        DOM.extend("#watch8", {constructor: spy2});
 
         waitsFor(function() {
             return spy1.callCount === 1 && spy2.callCount === 1;
@@ -146,7 +152,7 @@ describe("extend", function() {
 
         var link = DOM.find(".extend01"), calledOnce;
 
-        DOM.extend(".extend01", callback.andCallFake(function() {
+        callback.andCallFake(function() {
             expect(this).toBe(link);
 
             link.hide();
@@ -154,7 +160,9 @@ describe("extend", function() {
             setTimeout(function() {
                 if (callback.callCount === 1) calledOnce = true;
             }, WAIT_FOR_WATCH_TIME);
-        }));
+        });
+
+        DOM.extend(".extend01", {constructor: callback});
 
         waitsFor(function() { return calledOnce === true });
     });
@@ -164,7 +172,7 @@ describe("extend", function() {
 
         var link = DOM.find(".extend02"), calledOnce;
 
-        DOM.extend(".extend02", callback.andCallFake(function() {
+        callback.andCallFake(function() {
             var parent = link.parent();
 
             parent.append(link.remove());
@@ -172,7 +180,9 @@ describe("extend", function() {
             setTimeout(function() {
                 if (callback.callCount === 1) calledOnce = true;
             }, WAIT_FOR_WATCH_TIME);
-        }));
+        });
+
+        DOM.extend(".extend02", {constructor: callback});
 
         waitsFor(function() { return calledOnce === true });
     });
@@ -209,7 +219,7 @@ describe("extend", function() {
     it("should catch nested elements", function() {
         var cls = "watchhh" + CLS_INDEX++;
 
-        DOM.extend("." + cls, callback);
+        DOM.extend("." + cls, {constructor: callback});
 
         jasmine.sandbox.set("<div class='" + cls + "'><div class='" + cls + "'></div></div>");
 
