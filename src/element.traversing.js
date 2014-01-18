@@ -3,19 +3,21 @@ var _ = require("./utils"),
     SelectorMatcher = require("./selectormatcher");
 
 function makeTraversingMethod(propertyName, multiple) {
-    return function(selector) {
+    return function(selector, andSelf) {
         var matcher = SelectorMatcher(selector),
             nodes = multiple ? [] : null,
             it = this._node;
 
-        if (it) {
-            while (it = it[propertyName]) {
-                if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                    if (!multiple) break;
+        if (!andSelf && it) it = it[propertyName];
 
-                    nodes.push(it);
-                }
+        while (it) {
+            if (it.nodeType === 1 && (!matcher || matcher(it))) {
+                if (!multiple) break;
+
+                nodes.push(it);
             }
+
+            it = it[propertyName];
         }
 
         return multiple ? new $Element(nodes, multiple) : $Element(it);
@@ -56,6 +58,7 @@ function makeChildTraversingMethod(multiple) {
 /**
  * Find next sibling element filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -65,6 +68,7 @@ $Element.prototype.next = makeTraversingMethod("nextSibling");
 /**
  * Find previous sibling element filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -74,6 +78,7 @@ $Element.prototype.prev = makeTraversingMethod("previousSibling");
 /**
  * Find all next sibling elements filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -83,6 +88,7 @@ $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 /**
  * Find all previous sibling elements filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -92,6 +98,7 @@ $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 /**
  * Find parent element filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing

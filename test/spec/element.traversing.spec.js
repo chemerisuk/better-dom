@@ -28,6 +28,12 @@ describe("traversing", function() {
                 expect(link.prev("b")).toHaveTag("b");
                 expect(link.parent("body")).toHaveTag("body");
             });
+
+            it("should support and andSelf argument", function() {
+                expect(link.next().next("b", true)).toHaveTag("b");
+                expect(link.prev().prev("i", true)).toHaveTag("i");
+                expect(link.parent().parent("body", true)).toHaveTag("body");
+            });
         });
 
         describe("child", function() {
@@ -94,6 +100,11 @@ describe("traversing", function() {
                     haveTag(tagName);
                 }
             });
+        });
+
+        it("should support and andSelf argument", function() {
+            expect(link.next().nextAll("b", true).length).toBe(1);
+            expect(link.prev().prevAll("i", true).length).toBe(1);
         });
 
         it("should return empty element if value is not found", function() {
