@@ -1,7 +1,6 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
-    et = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
     prevDisplayValue = "_" + Date.now(),
     makeVisibilityMethod = function(name, fn) {
@@ -53,7 +52,7 @@ var _ = require("./utils"),
                 // prevent accidental user actions
                 node.style.pointerEvents = "none";
 
-                if (features.CSS3_ANIMATIONS && hasAnimation) {
+                if (_.CSS3_ANIMATIONS && hasAnimation) {
                     // choose max delay to determine appropriate event type
                     el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
                 } else {

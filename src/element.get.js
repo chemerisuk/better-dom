@@ -1,6 +1,5 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
     hooks = {};
 
 /**
@@ -37,7 +36,7 @@ hooks.type = function(node) {
     return node.getAttribute("type") || node.type;
 };
 
-if (!features.DOM2_EVENTS) {
+if (!_.DOM2_EVENTS) {
     hooks.textContent = function(node) { return node.innerText };
 }
 

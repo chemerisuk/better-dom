@@ -1,12 +1,11 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    features = require("./features"),
     styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
     // normalize pseudoelement selectors or quotes
-    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
+    norm = _.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
 
 /**
  * Append global css styles

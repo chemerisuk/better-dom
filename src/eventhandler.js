@@ -4,7 +4,6 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    features = require("./features"),
     hooks = {},
     docEl = document.documentElement,
     debouncedEvents = "scroll mousemove",
@@ -76,7 +75,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
             if (fn.apply(el, args) === false) {
                 // prevent default if handler returns false
-                if (features.DOM2_EVENTS) {
+                if (_.DOM2_EVENTS) {
                     e.preventDefault();
                 } else {
                     e.returnValue = false;
@@ -86,7 +85,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
     if (~debouncedEvents.indexOf(type)) {
         handler = createDebouncedEventWrapper(handler);
-    } else if (!features.DOM2_EVENTS && (type === "submit" || !("on" + type in testEl))) {
+    } else if (!_.DOM2_EVENTS && (type === "submit" || !("on" + type in testEl))) {
         // handle custom events for IE8
         handler = createCustomEventWrapper(handler, type);
     }
@@ -96,7 +95,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
 // EventHandler hooks
 
-if (features.DOM2_EVENTS) {
+if (_.DOM2_EVENTS) {
     hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
 } else {
     hooks.relatedTarget = function(e, currentTarget) {

@@ -1,6 +1,5 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
     hooks = {};
 
 /**
@@ -41,7 +40,7 @@ $Element.prototype.set = function(name, value) {
                 return;
             } else if (node.type && "value" in node) {
                 // for IE use innerText because it doesn't trigger onpropertychange
-                name = features.DOM2_EVENTS ? "value" : "innerText";
+                name = _.DOM2_EVENTS ? "value" : "innerText";
             } else {
                 name = "innerHTML";
             }
@@ -65,7 +64,7 @@ $Element.prototype.set = function(name, value) {
 
 // $Element.set hooks
 
-if (!features.DOM2_EVENTS) {
+if (!_.DOM2_EVENTS) {
     hooks.textContent = function(node, value) {
         node.innerText = value;
     };

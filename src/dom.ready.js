@@ -1,6 +1,5 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
-    features = require("./features"),
     readyCallbacks = [],
     readyState = document.readyState;
 
@@ -17,7 +16,7 @@ function pageLoaded() {
 if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
     pageLoaded();
 } else {
-    if (features.DOM2_EVENTS) {
+    if (_.DOM2_EVENTS) {
         window.addEventListener("load", pageLoaded, false);
         document.addEventListener("DOMContentLoaded", pageLoaded, false);
     } else {

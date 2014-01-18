@@ -5,7 +5,6 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
-    features = require("./features"),
     importStyles = require("./dom.importstyles"),
     reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
@@ -16,7 +15,7 @@ var _ = require("./utils"),
 
             e = e || window.event;
             // mark extension as processed via _skip bitmask
-            if (features.CSS3_ANIMATIONS) {
+            if (_.CSS3_ANIMATIONS) {
                 stop = e.animationName === animId && e.target === node;
             } else {
                 stop = e.srcUrn === "dataavailable" && e.srcElement === node;
@@ -33,7 +32,7 @@ var _ = require("./utils"),
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             if (!skip[index] && ext.accept(node)) {
-                if (features.CSS3_ANIMATIONS) {
+                if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
                 } else {
                     node.attachEvent(nativeEventType, stopExt(node, index));
@@ -44,11 +43,11 @@ var _ = require("./utils"),
         };
     };
 
-if (features.CSS3_ANIMATIONS) {
-    nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
+if (_.CSS3_ANIMATIONS) {
+    nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
-    importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
@@ -120,7 +119,7 @@ DOM.extend = function(selector, mixins) {
             DOM.findAll(selector).legacy(function(node) {
                 var e;
 
-                if (features.CSS3_ANIMATIONS) {
+                if (_.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
                     e.initEvent(nativeEventType, true, true);
                     e.animationName = animId;

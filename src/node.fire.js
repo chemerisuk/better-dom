@@ -1,7 +1,6 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    features = require("./features"),
     hooks = require("./node.on");
 
 /**
@@ -29,7 +28,7 @@ $Node.prototype.fire = function(type) {
 
         if (isSafeCall) el.once(eventType = "filterchange", type);
 
-        if (features.DOM2_EVENTS) {
+        if (_.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
             e.initEvent(eventType, !isSafeCall, !isSafeCall);
             e._args = args;

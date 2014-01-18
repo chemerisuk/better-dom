@@ -1,4 +1,6 @@
-var makeLoopMethod = (function(){
+var doc = document,
+    win = window,
+    makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
                 BEFORE: "",
@@ -24,6 +26,10 @@ var makeLoopMethod = (function(){
     })();
 
 module.exports = {
+    CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
+    DOM2_EVENTS: !!doc.addEventListener,
+    WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
+
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 

@@ -1,7 +1,6 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler"),
-    features = require("./features"),
     hooks = {};
 
 /**
@@ -51,7 +50,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
         if (hook) hook(handler);
 
-        if (features.DOM2_EVENTS) {
+        if (_.DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
         } else {
             // IE8 doesn't support onscroll on document level

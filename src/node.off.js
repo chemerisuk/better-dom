@@ -1,6 +1,5 @@
 var _ = require("./utils"),
-    $Node = require("./node"),
-    features = require("./features");
+    $Node = require("./node");
 
 /**
  * Unbind an event from the element
@@ -17,7 +16,7 @@ $Node.prototype.off = function(type, callback) {
             if (handler && type === handler.type && (!callback || callback === handler.callback)) {
                 type = handler._type || handler.type;
 
-                if (features.DOM2_EVENTS) {
+                if (_.DOM2_EVENTS) {
                     node.removeEventListener(type, handler, !!handler.capturing);
                 } else {
                     // IE8 doesn't support onscroll on document level
