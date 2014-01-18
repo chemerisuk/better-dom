@@ -1,6 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = {};
+    hooks = {},
+    fakeClass = "_" + Date.now();
 
 /**
  * Set property/attribute value by name
@@ -59,6 +60,8 @@ $Element.prototype.set = function(name, value) {
         } else {
             node.setAttribute(name, value);
         }
+        // trigger reflow manually in legacy IE
+        if (!_.DOM2_EVENTS) el.toggleClass(fakeClass).removeClass(fakeClass);
     });
 };
 

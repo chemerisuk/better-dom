@@ -8,7 +8,7 @@ var _ = require("./utils"),
 var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
-    tmpId = "DOM" + new Date().getTime();
+    tmpId = "DOM" + Date.now();
 
 /**
  * Find the first matched element by css selector
