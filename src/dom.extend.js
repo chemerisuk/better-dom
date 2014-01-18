@@ -8,6 +8,8 @@ var _ = require("./utils"),
     importStyles = require("./dom.importstyles"),
     reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
+    returnTrue = function() { return true },
+    returnFalse = function() { return false },
     nativeEventType, animId, link, styles,
     stopExt = function(node, index) {
         return function(e) {
@@ -79,31 +81,42 @@ if (_.CSS3_ANIMATIONS) {
 /**
  * Define a live extension
  * @memberOf DOM
- * @param  {String} selector extension css selector
- * @param  {Object} mixins   extension mixins
+ * @param  {String} selector  extension        css selector
+ * @param  {Boolean|Function} [condition=true] condition
+ * @param  {Object}           mixins           extension mixins
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
-DOM.extend = function(selector, mixins) {
-    if (!mixins || typeof mixins !== "object") throw _.makeError("extend", true);
+DOM.extend = function(selector, condition, mixins) {
+    var len = arguments.length,
+        eventHandlers, ext, ctr;
+
+    if (len === 3) {
+        if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
+    } else if (len === 2) {
+        mixins = condition;
+        condition = returnTrue;
+    }
+
+    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
 
     if (selector === "*") {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
-            ext = function(el, mock) {
-                var removable = mock ? [] : eventHandlers;
+        eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) });
+        ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
+        ext = function(el, mock) {
+            if (condition === returnFalse || !condition(el)) return;
 
-                _.extend(el, mixins);
+            _.extend(el, mixins);
 
-                try {
-                    if (ctr && ctr.call(el) === false) removable = Object.keys(mixins);
-                } finally {
-                    // remove event handlers from element's interface
-                    _.forEach(removable, function(prop) { delete el[prop] });
-                }
-            },
-            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
+            try {
+                if (ctr) ctr.call(el);
+            } finally {
+                // remove event handlers from element's interface
+                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+            }
+        };
 
         if (ctr) delete mixins.constructor;
 

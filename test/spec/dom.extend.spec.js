@@ -38,31 +38,31 @@ describe("extend", function() {
         });
     });
 
-    it("should not change interface if constructor returned false", function() {
-        var cls = "watchhh" + CLS_INDEX++,
-            spy = jasmine.createSpy("ctr");
+    // it("should not change interface if condition returns false", function() {
+    //     var cls = "watchhh" + CLS_INDEX++,
+    //         spy = jasmine.createSpy("ctr");
 
-        spy.andReturn(false);
+    //     spy.andReturn(false);
 
-        jasmine.sandbox.set("<a class=" + cls + "></a>");
+    //     jasmine.sandbox.set("<a class=" + cls + "></a>");
 
-        DOM.extend("." + cls, {
-            constructor: spy,
-            method: function() {},
-            onEvent: function() {}
-        });
+    //     DOM.extend("." + cls, false, {
+    //         constructor: spy,
+    //         method: function() {},
+    //         onEvent: function() {}
+    //     });
 
-        waitsFor(function() {
-            if (spy.callCount === 1) {
-                var el = spy.calls[0].object;
+    //     waitsFor(function() {
+    //         if (spy.callCount === 1) {
+    //             var el = spy.calls[0].object;
 
-                expect(el.method).toBeUndefined();
-                expect(el.onEvent).toBeUndefined();
+    //             expect(el.method).toBeUndefined();
+    //             expect(el.onEvent).toBeUndefined();
 
-                return true;
-            }
-        });
-    });
+    //             return true;
+    //         }
+    //     });
+    // });
 
     it("should capture any future element on page", function() {
         DOM.extend(".watch1", {constructor: callback});
