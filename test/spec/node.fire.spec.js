@@ -65,8 +65,10 @@ describe("fire", function() {
         var obj = {};
 
         input.fire(callback, 1, obj);
-
         expect(callback).toHaveBeenCalledWith(1, obj, input, false);
+
+        DOM.fire(callback, obj, 0);
+        expect(callback).toHaveBeenCalledWith(obj, 0, DOM, false);
     });
 
     it("should throw error if arguments are invalid", function() {

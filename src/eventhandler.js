@@ -5,9 +5,9 @@ var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = {},
+    eventHooks = {},
     docEl = document.documentElement,
     debouncedEvents = "scroll mousemove",
-    testEl = document.createElement("div"),
     requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
         return memo || window[name + "equestAnimationFrame"];
     }, null),
@@ -33,7 +33,8 @@ var _ = require("./utils"),
     };
 
 module.exports = function(type, selector, callback, props, el, once) {
-    var matcher = SelectorMatcher(selector),
+    var hook = hooks[type],
+        matcher = SelectorMatcher(selector),
         handler = function(e) {
             if (module.exports.skip === type) return; // early stop in case of default action
 
@@ -65,7 +66,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                     return $Element(currentTarget);
                 }
 
-                var hook = hooks[name];
+                var hook = eventHooks[name];
 
                 return hook ? hook(e, node) : e[name];
             });
@@ -83,40 +84,62 @@ module.exports = function(type, selector, callback, props, el, once) {
             }
         };
 
-    if (~debouncedEvents.indexOf(type)) {
+    if (hook) hook(handler);
+
+    handler.type = handler._type || type;
+
+    if (~debouncedEvents.indexOf(handler.type)) {
         handler = createDebouncedEventWrapper(handler);
-    } else if (!_.DOM2_EVENTS && (type === "submit" || !("on" + type in testEl))) {
+    } else if (!_.DOM2_EVENTS && (handler.type === "submit" || !("on" + handler.type in el._node))) {
         // handle custom events for IE8
         handler = createCustomEventWrapper(handler, type);
     }
 
+    handler.type = selector ? type + " " + selector : type;
+    handler.callback = callback;
+
     return handler;
 };
 
-// EventHandler hooks
+// EventHandler eventHooks
 
 if (_.DOM2_EVENTS) {
-    hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
+    eventHooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
 } else {
-    hooks.relatedTarget = function(e, currentTarget) {
+    eventHooks.relatedTarget = function(e, currentTarget) {
         return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
     };
 
-    hooks.defaultPrevented = function(e) { return e.returnValue === false };
+    eventHooks.defaultPrevented = function(e) { return e.returnValue === false };
 
-    hooks.which = function(e) { return e.keyCode };
+    eventHooks.which = function(e) { return e.keyCode };
 
-    hooks.button = function(e) {
+    eventHooks.button = function(e) {
         var button = e.button;
         // click: 1 === left; 2 === middle; 3 === right
         return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
     };
 
-    hooks.pageX = function(e) {
+    eventHooks.pageX = function(e) {
         return e.clientX + docEl.scrollLeft - docEl.clientLeft;
     };
 
-    hooks.pageY = function(e) {
+    eventHooks.pageY = function(e) {
         return e.clientY + docEl.scrollTop - docEl.clientTop;
     };
 }
+
+if ("onfocusin" in document.documentElement) {
+    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+        hooks[prop] = function(handler) { handler._type = value };
+    });
+} else {
+    // firefox doesn't support focusin/focusout events
+    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
+}
+
+if (document.createElement("input").validity) {
+    hooks.invalid = function(handler) { handler.capturing = true };
+}
+
+module.exports.hooks = hooks;

@@ -1,7 +1,6 @@
 var _ = require("./utils"),
     $Node = require("./node"),
-    EventHandler = require("./eventhandler"),
-    hooks = require("./node.on");
+    EventHandler = require("./eventhandler");
 
 /**
  * Triggers an event of specific type with optional extra arguments
@@ -18,7 +17,7 @@ $Node.prototype.fire = function(type) {
 
     return _.every(this, function(el) {
         var node = el._node,
-            hook = hooks[type.toString()],
+            hook = EventHandler.hooks[type.toString()],
             handler = {},
             isCustomEvent, eventType, canContinue, e;
 
@@ -40,7 +39,7 @@ $Node.prototype.fire = function(type) {
 
             isCustomEvent = eventType === "submit" || !("on" + eventType in node);
             // store original event type
-            if (isCustomEvent) e.srcUrn = type;
+            if (isCustomEvent) e.srcUrn = isSafeCall ? eventType : type;
 
             node.fireEvent("on" + (isCustomEvent ? "dataavailable" : eventType), e);
 
