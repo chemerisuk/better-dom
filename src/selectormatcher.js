@@ -8,7 +8,7 @@ var _ = require("./utils"),
     matchesProp = _.foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
         var propertyName = prefix + "atchesSelector";
 
-        if (!result) return document.documentElement[propertyName] && propertyName;
+        if (!result) return _.docEl[propertyName] && propertyName;
     }, null);
 
 module.exports = function(selector) {

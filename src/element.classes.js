@@ -5,7 +5,7 @@ var _ = require("./utils"),
 function makeClassesMethod(nativeStrategyName, strategy) {
     var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-    if (document.documentElement.classList) {
+    if (_.docEl.classList) {
         strategy = function(className) {
             return this._node.classList[nativeStrategyName](className);
         };

@@ -1,5 +1,5 @@
-var $Element = require("./element"),
-    documentElement = document.documentElement;
+var _ = require("./utils"),
+    $Element = require("./element");
 /**
  * Calculates offset of the current element
  * @return object with left, top, bottom, right, width and height properties
@@ -7,10 +7,10 @@ var $Element = require("./element"),
 $Element.prototype.offset = function() {
     if (this._node) {
         var boundingRect = this._node.getBoundingClientRect(),
-            clientTop = documentElement.clientTop,
-            clientLeft = documentElement.clientLeft,
-            scrollTop = window.pageYOffset || documentElement.scrollTop,
-            scrollLeft = window.pageXOffset || documentElement.scrollLeft;
+            clientTop = _.docEl.clientTop,
+            clientLeft = _.docEl.clientLeft,
+            scrollTop = window.pageYOffset || _.docEl.scrollTop,
+            scrollLeft = window.pageXOffset || _.docEl.scrollLeft;
 
         return {
             top: boundingRect.top + scrollTop - clientTop,

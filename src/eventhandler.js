@@ -6,7 +6,6 @@ var _ = require("./utils"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = {},
     eventHooks = {},
-    docEl = document.documentElement,
     debouncedEvents = "scroll mousemove",
     requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
         return memo || window[name + "equestAnimationFrame"];
@@ -121,15 +120,15 @@ if (_.DOM2_EVENTS) {
     };
 
     eventHooks.pageX = function(e) {
-        return e.clientX + docEl.scrollLeft - docEl.clientLeft;
+        return e.clientX + _.docEl.scrollLeft - _.docEl.clientLeft;
     };
 
     eventHooks.pageY = function(e) {
-        return e.clientY + docEl.scrollTop - docEl.clientTop;
+        return e.clientY + _.docEl.scrollTop - _.docEl.clientTop;
     };
 }
 
-if ("onfocusin" in document.documentElement) {
+if ("onfocusin" in _.docEl) {
     _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
         hooks[prop] = function(handler) { handler._type = value };
     });
