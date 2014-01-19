@@ -62,7 +62,7 @@ var _ = require("./utils"),
 
                 // trigger native CSS animation
                 if (hasAnimation || delay) {
-                    // toggle aria-hidden async to apply inline styles before the animation start
+                    // toggle aria-hidden async to apply inline styles before the animation starts
                     setTimeout(function() { node.setAttribute("aria-hidden", hidden) }, delay);
                 } else {
                     node.setAttribute("aria-hidden", hidden);

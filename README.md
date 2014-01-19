@@ -3,6 +3,10 @@
 
 jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce **live extensions** and **better-dom** - a new library for working with the DOM.
 
+[Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/)
+
+[Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/)
+
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features

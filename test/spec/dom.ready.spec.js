@@ -29,20 +29,15 @@ describe("ready", function(){
         expect(done1 < done2).toBeTruthy();
     });
 
-    it("should call callback asynchronously after DOMContentLoaded", function() {
+    it("should call callback synchronously after DOMContentLoaded", function() {
         var spy = jasmine.createSpy("callback");
 
         DOM.ready(spy);
 
-        expect(spy).not.toHaveBeenCalled();
-
-        waitsFor(function() {
-            return spy.callCount === 1;
-        });
+        expect(spy).toHaveBeenCalled();
     });
 
     it("should throw error if arguments are invalid", function(){
         expect(function() { DOM.ready(1); }).toThrow();
     });
-
 });
