@@ -106,7 +106,7 @@ DOM.extend = function(selector, condition, mixins) {
         eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) });
         ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
         ext = function(el, mock) {
-            if (!mock && !condition(el)) return;
+            if (!mock && condition(el) === false) return;
 
             _.extend(el, mixins);
 

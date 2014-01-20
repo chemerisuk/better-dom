@@ -37,9 +37,9 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should fix target in case of event filter", function() {
-        spy.andCallFake(function(target) {
-            expect(target).toHaveTag("a");
+    it("should fix currentTarget in case of event filter", function() {
+        spy.andCallFake(function(target, currentTarget) {
+            expect(currentTarget).toHaveTag("a");
 
             return false;
         });
@@ -96,8 +96,9 @@ describe("on", function() {
     });
 
     it("should have default event properties", function() {
-        spy.andCallFake(function(target, defaultPrevented) {
+        spy.andCallFake(function(target, currentTarget, defaultPrevented) {
             expect(target).toBe(input);
+            expect(currentTarget).toBe(input);
             expect(defaultPrevented).toBe(false);
         });
 
@@ -108,9 +109,10 @@ describe("on", function() {
 
         spy.reset();
 
-        spy.andCallFake(function(detail, target, defaultPrevented) {
+        spy.andCallFake(function(detail, target, currentTarget, defaultPrevented) {
             expect(detail).toBe(detail);
             expect(target).toBe(input);
+            expect(currentTarget).toBe(input);
             expect(defaultPrevented).toBe(false);
         });
 
@@ -217,7 +219,7 @@ describe("on", function() {
         DOM.once("custom:event1", spy);
         DOM.fire("custom:event1");
 
-        expect(spy).toHaveBeenCalledWith(DOM, false);
+        expect(spy).toHaveBeenCalledWith(DOM, DOM, false);
 
         spy.reset();
         DOM.once("custom:event2 ul > li", spy);

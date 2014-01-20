@@ -7,6 +7,7 @@ var _ = require("./utils"),
     hooks = {},
     eventHooks = {},
     debouncedEvents = "scroll mousemove",
+    defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
         return memo || window[name + "equestAnimationFrame"];
     }, null),
@@ -44,7 +45,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                 target = e.target || e.srcElement || document,
                 currentTarget = selector ? target : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
-                args = props || [selector ? "currentTarget" : "target", "defaultPrevented"];
+                args = props || defaultArgs;
 
             if (typeof fn !== "function") return; // early stop for late binding
 
