@@ -64,11 +64,11 @@ describe("fire", function() {
     it("should support a function to make a safe sync call", function() {
         var obj = {};
 
-        input.fire(callback, 1, obj);
-        expect(callback).toHaveBeenCalledWith(1, obj, input, false);
+        input.fire(callback, 123, obj);
+        expect(callback).toHaveBeenCalledWith(input, 0, input);
 
-        DOM.fire(callback, obj, 0);
-        expect(callback).toHaveBeenCalledWith(obj, 0, DOM, false);
+        DOM.fire(callback, obj, 321);
+        expect(callback).toHaveBeenCalledWith(DOM, 0, DOM);
     });
 
     it("should throw error if arguments are invalid", function() {

@@ -15,7 +15,7 @@ $Node.prototype.fire = function(type) {
 
     if (typeof type !== "string" && !isSafeCall) throw _.makeError("fire");
 
-    return _.every(this, function(el) {
+    return _.every(this, function(el, index, ref) {
         var node = el._node,
             hook = EventHandler.hooks[type.toString()],
             handler = {},
@@ -25,7 +25,7 @@ $Node.prototype.fire = function(type) {
 
         eventType = handler._type || type;
 
-        if (isSafeCall) el.once(eventType = "filterchange", type);
+        if (isSafeCall) el.once(eventType = "filterchange", function() { type(el, index, ref) });
 
         if (_.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
