@@ -73,52 +73,9 @@
         <article>
             <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
-    importStyles = require("./dom.importstyles"),
-    animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
-    createCallback = function(el, callback, fn) {
-        return function() {
-            el.legacy(function(node, el, index, ref) {
-                var hidden = typeof fn === "function" ? fn(el) : fn,
-                    transitionDelay = parseFloat(el.style("transition-duration")),
-                    animationDelay = parseFloat(el.style("animation-duration")),
-                    iterationCount = el.style("animation-iteration-count"),
-                    completeCallback = (callback || hidden) && function() {
-                        // remove temporary inline styles
-                        if (hidden) el.style({ visibility: null, position: null });
-
-                        if (callback) callback(el, index, ref);
-                    };
-
-                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount >= 1)) {
-                    if (completeCallback) {
-                        // choose max delay
-                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], completeCallback);
-                    }
-                } else {
-                    // use setTimeout to make a safe call
-                    if (completeCallback) setTimeout(completeCallback, 0);
-                }
-
-                if (hidden) {
-                    // store inline styles because they'll be temporary overwritten
-                    el._oldstyle = { visibility: node.style.visibility, position: node.style.position };
-                    // set current styles inline to override inherited from
-                    // the [aria-hidden=true] rule until the element animation ends
-                    el.style(el.style(["visibility", "position"]));
-                } else {
-                    if (el._oldstyle) {
-                        // restore inline styles
-                        el.style(el._oldstyle);
-
-                        delete el._oldstyle;
-                    }
-                }
-
-                el.set("aria-hidden", hidden);
-            });
-        };
-    },
+    et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    prevDisplayValue = "_" + Date.now(),
     makeVisibilityMethod = function(name, fn) {
         return function(delay, callback) {
             var delayType = typeof delay;
@@ -130,18 +87,60 @@
 
             if (delay && (delayType !== "number" || delay &lt; 0) ||
                 callback && typeof callback !== "function") {
-                throw _.makeError(name, this);
+                throw _.makeError(name);
             }
 
-            callback = createCallback(this, callback, fn);
+            return this.legacy(function(node, el, index, ref) {
+                var hidden = typeof fn === "function" ? fn(node) : fn,
+                    styles = el.style(animationProps),
+                    transitionDelay = parseFloat(styles[animationProps[0]]),
+                    animationDelay = parseFloat(styles[animationProps[1]]),
+                    iterationCount = parseFloat(styles[animationProps[2]]),
+                    hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
+                    completeCallback = function() {
+                        if (hidden) {
+                            // store current display value in private property
+                            el[prevDisplayValue] = node.style.display;
+                            // hide element and remove it from flow
+                            node.style.display = "none";
+                            node.style.visibility = "";
+                        }
 
-            if (delay) {
-                setTimeout(callback, delay);
-            } else {
-                callback();
-            }
+                        node.style.pointerEvents = "";
 
-            return this;
+                        if (callback) setTimeout(function() { callback(el, index, ref) }, 0);
+                    };
+
+                if (hidden) {
+                    // set visibility inline to override inherited from [aria-hidden=true]
+                    node.style.visibility = "visible";
+                } else {
+                    if (!el[prevDisplayValue] || el[prevDisplayValue] === "none") el[prevDisplayValue] = "";
+
+                    node.style.display = el[prevDisplayValue];
+
+                    delete el[prevDisplayValue];
+                }
+
+                // prevent accidental user actions
+                node.style.pointerEvents = "none";
+
+                if (_.CSS3_ANIMATIONS && hasAnimation) {
+                    // choose max delay to determine appropriate event type
+                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
+                } else {
+                    // execute completeCallback safely
+                    el.fire(completeCallback);
+                }
+
+                // trigger native CSS animation
+                if (hasAnimation || delay) {
+                    // toggle aria-hidden async to apply inline styles before the animation starts
+                    setTimeout(function() { node.setAttribute("aria-hidden", hidden) }, delay);
+                } else {
+                    node.setAttribute("aria-hidden", hidden);
+                }
+            });
         };
     };
 
@@ -170,13 +169,9 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
  * @return {$Element}
  * @function
  */
-$Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
-    return el.get("aria-hidden") !== "true";
+$Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
+    return node.getAttribute("aria-hidden") !== "true";
 });
-
-// [aria-hidden=true] could be overriden only if browser supports animations
-// pointer-events:none helps to solve accidental clicks on a hidden element
-importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute");
 </pre>
         </article>
     </section>
@@ -193,7 +188,7 @@ importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute");
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Fri Jan 10 2014 22:39:18 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Mon Jan 20 2014 16:53:10 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

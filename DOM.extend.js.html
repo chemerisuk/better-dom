@@ -78,11 +78,11 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
-    features = require("./features"),
     importStyles = require("./dom.importstyles"),
-    reEventHandler = /^on[A-Z]/,
+    reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
-    safeEventType = "filterchange",
+    returnTrue = function() { return true },
+    returnFalse = function() { return false },
     nativeEventType, animId, link, styles,
     stopExt = function(node, index) {
         return function(e) {
@@ -90,7 +90,7 @@ var _ = require("./utils"),
 
             e = e || window.event;
             // mark extension as processed via _skip bitmask
-            if (features.CSS3_ANIMATIONS) {
+            if (_.CSS3_ANIMATIONS) {
                 stop = e.animationName === animId && e.target === node;
             } else {
                 stop = e.srcUrn === "dataavailable" && e.srcElement === node;
@@ -107,23 +107,22 @@ var _ = require("./utils"),
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             if (!skip[index] && ext.accept(node)) {
-                if (features.CSS3_ANIMATIONS) {
+                if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
                 } else {
                     node.attachEvent(nativeEventType, stopExt(node, index));
                 }
-                // every extension executes in event handler function
-                // so they can't break each other
-                el.once(safeEventType, ext).fire(safeEventType);
+                // make a safe call so live extensions can't break each other
+                el.fire(ext);
             }
         };
     };
 
-if (features.CSS3_ANIMATIONS) {
-    nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = "DOM" + new Date().getTime();
+if (_.CSS3_ANIMATIONS) {
+    nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
+    animId = "DOM" + Date.now();
 
-    importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
@@ -155,33 +154,42 @@ if (features.CSS3_ANIMATIONS) {
 /**
  * Define a live extension
  * @memberOf DOM
- * @param  {String}          selector extension css selector
- * @param  {Object|Function} mixins   extension mixins or just a constructor function
+ * @param  {String} selector  extension        css selector
+ * @param  {Boolean|Function} [condition=true] condition
+ * @param  {Object}           mixins           extension mixins
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
-DOM.extend = function(selector, mixins) {
-    if (typeof mixins === "function") mixins = {constructor: mixins};
+DOM.extend = function(selector, condition, mixins) {
+    var len = arguments.length,
+        eventHandlers, ext, ctr;
 
-    if (!mixins || typeof mixins !== "object") throw _.makeError("extend", this);
+    if (len === 3) {
+        if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
+    } else if (len === 2) {
+        mixins = condition;
+        condition = returnTrue;
+    }
+
+    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
 
     if (selector === "*") {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
-            ext = function(el, mock) {
-                var removable = mock ? [] : eventHandlers;
+        eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) });
+        ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
+        ext = function(el, mock) {
+            if (!mock && condition(el) === false) return;
 
-                _.extend(el, mixins);
+            _.extend(el, mixins);
 
-                try {
-                    if (ctr && ctr.call(el) === false) removable = Object.keys(mixins);
-                } finally {
-                    // remove event handlers from element's interface
-                    _.forEach(removable, function(prop) { delete el[prop] });
-                }
-            },
-            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
+            try {
+                if (ctr) ctr.call(el);
+            } finally {
+                // remove event handlers from element's interface
+                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+            }
+        };
 
         if (ctr) delete mixins.constructor;
 
@@ -195,7 +203,7 @@ DOM.extend = function(selector, mixins) {
             DOM.findAll(selector).legacy(function(node) {
                 var e;
 
-                if (features.CSS3_ANIMATIONS) {
+                if (_.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
                     e.initEvent(nativeEventType, true, true);
                     e.animationName = animId;
@@ -231,7 +239,7 @@ module.exports = extensions;
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Fri Jan 10 2014 22:39:18 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Mon Jan 20 2014 16:53:10 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
