@@ -1,8 +1,8 @@
 /**
  * @file better-dom.js
- * @version 1.6.6 2014-01-10T22:39:11
+ * @version 1.7.0-beta.1 2014-01-20T16:53:03
  * @overview Live extension playground
- * @copyright Maksim Chemerisuk 2014
+ * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
@@ -23,7 +23,7 @@ var _ = require("./utils"),
 DOM.create = function(value, vars) {
     if (value.nodeType === 1) return $Element(value);
 
-    if (typeof value !== "string") throw _.makeError("create", this);
+    if (typeof value !== "string") throw _.makeError("create", true);
 
     var node, multiple;
 
@@ -44,7 +44,7 @@ DOM.create = function(value, vars) {
     return new $Element(value, multiple);
 };
 
-},{"./dom":6,"./element":14,"./utils":35}],2:[function(require,module,exports){
+},{"./dom":6,"./element":14,"./utils":34}],2:[function(require,module,exports){
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
@@ -52,11 +52,11 @@ var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
     SelectorMatcher = require("./selectormatcher"),
-    features = require("./features"),
     importStyles = require("./dom.importstyles"),
-    reEventHandler = /^on[A-Z]/,
+    reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
-    safeEventType = "filterchange",
+    returnTrue = function() { return true },
+    returnFalse = function() { return false },
     nativeEventType, animId, link, styles,
     stopExt = function(node, index) {
         return function(e) {
@@ -64,7 +64,7 @@ var _ = require("./utils"),
 
             e = e || window.event;
             // mark extension as processed via _skip bitmask
-            if (features.CSS3_ANIMATIONS) {
+            if (_.CSS3_ANIMATIONS) {
                 stop = e.animationName === animId && e.target === node;
             } else {
                 stop = e.srcUrn === "dataavailable" && e.srcElement === node;
@@ -81,23 +81,22 @@ var _ = require("./utils"),
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             if (!skip[index] && ext.accept(node)) {
-                if (features.CSS3_ANIMATIONS) {
+                if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
                 } else {
                     node.attachEvent(nativeEventType, stopExt(node, index));
                 }
-                // every extension executes in event handler function
-                // so they can't break each other
-                el.once(safeEventType, ext).fire(safeEventType);
+                // make a safe call so live extensions can't break each other
+                el.fire(ext);
             }
         };
     };
 
-if (features.CSS3_ANIMATIONS) {
-    nativeEventType = features.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = "DOM" + new Date().getTime();
+if (_.CSS3_ANIMATIONS) {
+    nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
+    animId = "DOM" + Date.now();
 
-    importStyles("@" + features.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
     styles = {
         "animation-duration": "1ms !important",
@@ -129,33 +128,42 @@ if (features.CSS3_ANIMATIONS) {
 /**
  * Define a live extension
  * @memberOf DOM
- * @param  {String}          selector extension css selector
- * @param  {Object|Function} mixins   extension mixins or just a constructor function
+ * @param  {String} selector  extension        css selector
+ * @param  {Boolean|Function} [condition=true] condition
+ * @param  {Object}           mixins           extension mixins
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
-DOM.extend = function(selector, mixins) {
-    if (typeof mixins === "function") mixins = {constructor: mixins};
+DOM.extend = function(selector, condition, mixins) {
+    var len = arguments.length,
+        eventHandlers, ext, ctr;
 
-    if (!mixins || typeof mixins !== "object") throw _.makeError("extend", this);
+    if (len === 3) {
+        if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
+    } else if (len === 2) {
+        mixins = condition;
+        condition = returnTrue;
+    }
+
+    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
 
     if (selector === "*") {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reEventHandler.exec(prop) }),
-            ext = function(el, mock) {
-                var removable = mock ? [] : eventHandlers;
+        eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) });
+        ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
+        ext = function(el, mock) {
+            if (!mock && condition(el) === false) return;
 
-                _.extend(el, mixins);
+            _.extend(el, mixins);
 
-                try {
-                    if (ctr && ctr.call(el) === false) removable = Object.keys(mixins);
-                } finally {
-                    // remove event handlers from element's interface
-                    _.forEach(removable, function(prop) { delete el[prop] });
-                }
-            },
-            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
+            try {
+                if (ctr) ctr.call(el);
+            } finally {
+                // remove event handlers from element's interface
+                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+            }
+        };
 
         if (ctr) delete mixins.constructor;
 
@@ -169,7 +177,7 @@ DOM.extend = function(selector, mixins) {
             DOM.findAll(selector).legacy(function(node) {
                 var e;
 
-                if (features.CSS3_ANIMATIONS) {
+                if (_.CSS3_ANIMATIONS) {
                     e = document.createEvent("HTMLEvents");
                     e.initEvent(nativeEventType, true, true);
                     e.animationName = animId;
@@ -190,7 +198,7 @@ DOM.extend = function(selector, mixins) {
 
 module.exports = extensions;
 
-},{"./dom":6,"./dom.importstyles":5,"./element":14,"./features":23,"./selectormatcher":34,"./utils":35}],3:[function(require,module,exports){
+},{"./dom":6,"./dom.importstyles":5,"./element":14,"./selectormatcher":33,"./utils":34}],3:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom");
 
@@ -217,14 +225,14 @@ DOM.importScripts = function() {
             } else if (argType === "function") {
                 arg();
             } else if (arg) {
-                throw _.makeError("importScripts", DOM);
+                throw _.makeError("importScripts", true);
             }
         };
 
     callback();
 };
 
-},{"./dom":6,"./utils":35}],4:[function(require,module,exports){
+},{"./dom":6,"./utils":34}],4:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     importStyles = require("./dom.importstyles"),
@@ -253,23 +261,22 @@ DOM.importStrings = function(lang, key, value) {
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
-        throw _.makeError("importStrings", this);
+        throw _.makeError("importStrings", true);
     }
 };
 
 // by default just show data-i18n string
 importStyles("[data-i18n]:before", "content:attr(data-i18n)");
 
-},{"./dom":6,"./dom.importstyles":5,"./utils":35}],5:[function(require,module,exports){
+},{"./dom":6,"./dom.importstyles":5,"./utils":34}],5:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    features = require("./features"),
-    styleNode = document.documentElement.firstChild.appendChild(document.createElement("style")),
+    styleNode = _.docEl.firstChild.appendChild(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
     // normalize pseudoelement selectors or quotes
-    norm = features.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
+    norm = _.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
 
 /**
  * Append global css styles
@@ -293,7 +300,7 @@ module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/uniqu
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {
-        throw _.makeError("importStyles", this);
+        throw _.makeError("importStyles", true);
     }
 
     // check if the rule already exists
@@ -311,11 +318,11 @@ module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/uniqu
     }
 };
 
-},{"./dom":6,"./element":14,"./features":23,"./utils":35}],6:[function(require,module,exports){
+},{"./dom":6,"./element":14,"./utils":34}],6:[function(require,module,exports){
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.6.6";
+DOM.version = "1.7.0-beta.1";
 
 /**
  * Global object to access DOM
@@ -324,7 +331,7 @@ DOM.version = "1.6.6";
  */
 module.exports = window.DOM = DOM;
 
-},{"./node":30}],7:[function(require,module,exports){
+},{"./node":29}],7:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -350,16 +357,15 @@ DOM.mock = function(content) {
     return el;
 };
 
-},{"./dom":6,"./dom.extend":2,"./element":14,"./utils":35}],8:[function(require,module,exports){
+},{"./dom":6,"./dom.extend":2,"./element":14,"./utils":34}],8:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
-    features = require("./features"),
     readyCallbacks = [],
     readyState = document.readyState;
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, setTimeout);
+    _.forEach(readyCallbacks, function(callback) { DOM.fire(callback) });
     // cleanup
     readyCallbacks = null;
 }
@@ -370,7 +376,7 @@ function pageLoaded() {
 if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
     pageLoaded();
 } else {
-    if (features.DOM2_EVENTS) {
+    if (_.DOM2_EVENTS) {
         window.addEventListener("load", pageLoaded, false);
         document.addEventListener("DOMContentLoaded", pageLoaded, false);
     } else {
@@ -389,16 +395,16 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
  * @param {Function} callback event listener
  */
 DOM.ready = function(callback) {
-    if (typeof callback !== "function") throw _.makeError("ready", this);
+    if (typeof callback !== "function") throw _.makeError("ready", true);
 
     if (readyCallbacks) {
         readyCallbacks.push(callback);
     } else {
-        setTimeout(callback, 0);
+        DOM.fire(callback);
     }
 };
 
-},{"./dom":6,"./features":23,"./utils":35}],9:[function(require,module,exports){
+},{"./dom":6,"./utils":34}],9:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
@@ -455,7 +461,7 @@ _.forEach("area base br col hr img input link meta param command keygen source".
  * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.template = function(template, vars) {
-    if (typeof template !== "string") throw _.makeError("template", this);
+    if (typeof template !== "string") throw _.makeError("template", true);
     // handle vars
     if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
 
@@ -576,25 +582,44 @@ DOM.template = function(template, vars) {
     return cache[template] = toString(stack[0]).replace(reTextTag, "");
 };
 
-},{"./dom":6,"./utils":35}],10:[function(require,module,exports){
+},{"./dom":6,"./utils":34}],10:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     rclass = /[\n\t\r]/g;
 
 function makeClassesMethod(nativeStrategyName, strategy) {
-    var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class",
-        processClasses = function(el) { _.forEach(this, strategy, el) }; /* this = arguments */
+    var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-    if (document.documentElement.classList) {
+    if (_.docEl.classList) {
         strategy = function(className) {
             return this._node.classList[nativeStrategyName](className);
         };
     }
 
     if (methodName === "hasClass") {
-        return function() { if (this._node) return _.every(arguments, strategy, this) };
+        return function(className) {
+            var args = arguments;
+
+            if (this._node) {
+                if (args.length === 1) {
+                    return strategy.call(this, className);
+                } else {
+                    return _.every(args, strategy, this);
+                }
+            }
+        };
     } else {
-        return function() { return _.forEach(this, processClasses, arguments) };
+        return function(className) {
+            var args = arguments;
+
+            return this.each(function(el) {
+                if (args.length === 1) {
+                    strategy.call(el, className);
+                } else {
+                    _.forEach(args, strategy, el);
+                }
+            });
+        };
     }
 }
 
@@ -644,10 +669,9 @@ $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className)
     if (oldClassName === this._node.className) this.removeClass(className);
 });
 
-},{"./element":14,"./utils":35}],11:[function(require,module,exports){
+},{"./element":14,"./utils":34}],11:[function(require,module,exports){
 var _ = require("./utils"),
-    $Element = require("./element"),
-    features = require("./features");
+    $Element = require("./element");
 
 /**
  * Clone element
@@ -657,12 +681,12 @@ var _ = require("./utils"),
 $Element.prototype.clone = function(deep) {
     if (!arguments.length) deep = true;
 
-    if (typeof deep !== "boolean") throw _.makeError("clone", this);
+    if (typeof deep !== "boolean") throw _.makeError("clone");
 
     var node = this._node;
 
     if (node) {
-        if (features.DOM2_EVENTS) {
+        if (_.DOM2_EVENTS) {
             node = node.cloneNode(deep);
         } else {
             node = document.createElement("div");
@@ -676,10 +700,9 @@ $Element.prototype.clone = function(deep) {
     return new $Element(node);
 };
 
-},{"./element":14,"./features":23,"./utils":35}],12:[function(require,module,exports){
+},{"./element":14,"./utils":34}],12:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
     hooks = {};
 
 /**
@@ -703,7 +726,7 @@ $Element.prototype.get = function(name) {
             name = node.type && "value" in node ? "value" : "innerHTML";
         }
     } else if (typeof name !== "string") {
-        throw _.makeError("get", this);
+        throw _.makeError("get");
     }
 
     return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
@@ -716,13 +739,13 @@ hooks.type = function(node) {
     return node.getAttribute("type") || node.type;
 };
 
-if (!features.DOM2_EVENTS) {
+if (!_.DOM2_EVENTS) {
     hooks.textContent = function(node) { return node.innerText };
 }
 
 module.exports = hooks;
 
-},{"./element":14,"./features":23,"./utils":35}],13:[function(require,module,exports){
+},{"./element":14,"./utils":34}],13:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element");
 
@@ -737,7 +760,7 @@ $Element.prototype.i18n = function(value, vars) {
 
     if (!len) return this.get("data-i18n");
 
-    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n", this);
+    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
 
     // localized srings with variables require different css
     if (vars) DOM.importStrings("", value, value);
@@ -752,7 +775,7 @@ $Element.prototype.i18n = function(value, vars) {
     return this.set("");
 };
 
-},{"./element":14,"./utils":35}],14:[function(require,module,exports){
+},{"./element":14,"./utils":34}],14:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -779,7 +802,7 @@ $Element.prototype = new $Node();
 
 module.exports = $Element;
 
-},{"./node":30,"./utils":35}],15:[function(require,module,exports){
+},{"./node":29,"./utils":34}],15:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element");
 
@@ -802,7 +825,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                     // populate fragment
                     arg.legacy(function(node) { value.appendChild(node) });
                 } else {
-                    throw _.makeError(methodName, el);
+                    throw _.makeError(methodName);
                 }
             });
 
@@ -876,12 +899,11 @@ $Element.prototype.remove = makeManipulationMethod("remove", "", false, function
     node.parentNode.removeChild(node);
 });
 
-},{"./element":14,"./utils":35}],16:[function(require,module,exports){
+},{"./element":14,"./utils":34}],16:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    hooks = {},
-    docEl = document.documentElement;
+    hooks = {};
 
 /**
  * Check if the element matches selector
@@ -890,7 +912,7 @@ var _ = require("./utils"),
  */
 $Element.prototype.matches = function(selector, deep) {
     if (!selector || typeof selector !== "string" || deep !== undefined && typeof deep !== "boolean") {
-        throw _.makeError("matches", this);
+        throw _.makeError("matches");
     }
 
     var node = this._node,
@@ -911,16 +933,16 @@ hooks[":focus"] = function(node) { return node === document.activeElement };
 
 hooks[":hidden"] = function(node) {
     return node.getAttribute("aria-hidden") === "true" ||
-        window.getComputedStyle(node).display === "none" || !docEl.contains(node);
+        window.getComputedStyle(node).display === "none" || !_.docEl.contains(node);
 };
 
 hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
 
 module.exports = hooks;
 
-},{"./element":14,"./selectormatcher":34,"./utils":35}],17:[function(require,module,exports){
-var $Element = require("./element"),
-    documentElement = document.documentElement;
+},{"./element":14,"./selectormatcher":33,"./utils":34}],17:[function(require,module,exports){
+var _ = require("./utils"),
+    $Element = require("./element");
 /**
  * Calculates offset of the current element
  * @return object with left, top, bottom, right, width and height properties
@@ -928,10 +950,10 @@ var $Element = require("./element"),
 $Element.prototype.offset = function() {
     if (this._node) {
         var boundingRect = this._node.getBoundingClientRect(),
-            clientTop = documentElement.clientTop,
-            clientLeft = documentElement.clientLeft,
-            scrollTop = window.pageYOffset || documentElement.scrollTop,
-            scrollLeft = window.pageXOffset || documentElement.scrollLeft;
+            clientTop = _.docEl.clientTop,
+            clientLeft = _.docEl.clientLeft,
+            scrollTop = window.pageYOffset || _.docEl.scrollTop,
+            scrollLeft = window.pageXOffset || _.docEl.scrollLeft;
 
         return {
             top: boundingRect.top + scrollTop - clientTop,
@@ -944,11 +966,11 @@ $Element.prototype.offset = function() {
     }
 };
 
-},{"./element":14}],18:[function(require,module,exports){
+},{"./element":14,"./utils":34}],18:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
-    hooks = {};
+    hooks = {},
+    fakeClass = "_" + Date.now();
 
 /**
  * Set property/attribute value by name
@@ -988,12 +1010,12 @@ $Element.prototype.set = function(name, value) {
                 return;
             } else if (node.type && "value" in node) {
                 // for IE use innerText because it doesn't trigger onpropertychange
-                name = features.DOM2_EVENTS ? "value" : "innerText";
+                name = _.DOM2_EVENTS ? "value" : "innerText";
             } else {
                 name = "innerHTML";
             }
         } else if (len > 2 || len === 0 || nameType !== "string") {
-            throw _.makeError("set", el);
+            throw _.makeError("set");
         }
 
         if (typeof value === "function") value = value(el, index, ref);
@@ -1007,12 +1029,17 @@ $Element.prototype.set = function(name, value) {
         } else {
             node.setAttribute(name, value);
         }
+        // trigger reflow manually in IE8
+        if (!_.DOM2_EVENTS) {
+            value = (node.className += " " + fakeClass);
+            node.className = value.replace(" " + fakeClass, "");
+        }
     });
 };
 
 // $Element.set hooks
 
-if (!features.DOM2_EVENTS) {
+if (!_.DOM2_EVENTS) {
     hooks.textContent = function(node, value) {
         node.innerText = value;
     };
@@ -1020,14 +1047,14 @@ if (!features.DOM2_EVENTS) {
 
 module.exports = hooks;
 
-},{"./element":14,"./features":23,"./utils":35}],19:[function(require,module,exports){
+},{"./element":14,"./utils":34}],19:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     hooks = {get: {}, set: {}},
     reDash = /\-./g,
     reCamel = /[A-Z]/g,
     directions = ["Top", "Right", "Bottom", "Left"],
-    computed = window.getComputedStyle(document.documentElement),
+    computed = window.getComputedStyle(_.docEl),
     // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
     props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
         return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
@@ -1090,7 +1117,7 @@ $Element.prototype.style = function(name, value) {
         } else if (len === 2 && nameType === "string") {
             appendCssText(value, name);
         } else {
-            throw _.makeError("style", el);
+            throw _.makeError("style");
         }
     });
 };
@@ -1175,26 +1202,27 @@ _.forOwn({
 
 module.exports = hooks;
 
-},{"./element":14,"./utils":35}],20:[function(require,module,exports){
+},{"./element":14,"./utils":34}],20:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    SelectorMatcher = require("./selectormatcher"),
-    features = require("./features");
+    SelectorMatcher = require("./selectormatcher");
 
 function makeTraversingMethod(propertyName, multiple) {
-    return function(selector) {
+    return function(selector, andSelf) {
         var matcher = SelectorMatcher(selector),
             nodes = multiple ? [] : null,
             it = this._node;
 
-        if (it) {
-            while (it = it[propertyName]) {
-                if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                    if (!multiple) break;
+        if (!andSelf && it) it = it[propertyName];
 
-                    nodes.push(it);
-                }
+        while (it) {
+            if (it.nodeType === 1 && (!matcher || matcher(it))) {
+                if (!multiple) break;
+
+                nodes.push(it);
             }
+
+            it = it[propertyName];
         }
 
         return multiple ? new $Element(nodes, multiple) : $Element(it);
@@ -1206,7 +1234,7 @@ function makeChildTraversingMethod(multiple) {
         if (multiple) {
             selector = index;
         } else if (typeof index !== "number") {
-            throw _.makeError("child", this);
+            throw _.makeError("child");
         }
 
         if (!this._node) return new $Element();
@@ -1215,7 +1243,7 @@ function makeChildTraversingMethod(multiple) {
             matcher = SelectorMatcher(selector),
             node;
 
-        if (!features.DOM2_EVENTS) {
+        if (!_.DOM2_EVENTS) {
             // fix IE8 bug with children collection
             children = _.filter(children, function(node) { return node.nodeType === 1 });
         }
@@ -1235,6 +1263,7 @@ function makeChildTraversingMethod(multiple) {
 /**
  * Find next sibling element filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -1244,6 +1273,7 @@ $Element.prototype.next = makeTraversingMethod("nextSibling");
 /**
  * Find previous sibling element filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -1253,6 +1283,7 @@ $Element.prototype.prev = makeTraversingMethod("previousSibling");
 /**
  * Find all next sibling elements filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -1262,6 +1293,7 @@ $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 /**
  * Find all previous sibling elements filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -1271,6 +1303,7 @@ $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 /**
  * Find parent element filtered by optional selector
  * @param {String} [selector] css selector
+ * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
@@ -1296,55 +1329,12 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
 
-},{"./element":14,"./features":23,"./selectormatcher":34,"./utils":35}],21:[function(require,module,exports){
+},{"./element":14,"./selectormatcher":33,"./utils":34}],21:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
-    features = require("./features"),
-    importStyles = require("./dom.importstyles"),
-    animationEvents = features.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
-    createCallback = function(el, callback, fn) {
-        return function() {
-            el.legacy(function(node, el, index, ref) {
-                var hidden = typeof fn === "function" ? fn(el) : fn,
-                    transitionDelay = parseFloat(el.style("transition-duration")),
-                    animationDelay = parseFloat(el.style("animation-duration")),
-                    iterationCount = el.style("animation-iteration-count"),
-                    completeCallback = (callback || hidden) && function() {
-                        // remove temporary inline styles
-                        if (hidden) el.style({ visibility: null, position: null });
-
-                        if (callback) callback(el, index, ref);
-                    };
-
-                if (features.CSS3_ANIMATIONS && (transitionDelay || animationDelay && iterationCount >= 1)) {
-                    if (completeCallback) {
-                        // choose max delay
-                        el.once(animationEvents[animationDelay > transitionDelay ? 0 : 1], completeCallback);
-                    }
-                } else {
-                    // use setTimeout to make a safe call
-                    if (completeCallback) setTimeout(completeCallback, 0);
-                }
-
-                if (hidden) {
-                    // store inline styles because they'll be temporary overwritten
-                    el._oldstyle = { visibility: node.style.visibility, position: node.style.position };
-                    // set current styles inline to override inherited from
-                    // the [aria-hidden=true] rule until the element animation ends
-                    el.style(el.style(["visibility", "position"]));
-                } else {
-                    if (el._oldstyle) {
-                        // restore inline styles
-                        el.style(el._oldstyle);
-
-                        delete el._oldstyle;
-                    }
-                }
-
-                el.set("aria-hidden", hidden);
-            });
-        };
-    },
+    et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    prevDisplayValue = "_" + Date.now(),
     makeVisibilityMethod = function(name, fn) {
         return function(delay, callback) {
             var delayType = typeof delay;
@@ -1356,18 +1346,60 @@ var _ = require("./utils"),
 
             if (delay && (delayType !== "number" || delay < 0) ||
                 callback && typeof callback !== "function") {
-                throw _.makeError(name, this);
+                throw _.makeError(name);
             }
 
-            callback = createCallback(this, callback, fn);
+            return this.legacy(function(node, el, index, ref) {
+                var hidden = typeof fn === "function" ? fn(node) : fn,
+                    styles = el.style(animationProps),
+                    transitionDelay = parseFloat(styles[animationProps[0]]),
+                    animationDelay = parseFloat(styles[animationProps[1]]),
+                    iterationCount = parseFloat(styles[animationProps[2]]),
+                    hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
+                    completeCallback = function() {
+                        if (hidden) {
+                            // store current display value in private property
+                            el[prevDisplayValue] = node.style.display;
+                            // hide element and remove it from flow
+                            node.style.display = "none";
+                            node.style.visibility = "";
+                        }
 
-            if (delay) {
-                setTimeout(callback, delay);
-            } else {
-                callback();
-            }
+                        node.style.pointerEvents = "";
 
-            return this;
+                        if (callback) setTimeout(function() { callback(el, index, ref) }, 0);
+                    };
+
+                if (hidden) {
+                    // set visibility inline to override inherited from [aria-hidden=true]
+                    node.style.visibility = "visible";
+                } else {
+                    if (!el[prevDisplayValue] || el[prevDisplayValue] === "none") el[prevDisplayValue] = "";
+
+                    node.style.display = el[prevDisplayValue];
+
+                    delete el[prevDisplayValue];
+                }
+
+                // prevent accidental user actions
+                node.style.pointerEvents = "none";
+
+                if (_.CSS3_ANIMATIONS && hasAnimation) {
+                    // choose max delay to determine appropriate event type
+                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
+                } else {
+                    // execute completeCallback safely
+                    el.fire(completeCallback);
+                }
+
+                // trigger native CSS animation
+                if (hasAnimation || delay) {
+                    // toggle aria-hidden async to apply inline styles before the animation starts
+                    setTimeout(function() { node.setAttribute("aria-hidden", hidden) }, delay);
+                } else {
+                    node.setAttribute("aria-hidden", hidden);
+                }
+            });
         };
     };
 
@@ -1396,26 +1428,21 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
  * @return {$Element}
  * @function
  */
-$Element.prototype.toggle = makeVisibilityMethod("toggle", function(el) {
-    return el.get("aria-hidden") !== "true";
+$Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
+    return node.getAttribute("aria-hidden") !== "true";
 });
 
-// [aria-hidden=true] could be overriden only if browser supports animations
-// pointer-events:none helps to solve accidental clicks on a hidden element
-importStyles("[aria-hidden=true]",  "visibility:hidden;position:absolute");
-
-},{"./dom.importstyles":5,"./element":14,"./features":23,"./utils":35}],22:[function(require,module,exports){
+},{"./element":14,"./utils":34}],22:[function(require,module,exports){
 /*
  * Helper type to create an event handler
  */
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    features = require("./features"),
     hooks = {},
-    docEl = document.documentElement,
+    eventHooks = {},
     debouncedEvents = "scroll mousemove",
-    testEl = document.createElement("div"),
+    defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
         return memo || window[name + "equestAnimationFrame"];
     }, null),
@@ -1441,7 +1468,8 @@ var _ = require("./utils"),
     };
 
 module.exports = function(type, selector, callback, props, el, once) {
-    var matcher = SelectorMatcher(selector),
+    var hook = hooks[type],
+        matcher = SelectorMatcher(selector),
         handler = function(e) {
             if (module.exports.skip === type) return; // early stop in case of default action
 
@@ -1452,7 +1480,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                 target = e.target || e.srcElement || document,
                 currentTarget = selector ? target : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
-                args = props || [selector ? "currentTarget" : "target", "defaultPrevented"];
+                args = props || defaultArgs;
 
             if (typeof fn !== "function") return; // early stop for late binding
 
@@ -1473,7 +1501,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                     return $Element(currentTarget);
                 }
 
-                var hook = hooks[name];
+                var hook = eventHooks[name];
 
                 return hook ? hook(e, node) : e[name];
             });
@@ -1483,7 +1511,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
             if (fn.apply(el, args) === false) {
                 // prevent default if handler returns false
-                if (features.DOM2_EVENTS) {
+                if (_.DOM2_EVENTS) {
                     e.preventDefault();
                 } else {
                     e.returnValue = false;
@@ -1491,55 +1519,67 @@ module.exports = function(type, selector, callback, props, el, once) {
             }
         };
 
-    if (~debouncedEvents.indexOf(type)) {
+    if (hook) hook(handler);
+
+    handler.type = handler._type || type;
+
+    if (~debouncedEvents.indexOf(handler.type)) {
         handler = createDebouncedEventWrapper(handler);
-    } else if (!features.DOM2_EVENTS && (type === "submit" || !("on" + type in testEl))) {
+    } else if (!_.DOM2_EVENTS && (handler.type === "submit" || !("on" + handler.type in el._node))) {
         // handle custom events for IE8
         handler = createCustomEventWrapper(handler, type);
     }
 
+    handler.type = selector ? type + " " + selector : type;
+    handler.callback = callback;
+
     return handler;
 };
 
-// EventHandler hooks
+// EventHandler eventHooks
 
-if (features.DOM2_EVENTS) {
-    hooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
+if (_.DOM2_EVENTS) {
+    eventHooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
 } else {
-    hooks.relatedTarget = function(e, currentTarget) {
+    eventHooks.relatedTarget = function(e, currentTarget) {
         return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
     };
 
-    hooks.defaultPrevented = function(e) { return e.returnValue === false };
+    eventHooks.defaultPrevented = function(e) { return e.returnValue === false };
 
-    hooks.which = function(e) { return e.keyCode };
+    eventHooks.which = function(e) { return e.keyCode };
 
-    hooks.button = function(e) {
+    eventHooks.button = function(e) {
         var button = e.button;
         // click: 1 === left; 2 === middle; 3 === right
         return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
     };
 
-    hooks.pageX = function(e) {
-        return e.clientX + docEl.scrollLeft - docEl.clientLeft;
+    eventHooks.pageX = function(e) {
+        return e.clientX + _.docEl.scrollLeft - _.docEl.clientLeft;
     };
 
-    hooks.pageY = function(e) {
-        return e.clientY + docEl.scrollTop - docEl.clientTop;
+    eventHooks.pageY = function(e) {
+        return e.clientY + _.docEl.scrollTop - _.docEl.clientTop;
     };
 }
 
-},{"./element":14,"./features":23,"./selectormatcher":34,"./utils":35}],23:[function(require,module,exports){
-var doc = document,
-    win = window;
+if ("onfocusin" in _.docEl) {
+    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+        hooks[prop] = function(handler) { handler._type = value };
+    });
+} else {
+    // firefox doesn't support focusin/focusout events
+    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
+}
 
-module.exports = {
-    CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
-    DOM2_EVENTS: !!doc.addEventListener,
-    WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : ""
-};
+if (document.createElement("input").validity) {
+    hooks.invalid = function(handler) { handler.capturing = true };
+}
 
-},{}],24:[function(require,module,exports){
+module.exports.hooks = hooks;
+
+},{"./element":14,"./selectormatcher":33,"./utils":34}],23:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element");
@@ -1552,12 +1592,12 @@ var _ = require("./utils"),
 $Node.prototype.contains = function(element) {
     var node = this._node;
 
-    if (!(element instanceof $Element)) throw _.makeError("contains", this);
+    if (!(element instanceof $Element)) throw _.makeError("contains");
 
     if (node) return element.every(function(el) { return node.contains(el._node) });
 };
 
-},{"./element":14,"./node":30,"./utils":35}],25:[function(require,module,exports){
+},{"./element":14,"./node":29,"./utils":34}],24:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -1604,7 +1644,7 @@ $Node.prototype.data = function(key, value) {
     throw _.makeError("data", this);
 };
 
-},{"./node":30,"./utils":35}],26:[function(require,module,exports){
+},{"./node":29,"./utils":34}],25:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element");
@@ -1615,7 +1655,7 @@ var _ = require("./utils"),
 var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
-    tmpId = "DOM" + new Date().getTime();
+    tmpId = "DOM" + Date.now();
 
 /**
  * Find the first matched element by css selector
@@ -1623,7 +1663,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @return {$Element} the first matched element
  */
 $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
-    if (typeof selector !== "string") throw _.makeError("find", this);
+    if (typeof selector !== "string") throw _.makeError("find");
 
     var node = this._node,
         quickMatch = rquickExpr.exec(selector),
@@ -1680,48 +1720,51 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);
 };
-},{"./element":14,"./node":30,"./utils":35}],27:[function(require,module,exports){
+},{"./element":14,"./node":29,"./utils":34}],26:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
-    EventHandler = require("./eventhandler"),
-    features = require("./features"),
-    hooks = require("./node.on");
+    EventHandler = require("./eventhandler");
 
 /**
  * Triggers an event of specific type with optional extra arguments
- * @param  {String}    type   type of event
- * @param  {...Object} [args] extra arguments to pass into each event handler
+ * @param  {String|Function}  type    type of event or function for a safe call
+ * @param  {...Object}        [args]  extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.fire = function(type) {
-    if (typeof type !== "string") throw _.makeError("fire", this);
+    var args = _.slice(arguments, 1),
+        isSafeCall = typeof type === "function";
 
-    var args = _.slice(arguments, 1);
+    if (typeof type !== "string" && !isSafeCall) throw _.makeError("fire");
 
-    return _.every(this, function(el) {
+    return _.every(this, function(el, index, ref) {
         var node = el._node,
-            hook = hooks[type],
+            hook = EventHandler.hooks[type.toString()],
             handler = {},
-            isCustomEvent, canContinue, e;
+            isCustomEvent, eventType, canContinue, e;
 
         if (hook) hook(handler);
 
-        if (features.DOM2_EVENTS) {
-            e = document.createEvent("HTMLEvents");
+        eventType = handler._type || type;
 
-            e.initEvent(handler._type || type, true, true);
+        if (isSafeCall) el.once(eventType = "filterchange", function() { type(el, index, ref) });
+
+        if (_.DOM2_EVENTS) {
+            e = document.createEvent("HTMLEvents");
+            e.initEvent(eventType, !isSafeCall, !isSafeCall);
             e._args = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
-            isCustomEvent = type === "submit" || !("on" + type in node);
             e = document.createEventObject();
-            // store original event type
-            e.srcUrn = isCustomEvent ? type : undefined;
             e._args = args;
 
-            node.fireEvent("on" + (isCustomEvent ? "dataavailable" : handler._type || type), e);
+            isCustomEvent = eventType === "submit" || !("on" + eventType in node);
+            // store original event type
+            if (isCustomEvent) e.srcUrn = isSafeCall ? eventType : type;
+
+            node.fireEvent("on" + (isCustomEvent ? "dataavailable" : eventType), e);
 
             canContinue = e.returnValue !== false;
         }
@@ -1740,7 +1783,7 @@ $Node.prototype.fire = function(type) {
     });
 };
 
-},{"./eventhandler":22,"./features":23,"./node":30,"./node.on":32,"./utils":35}],28:[function(require,module,exports){
+},{"./eventhandler":22,"./node":29,"./utils":34}],27:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -1835,7 +1878,7 @@ _.extend($Node.prototype, {
     legacy: makeCollectionMethod(_.legacy)
 });
 
-},{"./node":30,"./utils":35}],29:[function(require,module,exports){
+},{"./node":29,"./utils":34}],28:[function(require,module,exports){
 var $Node = require("./node");
 
 /**
@@ -1847,7 +1890,7 @@ $Node.prototype.get = function(name) {
     return this._node[name];
 };
 
-},{"./node":30}],30:[function(require,module,exports){
+},{"./node":29}],29:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -1868,10 +1911,9 @@ function $Node(node) {
 
 module.exports = $Node;
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var _ = require("./utils"),
-    $Node = require("./node"),
-    features = require("./features");
+    $Node = require("./node");
 
 /**
  * Unbind an event from the element
@@ -1881,14 +1923,14 @@ var _ = require("./utils"),
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.off = function(type, callback) {
-    if (typeof type !== "string") throw _.makeError("off", this);
+    if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy(function(node, el) {
         _.forEach(el._listeners, function(handler, index, events) {
             if (handler && type === handler.type && (!callback || callback === handler.callback)) {
                 type = handler._type || handler.type;
 
-                if (features.DOM2_EVENTS) {
+                if (_.DOM2_EVENTS) {
                     node.removeEventListener(type, handler, !!handler.capturing);
                 } else {
                     // IE8 doesn't support onscroll on document level
@@ -1903,12 +1945,10 @@ $Node.prototype.off = function(type, callback) {
     });
 };
 
-},{"./features":23,"./node":30,"./utils":35}],32:[function(require,module,exports){
+},{"./node":29,"./utils":34}],31:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
-    EventHandler = require("./eventhandler"),
-    features = require("./features"),
-    hooks = {};
+    EventHandler = require("./eventhandler");
 
 /**
  * Bind a DOM event
@@ -1945,19 +1985,13 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
         return this;
     } else {
-        throw _.makeError("on", this);
+        throw _.makeError("on");
     }
 
     return this.legacy(function(node, el) {
-        var handler = EventHandler(type, selector, callback, props, el, once),
-            hook = hooks[type];
+        var handler = EventHandler(type, selector, callback, props, el, once);
 
-        handler.type = selector ? type + " " + selector : type;
-        handler.callback = callback;
-
-        if (hook) hook(handler);
-
-        if (features.DOM2_EVENTS) {
+        if (_.DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
         } else {
             // IE8 doesn't support onscroll on document level
@@ -1986,24 +2020,7 @@ $Node.prototype.once = function() {
     return this.on.apply(this, args);
 };
 
-// $Node.on hooks
-
-if ("onfocusin" in document.createElement("a")) {
-    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
-        hooks[prop] = function(handler) { handler._type = value };
-    });
-} else {
-    // firefox doesn't support focusin/focusout events
-    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
-}
-
-if (document.createElement("input").validity) {
-    hooks.invalid = function(handler) { handler.capturing = true };
-}
-
-module.exports = hooks;
-
-},{"./eventhandler":22,"./features":23,"./node":30,"./utils":35}],33:[function(require,module,exports){
+},{"./eventhandler":22,"./node":29,"./utils":34}],32:[function(require,module,exports){
 var $Node = require("./node");
 
 /**
@@ -2017,7 +2034,7 @@ $Node.prototype.set = function(name, value) {
     return this;
 };
 
-},{"./node":30}],34:[function(require,module,exports){
+},{"./node":29}],33:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
@@ -2028,7 +2045,7 @@ var _ = require("./utils"),
     matchesProp = _.foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
         var propertyName = prefix + "atchesSelector";
 
-        if (!result) return document.documentElement[propertyName] && propertyName;
+        if (!result) return _.docEl[propertyName] && propertyName;
     }, null);
 
 module.exports = function(selector) {
@@ -2062,8 +2079,9 @@ module.exports = function(selector) {
     };
 };
 
-},{"./utils":35}],35:[function(require,module,exports){
-var DOM = require("./dom"),
+},{"./utils":34}],34:[function(require,module,exports){
+var doc = document,
+    win = window,
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
@@ -2090,8 +2108,13 @@ var DOM = require("./dom"),
     })();
 
 module.exports = {
-    makeError: function(method, el) {
-        var type = el === DOM ? "DOM" : "$Element";
+    docEl: doc.documentElement,
+    CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
+    DOM2_EVENTS: !!doc.addEventListener,
+    WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
+
+    makeError: function(method, DOM) {
+        var type = DOM ? "DOM" : "$Element";
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
     },
@@ -2154,5 +2177,5 @@ module.exports = {
     }
 };
 
-},{"./dom":6}]},{},[1,3,2,4,5,6,7,8,9,10,11,13,12,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35])
+},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34])
 ;
