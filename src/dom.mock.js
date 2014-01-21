@@ -8,10 +8,11 @@ var _ = require("./utils"),
  * Also exposes private event handler functions that aren't usually presented
  * @memberOf DOM
  * @param  {Mixed} [content] HTMLString, EmmetString
+ * @param  {Object} [vars]  key/value map of variables in emmet template
  * @return {$Element} mocked instance
  */
-DOM.mock = function(content) {
-    var el = content ? DOM.create(content) : new $Element(),
+DOM.mock = function(content, vars) {
+    var el = content ? DOM.create(content, vars) : new $Element(),
         applyWatchers = function(el) {
             _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
 
