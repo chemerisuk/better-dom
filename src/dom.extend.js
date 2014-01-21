@@ -33,15 +33,8 @@ var _ = require("./utils"),
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
-            if (!skip[index] && ext.accept(node)) {
-                if (_.CSS3_ANIMATIONS) {
-                    node.addEventListener(nativeEventType, stopExt(node, index), false);
-                } else {
-                    node.attachEvent(nativeEventType, stopExt(node, index));
-                }
-                // make a safe call so live extensions can't break each other
-                el.fire(ext);
-            }
+            // make a safe call so live extensions can't break each other
+            if (!skip[index] && ext.accept(node)) el.fire(ext);
         };
     };
 
@@ -79,23 +72,20 @@ if (_.CSS3_ANIMATIONS) {
 }
 
 /**
- * Define a live extension
+ * Declare a live extension
  * @memberOf DOM
- * @param  {String} selector  extension        css selector
- * @param  {Boolean|Function} [condition=true] condition
- * @param  {Object}           mixins           extension mixins
+ * @param  {String}           selector         css selector of which elements to capture
+ * @param  {Boolean|Function} [condition=true] condition, to define or not
+ * @param  {Object}           mixins           extension declatation
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
 DOM.extend = function(selector, condition, mixins) {
-    var len = arguments.length,
-        eventHandlers, ext, ctr;
-
-    if (len === 3) {
-        if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
-    } else if (len === 2) {
+    if (arguments.length === 2) {
         mixins = condition;
-        condition = returnTrue;
+        condition = true;
     }
+
+    if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
 
     if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
 
@@ -103,20 +93,29 @@ DOM.extend = function(selector, condition, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) });
-        ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
-        ext = function(el, mock) {
-            if (!mock && condition(el) === false) return;
+        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
+            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
+            index = extensions.length,
+            ext = function(el, mock) {
+                var node = el._node;
 
-            _.extend(el, mixins);
+                if (_.CSS3_ANIMATIONS) {
+                    node.addEventListener(nativeEventType, stopExt(node, index), false);
+                } else {
+                    node.attachEvent(nativeEventType, stopExt(node, index));
+                }
 
-            try {
-                if (ctr) ctr.call(el);
-            } finally {
-                // remove event handlers from element's interface
-                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
-            }
-        };
+                if (mock !== true && condition(el) === false) return;
+
+                _.extend(el, mixins);
+
+                try {
+                    if (ctr) ctr.call(el);
+                } finally {
+                    // remove event handlers from element's interface
+                    if (mock !== true) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                }
+            };
 
         if (ctr) delete mixins.constructor;
 
@@ -126,24 +125,10 @@ DOM.extend = function(selector, condition, mixins) {
         DOM.ready(function() {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
-            // Also fixes legacy IE in case when the lib behavior is already attached
-            DOM.findAll(selector).legacy(function(node) {
-                var e;
-
-                if (_.CSS3_ANIMATIONS) {
-                    e = document.createEvent("HTMLEvents");
-                    e.initEvent(nativeEventType, true, true);
-                    e.animationName = animId;
-
-                    node.dispatchEvent(e);
-                } else {
-                    e = document.createEventObject();
-                    e.srcUrn = "dataavailable";
-                    node.fireEvent(nativeEventType, e);
-                }
-            });
-            // make sure that any extension is initialized after DOM.ready
-            // MUST be after DOM.findAll because of legacy IE behavior
+            // Also fixes legacy IEs when the HTC behavior is already attached
+            DOM.findAll(selector).fire(ext);
+            // Any extension should be initialized after DOM.ready
+            // MUST be after DOM.findAll because of legacy IEs behavior
             importStyles(selector, styles, true);
         });
     }
