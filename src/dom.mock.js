@@ -14,7 +14,7 @@ var _ = require("./utils"),
 DOM.mock = function(content, vars) {
     var el = content ? DOM.create(content, vars) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
+            _.forEach(extensions, function(ext) { if (ext.accept(el[_.NODE])) ext(el, true) });
 
             el.children().each(applyWatchers);
         };

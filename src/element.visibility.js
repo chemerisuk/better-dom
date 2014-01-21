@@ -2,7 +2,6 @@ var _ = require("./utils"),
     $Element = require("./element"),
     et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
-    prevDisplayValue = "_" + Date.now(),
     makeVisibilityMethod = function(name, fn) {
         return function(delay, callback) {
             var len = arguments.length,
@@ -41,13 +40,13 @@ var _ = require("./utils"),
 
                 if (value) {
                     // store current display value in private property
-                    el[prevDisplayValue] = node.style.display;
+                    el[_.DISPLAY] = node.style.display;
                 } else {
-                    if (!el[prevDisplayValue] || el[prevDisplayValue] === "none") el[prevDisplayValue] = "";
+                    if (!el[_.DISPLAY] || el[_.DISPLAY] === "none") el[_.DISPLAY] = "";
 
-                    node.style.display = el[prevDisplayValue];
+                    node.style.display = el[_.DISPLAY];
 
-                    delete el[prevDisplayValue];
+                    delete el[_.DISPLAY];
                 }
 
                 // set inline styles to override inherited

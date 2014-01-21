@@ -23,22 +23,33 @@ var doc = document,
 
             return Function("a", "cb", "that", "undefined", code);
         };
-    })();
+    })(),
+    makeRandomProp = function() {
+        return "_" + Math.random().toString().split(".")[1];
+    },
+    NODE_PROP = makeRandomProp();
 
 module.exports = {
-    docEl: doc.documentElement,
-    CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
-    DOM2_EVENTS: !!doc.addEventListener,
-    WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
-
+    makeRandomProp: makeRandomProp,
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the function call";
     },
 
-    // OBJECT UTILS
+    // private props
+    NODE: NODE_PROP,
+    DATA: makeRandomProp(),
+    HANDLERS: makeRandomProp(),
+    DISPLAY: makeRandomProp(),
 
+    // constants
+    docEl: doc.documentElement,
+    CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
+    DOM2_EVENTS: !!doc.addEventListener,
+    WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
+
+    // utilites
     forOwn: makeLoopMethod({
         BEFORE: "var keys = Object.keys(a), k",
         COUNT:  "keys.length",
@@ -49,9 +60,6 @@ module.exports = {
 
         return obj;
     },
-
-    // COLLECTION UTILS
-
     forEach: makeLoopMethod({
         BODY:   "cb.call(that, a[i], i, a)",
         AFTER:  "return a"
@@ -87,7 +95,7 @@ module.exports = {
     }),
     legacy: makeLoopMethod({
         BEFORE: "that = a",
-        BODY:   "cb.call(that, a[i]._node, a[i], i)",
+        BODY:   "cb.call(that, a[i]." + NODE_PROP + ", a[i], i)",
         AFTER:  "return a"
     }),
     slice: function(list, index) {

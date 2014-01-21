@@ -10,7 +10,7 @@ var _ = require("./utils"),
  */
 $Element.prototype.get = function(name) {
     var el = this,
-        node = this._node,
+        node = this[_.NODE],
         hook = hooks[name];
 
     if (!node) return;

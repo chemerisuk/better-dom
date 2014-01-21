@@ -18,7 +18,7 @@ var _ = require("./utils"),
  */
 $Element.prototype.style = function(name, value) {
     var len = arguments.length,
-        node = this._node,
+        node = this[_.NODE],
         nameType = typeof name,
         style, hook, computed;
 

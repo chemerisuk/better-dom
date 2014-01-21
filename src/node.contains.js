@@ -8,9 +8,9 @@ var _ = require("./utils"),
  * @return {Boolean} true if success
  */
 $Node.prototype.contains = function(element) {
-    var node = this._node;
+    var node = this[_.NODE];
 
     if (!(element instanceof $Element)) throw _.makeError("contains");
 
-    if (node) return element.every(function(el) { return node.contains(el._node) });
+    if (node) return element.every(function(el) { return node.contains(el[_.NODE]) });
 };

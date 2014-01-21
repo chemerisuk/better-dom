@@ -12,8 +12,8 @@ var _ = require("./utils"),
 $Node.prototype.data = function(key, value) {
     var len = arguments.length,
         keyType = typeof key,
-        node = this._node,
-        data = this._data;
+        node = this[_.NODE],
+        data = this[_.DATA] || {};
 
     if (len === 1) {
         if (keyType === "string") {
@@ -38,11 +38,11 @@ $Node.prototype.data = function(key, value) {
             if (Array.isArray(key)) {
                 return _.foldr(key, function(r, key) { return r[key] = data[key], r; }, {});
             } else {
-                return _.forEach(this, function(el) { _.extend(el._data, key) });
+                return _.forEach(this, function(el) { _.extend(el[_.DATA], key) });
             }
         }
     } else if (len === 2 && keyType === "string") {
-        return _.forEach(this, function(el) { el._data[key] = value });
+        return _.forEach(this, function(el) { el[_.DATA][key] = value });
     }
 
     throw _.makeError("data", this);

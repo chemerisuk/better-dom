@@ -1,7 +1,7 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     hooks = {},
-    fakeClass = "_" + Date.now();
+    fakeClass = _.makeRandomProp();
 
 /**
  * Set property/attribute value by name

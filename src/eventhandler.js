@@ -41,7 +41,7 @@ module.exports = function(type, selector, callback, props, el, once) {
             e = e || window.event;
 
             // srcElement could be null in legacy IE when target is document
-            var node = el._node,
+            var node = el[_.NODE],
                 target = e.target || e.srcElement || document,
                 currentTarget = selector ? target : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
@@ -90,7 +90,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
     if (~debouncedEvents.indexOf(handler.type)) {
         handler = createDebouncedEventWrapper(handler);
-    } else if (!_.DOM2_EVENTS && (handler.type === "submit" || !("on" + handler.type in el._node))) {
+    } else if (!_.DOM2_EVENTS && (handler.type === "submit" || !("on" + handler.type in el[_.NODE]))) {
         // handle custom events for IE8
         handler = createCustomEventWrapper(handler, type);
     }

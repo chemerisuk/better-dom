@@ -16,7 +16,7 @@ $Node.prototype.fire = function(type) {
     if (typeof type !== "string" && !isSafeCall) throw _.makeError("fire");
 
     return _.every(this, function(el, index, ref) {
-        var node = el._node,
+        var node = el[_.NODE],
             hook = EventHandler.hooks[type.toString()],
             handler = {},
             isCustomEvent, eventType, canContinue, e;

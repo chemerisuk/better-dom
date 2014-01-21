@@ -7,7 +7,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
 
     if (_.docEl.classList) {
         strategy = function(className) {
-            return this._node.classList[nativeStrategyName](className);
+            return this[_.NODE].classList[nativeStrategyName](className);
         };
     }
 
@@ -15,7 +15,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
         return function(className) {
             var args = arguments;
 
-            if (this._node) {
+            if (this[_.NODE]) {
                 if (args.length === 1) {
                     return strategy.call(this, className);
                 } else {
@@ -45,7 +45,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
  * @function
  */
 $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
-    return (" " + this._node.className + " ").replace(rclass, " ").indexOf(" " + className + " ") >= 0;
+    return (" " + this[_.NODE].className + " ").replace(rclass, " ").indexOf(" " + className + " ") >= 0;
 });
 
 /**
@@ -55,7 +55,7 @@ $Element.prototype.hasClass = makeClassesMethod("contains", function(className) 
  * @function
  */
 $Element.prototype.addClass = makeClassesMethod("add", function(className) {
-    if (!this.hasClass(className)) this._node.className += " " + className;
+    if (!this.hasClass(className)) this[_.NODE].className += " " + className;
 });
 
 /**
@@ -65,9 +65,9 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
  * @function
  */
 $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
-    className = (" " + this._node.className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
+    className = (" " + this[_.NODE].className + " ").replace(rclass, " ").replace(" " + className + " ", " ");
 
-    this._node.className = className.trim();
+    this[_.NODE].className = className.trim();
 });
 
 /**
@@ -77,9 +77,9 @@ $Element.prototype.removeClass = makeClassesMethod("remove", function(className)
  * @function
  */
 $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
-    var oldClassName = this._node.className;
+    var oldClassName = this[_.NODE].className;
 
     this.addClass(className);
 
-    if (oldClassName === this._node.className) this.removeClass(className);
+    if (oldClassName === this[_.NODE].className) this.removeClass(className);
 });

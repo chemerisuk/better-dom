@@ -40,7 +40,7 @@ var _ = require("./utils"),
 
 if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = "DOM" + Date.now();
+    animId = _.makeRandomProp();
 
     importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
@@ -97,7 +97,7 @@ DOM.extend = function(selector, condition, mixins) {
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
             ext = function(el, mock) {
-                var node = el._node;
+                var node = el[_.NODE];
 
                 if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);

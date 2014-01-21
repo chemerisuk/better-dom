@@ -8,7 +8,7 @@ var _ = require("./utils"),
 var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
-    tmpId = "DOM" + Date.now();
+    tmpId = _.makeRandomProp();
 
 /**
  * Find the first matched element by css selector
@@ -18,7 +18,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
 $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
     if (typeof selector !== "string") throw _.makeError("find");
 
-    var node = this._node,
+    var node = this[_.NODE],
         quickMatch = rquickExpr.exec(selector),
         elements, old, nid, context;
 

@@ -13,7 +13,7 @@ $Element.prototype.matches = function(selector, deep) {
         throw _.makeError("matches");
     }
 
-    var node = this._node,
+    var node = this[_.NODE],
         checker = hooks[selector] || SelectorMatcher(selector);
 
     while (node && node !== document) {

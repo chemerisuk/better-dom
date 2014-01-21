@@ -24,7 +24,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 }
             });
 
-            if (!fasterMethodName && html) value = DOM.create(html)._node;
+            if (!fasterMethodName && html) value = DOM.create(html)[_.NODE];
 
             if (!fasterMethodName || value) {
                 strategy(node, value);

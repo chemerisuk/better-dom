@@ -12,7 +12,7 @@ $Node.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy(function(node, el) {
-        _.forEach(el._listeners, function(handler, index, events) {
+        _.forEach(el[_.HANDLERS], function(handler, index, handlers) {
             if (handler && type === handler.type && (!callback || callback === handler.callback)) {
                 type = handler._type || handler.type;
 
@@ -25,7 +25,7 @@ $Node.prototype.off = function(type, callback) {
                     node.detachEvent("on" + type, handler);
                 }
 
-                delete events[index];
+                delete handlers[index];
             }
         });
     });
