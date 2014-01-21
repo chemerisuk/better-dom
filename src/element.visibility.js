@@ -5,10 +5,13 @@ var _ = require("./utils"),
     prevDisplayValue = "_" + Date.now(),
     makeVisibilityMethod = function(name, fn) {
         return function(delay, callback) {
-            var delayType = typeof delay;
+            var len = arguments.length,
+                delayType = typeof delay;
 
-            if (arguments.length === 1 && delayType === "function") {
+            if (len === 1 && delayType === "function") {
                 callback = delay;
+                delay = 0;
+            } else if (len === 0) {
                 delay = 0;
             }
 
@@ -18,16 +21,14 @@ var _ = require("./utils"),
             }
 
             return this.legacy(function(node, el, index, ref) {
-                var hidden = typeof fn === "function" ? fn(node) : fn,
+                var value = typeof fn === "function" ? fn(node) : fn,
                     styles = el.style(animationProps),
                     transitionDelay = parseFloat(styles[animationProps[0]]),
                     animationDelay = parseFloat(styles[animationProps[1]]),
                     iterationCount = parseFloat(styles[animationProps[2]]),
                     hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
                     completeCallback = function() {
-                        if (hidden) {
-                            // store current display value in private property
-                            el[prevDisplayValue] = node.style.display;
+                        if (value) {
                             // hide element and remove it from flow
                             node.style.display = "none";
                             node.style.visibility = "";
@@ -35,12 +36,12 @@ var _ = require("./utils"),
 
                         node.style.pointerEvents = "";
 
-                        if (callback) setTimeout(function() { callback(el, index, ref) }, 0);
+                        if (callback) callback(el, index, ref);
                     };
 
-                if (hidden) {
-                    // set visibility inline to override inherited from [aria-hidden=true]
-                    node.style.visibility = "visible";
+                if (value) {
+                    // store current display value in private property
+                    el[prevDisplayValue] = node.style.display;
                 } else {
                     if (!el[prevDisplayValue] || el[prevDisplayValue] === "none") el[prevDisplayValue] = "";
 
@@ -49,6 +50,9 @@ var _ = require("./utils"),
                     delete el[prevDisplayValue];
                 }
 
+                // set inline styles to override inherited
+                node.style.display = "inherit";
+                node.style.visibility = "visible";
                 // prevent accidental user actions
                 node.style.pointerEvents = "none";
 
@@ -59,13 +63,12 @@ var _ = require("./utils"),
                     // execute completeCallback safely
                     el.fire(completeCallback);
                 }
-
                 // trigger native CSS animation
                 if (hasAnimation || delay) {
                     // toggle aria-hidden async to apply inline styles before the animation starts
-                    setTimeout(function() { node.setAttribute("aria-hidden", hidden) }, delay);
+                    setTimeout(function() { node.setAttribute("aria-hidden", value) }, delay);
                 } else {
-                    node.setAttribute("aria-hidden", hidden);
+                    node.setAttribute("aria-hidden", value);
                 }
             });
         };
