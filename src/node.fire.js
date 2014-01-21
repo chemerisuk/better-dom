@@ -30,12 +30,12 @@ $Node.prototype.fire = function(type) {
         if (_.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
             e.initEvent(eventType, !isSafeCall, !isSafeCall);
-            e._args = args;
+            e[_.EVENTARGS] = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
             e = document.createEventObject();
-            e._args = args;
+            e[_.EVENTARGS] = args;
 
             isCustomEvent = eventType === "submit" || !("on" + eventType in node);
             // store original event type

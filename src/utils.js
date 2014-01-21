@@ -42,6 +42,8 @@ module.exports = {
     DATA: makeRandomProp(),
     HANDLERS: makeRandomProp(),
     DISPLAY: makeRandomProp(),
+    EVENTARGS: makeRandomProp(),
+    SKIPEXT: makeRandomProp(),
 
     // constants
     docEl: doc.documentElement,

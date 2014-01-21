@@ -16,14 +16,14 @@ var _ = require("./utils"),
             var stop;
 
             e = e || window.event;
-            // mark extension as processed via _skip bitmask
+            // mark extension as processed via _.SKIPEXT bitmask
             if (_.CSS3_ANIMATIONS) {
                 stop = e.animationName === animId && e.target === node;
             } else {
                 stop = e.srcUrn === "dataavailable" && e.srcElement === node;
             }
 
-            if (stop) (e._skip = e._skip || {})[index] = true;
+            if (stop) (e[_.SKIPEXT] = e[_.SKIPEXT] || {})[index] = true;
         };
     },
     makeExtHandler = function(node, skip) {
@@ -51,7 +51,7 @@ if (_.CSS3_ANIMATIONS) {
 
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e.target, e._skip));
+            _.forEach(extensions, makeExtHandler(e.target, e[_.SKIPEXT]));
         }
     }, false);
 } else {
@@ -66,7 +66,7 @@ if (_.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
+            _.forEach(extensions, makeExtHandler(e.srcElement, e[_.SKIPEXT]));
         }
     });
 }
