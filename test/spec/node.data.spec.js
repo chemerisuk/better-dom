@@ -24,6 +24,18 @@ describe("data", function() {
         expect(input.data("c")).toBe(1);
     });
 
+    it("should work with collections", function() {
+        var links = DOM.create("a[data-test]*2");
+
+        expect(links.data("test")).toBeUndefined();
+        expect(links.data("test", "x")).toBe(links);
+        expect(links.data("test")).toBeUndefined();
+
+        links.each(function(link) {
+            expect(link.data("test")).toBe("x");
+        });
+    });
+
     it("should accept array argument", function() {
         var param = {a: "b", c: 1};
 

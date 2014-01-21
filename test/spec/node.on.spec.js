@@ -145,8 +145,12 @@ describe("on", function() {
 
         if (input.get("validity")) {
             DOM.on("invalid", spy);
-            input._node.checkValidity();
-            expect(spy.callCount).toBe(2);
+
+            input.legacy(function(node) {
+                node.checkValidity();
+
+                expect(spy.callCount).toBe(2);
+            });
         }
     });
 

@@ -16,7 +16,10 @@ describe("legacy", function() {
         spy.andCallFake(function(node, el, index) {
             expect(this).toBe(scripts);
             expect(el).toBe(scripts[index]);
-            expect(node).toBe(scripts[index]._node);
+
+            scripts[index].legacy(function(n) {
+                expect(node).toBe(n);
+            });
         });
 
         scripts.legacy(spy);

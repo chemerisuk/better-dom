@@ -22,7 +22,9 @@ describe("fire", function() {
     });
 
     it("should trigger native handlers", function() {
-        input._node.onclick = callback.andReturn(false);
+        input.legacy(function(node) {
+            node.onclick = callback.andReturn(false);
+        });
 
         input.fire("click");
 
@@ -31,8 +33,12 @@ describe("fire", function() {
 
     it("should trigger native methods if they exist", function() {
         input.fire("focus");
-        expect(input._node).toBe(document.activeElement);
+
         expect(input.matches(":focus")).toBe(true);
+
+        input.legacy(function(node) {
+            expect(node).toBe(document.activeElement);
+        });
     });
 
     it("should trigger custom events", function() {

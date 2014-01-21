@@ -2,60 +2,90 @@
     var sandbox = null,
         matchers = {
         toHaveTag: function(tagName) {
-            if (this.actual && this.actual._node) {
-                return this.actual._node.nodeName.toLowerCase() === tagName;
+            var result = false;
+
+            if (this.actual) {
+                this.actual.legacy(function(node) {
+                    result = node.nodeName.toLowerCase() === tagName;
+                });
             }
 
-            return false;
+            return result;
         },
         toHaveClass: function(className) {
-            if (this.actual && this.actual._node) {
-                return ~(" " + this.actual._node.className + " ").indexOf(" " + className + " ");
+            var result = false;
+
+            if (this.actual) {
+                this.actual.legacy(function(node) {
+                    result = ~(" " + node.className + " ").indexOf(" " + className + " ");
+                });
             }
 
-            return false;
+            return result;
         },
         toHaveId: function(value) {
-            if (this.actual && this.actual._node) {
-                return this.actual._node.id === value;
+            var result = false;
+
+            if (this.actual) {
+                this.actual.legacy(function(node) {
+                    result = node.id === value;
+                });
             }
 
-            return false;
+            return result;
         },
         toHaveAttr: function(name, value) {
-            if (this.actual && this.actual._node) {
+            var result = false;
+
+            if (this.actual) {
                 if (arguments.length === 1) {
-                    return this.actual._node.hasAttribute(name);
+                    this.actual.legacy(function(node) {
+                        result = node.hasAttribute(name);
+                    });
                 } else if (arguments.length === 2) {
-                    return this.actual._node.getAttribute(name) === value;
+                    this.actual.legacy(function(node) {
+                        result = node.getAttribute(name) === value;
+                    });
                 }
             }
 
-            return false;
+            return result;
         },
         toHaveProp: function(name, value) {
-            if (this.actual && this.actual._node) {
-                return this.actual._node[name] === value;
+            var result = false;
+
+            if (this.actual) {
+                this.actual.legacy(function(node) {
+                    result = node[name] === value;
+                });
             }
 
-            return false;
+            return result;
         },
         toBeEmpty: function() {
-            return this.actual && !this.actual._node;
+            return this.actual && !this.actual.length;
         },
         toHaveHtml: function(value) {
-            if (this.actual && this.actual._node) {
-                return this.actual._node.innerHTML === value;
+            var result = false;
+
+            if (this.actual) {
+                this.actual.legacy(function(node) {
+                    result = node.innerHTML === value;
+                });
             }
 
-            return false;
+            return result;
         },
         toHaveStyle: function(name, value) {
-            if (this.actual && this.actual._node) {
-                return this.actual._node.style[name] === value;
+            var result = false;
+
+            if (this.actual) {
+                this.actual.legacy(function(node) {
+                    result = node.style[name] === value;
+                });
             }
 
-            return false;
+            return result;
         }
     };
 
@@ -64,8 +94,10 @@
             if (typeof content === "string") {
                 sandbox.innerHTML = content;
             } else if (typeof content === "object") {
-                sandbox.innerHTML = "";
-                sandbox.appendChild(content._node);
+                content.legacy(function(node) {
+                    sandbox.innerHTML = "";
+                    sandbox.appendChild(node);
+                });
             }
         },
         get: function() {
