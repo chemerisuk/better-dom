@@ -17,6 +17,12 @@ describe("get", function() {
         expect(link.get("data-attr")).toBe("val");
         expect(link.get("tagName")).toBe("A");
 
+        expect(link.get(["id", "data-attr", "tagName"])).toEqual({
+            id: "test",
+            "data-attr": "val",
+            "tagName": "A"
+        });
+
         expect(input.get("type")).toBe("email");
         expect(textarea.get("type")).toBe("textarea");
     });
