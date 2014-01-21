@@ -45,19 +45,20 @@ describe("DOM.template", function() {
     });
 
     describe("attributes", function() {
-        checkExpr("a[title]", "<a title=\"\"></a>");
-        checkExpr("a[title href]", "<a title=\"\" href=\"\"></a>");
-        checkExpr("a.test[title href]", "<a class=\"test\" title=\"\" href=\"\"></a>");
-        checkExpr("a.test[title href]", "<a class=\"test\" title=\"\" href=\"\"></a>");
-        checkExpr("a#one.two[title href]", "<a id=\"one\" class=\"two\" title=\"\" href=\"\"></a>");
+        checkExpr("a[title]", "<a title=\"title\"></a>");
+        checkExpr("a[title href]", "<a title=\"title\" href=\"href\"></a>");
+        checkExpr("a.test[title href]", "<a class=\"test\" title=\"title\" href=\"href\"></a>");
+        checkExpr("a.test[title href]", "<a class=\"test\" title=\"title\" href=\"href\"></a>");
+        checkExpr("a#one.two[title href]", "<a id=\"one\" class=\"two\" title=\"title\" href=\"href\"></a>");
         checkExpr("a[title=hello]", "<a title=\"hello\"></a>");
         checkExpr("a[title=\"hello world\"]", "<a title=\"hello world\"></a>");
         checkExpr("a[title='hello world']", "<a title='hello world'></a>");
         checkExpr("a[title='hello world' href=other]", "<a title='hello world' href=\"other\"></a>");
-        checkExpr("a[title='hello world' href=other name]", "<a title='hello world' href=\"other\" name=\"\"></a>");
-        checkExpr("a[title='hello world' href=other name]>em", "<a title='hello world' href=\"other\" name=\"\"><em></em></a>");
+        checkExpr("a[title='hello world' href=other name]", "<a title='hello world' href=\"other\" name=\"name\"></a>");
+        checkExpr("a[title='hello world' href=other name]>em", "<a title='hello world' href=\"other\" name=\"name\"><em></em></a>");
         checkExpr("section[id=javascript.files]", "<section id=\"javascript.files\"></section>");
-        checkExpr("a[b c='d\\'f']", "<a b=\"\" c='d\\'f'></a>");
+        checkExpr("a[b c='d\\'f']", "<a b=\"b\" c='d\\'f'></a>");
+        checkExpr("input[type=text disabled]", "<input type=\"text\" disabled=\"disabled\">");
     });
 
     describe("variables", function() {

@@ -8,9 +8,9 @@ var _ = require("./utils"),
     reVar = /\$\{(\w+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
-    normalizeAttrs = function(term, name, value, a, b, simple) {
+    normalizeAttrs = function(term, attrName, attrValue, a, b, attrBool) {
         // always wrap attribute values with quotes if they don't exist
-        return name + "=" + (simple || !value ? "\"" + (value || "") + "\"" : value);
+        return attrName + "=" + (attrBool || !attrValue ? "\"" + (attrValue || attrName) + "\"" : attrValue);
     },
     injectTerm = function(term, first) {
         return function(el) {
