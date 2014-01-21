@@ -24,6 +24,14 @@ describe("data", function() {
         expect(input.data("c")).toBe(1);
     });
 
+    it("should accept array argument", function() {
+        var param = {a: "b", c: 1};
+
+        input.data(param);
+
+        expect(input.data(Object.keys(param))).toEqual(param);
+    });
+
     it("should read an appropriate data-* attribute if it exists", function() {
         expect(input.data("a1")).toEqual("x");
         expect(input.data("a2")).toEqual({ a: "b", c: 1, d: null });

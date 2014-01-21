@@ -4,8 +4,8 @@ var _ = require("./utils"),
 /**
  * Getter/setter of a data entry value. Tries to read the appropriate
  * HTML5 data-* attribute if it exists
- * @param  {String|Object}  key     data key or key/value object
- * @param  {Object}         [value] data value to store
+ * @param  {String|Object|Array}  key(s)  data key or key/value object or array of keys
+ * @param  {Object}               [value] data value to store
  * @return {Object} data entry value or this in case of setter
  * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
  */
@@ -35,7 +35,11 @@ $Node.prototype.data = function(key, value) {
 
             return value;
         } else if (key && keyType === "object") {
-            return _.forEach(this, function(el) { _.extend(el._data, key) });
+            if (Array.isArray(key)) {
+                return _.foldr(key, function(r, key) { return r[key] = data[key], r; }, {});
+            } else {
+                return _.forEach(this, function(el) { _.extend(el._data, key) });
+            }
         }
     } else if (len === 2 && keyType === "string") {
         return _.forEach(this, function(el) { el._data[key] = value });

@@ -4,7 +4,7 @@ var _ = require("./utils"),
 
 /**
  * Get property or attribute value by name
- * @param  {String|Array} [name] property/attribute name
+ * @param  {String|Array} [name] property/attribute name or array of names
  * @return {Object} property/attribute value
  * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
  */
