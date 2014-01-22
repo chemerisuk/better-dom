@@ -7,9 +7,9 @@ var _ = require("./utils"),
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
                     styles = el.style(animationProps),
-                    transitionDuration = parseFloat(styles[animationProps[0]]),
-                    animationDuration = parseFloat(styles[animationProps[1]]),
-                    iterationCount = parseFloat(styles[animationProps[2]]),
+                    transitionDuration = parseFloat(styles[animationProps[0]]) || 0,
+                    animationDuration = parseFloat(styles[animationProps[1]]) || 0,
+                    iterationCount = parseFloat(styles[animationProps[2]]) || 0,
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
                     completeAnimation = function() {
