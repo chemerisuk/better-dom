@@ -1,7 +1,8 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
-    styleNode = _.docEl.firstChild.appendChild(document.createElement("style")),
+    currentScript = document.scripts[0],
+    styleNode = currentScript.parentNode.insertBefore(document.createElement("style"), currentScript),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
     // normalize pseudoelement selectors or quotes
