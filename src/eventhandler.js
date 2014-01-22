@@ -8,9 +8,6 @@ var _ = require("./utils"),
     eventHooks = {},
     debouncedEvents = "scroll mousemove",
     defaultArgs = ["target", "currentTarget", "defaultPrevented"],
-    requestAnimationFrame = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
-        return memo || window[name + "equestAnimationFrame"];
-    }, null),
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -23,7 +20,7 @@ var _ = require("./utils"),
             if (!debouncing) {
                 debouncing = true;
 
-                requestAnimationFrame(function() {
+                window[_.RAF](function() {
                     originalHandler(e);
 
                     debouncing = false;

@@ -2,35 +2,21 @@ var _ = require("./utils"),
     $Element = require("./element"),
     et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
-    makeVisibilityMethod = function(name, fn) {
-        return function(delay, callback) {
-            var len = arguments.length,
-                delayType = typeof delay;
-
-            if (len === 1 && delayType === "function") {
-                callback = delay;
-                delay = 0;
-            } else if (len === 0) {
-                delay = 0;
-            }
-
-            if (delay && (delayType !== "number" || delay < 0) ||
-                callback && typeof callback !== "function") {
-                throw _.makeError(name);
-            }
-
-            return this.legacy(function(node, el, index, ref) {
+    changeVisibility = function(el, fn, callback) {
+        return function() {
+            el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
                     styles = el.style(animationProps),
                     transitionDelay = parseFloat(styles[animationProps[0]]),
                     animationDelay = parseFloat(styles[animationProps[1]]),
                     iterationCount = parseFloat(styles[animationProps[2]]),
                     hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
-                    completeCallback = function() {
-                        if (value) {
+                    completeAnimation = function() {
+                        // fix for quick hide/show when hiding is in progress
+                        if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
-                            node.style.display = "none";
-                            node.style.visibility = "";
+                            node.style.visibility = "hidden";
+                            node.style.position = "absolute";
                         }
 
                         node.style.pointerEvents = "";
@@ -39,37 +25,53 @@ var _ = require("./utils"),
                     };
 
                 if (value) {
-                    // store current display value in private property
-                    el[_.DISPLAY] = node.style.display;
+                    // store current inline value in a private property
+                    el[_.DISPLAY] = node.style.position;
                 } else {
-                    if (!el[_.DISPLAY] || el[_.DISPLAY] === "none") el[_.DISPLAY] = "";
-
-                    node.style.display = el[_.DISPLAY];
-
-                    delete el[_.DISPLAY];
+                    node.style.position = el[_.DISPLAY] || "";
                 }
 
-                // set inline styles to override inherited
-                node.style.display = "inherit";
+                // set styles inline to override inherited
                 node.style.visibility = "visible";
-                // prevent accidental user actions
-                node.style.pointerEvents = "none";
 
-                if (_.CSS3_ANIMATIONS && hasAnimation) {
+                if (_.CSS3_ANIMATIONS && hasAnimation && node.offsetWidth) {
+                    // prevent accidental user actions during animation
+                    node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
+                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeAnimation);
                 } else {
-                    // execute completeCallback safely
-                    el.fire(completeCallback);
+                    // execute completeAnimation safely
+                    el.fire(completeAnimation);
                 }
                 // trigger native CSS animation
-                if (hasAnimation || delay) {
-                    // toggle aria-hidden async to apply inline styles before the animation starts
-                    setTimeout(function() { node.setAttribute("aria-hidden", value) }, delay);
-                } else {
-                    node.setAttribute("aria-hidden", value);
-                }
+                node.setAttribute("aria-hidden", value);
             });
+        };
+    },
+    makeVisibilityMethod = function(name, fn) {
+        return function(delay, callback) {
+            var len = arguments.length,
+                delayType = typeof delay;
+
+            if (len === 1 && delayType === "function") {
+                callback = delay;
+                delay = 0;
+            }
+
+            if (delay && (delayType !== "number" || delay < 0) ||
+                callback && typeof callback !== "function") {
+                throw _.makeError(name);
+            }
+
+            callback = changeVisibility(this, fn, callback);
+
+            if (delay) {
+                setTimeout(callback, delay);
+            } else {
+                callback();
+            }
+
+            return this;
         };
     };
 
