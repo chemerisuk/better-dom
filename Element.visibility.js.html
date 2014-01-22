@@ -73,14 +73,61 @@
         <article>
             <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
     $Element = require("./element"),
-    et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
-    prevDisplayValue = "_" + Date.now(),
+    changeVisibility = function(el, fn, callback) {
+        return function() {
+            el.legacy(function(node, el, index, ref) {
+                var value = typeof fn === "function" ? fn(node) : fn,
+                    styles = el.style(animationProps),
+                    transitionDuration = parseFloat(styles[animationProps[0]]) || 0,
+                    animationDuration = parseFloat(styles[animationProps[1]]) || 0,
+                    iterationCount = parseFloat(styles[animationProps[2]]) || 0,
+                    duration = Math.max(iterationCount * animationDuration, transitionDuration),
+                    hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
+                    completeAnimation = function() {
+                        // fix for quick hide/show when hiding is in progress
+                        if (node.getAttribute("aria-hidden") === "true") {
+                            // hide element and remove it from flow
+                            node.style.visibility = "hidden";
+                            node.style.position = "absolute";
+                        }
+
+                        node.style.pointerEvents = "";
+
+                        if (callback) callback(el, index, ref);
+                    };
+
+                if (value) {
+                    // store current inline value in a private property
+                    el[_.DISPLAY] = node.style.position;
+                } else {
+                    node.style.position = el[_.DISPLAY] || "";
+                }
+
+                // set styles inline to override inherited
+                node.style.visibility = "visible";
+
+                if (hasAnimation) {
+                    // prevent accidental user actions during animation
+                    node.style.pointerEvents = "none";
+                    // choose max delay to determine appropriate event type
+                    el.once(eventType[duration === transitionDuration ? 1 : 0], completeAnimation);
+                }
+                // trigger native CSS animation
+                node.setAttribute("aria-hidden", value);
+                // when there is no animation the completeAnimation call
+                // must be AFTER changing the aria-hidden attribute
+                if (!hasAnimation) el.fire(completeAnimation);
+            });
+        };
+    },
     makeVisibilityMethod = function(name, fn) {
         return function(delay, callback) {
-            var delayType = typeof delay;
+            var len = arguments.length,
+                delayType = typeof delay;
 
-            if (arguments.length === 1 && delayType === "function") {
+            if (len === 1 && delayType === "function") {
                 callback = delay;
                 delay = 0;
             }
@@ -90,57 +137,15 @@
                 throw _.makeError(name);
             }
 
-            return this.legacy(function(node, el, index, ref) {
-                var hidden = typeof fn === "function" ? fn(node) : fn,
-                    styles = el.style(animationProps),
-                    transitionDelay = parseFloat(styles[animationProps[0]]),
-                    animationDelay = parseFloat(styles[animationProps[1]]),
-                    iterationCount = parseFloat(styles[animationProps[2]]),
-                    hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
-                    completeCallback = function() {
-                        if (hidden) {
-                            // store current display value in private property
-                            el[prevDisplayValue] = node.style.display;
-                            // hide element and remove it from flow
-                            node.style.display = "none";
-                            node.style.visibility = "";
-                        }
+            callback = changeVisibility(this, fn, callback);
 
-                        node.style.pointerEvents = "";
+            if (delay) {
+                setTimeout(callback, delay);
+            } else {
+                callback();
+            }
 
-                        if (callback) setTimeout(function() { callback(el, index, ref) }, 0);
-                    };
-
-                if (hidden) {
-                    // set visibility inline to override inherited from [aria-hidden=true]
-                    node.style.visibility = "visible";
-                } else {
-                    if (!el[prevDisplayValue] || el[prevDisplayValue] === "none") el[prevDisplayValue] = "";
-
-                    node.style.display = el[prevDisplayValue];
-
-                    delete el[prevDisplayValue];
-                }
-
-                // prevent accidental user actions
-                node.style.pointerEvents = "none";
-
-                if (_.CSS3_ANIMATIONS && hasAnimation) {
-                    // choose max delay to determine appropriate event type
-                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeCallback);
-                } else {
-                    // execute completeCallback safely
-                    el.fire(completeCallback);
-                }
-
-                // trigger native CSS animation
-                if (hasAnimation || delay) {
-                    // toggle aria-hidden async to apply inline styles before the animation starts
-                    setTimeout(function() { node.setAttribute("aria-hidden", hidden) }, delay);
-                } else {
-                    node.setAttribute("aria-hidden", hidden);
-                }
-            });
+            return this;
         };
     };
 
@@ -188,7 +193,7 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Jan 20 2014 16:53:10 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Jan 22 2014 19:15:37 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

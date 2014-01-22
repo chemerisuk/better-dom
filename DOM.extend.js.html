@@ -89,14 +89,14 @@ var _ = require("./utils"),
             var stop;
 
             e = e || window.event;
-            // mark extension as processed via _skip bitmask
+            // mark extension as processed via _.SKIPEXT bitmask
             if (_.CSS3_ANIMATIONS) {
                 stop = e.animationName === animId && e.target === node;
             } else {
                 stop = e.srcUrn === "dataavailable" && e.srcElement === node;
             }
 
-            if (stop) (e._skip = e._skip || {})[index] = true;
+            if (stop) (e[_.SKIPEXT] = e[_.SKIPEXT] || {})[index] = true;
         };
     },
     makeExtHandler = function(node, skip) {
@@ -106,21 +106,14 @@ var _ = require("./utils"),
 
         return function(ext, index) {
             // skip previously excluded or mismatched elements
-            if (!skip[index] && ext.accept(node)) {
-                if (_.CSS3_ANIMATIONS) {
-                    node.addEventListener(nativeEventType, stopExt(node, index), false);
-                } else {
-                    node.attachEvent(nativeEventType, stopExt(node, index));
-                }
-                // make a safe call so live extensions can't break each other
-                el.fire(ext);
-            }
+            // make a safe call so live extensions can't break each other
+            if (!skip[index] && ext.accept(node)) el.fire(ext);
         };
     };
 
 if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = "DOM" + Date.now();
+    animId = _.makeRandomProp();
 
     importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
 
@@ -131,7 +124,7 @@ if (_.CSS3_ANIMATIONS) {
 
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e.target, e._skip));
+            _.forEach(extensions, makeExtHandler(e.target, e[_.SKIPEXT]));
         }
     }, false);
 } else {
@@ -146,29 +139,26 @@ if (_.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
+            _.forEach(extensions, makeExtHandler(e.srcElement, e[_.SKIPEXT]));
         }
     });
 }
 
 /**
- * Define a live extension
+ * Declare a live extension
  * @memberOf DOM
- * @param  {String} selector  extension        css selector
- * @param  {Boolean|Function} [condition=true] condition
- * @param  {Object}           mixins           extension mixins
+ * @param  {String}           selector         css selector of which elements to capture
+ * @param  {Boolean|Function} [condition=true] condition, to define or not
+ * @param  {Object}           mixins           extension declatation
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
 DOM.extend = function(selector, condition, mixins) {
-    var len = arguments.length,
-        eventHandlers, ext, ctr;
-
-    if (len === 3) {
-        if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
-    } else if (len === 2) {
+    if (arguments.length === 2) {
         mixins = condition;
-        condition = returnTrue;
+        condition = true;
     }
+
+    if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
 
     if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
 
@@ -176,20 +166,29 @@ DOM.extend = function(selector, condition, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) });
-        ctr = mixins.hasOwnProperty("constructor") && mixins.constructor;
-        ext = function(el, mock) {
-            if (!mock && condition(el) === false) return;
+        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
+            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
+            index = extensions.length,
+            ext = function(el, mock) {
+                var node = el[_.NODE];
 
-            _.extend(el, mixins);
+                if (_.CSS3_ANIMATIONS) {
+                    node.addEventListener(nativeEventType, stopExt(node, index), false);
+                } else {
+                    node.attachEvent(nativeEventType, stopExt(node, index));
+                }
 
-            try {
-                if (ctr) ctr.call(el);
-            } finally {
-                // remove event handlers from element's interface
-                if (!mock) _.forEach(eventHandlers, function(prop) { delete el[prop] });
-            }
-        };
+                if (mock !== true && condition(el) === false) return;
+
+                _.extend(el, mixins);
+
+                try {
+                    if (ctr) ctr.call(el);
+                } finally {
+                    // remove event handlers from element's interface
+                    if (mock !== true) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                }
+            };
 
         if (ctr) delete mixins.constructor;
 
@@ -199,24 +198,10 @@ DOM.extend = function(selector, condition, mixins) {
         DOM.ready(function() {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
-            // Also fixes legacy IE in case when the lib behavior is already attached
-            DOM.findAll(selector).legacy(function(node) {
-                var e;
-
-                if (_.CSS3_ANIMATIONS) {
-                    e = document.createEvent("HTMLEvents");
-                    e.initEvent(nativeEventType, true, true);
-                    e.animationName = animId;
-
-                    node.dispatchEvent(e);
-                } else {
-                    e = document.createEventObject();
-                    e.srcUrn = "dataavailable";
-                    node.fireEvent(nativeEventType, e);
-                }
-            });
-            // make sure that any extension is initialized after DOM.ready
-            // MUST be after DOM.findAll because of legacy IE behavior
+            // Also fixes legacy IEs when the HTC behavior is already attached
+            DOM.findAll(selector).fire(ext);
+            // Any extension should be initialized after DOM.ready
+            // MUST be after DOM.findAll because of legacy IEs behavior
             importStyles(selector, styles, true);
         });
     }
@@ -239,7 +224,7 @@ module.exports = extensions;
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Mon Jan 20 2014 16:53:10 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Wed Jan 22 2014 19:15:37 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
