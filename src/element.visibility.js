@@ -1,16 +1,17 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    et = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
+    eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
                     styles = el.style(animationProps),
-                    transitionDelay = parseFloat(styles[animationProps[0]]),
-                    animationDelay = parseFloat(styles[animationProps[1]]),
+                    transitionDuration = parseFloat(styles[animationProps[0]]),
+                    animationDuration = parseFloat(styles[animationProps[1]]),
                     iterationCount = parseFloat(styles[animationProps[2]]),
-                    hasAnimation = iterationCount >= 1 && animationDelay || transitionDelay,
+                    duration = Math.max(iterationCount * animationDuration, transitionDuration),
+                    hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
                     completeAnimation = function() {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
@@ -34,17 +35,17 @@ var _ = require("./utils"),
                 // set styles inline to override inherited
                 node.style.visibility = "visible";
 
-                if (_.CSS3_ANIMATIONS && hasAnimation && node.offsetWidth) {
+                if (hasAnimation) {
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    el.once(et[iterationCount >= 1 && animationDelay > transitionDelay ? 0 : 1], completeAnimation);
-                } else {
-                    // execute completeAnimation safely
-                    el.fire(completeAnimation);
+                    el.once(eventType[duration === transitionDuration ? 1 : 0], completeAnimation);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
+                // when there is no animation the completeAnimation call
+                // must be AFTER changing the aria-hidden attribute
+                if (!hasAnimation) el.fire(completeAnimation);
             });
         };
     },

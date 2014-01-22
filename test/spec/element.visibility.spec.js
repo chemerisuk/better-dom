@@ -154,17 +154,17 @@ describe("visibility", function() {
             expect(link.toggle().matches(":hidden")).toBe(false);
         });
 
-        // it("should work properly with show/hide combination", function() {
-        //     expect(link.style("visibility")).toBe("visible");
+        it("should work properly with show/hide combination", function() {
+            expect(link.style("visibility")).not.toBe("hidden");
 
-        //     link.toggle();
+            link.toggle();
 
-        //     expect(link.style("visibility")).toBe("hidden");
+            expect(link.style("visibility")).toBe("hidden");
 
-        //     link.toggle();
+            link.toggle();
 
-        //     expect(link.style("visibility")).toBe("visible");
-        // });
+            expect(link.style("visibility")).toBe("visible");
+        });
     });
 
     it("should handle unknown aria-hidden values as false", function() {
