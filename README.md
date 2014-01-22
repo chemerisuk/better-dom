@@ -7,6 +7,8 @@ jQuery knows a concept called “**live events**”. Using the idea of event del
 
 [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/)
 
+[FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
+
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
