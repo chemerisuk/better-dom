@@ -77,6 +77,18 @@ describe("fire", function() {
         expect(callback).toHaveBeenCalledWith(DOM, 0, DOM);
     });
 
+    it("should respect return false in a safe sync call", function() {
+        var obj = {};
+
+        expect(input.fire(callback)).toBe(true);
+        expect(callback.callCount).toBe(1);
+
+        expect(input.fire(callback.andReturn(false))).toBe(false);
+        expect(callback.callCount).toBe(2);
+
+        // TODO: test a case when handler throws exception
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.fire(1); }).toThrow();
     });

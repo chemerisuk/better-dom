@@ -11,28 +11,34 @@ var _ = require("./utils"),
  */
 $Node.prototype.fire = function(type) {
     var args = _.slice(arguments, 1),
-        isSafeCall = typeof type === "function";
+        eventType = typeof type,
+        handler = {}, hook, isSafeCall;
 
-    if (typeof type !== "string" && !isSafeCall) throw _.makeError("fire");
+    if (eventType === "string") {
+        if (hook = EventHandler.hooks[type]) hook(handler);
+
+        eventType = handler._type || type;
+    } else if (eventType === "function") {
+        isSafeCall = true;
+        eventType = "filterchange";
+    } else {
+        throw _.makeError("fire");
+    }
 
     return _.every(this, function(el, index, ref) {
         var node = el[_.NODE],
-            hook = EventHandler.hooks[type.toString()],
-            handler = {},
-            isCustomEvent, eventType, canContinue, e;
+            isCustomEvent, canContinue, e;
 
-        if (hook) hook(handler);
-
-        eventType = handler._type || type;
-
-        if (isSafeCall) el.once(eventType = "filterchange", function() { type(el, index, ref) });
+        if (isSafeCall) el.once(eventType, function() { canContinue = type(el, index, ref) !== false });
 
         if (_.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
             e.initEvent(eventType, !isSafeCall, !isSafeCall);
             e[_.EVENTARGS] = args;
 
-            canContinue = node.dispatchEvent(e);
+            node.dispatchEvent(e);
+
+            canContinue = isSafeCall ? !!canContinue : !e.defaultPrevented;
         } else {
             e = document.createEventObject();
             e[_.EVENTARGS] = args;
@@ -43,7 +49,7 @@ $Node.prototype.fire = function(type) {
 
             node.fireEvent("on" + (isCustomEvent ? "dataavailable" : eventType), e);
 
-            canContinue = e.returnValue !== false;
+            canContinue = isSafeCall ? !!canContinue : e.returnValue !== false;
         }
 
         // Call native method. IE<9 dies on focus/blur to hidden element
