@@ -6,7 +6,6 @@ var _ = require("./utils"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = {},
     eventHooks = {},
-    debouncedEvents = "scroll mousemove",
     defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
@@ -80,14 +79,9 @@ module.exports = function(type, selector, callback, props, el, once) {
             }
         };
 
-    if (hook) hook(handler);
-
-    handler.type = handler._type || type;
-
-    if (~debouncedEvents.indexOf(handler.type)) {
-        handler = createDebouncedEventWrapper(handler);
-    } else if (!_.DOM2_EVENTS && (handler.type === "submit" || !("on" + handler.type in el[_.NODE]))) {
-        // handle custom events for IE8
+    if (hook) handler = hook(handler, type) || handler;
+    // handle custom events for IE8
+    if (!_.DOM2_EVENTS && !("on" + (handler._type || type) in el[_.NODE])) {
         handler = createCustomEventWrapper(handler, type);
     }
 
@@ -96,6 +90,27 @@ module.exports = function(type, selector, callback, props, el, once) {
 
     return handler;
 };
+
+// EventHandler hooks
+
+_.forEach(["scroll", "mousemove"], function(name) {
+    hooks[name] = createDebouncedEventWrapper;
+});
+
+if ("onfocusin" in _.docEl) {
+    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
+        hooks[prop] = function(handler) { handler._type = value };
+    });
+} else {
+    // firefox doesn't support focusin/focusout events
+    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
+}
+
+if (document.createElement("input").validity) {
+    hooks.invalid = function(handler) { handler.capturing = true };
+}
+// fix non-bubbling submit event for IE8
+if (!_.DOM2_EVENTS) hooks.submit = createCustomEventWrapper;
 
 // EventHandler eventHooks
 
@@ -123,19 +138,6 @@ if (_.DOM2_EVENTS) {
     eventHooks.pageY = function(e) {
         return e.clientY + _.docEl.scrollTop - _.docEl.clientTop;
     };
-}
-
-if ("onfocusin" in _.docEl) {
-    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
-        hooks[prop] = function(handler) { handler._type = value };
-    });
-} else {
-    // firefox doesn't support focusin/focusout events
-    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
-}
-
-if (document.createElement("input").validity) {
-    hooks.invalid = function(handler) { handler.capturing = true };
 }
 
 module.exports.hooks = hooks;
