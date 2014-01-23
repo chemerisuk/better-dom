@@ -20,7 +20,7 @@ var _ = require("./utils"),
                             node.style.position = "absolute";
                         }
 
-                        node.style.pointerEvents = "";
+                        if (hasAnimation) node.style.pointerEvents = "";
 
                         if (callback) callback(el, index, ref);
                     };

@@ -4,7 +4,11 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    hooks = {},
+    RAF = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+        var prop = name + "equestAnimationFrame";
+
+        return memo || window[prop] && prop;
+    }, null),
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -12,19 +16,22 @@ var _ = require("./utils"),
 
         return handler;
     },
-    createDebouncedEventWrapper = function(originalHandler, debouncing) {
+    createDebouncedEventWrapper = function(originalHandler) {
+        var debouncing;
+
         return function(e) {
             if (!debouncing) {
                 debouncing = true;
 
-                window[_.RAF](function() {
+                window[RAF](function() {
                     originalHandler(e);
 
                     debouncing = false;
                 });
             }
         };
-    };
+    },
+    hooks = {};
 
 module.exports = function(type, selector, callback, props, el, once) {
     var hook = hooks[type],

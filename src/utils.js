@@ -44,11 +44,6 @@ module.exports = {
     DISPLAY: makeRandomProp(),
     EVENTARGS: makeRandomProp(),
     SKIPEXT: makeRandomProp(),
-    RAF: ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
-        var prop = name + "equestAnimationFrame";
-
-        return memo || window[prop] && prop;
-    }, null),
 
     // constants
     docEl: doc.documentElement,
