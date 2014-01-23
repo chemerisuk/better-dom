@@ -80,6 +80,7 @@ describe("on", function() {
         spy.andCallFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
+            expect(relatedTarget).not.toBeFalsy();
             expect(relatedTarget).toBeEmpty();
         });
 

@@ -5,8 +5,6 @@ var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = {},
-    eventHooks = {},
-    defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -41,7 +39,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                 target = e.target || e.srcElement || document,
                 currentTarget = selector ? target : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
-                args = props || defaultArgs;
+                args = props || ["target", "currentTarget", "defaultPrevented"];
 
             if (typeof fn !== "function") return; // early stop for late binding
 
@@ -53,6 +51,23 @@ module.exports = function(type, selector, callback, props, el, once) {
             if (once) el.off(type, callback);
 
             args = _.map(args, function(name) {
+                if (!_.DOM2_EVENTS) {
+                    switch (name) {
+                    case "defaultPrevented":
+                        return e.returnValue === false;
+                    case "which":
+                        return e.keyCode;
+                    case "button":
+                        var button = e.button;
+                        // click: 1 === left; 2 === middle; 3 === right
+                        return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+                    case "pageX":
+                        return e.pageX || e.clientX + _.docEl.scrollLeft - _.docEl.clientLeft;
+                    case "pageY":
+                        return e.clientY + _.docEl.scrollTop - _.docEl.clientTop;
+                    }
+                }
+
                 switch (name) {
                 case "type":
                     return type;
@@ -60,11 +75,11 @@ module.exports = function(type, selector, callback, props, el, once) {
                     return $Element(target);
                 case "currentTarget":
                     return $Element(currentTarget);
+                case "relatedTarget":
+                    return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
                 }
 
-                var hook = eventHooks[name];
-
-                return hook ? hook(e, node) : e[name];
+                return e[name];
             });
             // prepend extra arguments if they exist
             if (e[_.EVENTARGS] && e[_.EVENTARGS].length) args = e[_.EVENTARGS].concat(args);
@@ -111,33 +126,5 @@ if (document.createElement("input").validity) {
 }
 // fix non-bubbling submit event for IE8
 if (!_.DOM2_EVENTS) hooks.submit = createCustomEventWrapper;
-
-// EventHandler eventHooks
-
-if (_.DOM2_EVENTS) {
-    eventHooks.relatedTarget = function(e) { return $Element(e.relatedTarget) };
-} else {
-    eventHooks.relatedTarget = function(e, currentTarget) {
-        return $Element(e[(e.toElement === currentTarget ? "from" : "to") + "Element"]);
-    };
-
-    eventHooks.defaultPrevented = function(e) { return e.returnValue === false };
-
-    eventHooks.which = function(e) { return e.keyCode };
-
-    eventHooks.button = function(e) {
-        var button = e.button;
-        // click: 1 === left; 2 === middle; 3 === right
-        return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
-    };
-
-    eventHooks.pageX = function(e) {
-        return e.clientX + _.docEl.scrollLeft - _.docEl.clientLeft;
-    };
-
-    eventHooks.pageY = function(e) {
-        return e.clientY + _.docEl.scrollTop - _.docEl.clientTop;
-    };
-}
 
 module.exports.hooks = hooks;
