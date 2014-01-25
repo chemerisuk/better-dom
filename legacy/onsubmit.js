@@ -1,13 +1,11 @@
 // submit event bubbling fix for IE<9
+function handleFormEvent() {
+    var e = window.event;
 
-var handleSubmit = function() {
-    var form = window.event.srcElement;
-
-    form.detachEvent("onsubmit", handleSubmit);
-    DOM.create(form).fire("submit");
+    if (!e.cancelBubble) DOM.create(e.srcElement).fire(e.type);
 
     return false;
-};
+}
 
 if (!document.addEventListener) {
     document.attachEvent("onkeydown", function() {
@@ -24,10 +22,14 @@ if (!document.addEventListener) {
 
     document.attachEvent("onclick", function() {
         var target = window.event.srcElement,
-            form = target.form;
+            form = target.form,
+            type = target.type;
 
-        if (form && target.type === "submit") {
-            form.attachEvent("onsubmit", handleSubmit);
+        if (!form) return;
+
+        if (type === "submit" || type === "reset") {
+            form.detachEvent("on" + type, handleFormEvent);
+            form.attachEvent("on" + type, handleFormEvent);
         }
     });
 }

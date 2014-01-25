@@ -183,6 +183,15 @@ describe("on", function() {
         expect(spy.callCount).toBe(4);
     });
 
+    it("should fix reset event", function() {
+        form.on("reset", spy).fire("reset");
+        expect(spy.callCount).toBe(1);
+
+        DOM.on("reset", spy);
+        form.fire("reset");
+        expect(spy.callCount).toBe(3);
+    });
+
     it("should not prevent default action if callback returns false", function() {
         spy.andReturn(false);
 
