@@ -78,8 +78,6 @@ describe("fire", function() {
     });
 
     it("should respect return false in a safe sync call", function() {
-        var obj = {};
-
         expect(input.fire(callback)).toBe(true);
         expect(callback.callCount).toBe(1);
 

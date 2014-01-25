@@ -4,8 +4,8 @@ var _ = require("./utils"),
     reDash = /\-./g,
     reCamel = /[A-Z]/g,
     directions = ["Top", "Right", "Bottom", "Left"],
-    computed = window.getComputedStyle(_.docEl),
-    // In Opera CSSStyleDeclaration objects returned by _getComputedStyle have length 0
+    computed = _.getComputedStyle(_.docEl),
+    // In Opera CSSStyleDeclaration objects returned by _.getComputedStyle have length 0
     props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
         return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
     });
@@ -31,7 +31,7 @@ $Element.prototype.style = function(name, value) {
                 value = hook ? hook(style) : style[name];
 
                 if (!computed && !value) {
-                    style = window.getComputedStyle(node);
+                    style = _.getComputedStyle(node);
                     value = hook ? hook(style) : style[name];
 
                     computed = true;

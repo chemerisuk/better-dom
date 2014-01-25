@@ -36,6 +36,9 @@ module.exports = {
 
         return "Error: " + type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the function call";
     },
+    getComputedStyle: function(node) {
+        return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
+    },
 
     // private props
     NODE: NODE_PROP,

@@ -31,7 +31,7 @@ hooks[":focus"] = function(node) { return node === document.activeElement };
 
 hooks[":hidden"] = function(node) {
     return node.getAttribute("aria-hidden") === "true" ||
-        window.getComputedStyle(node).display === "none" || !_.docEl.contains(node);
+        _.getComputedStyle(node).display === "none" || !_.docEl.contains(node);
 };
 
 hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };

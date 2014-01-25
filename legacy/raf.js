@@ -1,6 +1,9 @@
 // requestAnimationFrame implementation
 
-if (!window.requestAnimationFrame) {
+if (!window.requestAnimationFrame &&
+    !window.webkitRequestAnimationFrame &&
+    !window.mozRequestAnimationFrame &&
+    !window.oRequestAnimationFrame) {
     var lastTime = 0;
 
     window.requestAnimationFrame = function(callback) {
