@@ -15,7 +15,7 @@ $Node.prototype.fire = function(type) {
         handler = {}, hook, isSafeCall;
 
     if (eventType === "string") {
-        if (hook = EventHandler.hooks[type]) hook(handler);
+        if (hook = EventHandler.hooks[type]) handler = hook(handler) || handler;
 
         eventType = handler._type || type;
     } else if (eventType === "function") {
@@ -43,7 +43,7 @@ $Node.prototype.fire = function(type) {
             e = document.createEventObject();
             e[_.EVENTARGS] = args;
 
-            isCustomEvent = eventType === "submit" || !("on" + eventType in node);
+            isCustomEvent = eventType === "dataavailable" || !("on" + eventType in node);
             // store original event type
             if (isCustomEvent) e.srcUrn = isSafeCall ? eventType : type;
 

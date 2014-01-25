@@ -232,6 +232,31 @@ describe("on", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
+    it("should fix bubbling and triggering of the change event for IE8", function() {
+        DOM.on("change", spy);
+
+        input.set("123").fire("change");
+        expect(spy.callCount).toBe(1);
+
+        input = DOM.create("input[type=checkbox]");
+
+        jasmine.sandbox.set(input);
+        input.fire("focus");
+        input.fire("click");
+        expect(spy.callCount).toBe(2);
+        input.fire("click");
+        expect(spy.callCount).toBe(3);
+
+        input = DOM.create("input[type=radio]");
+
+        jasmine.sandbox.set(input);
+        input.fire("focus");
+        input.fire("click");
+        expect(spy.callCount).toBe(4);
+        input.fire("click");
+        expect(spy.callCount).toBe(4);
+    });
+
     // it("should debounce some events", function() {
     //     var spy = jasmine.createSpy("callback");
 
