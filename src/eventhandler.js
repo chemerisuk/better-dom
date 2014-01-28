@@ -42,7 +42,7 @@ module.exports = function(type, selector, callback, props, el, once) {
             e = e || window.event;
 
             // srcElement could be null in legacy IE when target is document
-            var node = el[_.NODE],
+            var node = el._node,
                 target = e.target || e.srcElement || document,
                 currentTarget = selector ? target : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
@@ -89,7 +89,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                 return e[name];
             });
             // prepend extra arguments if they exist
-            if (e[_.EVENTARGS] && e[_.EVENTARGS].length) args = e[_.EVENTARGS].concat(args);
+            if (e._args && e._args.length) args = e._args.concat(args);
 
             if (fn.apply(el, args) === false) {
                 // prevent default if handler returns false
@@ -103,7 +103,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
     if (hook) handler = hook(handler, type) || handler;
     // handle custom events for IE8
-    if (!_.DOM2_EVENTS && !("on" + (handler._type || type) in el[_.NODE])) {
+    if (!_.DOM2_EVENTS && !("on" + (handler._type || type) in el._node)) {
         handler = createCustomEventWrapper(handler, type);
     }
 

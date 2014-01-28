@@ -5,8 +5,8 @@ var _ = require("./utils"),
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
-    if (this[_.NODE]) {
-        var boundingRect = this[_.NODE].getBoundingClientRect(),
+    if (this._node) {
+        var boundingRect = this._node.getBoundingClientRect(),
             clientTop = _.docEl.clientTop,
             clientLeft = _.docEl.clientLeft,
             scrollTop = window.pageYOffset || _.docEl.scrollTop,

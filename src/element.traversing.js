@@ -6,7 +6,7 @@ function makeTraversingMethod(propertyName, multiple) {
     return function(selector, andSelf) {
         var matcher = SelectorMatcher(selector),
             nodes = multiple ? [] : null,
-            it = this[_.NODE];
+            it = this._node;
 
         if (!andSelf && it) it = it[propertyName];
 
@@ -32,9 +32,9 @@ function makeChildTraversingMethod(multiple) {
             throw _.makeError("child");
         }
 
-        if (!this[_.NODE]) return new $Element();
+        if (!this._node) return new $Element();
 
-        var children = this[_.NODE].children,
+        var children = this._node.children,
             matcher = SelectorMatcher(selector),
             node;
 

@@ -23,7 +23,7 @@ var _ = require("./utils"),
                 stop = e.srcUrn === "dataavailable" && e.srcElement === node;
             }
 
-            if (stop) (e[_.SKIPEXT] = e[_.SKIPEXT] || {})[index] = true;
+            if (stop) (e._skip = e._skip || {})[index] = true;
         };
     },
     makeExtHandler = function(node, skip) {
@@ -51,7 +51,7 @@ if (_.CSS3_ANIMATIONS) {
 
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e.target, e[_.SKIPEXT]));
+            _.forEach(extensions, makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
@@ -66,7 +66,7 @@ if (_.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e.srcElement, e[_.SKIPEXT]));
+            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -97,7 +97,7 @@ DOM.extend = function(selector, condition, mixins) {
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
             ext = function(el, mock) {
-                var node = el[_.NODE];
+                var node = el._node;
 
                 if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);

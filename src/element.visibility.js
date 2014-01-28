@@ -27,9 +27,9 @@ var _ = require("./utils"),
 
                 if (value) {
                     // store current inline value in a private property
-                    el[_.DISPLAY] = node.style.position;
+                    el._position = node.style.position;
                 } else {
-                    node.style.position = el[_.DISPLAY] || "";
+                    node.style.position = el._position || "";
                 }
 
                 // set styles inline to override inherited

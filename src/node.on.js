@@ -52,7 +52,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
             node.attachEvent("on" + (handler._type || type), handler);
         }
         // store event entry
-        el[_.HANDLERS].push(handler);
+        el._handlers.push(handler);
     });
 };
 

@@ -11,14 +11,14 @@ $Element.prototype.clone = function(deep) {
 
     if (typeof deep !== "boolean") throw _.makeError("clone");
 
-    var node = this[_.NODE];
+    var node = this._node;
 
     if (node) {
         if (_.DOM2_EVENTS) {
             node = node.cloneNode(deep);
         } else {
             node = document.createElement("div");
-            node.innerHTML = this[_.NODE].outerHTML;
+            node.innerHTML = this._node.outerHTML;
             node = node.firstChild;
 
             if (!deep) node.innerHTML = "";

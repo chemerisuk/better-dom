@@ -1,5 +1,3 @@
-var _ = require("./utils");
-
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -8,9 +6,9 @@ var _ = require("./utils");
  */
 function $Node(node) {
     if (node) {
-        this[_.NODE] = node;
-        this[_.DATA] = {};
-        this[_.HANDLERS] = [];
+        this._node = node;
+        this._data = {};
+        this._handlers = [];
 
         this[0] = node.__dom__ = this;
     }
@@ -24,7 +22,7 @@ function $Node(node) {
  * @return {String} property value
  */
 $Node.prototype.get = function(name) {
-    return this[_.NODE][name];
+    return this._node[name];
 };
 
 /**
@@ -33,7 +31,7 @@ $Node.prototype.get = function(name) {
  * @param  {String} value property value
  */
 $Node.prototype.set = function(name, value) {
-    this[_.NODE][name] = value;
+    this._node[name] = value;
 
     return this;
 };

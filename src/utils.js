@@ -26,8 +26,7 @@ var doc = document,
     })(),
     makeRandomProp = function() {
         return "_" + Math.random().toString().split(".")[1];
-    },
-    NODE_PROP = makeRandomProp();
+    };
 
 module.exports = {
     makeRandomProp: makeRandomProp,
@@ -39,14 +38,6 @@ module.exports = {
     getComputedStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
     },
-
-    // private props
-    NODE: NODE_PROP,
-    DATA: makeRandomProp(),
-    HANDLERS: makeRandomProp(),
-    DISPLAY: makeRandomProp(),
-    EVENTARGS: makeRandomProp(),
-    SKIPEXT: makeRandomProp(),
 
     // constants
     docEl: doc.documentElement,
@@ -100,7 +91,7 @@ module.exports = {
     }),
     legacy: makeLoopMethod({
         BEFORE: "that = a",
-        BODY:   "cb.call(that, a[i]." + NODE_PROP + ", a[i], i)",
+        BODY:   "cb.call(that, a[i]._node, a[i], i)",
         AFTER:  "return a"
     }),
     slice: function(list, index) {
