@@ -2,6 +2,7 @@ var _ = require("./utils"),
     $Element = require("./element"),
     eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    absentStrategy = _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
@@ -17,7 +18,7 @@ var _ = require("./utils"),
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
                             node.style.visibility = "hidden";
-                            node.style.position = "absolute";
+                            node.style[absentStrategy[0]] = absentStrategy[1];
                         }
 
                         if (hasAnimation) node.style.pointerEvents = "";
@@ -27,11 +28,10 @@ var _ = require("./utils"),
 
                 if (value) {
                     // store current inline value in a private property
-                    el._position = node.style.position;
+                    el._display = node.style[absentStrategy[0]];
                 } else {
-                    node.style.position = el._position || "";
+                    node.style[absentStrategy[0]] = el._display || "";
                 }
-
                 // set styles inline to override inherited
                 node.style.visibility = "visible";
 
