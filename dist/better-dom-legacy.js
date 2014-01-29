@@ -1,6 +1,6 @@
 /**
  * @file better-dom-legacy.js
- * @version 1.7.0-rc.1 2014-01-22T19:15:31
+ * @version 1.7.0-rc.2 2014-01-29T05:14:51
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -1623,15 +1623,6 @@ var toObject = function (o) {
 
 }(this, document));
 },{}],3:[function(require,module,exports){
-// getComputedStyle implementation
-
-if (!window.getComputedStyle) {
-    window.getComputedStyle = function(node) {
-        return node.currentStyle;
-    };
-}
-
-},{}],4:[function(require,module,exports){
 // DOMContentLoaded implementation
 
 if (!document.addEventListener) {
@@ -1668,24 +1659,34 @@ if (!document.addEventListener) {
     }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 // input event implementation/fixes for IE8-9
 
 if (document.attachEvent) {
     var capturedNode, capturedNodeValue,
-        legacyEventHandler = function() {
+        inputEventHandler = function() {
             if (capturedNode && capturedNode.value !== capturedNodeValue) {
                 capturedNodeValue = capturedNode.value;
                 // trigger special event that bubbles
                 DOM.create(capturedNode).fire("input");
             }
+        },
+        clickEventHandler = function() {
+            if (capturedNode && capturedNode.checked !== capturedNodeValue) {
+                capturedNodeValue = capturedNode.checked;
+                // trigger special event that bubbles
+                DOM.create(capturedNode).fire("change");
+            }
+        },
+        changeEventHandler = function() {
+            DOM.create(capturedNode).fire("change");
         };
 
     if (document.createElement("input").oninput === null) {
         // IE9 doesn't fire oninput when text is deleted, so use
         // legacy onselectionchange event to detect such cases
         // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
-        document.attachEvent("onselectionchange", legacyEventHandler);
+        document.attachEvent("onselectionchange", inputEventHandler);
     }
 
     // input event fix via propertychange
@@ -1694,27 +1695,35 @@ if (document.attachEvent) {
             type = target.type;
 
         if (capturedNode) {
-            capturedNode.detachEvent("onpropertychange", legacyEventHandler);
-            capturedNode = undefined;
+            capturedNode.detachEvent("onclick", clickEventHandler);
+            capturedNode.detachEvent("onchange", changeEventHandler);
+            capturedNode.detachEvent("onpropertychange", inputEventHandler);
+            capturedNode = null;
         }
 
-        if (type === "text" || type === "password" || type === "textarea") {
-            (capturedNode = target).attachEvent("onpropertychange", legacyEventHandler);
+        if (type === "checkbox" || type === "radio") {
+            (capturedNode = target).attachEvent("onclick", clickEventHandler);
+            capturedNodeValue = capturedNode.checked;
+        } else {
+            (capturedNode = target).attachEvent("onchange", changeEventHandler);
+
+            if (type === "text" || type === "password" || type === "textarea") {
+                capturedNode.attachEvent("onpropertychange", inputEventHandler);
+                capturedNodeValue = capturedNode.value;
+            }
         }
     });
 }
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // submit event bubbling fix for IE<9
+function handleFormEvent() {
+    var e = window.event;
 
-var handleSubmit = function() {
-    var form = window.event.srcElement;
-
-    form.detachEvent("onsubmit", handleSubmit);
-    DOM.create(form).fire("submit");
+    if (!e.cancelBubble) DOM.create(e.srcElement).fire(e.type);
 
     return false;
-};
+}
 
 if (!document.addEventListener) {
     document.attachEvent("onkeydown", function() {
@@ -1731,18 +1740,25 @@ if (!document.addEventListener) {
 
     document.attachEvent("onclick", function() {
         var target = window.event.srcElement,
-            form = target.form;
+            form = target.form,
+            type = target.type;
 
-        if (form && target.type === "submit") {
-            form.attachEvent("onsubmit", handleSubmit);
+        if (!form) return;
+
+        if (type === "submit" || type === "reset") {
+            form.detachEvent("on" + type, handleFormEvent);
+            form.attachEvent("on" + type, handleFormEvent);
         }
     });
 }
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 // requestAnimationFrame implementation
 
-if (!window.requestAnimationFrame) {
+if (!window.requestAnimationFrame &&
+    !window.webkitRequestAnimationFrame &&
+    !window.mozRequestAnimationFrame &&
+    !window.oRequestAnimationFrame) {
     var lastTime = 0;
 
     window.requestAnimationFrame = function(callback) {
@@ -1759,5 +1775,5 @@ if (!window.requestAnimationFrame) {
     };
 }
 
-},{}]},{},[3,4,5,6,7,2,1])
+},{}]},{},[3,4,5,6,2,1])
 ;
