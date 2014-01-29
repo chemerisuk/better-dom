@@ -192,15 +192,6 @@ describe("on", function() {
         expect(spy.callCount).toBe(3);
     });
 
-    it("should not prevent default action if callback returns false", function() {
-        spy.andReturn(false);
-
-        input.on("click", spy).fire("click");
-
-        expect(spy).toHaveBeenCalled();
-        expect(location.hash).not.toBe("#test");
-    });
-
     it("should support late binding", function() {
         spy.andCallFake(function() { expect(this).toBe(input) });
         input.callback = spy;
@@ -245,25 +236,31 @@ describe("on", function() {
         DOM.on("change", spy);
 
         input.set("123").fire("change");
-        expect(spy.callCount).toBe(1);
+        expect(spy).toHaveBeenCalled();
 
         input = DOM.create("input[type=checkbox]");
-
         jasmine.sandbox.set(input);
+
+        spy.reset();
         input.fire("focus");
         input.fire("click");
-        expect(spy.callCount).toBe(2);
+        expect(spy).toHaveBeenCalled();
+
+        spy.reset();
         input.fire("click");
-        expect(spy.callCount).toBe(3);
+        expect(spy).toHaveBeenCalled();
 
         input = DOM.create("input[type=radio]");
-
         jasmine.sandbox.set(input);
+
+        spy.reset();
         input.fire("focus");
         input.fire("click");
-        expect(spy.callCount).toBe(4);
+        expect(spy).toHaveBeenCalled();
+
+        spy.reset();
         input.fire("click");
-        expect(spy.callCount).toBe(4);
+        expect(spy).not.toHaveBeenCalled();
     });
 
     // it("should debounce some events", function() {

@@ -27,7 +27,7 @@ $Node.prototype.fire = function(type) {
 
     return _.every(this, function(el, index, ref) {
         var node = el._node,
-            isCustomEvent, canContinue, e;
+            e, canContinue, flag;
 
         if (isSafeCall) el.once(eventType, function() { canContinue = type(el, index, ref) !== false });
 
@@ -36,18 +36,17 @@ $Node.prototype.fire = function(type) {
             e.initEvent(eventType, !isSafeCall, !isSafeCall);
             e._args = args;
 
-            node.dispatchEvent(e);
-
-            canContinue = isSafeCall ? !!canContinue : !e.defaultPrevented;
+            flag = node.dispatchEvent(e);
+            canContinue = isSafeCall ? !!canContinue : flag;
         } else {
             e = document.createEventObject();
             e._args = args;
 
-            isCustomEvent = eventType === "dataavailable" || !("on" + eventType in node);
+            flag = eventType === "dataavailable" || !("on" + eventType in node);
             // store original event type
-            if (isCustomEvent) e.srcUrn = isSafeCall ? eventType : type;
+            if (flag) e.srcUrn = isSafeCall ? eventType : type;
 
-            node.fireEvent("on" + (isCustomEvent ? "dataavailable" : eventType), e);
+            node.fireEvent("on" + (flag ? "dataavailable" : eventType), e);
 
             canContinue = isSafeCall ? !!canContinue : e.returnValue !== false;
         }
