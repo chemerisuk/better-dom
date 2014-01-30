@@ -60,8 +60,6 @@ module.exports = function(type, selector, callback, props, el, once) {
             args = _.map(args, function(name) {
                 if (!_.DOM2_EVENTS) {
                     switch (name) {
-                    case "defaultPrevented":
-                        return e.returnValue === false;
                     case "which":
                         return e.keyCode;
                     case "button":
@@ -78,6 +76,9 @@ module.exports = function(type, selector, callback, props, el, once) {
                 switch (name) {
                 case "type":
                     return type;
+                case "defaultPrevented":
+                    // IE8 and Android 2.3 use returnValue instead of defaultPrevented
+                    return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
                 case "target":
                     return $Element(target);
                 case "currentTarget":

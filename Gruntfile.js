@@ -143,6 +143,7 @@ module.exports = function(grunt) {
         connect: {
             watch: {
                 options: {
+                    hostname: "*",
                     base: "../"
                 }
             }
