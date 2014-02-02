@@ -1,7 +1,28 @@
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = {},
-    fakeClass = _.makeRandomProp();
+    hooks = {get: {}, set: {}};
+
+/**
+ * Get property or attribute value by name
+ * @param  {String|Array} [name] property/attribute name or array of names
+ * @return {Object} property/attribute value
+ * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
+ */
+$Element.prototype.get = function(name) {
+    var el = this,
+        node = this._node,
+        hook = hooks.get[name];
+
+    if (!node) return;
+
+    if (hook || typeof name === "string") {
+        return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
+    }
+
+    if (Array.isArray(name)) return _.foldr(name, function(r, name) { return r[name] = el.get(name), r }, {});
+
+    throw _.makeError("get");
+};
 
 /**
  * Set property/attribute value by name
@@ -19,7 +40,7 @@ $Element.prototype.set = function(name, value) {
     }
 
     return this.legacy(function(node, el, index, ref) {
-        var hook = hooks[name],
+        var hook = hooks.set[name],
             str = value;
 
         if (typeof str === "function") str = value(el, index, ref);
@@ -41,16 +62,27 @@ $Element.prototype.set = function(name, value) {
         }
 
         // trigger reflow manually in IE8
-        if (!_.DOM2_EVENTS) {
-            str = (node.className += " " + fakeClass);
-            node.className = str.replace(" " + fakeClass, "");
-        }
+        if (!_.DOM2_EVENTS) node.className = node.className;
     });
 };
 
-// $Element.set hooks
+// $Element.get/$Element.set hooks
 
-hooks.undefined = function(node, value) {
+hooks.get.undefined = function(node) {
+    var name;
+
+    if (node.tagName === "OPTION") {
+        name = node.hasAttribute("value") ? "value" : "text";
+    } else if (node.tagName === "SELECT") {
+        return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
+    } else {
+        name = node.type && "value" in node ? "value" : "innerHTML";
+    }
+
+    return node[name];
+};
+
+hooks.set.undefined = function(node, value) {
     var name;
     // handle numbers, booleans etc.
     value = value == null ? "" : String(value);
@@ -70,8 +102,14 @@ hooks.undefined = function(node, value) {
     if (name) node[name] = value;
 };
 
+hooks.get.type = function(node) {
+    // some browsers don't recognize input[type=email] etc.
+    return node.getAttribute("type") || node.type;
+};
+
 if (!_.DOM2_EVENTS) {
-    hooks.textContent = function(node, value) {
+    hooks.get.textContent = function(node) { return node.innerText };
+    hooks.set.textContent = function(node, value) {
         node.innerText = value;
     };
 }
