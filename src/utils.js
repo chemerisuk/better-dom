@@ -38,6 +38,13 @@ module.exports = {
     getComputedStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
     },
+    template: function() {
+        var DOM = window.DOM;
+        // override method with particular implementation
+        this.template = DOM.template || function(str) { return str };
+
+        return this.template.apply(DOM, arguments);
+    },
 
     // constants
     docEl: doc.documentElement,

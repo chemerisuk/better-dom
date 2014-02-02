@@ -21,7 +21,7 @@ DOM.create = function(value, vars) {
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
-        sandbox.innerHTML = DOM.template(value, vars);
+        sandbox.innerHTML = _.template(value, vars);
 
         for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
             if (node.nodeType === 1) value.push(node);

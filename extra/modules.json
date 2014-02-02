@@ -3,5 +3,6 @@
     "classes": ["src/element.classes.js"],
     "visibility": ["src/element.visibility.js"],
     "traversing": ["src/element.traversing.js"],
-    "i18n": ["src/element.i18n.js", "src/dom.importstrings.js"]
+    "i18n": ["src/element.i18n.js", "src/dom.importstrings.js"],
+    "template": ["src/dom.template.js"]
 }
