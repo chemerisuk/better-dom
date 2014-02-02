@@ -1,3 +1,9 @@
+/**
+ * Emmet abbreviation syntax support
+ * @module template
+ * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
+ * @see http://docs.emmet.io/cheat-sheet/
+ */
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
@@ -45,13 +51,11 @@ _.forEach("area base br col hr img input link meta param command keygen source".
 });
 
 /**
- * Parse emmet-like template to a HTML string
- * @memberOf DOM
+ * Parse emmet-like template into a HTML string
+ * @memberOf module:template
  * @param  {String} template emmet-like expression
  * @param  {Object} [vars] key/value map of variables
  * @return {String} HTML string
- * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
- * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.template = function(template, vars) {
     if (typeof template !== "string") throw _.makeError("template", true);

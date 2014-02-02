@@ -33,7 +33,7 @@ module.exports = {
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 
-        return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %>/" + type + ".html#" + method + " to verify the call");
+        return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %> to verify the function call");
     },
     getComputedStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;

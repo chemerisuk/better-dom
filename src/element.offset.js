@@ -1,7 +1,12 @@
+/**
+ * Element offset calculation support
+ * @module offset
+ */
 var _ = require("./utils"),
     $Element = require("./element");
 /**
  * Calculates offset of the current element
+ * @memberOf module:offset
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {

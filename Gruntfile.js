@@ -60,9 +60,10 @@ module.exports = function(grunt) {
             },
             checkoutDocs: {
                 command: [
+                    // copy files to dist folder
+                    "cp build/*.js dist/",
                     // commit all changes
                     "git commit -am 'version <%= pkg.version %>'",
-
                     // checkout jsdoc branch
                     "git checkout gh-pages"
                 ].join(" && ")
@@ -98,28 +99,6 @@ module.exports = function(grunt) {
         clean: {
             build: ["build/"],
             jsdoc: ["jsdoc/"]
-        },
-        copy: {
-            dist: {
-                files: {
-                    "dist/<%= pkg.name %>.js": ["build/<%= pkg.name %>.js"],
-                    "dist/<%= pkg.name %>-legacy.js": ["build/<%= pkg.name %>-legacy.js"],
-                }
-            },
-            readme: {
-                options: {
-                    // processContent: function(content) {
-                    //     return content
-                    //         // remove the first line
-                    //         .replace(/^# .+/, "&nbsp;")
-                    //         // remove source code
-                    //         .replace(/```[^`]+```/g, "");
-                    // }
-                },
-                files: {
-                    "jsdoc/README.md": ["README.md"]
-                }
-            }
         },
         uglify: {
             build: {
@@ -210,7 +189,6 @@ module.exports = function(grunt) {
 
     grunt.registerTask("docs", [
         "clean:jsdoc",
-        "copy:readme",
         "jsdoc"
     ]);
 
@@ -267,7 +245,6 @@ module.exports = function(grunt) {
             "updateFileVersion:package.json",
             "updateFileVersion:bower.json",
             "browserify",
-            "copy:dist",
             "docs",
             "shell:checkoutDocs",
             "bumpDocsBuild",

@@ -1,3 +1,7 @@
+/**
+ * Testing if element matches a particular CSS selector support
+ * @module matches
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
@@ -5,6 +9,7 @@ var _ = require("./utils"),
 
 /**
  * Check if the element matches selector
+ * @memberOf module:matches
  * @param  {String} selector css selector
  * @return {$Element}
  */
@@ -35,5 +40,3 @@ hooks[":hidden"] = function(node) {
 };
 
 hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
-
-module.exports = hooks;

@@ -1,3 +1,8 @@
+/**
+ * Internationalization support
+ * @module i18n
+ * @see https://github.com/chemerisuk/better-dom/wiki/Localization
+ */
 var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
@@ -25,6 +30,7 @@ var _ = require("./utils"),
 
 /**
  * Get/set localized value
+ * @memberOf module:i18n
  * @param  {String} [value]  resource string key
  * @param  {Object} [vars]   resource string variables
  * @return {String|$Element}
@@ -49,11 +55,11 @@ $Element.prototype.i18n = function(value, vars) {
 
 /**
  * Import global i18n string(s)
- * @memberOf DOM
+ * @memberOf module:i18n
  * @param {String}         lang    target language
  * @param {String|Object}  key     english string to localize or key/value object
  * @param {String}         value   localized string
- * @see https://github.com/chemerisuk/better-dom/wiki/Localization
+ * @function
  */
 DOM.importStrings = importStrings;
 

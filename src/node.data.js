@@ -1,4 +1,9 @@
 var _ = require("./utils"),
+    /**
+     * Data property support
+     * @exports data
+     * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
+     */
     $Node = require("./node");
 
 /**
@@ -7,7 +12,6 @@ var _ = require("./utils"),
  * @param  {String|Object|Array}  key(s)  data key or key/value object or array of keys
  * @param  {Object}               [value] data value to store
  * @return {Object} data entry value or this in case of setter
- * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
  */
 $Node.prototype.data = function(key, value) {
     var len = arguments.length,

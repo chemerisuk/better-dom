@@ -1,8 +1,13 @@
+/**
+ * Clonning of an element support
+ * @module clone
+ */
 var _ = require("./utils"),
     $Element = require("./element");
 
 /**
  * Clone element
+ * @memberOf module:clone
  * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */

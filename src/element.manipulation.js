@@ -1,3 +1,7 @@
+/**
+ * Element manipulation support
+ * @module manipulation
+ */
 var _ = require("./utils"),
     $Element = require("./element");
 
@@ -37,6 +41,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 
 /**
  * Insert html string or $Element after the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -47,6 +52,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, fu
 
 /**
  * Insert html string or $Element before the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -57,6 +63,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
 
 /**
  * Prepend html string or $Element to the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -67,6 +74,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
 
 /**
  * Append html string or $Element to the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -77,6 +85,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
 
 /**
  * Replace current element with html string or $Element
+ * @memberOf module:manipulation
  * @param {Mixed} content HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -87,6 +96,7 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", false, functi
 
 /**
  * Remove current element from DOM
+ * @memberOf module:manipulation
  * @return {$Element}
  * @function
  */

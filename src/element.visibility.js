@@ -1,3 +1,7 @@
+/**
+ * Changing of animatable element visibility support
+ * @module visibility
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
@@ -78,6 +82,7 @@ var _ = require("./utils"),
 
 /**
  * Show element with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -87,6 +92,7 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
  * Hide element with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -96,6 +102,7 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
  * Toggle element visibility with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}

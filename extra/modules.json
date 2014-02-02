@@ -3,7 +3,12 @@
     "classes": ["src/element.classes.js"],
     "visibility": ["src/element.visibility.js"],
     "traversing": ["src/element.traversing.js"],
-    "i18n": ["src/element.i18n.js", "src/dom.importstrings.js"],
+    "i18n": ["src/element.i18n.js"],
     "template": ["src/dom.template.js"],
-    "accessors": ["src/element.accessors.js"]
+    "accessors": ["src/element.accessors.js"],
+    "offset": ["src/element.offset.js"],
+    "matches": ["src/element.matches.js"],
+    "contains": ["src/element.contains.js"],
+    "clone": ["src/element.clone.js"],
+    "data": ["src/element.data.js"]
 }
