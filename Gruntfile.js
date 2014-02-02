@@ -2,22 +2,23 @@ module.exports = function(grunt) {
     "use strict";
 
     var pkg = grunt.file.readJSON("package.json"),
-        gruntDeps = function(name) {
-            return !name.indexOf("grunt-");
-        };
+        gruntDeps = function(name) { return !name.indexOf("grunt-") };
 
     grunt.initConfig({
         pkg: pkg,
-
         watch: {
-            jasmine: {
+            build: {
+                files: ["src/*.js"],
+                tasks: ["browserify:compile", "karma:coverage:run"]
+            },
+            legacy: {
+                files: ["legacy/*.js"],
+                tasks: ["browserify:legacy"]
+            },
+            specs: {
                 files: ["test/spec/*.js"],
                 tasks: ["karma:coverage:run"]
             },
-            build: {
-                files: ["src/*.js", "legacy/*.js"],
-                tasks: ["browserify", "karma:coverage:run"]
-            }
         },
         jshint: {
             all: ["src/*.js", "test/spec/*.js", "Gruntfile.js"],
@@ -27,7 +28,7 @@ module.exports = function(grunt) {
         },
         jsdoc: {
             dist: {
-                src: ["src/*.js", "jsdoc/README.md"],
+                src: ["src/*.js", "README.md"],
                 options: {
                     destination: "jsdoc",
                     template: "node_modules/ink-docstrap/template",
@@ -100,7 +101,7 @@ module.exports = function(grunt) {
             }
         },
         clean: {
-            dist: ["dist/"],
+            build: ["build/"],
             jsdoc: ["jsdoc/"]
         },
         copy: {
@@ -112,15 +113,13 @@ module.exports = function(grunt) {
             },
             readme: {
                 options: {
-                    processContent: function(content) {
-                        return content
-                            // remove the first line
-                            .replace(/^# .+/, "&nbsp;")
-                            // remove docs link
-                            .replace("[API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)", "")
-                            // remove source code
-                            .replace(/```[^`]+```/g, "");
-                    }
+                    // processContent: function(content) {
+                    //     return content
+                    //         // remove the first line
+                    //         .replace(/^# .+/, "&nbsp;")
+                    //         // remove source code
+                    //         .replace(/```[^`]+```/g, "");
+                    // }
                 },
                 files: {
                     "jsdoc/README.md": ["README.md"]
@@ -128,15 +127,15 @@ module.exports = function(grunt) {
             }
         },
         uglify: {
-            dist: {
+            build: {
                 options: {
+                    sourceMap: true,
                     preserveComments: "some",
-                    report: "gzip",
-                    sourceMap: "build/<%= pkg.name %>.min.src",
-                    sourceMappingURL: "<%= pkg.name %>.min.src"
+                    report: "gzip"
                 },
                 files: {
-                    "build/<%= pkg.name %>.min.js": ["build/<%= pkg.name %>.js"]
+                    "build/<%= pkg.name %>.min.js": ["build/<%= pkg.name %>.js"],
+                    "build/<%= pkg.name %>-legacy.min.js": ["build/<%= pkg.name %>-legacy.js"]
                 }
             }
         },
@@ -179,8 +178,6 @@ module.exports = function(grunt) {
                 },
                 options: {
                     postBundleCB: function(err, src, next) {
-                        // apeend strict mode
-                        src = src.replace("{", "{\"use strict\";");
                         // append copyrights header
                         next(err, grunt.template.process(
                             "/**\n" +
@@ -220,6 +217,12 @@ module.exports = function(grunt) {
         "jsdoc"
     ]);
 
+    grunt.registerTask("default", [
+        "clean:build",
+        "browserify",
+        "uglify"
+    ]);
+
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
 
@@ -231,7 +234,7 @@ module.exports = function(grunt) {
             grunt.file.write(filename, JSON.stringify(json, null, 2));
         });
 
-        grunt.registerTask("bumpDocsBuild", function () {
+        grunt.registerTask("bumpDocsBuild", function() {
             var path = require("path"),
                 build = ".build";
 

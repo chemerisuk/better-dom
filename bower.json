@@ -11,7 +11,10 @@
     "test",
     "src",
     "extra",
-    "legacy"
+    "legacy",
+    "Gruntfile.js",
+    "package.json",
+    "bower.json"
   ],
   "devDependencies": {
     "jquery": "latest",

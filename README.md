@@ -13,7 +13,7 @@ jQuery knows a concept called “**live events**”. Using the idea of event del
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
 
-## Documentation and manuals
+## Documentation
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 [Introduction into the better-dom library in English @smashingmagazine.com](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/)
@@ -21,6 +21,7 @@ jQuery knows a concept called “**live events**”. Using the idea of event del
 [Введение в библиотеку better-dom по-русски @habrahabr.ru](http://habrahabr.ru/post/209140/)
 
 Need more?
+
 * Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
 * read [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
 * check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
