@@ -5,7 +5,7 @@ var _ = require("./utils"),
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, function(callback) { DOM.fire(callback) });
+    _.forEach(readyCallbacks, function(callback) { DOM.invoke(callback) });
     // cleanup
     readyCallbacks = null;
 }
@@ -40,6 +40,6 @@ DOM.ready = function(callback) {
     if (readyCallbacks) {
         readyCallbacks.push(callback);
     } else {
-        DOM.fire(callback);
+        DOM.invoke(callback);
     }
 };

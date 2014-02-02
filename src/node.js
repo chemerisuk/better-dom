@@ -19,7 +19,7 @@ function $Node(node) {
 /**
  * Get property value by name
  * @param  {String} name property name
- * @return {String} property value
+ * @return {Object} property value
  */
 $Node.prototype.get = function(name) {
     return this._node[name];
@@ -28,7 +28,7 @@ $Node.prototype.get = function(name) {
 /**
  * Set property value by name
  * @param  {String} name  property name
- * @param  {String} value property value
+ * @param  {Object} value property value
  */
 $Node.prototype.set = function(name, value) {
     this._node[name] = value;
