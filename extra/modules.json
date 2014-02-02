@@ -1,0 +1,6 @@
+{
+    "manipulation": ["src/element.manipulation.js"],
+    "classes": ["src/element.classes.js"],
+    "visibility": ["src/element.visibility.js"],
+    "traversing": ["src/element.traversing.js"]
+}

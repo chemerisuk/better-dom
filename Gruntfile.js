@@ -193,6 +193,7 @@ module.exports = function(grunt) {
     Object.keys(pkg.devDependencies).filter(gruntDeps).forEach(grunt.loadNpmTasks);
 
     grunt.registerTask("dev", [
+        "clean:build",
         "browserify",
         "jshint",
         "connect",
@@ -201,6 +202,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("test", [
+        "clean:build",
         "browserify",
         "jshint",
         "karma:unit"
@@ -217,6 +219,29 @@ module.exports = function(grunt) {
         "browserify",
         "uglify"
     ]);
+
+    grunt.registerTask("build", "Make a custom build", function() {
+        var args = Array.prototype.slice.call(arguments),
+            modules = grunt.file.readJSON("extra/modules.json"),
+            options = grunt.config.get("browserify.compile.options");
+
+        options.ignore = args.reduce(function(memo, arg) {
+            var files = modules[arg];
+
+            if (!files) throw Error("Illegal module name '" + arg + "'\n\n");
+
+            memo.push.apply(memo, files);
+
+            return memo;
+        }, []);
+
+        grunt.config.set("browserify.compile.options", options);
+
+        grunt.log.ok("Making a custom better-dom build that doesn't contain modules:");
+        grunt.log.subhead(args.join("\n"));
+
+        grunt.task.run(["default"]);
+    });
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
