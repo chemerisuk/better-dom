@@ -29,6 +29,7 @@ $Node.prototype.get = function(name) {
  * Set property value by name
  * @param  {String} name  property name
  * @param  {Object} value property value
+ * @return {$Node}
  */
 $Node.prototype.set = function(name, value) {
     this._node[name] = value;

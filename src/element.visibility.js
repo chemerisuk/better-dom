@@ -25,7 +25,10 @@ var _ = require("./utils"),
                             node.style[absentStrategy[0]] = absentStrategy[1];
                         }
 
-                        if (hasAnimation) node.style.pointerEvents = "";
+                        if (hasAnimation) {
+                            node.style.pointerEvents = "";
+                            node.removeEventListener(completeAnimation);
+                        }
 
                         if (callback) callback(el, index, ref);
                     };
@@ -43,7 +46,7 @@ var _ = require("./utils"),
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    el.once(eventType[duration === transitionDuration ? 1 : 0], completeAnimation);
+                    node.addEventListener(eventType[duration === transitionDuration ? 1 : 0], completeAnimation, false);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);

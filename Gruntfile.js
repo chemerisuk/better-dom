@@ -198,8 +198,8 @@ module.exports = function(grunt) {
         "uglify"
     ]);
 
-    grunt.registerTask("build", "Make a custom build", function() {
-        var args = Array.prototype.slice.call(arguments),
+    grunt.registerTask("build", "Make a custom build", function(excluded) {
+        var args =  (excluded || "").split(","),
             modules = grunt.file.readJSON("extra/modules.json"),
             options = grunt.config.get("browserify.compile.options");
 

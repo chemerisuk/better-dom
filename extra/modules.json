@@ -11,5 +11,6 @@
     "contains": ["src/element.contains.js"],
     "clone": ["src/element.clone.js"],
     "data": ["src/element.data.js"],
-    "search": ["src/node.search.js"]
+    "search": ["src/node.search.js"],
+    "events": ["src/node.events.js", "src/eventhandler.js"]
 }
