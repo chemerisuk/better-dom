@@ -126,9 +126,11 @@ DOM.extend = function(selector, condition, mixins) {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            DOM.findAll(selector).fire(ext);
+            _.forEach(document.querySelectorAll(selector), function(node) {
+                $Element(node).fire(ext);
+            });
             // Any extension should be initialized after DOM.ready
-            // MUST be after DOM.findAll because of legacy IEs behavior
+            // MUST be after querySelectorAll because of legacy IEs behavior
             importStyles(selector, styles, true);
         });
     }

@@ -10,5 +10,6 @@
     "matches": ["src/element.matches.js"],
     "contains": ["src/element.contains.js"],
     "clone": ["src/element.clone.js"],
-    "data": ["src/element.data.js"]
+    "data": ["src/element.data.js"],
+    "search": ["src/node.search.js"]
 }
