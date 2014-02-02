@@ -11,9 +11,9 @@
         },
         "systemName"      : "better-dom",
         "footer"          : "",
-        "copyright"       : "",
+        "copyright"       : "© 2013-2014 Maksim Chemerisuk",
         "navType"         : "vertical",
-        "theme"           : "united",
+        "theme"           : "spruce",
         "linenums"        : false,
         "collapseSymbols" : false,
         "inverseNav"      : false

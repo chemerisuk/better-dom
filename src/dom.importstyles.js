@@ -14,7 +14,7 @@ var _ = require("./utils"),
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  */
-module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
+DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
         // make a temporary element and populate style properties
@@ -47,3 +47,5 @@ module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/uniqu
         }
     }
 };
+
+module.exports = DOM.importStyles;

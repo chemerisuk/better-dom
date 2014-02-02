@@ -72,25 +72,20 @@ module.exports = function(grunt) {
                     // get a list of all files in stage and delete everything except for targets, node_modules, cache, temp, and logs
                     // rm does not delete root level hidden files
                     "ls | grep -v ^jsdoc$ | grep -v ^node_modules$ | grep -v ^bower_components$ | xargs rm -r ",
-
+                    // remove incorrect <static> directives
+                    "grep -rl '&lt;static> ' jsdoc/*.html | xargs sed -i \"\" 's/&lt;static> //g'",
                     // copy from the stage folder to the current (root) folder
                     "cp -r jsdoc/* . && rm -r jsdoc",
-
                     // add any files that may have been created
                     "git add -A",
-
                     // commit all files using the version number as the commit message
                     "git commit -am 'Build: <%= grunt.file.read(\".build\") %>'",
-
                     // switch back to the previous branch we started from
                     "git checkout -",
-
                     // update version tag
                     "git tag -af v<%= pkg.version %> -m 'version <%= pkg.version %>'",
-
                     // push file changed
                     "git push origin --all",
-
                     // push new tag
                     "git push origin v<%= pkg.version %>"
                 ].join(" && "),
