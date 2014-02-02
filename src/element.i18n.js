@@ -1,5 +1,6 @@
 var _ = require("./utils"),
-    $Element = require("./element");
+    $Element = require("./element"),
+    setDataAttr = function(value, key) { this.setAttribute("data-" + key, value) };
 
 /**
  * Get/set localized value
@@ -8,21 +9,19 @@ var _ = require("./utils"),
  * @return {String|$Element}
  */
 $Element.prototype.i18n = function(value, vars) {
-    var len = arguments.length;
+    var len = arguments.length,
+        node = this._node;
 
-    if (!len) return this.get("data-i18n");
+    if (!len) return node.getAttribute("data-i18n");
 
     if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
 
     // localized srings with variables require different css
     if (vars) DOM.importStrings("", value, value);
     // cleanup existing content
-    this.set("");
+    node.innerHTML = "";
     // process variables
-    _.forOwn(_.extend({i18n: value}, vars), function(value, key) {
-        this.set("data-" + key, value);
-    }, this);
+    _.forOwn(_.extend({i18n: value}, vars), setDataAttr, node);
 
-    // IMPORTANT: set empty value twice to fix IE8 quirks
-    return this.set("");
+    return this;
 };
