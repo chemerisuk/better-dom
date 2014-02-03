@@ -101,14 +101,18 @@ module.exports = function(grunt) {
             jsdoc: ["jsdoc/"]
         },
         uglify: {
+            options: {
+                sourceMap: true,
+                preserveComments: "some",
+                report: "gzip"
+            },
             build: {
-                options: {
-                    sourceMap: true,
-                    preserveComments: "some",
-                    report: "gzip"
-                },
                 files: {
-                    "build/<%= pkg.name %>.min.js": ["build/<%= pkg.name %>.js"],
+                    "build/<%= pkg.name %>.min.js": ["build/<%= pkg.name %>.js"]
+                }
+            },
+            legacy: {
+                files: {
                     "build/<%= pkg.name %>-legacy.min.js": ["build/<%= pkg.name %>-legacy.js"]
                 }
             }
@@ -204,14 +208,14 @@ module.exports = function(grunt) {
 
         if (!excluded) {
             grunt.log.writeln(
-                grunt.log.table([15, 70, 70],
+                grunt.log.table([15, 40, 70],
                     ["MODULE", "DESCRIPTION", "URL"]
                 )
             );
 
             Object.keys(modules).forEach(function(name) {
                 grunt.log.writeln(
-                    grunt.log.table([15, 70, 70],
+                    grunt.log.table([15, 40, 70],
                         [name.yellow.bold, modules[name].title, pkg.docs + "/module-" + name + ".html"]
                     )
                 );
@@ -223,7 +227,7 @@ module.exports = function(grunt) {
             return;
         }
 
-        args = excluded.split(",");
+        args = excluded === "all" ? Object.keys(modules) : excluded.split(",");
         options = grunt.config.get("browserify.compile.options");
 
         options.ignore = args.reduce(function(memo, arg) {
@@ -239,9 +243,13 @@ module.exports = function(grunt) {
         grunt.config.set("browserify.compile.options", options);
 
         grunt.log.ok("Making a custom better-dom build that doesn't contain modules:");
-        grunt.log.subhead(args.join("\n"));
+        grunt.log.subhead(args);
 
-        grunt.task.run(["default"]);
+        grunt.task.run([
+            "clean:build",
+            "browserify:compile",
+            "uglify:build"
+        ]);
     });
 
     grunt.registerTask("publish", "Publish a new version routine", function(version) {

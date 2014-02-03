@@ -1,5 +1,5 @@
 /**
- * Support for testing if element is inside of a particular tree
+ * Ancestor check support
  * @module contains
  */
 var _ = require("./utils"),

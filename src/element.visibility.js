@@ -1,5 +1,5 @@
 /**
- * Changing of animatable element visibility support
+ * Changing of element visibility support
  * @module visibility
  */
 var _ = require("./utils"),

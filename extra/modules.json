@@ -8,7 +8,7 @@
         "files": ["src/element.classes.js"]
     },
     "visibility": {
-        "title": "Changing of animatable element visibility support",
+        "title": "Changing of element visibility support",
         "files": ["src/element.visibility.js"]
     },
     "traversing": {
@@ -32,11 +32,11 @@
         "files": ["src/element.offset.js"]
     },
     "matches": {
-        "title": "Testing if element matches a particular CSS selector support",
+        "title": "CSS selector matching support",
         "files": ["src/element.matches.js"]
     },
     "contains": {
-        "title": "Support for testing if element is inside of a particular tree",
+        "title": "Ancestor check support",
         "files": ["src/element.contains.js"]
     },
     "clone": {

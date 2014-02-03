@@ -1,5 +1,5 @@
 /**
- * Testing if element matches a particular CSS selector support
+ * CSS selector matching support
  * @module matches
  */
 var _ = require("./utils"),
