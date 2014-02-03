@@ -1,12 +1,12 @@
 /**
  * @file better-dom.js
- * @version 1.7.0-rc.2 2014-01-29T05:14:51
+ * @version 1.7.0-rc.3 2014-02-03T03:17:11
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
-;(function e(t,n,r){"use strict";function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -30,7 +30,7 @@ DOM.create = function(value, vars) {
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
-        sandbox.innerHTML = DOM.template(value, vars);
+        sandbox.innerHTML = _.template(value, vars);
 
         for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
             if (node.nodeType === 1) value.push(node);
@@ -44,7 +44,7 @@ DOM.create = function(value, vars) {
     return new $Element(value, multiple);
 };
 
-},{"./dom":6,"./element":14,"./utils":32}],2:[function(require,module,exports){
+},{"./dom":5,"./element":13,"./utils":29}],2:[function(require,module,exports){
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
@@ -81,7 +81,7 @@ var _ = require("./utils"),
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             // make a safe call so live extensions can't break each other
-            if (!skip[index] && ext.accept(node)) el.fire(ext);
+            if (!skip[index] && ext.accept(node)) el.invoke(ext);
         };
     };
 
@@ -89,7 +89,7 @@ if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = _.makeRandomProp();
 
-    importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "1% {opacity: .99}");
+    importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}");
 
     styles = {
         "animation-duration": "1ms !important",
@@ -173,9 +173,11 @@ DOM.extend = function(selector, condition, mixins) {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            DOM.findAll(selector).fire(ext);
+            _.forEach(document.querySelectorAll(selector), function(node) {
+                $Element(node).invoke(ext);
+            });
             // Any extension should be initialized after DOM.ready
-            // MUST be after DOM.findAll because of legacy IEs behavior
+            // MUST be after querySelectorAll because of legacy IEs behavior
             importStyles(selector, styles, true);
         });
     }
@@ -183,7 +185,7 @@ DOM.extend = function(selector, condition, mixins) {
 
 module.exports = extensions;
 
-},{"./dom":6,"./dom.importstyles":5,"./element":14,"./selectormatcher":31,"./utils":32}],3:[function(require,module,exports){
+},{"./dom":5,"./dom.importstyles":4,"./element":13,"./selectormatcher":28,"./utils":29}],3:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom");
 
@@ -217,43 +219,7 @@ DOM.importScripts = function() {
     callback();
 };
 
-},{"./dom":6,"./utils":32}],4:[function(require,module,exports){
-var _ = require("./utils"),
-    DOM = require("./dom"),
-    importStyles = require("./dom.importstyles"),
-    rparam = /\$\{([a-z\-]+)\}/g,
-    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
-
-/**
- * Import global i18n string(s)
- * @memberOf DOM
- * @param {String}         lang    target language
- * @param {String|Object}  key     english string to localize or key/value object
- * @param {String}         value   localized string
- * @see https://github.com/chemerisuk/better-dom/wiki/Localization
- */
-DOM.importStrings = function(lang, key, value) {
-    var keyType = typeof key,
-        selector, content;
-
-    if (keyType === "string") {
-        selector = "[data-i18n=\"" + key + "\"]";
-        content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
-        // empty lang is for internal use only
-        if (lang) selector += ":lang(" + lang + ")";
-
-        DOM.importStyles(selector + ":before", content, !lang);
-    } else if (keyType === "object") {
-        _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
-    } else {
-        throw _.makeError("importStrings", true);
-    }
-};
-
-// by default just show data-i18n string
-importStyles("[data-i18n]:before", "content:attr(data-i18n)");
-
-},{"./dom":6,"./dom.importstyles":5,"./utils":32}],5:[function(require,module,exports){
+},{"./dom":5,"./utils":29}],4:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -270,7 +236,7 @@ var _ = require("./utils"),
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  */
-module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
+DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
         // make a temporary element and populate style properties
@@ -304,11 +270,13 @@ module.exports = DOM.importStyles = function(selector, cssText, /*INTENAL*/uniqu
     }
 };
 
-},{"./dom":6,"./element":14,"./utils":32}],6:[function(require,module,exports){
+module.exports = DOM.importStyles;
+
+},{"./dom":5,"./element":13,"./utils":29}],5:[function(require,module,exports){
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.7.0-rc.2";
+DOM.version = "1.7.0-rc.3";
 
 /**
  * Global object to access DOM
@@ -317,7 +285,7 @@ DOM.version = "1.7.0-rc.2";
  */
 module.exports = window.DOM = DOM;
 
-},{"./node":28}],7:[function(require,module,exports){
+},{"./node":26}],6:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -344,7 +312,7 @@ DOM.mock = function(content, vars) {
     return el;
 };
 
-},{"./dom":6,"./dom.extend":2,"./element":14,"./utils":32}],8:[function(require,module,exports){
+},{"./dom":5,"./dom.extend":2,"./element":13,"./utils":29}],7:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     readyCallbacks = [],
@@ -352,7 +320,7 @@ var _ = require("./utils"),
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, function(callback) { DOM.fire(callback) });
+    _.forEach(readyCallbacks, function(callback) { DOM.invoke(callback) });
     // cleanup
     readyCallbacks = null;
 }
@@ -387,11 +355,17 @@ DOM.ready = function(callback) {
     if (readyCallbacks) {
         readyCallbacks.push(callback);
     } else {
-        DOM.fire(callback);
+        DOM.invoke(callback);
     }
 };
 
-},{"./dom":6,"./utils":32}],9:[function(require,module,exports){
+},{"./dom":5,"./utils":29}],8:[function(require,module,exports){
+/**
+ * Emmet abbreviation syntax support
+ * @module template
+ * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
+ * @see http://docs.emmet.io/cheat-sheet/
+ */
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
@@ -439,13 +413,11 @@ _.forEach("area base br col hr img input link meta param command keygen source".
 });
 
 /**
- * Parse emmet-like template to a HTML string
- * @memberOf DOM
+ * Parse emmet-like template into a HTML string
+ * @memberOf module:template
  * @param  {String} template emmet-like expression
  * @param  {Object} [vars] key/value map of variables
  * @return {String} HTML string
- * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
- * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.template = function(template, vars) {
     if (typeof template !== "string") throw _.makeError("template", true);
@@ -569,7 +541,133 @@ DOM.template = function(template, vars) {
     return cache[template] = toString(stack[0]).replace(reTextTag, "");
 };
 
-},{"./dom":6,"./utils":32}],10:[function(require,module,exports){
+},{"./dom":5,"./utils":29}],9:[function(require,module,exports){
+/**
+ * Smart getter and setter support
+ * @module accessors
+ * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
+ */
+var _ = require("./utils"),
+    $Element = require("./element"),
+    hooks = {get: {}, set: {}};
+
+/**
+ * Get property or attribute value by name
+ * @memberOf module:accessors
+ * @param  {String|Array} [name] property/attribute name or array of names
+ * @return {Object} property/attribute value
+ */
+$Element.prototype.get = function(name) {
+    var el = this,
+        node = this._node,
+        hook = hooks.get[name];
+
+    if (!node) return;
+
+    if (hook || typeof name === "string") {
+        return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
+    }
+
+    if (Array.isArray(name)) return _.foldr(name, function(r, name) { return r[name] = el.get(name), r }, {});
+
+    throw _.makeError("get");
+};
+
+/**
+ * Set property/attribute value by name
+ * @memberOf module:accessors
+ * @param {String}           [name]  property/attribute name
+ * @param {String|Function}  value   property/attribute value or function that returns it
+ * @return {$Element}
+ */
+$Element.prototype.set = function(name, value) {
+    var nameType = typeof name;
+
+    if (arguments.length === 1 && nameType !== "object") {
+        value = name;
+        name = undefined;
+    }
+
+    return this.legacy(function(node, el, index, ref) {
+        var hook = hooks.set[name],
+            str = value;
+
+        if (typeof str === "function") str = value(el, index, ref);
+
+        if (hook || nameType === "string") {
+            if (hook) {
+                hook(node, str);
+            } else if (str == null) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = str;
+            } else {
+                node.setAttribute(name, str);
+            }
+        } else if (nameType === "object") {
+            return _.forOwn(name, function(value, name) { el.set(name, value) });
+        } else {
+            throw _.makeError("set");
+        }
+
+        // trigger reflow manually in IE8
+        if (!_.DOM2_EVENTS) node.className = node.className;
+    });
+};
+
+// $Element.get/$Element.set hooks
+
+hooks.get.undefined = function(node) {
+    var name;
+
+    if (node.tagName === "OPTION") {
+        name = node.hasAttribute("value") ? "value" : "text";
+    } else if (node.tagName === "SELECT") {
+        return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
+    } else {
+        name = node.type && "value" in node ? "value" : "innerHTML";
+    }
+
+    return node[name];
+};
+
+hooks.set.undefined = function(node, value) {
+    var name;
+    // handle numbers, booleans etc.
+    value = value == null ? "" : String(value);
+
+    if (node.tagName === "SELECT") {
+        // selectbox has special case
+        if (_.every(node.options, function(o) { return !(o.selected = o.value === value) })) {
+            node.selectedIndex = -1;
+        }
+    } else if (node.type && "value" in node) {
+        // for IE use innerText because it doesn't trigger onpropertychange
+        name = _.DOM2_EVENTS ? "value" : "innerText";
+    } else {
+        name = "innerHTML";
+    }
+
+    if (name) node[name] = value;
+};
+
+hooks.get.type = function(node) {
+    // some browsers don't recognize input[type=email] etc.
+    return node.getAttribute("type") || node.type;
+};
+
+if (!_.DOM2_EVENTS) {
+    hooks.get.textContent = function(node) { return node.innerText };
+    hooks.set.textContent = function(node, value) {
+        node.innerText = value;
+    };
+}
+
+},{"./element":13,"./utils":29}],10:[function(require,module,exports){
+/**
+ * Class manipulation support
+ * @module classes
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     rclass = /[\n\t\r]/g;
@@ -612,6 +710,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
 
 /**
  * Check if element contains class name(s)
+ * @memberOf module:classes
  * @param  {...String} classNames class name(s)
  * @return {Boolean}   true if the element contains all classes
  * @function
@@ -622,6 +721,7 @@ $Element.prototype.hasClass = makeClassesMethod("contains", function(className) 
 
 /**
  * Add class(es) to element
+ * @memberOf module:classes
  * @param  {...String} classNames class name(s)
  * @return {$Element}
  * @function
@@ -632,6 +732,7 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
 
 /**
  * Remove class(es) from element
+ * @memberOf module:classes
  * @param  {...String} classNames class name(s)
  * @return {$Element}
  * @function
@@ -644,6 +745,7 @@ $Element.prototype.removeClass = makeClassesMethod("remove", function(className)
 
 /**
  * Toggle class(es) on element
+ * @memberOf module:classes
  * @param  {...String}  classNames class name(s)
  * @return {$Element}
  * @function
@@ -656,12 +758,17 @@ $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className)
     if (oldClassName === this._node.className) this.removeClass(className);
 });
 
-},{"./element":14,"./utils":32}],11:[function(require,module,exports){
+},{"./element":13,"./utils":29}],11:[function(require,module,exports){
+/**
+ * Clonning of an element support
+ * @module clone
+ */
 var _ = require("./utils"),
     $Element = require("./element");
 
 /**
  * Clone element
+ * @memberOf module:clone
  * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */
@@ -687,91 +794,76 @@ $Element.prototype.clone = function(deep) {
     return new $Element(node);
 };
 
-},{"./element":14,"./utils":32}],12:[function(require,module,exports){
-var _ = require("./utils"),
-    $Element = require("./element"),
-    hooks = {};
-
+},{"./element":13,"./utils":29}],12:[function(require,module,exports){
 /**
- * Get property or attribute value by name
- * @param  {String|Array} [name] property/attribute name or array of names
- * @return {Object} property/attribute value
- * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
+ * Internationalization support
+ * @module i18n
+ * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
-$Element.prototype.get = function(name) {
-    var el = this,
-        node = this._node,
-        hook = hooks[name];
-
-    if (!node) return;
-
-    if (hook || typeof name === "string") {
-        return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
-    }
-
-    if (Array.isArray(name)) return _.foldr(name, function(r, name) { return r[name] = el.get(name), r }, {});
-
-    throw _.makeError("get");
-};
-
-// $Element.get hooks
-
-hooks.undefined = function(node) {
-    var name;
-
-    if (node.tagName === "OPTION") {
-        name = node.hasAttribute("value") ? "value" : "text";
-    } else if (node.tagName === "SELECT") {
-        return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
-    } else {
-        name = node.type && "value" in node ? "value" : "innerHTML";
-    }
-
-    return node[name];
-};
-
-hooks.type = function(node) {
-    // some browsers don't recognize input[type=email] etc.
-    return node.getAttribute("type") || node.type;
-};
-
-if (!_.DOM2_EVENTS) {
-    hooks.textContent = function(node) { return node.innerText };
-}
-
-module.exports = hooks;
-
-},{"./element":14,"./utils":32}],13:[function(require,module,exports){
 var _ = require("./utils"),
-    $Element = require("./element");
+    DOM = require("./dom"),
+    $Element = require("./element"),
+    importStyles = require("./dom.importstyles"),
+    rparam = /\$\{([a-z\-]+)\}/g,
+    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" },
+    setDataAttr = function(value, key) { this.setAttribute("data-" + key, value) },
+    importStrings = function(lang, key, value) {
+        var keyType = typeof key,
+            selector, content;
+
+        if (keyType === "string") {
+            selector = "[data-i18n=\"" + key + "\"]";
+            content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
+            // empty lang is for internal use only
+            if (lang) selector += ":lang(" + lang + ")";
+
+            DOM.importStyles(selector + ":before", content, !lang);
+        } else if (keyType === "object") {
+            _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
+        } else {
+            throw _.makeError("importStrings", true);
+        }
+    };
 
 /**
  * Get/set localized value
+ * @memberOf module:i18n
  * @param  {String} [value]  resource string key
  * @param  {Object} [vars]   resource string variables
  * @return {String|$Element}
  */
 $Element.prototype.i18n = function(value, vars) {
-    var len = arguments.length;
+    var len = arguments.length,
+        node = this._node;
 
-    if (!len) return this.get("data-i18n");
+    if (!len) return node.getAttribute("data-i18n");
 
     if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
 
     // localized srings with variables require different css
-    if (vars) DOM.importStrings("", value, value);
+    if (vars) importStrings("", value, value);
     // cleanup existing content
-    this.set("");
+    node.innerHTML = "";
     // process variables
-    _.forOwn(_.extend({i18n: value}, vars), function(value, key) {
-        this.set("data-" + key, value);
-    }, this);
+    _.forOwn(_.extend({i18n: value}, vars), setDataAttr, node);
 
-    // IMPORTANT: set empty value twice to fix IE8 quirks
-    return this.set("");
+    return this;
 };
 
-},{"./element":14,"./utils":32}],14:[function(require,module,exports){
+/**
+ * Import global i18n string(s)
+ * @memberOf module:i18n
+ * @param {String}         lang    target language
+ * @param {String|Object}  key     english string to localize or key/value object
+ * @param {String}         value   localized string
+ * @function
+ */
+DOM.importStrings = importStrings;
+
+// by default just show data-i18n string
+importStyles("[data-i18n]:before", "content:attr(data-i18n)");
+
+},{"./dom":5,"./dom.importstyles":4,"./element":13,"./utils":29}],13:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -798,7 +890,11 @@ $Element.prototype = new $Node();
 
 module.exports = $Element;
 
-},{"./node":28,"./utils":32}],15:[function(require,module,exports){
+},{"./node":26,"./utils":29}],14:[function(require,module,exports){
+/**
+ * Element manipulation support
+ * @module manipulation
+ */
 var _ = require("./utils"),
     $Element = require("./element");
 
@@ -815,7 +911,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 if (typeof arg === "function") arg = arg(el, index, ref);
 
                 if (typeof arg === "string") {
-                    html += DOM.template(arg).trim();
+                    html += _.template(arg).trim();
                 } else if (arg instanceof $Element) {
                     if (!value) value = document.createDocumentFragment();
                     // populate fragment
@@ -838,6 +934,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 
 /**
  * Insert html string or $Element after the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -848,6 +945,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, fu
 
 /**
  * Insert html string or $Element before the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -858,6 +956,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
 
 /**
  * Prepend html string or $Element to the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -868,6 +967,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
 
 /**
  * Append html string or $Element to the current
+ * @memberOf module:manipulation
  * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -878,6 +978,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
 
 /**
  * Replace current element with html string or $Element
+ * @memberOf module:manipulation
  * @param {Mixed} content HTMLString, EmmetString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -888,6 +989,7 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", false, functi
 
 /**
  * Remove current element from DOM
+ * @memberOf module:manipulation
  * @return {$Element}
  * @function
  */
@@ -895,7 +997,11 @@ $Element.prototype.remove = makeManipulationMethod("remove", "", false, function
     node.parentNode.removeChild(node);
 });
 
-},{"./element":14,"./utils":32}],16:[function(require,module,exports){
+},{"./element":13,"./utils":29}],15:[function(require,module,exports){
+/**
+ * Testing if element matches a particular CSS selector support
+ * @module matches
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
@@ -903,6 +1009,7 @@ var _ = require("./utils"),
 
 /**
  * Check if the element matches selector
+ * @memberOf module:matches
  * @param  {String} selector css selector
  * @return {$Element}
  */
@@ -934,13 +1041,16 @@ hooks[":hidden"] = function(node) {
 
 hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
 
-module.exports = hooks;
-
-},{"./element":14,"./selectormatcher":31,"./utils":32}],17:[function(require,module,exports){
+},{"./element":13,"./selectormatcher":28,"./utils":29}],16:[function(require,module,exports){
+/**
+ * Element offset calculation support
+ * @module offset
+ */
 var _ = require("./utils"),
     $Element = require("./element");
 /**
  * Calculates offset of the current element
+ * @memberOf module:offset
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
@@ -962,88 +1072,7 @@ $Element.prototype.offset = function() {
     }
 };
 
-},{"./element":14,"./utils":32}],18:[function(require,module,exports){
-var _ = require("./utils"),
-    $Element = require("./element"),
-    hooks = {},
-    fakeClass = _.makeRandomProp();
-
-/**
- * Set property/attribute value by name
- * @param {String}           [name]  property/attribute name
- * @param {String|Function}  value   property/attribute value or function that returns it
- * @return {$Element}
- * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
- */
-$Element.prototype.set = function(name, value) {
-    var nameType = typeof name;
-
-    if (arguments.length === 1 && nameType !== "object") {
-        value = name;
-        name = undefined;
-    }
-
-    return this.legacy(function(node, el, index, ref) {
-        var hook = hooks[name],
-            str = value;
-
-        if (typeof str === "function") str = value(el, index, ref);
-
-        if (hook || nameType === "string") {
-            if (hook) {
-                hook(node, str);
-            } else if (str == null) {
-                node.removeAttribute(name);
-            } else if (name in node) {
-                node[name] = str;
-            } else {
-                node.setAttribute(name, str);
-            }
-        } else if (nameType === "object") {
-            return _.forOwn(name, function(value, name) { el.set(name, value) });
-        } else {
-            throw _.makeError("set");
-        }
-
-        // trigger reflow manually in IE8
-        if (!_.DOM2_EVENTS) {
-            str = (node.className += " " + fakeClass);
-            node.className = str.replace(" " + fakeClass, "");
-        }
-    });
-};
-
-// $Element.set hooks
-
-hooks.undefined = function(node, value) {
-    var name;
-    // handle numbers, booleans etc.
-    value = value == null ? "" : String(value);
-
-    if (node.tagName === "SELECT") {
-        // selectbox has special case
-        if (_.every(node.options, function(o) { return !(o.selected = o.value === value) })) {
-            node.selectedIndex = -1;
-        }
-    } else if (node.type && "value" in node) {
-        // for IE use innerText because it doesn't trigger onpropertychange
-        name = _.DOM2_EVENTS ? "value" : "innerText";
-    } else {
-        name = "innerHTML";
-    }
-
-    if (name) node[name] = value;
-};
-
-if (!_.DOM2_EVENTS) {
-    hooks.textContent = function(node, value) {
-        node.innerText = value;
-    };
-}
-
-module.exports = hooks;
-
-},{"./element":14,"./utils":32}],19:[function(require,module,exports){
+},{"./element":13,"./utils":29}],17:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
     hooks = {get: {}, set: {}},
@@ -1198,7 +1227,12 @@ _.forOwn({
 
 module.exports = hooks;
 
-},{"./element":14,"./utils":32}],20:[function(require,module,exports){
+},{"./element":13,"./utils":29}],18:[function(require,module,exports){
+/**
+ * Element traversing support
+ * @module traversing
+ * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher");
@@ -1258,74 +1292,78 @@ function makeChildTraversingMethod(multiple) {
 
 /**
  * Find next sibling element filtered by optional selector
+ * @memberOf module:traversing
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.next = makeTraversingMethod("nextSibling");
 
 /**
  * Find previous sibling element filtered by optional selector
+ * @memberOf module:traversing
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.prev = makeTraversingMethod("previousSibling");
 
 /**
  * Find all next sibling elements filtered by optional selector
+ * @memberOf module:traversing
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
 
 /**
  * Find all previous sibling elements filtered by optional selector
+ * @memberOf module:traversing
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
 
 /**
  * Find parent element filtered by optional selector
+ * @memberOf module:traversing
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.parent = makeTraversingMethod("parentNode");
 
 /**
  * Return child element by index filtered by optional selector
+ * @memberOf module:traversing
  * @param  {Number} index child index
  * @param  {String} [selector] css selector
  * @return {$Element} matched child
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.child = makeChildTraversingMethod(false);
 
 /**
  * Fetch children elements filtered by optional selector
+ * @memberOf module:traversing
  * @param  {String} [selector] css selector
  * @return {$Element} collection of matched elements
  * @function
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
 
-},{"./element":14,"./selectormatcher":31,"./utils":32}],21:[function(require,module,exports){
+},{"./element":13,"./selectormatcher":28,"./utils":29}],19:[function(require,module,exports){
+/**
+ * Changing of animatable element visibility support
+ * @module visibility
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
     eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
@@ -1341,7 +1379,7 @@ var _ = require("./utils"),
                     iterationCount = parseFloat(styles[animationProps[2]]) || 0,
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    completeAnimation = function() {
+                    completeAnimation = function(e) {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
@@ -1349,7 +1387,10 @@ var _ = require("./utils"),
                             node.style[absentStrategy[0]] = absentStrategy[1];
                         }
 
-                        if (hasAnimation) node.style.pointerEvents = "";
+                        if (hasAnimation) {
+                            node.style.pointerEvents = "";
+                            node.removeEventListener(e.type, completeAnimation, false);
+                        }
 
                         if (callback) callback(el, index, ref);
                     };
@@ -1367,13 +1408,13 @@ var _ = require("./utils"),
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    el.once(eventType[duration === transitionDuration ? 1 : 0], completeAnimation);
+                    node.addEventListener(eventType[duration === transitionDuration ? 1 : 0], completeAnimation, false);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
                 // when there is no animation the completeAnimation call
                 // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.fire(completeAnimation);
+                if (!hasAnimation) el.invoke(completeAnimation);
             });
         };
     },
@@ -1406,6 +1447,7 @@ var _ = require("./utils"),
 
 /**
  * Show element with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -1415,6 +1457,7 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
  * Hide element with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -1424,6 +1467,7 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
  * Toggle element visibility with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -1433,7 +1477,7 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
     return node.getAttribute("aria-hidden") !== "true";
 });
 
-},{"./element":14,"./utils":32}],22:[function(require,module,exports){
+},{"./element":13,"./utils":29}],20:[function(require,module,exports){
 /*
  * Helper type to create an event handler
  */
@@ -1496,8 +1540,6 @@ module.exports = function(type, selector, callback, props, el, once) {
             args = _.map(args, function(name) {
                 if (!_.DOM2_EVENTS) {
                     switch (name) {
-                    case "defaultPrevented":
-                        return e.returnValue === false;
                     case "which":
                         return e.keyCode;
                     case "button":
@@ -1514,6 +1556,9 @@ module.exports = function(type, selector, callback, props, el, once) {
                 switch (name) {
                 case "type":
                     return type;
+                case "defaultPrevented":
+                    // IE8 and Android 2.3 use returnValue instead of defaultPrevented
+                    return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
                 case "target":
                     return $Element(target);
                 case "currentTarget":
@@ -1576,13 +1621,18 @@ if (!_.DOM2_EVENTS) {
 
 module.exports.hooks = hooks;
 
-},{"./element":14,"./selectormatcher":31,"./utils":32}],23:[function(require,module,exports){
+},{"./element":13,"./selectormatcher":28,"./utils":29}],21:[function(require,module,exports){
+/**
+ * Support for testing if element is inside of a particular tree
+ * @module contains
+ */
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element");
 
 /**
  * Check if element is inside of context
+ * @memberOf module:contains
  * @param  {$Element} element element to check
  * @return {Boolean} true if success
  */
@@ -1594,8 +1644,13 @@ $Node.prototype.contains = function(element) {
     if (node) return element.every(function(el) { return node.contains(el._node) });
 };
 
-},{"./element":14,"./node":28,"./utils":32}],24:[function(require,module,exports){
+},{"./element":13,"./node":26,"./utils":29}],22:[function(require,module,exports){
 var _ = require("./utils"),
+    /**
+     * Data property support
+     * @exports data
+     * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
+     */
     $Node = require("./node");
 
 /**
@@ -1604,7 +1659,6 @@ var _ = require("./utils"),
  * @param  {String|Object|Array}  key(s)  data key or key/value object or array of keys
  * @param  {Object}               [value] data value to store
  * @return {Object} data entry value or this in case of setter
- * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
  */
 $Node.prototype.data = function(key, value) {
     var len = arguments.length,
@@ -1645,134 +1699,155 @@ $Node.prototype.data = function(key, value) {
     throw _.makeError("data", this);
 };
 
-},{"./node":28,"./utils":32}],25:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node"),
-    $Element = require("./element");
-
-// big part of code inspired by Sizzle:
-// https://github.com/jquery/sizzle/blob/master/sizzle.js
-
-var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
-    rsibling = /[\x20\t\r\n\f]*[+~>]/,
-    rescape = /'|\\/g,
-    tmpId = _.makeRandomProp();
-
+},{"./node":26,"./utils":29}],23:[function(require,module,exports){
 /**
- * Find the first matched element by css selector
- * @param  {String} selector css selector
- * @return {$Element} the first matched element
+ * Event handling support
+ * @module events
+ * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-$Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
-    if (typeof selector !== "string") throw _.makeError("find");
-
-    var node = this._node,
-        quickMatch = rquickExpr.exec(selector),
-        elements, old, nid, context;
-
-    if (!node) return new $Element();
-
-    if (quickMatch) {
-        if (quickMatch[1]) {
-            // speed-up: "TAG"
-            elements = node.getElementsByTagName(selector);
-        } else {
-            // speed-up: ".CLASS"
-            elements = node.getElementsByClassName(quickMatch[2]);
-        }
-
-        if (elements && !multiple) elements = elements[0];
-    } else {
-        old = true;
-        nid = tmpId;
-        context = node;
-
-        if (node !== document) {
-            // qSA works strangely on Element-rooted queries
-            // We can work around this by specifying an extra ID on the root
-            // and working up from there (Thanks to Andrew Dupont for the technique)
-            if ( (old = node.getAttribute("id")) ) {
-                nid = old.replace(rescape, "\\$&");
-            } else {
-                node.setAttribute("id", nid);
-            }
-
-            nid = "[id='" + nid + "'] ";
-
-            context = rsibling.test(selector) ? node.parentNode : node;
-            selector = nid + selector.split(",").join("," + nid);
-        }
-
-        try {
-            elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
-        } finally {
-            if (!old) node.removeAttribute("id");
-        }
-    }
-
-    return $Element(elements, multiple);
-};
-
-/**
- * Find all matched elements by css selector
- * @param  {String} selector css selector
- * @return {$Element} matched elements
- */
-$Node.prototype.findAll = function(selector) {
-    return this.find(selector, true);
-};
-},{"./element":14,"./node":28,"./utils":32}],26:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     EventHandler = require("./eventhandler");
 
 /**
+ * Bind a DOM event
+ * @memberOf module:events
+ * @param  {String|Array}    type event type(s) with optional selector
+ * @param  {Function|String} callback event callback or property name (for late binding)
+ * @param  {Array}           [props] array of event properties to pass into the callback
+ * @return {$Node}
+ */
+$Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
+    var eventType = typeof type,
+        selector, index, args;
+
+    if (eventType === "string") {
+        index = type.indexOf(" ");
+
+        if (~index) {
+            selector = type.substr(index + 1);
+            type = type.substr(0, index);
+        }
+
+        if (!Array.isArray(props)) {
+            once = props;
+            props = undefined;
+        }
+    } else if (eventType === "object") {
+        if (Array.isArray(type)) {
+            args = _.slice(arguments, 1);
+
+            _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
+        } else {
+            _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+        }
+
+        return this;
+    } else {
+        throw _.makeError("on");
+    }
+
+    return this.legacy(function(node, el) {
+        var handler = EventHandler(type, selector, callback, props, el, once);
+
+        if (_.DOM2_EVENTS) {
+            node.addEventListener(handler._type || type, handler, !!handler.capturing);
+        } else {
+            // IE8 doesn't support onscroll on document level
+            if (el === DOM && type === "scroll") node = window;
+
+            node.attachEvent("on" + (handler._type || type), handler);
+        }
+        // store event entry
+        el._handlers.push(handler);
+    });
+};
+
+/**
+ * Bind a DOM event but fire once before being removed
+ * @memberOf module:events
+ * @param  {String|Array}    type event type(s) with optional selector
+ * @param  {Function|String} callback event callback or property name (for late binding)
+ * @param  {Array}           [props] array of event properties to pass into the callback
+ * @return {$Node}
+ */
+$Node.prototype.once = function() {
+    var args = _.slice(arguments);
+
+    args.push(true);
+
+    return this.on.apply(this, args);
+};
+
+/**
+ * Unbind an event from the element
+ * @memberOf module:events
+ * @param  {String}          type type of event
+ * @param  {Function|String} [callback] event handler
+ * @return {$Node}
+ */
+$Node.prototype.off = function(type, callback) {
+    if (typeof type !== "string") throw _.makeError("off");
+
+    return this.legacy(function(node, el) {
+        el._handlers = _.filter(el._handlers, function(handler) {
+            if (type !== handler.type || callback && callback !== handler.callback) return true;
+
+            type = handler._type || handler.type;
+
+            if (_.DOM2_EVENTS) {
+                node.removeEventListener(type, handler, !!handler.capturing);
+            } else {
+                // IE8 doesn't support onscroll on document level
+                if (el === DOM && type === "scroll") node = window;
+
+                node.detachEvent("on" + type, handler);
+            }
+        });
+    });
+};
+
+/**
  * Triggers an event of specific type with optional extra arguments
- * @param  {String|Function}  type    type of event or function for a safe call
- * @param  {...Object}        [args]  extra arguments to pass into each event handler
+ * @memberOf module:events
+ * @param  {String}  type  type of event
+ * @param  {...Object}     [args]  extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
- * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 $Node.prototype.fire = function(type) {
     var args = _.slice(arguments, 1),
         eventType = typeof type,
-        handler = {}, hook, isSafeCall;
+        handler = {}, hook;
 
     if (eventType === "string") {
         if (hook = EventHandler.hooks[type]) handler = hook(handler) || handler;
 
         eventType = handler._type || type;
-    } else if (eventType === "function") {
-        isSafeCall = true;
-        eventType = "filterchange";
     } else {
         throw _.makeError("fire");
     }
 
-    return _.every(this, function(el, index, ref) {
+    return _.every(this, function(el) {
         var node = el._node,
-            e, canContinue, flag;
-
-        if (isSafeCall) el.once(eventType, function() { canContinue = type(el, index, ref) !== false });
+            e, canContinue;
 
         if (_.DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
-            e.initEvent(eventType, !isSafeCall, !isSafeCall);
+            e.initEvent(eventType, true, true);
             e._args = args;
 
-            flag = node.dispatchEvent(e);
-            canContinue = isSafeCall ? !!canContinue : flag;
+            canContinue = node.dispatchEvent(e);
         } else {
             e = document.createEventObject();
             e._args = args;
-
-            flag = eventType === "dataavailable" || !("on" + eventType in node);
+            // handle custom events for legacy IE
+            if (!("on" + eventType in node)) eventType = "dataavailable";
             // store original event type
-            if (flag) e.srcUrn = isSafeCall ? eventType : type;
+            if (eventType === "dataavailable") e.srcUrn = type;
 
-            node.fireEvent("on" + (flag ? "dataavailable" : eventType), e);
+            node.fireEvent("on" + eventType, e);
 
-            canContinue = isSafeCall ? !!canContinue : e.returnValue !== false;
+            canContinue = e.returnValue !== false;
         }
 
         // Call native method. IE<9 dies on focus/blur to hidden element
@@ -1789,7 +1864,7 @@ $Node.prototype.fire = function(type) {
     });
 };
 
-},{"./eventhandler":22,"./node":28,"./utils":32}],27:[function(require,module,exports){
+},{"./eventhandler":20,"./node":26,"./utils":29}],24:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -1884,7 +1959,44 @@ _.extend($Node.prototype, {
     legacy: makeCollectionMethod(_.legacy)
 });
 
-},{"./node":28,"./utils":32}],28:[function(require,module,exports){
+},{"./node":26,"./utils":29}],25:[function(require,module,exports){
+var _ = require("./utils"),
+    $Node = require("./node"),
+    invoker = document.createElement("form");
+
+/**
+ * Make a safe method/function call
+ * @param  {String|Function}  method  name of method or function for a safe call
+ * @param  {...Object}        [args]  extra arguments to pass into each invokation
+ * @return {Object} false there was an exception, result for a single node, array of results for collection
+ */
+$Node.prototype.invoke = function(method) {
+    var args = _.slice(arguments, 1),
+        methodType = typeof method,
+        ref = this, handler, result;
+
+    if (methodType === "function") {
+        handler = function(el, index) {
+            return method.apply(null, args.concat(el, index, ref));
+        };
+    } else if (methodType === "string") {
+        handler = function(el) {
+            return el._node[method].apply(el._node, args);
+        };
+    } else {
+        throw _.makeError("invoke");
+    }
+    // register event callback
+    invoker.onreset = function() { result = ref.map(handler) };
+    // make a safe call
+    invoker.reset();
+    // cleanup references
+    invoker.onreset = null;
+
+    return result ? (this._node ? result[0] : result) : false;
+};
+
+},{"./node":26,"./utils":29}],26:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -1906,7 +2018,7 @@ function $Node(node) {
 /**
  * Get property value by name
  * @param  {String} name property name
- * @return {String} property value
+ * @return {Object} property value
  */
 $Node.prototype.get = function(name) {
     return this._node[name];
@@ -1915,7 +2027,8 @@ $Node.prototype.get = function(name) {
 /**
  * Set property value by name
  * @param  {String} name  property name
- * @param  {String} value property value
+ * @param  {Object} value property value
+ * @return {$Node}
  */
 $Node.prototype.set = function(name, value) {
     this._node[name] = value;
@@ -1925,114 +2038,89 @@ $Node.prototype.set = function(name, value) {
 
 module.exports = $Node;
 
-},{}],29:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node");
-
+},{}],27:[function(require,module,exports){
 /**
- * Unbind an event from the element
- * @param  {String}          type type of event
- * @param  {Function|String} [callback] event handler
- * @return {$Node}
- * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
+ * Element search support
+ * @module search
  */
-$Node.prototype.off = function(type, callback) {
-    if (typeof type !== "string") throw _.makeError("off");
-
-    return this.legacy(function(node, el) {
-        el._handlers = _.filter(el._handlers, function(handler) {
-            if (type !== handler.type || callback && callback !== handler.callback) return true;
-
-            type = handler._type || handler.type;
-
-            if (_.DOM2_EVENTS) {
-                node.removeEventListener(type, handler, !!handler.capturing);
-            } else {
-                // IE8 doesn't support onscroll on document level
-                if (el === DOM && type === "scroll") node = window;
-
-                node.detachEvent("on" + type, handler);
-            }
-        });
-    });
-};
-
-},{"./node":28,"./utils":32}],30:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
-    EventHandler = require("./eventhandler");
+    $Element = require("./element");
+
+// big part of code inspired by Sizzle:
+// https://github.com/jquery/sizzle/blob/master/sizzle.js
+
+var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+    rsibling = /[\x20\t\r\n\f]*[+~>]/,
+    rescape = /'|\\/g,
+    tmpId = _.makeRandomProp();
 
 /**
- * Bind a DOM event
- * @param  {String|Array}    type event type(s) with optional selector
- * @param  {Function|String} callback event callback or property name (for late binding)
- * @param  {Array}           [props] array of event properties to pass into the callback
- * @return {$Node}
- * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
+ * Find the first matched element by css selector
+ * @memberOf module:search
+ * @param  {String} selector css selector
+ * @return {$Element} the first matched element
  */
-$Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
-    var eventType = typeof type,
-        selector, index, args;
+$Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
+    if (typeof selector !== "string") throw _.makeError("find");
 
-    if (eventType === "string") {
-        index = type.indexOf(" ");
+    var node = this._node,
+        quickMatch = rquickExpr.exec(selector),
+        elements, old, nid, context;
 
-        if (~index) {
-            selector = type.substr(index + 1);
-            type = type.substr(0, index);
-        }
+    if (!node) return new $Element();
 
-        if (!Array.isArray(props)) {
-            once = props;
-            props = undefined;
-        }
-    } else if (eventType === "object") {
-        if (Array.isArray(type)) {
-            args = _.slice(arguments, 1);
-
-            _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
+    if (quickMatch) {
+        if (quickMatch[1]) {
+            // speed-up: "TAG"
+            elements = node.getElementsByTagName(selector);
         } else {
-            _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+            // speed-up: ".CLASS"
+            elements = node.getElementsByClassName(quickMatch[2]);
         }
 
-        return this;
+        if (elements && !multiple) elements = elements[0];
     } else {
-        throw _.makeError("on");
+        old = true;
+        nid = tmpId;
+        context = node;
+
+        if (node !== document) {
+            // qSA works strangely on Element-rooted queries
+            // We can work around this by specifying an extra ID on the root
+            // and working up from there (Thanks to Andrew Dupont for the technique)
+            if ( (old = node.getAttribute("id")) ) {
+                nid = old.replace(rescape, "\\$&");
+            } else {
+                node.setAttribute("id", nid);
+            }
+
+            nid = "[id='" + nid + "'] ";
+
+            context = rsibling.test(selector) ? node.parentNode : node;
+            selector = nid + selector.split(",").join("," + nid);
+        }
+
+        try {
+            elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
+        } finally {
+            if (!old) node.removeAttribute("id");
+        }
     }
 
-    return this.legacy(function(node, el) {
-        var handler = EventHandler(type, selector, callback, props, el, once);
-
-        if (_.DOM2_EVENTS) {
-            node.addEventListener(handler._type || type, handler, !!handler.capturing);
-        } else {
-            // IE8 doesn't support onscroll on document level
-            if (el === DOM && type === "scroll") node = window;
-
-            node.attachEvent("on" + (handler._type || type), handler);
-        }
-        // store event entry
-        el._handlers.push(handler);
-    });
+    return $Element(elements, multiple);
 };
 
 /**
- * Bind a DOM event but fire once before being removed
- * @param  {String|Array}    type event type(s) with optional selector
- * @param  {Function|String} callback event callback or property name (for late binding)
- * @param  {Array}           [props] array of event properties to pass into the callback
- * @return {$Node}
- * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
+ * Find all matched elements by css selector
+ * @memberOf module:search
+ * @param  {String} selector css selector
+ * @return {$Element} matched elements
  */
-$Node.prototype.once = function() {
-    var args = _.slice(arguments);
-
-    args.push(true);
-
-    return this.on.apply(this, args);
+$Node.prototype.findAll = function(selector) {
+    return this.find(selector, true);
 };
-
-},{"./eventhandler":22,"./node":28,"./utils":32}],31:[function(require,module,exports){
+},{"./element":13,"./node":26,"./utils":29}],28:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
@@ -2077,7 +2165,7 @@ module.exports = function(selector) {
     };
 };
 
-},{"./utils":32}],32:[function(require,module,exports){
+},{"./utils":29}],29:[function(require,module,exports){
 var doc = document,
     win = window,
     makeLoopMethod = (function(){
@@ -2113,10 +2201,17 @@ module.exports = {
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 
-        return "Error: " + type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom/" + type + ".html#" + method + " to verify the function call";
+        return TypeError(type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom to verify the function call");
     },
     getComputedStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
+    },
+    template: function() {
+        var DOM = window.DOM;
+        // override method with particular implementation
+        this.template = DOM.template || function(str) { return str };
+
+        return this.template.apply(DOM, arguments);
     },
 
     // constants
@@ -2179,5 +2274,4 @@ module.exports = {
     }
 };
 
-},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32])
-;
+},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29])

@@ -17,7 +17,7 @@ var _ = require("./utils"),
                     iterationCount = parseFloat(styles[animationProps[2]]) || 0,
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    completeAnimation = function() {
+                    completeAnimation = function(e) {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
@@ -27,7 +27,7 @@ var _ = require("./utils"),
 
                         if (hasAnimation) {
                             node.style.pointerEvents = "";
-                            node.removeEventListener(completeAnimation);
+                            node.removeEventListener(e.type, completeAnimation, false);
                         }
 
                         if (callback) callback(el, index, ref);
