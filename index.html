@@ -11,7 +11,7 @@
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
 	
-	<link type="text/css" rel="stylesheet" href="styles/site.united.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.spruce.css">
 	
 </head>
 
@@ -30,6 +30,72 @@
 						
 						<li>
 							<a href="DOM.html">DOM</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="module-accessors.html">accessors</a>
+						</li>
+						
+						<li>
+							<a href="module-classes.html">classes</a>
+						</li>
+						
+						<li>
+							<a href="module-clone.html">clone</a>
+						</li>
+						
+						<li>
+							<a href="module-contains.html">contains</a>
+						</li>
+						
+						<li>
+							<a href="module-data.html">data</a>
+						</li>
+						
+						<li>
+							<a href="module-events.html">events</a>
+						</li>
+						
+						<li>
+							<a href="module-i18n.html">i18n</a>
+						</li>
+						
+						<li>
+							<a href="module-manipulation.html">manipulation</a>
+						</li>
+						
+						<li>
+							<a href="module-matches.html">matches</a>
+						</li>
+						
+						<li>
+							<a href="module-offset.html">offset</a>
+						</li>
+						
+						<li>
+							<a href="module-search.html">search</a>
+						</li>
+						
+						<li>
+							<a href="module-template.html">template</a>
+						</li>
+						
+						<li>
+							<a href="module-traversing.html">traversing</a>
+						</li>
+						
+						<li>
+							<a href="module-visibility.html">visibility</a>
 						</li>
 						
 
@@ -91,14 +157,11 @@
 
 
     <section>
-        <article><p>&nbsp;</p>
+        <article><h1>better-dom <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master" alt="Build Status"></a></h1>
 <blockquote>
 <p>Live extension playground</p>
 </blockquote>
-<p>jQuery knows a concept called “<strong>live events</strong>”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce <strong>live extensions</strong> and <strong>better-dom</strong> - a new library for working with the DOM.</p>
-<p><a href="http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/">Introduction into the better-dom library in English</a></p>
-<p><a href="http://habrahabr.ru/post/209140/">Введение в библиотеку better-dom по-русски</a></p>
-<p><a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></p>
+<p>jQuery knows a concept called “<strong>live events</strong>”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce <strong><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></strong> and <strong>better-dom</strong> - a new library for working with the DOM.</p>
 <h2>Features</h2>
 <ul>
 <li>compact size (~26,5kb minified and ~5,8kb gzipped)</li>
@@ -109,30 +172,53 @@
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">microtemplating using the emmet syntax</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Localization">i18n support</a></li>
 <li><a href="http://jsfiddle.net/C3WeM/5/">animations via CSS3</a></li>
+<li><a href="#how-to-make-a-custom-build">custom builds support</a></li>
+</ul>
+<h2>Documentation</h2>
+<p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
+<p><a href="http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/">Introduction into the better-dom library in English @smashingmagazine.com</a></p>
+<p><a href="http://habrahabr.ru/post/209140/">Введение в библиотеку better-dom по-русски @habrahabr.ru</a></p>
+<p>Need more?</p>
+<ul>
+<li>Take a look at the <a href="https://github.com/chemerisuk/better-dom/wiki">better-dom wiki</a></li>
+<li>read <a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></li>
+<li>check <a href="https://github.com/chemerisuk/better-dom/releases">releases tab</a> for getting the changes log</li>
+<li>walk through the sorce code of existing <a href="https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom">projects that use better-dom</a>.</li>
 </ul>
 <h2>Performance</h2>
 <ul>
 <li><a href="http://jsperf.com/dom-create-vs-jquery/18">DOM.create vs jquery</a></li>
 <li><a href="http://jsperf.com/dom-find-all-vs-jquery-find/3">DOM.find[All] vs jQuery.find</a></li>
 <li><a href="http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/3">DOM getter/setter vs jQuery.attr/prop</a></li>
-<li><a href="http://jsperf.com/better-dom-vs-jquery-classes-manipulation">better-dom vs jquery: classes manipulation</a></li>
+<li><a href="http://jsperf.com/better-dom-vs-jquery-classes-manipulation/3">better-dom vs jquery: classes manipulation</a></li>
 <li><a href="http://jsperf.com/better-dom-vs-jquery-array-methods/2">better-dom vs jquery: array methods</a></li>
 </ul>
+<h2>How to make a custom build</h2>
+<p>In order to create a custom build make sure that you installed <a href="https://github.com/gruntjs/grunt-cli">grunt-cli</a> globally:</p>
+<pre><code>npm install -g grunt-cli</code></pre>
+<p>Then you can print all available modules for customization via the task below:</p>
+<pre><code>grunt build</code></pre>
+<p>Pick modules that you want to exclude and pass them to the same task separated by comma:</p>
+<pre><code>grunt build:classes,offset,data</code></pre>
+<p>Your custom build will be created inside of the <code>build</code> folder including uglified version and source map.</p>
 <h2>Installation</h2>
 <p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
 <pre><code>bower install better-dom</code></pre>
 <p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include scripts below on your web page:</p>
-<h2>Projects that use better-dom</h2>
-<ul>
-<li><a href="https://github.com/chemerisuk/better-ajaxify">better-ajaxify</a> - Ajax websites engine</li>
-<li><a href="https://github.com/chemerisuk/better-dateinput-polyfill">better-dateinput-polyfill</a> - <code>input[type=date]</code> polyfill</li>
-<li><a href="https://github.com/chemerisuk/better-timeinput-polyfill">better-timeinput-polyfill</a> - <code>input[type=time]</code> polyfill</li>
-<li><a href="https://github.com/chemerisuk/better-form-validation">better-form-validation</a> - Form validation polyfill</li>
-<li><a href="https://github.com/chemerisuk/better-prettydate">better-prettydate</a> - Enhances time element to update text in realtime</li>
-<li><a href="https://github.com/chemerisuk/better-placeholder-polyfill">better-placeholder-polyfill</a> - <code>[placeholder]</code> polyfill</li>
-<li><a href="https://github.com/chemerisuk/better-elastic-textarea">better-elastic-textarea</a> - Make textarea to expand on user input</li>
-<li><a href="https://github.com/chemerisuk/better-details-polyfill">better-details-polyfill</a> - <code>&lt;details&gt;</code> polyfill</li>
-</ul>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    ...
+    &lt;!--[if IE]&gt;
+        &lt;link href=&quot;bower_components/better-dom/dist/better-dom-legacy.htc&quot; rel=&quot;htc&quot;/&gt;
+        &lt;script src=&quot;bower_components/better-dom/dist/better-dom-legacy.js&quot;&gt;&lt;/script&gt;
+    &lt;![endif]--&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    ...
+    &lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 <h2>Notes about old IEs</h2>
 <p>For IE8-9 support you have to incude the conditional comment above with 2 extra elements into <code>&lt;head&gt;</code>. The excellent <a href="https://github.com/aFarkas/html5shiv">html5shiv</a> provides fix for new HTML5 tags and <a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill missed standards-based functions. These projects are bundled into <strong>better-dom-legacy.js</strong> with other fixes.</p>
 <p>The <strong>better-dom-legacy.htc</strong> file helps to implement <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> support. This fact applies several important limitations that you must know in case when legacy browser support is required.</p>
@@ -142,13 +228,21 @@
 <h4>Same domain limitation</h4>
 <p>IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.</p>
 <h2>Browser support</h2>
+<h6>Desktop</h6>
 <ul>
 <li>Chrome</li>
 <li>Safari 6.0+</li>
 <li>Firefox 16+</li>
 <li>Opera 12.10+</li>
 <li>IE8+</li>
-</ul></article>
+</ul>
+<h6>Mobile</h6>
+<ul>
+<li>iOS Safari 6+</li>
+<li>Android 2.3+</li>
+<li>Chrome for Android</li>
+</ul>
+<p>Opera Mini is out of the scope because of lack of support for CSS3 Animations.</p></article>
     </section>
 
 
@@ -163,9 +257,14 @@
 				<footer>
 					
 					
+		<span class="copyright">
+		© 2013-2014 Maksim Chemerisuk
+		</span>
+					<br />
+					
 		<span class="jsdoc-message">
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Wed Jan 29 2014 05:14:59 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
+		on Mon Feb 03 2014 03:17:17 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

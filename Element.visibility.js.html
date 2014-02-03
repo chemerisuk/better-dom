@@ -11,7 +11,7 @@
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
 	
-	<link type="text/css" rel="stylesheet" href="styles/site.united.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.spruce.css">
 	
 </head>
 
@@ -30,6 +30,72 @@
 						
 						<li>
 							<a href="DOM.html">DOM</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="module-accessors.html">accessors</a>
+						</li>
+						
+						<li>
+							<a href="module-classes.html">classes</a>
+						</li>
+						
+						<li>
+							<a href="module-clone.html">clone</a>
+						</li>
+						
+						<li>
+							<a href="module-contains.html">contains</a>
+						</li>
+						
+						<li>
+							<a href="module-data.html">data</a>
+						</li>
+						
+						<li>
+							<a href="module-events.html">events</a>
+						</li>
+						
+						<li>
+							<a href="module-i18n.html">i18n</a>
+						</li>
+						
+						<li>
+							<a href="module-manipulation.html">manipulation</a>
+						</li>
+						
+						<li>
+							<a href="module-matches.html">matches</a>
+						</li>
+						
+						<li>
+							<a href="module-offset.html">offset</a>
+						</li>
+						
+						<li>
+							<a href="module-search.html">search</a>
+						</li>
+						
+						<li>
+							<a href="module-template.html">template</a>
+						</li>
+						
+						<li>
+							<a href="module-traversing.html">traversing</a>
+						</li>
+						
+						<li>
+							<a href="module-visibility.html">visibility</a>
 						</li>
 						
 
@@ -71,7 +137,11 @@
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+            <pre class="sunlight-highlight-javascript ">/**
+ * Changing of animatable element visibility support
+ * @module visibility
+ */
+var _ = require("./utils"),
     $Element = require("./element"),
     eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
@@ -86,7 +156,7 @@
                     iterationCount = parseFloat(styles[animationProps[2]]) || 0,
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    completeAnimation = function() {
+                    completeAnimation = function(e) {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
@@ -94,7 +164,10 @@
                             node.style[absentStrategy[0]] = absentStrategy[1];
                         }
 
-                        if (hasAnimation) node.style.pointerEvents = "";
+                        if (hasAnimation) {
+                            node.style.pointerEvents = "";
+                            node.removeEventListener(e.type, completeAnimation, false);
+                        }
 
                         if (callback) callback(el, index, ref);
                     };
@@ -112,13 +185,13 @@
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    el.once(eventType[duration === transitionDuration ? 1 : 0], completeAnimation);
+                    node.addEventListener(eventType[duration === transitionDuration ? 1 : 0], completeAnimation, false);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
                 // when there is no animation the completeAnimation call
                 // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.fire(completeAnimation);
+                if (!hasAnimation) el.invoke(completeAnimation);
             });
         };
     },
@@ -151,6 +224,7 @@
 
 /**
  * Show element with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -160,6 +234,7 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
  * Hide element with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -169,6 +244,7 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
  * Toggle element visibility with optional callback and delay
+ * @memberOf module:visibility
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -191,9 +267,14 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
 				<footer>
 					
 					
+		<span class="copyright">
+		© 2013-2014 Maksim Chemerisuk
+		</span>
+					<br />
+					
 		<span class="jsdoc-message">
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Wed Jan 29 2014 05:14:58 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
+		on Mon Feb 03 2014 03:17:17 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

@@ -11,7 +11,7 @@
 	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
 
 	
-	<link type="text/css" rel="stylesheet" href="styles/site.united.css">
+	<link type="text/css" rel="stylesheet" href="styles/site.spruce.css">
 	
 </head>
 
@@ -30,6 +30,72 @@
 						
 						<li>
 							<a href="DOM.html">DOM</a>
+						</li>
+						
+
+					</ul>
+				</li>
+				
+				<li class="dropdown">
+					<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b
+						class="caret"></b></a>
+
+					<ul class="dropdown-menu ">
+						
+						<li>
+							<a href="module-accessors.html">accessors</a>
+						</li>
+						
+						<li>
+							<a href="module-classes.html">classes</a>
+						</li>
+						
+						<li>
+							<a href="module-clone.html">clone</a>
+						</li>
+						
+						<li>
+							<a href="module-contains.html">contains</a>
+						</li>
+						
+						<li>
+							<a href="module-data.html">data</a>
+						</li>
+						
+						<li>
+							<a href="module-events.html">events</a>
+						</li>
+						
+						<li>
+							<a href="module-i18n.html">i18n</a>
+						</li>
+						
+						<li>
+							<a href="module-manipulation.html">manipulation</a>
+						</li>
+						
+						<li>
+							<a href="module-matches.html">matches</a>
+						</li>
+						
+						<li>
+							<a href="module-offset.html">offset</a>
+						</li>
+						
+						<li>
+							<a href="module-search.html">search</a>
+						</li>
+						
+						<li>
+							<a href="module-template.html">template</a>
+						</li>
+						
+						<li>
+							<a href="module-traversing.html">traversing</a>
+						</li>
+						
+						<li>
+							<a href="module-visibility.html">visibility</a>
 						</li>
 						
 
@@ -71,34 +137,73 @@
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
-    $Element = require("./element");
+            <pre class="sunlight-highlight-javascript ">/**
+ * Internationalization support
+ * @module i18n
+ * @see https://github.com/chemerisuk/better-dom/wiki/Localization
+ */
+var _ = require("./utils"),
+    DOM = require("./dom"),
+    $Element = require("./element"),
+    importStyles = require("./dom.importstyles"),
+    rparam = /\$\{([a-z\-]+)\}/g,
+    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" },
+    setDataAttr = function(value, key) { this.setAttribute("data-" + key, value) },
+    importStrings = function(lang, key, value) {
+        var keyType = typeof key,
+            selector, content;
+
+        if (keyType === "string") {
+            selector = "[data-i18n=\"" + key + "\"]";
+            content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
+            // empty lang is for internal use only
+            if (lang) selector += ":lang(" + lang + ")";
+
+            DOM.importStyles(selector + ":before", content, !lang);
+        } else if (keyType === "object") {
+            _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
+        } else {
+            throw _.makeError("importStrings", true);
+        }
+    };
 
 /**
  * Get/set localized value
+ * @memberOf module:i18n
  * @param  {String} [value]  resource string key
  * @param  {Object} [vars]   resource string variables
  * @return {String|$Element}
  */
 $Element.prototype.i18n = function(value, vars) {
-    var len = arguments.length;
+    var len = arguments.length,
+        node = this._node;
 
-    if (!len) return this.get("data-i18n");
+    if (!len) return node.getAttribute("data-i18n");
 
     if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
 
     // localized srings with variables require different css
-    if (vars) DOM.importStrings("", value, value);
+    if (vars) importStrings("", value, value);
     // cleanup existing content
-    this.set("");
+    node.innerHTML = "";
     // process variables
-    _.forOwn(_.extend({i18n: value}, vars), function(value, key) {
-        this.set("data-" + key, value);
-    }, this);
+    _.forOwn(_.extend({i18n: value}, vars), setDataAttr, node);
 
-    // IMPORTANT: set empty value twice to fix IE8 quirks
-    return this.set("");
+    return this;
 };
+
+/**
+ * Import global i18n string(s)
+ * @memberOf module:i18n
+ * @param {String}         lang    target language
+ * @param {String|Object}  key     english string to localize or key/value object
+ * @param {String}         value   localized string
+ * @function
+ */
+DOM.importStrings = importStrings;
+
+// by default just show data-i18n string
+importStyles("[data-i18n]:before", "content:attr(data-i18n)");
 </pre>
         </article>
     </section>
@@ -113,9 +218,14 @@ $Element.prototype.i18n = function(value, vars) {
 				<footer>
 					
 					
+		<span class="copyright">
+		© 2013-2014 Maksim Chemerisuk
+		</span>
+					<br />
+					
 		<span class="jsdoc-message">
-		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0</a>
-		on Wed Jan 29 2014 05:14:58 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
+		on Mon Feb 03 2014 03:17:17 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
