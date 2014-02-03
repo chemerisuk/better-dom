@@ -199,16 +199,32 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("build", "Make a custom build", function(excluded) {
-        var args =  (excluded || "").split(","),
-            modules = grunt.file.readJSON("extra/modules.json"),
-            options = grunt.config.get("browserify.compile.options");
+        var modules = grunt.file.readJSON("extra/modules.json"),
+            args, options;
+
+        if (!excluded) {
+            grunt.log.writeln("Choose one or several comma-separated modules below to exclude them from build:");
+
+            Object.keys(modules).forEach(function(name) {
+                grunt.log.writeln(
+                    grunt.log.table([20, 70],
+                        [name.yellow.bold, modules[name].title]
+                    )
+                );
+            });
+
+            return;
+        }
+
+        args = excluded.split(",");
+        options = grunt.config.get("browserify.compile.options");
 
         options.ignore = args.reduce(function(memo, arg) {
-            var files = modules[arg];
+            var module = modules[arg];
 
-            if (!files) throw Error("Illegal module name '" + arg + "'\n\n");
+            if (!module) throw Error("Illegal module name '" + arg + "'\n\n");
 
-            memo.push.apply(memo, files);
+            memo.push.apply(memo, module.files);
 
             return memo;
         }, []);

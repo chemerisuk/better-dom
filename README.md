@@ -12,6 +12,7 @@ jQuery knows a concept called “**live events**”. Using the idea of event del
 * [microtemplating using the emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
+* [custom builds support](#how-to-make-a-custom-build)
 
 ## Documentation
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
@@ -33,6 +34,21 @@ Need more?
 * [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/3)
 * [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation/3)
 * [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/2)
+
+## How to make a custom build
+In order to create a custom build make sure that you installed [grunt-cli](https://github.com/gruntjs/grunt-cli) globally:
+
+    npm install -g grunt-cli
+
+Then you can print all available modules for customization via the task below:
+
+    grunt build
+
+Pick modules that you want to exclude and pass them to the same task separated by comma:
+
+    grunt build:classes,offset,data
+
+Your custom build will be created inside of the `build` folder including uglified version and source map.
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):

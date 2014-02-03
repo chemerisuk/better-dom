@@ -1,16 +1,58 @@
 {
-    "manipulation": ["src/element.manipulation.js"],
-    "classes": ["src/element.classes.js"],
-    "visibility": ["src/element.visibility.js"],
-    "traversing": ["src/element.traversing.js"],
-    "i18n": ["src/element.i18n.js"],
-    "template": ["src/dom.template.js"],
-    "accessors": ["src/element.accessors.js"],
-    "offset": ["src/element.offset.js"],
-    "matches": ["src/element.matches.js"],
-    "contains": ["src/element.contains.js"],
-    "clone": ["src/element.clone.js"],
-    "data": ["src/element.data.js"],
-    "search": ["src/node.search.js"],
-    "events": ["src/node.events.js", "src/eventhandler.js"]
+    "manipulation": {
+        "title": "Element manipulation support",
+        "files": ["src/element.manipulation.js"]
+    },
+    "classes": {
+        "title": "Class manipulation support",
+        "files": ["src/element.classes.js"]
+    },
+    "visibility": {
+        "title": "Changing of animatable element visibility support",
+        "files": ["src/element.visibility.js"]
+    },
+    "traversing": {
+        "title": "Element traversing support",
+        "files": ["src/element.traversing.js"]
+    },
+    "i18n": {
+        "title": "Internationalization support",
+        "files": ["src/element.i18n.js"]
+    },
+    "template": {
+        "title": "Emmet abbreviation syntax support",
+        "files": ["src/dom.template.js"]
+    },
+    "accessors": {
+        "title": "Smart getter and setter support",
+        "files": ["src/element.accessors.js"]
+    },
+    "offset": {
+        "title": "Element offset calculation support",
+        "files": ["src/element.offset.js"]
+    },
+    "matches": {
+        "title": "Testing if element matches a particular CSS selector support",
+        "files": ["src/element.matches.js"]
+    },
+    "contains": {
+        "title": "Support for testing if element is inside of a particular tree",
+        "files": ["src/element.contains.js"]
+    },
+    "clone": {
+        "title": "Clonning of an element support",
+        "files": ["src/element.clone.js"]
+    },
+    "data": {
+        "title": "Data property support",
+        "files": ["src/element.data.js"]
+    },
+    "search": {
+        "title": "Element search support",
+        "files": ["src/node.search.js"]
+    },
+    "events": {
+        "title": "Event handling support",
+        "files": ["src/node.events.js", "src/eventhandler.js"]
+    }
 }

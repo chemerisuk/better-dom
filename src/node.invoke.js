@@ -6,7 +6,7 @@ var _ = require("./utils"),
  * Make a safe method/function call
  * @param  {String|Function}  method  name of method or function for a safe call
  * @param  {...Object}        [args]  extra arguments to pass into each invokation
- * @return {Array|Boolean} array of results when there was no exception or false otherwise
+ * @return {Object} false there was an exception, result for a single node, array of results for collection
  */
 $Node.prototype.invoke = function(method) {
     var args = _.slice(arguments, 1),
