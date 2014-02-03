@@ -203,15 +203,22 @@ module.exports = function(grunt) {
             args, options;
 
         if (!excluded) {
-            grunt.log.writeln("Choose one or several comma-separated modules below to exclude them from build:");
+            grunt.log.writeln(
+                grunt.log.table([15, 70, 70],
+                    ["MODULE", "DESCRIPTION", "URL"]
+                )
+            );
 
             Object.keys(modules).forEach(function(name) {
                 grunt.log.writeln(
-                    grunt.log.table([20, 70],
-                        [name.yellow.bold, modules[name].title]
+                    grunt.log.table([15, 70, 70],
+                        [name.yellow.bold, modules[name].title, pkg.docs + "/module-" + name + ".html"]
                     )
                 );
             });
+
+            grunt.log.writeln("\nPick one or several comma-separated modules above to exclude them from build, e.g.\n");
+            grunt.log.writeln("    grunt build:classes,offset,data");
 
             return;
         }

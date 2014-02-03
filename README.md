@@ -14,6 +14,30 @@ jQuery knows a concept called “**live events**”. Using the idea of event del
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
 * [custom builds support](#how-to-make-a-custom-build)
 
+## Installation
+The simplest way is to use [bower](http://bower.io/):
+
+    bower install better-dom
+
+This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    ...
+    <!--[if IE]>
+        <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
+        <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
+    <![endif]-->
+</head>
+<body>
+    ...
+    <script src="bower_components/better-dom/dist/better-dom.js"></script>
+</body>
+</html>
+```
+
 ## Documentation
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
@@ -48,34 +72,14 @@ Pick modules that you want to exclude and pass them to the same task separated b
 
     grunt build:classes,offset,data
 
-Your custom build will be created inside of the `build` folder including uglified version and source map.
+Look at the [API documentation](http://chemerisuk.github.io/better-dom/) to find which functions are included into a particular module.
 
-## Installation
-The simplest way is to use [bower](http://bower.io/):
-
-    bower install better-dom
-
-This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    ...
-    <!--[if IE]>
-        <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
-        <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
-    <![endif]-->
-</head>
-<body>
-    ...
-    <script src="bower_components/better-dom/dist/better-dom.js"></script>
-</body>
-</html>
-```
+Your custom build will be created inside of the `build` folder including uglified version and source maps.
 
 ## Notes about old IEs
-For IE8-9 support you have to incude the conditional comment above with 2 extra elements into `<head>`. The excellent [html5shiv](https://github.com/aFarkas/html5shiv) provides fix for new HTML5 tags and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions. These projects are bundled into **better-dom-legacy.js** with other fixes.
+For IE8-9 support you have to incude extra files via conditional comment (see [Installation](#installation) section).
+
+The **better-dom-legacy.js** file includes excellent [html5shiv](https://github.com/aFarkas/html5shiv) that provides fix for HTML5 tags and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions. These projects are bundled into signle file with other fixes.
 
 The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
 
@@ -88,14 +92,14 @@ HTC behaviors have to serve up with a content-type header of “text/x-component
 IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.
 
 ## Browser support
-###### Desktop
+#### Desktop
 * Chrome
 * Safari 6.0+
 * Firefox 16+
 * Opera 12.10+
 * IE8+
 
-###### Mobile
+#### Mobile
 * iOS Safari 6+
 * Android 2.3+
 * Chrome for Android
