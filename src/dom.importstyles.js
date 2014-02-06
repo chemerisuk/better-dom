@@ -1,6 +1,6 @@
 var _ = require("./utils"),
-    $Element = require("./element"),
     DOM = require("./dom"),
+    styleAccessor = require("./styleaccessor"),
     currentScript = document.scripts[0],
     styleNode = currentScript.parentNode.insertBefore(document.createElement("style"), currentScript),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
@@ -17,8 +17,18 @@ var _ = require("./utils"),
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
-        // make a temporary element and populate style properties
-        new $Element({style: styleObj}).style(cssText);
+
+        _.forOwn(cssText, function(value, prop) {
+            var hook = styleAccessor.set[prop];
+
+            value = typeof value === "number" ? value + "px" : value || "";
+
+            if (hook) {
+                hook(styleObj, value);
+            } else {
+                styleObj[prop] = value;
+            }
+        });
 
         cssText = [];
 

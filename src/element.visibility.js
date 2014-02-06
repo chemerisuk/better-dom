@@ -4,17 +4,22 @@
  */
 var _ = require("./utils"),
     $Element = require("./element"),
-    eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
-    animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    styleAccessor = require("./styleaccessor"),
+    eventTypes = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     absentStrategy = _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
+    readAnimationProp = function(key, style) {
+        var fn = styleAccessor.get[key];
+
+        return fn && parseFloat(fn(style)) || 0;
+    },
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
-                    styles = el.style(animationProps),
-                    transitionDuration = parseFloat(styles[animationProps[0]]) || 0,
-                    animationDuration = parseFloat(styles[animationProps[1]]) || 0,
-                    iterationCount = parseFloat(styles[animationProps[2]]) || 0,
+                    style = _.getComputedStyle(node),
+                    transitionDuration = readAnimationProp("transition-duration", style),
+                    animationDuration = readAnimationProp("animation-duration", style),
+                    iterationCount = readAnimationProp("animation-iteration-count", style),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
                     completeAnimation = function(e) {
@@ -46,7 +51,7 @@ var _ = require("./utils"),
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    node.addEventListener(eventType[duration === transitionDuration ? 1 : 0], completeAnimation, false);
+                    node.addEventListener(eventTypes[duration === transitionDuration ? 1 : 0], completeAnimation, false);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
