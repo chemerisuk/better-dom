@@ -1,6 +1,6 @@
 /**
  * Changing of element styles support
- * @module styles
+ * @module css
  */
 var _ = require("./utils"),
     $Element = require("./element"),
@@ -8,7 +8,7 @@ var _ = require("./utils"),
 
 /**
  * CSS getter/setter for an element
- * @memberOf module:styles
+ * @memberOf module:css
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this

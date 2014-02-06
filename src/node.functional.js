@@ -17,7 +17,7 @@ _.extend($Node.prototype, {
      * @memberOf $Node.prototype
      * @param  {Function} callback  function that accepts (element, index, this)
      * @param  {Object}   [context] callback context
-     * @return {$Element}
+     * @return {$Node}
      * @function
      */
     each: makeCollectionMethod(_.forEach),
@@ -86,7 +86,7 @@ _.extend($Node.prototype, {
      * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
      * @param  {Function} callback function that accepts (node, element, index, this)
-     * @return {$Element}
+     * @return {$Node}
      * @function
      */
     legacy: makeCollectionMethod(_.legacy)

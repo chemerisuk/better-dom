@@ -8,10 +8,10 @@ var _ = require("./utils"),
  * Create a $Element instance
  * @memberOf DOM
  * @param  {Mixed}  value   HTMLString, EmmetString or native element
- * @param  {Object} [vars]  key/value map of variables in emmet template
+ * @param  {Object} [varMap]  key/value map of variables in emmet template
  * @return {$Element} element
  */
-DOM.create = function(value, vars) {
+DOM.create = function(value, varMap) {
     if (value.nodeType === 1) return $Element(value);
 
     if (typeof value !== "string") throw _.makeError("create", true);
@@ -21,7 +21,7 @@ DOM.create = function(value, vars) {
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
-        sandbox.innerHTML = _.template(value, vars);
+        sandbox.innerHTML = _.template(value, varMap);
 
         for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
             if (node.nodeType === 1) value.push(node);

@@ -54,13 +54,13 @@ _.forEach("area base br col hr img input link meta param command keygen source".
  * Parse emmet-like template into a HTML string
  * @memberOf module:template
  * @param  {String} template emmet-like expression
- * @param  {Object} [vars] key/value map of variables
+ * @param  {Object} [varMap] key/value map of variables
  * @return {String} HTML string
  */
-DOM.template = function(template, vars) {
+DOM.template = function(template, varMap) {
     if (typeof template !== "string") throw _.makeError("template", true);
-    // handle vars
-    if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
+    // handle varMap
+    if (varMap) template = template.replace(reVar, function(x, name) { return varMap[name] || x });
 
     var stack = [],
         output = [],

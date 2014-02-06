@@ -1,6 +1,11 @@
+/**
+ * Live extensions support
+ * @module extend
+ * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
+ */
+
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
-
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -73,11 +78,10 @@ if (_.CSS3_ANIMATIONS) {
 
 /**
  * Declare a live extension
- * @memberOf DOM
+ * @memberOf module:extend
  * @param  {String}           selector         css selector of which elements to capture
- * @param  {Boolean|Function} [condition=true] condition, to define or not
+ * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
  * @param  {Object}           mixins           extension declatation
- * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
 DOM.extend = function(selector, condition, mixins) {
     if (arguments.length === 2) {
@@ -136,4 +140,23 @@ DOM.extend = function(selector, condition, mixins) {
     }
 };
 
-module.exports = extensions;
+/**
+ * Return {@link $Element} initialized with all existing live extensions.
+ * Also exposes private event handler functions that aren't usually presented
+ * @memberOf module:extend
+ * @param  {Mixed} [content] HTMLString, EmmetString
+ * @param  {Object} [varMap]  key/value map of variables in emmet template
+ * @return {$Element} mocked instance
+ */
+DOM.mock = function(content, varMap) {
+    var el = content ? DOM.create(content, varMap) : new $Element(),
+        applyWatchers = function(el) {
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
+
+            el.children().each(applyWatchers);
+        };
+
+    if (content) applyWatchers(el);
+
+    return el;
+};
