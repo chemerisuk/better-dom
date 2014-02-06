@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Module: clone</title>
+	<title>better-dom Module: extend</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -141,12 +141,12 @@
 					
 
 
-	<h1 class="page-title">Module: clone</h1>
+	<h1 class="page-title">Module: extend</h1>
 <section>
 
 <header>
     <h2>
-    clone
+    extend
     </h2>
     
 </header>
@@ -157,7 +157,7 @@
 
     
         
-            <div class="description"><p>Clonning of an element support</p></div>
+            <div class="description"><p>Live extensions support</p></div>
         
 
         
@@ -183,12 +183,19 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="element.clone.js.html">element.clone.js</a>
+        <a href="dom.extend.js.html">dom.extend.js</a>
     </li></ul></dd>
     
 
     
 
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">https://github.com/chemerisuk/better-dom/wiki/Live-extensions</a></li>
+        </ul>
+    </dd>
     
 
     
@@ -217,7 +224,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="clone"><span class="type-signature"></span>$Element#clone<span class="signature">(<span class="optional">deep</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="DOM.extend"><span class="type-signature"></span>DOM.extend<span class="signature">(selector, <span class="optional">condition</span>, mixins)</span><span class="type-signature"></span></h4>
     
     
 </dt>
@@ -225,7 +232,7 @@
     
     
     <div class="description">
-        <p>Clone element</p>
+        <p>Declare a live extension</p>
     </div>
     
 
@@ -263,13 +270,51 @@
 
         <tr>
             
-                <td class="name"><code>deep</code></td>
+                <td class="name"><code>selector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>css selector of which elements to capture</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>condition</code></td>
             
 
             <td class="type">
             
                 
 <span class="param-type">Boolean</span>
+|
+
+<span class="param-type">function</span>
 
 
             
@@ -295,7 +340,42 @@
                 </td>
             
 
-            <td class="description last"><p>true if all children should also be cloned, or false otherwise</p></td>
+            <td class="description last"><p>indicates if live extension should be attached or not</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>mixins</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>extension declatation</p></td>
         </tr>
 
 	
@@ -327,7 +407,171 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="element.clone.js.html">element.clone.js</a>
+        <a href="dom.extend.js.html">dom.extend.js</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="DOM.mock"><span class="type-signature"></span>DOM.mock<span class="signature">(<span class="optional">content</span>, <span class="optional">varMap</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Return <a href="$Element.html">$Element</a> initialized with all existing live extensions.
+Also exposes private event handler functions that aren't usually presented</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>content</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Mixed</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>HTMLString, EmmetString</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>key/value map of variables in emmet template</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="dom.extend.js.html">dom.extend.js</a>
     </li></ul></dd>
     
 
@@ -352,7 +596,7 @@
     
             
 <div class="param-desc">
-    <p>clone of current element</p>
+    <p>mocked instance</p>
 </div>
 
 

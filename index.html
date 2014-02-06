@@ -59,11 +59,19 @@
 						</li>
 						
 						<li>
+							<a href="module-css.html">css</a>
+						</li>
+						
+						<li>
 							<a href="module-data.html">data</a>
 						</li>
 						
 						<li>
 							<a href="module-events.html">events</a>
+						</li>
+						
+						<li>
+							<a href="module-extend.html">extend</a>
 						</li>
 						
 						<li>
@@ -174,6 +182,24 @@
 <li><a href="http://jsfiddle.net/C3WeM/5/">animations via CSS3</a></li>
 <li><a href="#how-to-make-a-custom-build">custom builds support</a></li>
 </ul>
+<h2>Installation</h2>
+<p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
+<pre><code>bower install better-dom</code></pre>
+<p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include scripts below on your web page:</p>
+<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    ...
+    &lt;!--[if IE]&gt;
+        &lt;link href=&quot;bower_components/better-dom/dist/better-dom-legacy.htc&quot; rel=&quot;htc&quot;/&gt;
+        &lt;script src=&quot;bower_components/better-dom/dist/better-dom-legacy.js&quot;&gt;&lt;/script&gt;
+    &lt;![endif]--&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    ...
+    &lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
 <h2>Documentation</h2>
 <p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
 <p><a href="http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/">Introduction into the better-dom library in English @smashingmagazine.com</a></p>
@@ -200,27 +226,11 @@
 <pre><code>grunt build</code></pre>
 <p>Pick modules that you want to exclude and pass them to the same task separated by comma:</p>
 <pre><code>grunt build:classes,offset,data</code></pre>
-<p>Your custom build will be created inside of the <code>build</code> folder including uglified version and source map.</p>
-<h2>Installation</h2>
-<p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
-<pre><code>bower install better-dom</code></pre>
-<p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include scripts below on your web page:</p>
-<pre><code class="lang-html">&lt;!DOCTYPE html&gt;
-&lt;html&gt;
-&lt;head&gt;
-    ...
-    &lt;!--[if IE]&gt;
-        &lt;link href=&quot;bower_components/better-dom/dist/better-dom-legacy.htc&quot; rel=&quot;htc&quot;/&gt;
-        &lt;script src=&quot;bower_components/better-dom/dist/better-dom-legacy.js&quot;&gt;&lt;/script&gt;
-    &lt;![endif]--&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    ...
-    &lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</code></pre>
+<p>Look at the <a href="http://chemerisuk.github.io/better-dom/">API documentation</a> to find which functions are included into a particular module.</p>
+<p>Your custom build will be created inside of the <code>build</code> folder including uglified version and source maps.</p>
 <h2>Notes about old IEs</h2>
-<p>For IE8-9 support you have to incude the conditional comment above with 2 extra elements into <code>&lt;head&gt;</code>. The excellent <a href="https://github.com/aFarkas/html5shiv">html5shiv</a> provides fix for new HTML5 tags and <a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill missed standards-based functions. These projects are bundled into <strong>better-dom-legacy.js</strong> with other fixes.</p>
+<p>For IE8-9 support you have to incude extra files via conditional comment (see <a href="#installation">Installation</a> section).</p>
+<p>The <strong>better-dom-legacy.js</strong> file includes excellent <a href="https://github.com/aFarkas/html5shiv">html5shiv</a> that provides fix for HTML5 tags and <a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill missed standards-based functions. These projects are bundled into signle file with other fixes.</p>
 <p>The <strong>better-dom-legacy.htc</strong> file helps to implement <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> support. This fact applies several important limitations that you must know in case when legacy browser support is required.</p>
 <h4>Setup content-type header</h4>
 <p>HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.</p>
@@ -228,7 +238,7 @@
 <h4>Same domain limitation</h4>
 <p>IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.</p>
 <h2>Browser support</h2>
-<h6>Desktop</h6>
+<h4>Desktop</h4>
 <ul>
 <li>Chrome</li>
 <li>Safari 6.0+</li>
@@ -236,7 +246,7 @@
 <li>Opera 12.10+</li>
 <li>IE8+</li>
 </ul>
-<h6>Mobile</h6>
+<h4>Mobile</h4>
 <ul>
 <li>iOS Safari 6+</li>
 <li>Android 2.3+</li>
@@ -264,7 +274,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Mon Feb 03 2014 03:17:17 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Thu Feb 06 2014 13:27:10 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

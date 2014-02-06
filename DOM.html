@@ -59,11 +59,19 @@
 						</li>
 						
 						<li>
+							<a href="module-css.html">css</a>
+						</li>
+						
+						<li>
 							<a href="module-data.html">data</a>
 						</li>
 						
 						<li>
 							<a href="module-events.html">events</a>
+						</li>
+						
+						<li>
+							<a href="module-extend.html">extend</a>
 						</li>
 						
 						<li>
@@ -215,7 +223,7 @@
         <dl>
             
 <dt>
-    <h4 class="name" id="create"><span class="type-signature"></span>create<span class="signature">(value, <span class="optional">vars</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
+    <h4 class="name" id="create"><span class="type-signature"></span>create<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
     
     
 </dt>
@@ -290,7 +298,7 @@
 
         <tr>
             
-                <td class="name"><code>vars</code></td>
+                <td class="name"><code>varMap</code></td>
             
 
             <td class="type">
@@ -392,224 +400,6 @@
 
 
         
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <h4 class="name" id="extend"><span class="type-signature"></span>extend<span class="signature">(selector, <span class="optional">condition</span>, mixins)</span><span class="type-signature"></span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Declare a live extension</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-		<th>Default</th>
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>css selector of which elements to capture</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>condition</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-|
-
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                    true
-                
-                </td>
-            
-
-            <td class="description last"><p>condition, to define or not</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>mixins</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last"><p>extension declatation</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dom.extend.js.html">dom.extend.js</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">https://github.com/chemerisuk/better-dom/wiki/Live-extensions</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
     
     
 </dd>
@@ -924,193 +714,6 @@
         
             
 <dt>
-    <h4 class="name" id="mock"><span class="type-signature"></span>mock<span class="signature">(<span class="optional">content</span>, <span class="optional">vars</span>)</span><span class="type-signature"> &rarr; {<a href="$Element.html">$Element</a>}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Return <a href="$Element.html">$Element</a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>content</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>HTMLString, EmmetString</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>vars</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>key/value map of variables in emmet template</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dom.mock.js.html">dom.mock.js</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>mocked instance</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type"><a href="$Element.html">$Element</a></span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        
-            
-<dt>
     <h4 class="name" id="ready"><span class="type-signature"></span>ready<span class="signature">(callback)</span><span class="type-signature"></span></h4>
     
     
@@ -1252,7 +855,7 @@ Also exposes private event handler functions that aren't usually presented</p>
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Mon Feb 03 2014 03:17:18 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Thu Feb 06 2014 13:27:10 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
