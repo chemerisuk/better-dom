@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 1.7.0-rc.3 2014-02-03T03:17:11
+ * @version 1.7.0 2014-02-06T13:27:03
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -17,10 +17,10 @@ var _ = require("./utils"),
  * Create a $Element instance
  * @memberOf DOM
  * @param  {Mixed}  value   HTMLString, EmmetString or native element
- * @param  {Object} [vars]  key/value map of variables in emmet template
+ * @param  {Object} [varMap]  key/value map of variables in emmet template
  * @return {$Element} element
  */
-DOM.create = function(value, vars) {
+DOM.create = function(value, varMap) {
     if (value.nodeType === 1) return $Element(value);
 
     if (typeof value !== "string") throw _.makeError("create", true);
@@ -30,7 +30,7 @@ DOM.create = function(value, vars) {
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
-        sandbox.innerHTML = _.template(value, vars);
+        sandbox.innerHTML = _.template(value, varMap);
 
         for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
             if (node.nodeType === 1) value.push(node);
@@ -44,10 +44,15 @@ DOM.create = function(value, vars) {
     return new $Element(value, multiple);
 };
 
-},{"./dom":5,"./element":13,"./utils":29}],2:[function(require,module,exports){
+},{"./dom":5,"./element":12,"./utils":29}],2:[function(require,module,exports){
+/**
+ * Live extensions support
+ * @module extend
+ * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
+ */
+
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
-
 var _ = require("./utils"),
     $Element = require("./element"),
     DOM = require("./dom"),
@@ -120,11 +125,10 @@ if (_.CSS3_ANIMATIONS) {
 
 /**
  * Declare a live extension
- * @memberOf DOM
+ * @memberOf module:extend
  * @param  {String}           selector         css selector of which elements to capture
- * @param  {Boolean|Function} [condition=true] condition, to define or not
+ * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
  * @param  {Object}           mixins           extension declatation
- * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
 DOM.extend = function(selector, condition, mixins) {
     if (arguments.length === 2) {
@@ -183,9 +187,28 @@ DOM.extend = function(selector, condition, mixins) {
     }
 };
 
-module.exports = extensions;
+/**
+ * Return {@link $Element} initialized with all existing live extensions.
+ * Also exposes private event handler functions that aren't usually presented
+ * @memberOf module:extend
+ * @param  {Mixed} [content] HTMLString, EmmetString
+ * @param  {Object} [varMap]  key/value map of variables in emmet template
+ * @return {$Element} mocked instance
+ */
+DOM.mock = function(content, varMap) {
+    var el = content ? DOM.create(content, varMap) : new $Element(),
+        applyWatchers = function(el) {
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
 
-},{"./dom":5,"./dom.importstyles":4,"./element":13,"./selectormatcher":28,"./utils":29}],3:[function(require,module,exports){
+            el.children().each(applyWatchers);
+        };
+
+    if (content) applyWatchers(el);
+
+    return el;
+};
+
+},{"./dom":5,"./dom.importstyles":4,"./element":12,"./selectormatcher":27,"./utils":29}],3:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom");
 
@@ -221,8 +244,8 @@ DOM.importScripts = function() {
 
 },{"./dom":5,"./utils":29}],4:[function(require,module,exports){
 var _ = require("./utils"),
-    $Element = require("./element"),
     DOM = require("./dom"),
+    styleAccessor = require("./styleaccessor"),
     currentScript = document.scripts[0],
     styleNode = currentScript.parentNode.insertBefore(document.createElement("style"), currentScript),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
@@ -239,8 +262,18 @@ var _ = require("./utils"),
 DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
-        // make a temporary element and populate style properties
-        new $Element({style: styleObj}).style(cssText);
+
+        _.forOwn(cssText, function(value, prop) {
+            var hook = styleAccessor.set[prop];
+
+            value = typeof value === "number" ? value + "px" : value || "";
+
+            if (hook) {
+                hook(styleObj, value);
+            } else {
+                styleObj[prop] = value;
+            }
+        });
 
         cssText = [];
 
@@ -272,11 +305,11 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
 
 module.exports = DOM.importStyles;
 
-},{"./dom":5,"./element":13,"./utils":29}],5:[function(require,module,exports){
+},{"./dom":5,"./styleaccessor":28,"./utils":29}],5:[function(require,module,exports){
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.7.0-rc.3";
+DOM.version = "1.7.0";
 
 /**
  * Global object to access DOM
@@ -285,34 +318,7 @@ DOM.version = "1.7.0-rc.3";
  */
 module.exports = window.DOM = DOM;
 
-},{"./node":26}],6:[function(require,module,exports){
-var _ = require("./utils"),
-    $Element = require("./element"),
-    DOM = require("./dom"),
-    extensions = require("./dom.extend");
-
-/**
- * Return {@link $Element} initialized with all existing live extensions.
- * Also exposes private event handler functions that aren't usually presented
- * @memberOf DOM
- * @param  {Mixed} [content] HTMLString, EmmetString
- * @param  {Object} [vars]  key/value map of variables in emmet template
- * @return {$Element} mocked instance
- */
-DOM.mock = function(content, vars) {
-    var el = content ? DOM.create(content, vars) : new $Element(),
-        applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
-
-            el.children().each(applyWatchers);
-        };
-
-    if (content) applyWatchers(el);
-
-    return el;
-};
-
-},{"./dom":5,"./dom.extend":2,"./element":13,"./utils":29}],7:[function(require,module,exports){
+},{"./node":25}],6:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     readyCallbacks = [],
@@ -359,7 +365,7 @@ DOM.ready = function(callback) {
     }
 };
 
-},{"./dom":5,"./utils":29}],8:[function(require,module,exports){
+},{"./dom":5,"./utils":29}],7:[function(require,module,exports){
 /**
  * Emmet abbreviation syntax support
  * @module template
@@ -416,13 +422,13 @@ _.forEach("area base br col hr img input link meta param command keygen source".
  * Parse emmet-like template into a HTML string
  * @memberOf module:template
  * @param  {String} template emmet-like expression
- * @param  {Object} [vars] key/value map of variables
+ * @param  {Object} [varMap] key/value map of variables
  * @return {String} HTML string
  */
-DOM.template = function(template, vars) {
+DOM.template = function(template, varMap) {
     if (typeof template !== "string") throw _.makeError("template", true);
-    // handle vars
-    if (vars) template = template.replace(reVar, function(x, name) { return vars[name] || x });
+    // handle varMap
+    if (varMap) template = template.replace(reVar, function(x, name) { return varMap[name] || x });
 
     var stack = [],
         output = [],
@@ -541,7 +547,7 @@ DOM.template = function(template, vars) {
     return cache[template] = toString(stack[0]).replace(reTextTag, "");
 };
 
-},{"./dom":5,"./utils":29}],9:[function(require,module,exports){
+},{"./dom":5,"./utils":29}],8:[function(require,module,exports){
 /**
  * Smart getter and setter support
  * @module accessors
@@ -663,7 +669,7 @@ if (!_.DOM2_EVENTS) {
     };
 }
 
-},{"./element":13,"./utils":29}],10:[function(require,module,exports){
+},{"./element":12,"./utils":29}],9:[function(require,module,exports){
 /**
  * Class manipulation support
  * @module classes
@@ -758,7 +764,7 @@ $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className)
     if (oldClassName === this._node.className) this.removeClass(className);
 });
 
-},{"./element":13,"./utils":29}],11:[function(require,module,exports){
+},{"./element":12,"./utils":29}],10:[function(require,module,exports){
 /**
  * Clonning of an element support
  * @module clone
@@ -794,7 +800,7 @@ $Element.prototype.clone = function(deep) {
     return new $Element(node);
 };
 
-},{"./element":13,"./utils":29}],12:[function(require,module,exports){
+},{"./element":12,"./utils":29}],11:[function(require,module,exports){
 /**
  * Internationalization support
  * @module i18n
@@ -863,7 +869,7 @@ DOM.importStrings = importStrings;
 // by default just show data-i18n string
 importStyles("[data-i18n]:before", "content:attr(data-i18n)");
 
-},{"./dom":5,"./dom.importstyles":4,"./element":13,"./utils":29}],13:[function(require,module,exports){
+},{"./dom":5,"./dom.importstyles":4,"./element":12,"./utils":29}],12:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -890,7 +896,7 @@ $Element.prototype = new $Node();
 
 module.exports = $Element;
 
-},{"./node":26,"./utils":29}],14:[function(require,module,exports){
+},{"./node":25,"./utils":29}],13:[function(require,module,exports){
 /**
  * Element manipulation support
  * @module manipulation
@@ -997,9 +1003,9 @@ $Element.prototype.remove = makeManipulationMethod("remove", "", false, function
     node.parentNode.removeChild(node);
 });
 
-},{"./element":13,"./utils":29}],15:[function(require,module,exports){
+},{"./element":12,"./utils":29}],14:[function(require,module,exports){
 /**
- * Testing if element matches a particular CSS selector support
+ * CSS selector matching support
  * @module matches
  */
 var _ = require("./utils"),
@@ -1041,7 +1047,7 @@ hooks[":hidden"] = function(node) {
 
 hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
 
-},{"./element":13,"./selectormatcher":28,"./utils":29}],16:[function(require,module,exports){
+},{"./element":12,"./selectormatcher":27,"./utils":29}],15:[function(require,module,exports){
 /**
  * Element offset calculation support
  * @module offset
@@ -1072,21 +1078,18 @@ $Element.prototype.offset = function() {
     }
 };
 
-},{"./element":13,"./utils":29}],17:[function(require,module,exports){
+},{"./element":12,"./utils":29}],16:[function(require,module,exports){
+/**
+ * Changing of element styles support
+ * @module css
+ */
 var _ = require("./utils"),
     $Element = require("./element"),
-    hooks = {get: {}, set: {}},
-    reDash = /\-./g,
-    reCamel = /[A-Z]/g,
-    directions = ["Top", "Right", "Bottom", "Left"],
-    computed = _.getComputedStyle(_.docEl),
-    // In Opera CSSStyleDeclaration objects returned by _.getComputedStyle have length 0
-    props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
-        return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
-    });
+    styleAccessor = require("./styleaccessor");
 
 /**
  * CSS getter/setter for an element
+ * @memberOf module:css
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this
@@ -1102,7 +1105,7 @@ $Element.prototype.style = function(name, value) {
             style = node.style;
 
             value = _.foldl(nameType === "string" ? [name] : name, function(memo, name) {
-                hook = hooks.get[name];
+                hook = styleAccessor.get[name];
                 value = hook ? hook(style) : style[name];
 
                 if (!computed && !value) {
@@ -1124,7 +1127,7 @@ $Element.prototype.style = function(name, value) {
     return this.legacy(function(node, el, index, ref) {
         var style = node.style,
             appendCssText = function(value, key) {
-                var hook = hooks.set[key];
+                var hook = styleAccessor.set[key];
 
                 if (typeof value === "function") value = value(el, index, ref);
 
@@ -1147,87 +1150,7 @@ $Element.prototype.style = function(name, value) {
     });
 };
 
-// $Element.style hooks
-
-_.forEach(props, function(propName) {
-    var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
-        unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-        stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
-
-    // most of browsers starts vendor specific props in lowercase
-    if (!(stylePropName in computed)) {
-        stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
-    }
-
-    if (stylePropName !== propName) {
-        hooks.get[unprefixedName] = function(style) {
-            return style[stylePropName];
-        };
-        hooks.set[unprefixedName] = function(style, value) {
-            value = typeof value === "number" ? value + "px" : value.toString();
-            // use cssText property to determine DOM.importStyles call
-            style["cssText" in style ? stylePropName : propName] = value;
-        };
-    }
-
-    // Exclude the following css properties from adding px
-    if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
-        hooks.set[propName] = function(style, value) {
-            style["cssText" in style ? stylePropName : propName] = value.toString();
-        };
-    }
-});
-
-// normalize float css property
-if ("cssFloat" in computed) {
-    hooks.get.float = function(style) {
-        return style.cssFloat;
-    };
-    hooks.set.float = function(style, value) {
-        style.cssFloat = value;
-    };
-} else {
-    hooks.get.float = function(style) {
-        return style.styleFloat;
-    };
-    hooks.set.float = function(style, value) {
-        style.styleFloat = value;
-    };
-}
-
-// normalize property shortcuts
-_.forOwn({
-    font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-    padding: _.map(directions, function(dir) { return "padding" + dir }),
-    margin: _.map(directions, function(dir) { return "margin" + dir }),
-    "border-width": _.map(directions, function(dir) { return "border" + dir + "Width" }),
-    "border-style": _.map(directions, function(dir) { return "border" + dir + "Style" })
-}, function(props, key) {
-    hooks.get[key] = function(style) {
-        var result = [],
-            hasEmptyStyleValue = function(prop, index) {
-                result.push(prop === "/" ? prop : style[prop]);
-
-                return !result[index];
-            };
-
-        return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
-    };
-    hooks.set[key] = function(style, value) {
-        if (value && "cssText" in style) {
-            // normalize setting complex property across browsers
-            style.cssText += ";" + key + ":" + value;
-        } else {
-            _.forEach(props, function(name) {
-                style[name] = typeof value === "number" ? value + "px" : value.toString();
-            });
-        }
-    };
-});
-
-module.exports = hooks;
-
-},{"./element":13,"./utils":29}],18:[function(require,module,exports){
+},{"./element":12,"./styleaccessor":28,"./utils":29}],17:[function(require,module,exports){
 /**
  * Element traversing support
  * @module traversing
@@ -1359,24 +1282,29 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
 
-},{"./element":13,"./selectormatcher":28,"./utils":29}],19:[function(require,module,exports){
+},{"./element":12,"./selectormatcher":27,"./utils":29}],18:[function(require,module,exports){
 /**
- * Changing of animatable element visibility support
+ * Changing of element visibility support
  * @module visibility
  */
 var _ = require("./utils"),
     $Element = require("./element"),
-    eventType = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
-    animationProps = ["transition-duration", "animation-duration", "animation-iteration-count"],
+    styleAccessor = require("./styleaccessor"),
+    eventTypes = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
     absentStrategy = _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
+    readAnimationProp = function(key, style) {
+        var fn = styleAccessor.get[key];
+
+        return fn && parseFloat(fn(style)) || 0;
+    },
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
-                    styles = el.style(animationProps),
-                    transitionDuration = parseFloat(styles[animationProps[0]]) || 0,
-                    animationDuration = parseFloat(styles[animationProps[1]]) || 0,
-                    iterationCount = parseFloat(styles[animationProps[2]]) || 0,
+                    style = _.getComputedStyle(node),
+                    transitionDuration = readAnimationProp("transition-duration", style),
+                    animationDuration = readAnimationProp("animation-duration", style),
+                    iterationCount = readAnimationProp("animation-iteration-count", style),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
                     completeAnimation = function(e) {
@@ -1408,7 +1336,7 @@ var _ = require("./utils"),
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    node.addEventListener(eventType[duration === transitionDuration ? 1 : 0], completeAnimation, false);
+                    node.addEventListener(eventTypes[duration === transitionDuration ? 1 : 0], completeAnimation, false);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
@@ -1477,7 +1405,7 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
     return node.getAttribute("aria-hidden") !== "true";
 });
 
-},{"./element":13,"./utils":29}],20:[function(require,module,exports){
+},{"./element":12,"./styleaccessor":28,"./utils":29}],19:[function(require,module,exports){
 /*
  * Helper type to create an event handler
  */
@@ -1621,9 +1549,9 @@ if (!_.DOM2_EVENTS) {
 
 module.exports.hooks = hooks;
 
-},{"./element":13,"./selectormatcher":28,"./utils":29}],21:[function(require,module,exports){
+},{"./element":12,"./selectormatcher":27,"./utils":29}],20:[function(require,module,exports){
 /**
- * Support for testing if element is inside of a particular tree
+ * Ancestor check support
  * @module contains
  */
 var _ = require("./utils"),
@@ -1644,7 +1572,7 @@ $Node.prototype.contains = function(element) {
     if (node) return element.every(function(el) { return node.contains(el._node) });
 };
 
-},{"./element":13,"./node":26,"./utils":29}],22:[function(require,module,exports){
+},{"./element":12,"./node":25,"./utils":29}],21:[function(require,module,exports){
 var _ = require("./utils"),
     /**
      * Data property support
@@ -1699,7 +1627,7 @@ $Node.prototype.data = function(key, value) {
     throw _.makeError("data", this);
 };
 
-},{"./node":26,"./utils":29}],23:[function(require,module,exports){
+},{"./node":25,"./utils":29}],22:[function(require,module,exports){
 /**
  * Event handling support
  * @module events
@@ -1864,7 +1792,7 @@ $Node.prototype.fire = function(type) {
     });
 };
 
-},{"./eventhandler":20,"./node":26,"./utils":29}],24:[function(require,module,exports){
+},{"./eventhandler":19,"./node":25,"./utils":29}],23:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node");
 
@@ -1884,7 +1812,7 @@ _.extend($Node.prototype, {
      * @memberOf $Node.prototype
      * @param  {Function} callback  function that accepts (element, index, this)
      * @param  {Object}   [context] callback context
-     * @return {$Element}
+     * @return {$Node}
      * @function
      */
     each: makeCollectionMethod(_.forEach),
@@ -1953,13 +1881,13 @@ _.extend($Node.prototype, {
      * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
      * @param  {Function} callback function that accepts (node, element, index, this)
-     * @return {$Element}
+     * @return {$Node}
      * @function
      */
     legacy: makeCollectionMethod(_.legacy)
 });
 
-},{"./node":26,"./utils":29}],25:[function(require,module,exports){
+},{"./node":25,"./utils":29}],24:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     invoker = document.createElement("form");
@@ -1996,7 +1924,7 @@ $Node.prototype.invoke = function(method) {
     return result ? (this._node ? result[0] : result) : false;
 };
 
-},{"./node":26,"./utils":29}],26:[function(require,module,exports){
+},{"./node":25,"./utils":29}],25:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -2038,7 +1966,7 @@ $Node.prototype.set = function(name, value) {
 
 module.exports = $Node;
 
-},{}],27:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 /**
  * Element search support
  * @module search
@@ -2120,7 +2048,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);
 };
-},{"./element":13,"./node":26,"./utils":29}],28:[function(require,module,exports){
+},{"./element":12,"./node":25,"./utils":29}],27:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
@@ -2164,6 +2092,99 @@ module.exports = function(selector) {
         );
     };
 };
+
+},{"./utils":29}],28:[function(require,module,exports){
+/*
+ * Helper for accessing css
+ */
+var _ = require("./utils"),
+    hooks = {get: {}, set: {}},
+    reDash = /\-./g,
+    reCamel = /[A-Z]/g,
+    directions = ["Top", "Right", "Bottom", "Left"],
+    computed = _.getComputedStyle(_.docEl),
+    // In Opera CSSStyleDeclaration objects returned by _.getComputedStyle have length 0
+    props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
+        return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
+    });
+
+_.forEach(props, function(propName) {
+    var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
+        unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
+        stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
+
+    // most of browsers starts vendor specific props in lowercase
+    if (!(stylePropName in computed)) {
+        stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
+    }
+
+    if (stylePropName !== propName) {
+        hooks.get[unprefixedName] = function(style) {
+            return style[stylePropName];
+        };
+        hooks.set[unprefixedName] = function(style, value) {
+            value = typeof value === "number" ? value + "px" : value.toString();
+            // use cssText property to determine DOM.importStyles call
+            style["cssText" in style ? stylePropName : propName] = value;
+        };
+    }
+
+    // Exclude the following css properties from adding px
+    if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
+        hooks.set[propName] = function(style, value) {
+            style["cssText" in style ? stylePropName : propName] = value.toString();
+        };
+    }
+});
+
+// normalize float css property
+if ("cssFloat" in computed) {
+    hooks.get.float = function(style) {
+        return style.cssFloat;
+    };
+    hooks.set.float = function(style, value) {
+        style.cssFloat = value;
+    };
+} else {
+    hooks.get.float = function(style) {
+        return style.styleFloat;
+    };
+    hooks.set.float = function(style, value) {
+        style.styleFloat = value;
+    };
+}
+
+// normalize property shortcuts
+_.forOwn({
+    font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
+    padding: _.map(directions, function(dir) { return "padding" + dir }),
+    margin: _.map(directions, function(dir) { return "margin" + dir }),
+    "border-width": _.map(directions, function(dir) { return "border" + dir + "Width" }),
+    "border-style": _.map(directions, function(dir) { return "border" + dir + "Style" })
+}, function(props, key) {
+    hooks.get[key] = function(style) {
+        var result = [],
+            hasEmptyStyleValue = function(prop, index) {
+                result.push(prop === "/" ? prop : style[prop]);
+
+                return !result[index];
+            };
+
+        return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
+    };
+    hooks.set[key] = function(style, value) {
+        if (value && "cssText" in style) {
+            // normalize setting complex property across browsers
+            style.cssText += ";" + key + ":" + value;
+        } else {
+            _.forEach(props, function(name) {
+                style[name] = typeof value === "number" ? value + "px" : value.toString();
+            });
+        }
+    };
+});
+
+module.exports = hooks;
 
 },{"./utils":29}],29:[function(require,module,exports){
 var doc = document,
