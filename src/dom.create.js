@@ -16,7 +16,7 @@ DOM.create = function(value, varMap) {
 
     if (typeof value !== "string") throw _.makeError("create", true);
 
-    var node, multiple;
+    var node;
 
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
@@ -27,10 +27,10 @@ DOM.create = function(value, varMap) {
             if (node.nodeType === 1) value.push(node);
         }
 
-        multiple = value.length !== 1;
+        if (value.length !== 1) return _.makeCollection(value);
 
-        if (!multiple) value = value[0];
+        value = value[0];
     }
 
-    return new $Element(value, multiple);
+    return new $Element(value);
 };

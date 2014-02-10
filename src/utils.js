@@ -1,5 +1,7 @@
 var doc = document,
     win = window,
+    push = Array.prototype.push,
+    $Element = require("./element"),
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
@@ -23,17 +25,23 @@ var doc = document,
 
             return Function("a", "cb", "that", "undefined", code);
         };
-    })(),
-    makeRandomProp = function() {
-        return "_" + Math.random().toString().split(".")[1];
-    };
+    })();
 
 module.exports = {
-    makeRandomProp: makeRandomProp,
+    makeRandomProp: function() {
+        return "_" + Math.random().toString().split(".")[1];
+    },
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 
         return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %> to verify the function call");
+    },
+    makeCollection: function(nodes) {
+        var result = new $Element();
+
+        push.apply(result, this.map(nodes, $Element));
+
+        return result;
     },
     getComputedStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;

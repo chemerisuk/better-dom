@@ -20,7 +20,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
-$Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
+$Node.prototype.find = function(selector, /*INTERNAL*/all) {
     if (typeof selector !== "string") throw _.makeError("find");
 
     var node = this._node,
@@ -38,7 +38,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
             elements = node.getElementsByClassName(quickMatch[2]);
         }
 
-        if (elements && !multiple) elements = elements[0];
+        if (elements && !all) elements = elements[0];
     } else {
         old = true;
         nid = tmpId;
@@ -61,13 +61,13 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
         }
 
         try {
-            elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
+            elements = context[all ? "querySelectorAll" : "querySelector"](selector);
         } finally {
             if (!old) node.removeAttribute("id");
         }
     }
 
-    return $Element(elements, multiple);
+    return all ? _.makeCollection(elements) : $Element(elements);
 };
 
 /**
