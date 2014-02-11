@@ -1,4 +1,4 @@
-// input event implementation/fixes for IE8-9
+// form element event fixes for IE8-9
 
 if (document.attachEvent) {
     var capturedNode, capturedNodeValue,
@@ -42,7 +42,7 @@ if (document.attachEvent) {
         if (type === "checkbox" || type === "radio") {
             (capturedNode = target).attachEvent("onclick", clickEventHandler);
             capturedNodeValue = capturedNode.checked;
-        } else {
+        } else if (target.nodeType === 1) {
             (capturedNode = target).attachEvent("onchange", changeEventHandler);
 
             if (type === "text" || type === "password" || type === "textarea") {
