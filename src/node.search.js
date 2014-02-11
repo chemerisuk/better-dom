@@ -4,7 +4,8 @@
  */
 var _ = require("./utils"),
     $Node = require("./node"),
-    $Element = require("./element");
+    $Element = require("./element"),
+    $Elements = require("./elements");
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -67,7 +68,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all) {
         }
     }
 
-    return all ? _.makeCollection(elements) : $Element(elements);
+    return all ? new $Elements(elements) : $Element(elements);
 };
 
 /**

@@ -5,6 +5,7 @@
  */
 var _ = require("./utils"),
     $Element = require("./element"),
+    $Elements = require("./elements"),
     SelectorMatcher = require("./selectormatcher");
 
 function makeTraversingMethod(propertyName, all) {
@@ -25,7 +26,7 @@ function makeTraversingMethod(propertyName, all) {
             it = it[propertyName];
         }
 
-        return all ? _.makeCollection(nodes) : $Element(it);
+        return all ? new $Elements(nodes) : $Element(it);
     };
 }
 
@@ -48,7 +49,7 @@ function makeChildTraversingMethod(all) {
             children = _.filter(children, function(node) { return node.nodeType === 1 });
         }
 
-        if (all) return _.makeCollection(matcher ? _.filter(children, matcher) : children);
+        if (all) return new $Elements(matcher ? _.filter(children, matcher) : children);
 
         if (index < 0) index = children.length + index;
 

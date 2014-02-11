@@ -1,5 +1,6 @@
 var _ = require("./utils"),
     $Element = require("./element"),
+    $Elements = require("./elements"),
     DOM = require("./dom"),
     reSingleTag = /^\w+$/,
     sandbox = document.createElement("div");
@@ -27,7 +28,7 @@ DOM.create = function(value, varMap) {
             if (node.nodeType === 1) value.push(node);
         }
 
-        if (value.length !== 1) return _.makeCollection(value);
+        if (value.length !== 1) return new $Elements(value);
 
         value = value[0];
     }

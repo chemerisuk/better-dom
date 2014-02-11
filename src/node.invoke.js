@@ -14,7 +14,7 @@ if (_.DOM2_EVENTS) {
  * Make a safe method/function call
  * @param  {String|Function}  method  name of method or function for a safe call
  * @param  {...Object}        [args]  extra arguments to pass into each invokation
- * @return {Object} false there was an exception, result for a single node, array of results for collection
+ * @return {Object} result of the invokation which is undefined if there was an exception
  */
 $Node.prototype.invoke = function(method) {
     var args = _.slice(arguments, 1),
