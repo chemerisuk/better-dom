@@ -40,11 +40,11 @@ var _ = require("./utils"),
 
                 if (value) {
                     // store current inline value in a private property
-                    el._display = node.style[absentStrategy[0]];
+                    el._visibility = node.style[absentStrategy[0]];
                     // do not store display:none
-                    if (el._display === "none") el._display = "";
+                    if (el._visibility === "none") el._visibility = "";
                 } else {
-                    node.style[absentStrategy[0]] = el._display || "";
+                    node.style[absentStrategy[0]] = el._visibility || "";
                 }
                 // set styles inline to override inherited
                 node.style.visibility = "visible";

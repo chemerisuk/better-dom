@@ -14,5 +14,6 @@ function $Elements(elements) {
 }
 
 $Elements.prototype = new $Element();
+$Elements.prototype.toString = Array.prototype.join;
 
 module.exports = $Elements;
