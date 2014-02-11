@@ -12,10 +12,10 @@ describe("invoke", function() {
             callback = jasmine.createSpy("callback");
 
         input.invoke(callback, 123, obj);
-        expect(callback).toHaveBeenCalledWith(123, obj, input, 0, input);
+        expect(callback).toHaveBeenCalledWith(123, obj);
 
         DOM.invoke(callback, obj, 321);
-        expect(callback).toHaveBeenCalledWith(obj, 321, DOM, 0, DOM);
+        expect(callback).toHaveBeenCalledWith(obj, 321);
     });
 
     it("should support method name as the first argument", function() {

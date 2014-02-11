@@ -100,8 +100,9 @@ DOM.extend = function(selector, condition, mixins) {
         var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
-            ext = function(el, mock) {
-                var node = el._node;
+            ext = function(mock) {
+                var el = this,
+                    node = this._node;
 
                 if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
@@ -151,7 +152,7 @@ DOM.extend = function(selector, condition, mixins) {
 DOM.mock = function(content, varMap) {
     var el = content ? DOM.create(content, varMap) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
+            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext.call(el, true) });
 
             el.children().each(applyWatchers);
         };
