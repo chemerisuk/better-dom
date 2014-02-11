@@ -2,6 +2,7 @@ var $Node = require("./node"),
     DOM = new $Node(document);
 
 DOM.version = "<%= pkg.version %>";
+DOM.template = function(str) { return str };
 
 /**
  * Global object to access DOM

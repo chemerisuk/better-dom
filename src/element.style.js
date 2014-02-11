@@ -28,7 +28,7 @@ $Element.prototype.style = function(name, value) {
                 value = hook ? hook(style) : style[name];
 
                 if (!computed && !value) {
-                    style = _.getComputedStyle(node);
+                    style = _.computeStyle(node);
                     value = hook ? hook(style) : style[name];
 
                     computed = true;

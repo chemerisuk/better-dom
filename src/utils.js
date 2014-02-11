@@ -1,5 +1,6 @@
 var doc = document,
     win = window,
+    currentScript = doc.scripts[0],
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
@@ -26,23 +27,16 @@ var doc = document,
     })();
 
 module.exports = {
-    makeRandomProp: function() {
-        return "_" + Math.random().toString().split(".")[1];
-    },
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 
         return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %> to verify the function call");
     },
-    getComputedStyle: function(node) {
+    computeStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
     },
-    template: function() {
-        var DOM = window.DOM;
-        // override method with particular implementation
-        this.template = DOM.template || function(str) { return str };
-
-        return this.template.apply(DOM, arguments);
+    injectElement: function(el) {
+        return currentScript.parentNode.insertBefore(el, currentScript);
     },
 
     // constants

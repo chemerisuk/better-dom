@@ -9,7 +9,6 @@ var _ = require("./utils"),
  */
 DOM.importScripts = function() {
     var args = _.slice(arguments),
-        context = document.scripts[0],
         callback = function() {
             var arg = args.shift(),
                 argType = typeof arg,
@@ -20,7 +19,7 @@ DOM.importScripts = function() {
                 script.src = arg;
                 script.onload = callback;
                 script.async = true;
-                context.parentNode.insertBefore(script, context);
+                _.injectElement(script);
             } else if (argType === "function") {
                 arg();
             } else if (arg) {

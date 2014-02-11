@@ -45,7 +45,7 @@ var _ = require("./utils"),
 
 if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = _.makeRandomProp();
+    animId = "DOM" + new Date().getTime();
 
     importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}");
 

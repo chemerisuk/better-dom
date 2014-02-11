@@ -16,7 +16,7 @@ var _ = require("./utils"),
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
-                    style = _.getComputedStyle(node),
+                    style = _.computeStyle(node),
                     transitionDuration = readAnimationProp("transition-duration", style),
                     animationDuration = readAnimationProp("animation-duration", style),
                     iterationCount = readAnimationProp("animation-iteration-count", style),

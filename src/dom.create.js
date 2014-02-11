@@ -22,7 +22,7 @@ DOM.create = function(value, varMap) {
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
-        sandbox.innerHTML = _.template(value, varMap);
+        sandbox.innerHTML = DOM.template(value, varMap);
 
         for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
             if (node.nodeType === 1) value.push(node);
