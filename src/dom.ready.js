@@ -5,9 +5,11 @@ var _ = require("./utils"),
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, DOM.invoke, DOM);
-    // cleanup
-    readyCallbacks = null;
+    if (readyCallbacks) {
+        readyCallbacks.forEach(DOM.invoke, DOM);
+        // cleanup
+        readyCallbacks = null;
+    }
 }
 
 // Catch cases where ready is called after the browser event has already occurred.

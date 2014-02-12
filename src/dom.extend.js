@@ -56,7 +56,7 @@ if (_.CSS3_ANIMATIONS) {
 
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e.target, e._skip));
+            extensions.forEach(makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
@@ -71,7 +71,7 @@ if (_.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
+            extensions.forEach(makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -118,7 +118,7 @@ DOM.extend = function(selector, condition, mixins) {
                     if (ctr) ctr.call(el);
                 } finally {
                     // remove event handlers from element's interface
-                    if (mock !== true) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                    if (mock !== true) eventHandlers.forEach(function(prop) { delete el[prop] });
                 }
             };
 
@@ -131,7 +131,7 @@ DOM.extend = function(selector, condition, mixins) {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            _.forEach(document.querySelectorAll(selector), function(node) {
+            Array.prototype.forEach.call(document.querySelectorAll(selector), function(node) {
                 $Element(node).invoke(ext);
             });
             // Any extension should be initialized after DOM.ready
@@ -152,7 +152,7 @@ DOM.extend = function(selector, condition, mixins) {
 DOM.mock = function(content, varMap) {
     var el = content ? DOM.create(content, varMap) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext.call(el, true) });
+            extensions.forEach(function(ext) { if (ext.accept(el._node)) ext.call(el, true) });
 
             el.children().each(applyWatchers);
         };

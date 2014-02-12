@@ -43,14 +43,14 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     }
 
     // check if the rule already exists
-    if (!unique || !_.some(styleRules, function(rule) {
+    if (!unique || !Array.prototype.some.call(styleRules, function(rule) {
         return selector === (rule.selectorText || "").split(norm[0]).join(norm[1]);
     })) {
         if (styleSheet.cssRules) {
             styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
         } else {
             // ie doesn't support multiple selectors in addRule
-            _.forEach(selector.split(","), function(selector) {
+            selector.split(",").forEach(function(selector) {
                 styleSheet.addRule(selector, cssText);
             });
         }

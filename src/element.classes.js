@@ -23,7 +23,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
                 if (args.length === 1) {
                     return strategy.call(this, className);
                 } else {
-                    return _.every(args, strategy, this);
+                    return Array.prototype.every.call(args, strategy, this);
                 }
             }
         };
@@ -35,7 +35,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
                 if (args.length === 1) {
                     strategy.call(el, className);
                 } else {
-                    _.forEach(args, strategy, el);
+                    Array.prototype.forEach.call(args, strategy, el);
                 }
             });
         };

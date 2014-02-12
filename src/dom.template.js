@@ -46,7 +46,7 @@ var _ = require("./utils"),
     };
 
 // populate empty tags
-_.forEach("area base br col hr img input link meta param command keygen source".split(" "), function(tag) {
+"area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag) {
     cache[tag] = "<" + tag + ">";
 });
 
@@ -155,7 +155,8 @@ DOM.template = function(template, varMap) {
                 break;
 
             case "*":
-                node = _.map(Array(+term), makeIndexedTerm(toString(node)));
+                // Array.prototype.map doesn't work properly here
+                node = this.map.call(Array(+term), makeIndexedTerm(toString(node)));
                 break;
 
             default:
@@ -170,7 +171,7 @@ DOM.template = function(template, varMap) {
                 }
             }
 
-            str = typeof term === "function" ? _.map(node, term) : node;
+            str = typeof term === "function" ? node.map(term) : node;
         }
 
         stack.unshift(str);

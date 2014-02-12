@@ -24,7 +24,7 @@ $Element.prototype.get = function(name) {
         return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
     }
 
-    if (Array.isArray(name)) return _.foldr(name, function(r, name) { return r[name] = el.get(name), r }, {});
+    if (Array.isArray(name)) return name.reduce(function(r, name) { return r[name] = el.get(name), r }, {});
 
     throw _.makeError("get");
 };
@@ -94,7 +94,7 @@ hooks.set.undefined = function(node, value) {
 
     if (node.tagName === "SELECT") {
         // selectbox has special case
-        if (_.every(node.options, function(o) { return !(o.selected = o.value === value) })) {
+        if (Array.prototype.every.call(node.options, function(o) { return !(o.selected = o.value === value) })) {
             node.selectedIndex = -1;
         }
     } else if (node.type && "value" in node) {

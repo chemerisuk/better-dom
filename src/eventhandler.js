@@ -54,7 +54,7 @@ module.exports = function(type, selector, callback, props, el, once) {
             // off callback even if it throws an exception later
             if (once) el.off(type, callback);
 
-            args = _.map(args, function(name) {
+            args = args.map(function(name) {
                 if (!_.DOM2_EVENTS) {
                     switch (name) {
                     case "which":
@@ -113,7 +113,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
 // EventHandler hooks
 
-_.forEach(["scroll", "mousemove"], function(name) {
+["scroll", "mousemove"].forEach(function(name) {
     hooks[name] = createDebouncedEventWrapper;
 });
 
@@ -131,7 +131,7 @@ if (document.createElement("input").validity) {
 }
 // fix non-bubbling submit event for IE8
 if (!_.DOM2_EVENTS) {
-    _.forEach(["submit", "change", "reset"], function(name) {
+    ["submit", "change", "reset"].forEach(function(name) {
         hooks[name] = createCustomEventWrapper;
     });
 }

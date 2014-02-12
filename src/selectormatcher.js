@@ -1,10 +1,8 @@
 /*
  * Helper for css selectors
  */
-var _ = require("./utils"),
-    // Quick matching inspired by jQuery
-    rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
-
+var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
+// Quick matching inspired by jQuery
 module.exports = function(selector, context) {
     if (typeof selector !== "string") return null;
 
@@ -40,7 +38,7 @@ module.exports = function(selector, context) {
                 if (node.webkitMatchesSelector) {
                     result = node.webkitMatchesSelector(selector);
                 } else {
-                    result = _.some(found, test);
+                    result = Array.prototype.some.call(found, test);
                 }
             }
 

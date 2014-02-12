@@ -8,11 +8,11 @@ var _ = require("./utils"),
     directions = ["Top", "Right", "Bottom", "Left"],
     computed = _.computeStyle(_.docEl),
     // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
-    props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
+    props = computed.length ? _.slice(computed) : Object.keys(computed).map(function(key) {
         return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
     });
 
-_.forEach(props, function(propName) {
+props.forEach(function(propName) {
     var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
         unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
         stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
@@ -61,10 +61,10 @@ if ("cssFloat" in computed) {
 // normalize property shortcuts
 _.forOwn({
     font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-    padding: _.map(directions, function(dir) { return "padding" + dir }),
-    margin: _.map(directions, function(dir) { return "margin" + dir }),
-    "border-width": _.map(directions, function(dir) { return "border" + dir + "Width" }),
-    "border-style": _.map(directions, function(dir) { return "border" + dir + "Style" })
+    padding: directions.map(function(dir) { return "padding" + dir }),
+    margin: directions.map(function(dir) { return "margin" + dir }),
+    "border-width": directions.map(function(dir) { return "border" + dir + "Width" }),
+    "border-style": directions.map(function(dir) { return "border" + dir + "Style" })
 }, function(props, key) {
     hooks.get[key] = function(style) {
         var result = [],
@@ -74,14 +74,14 @@ _.forOwn({
                 return !result[index];
             };
 
-        return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
+        return props.some(hasEmptyStyleValue) ? "" : result.join(" ");
     };
     hooks.set[key] = function(style, value) {
         if (value && "cssText" in style) {
             // normalize setting complex property across browsers
             style.cssText += ";" + key + ":" + value;
         } else {
-            _.forEach(props, function(name) {
+            props.forEach(function(name) {
                 style[name] = typeof value === "number" ? value + "px" : value.toString();
             });
         }

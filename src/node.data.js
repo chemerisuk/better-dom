@@ -40,13 +40,13 @@ $Node.prototype.data = function(key, value) {
             return value;
         } else if (key && keyType === "object") {
             if (Array.isArray(key)) {
-                return _.foldr(key, function(r, key) { return r[key] = data[key], r; }, {});
+                return key.reduce(function(r, key) { return r[key] = data[key], r; }, {});
             } else {
-                return _.forEach(this, function(el) { _.extend(el._data, key) });
+                return this.each(function(el) { _.extend(el._data, key) });
             }
         }
     } else if (len === 2 && keyType === "string") {
-        return _.forEach(this, function(el) { el._data[key] = value });
+        return this.each(function(el) { el._data[key] = value });
     }
 
     throw _.makeError("data", this);

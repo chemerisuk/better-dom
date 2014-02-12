@@ -23,7 +23,7 @@ $Element.prototype.style = function(name, value) {
         if (node) {
             style = node.style;
 
-            value = _.foldl(nameType === "string" ? [name] : name, function(memo, name) {
+            value = (nameType === "string" ? [name] : name).reduce(function(memo, name) {
                 hook = styleAccessor.get[name];
                 value = hook ? hook(style) : style[name];
 

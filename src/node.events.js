@@ -35,7 +35,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         if (Array.isArray(type)) {
             args = _.slice(arguments, 1);
 
-            _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
+            type.forEach(function(name) { this.on.apply(this, [name].concat(args)) }, this);
         } else {
             _.forOwn(type, function(value, name) { this.on(name, value) }, this);
         }
@@ -125,7 +125,7 @@ $Node.prototype.fire = function(type) {
         throw _.makeError("fire");
     }
 
-    return _.every(this, function(el) {
+    return this.every(function(el) {
         var node = el._node,
             e, canContinue;
 
