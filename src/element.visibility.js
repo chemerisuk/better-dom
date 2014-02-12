@@ -59,7 +59,7 @@ var _ = require("./utils"),
                 node.setAttribute("aria-hidden", value);
                 // when there is no animation the completeAnimation call
                 // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.invoke(completeAnimation);
+                if (!hasAnimation) el.dispatch(completeAnimation);
             });
         };
     },

@@ -1,13 +1,13 @@
 var _ = require("./utils"),
     $Node = require("./node"),
-    invoker = document.createElement("a"),
+    dispatcher = document.createElement("a"),
     safePropName = "onpropertychange";
 
 if (_.DOM2_EVENTS) {
     // for modern browsers use late binding for safe calls
-    // invoker MUST have handleEvent property before registering
-    invoker[safePropName = "handleEvent"] = null;
-    invoker.addEventListener(safePropName, invoker, false);
+    // dispatcher MUST have handleEvent property before registering
+    dispatcher[safePropName = "handleEvent"] = null;
+    dispatcher.addEventListener(safePropName, dispatcher, false);
 }
 
 /**
@@ -16,7 +16,7 @@ if (_.DOM2_EVENTS) {
  * @param  {...Object}        [args]  extra arguments to pass into each invokation
  * @return {Object} result of the invokation which is undefined if there was an exception
  */
-$Node.prototype.invoke = function(method) {
+$Node.prototype.dispatch = function(method) {
     var args = _.slice.call(arguments, 1),
         methodType = typeof method,
         el = this,
@@ -30,18 +30,18 @@ $Node.prototype.invoke = function(method) {
     } else if (methodType === "string") {
         handler = function() { result = node[method].apply(node, args) };
     } else {
-        throw _.makeError("invoke");
+        throw _.makeError("dispatch");
     }
     // register safe invokation handler
-    invoker[safePropName] = handler;
+    dispatcher[safePropName] = handler;
     // make a safe call
     if (_.DOM2_EVENTS) {
         e = document.createEvent("HTMLEvents");
         e.initEvent(safePropName, false, false);
-        invoker.dispatchEvent(e);
+        dispatcher.dispatchEvent(e);
     }
     // cleanup references
-    invoker[safePropName] = null;
+    dispatcher[safePropName] = null;
 
     return result;
 };

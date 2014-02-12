@@ -39,7 +39,7 @@ var _ = require("./utils"),
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             // make a safe call so live extensions can't break each other
-            if (!skip[index] && ext.accept(node)) el.invoke(ext);
+            if (!skip[index] && ext.accept(node)) el.dispatch(ext);
         };
     };
 
@@ -132,7 +132,7 @@ DOM.extend = function(selector, condition, mixins) {
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
             _.each.call(document.querySelectorAll(selector), function(node) {
-                $Element(node).invoke(ext);
+                $Element(node).dispatch(ext);
             });
             // Any extension should be initialized after DOM.ready
             // MUST be after querySelectorAll because of legacy IEs behavior

@@ -1,4 +1,4 @@
-describe("invoke", function() {
+describe("dispatch", function() {
     var input;
 
     beforeEach(function() {
@@ -11,10 +11,10 @@ describe("invoke", function() {
         var obj = {},
             callback = jasmine.createSpy("callback");
 
-        input.invoke(callback, 123, obj);
+        input.dispatch(callback, 123, obj);
         expect(callback).toHaveBeenCalledWith(123, obj);
 
-        DOM.invoke(callback, obj, 321);
+        DOM.dispatch(callback, obj, 321);
         expect(callback).toHaveBeenCalledWith(obj, 321);
     });
 
@@ -23,7 +23,7 @@ describe("invoke", function() {
 
         input.legacy(function(node) { spy = spyOn(node, "focus") });
 
-        expect(input.invoke("focus")).toBeUndefined();
+        expect(input.dispatch("focus")).toBeUndefined();
         expect(spy).toHaveBeenCalled();
     });
 });
