@@ -8,25 +8,7 @@ var _ = require("./utils"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
     rparam = /\$\{([a-z\-]+)\}/g,
-    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" },
-    setDataAttr = function(value, key) { this.setAttribute("data-" + key, value) },
-    importStrings = function(lang, key, value) {
-        var keyType = typeof key,
-            selector, content;
-
-        if (keyType === "string") {
-            selector = "[data-i18n=\"" + key + "\"]";
-            content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
-            // empty lang is for internal use only
-            if (lang) selector += ":lang(" + lang + ")";
-
-            DOM.importStyles(selector + ":before", content, !lang);
-        } else if (keyType === "object") {
-            _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
-        } else {
-            throw _.makeError("importStrings", true);
-        }
-    };
+    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
  * Get/set localized value
@@ -39,18 +21,20 @@ $Element.prototype.i18n = function(value, vars) {
     var len = arguments.length,
         node = this._node;
 
-    if (!len) return node.getAttribute("data-i18n");
+    if (!len) return node ? node.getAttribute("data-i18n") : undefined;
 
     if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
-
     // localized srings with variables require different css
-    if (vars) importStrings("", value, value);
-    // cleanup existing content
-    node.innerHTML = "";
-    // process variables
-    _.forOwn(_.extend({i18n: value}, vars), setDataAttr, node);
+    if (vars) DOM.importStrings("", value, value);
 
-    return this;
+    vars = _.extend({i18n: value}, vars);
+
+    return this.legacy(function(node) {
+        // cleanup existing content
+        node.innerHTML = "";
+        // process variables
+        _.forOwn(vars, function(value, key) { node.setAttribute("data-" + key, value) });
+    });
 };
 
 /**
@@ -61,7 +45,23 @@ $Element.prototype.i18n = function(value, vars) {
  * @param {String}         value   localized string
  * @function
  */
-DOM.importStrings = importStrings;
+DOM.importStrings = function(lang, key, value) {
+    var keyType = typeof key,
+        selector, content;
+
+    if (keyType === "string") {
+        selector = "[data-i18n=\"" + key + "\"]";
+        content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
+        // empty lang is for internal use only
+        if (lang) selector += ":lang(" + lang + ")";
+
+        DOM.importStyles(selector + ":before", content, !lang);
+    } else if (keyType === "object") {
+        _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
+    } else {
+        throw _.makeError("importStrings", true);
+    }
+};
 
 // by default just show data-i18n string
 importStyles("[data-i18n]:before", "content:attr(data-i18n)");
