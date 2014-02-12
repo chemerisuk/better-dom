@@ -94,7 +94,7 @@ hooks.set.undefined = function(node, value) {
 
     if (node.tagName === "SELECT") {
         // selectbox has special case
-        if (Array.prototype.every.call(node.options, function(o) { return !(o.selected = o.value === value) })) {
+        if (_.every.call(node.options, function(o) { return !(o.selected = o.value === value) })) {
             node.selectedIndex = -1;
         }
     } else if (node.type && "value" in node) {

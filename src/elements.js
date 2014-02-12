@@ -1,6 +1,5 @@
-var $Element = require("./element"),
-    push = Array.prototype.push,
-    map = Array.prototype.map;
+var _ = require("./utils"),
+    $Element = require("./element");
 
 /**
  * Used to represent a collection of DOM elements
@@ -10,7 +9,7 @@ var $Element = require("./element"),
  * @private
  */
 function $Elements(elements) {
-    push.apply(this, map.call(elements, $Element));
+    _.push.apply(this, _.map.call(elements, $Element));
 }
 
 $Elements.prototype = new $Element();

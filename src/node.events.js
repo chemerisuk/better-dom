@@ -33,7 +33,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         }
     } else if (eventType === "object") {
         if (Array.isArray(type)) {
-            args = _.slice(arguments, 1);
+            args = _.slice.call(arguments, 1);
 
             type.forEach(function(name) { this.on.apply(this, [name].concat(args)) }, this);
         } else {
@@ -70,7 +70,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
  * @return {$Node}
  */
 $Node.prototype.once = function() {
-    var args = _.slice(arguments);
+    var args = _.slice.call(arguments, 0);
 
     args.push(true);
 
@@ -113,7 +113,7 @@ $Node.prototype.off = function(type, callback) {
  * @return {Boolean} true if default action wasn't prevented
  */
 $Node.prototype.fire = function(type) {
-    var args = _.slice(arguments, 1),
+    var args = _.slice.call(arguments, 1),
         eventType = typeof type,
         handler = {}, hook;
 

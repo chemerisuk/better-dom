@@ -17,7 +17,7 @@ if (_.DOM2_EVENTS) {
  * @return {Object} result of the invokation which is undefined if there was an exception
  */
 $Node.prototype.invoke = function(method) {
-    var args = _.slice(arguments, 1),
+    var args = _.slice.call(arguments, 1),
         methodType = typeof method,
         el = this,
         node = this._node,

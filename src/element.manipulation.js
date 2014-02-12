@@ -14,7 +14,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 
             var html = "", value;
 
-            Array.prototype.forEach.call(args, function(arg) {
+            _.each.call(args, function(arg) {
                 if (typeof arg === "function") arg = arg(el, index, ref);
 
                 if (typeof arg === "string") {

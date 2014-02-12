@@ -43,7 +43,7 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     }
 
     // check if the rule already exists
-    if (!unique || !Array.prototype.some.call(styleRules, function(rule) {
+    if (!unique || !_.some.call(styleRules, function(rule) {
         return selector === (rule.selectorText || "").split(norm[0]).join(norm[1]);
     })) {
         if (styleSheet.cssRules) {

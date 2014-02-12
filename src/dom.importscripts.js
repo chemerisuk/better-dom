@@ -8,7 +8,7 @@ var _ = require("./utils"),
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  */
 DOM.importScripts = function() {
-    var args = _.slice(arguments),
+    var args = _.slice.call(arguments, 0),
         callback = function() {
             var arg = args.shift(),
                 argType = typeof arg,

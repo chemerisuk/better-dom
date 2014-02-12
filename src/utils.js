@@ -32,7 +32,11 @@ module.exports = {
 
         return obj;
     },
-    slice: function(list, index) {
-        return Array.prototype.slice.call(list, index | 0);
-    }
+    slice: Array.prototype.slice,
+    every: Array.prototype.every,
+    each: Array.prototype.forEach,
+    filter: Array.prototype.filter,
+    some: Array.prototype.some,
+    push: Array.prototype.push,
+    map: Array.prototype.map
 };

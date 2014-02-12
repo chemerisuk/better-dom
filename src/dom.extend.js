@@ -131,7 +131,7 @@ DOM.extend = function(selector, condition, mixins) {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            Array.prototype.forEach.call(document.querySelectorAll(selector), function(node) {
+            _.each.call(document.querySelectorAll(selector), function(node) {
                 $Element(node).invoke(ext);
             });
             // Any extension should be initialized after DOM.ready
