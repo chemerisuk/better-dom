@@ -36,16 +36,16 @@ describe("traversing", function() {
             });
         });
 
-        describe("child", function() {
-            it("should accept optional filter", function() {
-                expect(link.child(0)).toHaveTag("strong");
-                expect(link.child(0, "a")).toBeEmpty();
-            });
+        // describe("child", function() {
+        //     it("should accept optional filter", function() {
+        //         expect(link.child(0)).toHaveTag("strong");
+        //         expect(link.child(0, "a")).toBeEmpty();
+        //     });
 
-            it("should throw error if the first arg is not a number", function() {
-                expect(function() { link.child({}); }).toThrow();
-            });
-        });
+        //     it("should throw error if the first arg is not a number", function() {
+        //         expect(function() { link.child({}); }).toThrow();
+        //     });
+        // });
 
         describe("parent", function() {
             it("should return empty node for html node", function() {

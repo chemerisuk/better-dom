@@ -5,7 +5,7 @@ var _ = require("./utils"),
     // Quick matching inspired by jQuery
     rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
 
-module.exports = function(selector) {
+module.exports = function(selector, context) {
     if (typeof selector !== "string") return null;
 
     var quick = rquickIs.exec(selector);
@@ -18,7 +18,7 @@ module.exports = function(selector) {
         if (quick[4]) quick[4] = " " + quick[4] + " ";
     }
 
-    return function(node, context) {
+    return function(node) {
         var result, found, test;
 
         if (!quick && !node.webkitMatchesSelector) {

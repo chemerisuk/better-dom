@@ -35,16 +35,16 @@ var _ = require("./utils"),
 
 module.exports = function(type, selector, callback, props, el, once) {
     var hook = hooks[type],
-        matcher = SelectorMatcher(selector),
+        node = el._node,
+        matcher = SelectorMatcher(selector, node),
         handler = function(e) {
             if (module.exports.skip === type) return; // early stop in case of default action
 
             e = e || window.event;
 
-            var node = el._node,
-                // srcElement could be null in legacy IE when target is document
+            var // srcElement could be null in legacy IE when target is document
                 target = e.target || e.srcElement || document,
-                currentTarget = matcher ? matcher(target, node) : node,
+                currentTarget = matcher ? matcher(target) : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
                 args = props || ["target", "currentTarget", "defaultPrevented"];
 

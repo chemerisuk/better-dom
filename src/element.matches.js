@@ -21,7 +21,7 @@ $Element.prototype.matches = function(selector) {
     var node = this._node,
         checker = hooks[selector] || SelectorMatcher(selector);
 
-    return !!checker(node);
+    return node && !!checker(node);
 };
 
 // $Element.matches hooks

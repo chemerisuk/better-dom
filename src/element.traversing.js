@@ -31,31 +31,27 @@ function makeTraversingMethod(propertyName, all) {
 }
 
 function makeChildTraversingMethod(all) {
-    return function(index, selector) {
+    return function(selector) {
         if (all) {
-            selector = index;
-        } else if (typeof index !== "number") {
-            throw _.makeError("child");
+            if (selector && typeof selector !== "string") _.makeError("children");
+        } else {
+            if (selector && typeof selector !== "number") _.makeError("child");
         }
 
         if (!this._node) return new $Element();
 
-        var children = this._node.children,
-            matcher = SelectorMatcher(selector),
-            node;
+        var children = this._node.children;
 
         if (!_.DOM2_EVENTS) {
             // fix IE8 bug with children collection
             children = _.filter(children, function(node) { return node.nodeType === 1 });
         }
 
-        if (all) return new $Elements(matcher ? _.filter(children, matcher) : children);
+        if (all) return new $Elements(selector ? _.filter(children, SelectorMatcher(selector)) : children);
 
-        if (index < 0) index = children.length + index;
+        if (selector < 0) selector = children.length + selector;
 
-        node = children[index];
-
-        return $Element(!matcher || matcher(node) ? node : null);
+        return $Element(children[selector]);
     };
 }
 
@@ -113,7 +109,6 @@ $Element.prototype.parent = makeTraversingMethod("parentNode");
  * Return child element by index filtered by optional selector
  * @memberOf module:traversing
  * @param  {Number} index child index
- * @param  {String} [selector] css selector
  * @return {$Element} matched child
  * @function
  */
