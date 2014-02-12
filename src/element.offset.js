@@ -4,18 +4,22 @@
  */
 var _ = require("./utils"),
     $Element = require("./element");
+
 /**
  * Calculates offset of the current element
  * @memberOf module:offset
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
-    if (this._node) {
-        var boundingRect = this._node.getBoundingClientRect(),
-            clientTop = _.docEl.clientTop,
-            clientLeft = _.docEl.clientLeft,
-            scrollTop = window.pageYOffset || _.docEl.scrollTop,
-            scrollLeft = window.pageXOffset || _.docEl.scrollLeft;
+    var node = this._node,
+        clientTop = _.docEl.clientTop,
+        clientLeft = _.docEl.clientLeft,
+        scrollTop = window.pageYOffset || _.docEl.scrollTop,
+        scrollLeft = window.pageXOffset || _.docEl.scrollLeft,
+        boundingRect;
+
+    if (node) {
+        boundingRect = node.getBoundingClientRect();
 
         return {
             top: boundingRect.top + scrollTop - clientTop,

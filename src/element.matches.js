@@ -6,7 +6,6 @@ var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = {};
-
 /**
  * Check if the element matches selector
  * @memberOf module:matches
@@ -14,12 +13,10 @@ var _ = require("./utils"),
  * @return {$Element}
  */
 $Element.prototype.matches = function(selector) {
-    if (!selector || typeof selector !== "string") {
-        throw _.makeError("matches");
-    }
+    if (!selector || typeof selector !== "string") throw _.makeError("matches");
 
-    var node = this._node,
-        checker = hooks[selector] || SelectorMatcher(selector);
+    var checker = hooks[selector] || SelectorMatcher(selector),
+        node = this._node;
 
     return node && !!checker(node);
 };

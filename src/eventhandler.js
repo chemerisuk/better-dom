@@ -4,11 +4,6 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    RAF = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
-        var prop = name + "equestAnimationFrame";
-
-        return memo || window[prop] && prop;
-    }, null),
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -23,7 +18,7 @@ var _ = require("./utils"),
             if (!debouncing) {
                 debouncing = true;
 
-                window[RAF](function() {
+                window[_.RAF](function() {
                     originalHandler(e);
 
                     debouncing = false;

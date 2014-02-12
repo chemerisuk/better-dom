@@ -15,7 +15,9 @@ var _ = require("./utils"),
 $Node.prototype.contains = function(element) {
     var node = this._node;
 
-    if (!(element instanceof $Element)) throw _.makeError("contains");
+    if (element instanceof $Element) {
+        return node && element.every(function(el) { return node.contains(el._node) });
+    }
 
-    if (node) return element.every(function(el) { return node.contains(el._node) });
+    throw _.makeError("contains");
 };

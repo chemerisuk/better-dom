@@ -7,7 +7,7 @@ var _ = require("./utils"),
     styleAccessor = require("./styleaccessor");
 
 /**
- * CSS getter/setter for an element
+ * CSS properties accessor for an element
  * @memberOf module:css
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
