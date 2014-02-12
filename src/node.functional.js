@@ -1,15 +1,28 @@
 var _ = require("./utils"),
-    $Node = require("./node");
+    $Node = require("./node"),
+    makeLoopMethod = (function(){
+        var rcallback = /cb\.call\(([^)]+)\)/g,
+            defaults = {
+                BEGIN: "",
+                COUNT:  "this ? this.length : 0",
+                BODY:   "",
+                END:  "return this"
+            };
 
-function makeCollectionMethod(fn) {
-    var code = fn.toString();
-    // extract function body
-    code = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
-    // use this variable unstead of a
-    code = code.replace(/a([^\w])/g, function(a, symbol) { return "this" + symbol; });
-    // compile the function
-    return Function("cb", "that", code);
-}
+        return function(options) {
+            var code = "%BEGIN%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%END%", key;
+
+            for (key in defaults) {
+                code = code.replace("%" + key + "%", options[key] || defaults[key]);
+            }
+            // improve performance by using call method on demand
+            code = code.replace(rcallback, function(expr, args) {
+                return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
+            });
+
+            return Function("cb", "that", "undefined", code);
+        };
+    })();
 
 _.extend($Node.prototype, {
     /**
@@ -20,8 +33,9 @@ _.extend($Node.prototype, {
      * @return {$Node}
      * @function
      */
-    each: makeCollectionMethod(_.forEach),
-
+    each: makeLoopMethod({
+        BODY:  "cb.call(that, this[i], i, this)"
+    }),
     /**
      * Check if the callback returns true for any element in the collection
      * @memberOf $Node.prototype
@@ -30,8 +44,10 @@ _.extend($Node.prototype, {
      * @return {Boolean} true, if any element in the collection return true
      * @function
      */
-    some: makeCollectionMethod(_.some),
-
+    some: makeLoopMethod({
+        BODY:  "if (cb.call(that, this[i], i, this) === true) return true",
+        END:   "return false"
+    }),
     /**
      * Check if the callback returns true for all elements in the collection
      * @memberOf $Node.prototype
@@ -40,8 +56,11 @@ _.extend($Node.prototype, {
      * @return {Boolean} true, if all elements in the collection returns true
      * @function
      */
-    every: makeCollectionMethod(_.every),
-
+    every: makeLoopMethod({
+        BEGIN: "var out = true",
+        BODY:  "out = cb.call(that, this[i], i, this) && out",
+        END:   "return out"
+    }),
     /**
      * Create an array of values by running each element in the collection through the callback
      * @memberOf $Node.prototype
@@ -50,8 +69,11 @@ _.extend($Node.prototype, {
      * @return {Array} new array of the results of each callback execution
      * @function
      */
-    map: makeCollectionMethod(_.map),
-
+    map: makeLoopMethod({
+        BEGIN: "var out = Array(this && this.length || 0)",
+        BODY:  "out[i] = cb.call(that, this[i], i, this)",
+        END:   "return out"
+    }),
     /**
      * Examine each element in a collection, returning an array of all elements the callback returns truthy for
      * @memberOf $Node.prototype
@@ -60,8 +82,11 @@ _.extend($Node.prototype, {
      * @return {Array} new array with elements where callback returned true
      * @function
      */
-    filter: makeCollectionMethod(_.filter),
-
+    filter: makeLoopMethod({
+        BEGIN: "var out = []",
+        BODY:  "if (cb.call(that, this[i], i, this)) out.push(this[i])",
+        END:   "return out"
+    }),
     /**
      * Boil down a list of values into a single value (from start to end)
      * @memberOf $Node.prototype
@@ -70,8 +95,11 @@ _.extend($Node.prototype, {
      * @return {Object} the accumulated value
      * @function
      */
-    reduce: makeCollectionMethod(_.foldl),
-
+    reduce: makeLoopMethod({
+        BEGIN: "if (arguments.length < 2) that = this[0]",
+        BODY:  "that = cb(that, this[arguments.length < 2 ? i + 1 : i], i, this)",
+        END:   "return that"
+    }),
     /**
      * Boil down a list of values into a single value (from end to start)
      * @memberOf $Node.prototype
@@ -80,8 +108,11 @@ _.extend($Node.prototype, {
      * @return {Object} the accumulated value
      * @function
      */
-    reduceRight: makeCollectionMethod(_.foldr),
-
+    reduceRight: makeLoopMethod({
+        BEGIN: "var j; if (arguments.length < 2) that = this[this.length - 1]",
+        BODY:  "j = n - i - 1; that = cb(that, this[arguments.length < 2 ? j - 1 : j], j, this)",
+        END:   "return that"
+    }),
     /**
      * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
@@ -89,5 +120,8 @@ _.extend($Node.prototype, {
      * @return {$Node}
      * @function
      */
-    legacy: makeCollectionMethod(_.legacy)
+    legacy: makeLoopMethod({
+        BEGIN: "that = this",
+        BODY:  "cb.call(that, this[i]._node, this[i], i)"
+    })
 });

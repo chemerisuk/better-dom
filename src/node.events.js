@@ -88,7 +88,7 @@ $Node.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy(function(node, el) {
-        el._handlers = _.filter(el._handlers, function(handler) {
+        el._handlers = el._handlers.filter(function(handler) {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 
             type = handler._type || handler.type;

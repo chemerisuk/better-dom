@@ -97,7 +97,7 @@ DOM.extend = function(selector, condition, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
+        var eventHandlers = Object.keys(mixins).filter(function(prop) { return !!reRemovableMethod.exec(prop) }),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
             ext = function(mock) {
