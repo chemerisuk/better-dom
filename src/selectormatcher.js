@@ -2,14 +2,8 @@
  * Helper for css selectors
  */
 var _ = require("./utils"),
-    // Quick matching inspired by
-    // https://github.com/jquery/jquery
-    rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
-    matchesProp = _.foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
-        var propertyName = prefix + "atchesSelector";
-
-        if (!result) return _.docEl[propertyName] && propertyName;
-    }, null);
+    // Quick matching inspired by jQuery
+    rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
 
 module.exports = function(selector) {
     if (typeof selector !== "string") return null;
@@ -24,20 +18,35 @@ module.exports = function(selector) {
         if (quick[4]) quick[4] = " " + quick[4] + " ";
     }
 
-    return function(node) {
-        if (!node || node.nodeType !== 1) return false;
+    return function(node, context) {
+        var result, found, test;
 
-        if (!quick) {
-            if (matchesProp) return node[matchesProp](selector);
-
-            return _.some(document.querySelectorAll(selector), function(x) { return x === node });
+        if (!quick && !node.webkitMatchesSelector) {
+            found = (context || document).querySelectorAll(selector);
+            test = function(x) { return x === node };
         }
 
-        return (
-            (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
-            (!quick[2] || node.id === quick[2]) &&
-            (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
-            (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
-        );
+        for (; node && node.nodeType === 1; node = node.parentNode) {
+            if (quick) {
+                result = (
+                    (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
+                    (!quick[2] || node.id === quick[2]) &&
+                    (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
+                    (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
+                );
+            } else {
+                // querySelectorAll is faster in all browsers except Webkit-based:
+                // http://jsperf.com/queryselectorall-vs-matches/3
+                if (node.webkitMatchesSelector) {
+                    result = node.webkitMatchesSelector(selector);
+                } else {
+                    result = _.some(found, test);
+                }
+            }
+
+            if (result || !context || node === context) break;
+        }
+
+        return result && node;
     };
 };

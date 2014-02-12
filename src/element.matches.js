@@ -10,24 +10,18 @@ var _ = require("./utils"),
 /**
  * Check if the element matches selector
  * @memberOf module:matches
- * @param  {String} selector css selector
+ * @param  {String}   selector  css selector for checking
  * @return {$Element}
  */
-$Element.prototype.matches = function(selector, deep) {
-    if (!selector || typeof selector !== "string" || deep !== undefined && typeof deep !== "boolean") {
+$Element.prototype.matches = function(selector) {
+    if (!selector || typeof selector !== "string") {
         throw _.makeError("matches");
     }
 
     var node = this._node,
         checker = hooks[selector] || SelectorMatcher(selector);
 
-    while (node && node !== document) {
-        if (checker(node)) return true;
-
-        node = deep ? node.parentNode : null;
-    }
-
-    return false;
+    return !!checker(node);
 };
 
 // $Element.matches hooks

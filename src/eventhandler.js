@@ -41,18 +41,15 @@ module.exports = function(type, selector, callback, props, el, once) {
 
             e = e || window.event;
 
-            // srcElement could be null in legacy IE when target is document
             var node = el._node,
+                // srcElement could be null in legacy IE when target is document
                 target = e.target || e.srcElement || document,
-                currentTarget = selector ? target : node,
+                currentTarget = matcher ? matcher(target, node) : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
                 args = props || ["target", "currentTarget", "defaultPrevented"];
 
-            if (typeof fn !== "function") return; // early stop for late binding
-
-            for (; matcher && !matcher(currentTarget); currentTarget = currentTarget.parentNode) {
-                if (!currentTarget || currentTarget === node) return; // no matched element was found
-            }
+            // early stop for late binding or when target doesn't match selector
+            if (typeof fn !== "function" || !currentTarget) return;
 
             // off callback even if it throws an exception later
             if (once) el.off(type, callback);

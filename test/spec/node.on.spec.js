@@ -37,7 +37,7 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should fix currentTarget in case of event filter", function() {
+    it("should fix currentTarget when selector exists", function() {
         spy.andCallFake(function(target, currentTarget) {
             expect(currentTarget).toHaveTag("a");
 

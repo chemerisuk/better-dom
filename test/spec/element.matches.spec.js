@@ -35,10 +35,10 @@ describe("matches", function() {
         expect(function() { link.matches(1); }).toThrow();
     });
 
-    it("should accept optional deep argument", function() {
-        expect(link.child(0).matches("a")).toBe(false);
-        expect(link.child(0).matches("a", true)).toBe(true);
-    });
+    // it("should accept optional deep argument", function() {
+    //     expect(link.child(0).matches("a")).toBe(false);
+    //     expect(link.child(0).matches("a", true)).toBe(true);
+    // });
 
     it("should support special :hidden and :visible pseudoselector", function() {
         expect(link.matches(":hidden")).toBe(false);
