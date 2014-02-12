@@ -16,19 +16,19 @@ $Element.prototype.clone = function(deep) {
 
     if (typeof deep !== "boolean") throw _.makeError("clone");
 
-    var node = this._node;
+    var node = this._node, result;
 
     if (node) {
         if (_.DOM2_EVENTS) {
-            node = node.cloneNode(deep);
+            result = new $Element(node.cloneNode(deep));
         } else {
-            node = document.createElement("div");
-            node.innerHTML = this._node.outerHTML;
-            node = node.firstChild;
+            result = DOM.create(node.outerHTML);
 
-            if (!deep) node.innerHTML = "";
+            if (!deep) result.set("innerHTML", "");
         }
+    } else {
+        result = new $Element();
     }
 
-    return new $Element(node);
+    return result;
 };

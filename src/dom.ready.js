@@ -5,7 +5,7 @@ var _ = require("./utils"),
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, function(callback) { DOM.invoke(callback) });
+    _.forEach(readyCallbacks, DOM.invoke, DOM);
     // cleanup
     readyCallbacks = null;
 }
@@ -22,9 +22,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
     } else {
         window.attachEvent("onload", pageLoaded);
         document.attachEvent("ondataavailable", function() {
-            if (window.event.srcUrn === "DOMContentLoaded") {
-                pageLoaded();
-            }
+            if (window.event.srcUrn === "DOMContentLoaded") pageLoaded();
         });
     }
 }
