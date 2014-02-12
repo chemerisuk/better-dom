@@ -11,7 +11,8 @@ function $Element(element) {
     if (element && element.__dom__) return element.__dom__;
 
     if (this instanceof $Element) {
-        this._visibility = ""; /* reduce number of hidden classes */
+        this._watchers = {};
+        this._visibility = "";
 
         $Node.call(this, element);
     } else {

@@ -46,19 +46,22 @@ $Element.prototype.set = function(name, value) {
 
     return this.legacy(function(node, el, index, ref) {
         var hook = hooks.set[name],
-            str = value;
+            watchers = el._watchers[name],
+            newValue = value, oldValue;
 
-        if (typeof str === "function") str = value(el, index, ref);
+        if (watchers) oldValue = el.get(name);
+
+        if (typeof newValue === "function") newValue = value(el, index, ref);
 
         if (hook || nameType === "string") {
             if (hook) {
-                hook(node, str);
-            } else if (str == null) {
+                hook(node, newValue);
+            } else if (newValue == null) {
                 node.removeAttribute(name);
             } else if (name in node) {
-                node[name] = str;
+                node[name] = newValue;
             } else {
-                node.setAttribute(name, str);
+                node.setAttribute(name, newValue);
             }
         } else if (nameType === "object") {
             return _.forOwn(name, function(value, name) { el.set(name, value) });
@@ -66,8 +69,27 @@ $Element.prototype.set = function(name, value) {
             throw _.makeError("set");
         }
 
+        if (watchers) watchers.forEach(function(watcher) {
+                el.invoke(watcher, name, newValue, oldValue);
+            });
         // trigger reflow manually in IE8
         if (!_.DOM2_EVENTS) node.className = node.className;
+    });
+};
+
+$Element.prototype.watch = function(name, watcher) {
+    return this.each(function(el) {
+        (el._watchers[name] || (el._watchers[name] = [])).push(watcher);
+    });
+};
+
+$Element.prototype.unwatch = function(name, watcher) {
+    var eq = function(w) { return w === watcher };
+
+    return this.each(function(el) {
+        var watchers = el._watchers[name];
+
+        if (watchers) el._watchers[name] = watchers.filter(eq);
     });
 };
 
