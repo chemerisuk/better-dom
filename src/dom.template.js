@@ -11,7 +11,7 @@ var _ = require("./utils"),
     reTextTag = /<\?>|<\/\?>/g,
     reAttr = /([\w\-]+)(?:=((?:`((?:\\.|[^`])*)`)|(?:'(?:(?:\\.|[^'])*)')|([^\s\]]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    reVar = /\$\{(\w+)\}/g,
+    reVar = /\{([a-zA-Z\-\d]+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
     normalizeAttrs = function(term, name, value, rawValue, needQuotes) {
@@ -170,5 +170,9 @@ DOM.template = function(template, varMap) {
         stack.unshift(str);
     }
 
-    return cache[template] = toString(stack[0]).replace(reTextTag, "");
+    output = toString(stack[0]).replace(reTextTag, "");
+
+    if (!varMap) cache[template] = output;
+
+    return output;
 };

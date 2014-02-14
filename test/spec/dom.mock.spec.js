@@ -71,7 +71,7 @@ describe("DOM.mock", function() {
         var el;
 
         DOM.extend(".mock6", function() { return true }, { d: 2 });
-        el = DOM.mock("a.mock6[title=${title}]", {title: "c"});
+        el = DOM.mock("a.mock6[title={title}]", {title: "c"});
         expect(el.d).toBe(2);
         expect(el.get("title")).toBe("c");
     });

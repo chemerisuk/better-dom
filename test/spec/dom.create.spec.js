@@ -2,7 +2,7 @@ describe("create", function() {
     "use strict";
 
     it("should create single DOM element if parameter is not an HTML string", function() {
-        var link = DOM.create("a#${id}[title=${title}]", {id: "b", title: "c"});
+        var link = DOM.create("a#{id}[title={title}]", {id: "b", title: "c"});
 
         jasmine.sandbox.set(link);
 

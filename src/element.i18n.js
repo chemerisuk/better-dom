@@ -7,8 +7,8 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
-    rparam = /\$\{([a-z\-]+)\}/g,
-    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" };
+    reVar = /\{([a-zA-Z\-\d]+)\}/g,
+    toContentAttr = function(_, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
  * Get/set localized value
@@ -51,7 +51,7 @@ DOM.importStrings = function(lang, key, value) {
 
     if (keyType === "string") {
         selector = "[data-i18n=\"" + key + "\"]";
-        content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
+        content = "content:\"" + value.replace(reVar, toContentAttr) + "\"";
         // empty lang is for internal use only
         if (lang) selector += ":lang(" + lang + ")";
 
