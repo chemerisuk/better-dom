@@ -30,11 +30,7 @@ suite("create", function () {
     });
 
     benchmark("DOM#create(EmmetString)", function() {
-        DOM.create("a#a1[rel=b2]>span+i");
-    });
-
-    benchmark("DOM#create(Options)", function() {
-        DOM.create("a", {id: "a1", rel: "b2"}).append("span").append("i");
+        DOM.create("a#${0}[rel=${1}]>span+i", ["a1", "b2"]);
     });
 
     benchmark("native(String)", function() {

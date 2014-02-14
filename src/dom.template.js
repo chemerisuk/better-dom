@@ -9,14 +9,15 @@ var _ = require("./utils"),
     // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reTextTag = /<\?>|<\/\?>/g,
-    reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+    reAttr = /([\w\-]+)(?:=((?:`((?:\\.|[^`])*)`)|(?:'(?:(?:\\.|[^'])*)')|([^\s\]]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
     reVar = /\$\{(\w+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
-    normalizeAttrs = function(term, attrName, attrValue, a, b, attrBool) {
+    normalizeAttrs = function(term, name, value, rawValue, needQuotes) {
         // always wrap attribute values with quotes if they don't exist
-        return attrName + "=" + (attrBool || !attrValue ? "\"" + (attrValue || attrName) + "\"" : attrValue);
+        // replace ` quotes with " except when it's a single quotes case
+        return name + "=" + (needQuotes || rawValue || !value ? "\"" + (rawValue || value || name) + "\"" : value);
     },
     injectTerm = function(term, first) {
         return function(el) {

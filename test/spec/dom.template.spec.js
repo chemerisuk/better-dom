@@ -51,7 +51,7 @@ describe("DOM.template", function() {
         checkExpr("a.test[title href]", "<a class=\"test\" title=\"title\" href=\"href\"></a>");
         checkExpr("a#one.two[title href]", "<a id=\"one\" class=\"two\" title=\"title\" href=\"href\"></a>");
         checkExpr("a[title=hello]", "<a title=\"hello\"></a>");
-        checkExpr("a[title=\"hello world\"]", "<a title=\"hello world\"></a>");
+        checkExpr("a[title=`hello world`]", "<a title=\"hello world\"></a>");
         checkExpr("a[title='hello world']", "<a title='hello world'></a>");
         checkExpr("a[title='hello world' href=other]", "<a title='hello world' href=\"other\"></a>");
         checkExpr("a[title='hello world' href=other name]", "<a title='hello world' href=\"other\" name=\"name\"></a>");
