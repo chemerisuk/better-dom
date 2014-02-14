@@ -77,12 +77,26 @@ $Element.prototype.set = function(name, value) {
     });
 };
 
+/**
+ * Watch for changes of a particular property/attribute
+ * @memberOf module:accessors
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} watcher watch callback the accepts (name, newValue, oldValue)
+ * @return {$Element}
+ */
 $Element.prototype.watch = function(name, watcher) {
     return this.each(function(el) {
         (el._watchers[name] || (el._watchers[name] = [])).push(watcher);
     });
 };
 
+/**
+ * Disable watching of a particular property/attribute
+ * @memberOf module:accessors
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} watcher watch callback
+ * @return {$Element}
+ */
 $Element.prototype.unwatch = function(name, watcher) {
     var eq = function(w) { return w === watcher };
 
@@ -136,7 +150,5 @@ hooks.get.type = function(node) {
 
 if (!_.DOM2_EVENTS) {
     hooks.get.textContent = function(node) { return node.innerText };
-    hooks.set.textContent = function(node, value) {
-        node.innerText = value;
-    };
+    hooks.set.textContent = function(node, value) { node.innerText = value };
 }

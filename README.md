@@ -1,18 +1,21 @@
 # better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
 > Live extension playground
 
-jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. But there are a lot of situations when more flexibility is required. To handle such cases I'd like to introduce **[live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)** and **better-dom** - a new library for working with the DOM.
+jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
+But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce **[live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)** and **better-dom** - a new library for working with the DOM.
+
+[API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
-* compact size (~26,5kb minified and ~5,8kb gzipped)
+* compact size: from ~2,2kb till ~5,9kb for minified and gzipped version
 * clean, minimalistic and standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
-* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
-* [better event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
-* [microtemplating using the emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
-* [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
-* [custom builds support](#how-to-make-a-custom-build)
+* [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
+* [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
+* [custom builds](#how-to-make-a-custom-build)
+* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
+* [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
@@ -39,16 +42,14 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ```
 
 ## Documentation
-[API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
-
-[Introduction into the better-dom library in English @smashingmagazine.com](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/)
-
-[Введение в библиотеку better-dom по-русски @habrahabr.ru](http://habrahabr.ru/post/209140/)
+* [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
+* [Introducing Live Extensions For Better-DOM: What They Are And How They Work](http://coding.smashingmagazine.com/2014/02/05/introducing-live-extensions-better-dom-javascript/) @smashingmagazine.com
+* [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
 Need more?
 
-* Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
 * read [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
+* Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
 * check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
 * walk through the sorce code of existing [projects that use better-dom](https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom).
 

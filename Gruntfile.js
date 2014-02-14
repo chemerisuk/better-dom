@@ -227,7 +227,7 @@ module.exports = function(grunt) {
             return;
         }
 
-        args = excluded === "all" ? Object.keys(modules) : excluded.split(",");
+        args = excluded === "min" ? Object.keys(modules) : excluded.split(",");
         options = grunt.config.get("browserify.compile.options");
 
         options.ignore = args.reduce(function(memo, arg) {
