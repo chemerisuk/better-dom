@@ -68,20 +68,15 @@ describe("DOM.template", function() {
         checkExpr("ul#nav>li.pre$*3+li.post$*3", "<ul id=\"nav\"><li class=\"pre1\"></li><li class=\"pre2\"></li><li class=\"pre3\"></li><li class=\"post1\"></li><li class=\"post2\"></li><li class=\"post3\"></li></ul>");
 
         checkExpr("div.sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
-        // checkExpr(".sample$*3", "<div class=\"sample1\"></div><div class=\"sample2\"></div><div class=\"sample3\"></div>");
         checkExpr("li#id$.class$*3", "<li id=\"id1\" class=\"class1\"></li><li id=\"id2\" class=\"class2\"></li><li id=\"id3\" class=\"class3\"></li>");
-
-        checkExpr("{$@3 }*3", "3 4 5 ");
-        checkExpr("{$@- }*3", "3 2 1 ");
-        checkExpr("{$@-5 }*3", "7 6 5 ");
 
         checkExpr("ul>(li>b)*3", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>");
         checkExpr("ul>li*3>b", "<ul><li><b></b></li><li><b></b></li><li><b></b></li></ul>");
 
-        // checkExpr("a>{${c}}", "<a>${c}</a>", {b: "test"});
-        checkExpr("a>{${c}}", "<a>test</a>", {c: "test"});
-        checkExpr("a.${c}>{${c}}", "<a class=\"test\">test</a>", {c: "test"});
-        checkExpr("a#${b}>{${c}}", "<a id=\"bbb\">test</a>", {c: "test", b: "bbb"});
+        checkExpr("a>`${c}`", "<a>${c}</a>", {b: "test"});
+        checkExpr("a>`${c}`", "<a>test</a>", {c: "test"});
+        checkExpr("a.${c}>`${c}`", "<a class=\"test\">test</a>", {c: "test"});
+        checkExpr("a#${b}>`${c}`", "<a id=\"bbb\">test</a>", {c: "test", b: "bbb"});
         checkExpr("div[class=foo-${lang}]*2", "<div class=\"foo-en\"></div><div class=\"foo-en\"></div>", {lang: "en"});
         checkExpr("div[class=foo-$lang]*2", "<div class=\"foo-1lang\"></div><div class=\"foo-2lang\"></div>", {lang: "en"});
     });
@@ -95,23 +90,15 @@ describe("DOM.template", function() {
         checkExpr("(span.i$)*3", "<span class=\"i1\"></span><span class=\"i2\"></span><span class=\"i3\"></span>");
         // checkExpr("(p.i$+ul>li.i$*2>span.s$)*3", "<p class=\"i1\"></p><ul><li class=\"i1\"><span class=\"s1\"></span></li><li class=\"i2\"><span class=\"s2\"></span></li></ul><p class=\"i2\"></p><ul><li class=\"i1\"><span class=\"s1\"></span></li><li class=\"i2\"><span class=\"s2\"></span></li></ul><p class=\"i3\"></p><ul><li class=\"i1\"><span class=\"s1\"></span></li><li class=\"i2\"><span class=\"s2\"></span></li></ul>");
         checkExpr("p.p$*2>(i.i$+b.b$)*3", "<p class=\"p1\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p><p class=\"p2\"><i class=\"i1\"></i><b class=\"b1\"></b><i class=\"i2\"></i><b class=\"b2\"></b><i class=\"i3\"></i><b class=\"b3\"></b></p>");
-        // checkExpr("a.c[d=$@2]*3>b>{Card $@-5}", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
-        checkExpr("(a.c[d=$@2]>b>{Card $@-5})*3", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
+        // checkExpr("a.c[d=$@2]*3>b>`Card $@-5`", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
+        checkExpr("(a.c[d=$@2]>b>`Card $@-5`)*3", "<a class=\"c\" d=\"2\"><b>Card 7</b></a><a class=\"c\" d=\"3\"><b>Card 6</b></a><a class=\"c\" d=\"4\"><b>Card 5</b></a>");
     });
 
-    // describe("type attribute", function() {
-        // checkExpr("ul>.t>a", "<input type=\"radio\">");
-        // checkExpr("input:radio", "<input type=\"radio\">");
-        // checkExpr("input:email#a.b", "<input type=\"email\" id=\"a\" class=\"b\">");
-        // checkExpr(":date", "<input type=\"date\">");
-        // checkExpr("a>:date+b", "<a><input type=\"date\"><b></b></a>");
-    // });
-
     describe("text nodes", function() {
-        checkExpr("span{Hello world}", "<span>Hello world</span>");
-        checkExpr("span>{Hello world}", "<span>Hello world</span>");
-        checkExpr("span>{Hello}+{ world}", "<span>Hello world</span>");
-        checkExpr("span>{Click }+(a[href=/url/]>{here})+{ for more info}", "<span>Click <a href=\"/url/\">here</a> for more info</span>");
+        checkExpr("span`Hello world`", "<span>Hello world</span>");
+        checkExpr("span>`Hello world`", "<span>Hello world</span>");
+        checkExpr("span>`Hello`+` world`", "<span>Hello world</span>");
+        checkExpr("span>`Click `+(a[href=/url/]>`here`)+` for more info`", "<span>Click <a href=\"/url/\">here</a> for more info</span>");
     });
 
     it("should throw error on invalid args", function() {

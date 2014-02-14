@@ -7,7 +7,7 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
-    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8},
+    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reTextTag = /<\?>|<\/\?>/g,
     reAttr = /([\w\-]+)(?:=((?:`((?:\\.|[^`])*)`)|(?:'(?:(?:\\.|[^'])*)')|([^\s\]]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
@@ -82,14 +82,6 @@ DOM.template = function(template, varMap) {
         priority = operators[str];
 
         if (priority && (!skip || skip === str)) {
-            // append empty tag for text nodes or put missing '>' operator into the stack
-            if (str === "{") {
-                if (term) {
-                    stack.unshift(">");
-                } else {
-                    term = "?";
-                }
-            }
             // remove redundat ^ operators from the stack when more than one exists
             if (str === "^" && stack[0] === "^") stack.shift();
 
@@ -112,7 +104,7 @@ DOM.template = function(template, varMap) {
                 stack.unshift(str);
 
                 if (str === "[") skip = "]";
-                if (str === "{") skip = "}";
+                if (str === "`") skip = "`";
             } else {
                 skip = false;
             }
@@ -151,7 +143,7 @@ DOM.template = function(template, varMap) {
                 term = injectTerm(" " + term.replace(reAttr, normalizeAttrs), true);
                 break;
 
-            case "{":
+            case "`":
                 term = injectTerm(term);
                 break;
 
