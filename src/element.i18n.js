@@ -13,27 +13,27 @@ var _ = require("./utils"),
 /**
  * Get/set localized value
  * @memberOf module:i18n
- * @param  {String} [value]  resource string key
- * @param  {Object} [vars]   resource string variables
+ * @param  {String}       [value]   resource string key
+ * @param  {Object|Array} [varMap]  resource string variables
  * @return {String|$Element}
  */
-$Element.prototype.i18n = function(value, vars) {
+$Element.prototype.i18n = function(value, varMap) {
     var len = arguments.length,
         node = this._node;
 
     if (!len) return node ? node.getAttribute("data-i18n") : undefined;
 
-    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
+    if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
     // localized srings with variables require different css
-    if (vars) DOM.importStrings("", value, value);
+    if (varMap) DOM.importStrings("", value, value);
 
-    vars = _.extend({i18n: value}, vars);
+    varMap = _.extend({i18n: value}, varMap);
 
     return this.legacy(function(node) {
         // cleanup existing content
         node.innerHTML = "";
         // process variables
-        _.forOwn(vars, function(value, key) { node.setAttribute("data-" + key, value) });
+        _.forOwn(varMap, function(value, key) { node.setAttribute("data-" + key, value) });
     });
 };
 

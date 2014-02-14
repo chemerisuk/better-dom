@@ -34,6 +34,10 @@ describe("clone", function() {
         expect(clone.children().length).toBe(0);
     });
 
+    it("should work on empty elements", function() {
+        expect(DOM.mock().clone()).toBeTruthy();
+    });
+
     it("should throw error if argument is invalud", function() {
         expect(function() { link.clone(1) }).toThrow();
         expect(function() { link.clone({}) }).toThrow();

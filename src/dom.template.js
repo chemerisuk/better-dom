@@ -53,8 +53,8 @@ var _ = require("./utils"),
 /**
  * Parse emmet-like template into a HTML string
  * @memberOf module:template
- * @param  {String} template emmet-like expression
- * @param  {Object} [varMap] key/value map of variables
+ * @param  {String}       template  emmet-like expression
+ * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {String} HTML string
  */
 DOM.template = function(template, varMap) {

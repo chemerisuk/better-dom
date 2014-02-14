@@ -145,8 +145,8 @@ DOM.extend = function(selector, condition, mixins) {
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
  * @memberOf module:extend
- * @param  {Mixed} [content] HTMLString, EmmetString
- * @param  {Object} [varMap]  key/value map of variables in emmet template
+ * @param  {Mixed}        [content]  HTMLString, EmmetString
+ * @param  {Object|Array} [varMap]   key/value map of variables in emmet template
  * @return {$Element} mocked instance
  */
 DOM.mock = function(content, varMap) {
