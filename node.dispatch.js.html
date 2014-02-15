@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Module: template</title>
+	<title>better-dom Source: node.dispatch.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -139,290 +139,67 @@
 	<div class="row-fluid">
 
 		
-		<div class="span8">
-			
+			<div class="span12">
+				
 				<div id="main">
 					
 
 
-	<h1 class="page-title">Module: template</h1>
-<section>
+		<h1 class="page-title">Source: node.dispatch.js</h1>
+    
+    <section>
+        <article>
+            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+    $Node = require("./node"),
+    dispatcher = document.createElement("a"),
+    safePropName = "onpropertychange";
+
+if (_.DOM2_EVENTS) {
+    // for modern browsers use late binding for safe calls
+    // dispatcher MUST have handleEvent property before registering
+    dispatcher[safePropName = "handleEvent"] = null;
+    dispatcher.addEventListener(safePropName, dispatcher, false);
+}
+
+/**
+ * Make a safe method/function call
+ * @param  {String|Function}  method  name of method or function for a safe call
+ * @param  {...Object}        [args]  extra arguments to pass into each invokation
+ * @return {Object} result of the invokation which is undefined if there was an exception
+ */
+$Node.prototype.dispatch = function(method) {
+    var args = _.slice.call(arguments, 1),
+        methodType = typeof method,
+        el = this,
+        node = this._node,
+        handler, result, e;
+
+    if (!node) return;
+
+    if (methodType === "function") {
+        handler = function() { result = method.apply(el, args) };
+    } else if (methodType === "string") {
+        handler = function() { result = node[method].apply(node, args) };
+    } else {
+        throw _.makeError("dispatch");
+    }
+    // register safe invokation handler
+    dispatcher[safePropName] = handler;
+    // make a safe call
+    if (_.DOM2_EVENTS) {
+        e = document.createEvent("HTMLEvents");
+        e.initEvent(safePropName, false, false);
+        dispatcher.dispatchEvent(e);
+    }
+    // cleanup references
+    dispatcher[safePropName] = null;
+
+    return result;
+};
+</pre>
+        </article>
+    </section>
 
-<header>
-    <h2>
-    template
-    </h2>
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-
-    
-        
-            <div class="description"><p>Emmet abbreviation syntax support</p></div>
-        
-
-        
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dom.template.js.html">dom.template.js</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">https://github.com/chemerisuk/better-dom/wiki/Microtemplating</a></li>
-        
-            <li><a href="http://docs.emmet.io/cheat-sheet/">http://docs.emmet.io/cheat-sheet/</a></li>
-        </ul>
-    </dd>
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        <dl>
-            
-<dt>
-    <h4 class="name" id="DOM.template"><span class="type-signature"></span>DOM.template<span class="signature">(template, <span class="optional">varMap</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
-    
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Parse emmet-like template into a HTML string</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-
-		<th>Type</th>
-
-		
-		<th>Argument</th>
-		
-
-		
-
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-
-	<tbody>
-	
-
-        <tr>
-            
-                <td class="name"><code>template</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>emmet-like expression</p></td>
-        </tr>
-
-	
-
-        <tr>
-            
-                <td class="name"><code>varMap</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>key/value map of variables</p></td>
-        </tr>
-
-	
-	</tbody>
-</table>
-
-    
-    
-    
-<dl class="details">
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="dom.template.js.html">dom.template.js</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>HTML string</p>
-</div>
-
-
-
-<dl>
-	<dt>
-		Type
-	</dt>
-	<dd>
-		
-<span class="param-type">String</span>
-
-
-	</dd>
-</dl>
-
-
-        
-    
-    
-</dd>
-
-        </dl>
-    
-
-    
-
-    
-</article>
-
-</section>
 
 
 
@@ -440,15 +217,11 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Sat Feb 15 2014 16:29:02 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Sat Feb 15 2014 16:29:01 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
 
-			
-			<div class="span3">
-				<div id="toc"></div>
-			</div>
 			
 			<br clear="both">
 		</div>
