@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 1.7.0 2014-02-06T13:27:03
+ * @version 1.7.1 2014-02-15T16:28:54
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -9,6 +9,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var _ = require("./utils"),
     $Element = require("./element"),
+    $Elements = require("./elements"),
     DOM = require("./dom"),
     reSingleTag = /^\w+$/,
     sandbox = document.createElement("div");
@@ -25,26 +26,26 @@ DOM.create = function(value, varMap) {
 
     if (typeof value !== "string") throw _.makeError("create", true);
 
-    var node, multiple;
+    var node;
 
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
-        sandbox.innerHTML = _.template(value, varMap);
+        sandbox.innerHTML = DOM.template(value, varMap);
 
         for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
             if (node.nodeType === 1) value.push(node);
         }
 
-        multiple = value.length !== 1;
+        if (value.length !== 1) return new $Elements(value);
 
-        if (!multiple) value = value[0];
+        value = value[0];
     }
 
-    return new $Element(value, multiple);
+    return new $Element(value);
 };
 
-},{"./dom":5,"./element":12,"./utils":29}],2:[function(require,module,exports){
+},{"./dom":5,"./element":12,"./elements":19,"./utils":30}],2:[function(require,module,exports){
 /**
  * Live extensions support
  * @module extend
@@ -86,13 +87,13 @@ var _ = require("./utils"),
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             // make a safe call so live extensions can't break each other
-            if (!skip[index] && ext.accept(node)) el.invoke(ext);
+            if (!skip[index] && ext.accept(node)) el.dispatch(ext);
         };
     };
 
 if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = _.makeRandomProp();
+    animId = "DOM" + new Date().getTime();
 
     importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}");
 
@@ -103,7 +104,7 @@ if (_.CSS3_ANIMATIONS) {
 
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            _.forEach(extensions, makeExtHandler(e.target, e._skip));
+            extensions.forEach(makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
@@ -118,7 +119,7 @@ if (_.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            _.forEach(extensions, makeExtHandler(e.srcElement, e._skip));
+            extensions.forEach(makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -144,11 +145,12 @@ DOM.extend = function(selector, condition, mixins) {
         // extending element prototype
         _.extend($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.filter(Object.keys(mixins), function(prop) { return !!reRemovableMethod.exec(prop) }),
+        var eventHandlers = Object.keys(mixins).filter(function(prop) { return !!reRemovableMethod.exec(prop) }),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
-            ext = function(el, mock) {
-                var node = el._node;
+            ext = function(mock) {
+                var el = this,
+                    node = this._node;
 
                 if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
@@ -164,7 +166,7 @@ DOM.extend = function(selector, condition, mixins) {
                     if (ctr) ctr.call(el);
                 } finally {
                     // remove event handlers from element's interface
-                    if (mock !== true) _.forEach(eventHandlers, function(prop) { delete el[prop] });
+                    if (mock !== true) eventHandlers.forEach(function(prop) { delete el[prop] });
                 }
             };
 
@@ -177,8 +179,8 @@ DOM.extend = function(selector, condition, mixins) {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            _.forEach(document.querySelectorAll(selector), function(node) {
-                $Element(node).invoke(ext);
+            _.each.call(document.querySelectorAll(selector), function(node) {
+                $Element(node).dispatch(ext);
             });
             // Any extension should be initialized after DOM.ready
             // MUST be after querySelectorAll because of legacy IEs behavior
@@ -191,14 +193,14 @@ DOM.extend = function(selector, condition, mixins) {
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
  * @memberOf module:extend
- * @param  {Mixed} [content] HTMLString, EmmetString
- * @param  {Object} [varMap]  key/value map of variables in emmet template
+ * @param  {Mixed}        [content]  HTMLString, EmmetString
+ * @param  {Object|Array} [varMap]   key/value map of variables in emmet template
  * @return {$Element} mocked instance
  */
 DOM.mock = function(content, varMap) {
     var el = content ? DOM.create(content, varMap) : new $Element(),
         applyWatchers = function(el) {
-            _.forEach(extensions, function(ext) { if (ext.accept(el._node)) ext(el, true) });
+            extensions.forEach(function(ext) { if (ext.accept(el._node)) ext.call(el, true) });
 
             el.children().each(applyWatchers);
         };
@@ -208,7 +210,7 @@ DOM.mock = function(content, varMap) {
     return el;
 };
 
-},{"./dom":5,"./dom.importstyles":4,"./element":12,"./selectormatcher":27,"./utils":29}],3:[function(require,module,exports){
+},{"./dom":5,"./dom.importstyles":4,"./element":12,"./selectormatcher":28,"./utils":30}],3:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom");
 
@@ -219,8 +221,7 @@ var _ = require("./utils"),
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  */
 DOM.importScripts = function() {
-    var args = _.slice(arguments),
-        context = document.scripts[0],
+    var args = _.slice.call(arguments, 0),
         callback = function() {
             var arg = args.shift(),
                 argType = typeof arg,
@@ -231,7 +232,7 @@ DOM.importScripts = function() {
                 script.src = arg;
                 script.onload = callback;
                 script.async = true;
-                context.parentNode.insertBefore(script, context);
+                _.injectElement(script);
             } else if (argType === "function") {
                 arg();
             } else if (arg) {
@@ -242,12 +243,11 @@ DOM.importScripts = function() {
     callback();
 };
 
-},{"./dom":5,"./utils":29}],4:[function(require,module,exports){
+},{"./dom":5,"./utils":30}],4:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     styleAccessor = require("./styleaccessor"),
-    currentScript = document.scripts[0],
-    styleNode = currentScript.parentNode.insertBefore(document.createElement("style"), currentScript),
+    styleNode = _.injectElement(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
     // normalize pseudoelement selectors or quotes
@@ -289,14 +289,14 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
     }
 
     // check if the rule already exists
-    if (!unique || !_.some(styleRules, function(rule) {
+    if (!unique || !_.some.call(styleRules, function(rule) {
         return selector === (rule.selectorText || "").split(norm[0]).join(norm[1]);
     })) {
         if (styleSheet.cssRules) {
             styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
         } else {
             // ie doesn't support multiple selectors in addRule
-            _.forEach(selector.split(","), function(selector) {
+            selector.split(",").forEach(function(selector) {
                 styleSheet.addRule(selector, cssText);
             });
         }
@@ -305,11 +305,12 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
 
 module.exports = DOM.importStyles;
 
-},{"./dom":5,"./styleaccessor":28,"./utils":29}],5:[function(require,module,exports){
+},{"./dom":5,"./styleaccessor":29,"./utils":30}],5:[function(require,module,exports){
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.7.0";
+DOM.version = "1.7.1";
+DOM.template = function(str) { return str };
 
 /**
  * Global object to access DOM
@@ -318,7 +319,7 @@ DOM.version = "1.7.0";
  */
 module.exports = window.DOM = DOM;
 
-},{"./node":25}],6:[function(require,module,exports){
+},{"./node":26}],6:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     readyCallbacks = [],
@@ -326,9 +327,11 @@ var _ = require("./utils"),
 
 function pageLoaded() {
     // safely trigger callbacks
-    _.forEach(readyCallbacks, function(callback) { DOM.invoke(callback) });
-    // cleanup
-    readyCallbacks = null;
+    if (readyCallbacks) {
+        readyCallbacks.forEach(DOM.dispatch, DOM);
+        // cleanup
+        readyCallbacks = null;
+    }
 }
 
 // Catch cases where ready is called after the browser event has already occurred.
@@ -343,9 +346,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
     } else {
         window.attachEvent("onload", pageLoaded);
         document.attachEvent("ondataavailable", function() {
-            if (window.event.srcUrn === "DOMContentLoaded") {
-                pageLoaded();
-            }
+            if (window.event.srcUrn === "DOMContentLoaded") pageLoaded();
         });
     }
 }
@@ -361,11 +362,11 @@ DOM.ready = function(callback) {
     if (readyCallbacks) {
         readyCallbacks.push(callback);
     } else {
-        DOM.invoke(callback);
+        DOM.dispatch(callback);
     }
 };
 
-},{"./dom":5,"./utils":29}],7:[function(require,module,exports){
+},{"./dom":5,"./utils":30}],7:[function(require,module,exports){
 /**
  * Emmet abbreviation syntax support
  * @module template
@@ -375,16 +376,17 @@ DOM.ready = function(callback) {
 var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
-    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"}": 5,"{": 6,"]": 5,"[": 6,".": 7,"#": 8},
+    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reTextTag = /<\?>|<\/\?>/g,
-    reAttr = /([\w\-]+)(?:=((?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+    reAttr = /([\w\-]+)(?:=((?:`((?:\\.|[^`])*)`)|(?:'(?:(?:\\.|[^'])*)')|([^\s\]]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    reVar = /\$\{(\w+)\}/g,
+    reVar = /\{([a-zA-Z\-\d]+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
-    normalizeAttrs = function(term, attrName, attrValue, a, b, attrBool) {
+    normalizeAttrs = function(term, name, value, rawValue, needQuotes) {
         // always wrap attribute values with quotes if they don't exist
-        return attrName + "=" + (attrBool || !attrValue ? "\"" + (attrValue || attrName) + "\"" : attrValue);
+        // replace ` quotes with " except when it's a single quotes case
+        return name + "=" + (needQuotes || rawValue || !value ? "\"" + (rawValue || value || name) + "\"" : value);
     },
     injectTerm = function(term, first) {
         return function(el) {
@@ -414,15 +416,15 @@ var _ = require("./utils"),
     };
 
 // populate empty tags
-_.forEach("area base br col hr img input link meta param command keygen source".split(" "), function(tag) {
+"area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag) {
     cache[tag] = "<" + tag + ">";
 });
 
 /**
  * Parse emmet-like template into a HTML string
  * @memberOf module:template
- * @param  {String} template emmet-like expression
- * @param  {Object} [varMap] key/value map of variables
+ * @param  {String}       template  emmet-like expression
+ * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {String} HTML string
  */
 DOM.template = function(template, varMap) {
@@ -449,14 +451,6 @@ DOM.template = function(template, varMap) {
         priority = operators[str];
 
         if (priority && (!skip || skip === str)) {
-            // append empty tag for text nodes or put missing '>' operator into the stack
-            if (str === "{") {
-                if (term) {
-                    stack.unshift(">");
-                } else {
-                    term = "?";
-                }
-            }
             // remove redundat ^ operators from the stack when more than one exists
             if (str === "^" && stack[0] === "^") stack.shift();
 
@@ -479,7 +473,7 @@ DOM.template = function(template, varMap) {
                 stack.unshift(str);
 
                 if (str === "[") skip = "]";
-                if (str === "{") skip = "}";
+                if (str === "`") skip = "`";
             } else {
                 skip = false;
             }
@@ -518,12 +512,13 @@ DOM.template = function(template, varMap) {
                 term = injectTerm(" " + term.replace(reAttr, normalizeAttrs), true);
                 break;
 
-            case "{":
+            case "`":
                 term = injectTerm(term);
                 break;
 
             case "*":
-                node = _.map(Array(+term), makeIndexedTerm(toString(node)));
+                // Array.prototype.map doesn't work properly here
+                node = this.map.call(Array(+term), makeIndexedTerm(toString(node)));
                 break;
 
             default:
@@ -538,16 +533,20 @@ DOM.template = function(template, varMap) {
                 }
             }
 
-            str = typeof term === "function" ? _.map(node, term) : node;
+            str = typeof term === "function" ? node.map(term) : node;
         }
 
         stack.unshift(str);
     }
 
-    return cache[template] = toString(stack[0]).replace(reTextTag, "");
+    output = toString(stack[0]).replace(reTextTag, "");
+
+    if (!varMap) cache[template] = output;
+
+    return output;
 };
 
-},{"./dom":5,"./utils":29}],8:[function(require,module,exports){
+},{"./dom":5,"./utils":30}],8:[function(require,module,exports){
 /**
  * Smart getter and setter support
  * @module accessors
@@ -574,7 +573,7 @@ $Element.prototype.get = function(name) {
         return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
     }
 
-    if (Array.isArray(name)) return _.foldr(name, function(r, name) { return r[name] = el.get(name), r }, {});
+    if (Array.isArray(name)) return name.reduce(function(r, name) { return r[name] = el.get(name), r }, {});
 
     throw _.makeError("get");
 };
@@ -596,19 +595,22 @@ $Element.prototype.set = function(name, value) {
 
     return this.legacy(function(node, el, index, ref) {
         var hook = hooks.set[name],
-            str = value;
+            watchers = el._watchers[name],
+            newValue = value, oldValue;
 
-        if (typeof str === "function") str = value(el, index, ref);
+        if (watchers) oldValue = el.get(name);
+
+        if (typeof newValue === "function") newValue = value(el, index, ref);
 
         if (hook || nameType === "string") {
             if (hook) {
-                hook(node, str);
-            } else if (str == null) {
+                hook(node, newValue);
+            } else if (newValue == null) {
                 node.removeAttribute(name);
             } else if (name in node) {
-                node[name] = str;
+                node[name] = newValue;
             } else {
-                node.setAttribute(name, str);
+                node.setAttribute(name, newValue);
             }
         } else if (nameType === "object") {
             return _.forOwn(name, function(value, name) { el.set(name, value) });
@@ -616,8 +618,41 @@ $Element.prototype.set = function(name, value) {
             throw _.makeError("set");
         }
 
+        if (watchers) watchers.forEach(function(watcher) {
+                el.dispatch(watcher, name, newValue, oldValue);
+            });
         // trigger reflow manually in IE8
         if (!_.DOM2_EVENTS) node.className = node.className;
+    });
+};
+
+/**
+ * Watch for changes of a particular property/attribute
+ * @memberOf module:accessors
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} watcher watch callback the accepts (name, newValue, oldValue)
+ * @return {$Element}
+ */
+$Element.prototype.watch = function(name, watcher) {
+    return this.each(function(el) {
+        (el._watchers[name] || (el._watchers[name] = [])).push(watcher);
+    });
+};
+
+/**
+ * Disable watching of a particular property/attribute
+ * @memberOf module:accessors
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} watcher watch callback
+ * @return {$Element}
+ */
+$Element.prototype.unwatch = function(name, watcher) {
+    var eq = function(w) { return w === watcher };
+
+    return this.each(function(el) {
+        var watchers = el._watchers[name];
+
+        if (watchers) el._watchers[name] = watchers.filter(eq);
     });
 };
 
@@ -644,7 +679,7 @@ hooks.set.undefined = function(node, value) {
 
     if (node.tagName === "SELECT") {
         // selectbox has special case
-        if (_.every(node.options, function(o) { return !(o.selected = o.value === value) })) {
+        if (_.every.call(node.options, function(o) { return !(o.selected = o.value === value) })) {
             node.selectedIndex = -1;
         }
     } else if (node.type && "value" in node) {
@@ -664,12 +699,10 @@ hooks.get.type = function(node) {
 
 if (!_.DOM2_EVENTS) {
     hooks.get.textContent = function(node) { return node.innerText };
-    hooks.set.textContent = function(node, value) {
-        node.innerText = value;
-    };
+    hooks.set.textContent = function(node, value) { node.innerText = value };
 }
 
-},{"./element":12,"./utils":29}],9:[function(require,module,exports){
+},{"./element":12,"./utils":30}],9:[function(require,module,exports){
 /**
  * Class manipulation support
  * @module classes
@@ -695,7 +728,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
                 if (args.length === 1) {
                     return strategy.call(this, className);
                 } else {
-                    return _.every(args, strategy, this);
+                    return _.every.call(args, strategy, this);
                 }
             }
         };
@@ -707,7 +740,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
                 if (args.length === 1) {
                     strategy.call(el, className);
                 } else {
-                    _.forEach(args, strategy, el);
+                    _.each.call(args, strategy, el);
                 }
             });
         };
@@ -764,7 +797,7 @@ $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className)
     if (oldClassName === this._node.className) this.removeClass(className);
 });
 
-},{"./element":12,"./utils":29}],10:[function(require,module,exports){
+},{"./element":12,"./utils":30}],10:[function(require,module,exports){
 /**
  * Clonning of an element support
  * @module clone
@@ -783,24 +816,24 @@ $Element.prototype.clone = function(deep) {
 
     if (typeof deep !== "boolean") throw _.makeError("clone");
 
-    var node = this._node;
+    var node = this._node, result;
 
     if (node) {
         if (_.DOM2_EVENTS) {
-            node = node.cloneNode(deep);
+            result = new $Element(node.cloneNode(deep));
         } else {
-            node = document.createElement("div");
-            node.innerHTML = this._node.outerHTML;
-            node = node.firstChild;
+            result = DOM.create(node.outerHTML);
 
-            if (!deep) node.innerHTML = "";
+            if (!deep) result.set("innerHTML", "");
         }
+    } else {
+        result = new $Element();
     }
 
-    return new $Element(node);
+    return result;
 };
 
-},{"./element":12,"./utils":29}],11:[function(require,module,exports){
+},{"./element":12,"./utils":30}],11:[function(require,module,exports){
 /**
  * Internationalization support
  * @module i18n
@@ -810,50 +843,34 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
-    rparam = /\$\{([a-z\-]+)\}/g,
-    toContentAttr = function(term, attr) { return "\"attr(data-" + attr + ")\"" },
-    setDataAttr = function(value, key) { this.setAttribute("data-" + key, value) },
-    importStrings = function(lang, key, value) {
-        var keyType = typeof key,
-            selector, content;
-
-        if (keyType === "string") {
-            selector = "[data-i18n=\"" + key + "\"]";
-            content = "content:\"" + value.replace(rparam, toContentAttr) + "\"";
-            // empty lang is for internal use only
-            if (lang) selector += ":lang(" + lang + ")";
-
-            DOM.importStyles(selector + ":before", content, !lang);
-        } else if (keyType === "object") {
-            _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
-        } else {
-            throw _.makeError("importStrings", true);
-        }
-    };
+    reVar = /\{([a-zA-Z\-\d]+)\}/g,
+    toContentAttr = function(_, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
  * Get/set localized value
  * @memberOf module:i18n
- * @param  {String} [value]  resource string key
- * @param  {Object} [vars]   resource string variables
+ * @param  {String}       [value]   resource string key
+ * @param  {Object|Array} [varMap]  resource string variables
  * @return {String|$Element}
  */
-$Element.prototype.i18n = function(value, vars) {
+$Element.prototype.i18n = function(value, varMap) {
     var len = arguments.length,
         node = this._node;
 
-    if (!len) return node.getAttribute("data-i18n");
+    if (!len) return node ? node.getAttribute("data-i18n") : undefined;
 
-    if (len > 2 || value && typeof value !== "string" || vars && typeof vars !== "object") throw _.makeError("i18n");
-
+    if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
     // localized srings with variables require different css
-    if (vars) importStrings("", value, value);
-    // cleanup existing content
-    node.innerHTML = "";
-    // process variables
-    _.forOwn(_.extend({i18n: value}, vars), setDataAttr, node);
+    if (varMap) DOM.importStrings("", value, value);
 
-    return this;
+    varMap = _.extend({i18n: value}, varMap);
+
+    return this.legacy(function(node) {
+        // cleanup existing content
+        node.innerHTML = "";
+        // process variables
+        _.forOwn(varMap, function(value, key) { node.setAttribute("data-" + key, value) });
+    });
 };
 
 /**
@@ -864,39 +881,58 @@ $Element.prototype.i18n = function(value, vars) {
  * @param {String}         value   localized string
  * @function
  */
-DOM.importStrings = importStrings;
+DOM.importStrings = function(lang, key, value) {
+    var keyType = typeof key,
+        selector, content;
+
+    if (keyType === "string") {
+        selector = "[data-i18n=\"" + key + "\"]";
+        content = "content:\"" + value.replace(reVar, toContentAttr) + "\"";
+        // empty lang is for internal use only
+        if (lang) selector += ":lang(" + lang + ")";
+
+        DOM.importStyles(selector + ":before", content, !lang);
+    } else if (keyType === "object") {
+        _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
+    } else {
+        throw _.makeError("importStrings", true);
+    }
+};
 
 // by default just show data-i18n string
 importStyles("[data-i18n]:before", "content:attr(data-i18n)");
 
-},{"./dom":5,"./dom.importstyles":4,"./element":12,"./utils":29}],12:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node");
+},{"./dom":5,"./dom.importstyles":4,"./element":12,"./utils":30}],12:[function(require,module,exports){
+var $Node = require("./node");
 
 /**
- * Used to represent a DOM element or collection
+ * Used to represent a DOM element
  * @name $Element
  * @extends $Node
  * @constructor
  * @private
  */
-function $Element(element, collection) {
+function $Element(element) {
     if (element && element.__dom__) return element.__dom__;
 
-    if (!(this instanceof $Element)) return new $Element(element, collection);
+    if (this instanceof $Element) {
+        this._watchers = {};
+        this._visibility = "";
 
-    if (element && collection === true) {
-        Array.prototype.push.apply(this, _.map(element, $Element));
-    } else {
         $Node.call(this, element);
+    } else {
+        return new $Element(element);
     }
 }
 
 $Element.prototype = new $Node();
+$Element.prototype.toString = function() {
+    return this._node ? this._node.tagName.toLowerCase() : "";
+};
 
 module.exports = $Element;
 
-},{"./node":25,"./utils":29}],13:[function(require,module,exports){
+},{"./node":26}],13:[function(require,module,exports){
 /**
  * Element manipulation support
  * @module manipulation
@@ -913,11 +949,11 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 
             var html = "", value;
 
-            _.forEach(args, function(arg) {
+            _.each.call(args, function(arg) {
                 if (typeof arg === "function") arg = arg(el, index, ref);
 
                 if (typeof arg === "string") {
-                    html += _.template(arg).trim();
+                    html += DOM.template(arg).trim();
                 } else if (arg instanceof $Element) {
                     if (!value) value = document.createDocumentFragment();
                     // populate fragment
@@ -1003,7 +1039,7 @@ $Element.prototype.remove = makeManipulationMethod("remove", "", false, function
     node.parentNode.removeChild(node);
 });
 
-},{"./element":12,"./utils":29}],14:[function(require,module,exports){
+},{"./element":12,"./utils":30}],14:[function(require,module,exports){
 /**
  * CSS selector matching support
  * @module matches
@@ -1012,28 +1048,19 @@ var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
     hooks = {};
-
 /**
  * Check if the element matches selector
  * @memberOf module:matches
- * @param  {String} selector css selector
+ * @param  {String}   selector  css selector for checking
  * @return {$Element}
  */
-$Element.prototype.matches = function(selector, deep) {
-    if (!selector || typeof selector !== "string" || deep !== undefined && typeof deep !== "boolean") {
-        throw _.makeError("matches");
-    }
+$Element.prototype.matches = function(selector) {
+    if (!selector || typeof selector !== "string") throw _.makeError("matches");
 
-    var node = this._node,
-        checker = hooks[selector] || SelectorMatcher(selector);
+    var checker = hooks[selector] || SelectorMatcher(selector),
+        node = this._node;
 
-    while (node && node !== document) {
-        if (checker(node)) return true;
-
-        node = deep ? node.parentNode : null;
-    }
-
-    return false;
+    return node && !!checker(node);
 };
 
 // $Element.matches hooks
@@ -1042,30 +1069,34 @@ hooks[":focus"] = function(node) { return node === document.activeElement };
 
 hooks[":hidden"] = function(node) {
     return node.getAttribute("aria-hidden") === "true" ||
-        _.getComputedStyle(node).display === "none" || !_.docEl.contains(node);
+        _.computeStyle(node).display === "none" || !_.docEl.contains(node);
 };
 
 hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
 
-},{"./element":12,"./selectormatcher":27,"./utils":29}],15:[function(require,module,exports){
+},{"./element":12,"./selectormatcher":28,"./utils":30}],15:[function(require,module,exports){
 /**
  * Element offset calculation support
  * @module offset
  */
 var _ = require("./utils"),
     $Element = require("./element");
+
 /**
  * Calculates offset of the current element
  * @memberOf module:offset
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
-    if (this._node) {
-        var boundingRect = this._node.getBoundingClientRect(),
-            clientTop = _.docEl.clientTop,
-            clientLeft = _.docEl.clientLeft,
-            scrollTop = window.pageYOffset || _.docEl.scrollTop,
-            scrollLeft = window.pageXOffset || _.docEl.scrollLeft;
+    var node = this._node,
+        clientTop = _.docEl.clientTop,
+        clientLeft = _.docEl.clientLeft,
+        scrollTop = window.pageYOffset || _.docEl.scrollTop,
+        scrollLeft = window.pageXOffset || _.docEl.scrollLeft,
+        boundingRect;
+
+    if (node) {
+        boundingRect = node.getBoundingClientRect();
 
         return {
             top: boundingRect.top + scrollTop - clientTop,
@@ -1078,7 +1109,7 @@ $Element.prototype.offset = function() {
     }
 };
 
-},{"./element":12,"./utils":29}],16:[function(require,module,exports){
+},{"./element":12,"./utils":30}],16:[function(require,module,exports){
 /**
  * Changing of element styles support
  * @module css
@@ -1088,7 +1119,7 @@ var _ = require("./utils"),
     styleAccessor = require("./styleaccessor");
 
 /**
- * CSS getter/setter for an element
+ * CSS properties accessor for an element
  * @memberOf module:css
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
@@ -1104,12 +1135,12 @@ $Element.prototype.style = function(name, value) {
         if (node) {
             style = node.style;
 
-            value = _.foldl(nameType === "string" ? [name] : name, function(memo, name) {
+            value = (nameType === "string" ? [name] : name).reduce(function(memo, name) {
                 hook = styleAccessor.get[name];
                 value = hook ? hook(style) : style[name];
 
                 if (!computed && !value) {
-                    style = _.getComputedStyle(node);
+                    style = _.computeStyle(node);
                     value = hook ? hook(style) : style[name];
 
                     computed = true;
@@ -1150,7 +1181,7 @@ $Element.prototype.style = function(name, value) {
     });
 };
 
-},{"./element":12,"./styleaccessor":28,"./utils":29}],17:[function(require,module,exports){
+},{"./element":12,"./styleaccessor":29,"./utils":30}],17:[function(require,module,exports){
 /**
  * Element traversing support
  * @module traversing
@@ -1158,19 +1189,20 @@ $Element.prototype.style = function(name, value) {
  */
 var _ = require("./utils"),
     $Element = require("./element"),
+    $Elements = require("./elements"),
     SelectorMatcher = require("./selectormatcher");
 
-function makeTraversingMethod(propertyName, multiple) {
+function makeTraversingMethod(propertyName, all) {
     return function(selector, andSelf) {
         var matcher = SelectorMatcher(selector),
-            nodes = multiple ? [] : null,
+            nodes = all ? [] : null,
             it = this._node;
 
         if (!andSelf && it) it = it[propertyName];
 
         while (it) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                if (!multiple) break;
+                if (!all) break;
 
                 nodes.push(it);
             }
@@ -1178,38 +1210,32 @@ function makeTraversingMethod(propertyName, multiple) {
             it = it[propertyName];
         }
 
-        return multiple ? new $Element(nodes, multiple) : $Element(it);
+        return all ? new $Elements(nodes) : $Element(it);
     };
 }
 
-function makeChildTraversingMethod(multiple) {
-    return function(index, selector) {
-        if (multiple) {
-            selector = index;
-        } else if (typeof index !== "number") {
-            throw _.makeError("child");
+function makeChildTraversingMethod(all) {
+    return function(selector) {
+        if (all) {
+            if (selector && typeof selector !== "string") _.makeError("children");
+        } else {
+            if (selector && typeof selector !== "number") _.makeError("child");
         }
 
         if (!this._node) return new $Element();
 
-        var children = this._node.children,
-            matcher = SelectorMatcher(selector),
-            node;
+        var children = this._node.children;
 
         if (!_.DOM2_EVENTS) {
             // fix IE8 bug with children collection
-            children = _.filter(children, function(node) { return node.nodeType === 1 });
+            children = _.filter.call(children, function(node) { return node.nodeType === 1 });
         }
 
-        if (multiple) {
-            return new $Element(!matcher ? children : _.filter(children, matcher), true);
-        }
+        if (all) return new $Elements(selector ? _.filter.call(children, SelectorMatcher(selector)) : children);
 
-        if (index < 0) index = children.length + index;
+        if (selector < 0) selector = children.length + selector;
 
-        node = children[index];
-
-        return $Element(!matcher || matcher(node) ? node : null);
+        return $Element(children[selector]);
     };
 }
 
@@ -1267,7 +1293,6 @@ $Element.prototype.parent = makeTraversingMethod("parentNode");
  * Return child element by index filtered by optional selector
  * @memberOf module:traversing
  * @param  {Number} index child index
- * @param  {String} [selector] css selector
  * @return {$Element} matched child
  * @function
  */
@@ -1282,7 +1307,7 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
 
-},{"./element":12,"./selectormatcher":27,"./utils":29}],18:[function(require,module,exports){
+},{"./element":12,"./elements":19,"./selectormatcher":28,"./utils":30}],18:[function(require,module,exports){
 /**
  * Changing of element visibility support
  * @module visibility
@@ -1301,7 +1326,7 @@ var _ = require("./utils"),
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var value = typeof fn === "function" ? fn(node) : fn,
-                    style = _.getComputedStyle(node),
+                    style = _.computeStyle(node),
                     transitionDuration = readAnimationProp("transition-duration", style),
                     animationDuration = readAnimationProp("animation-duration", style),
                     iterationCount = readAnimationProp("animation-iteration-count", style),
@@ -1325,9 +1350,11 @@ var _ = require("./utils"),
 
                 if (value) {
                     // store current inline value in a private property
-                    el._display = node.style[absentStrategy[0]];
+                    el._visibility = node.style[absentStrategy[0]];
+                    // do not store display:none
+                    if (el._visibility === "none") el._visibility = "";
                 } else {
-                    node.style[absentStrategy[0]] = el._display || "";
+                    node.style[absentStrategy[0]] = el._visibility || "";
                 }
                 // set styles inline to override inherited
                 node.style.visibility = "visible";
@@ -1342,7 +1369,7 @@ var _ = require("./utils"),
                 node.setAttribute("aria-hidden", value);
                 // when there is no animation the completeAnimation call
                 // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.invoke(completeAnimation);
+                if (!hasAnimation) el.dispatch(completeAnimation);
             });
         };
     },
@@ -1405,18 +1432,33 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
     return node.getAttribute("aria-hidden") !== "true";
 });
 
-},{"./element":12,"./styleaccessor":28,"./utils":29}],19:[function(require,module,exports){
+},{"./element":12,"./styleaccessor":29,"./utils":30}],19:[function(require,module,exports){
+var _ = require("./utils"),
+    $Element = require("./element");
+
+/**
+ * Used to represent a collection of DOM elements
+ * @name $Elements
+ * @extends $Element
+ * @constructor
+ * @private
+ */
+function $Elements(elements) {
+    _.push.apply(this, _.map.call(elements, $Element));
+}
+
+$Elements.prototype = new $Element();
+$Elements.prototype.toString = Array.prototype.join;
+
+module.exports = $Elements;
+
+},{"./element":12,"./utils":30}],20:[function(require,module,exports){
 /*
  * Helper type to create an event handler
  */
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    RAF = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
-        var prop = name + "equestAnimationFrame";
-
-        return memo || window[prop] && prop;
-    }, null),
     createCustomEventWrapper = function(originalHandler, type) {
         var handler = function() { if (window.event.srcUrn === type) originalHandler() };
 
@@ -1431,7 +1473,7 @@ var _ = require("./utils"),
             if (!debouncing) {
                 debouncing = true;
 
-                window[RAF](function() {
+                window[_.RAF](function() {
                     originalHandler(e);
 
                     debouncing = false;
@@ -1443,29 +1485,26 @@ var _ = require("./utils"),
 
 module.exports = function(type, selector, callback, props, el, once) {
     var hook = hooks[type],
-        matcher = SelectorMatcher(selector),
+        node = el._node,
+        matcher = SelectorMatcher(selector, node),
         handler = function(e) {
             if (module.exports.skip === type) return; // early stop in case of default action
 
             e = e || window.event;
 
-            // srcElement could be null in legacy IE when target is document
-            var node = el._node,
+            var // srcElement could be null in legacy IE when target is document
                 target = e.target || e.srcElement || document,
-                currentTarget = selector ? target : node,
+                currentTarget = matcher ? matcher(target) : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
                 args = props || ["target", "currentTarget", "defaultPrevented"];
 
-            if (typeof fn !== "function") return; // early stop for late binding
-
-            for (; matcher && !matcher(currentTarget); currentTarget = currentTarget.parentNode) {
-                if (!currentTarget || currentTarget === node) return; // no matched element was found
-            }
+            // early stop for late binding or when target doesn't match selector
+            if (typeof fn !== "function" || !currentTarget) return;
 
             // off callback even if it throws an exception later
             if (once) el.off(type, callback);
 
-            args = _.map(args, function(name) {
+            args = args.map(function(name) {
                 if (!_.DOM2_EVENTS) {
                     switch (name) {
                     case "which":
@@ -1524,7 +1563,7 @@ module.exports = function(type, selector, callback, props, el, once) {
 
 // EventHandler hooks
 
-_.forEach(["scroll", "mousemove"], function(name) {
+["scroll", "mousemove"].forEach(function(name) {
     hooks[name] = createDebouncedEventWrapper;
 });
 
@@ -1542,14 +1581,14 @@ if (document.createElement("input").validity) {
 }
 // fix non-bubbling submit event for IE8
 if (!_.DOM2_EVENTS) {
-    _.forEach(["submit", "change", "reset"], function(name) {
+    ["submit", "change", "reset"].forEach(function(name) {
         hooks[name] = createCustomEventWrapper;
     });
 }
 
 module.exports.hooks = hooks;
 
-},{"./element":12,"./selectormatcher":27,"./utils":29}],20:[function(require,module,exports){
+},{"./element":12,"./selectormatcher":28,"./utils":30}],21:[function(require,module,exports){
 /**
  * Ancestor check support
  * @module contains
@@ -1567,12 +1606,14 @@ var _ = require("./utils"),
 $Node.prototype.contains = function(element) {
     var node = this._node;
 
-    if (!(element instanceof $Element)) throw _.makeError("contains");
+    if (element instanceof $Element) {
+        return node && element.every(function(el) { return node.contains(el._node) });
+    }
 
-    if (node) return element.every(function(el) { return node.contains(el._node) });
+    throw _.makeError("contains");
 };
 
-},{"./element":12,"./node":25,"./utils":29}],21:[function(require,module,exports){
+},{"./element":12,"./node":26,"./utils":30}],22:[function(require,module,exports){
 var _ = require("./utils"),
     /**
      * Data property support
@@ -1615,19 +1656,68 @@ $Node.prototype.data = function(key, value) {
             return value;
         } else if (key && keyType === "object") {
             if (Array.isArray(key)) {
-                return _.foldr(key, function(r, key) { return r[key] = data[key], r; }, {});
+                return key.reduce(function(r, key) { return r[key] = data[key], r; }, {});
             } else {
-                return _.forEach(this, function(el) { _.extend(el._data, key) });
+                return this.each(function(el) { _.extend(el._data, key) });
             }
         }
     } else if (len === 2 && keyType === "string") {
-        return _.forEach(this, function(el) { el._data[key] = value });
+        return this.each(function(el) { el._data[key] = value });
     }
 
     throw _.makeError("data", this);
 };
 
-},{"./node":25,"./utils":29}],22:[function(require,module,exports){
+},{"./node":26,"./utils":30}],23:[function(require,module,exports){
+var _ = require("./utils"),
+    $Node = require("./node"),
+    dispatcher = document.createElement("a"),
+    safePropName = "onpropertychange";
+
+if (_.DOM2_EVENTS) {
+    // for modern browsers use late binding for safe calls
+    // dispatcher MUST have handleEvent property before registering
+    dispatcher[safePropName = "handleEvent"] = null;
+    dispatcher.addEventListener(safePropName, dispatcher, false);
+}
+
+/**
+ * Make a safe method/function call
+ * @param  {String|Function}  method  name of method or function for a safe call
+ * @param  {...Object}        [args]  extra arguments to pass into each invokation
+ * @return {Object} result of the invokation which is undefined if there was an exception
+ */
+$Node.prototype.dispatch = function(method) {
+    var args = _.slice.call(arguments, 1),
+        methodType = typeof method,
+        el = this,
+        node = this._node,
+        handler, result, e;
+
+    if (!node) return;
+
+    if (methodType === "function") {
+        handler = function() { result = method.apply(el, args) };
+    } else if (methodType === "string") {
+        handler = function() { result = node[method].apply(node, args) };
+    } else {
+        throw _.makeError("dispatch");
+    }
+    // register safe invokation handler
+    dispatcher[safePropName] = handler;
+    // make a safe call
+    if (_.DOM2_EVENTS) {
+        e = document.createEvent("HTMLEvents");
+        e.initEvent(safePropName, false, false);
+        dispatcher.dispatchEvent(e);
+    }
+    // cleanup references
+    dispatcher[safePropName] = null;
+
+    return result;
+};
+
+},{"./node":26,"./utils":30}],24:[function(require,module,exports){
 /**
  * Event handling support
  * @module events
@@ -1663,9 +1753,9 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         }
     } else if (eventType === "object") {
         if (Array.isArray(type)) {
-            args = _.slice(arguments, 1);
+            args = _.slice.call(arguments, 1);
 
-            _.forEach(type, function(name) { this.on.apply(this, [name].concat(args)) }, this);
+            type.forEach(function(name) { this.on.apply(this, [name].concat(args)) }, this);
         } else {
             _.forOwn(type, function(value, name) { this.on(name, value) }, this);
         }
@@ -1700,7 +1790,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
  * @return {$Node}
  */
 $Node.prototype.once = function() {
-    var args = _.slice(arguments);
+    var args = _.slice.call(arguments, 0);
 
     args.push(true);
 
@@ -1718,7 +1808,7 @@ $Node.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy(function(node, el) {
-        el._handlers = _.filter(el._handlers, function(handler) {
+        el._handlers = el._handlers.filter(function(handler) {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 
             type = handler._type || handler.type;
@@ -1743,7 +1833,7 @@ $Node.prototype.off = function(type, callback) {
  * @return {Boolean} true if default action wasn't prevented
  */
 $Node.prototype.fire = function(type) {
-    var args = _.slice(arguments, 1),
+    var args = _.slice.call(arguments, 1),
         eventType = typeof type,
         handler = {}, hook;
 
@@ -1755,7 +1845,7 @@ $Node.prototype.fire = function(type) {
         throw _.makeError("fire");
     }
 
-    return _.every(this, function(el) {
+    return this.every(function(el) {
         var node = el._node,
             e, canContinue;
 
@@ -1792,19 +1882,32 @@ $Node.prototype.fire = function(type) {
     });
 };
 
-},{"./eventhandler":19,"./node":25,"./utils":29}],23:[function(require,module,exports){
+},{"./eventhandler":20,"./node":26,"./utils":30}],25:[function(require,module,exports){
 var _ = require("./utils"),
-    $Node = require("./node");
+    $Node = require("./node"),
+    makeLoopMethod = (function(){
+        var rcallback = /cb\.call\(([^)]+)\)/g,
+            defaults = {
+                BEGIN: "",
+                COUNT:  "this ? this.length : 0",
+                BODY:   "",
+                END:  "return this"
+            };
 
-function makeCollectionMethod(fn) {
-    var code = fn.toString();
-    // extract function body
-    code = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
-    // use this variable unstead of a
-    code = code.replace(/a([^\w])/g, function(a, symbol) { return "this" + symbol; });
-    // compile the function
-    return Function("cb", "that", code);
-}
+        return function(options) {
+            var code = "%BEGIN%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%END%", key;
+
+            for (key in defaults) {
+                code = code.replace("%" + key + "%", options[key] || defaults[key]);
+            }
+            // improve performance by using call method on demand
+            code = code.replace(rcallback, function(expr, args) {
+                return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
+            });
+
+            return Function("cb", "that", "undefined", code);
+        };
+    })();
 
 _.extend($Node.prototype, {
     /**
@@ -1815,8 +1918,9 @@ _.extend($Node.prototype, {
      * @return {$Node}
      * @function
      */
-    each: makeCollectionMethod(_.forEach),
-
+    each: makeLoopMethod({
+        BODY:  "cb.call(that, this[i], i, this)"
+    }),
     /**
      * Check if the callback returns true for any element in the collection
      * @memberOf $Node.prototype
@@ -1825,8 +1929,10 @@ _.extend($Node.prototype, {
      * @return {Boolean} true, if any element in the collection return true
      * @function
      */
-    some: makeCollectionMethod(_.some),
-
+    some: makeLoopMethod({
+        BODY:  "if (cb.call(that, this[i], i, this) === true) return true",
+        END:   "return false"
+    }),
     /**
      * Check if the callback returns true for all elements in the collection
      * @memberOf $Node.prototype
@@ -1835,8 +1941,11 @@ _.extend($Node.prototype, {
      * @return {Boolean} true, if all elements in the collection returns true
      * @function
      */
-    every: makeCollectionMethod(_.every),
-
+    every: makeLoopMethod({
+        BEGIN: "var out = true",
+        BODY:  "out = cb.call(that, this[i], i, this) && out",
+        END:   "return out"
+    }),
     /**
      * Create an array of values by running each element in the collection through the callback
      * @memberOf $Node.prototype
@@ -1845,8 +1954,11 @@ _.extend($Node.prototype, {
      * @return {Array} new array of the results of each callback execution
      * @function
      */
-    map: makeCollectionMethod(_.map),
-
+    map: makeLoopMethod({
+        BEGIN: "var out = Array(this && this.length || 0)",
+        BODY:  "out[i] = cb.call(that, this[i], i, this)",
+        END:   "return out"
+    }),
     /**
      * Examine each element in a collection, returning an array of all elements the callback returns truthy for
      * @memberOf $Node.prototype
@@ -1855,8 +1967,11 @@ _.extend($Node.prototype, {
      * @return {Array} new array with elements where callback returned true
      * @function
      */
-    filter: makeCollectionMethod(_.filter),
-
+    filter: makeLoopMethod({
+        BEGIN: "var out = []",
+        BODY:  "if (cb.call(that, this[i], i, this)) out.push(this[i])",
+        END:   "return out"
+    }),
     /**
      * Boil down a list of values into a single value (from start to end)
      * @memberOf $Node.prototype
@@ -1865,8 +1980,11 @@ _.extend($Node.prototype, {
      * @return {Object} the accumulated value
      * @function
      */
-    reduce: makeCollectionMethod(_.foldl),
-
+    reduce: makeLoopMethod({
+        BEGIN: "if (arguments.length < 2) that = this[0]",
+        BODY:  "that = cb(that, this[arguments.length < 2 ? i + 1 : i], i, this)",
+        END:   "return that"
+    }),
     /**
      * Boil down a list of values into a single value (from end to start)
      * @memberOf $Node.prototype
@@ -1875,8 +1993,11 @@ _.extend($Node.prototype, {
      * @return {Object} the accumulated value
      * @function
      */
-    reduceRight: makeCollectionMethod(_.foldr),
-
+    reduceRight: makeLoopMethod({
+        BEGIN: "var j; if (arguments.length < 2) that = this[this.length - 1]",
+        BODY:  "j = n - i - 1; that = cb(that, this[arguments.length < 2 ? j - 1 : j], j, this)",
+        END:   "return that"
+    }),
     /**
      * Execute code in a 'unsafe' block where the first callback argument is native object.
      * @memberOf $Node.prototype
@@ -1884,58 +2005,13 @@ _.extend($Node.prototype, {
      * @return {$Node}
      * @function
      */
-    legacy: makeCollectionMethod(_.legacy)
+    legacy: makeLoopMethod({
+        BEGIN: "that = this",
+        BODY:  "cb.call(that, this[i]._node, this[i], i)"
+    })
 });
 
-},{"./node":25,"./utils":29}],24:[function(require,module,exports){
-var _ = require("./utils"),
-    $Node = require("./node"),
-    invoker = document.createElement("a"),
-    safeEvent = "filterchange";
-
-if (_.DOM2_EVENTS) {
-    invoker.addEventListener(safeEvent, function() { this.onfilterchange() }, false);
-}
-
-/**
- * Make a safe method/function call
- * @param  {String|Function}  method  name of method or function for a safe call
- * @param  {...Object}        [args]  extra arguments to pass into each invokation
- * @return {Object} false there was an exception, result for a single node, array of results for collection
- */
-$Node.prototype.invoke = function(method) {
-    var args = _.slice(arguments, 1),
-        methodType = typeof method,
-        ref = this, handler, result, e;
-
-    if (methodType === "function") {
-        handler = function(el, index) {
-            return method.apply(null, args.concat(el, index, ref));
-        };
-    } else if (methodType === "string") {
-        handler = function(el) {
-            return el._node[method].apply(el._node, args);
-        };
-    } else {
-        throw _.makeError("invoke");
-    }
-    // register event callback
-    invoker.onfilterchange = function() { result = ref.map(handler) };
-    // make a safe call
-    if (_.DOM2_EVENTS) {
-        e = document.createEvent("HTMLEvents");
-        e.initEvent(safeEvent, false, false);
-        invoker.dispatchEvent(e);
-    } else {
-        invoker.fireEvent("on" + safeEvent);
-    }
-    // cleanup references
-    invoker.onreset = null;
-
-    return result ? (this._node ? result[0] : result) : false;
-};
-
-},{"./node":25,"./utils":29}],25:[function(require,module,exports){
+},{"./node":26,"./utils":30}],26:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -1977,14 +2053,15 @@ $Node.prototype.set = function(name, value) {
 
 module.exports = $Node;
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 /**
  * Element search support
  * @module search
  */
 var _ = require("./utils"),
     $Node = require("./node"),
-    $Element = require("./element");
+    $Element = require("./element"),
+    $Elements = require("./elements");
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -1992,7 +2069,7 @@ var _ = require("./utils"),
 var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
-    tmpId = _.makeRandomProp();
+    tmpId = "DOM" + new Date().getTime();
 
 /**
  * Find the first matched element by css selector
@@ -2000,7 +2077,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
-$Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
+$Node.prototype.find = function(selector, /*INTERNAL*/all) {
     if (typeof selector !== "string") throw _.makeError("find");
 
     var node = this._node,
@@ -2018,7 +2095,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
             elements = node.getElementsByClassName(quickMatch[2]);
         }
 
-        if (elements && !multiple) elements = elements[0];
+        if (elements && !all) elements = elements[0];
     } else {
         old = true;
         nid = tmpId;
@@ -2041,13 +2118,13 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
         }
 
         try {
-            elements = context[multiple ? "querySelectorAll" : "querySelector"](selector);
+            elements = context[all ? "querySelectorAll" : "querySelector"](selector);
         } finally {
             if (!old) node.removeAttribute("id");
         }
     }
 
-    return $Element(elements, multiple);
+    return all ? new $Elements(elements) : $Element(elements);
 };
 
 /**
@@ -2059,21 +2136,14 @@ $Node.prototype.find = function(selector, /*INTERNAL*/multiple) {
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);
 };
-},{"./element":12,"./node":25,"./utils":29}],27:[function(require,module,exports){
+},{"./element":12,"./elements":19,"./node":26,"./utils":30}],28:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
 var _ = require("./utils"),
-    // Quick matching inspired by
-    // https://github.com/jquery/jquery
-    rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
-    matchesProp = _.foldl("m oM msM mozM webkitM".split(" "), function(result, prefix) {
-        var propertyName = prefix + "atchesSelector";
-
-        if (!result) return _.docEl[propertyName] && propertyName;
-    }, null);
-
-module.exports = function(selector) {
+    rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
+// Quick matching inspired by jQuery
+module.exports = function(selector, context) {
     if (typeof selector !== "string") return null;
 
     var quick = rquickIs.exec(selector);
@@ -2087,24 +2157,39 @@ module.exports = function(selector) {
     }
 
     return function(node) {
-        if (!node || node.nodeType !== 1) return false;
+        var result, found, test;
 
-        if (!quick) {
-            if (matchesProp) return node[matchesProp](selector);
-
-            return _.some(document.querySelectorAll(selector), function(x) { return x === node });
+        if (!quick && !node.webkitMatchesSelector) {
+            found = (context || document).querySelectorAll(selector);
+            test = function(x) { return x === node };
         }
 
-        return (
-            (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
-            (!quick[2] || node.id === quick[2]) &&
-            (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
-            (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
-        );
+        for (; node && node.nodeType === 1; node = node.parentNode) {
+            if (quick) {
+                result = (
+                    (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
+                    (!quick[2] || node.id === quick[2]) &&
+                    (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
+                    (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
+                );
+            } else {
+                // querySelectorAll is faster in all browsers except Webkit-based:
+                // http://jsperf.com/queryselectorall-vs-matches/3
+                if (node.webkitMatchesSelector) {
+                    result = node.webkitMatchesSelector(selector);
+                } else {
+                    result = _.some.call(found, test);
+                }
+            }
+
+            if (result || !context || node === context) break;
+        }
+
+        return result && node;
     };
 };
 
-},{"./utils":29}],28:[function(require,module,exports){
+},{"./utils":30}],29:[function(require,module,exports){
 /*
  * Helper for accessing css
  */
@@ -2113,65 +2198,53 @@ var _ = require("./utils"),
     reDash = /\-./g,
     reCamel = /[A-Z]/g,
     directions = ["Top", "Right", "Bottom", "Left"],
-    computed = _.getComputedStyle(_.docEl),
-    // In Opera CSSStyleDeclaration objects returned by _.getComputedStyle have length 0
-    props = computed.length ? _.slice(computed) : _.map(Object.keys(computed), function(key) {
+    computed = _.computeStyle(_.docEl),
+    // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
+    props = computed.length ? _.slice.call(computed, 0) : Object.keys(computed).map(function(key) {
         return key.replace(reCamel, function(str) { return "-" + str.toLowerCase() });
     });
 
-_.forEach(props, function(propName) {
+props.forEach(function(propName) {
     var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
         unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
         stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
-
     // most of browsers starts vendor specific props in lowercase
     if (!(stylePropName in computed)) {
         stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
     }
 
     if (stylePropName !== propName) {
-        hooks.get[unprefixedName] = function(style) {
-            return style[stylePropName];
-        };
+        hooks.get[unprefixedName] = function(style) { return style[stylePropName] };
         hooks.set[unprefixedName] = function(style, value) {
             value = typeof value === "number" ? value + "px" : value.toString();
             // use cssText property to determine DOM.importStyles call
             style["cssText" in style ? stylePropName : propName] = value;
         };
     }
-
-    // Exclude the following css properties from adding px
-    if (~" fill-opacity font-weight line-height opacity orphans widows z-index zoom ".indexOf(" " + propName + " ")) {
-        hooks.set[propName] = function(style, value) {
-            style["cssText" in style ? stylePropName : propName] = value.toString();
-        };
-    }
 });
 
-// normalize float css property
-if ("cssFloat" in computed) {
-    hooks.get.float = function(style) {
-        return style.cssFloat;
+// Exclude the following css properties from adding px
+" float fill-opacity font-weight line-height opacity orphans widows z-index zoom ".split(" ").forEach(function(propName) {
+    var stylePropName = propName.replace(reDash, function(str) { return str[1].toUpperCase() });
+
+    if (propName === "float") {
+        stylePropName = "cssFloat" in computed ? "cssFloat" : "styleFloat";
+        // normalize float css property
+        hooks.get[propName] = function(style) { return style[stylePropName] };
+    }
+
+    hooks.set[propName] = function(style, value) {
+        style["cssText" in style ? stylePropName : propName] = value.toString();
     };
-    hooks.set.float = function(style, value) {
-        style.cssFloat = value;
-    };
-} else {
-    hooks.get.float = function(style) {
-        return style.styleFloat;
-    };
-    hooks.set.float = function(style, value) {
-        style.styleFloat = value;
-    };
-}
+});
 
 // normalize property shortcuts
 _.forOwn({
     font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-    padding: _.map(directions, function(dir) { return "padding" + dir }),
-    margin: _.map(directions, function(dir) { return "margin" + dir }),
-    "border-width": _.map(directions, function(dir) { return "border" + dir + "Width" }),
-    "border-style": _.map(directions, function(dir) { return "border" + dir + "Style" })
+    padding: directions.map(function(dir) { return "padding" + dir }),
+    margin: directions.map(function(dir) { return "margin" + dir }),
+    "border-width": directions.map(function(dir) { return "border" + dir + "Width" }),
+    "border-style": directions.map(function(dir) { return "border" + dir + "Style" })
 }, function(props, key) {
     hooks.get[key] = function(style) {
         var result = [],
@@ -2181,14 +2254,14 @@ _.forOwn({
                 return !result[index];
             };
 
-        return _.some(props, hasEmptyStyleValue) ? "" : result.join(" ");
+        return props.some(hasEmptyStyleValue) ? "" : result.join(" ");
     };
     hooks.set[key] = function(style, value) {
         if (value && "cssText" in style) {
             // normalize setting complex property across browsers
             style.cssText += ";" + key + ":" + value;
         } else {
-            _.forEach(props, function(name) {
+            props.forEach(function(name) {
                 style[name] = typeof value === "number" ? value + "px" : value.toString();
             });
         }
@@ -2197,53 +2270,22 @@ _.forOwn({
 
 module.exports = hooks;
 
-},{"./utils":29}],29:[function(require,module,exports){
+},{"./utils":30}],30:[function(require,module,exports){
 var doc = document,
     win = window,
-    makeLoopMethod = (function(){
-        var rcallback = /cb\.call\(([^)]+)\)/g,
-            defaults = {
-                BEFORE: "",
-                COUNT:  "a ? a.length : 0",
-                BODY:   "",
-                AFTER:  ""
-            };
-
-        return function(options) {
-            var code = "%BEFORE%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%AFTER%", key;
-
-            for (key in defaults) {
-                code = code.replace("%" + key + "%", options[key] || defaults[key]);
-            }
-
-            // improve callback invokation by using call on demand
-            code = code.replace(rcallback, function(expr, args) {
-                return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
-            });
-
-            return Function("a", "cb", "that", "undefined", code);
-        };
-    })(),
-    makeRandomProp = function() {
-        return "_" + Math.random().toString().split(".")[1];
-    };
+    currentScript = doc.scripts[0];
 
 module.exports = {
-    makeRandomProp: makeRandomProp,
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 
         return TypeError(type + "." + method + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom to verify the function call");
     },
-    getComputedStyle: function(node) {
+    computeStyle: function(node) {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
     },
-    template: function() {
-        var DOM = window.DOM;
-        // override method with particular implementation
-        this.template = DOM.template || function(str) { return str };
-
-        return this.template.apply(DOM, arguments);
+    injectElement: function(el) {
+        return currentScript.parentNode.insertBefore(el, currentScript);
     },
 
     // constants
@@ -2251,59 +2293,30 @@ module.exports = {
     CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
     DOM2_EVENTS: !!doc.addEventListener,
     WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
+    RAF: ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+        var prop = name + "equestAnimationFrame";
+
+        return memo || window[prop] && prop;
+    }, null),
 
     // utilites
-    forOwn: makeLoopMethod({
-        BEFORE: "var keys = Object.keys(a), k",
-        COUNT:  "keys.length",
-        BODY:   "k = keys[i]; cb.call(that, a[k], k, a)"
-    }),
+    forOwn: function(obj, fn, thisPtr) {
+        Object.keys(obj).forEach(function(key) {
+            fn.call(thisPtr, obj[key], key);
+        });
+    },
     extend: function(obj, mixins) {
         this.forOwn(mixins || {}, function(value, key) { obj[key] = value });
 
         return obj;
     },
-    forEach: makeLoopMethod({
-        BODY:   "cb.call(that, a[i], i, a)",
-        AFTER:  "return a"
-    }),
-    map: makeLoopMethod({
-        BEFORE: "var out = Array(a && a.length || 0)",
-        BODY:   "out[i] = cb.call(that, a[i], i, a)",
-        AFTER:  "return out"
-    }),
-    some: makeLoopMethod({
-        BODY:   "if (cb.call(that, a[i], i, a) === true) return true",
-        AFTER:  "return false"
-    }),
-    filter: makeLoopMethod({
-        BEFORE: "var out = []",
-        BODY:   "if (cb.call(that, a[i], i, a)) out.push(a[i])",
-        AFTER:  "return out"
-    }),
-    foldl: makeLoopMethod({
-        BEFORE: "if (a && arguments.length < 2) that = a[0]",
-        BODY:   "that = cb(that, a[arguments.length < 2 ? i + 1 : i], i, a)",
-        AFTER:  "return that"
-    }),
-    foldr: makeLoopMethod({
-        BEFORE: "var j; if (a && arguments.length < 2) that = a[a.length - 1]",
-        BODY:   "j = n - i - 1; that = cb(that, a[arguments.length < 2 ? j - 1 : j], j, a)",
-        AFTER:  "return that"
-    }),
-    every: makeLoopMethod({
-        BEFORE: "var out = true",
-        BODY:   "out = cb.call(that, a[i], i, a) && out",
-        AFTER:  "return out"
-    }),
-    legacy: makeLoopMethod({
-        BEFORE: "that = a",
-        BODY:   "cb.call(that, a[i]._node, a[i], i)",
-        AFTER:  "return a"
-    }),
-    slice: function(list, index) {
-        return Array.prototype.slice.call(list, index | 0);
-    }
+    slice: Array.prototype.slice,
+    every: Array.prototype.every,
+    each: Array.prototype.forEach,
+    filter: Array.prototype.filter,
+    some: Array.prototype.some,
+    push: Array.prototype.push,
+    map: Array.prototype.map
 };
 
-},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29])
+},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30])
