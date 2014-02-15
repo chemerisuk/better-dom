@@ -1,91 +1,127 @@
 (function() {
     var sandbox = null,
         matchers = {
-        toHaveTag: function(tagName) {
-            var result = false;
+        toHaveTag: function() {
+            return {
+                compare: function(actual, tagName) {
+                    var result = {};
 
-            if (this.actual) {
-                this.actual.legacy(function(node) {
-                    result = node.nodeName.toLowerCase() === tagName;
-                });
-            }
+                    if (actual) {
+                        actual.legacy(function(node) {
+                            result.pass = node.nodeName.toLowerCase() === tagName;
+                        });
+                    }
 
-            return result;
-        },
-        toHaveClass: function(className) {
-            var result = false;
-
-            if (this.actual) {
-                this.actual.legacy(function(node) {
-                    result = ~(" " + node.className + " ").indexOf(" " + className + " ");
-                });
-            }
-
-            return result;
-        },
-        toHaveId: function(value) {
-            var result = false;
-
-            if (this.actual) {
-                this.actual.legacy(function(node) {
-                    result = node.id === value;
-                });
-            }
-
-            return result;
-        },
-        toHaveAttr: function(name, value) {
-            var result = false;
-
-            if (this.actual) {
-                if (arguments.length === 1) {
-                    this.actual.legacy(function(node) {
-                        result = node.hasAttribute(name);
-                    });
-                } else if (arguments.length === 2) {
-                    this.actual.legacy(function(node) {
-                        result = node.getAttribute(name) === value;
-                    });
+                    return result;
                 }
-            }
-
-            return result;
+            };
         },
-        toHaveProp: function(name, value) {
-            var result = false;
+        toHaveClass: function() {
+            return {
+                compare: function(actual, className) {
+                    var result = {};
 
-            if (this.actual) {
-                this.actual.legacy(function(node) {
-                    result = node[name] === value;
-                });
-            }
+                    if (actual) {
+                        actual.legacy(function(node) {
+                            result.pass = ~(" " + node.className + " ").indexOf(" " + className + " ");
+                        });
+                    }
 
-            return result;
+                    return result;
+                }
+            };
+        },
+        toHaveId: function() {
+            return {
+                compare: function(actual, value) {
+                    var result = {};
+
+                    if (actual) {
+                        actual.legacy(function(node) {
+                            result.pass = node.id === value;
+                        });
+                    }
+
+                    return result;
+                }
+            };
+        },
+        toHaveAttr: function() {
+            return {
+                compare: function(actual, name, value) {
+                    var result = {};
+
+                    if (actual) {
+                        if (arguments.length === 2) {
+                            actual.legacy(function(node) {
+                                result.pass = node.hasAttribute(name);
+                            });
+                        } else if (arguments.length === 3) {
+                            actual.legacy(function(node) {
+                                result.pass = node.getAttribute(name) === value;
+                            });
+                        }
+                    }
+
+                    return result;
+                }
+            };
+        },
+        toHaveProp: function() {
+            return {
+                compare: function(actual, name, value) {
+                    var result = {};
+
+                    if (actual) {
+                        actual.legacy(function(node) {
+                            result.pass = node[name] === value;
+                        });
+                    }
+
+                    return result;
+                }
+            };
         },
         toBeEmpty: function() {
-            return this.actual && !this.actual.length;
+            return {
+                compare: function(actual) {
+                    var result = {};
+
+                    result.pass = actual && !actual.length;
+
+                    return result;
+                }
+            };
         },
-        toHaveHtml: function(value) {
-            var result = false;
+        toHaveHtml: function() {
+            return {
+                compare: function(actual, value) {
+                    var result = {};
 
-            if (this.actual) {
-                this.actual.legacy(function(node) {
-                    result = node.innerHTML === value;
-                });
-            }
+                    if (actual) {
+                        actual.legacy(function(node) {
+                            result.pass = node.innerHTML === value;
+                        });
+                    }
 
-            return result;
+                    return result;
+                }
+            };
         },
-        toHaveStyle: function(name, value) {
-            var result = false;
+        toHaveStyle: function() {
+            return {
+                compare: function(actual, name, value) {
+                    var result = {};
 
-            if (this.actual) {
-                this.actual.legacy(function(node) {
-                    result = node.style[name] === value;
-                });
-            }
+                    if (actual) {
+                        actual.legacy(function(node) {
+                            result.pass = node.style[name] === value;
+                        });
+                    }
 
-            return result;
+                    return result;
+                }
+            };
         }
     };
 
@@ -106,7 +142,7 @@
     };
 
     beforeEach(function() {
-        this.addMatchers(matchers);
+        jasmine.addMatchers(matchers);
 
         sandbox = document.createElement("div");
         sandbox.id = "sandbox" + new Date().getTime();

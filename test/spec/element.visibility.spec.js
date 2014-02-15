@@ -31,17 +31,18 @@ describe("visibility", function() {
     DOM.importStyles(".hide[aria-hidden=true]", "opacity:0");
 
     describe("hide", function() {
-        it("should support optional delay argument", function() {
-            var delay = 50,
-                start = new Date();
+        it("should support optional delay argument", function(done) {
+            var delay = 50;
 
             expect(link.get("aria-hidden")).not.toBe("true");
             expect(link.hide(delay)).toBe(link);
             expect(link.get("aria-hidden")).not.toBe("true");
 
-            waitsFor(function() {
-                return link.get("aria-hidden") === "true" && (new Date() - start) >= delay;
-            });
+            setTimeout(function() {
+                expect(link.get("aria-hidden")).toBe("true");
+
+                done();
+            }, delay);
         });
 
         it("should support exec callback when no animation is defined", function() {
@@ -49,41 +50,39 @@ describe("visibility", function() {
 
             link.hide(spy);
 
-            // expect(spy).not.toHaveBeenCalled();
-
-            waitsFor(function() {
-                return spy.callCount === 1;
-            });
+            expect(spy).toHaveBeenCalled();
         });
 
-        it("should support exec callback when animation is defined", function() {
+        it("should support exec callback when animation is defined", function(done) {
             var spy = jasmine.createSpy();
 
-            link = DOM.create("a[style='animation:show .1s;-webkit-animation:show .1s;display:block']>{abc}");
+            link = DOM.create("a[style='animation:show 10ms;-webkit-animation:show 10ms;display:block']>{abc}");
+            jasmine.sandbox.set(link);
+
+            link.hide(spy);
+
+            setTimeout(function() {
+                expect(spy).toHaveBeenCalled();
+
+                done();
+            }, 50);
+        });
+
+        it("should support exec callback when transition is defined", function(done) {
+            var spy = jasmine.createSpy();
+
+            link = DOM.create("a.hide[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>{abc}");
             jasmine.sandbox.set(link);
 
             link.hide(spy);
 
             // expect(spy).not.toHaveBeenCalled();
 
-            waitsFor(function() {
-                return spy.callCount === 1;
-            });
-        });
+            setTimeout(function() {
+                expect(spy).toHaveBeenCalled();
 
-        it("should support exec callback when transition is defined", function() {
-            var spy = jasmine.createSpy();
-
-            link = DOM.create("a.hide[style='transition:opacity 0.1s;-webkit-transition:opacity 0.1s']>{abc}");
-            jasmine.sandbox.set(link);
-
-            link.hide(spy);
-
-            // expect(spy).not.toHaveBeenCalled();
-
-            waitsFor(function() {
-                return spy.callCount === 1;
-            });
+                done();
+            }, 50);
         });
 
         it("should work properly in legacy browsers", function() {
@@ -98,24 +97,24 @@ describe("visibility", function() {
             link.style("transition-duration", null);
             link.hide(spy);
 
-            waitsFor(function() {
-                return spy.callCount === 3;
-            });
+            expect(spy.calls.count()).toBe(3);
         });
 
-        it("should skip infinite animations", function() {
+        it("should skip infinite animations", function(done) {
             var spy = jasmine.createSpy();
 
-            link = DOM.create("a#inf[style='animation:show .1s infinite;-webkit-animation:show .1s infinite;display:block']>{abc}");
+            link = DOM.create("a#inf[style='animation:show 10ms infinite;-webkit-animation:show 10ms infinite;display:block']>{abc}");
             jasmine.sandbox.set(link);
 
             link.hide(spy);
 
             // expect(spy).not.toHaveBeenCalled();
 
-            waitsFor(function() {
-                return spy.callCount === 1;
-            });
+            setTimeout(function() {
+                expect(spy).toHaveBeenCalled();
+
+                done();
+            }, 50);
         });
 
         it("should throw error if arguments are invalid", function() {
@@ -126,18 +125,19 @@ describe("visibility", function() {
     });
 
     describe("show", function() {
-        it("show should support optional delay argument", function() {
-            var delay = 50,
-                start = new Date();
+        it("show should support optional delay argument", function(done) {
+            var delay = 50;
 
             link.hide();
             expect(link.get("aria-hidden")).toBe("true");
             expect(link.show(delay)).toBe(link);
             expect(link.get("aria-hidden")).toBe("true");
 
-            waitsFor(function() {
-                return link.get("aria-hidden") !== "true" && (new Date() - start) >= delay;
-            });
+            setTimeout(function() {
+                expect(link.get("aria-hidden")).not.toBe("true");
+
+                done();
+            }, delay);
         });
 
         it("should throw error if arguments are invalid", function() {

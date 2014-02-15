@@ -18,8 +18,8 @@ describe("ready", function(){
     //     waits(50);
 
     //     runs(function() {
-    //         expect(spy1.callCount).toBe(1);
-    //         expect(spy2.callCount).toBe(1);
+    //         expect(spy1.calls.count()).toBe(1);
+    //         expect(spy2.calls.count()).toBe(1);
     //     });
     // });
 

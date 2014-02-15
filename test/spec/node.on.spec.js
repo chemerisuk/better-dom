@@ -20,7 +20,7 @@ describe("on", function() {
     it("should accept single callback with the element as 'this' by default", function() {
         input.on("focus", spy).fire("focus");
 
-        spy.andCallFake(function() {
+        spy.and.callFake(function() {
             expect(this).toEqual(input);
         });
 
@@ -38,7 +38,7 @@ describe("on", function() {
     });
 
     it("should fix currentTarget when selector exists", function() {
-        spy.andCallFake(function(target, currentTarget) {
+        spy.and.callFake(function(target, currentTarget) {
             expect(currentTarget).toHaveTag("a");
 
             return false;
@@ -65,11 +65,11 @@ describe("on", function() {
 
         input.fire("focus");
         input.fire("click");
-        expect(arraySpy.callCount).toBe(2);
+        expect(arraySpy.calls.count()).toBe(2);
     });
 
     it("should prevent default if handler returns false", function() {
-        spy.andReturn(false);
+        spy.and.returnValue(false);
 
         link.on("click", spy).fire("click");
         expect(spy).toHaveBeenCalled();
@@ -77,7 +77,7 @@ describe("on", function() {
     });
 
     it("should allow to pass extra args into callback", function() {
-        spy.andCallFake(function(target, currentTarget, relatedTarget) {
+        spy.and.callFake(function(target, currentTarget, relatedTarget) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
             expect(relatedTarget).not.toBeFalsy();
@@ -87,7 +87,7 @@ describe("on", function() {
         input.on("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.andCallFake(function(type, defaultPrevented) {
+        spy.and.callFake(function(type, defaultPrevented) {
             expect(type).toBe("focus");
             expect(defaultPrevented).toBe(false);
         });
@@ -97,7 +97,7 @@ describe("on", function() {
     });
 
     it("should have default event properties", function() {
-        spy.andCallFake(function(target, currentTarget, defaultPrevented) {
+        spy.and.callFake(function(target, currentTarget, defaultPrevented) {
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
             expect(defaultPrevented).toBe(false);
@@ -108,9 +108,9 @@ describe("on", function() {
 
         var detail = {a: 1};
 
-        spy.reset();
+        spy.calls.reset();
 
-        spy.andCallFake(function(detail, target, currentTarget, defaultPrevented) {
+        spy.and.callFake(function(detail, target, currentTarget, defaultPrevented) {
             expect(detail).toBe(detail);
             expect(target).toBe(input);
             expect(currentTarget).toBe(input);
@@ -151,7 +151,7 @@ describe("on", function() {
         //     input.legacy(function(node) {
         //         node.checkValidity();
 
-        //         expect(spy.callCount).toBe(2);
+        //         expect(spy.calls.count()).toBe(2);
         //     });
         // }
     });
@@ -162,55 +162,55 @@ describe("on", function() {
 
         DOM.on("input a", spy);
         input.fire("input");
-        expect(spy.callCount).toBe(2);
+        expect(spy.calls.count()).toBe(2);
 
         DOM.on("input input", spy);
         input.fire("input");
-        expect(spy.callCount).toBe(4);
+        expect(spy.calls.count()).toBe(4);
     });
 
     it("should fix submit event", function() {
-        spy.andReturn(false);
+        spy.and.returnValue(false);
 
         form.on("submit", spy).fire("submit");
         expect(spy).toHaveBeenCalled();
 
         DOM.on("submit a", spy);
         form.fire("submit");
-        expect(spy.callCount).toBe(2);
+        expect(spy.calls.count()).toBe(2);
 
         DOM.on("submit form", spy);
         form.fire("submit");
-        expect(spy.callCount).toBe(4);
+        expect(spy.calls.count()).toBe(4);
     });
 
     it("should fix reset event", function() {
         form.on("reset", spy).fire("reset");
-        expect(spy.callCount).toBe(1);
+        expect(spy.calls.count()).toBe(1);
 
         DOM.on("reset", spy);
         form.fire("reset");
-        expect(spy.callCount).toBe(3);
+        expect(spy.calls.count()).toBe(3);
     });
 
     it("should support late binding", function() {
-        spy.andCallFake(function() { expect(this).toBe(input) });
+        spy.and.callFake(function() { expect(this).toBe(input) });
         input.callback = spy;
         input.on("focus", "callback").fire("focus");
         expect(spy).toHaveBeenCalled();
 
         delete input.callback;
         input.fire("focus");
-        expect(spy.callCount).toBe(1);
+        expect(spy.calls.count()).toBe(1);
     });
 
     it("should allow to prevent custom events", function() {
         var spy2 = jasmine.createSpy("spy2");
 
         form.on("custom:on", spy, ["defaultPrevented"]);
-        input.on("custom:on", spy2.andReturn(false));
+        input.on("custom:on", spy2.and.returnValue(false));
 
-        spy.andCallFake(function(defaultPrevented) {
+        spy.and.callFake(function(defaultPrevented) {
             expect(defaultPrevented).toBe(true);
         });
 
@@ -227,7 +227,7 @@ describe("on", function() {
 
         expect(spy).toHaveBeenCalledWith(DOM, DOM, false);
 
-        spy.reset();
+        spy.calls.reset();
         DOM.once("custom:event2 ul > li", spy);
         DOM.fire("custom:event2");
         expect(spy).not.toHaveBeenCalled();
@@ -242,24 +242,24 @@ describe("on", function() {
         input = DOM.create("input[type=checkbox]");
         jasmine.sandbox.set(input);
 
-        spy.reset();
+        spy.calls.reset();
         input.fire("focus");
         input.fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.reset();
+        spy.calls.reset();
         input.fire("click");
         expect(spy).toHaveBeenCalled();
 
         input = DOM.create("input[type=radio]");
         jasmine.sandbox.set(input);
 
-        spy.reset();
+        spy.calls.reset();
         input.fire("focus");
         input.fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.reset();
+        spy.calls.reset();
         input.fire("click");
         expect(spy).not.toHaveBeenCalled();
     });
@@ -273,7 +273,7 @@ describe("on", function() {
     //     form.fire("scroll");
 
     //     expect(spy).toHaveBeenCalledWith(form, false);
-    //     expect(spy.callCount).toBe(1);
+    //     expect(spy.calls.count()).toBe(1);
     // });
 
     it("should throw error if arguments are invalid", function() {
@@ -282,7 +282,7 @@ describe("on", function() {
 
     describe("once", function() {
         it("should trigger callback only one time", function() {
-            spy.andCallFake(function() {
+            spy.and.callFake(function() {
                 expect(this).toBe(input);
             });
 
@@ -290,11 +290,11 @@ describe("on", function() {
             expect(spy).toHaveBeenCalled();
 
             input.fire("focus");
-            expect(spy.callCount).toBe(1);
+            expect(spy.calls.count()).toBe(1);
         });
 
         it("should work for with late binding", function() {
-            spy.andCallFake(function() { expect(this).toBe(input) });
+            spy.and.callFake(function() { expect(this).toBe(input) });
             input.callback = spy;
             input.once("focus", "callback").fire("focus");
             expect(spy).toHaveBeenCalled();

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../bower_components/jasmine/lib/jasmine-core/jasmine.css">
     <script src="../bower_components/jasmine/lib/jasmine-core/jasmine.js"></script>
     <script src="../bower_components/jasmine/lib/jasmine-core/jasmine-html.js"></script>
+    <script src="../bower_components/jasmine/lib/jasmine-core/boot.js"></script>
 
     <!--[if IE]>
         <link href="../dist/better-dom-legacy.htc" rel="htc" />
@@ -51,23 +52,4 @@
     <script src="spec/element.i18n.spec.js"></script>
     <script src="spec/element.watch.spec.js"></script>
 </head>
-<body>
-    <script type="text/javascript">
-    (function() {
-        var jasmineEnv = jasmine.getEnv(),
-        currentWindowOnload = window.onload;
-
-        jasmineEnv.updateInterval = 250;
-        jasmineEnv.addReporter(new jasmine.HtmlReporter());
-
-        window.onload = function() {
-            if (currentWindowOnload) {
-              currentWindowOnload();
-            }
-
-            jasmineEnv.execute();
-        };
-    })();
-    </script>
-</body>
 </html>

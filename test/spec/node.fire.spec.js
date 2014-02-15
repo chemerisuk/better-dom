@@ -17,13 +17,13 @@ describe("fire", function() {
         for (i = 0; i < 3; ++i) {
             input.on(events[i], callback).fire(events[i]);
 
-            expect(callback.callCount).toBe(i + 1);
+            expect(callback.calls.count()).toBe(i + 1);
         }
     });
 
     it("should trigger native handlers", function() {
         input.legacy(function(node) {
-            node.onclick = callback.andReturn(false);
+            node.onclick = callback.and.returnValue(false);
         });
 
         input.fire("click");

@@ -33,7 +33,7 @@ describe("i18n", function() {
         expect(span.get("data-i18n")).toBe("new {0} and {1}");
         expect(span.get("data-0")).toBe("one");
         expect(span.get("data-1")).toBe("two");
-        expect(importSpy.callCount).toBe(2);
+        expect(importSpy.calls.count()).toBe(2);
     });
 
     it("should work for coolections", function() {

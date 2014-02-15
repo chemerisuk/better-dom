@@ -11,7 +11,7 @@ describe("DOM.importScripts", function() {
     it("should append script element to body", function() {
         var spy = jasmine.createSpy("callback");
 
-        bodySpy.andCallFake(function(el) {
+        bodySpy.and.callFake(function(el) {
             expect(el.tagName.toLowerCase()).toBe("script");
             expect(el.src).toBe("http://test/url");
             expect(typeof el.onload).toBe("function");
@@ -28,7 +28,7 @@ describe("DOM.importScripts", function() {
         var spy = jasmine.createSpy("callback"),
             index = 1;
 
-        bodySpy.andCallFake(function(el) {
+        bodySpy.and.callFake(function(el) {
             expect(el.tagName.toLowerCase()).toBe("script");
             expect(el.src).toBe("http://test/" + index++);
             expect(typeof el.onload).toBe("function");
@@ -42,7 +42,7 @@ describe("DOM.importScripts", function() {
     });
 
     it("should accept just strings", function() {
-        bodySpy.andCallFake(function(el) {
+        bodySpy.and.callFake(function(el) {
             // trigger fake onload
             el.onload();
         });
@@ -51,7 +51,7 @@ describe("DOM.importScripts", function() {
         expect(bodySpy).toHaveBeenCalled();
 
         DOM.importScripts("test1", "test2", "test3");
-        expect(bodySpy.callCount).toBe(4);
+        expect(bodySpy.calls.count()).toBe(4);
     });
 
     it("should throw error if arguments are invalid", function() {

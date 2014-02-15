@@ -13,7 +13,7 @@ describe("legacy", function() {
         var spy = jasmine.createSpy("legacy"),
             scripts = DOM.findAll("script");
 
-        spy.andCallFake(function(node, el, index) {
+        spy.and.callFake(function(node, el, index) {
             expect(this).toBe(scripts);
             expect(el).toBe(scripts[index]);
 
@@ -23,6 +23,6 @@ describe("legacy", function() {
         });
 
         scripts.legacy(spy);
-        expect(spy.callCount).toBe(scripts.length);
+        expect(spy.calls.count()).toBe(scripts.length);
     });
 });

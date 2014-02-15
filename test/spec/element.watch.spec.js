@@ -19,11 +19,11 @@ describe("watch", function() {
 
         link.set("title", "modified");
         expect(spy2).toHaveBeenCalledWith("title", "modified", "text");
-        expect(spy1.callCount).toBe(1);
+        expect(spy1.calls.count()).toBe(1);
 
         link.set("123");
-        expect(spy1.callCount).toBe(1);
-        expect(spy1.callCount).toBe(1);
+        expect(spy1.calls.count()).toBe(1);
+        expect(spy1.calls.count()).toBe(1);
 
         link.set("title", "new");
         expect(spy2).toHaveBeenCalledWith("title", "new", "modified");
