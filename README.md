@@ -7,7 +7,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Features
-* compact size: from ~2,2kb till ~5,9kb for minified and gzipped version
+* compact size: ~27kb minified and ~6kb gzipped version
 * clean, minimalistic and standards-based (if possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
@@ -54,11 +54,11 @@ Need more?
 * walk through the sorce code of existing [projects that use better-dom](https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom).
 
 ## Performance
-* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/18)
-* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/3)
-* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/3)
-* [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation/3)
-* [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/2)
+* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/26)
+* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/9)
+* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/5)
+* [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6)
+* [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/4)
 
 ## How to make a custom build
 In order to create a custom build make sure that you installed [grunt-cli](https://github.com/gruntjs/grunt-cli) globally:
