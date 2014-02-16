@@ -9,11 +9,12 @@ var _ = require("./utils"),
     // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reTextTag = /<\?>|<\/\?>/g,
-    reAttr = /([\w\-]+)(?:=((?:`((?:\\.|[^`])*)`)|(?:'(?:(?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+    reAttr = /([\w\-]+)(?:=(`([^`]*)`|'(?:(?:\\.|[^'])*)'|([^\s]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    reVar = /\{([a-zA-Z\-\d]+)\}/g,
+    reVar = /\{([\w\-]+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
+    toString = function(term) { return term.join ? term.join("") : term },
     normalizeAttrs = function(term, name, value, rawValue, needQuotes) {
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
@@ -31,7 +32,7 @@ var _ = require("./utils"),
 
         if (!result) result = cache[tag] = "<" + tag + "></" + tag + ">";
 
-        return [result];
+        return result;
     },
     makeIndexedTerm = function(term) {
         return function(_, i, arr) {
@@ -41,9 +42,6 @@ var _ = require("./utils"),
                 return (fmt + index).slice(-fmt.length).split("$").join("0");
             });
         };
-    },
-    toString = function(term) {
-        return typeof term === "string" ? term : term.join("");
     };
 
 // populate empty tags
@@ -128,7 +126,7 @@ DOM.template = function(template, varMap) {
             term = stack.shift();
             node = stack.shift() || "?";
 
-            if (typeof node === "string") node = makeTerm(node);
+            if (typeof node === "string") node = [ makeTerm(node) ];
 
             switch(str) {
             case ".":
@@ -153,9 +151,7 @@ DOM.template = function(template, varMap) {
                 break;
 
             default:
-                if (typeof term === "string") term = makeTerm(term)[0];
-
-                term = toString(term);
+                term = typeof term === "string" ? makeTerm(term) : toString(term);
 
                 if (str === ">") {
                     term = injectTerm(term);
@@ -172,7 +168,5 @@ DOM.template = function(template, varMap) {
 
     output = toString(stack[0]).replace(reTextTag, "");
 
-    if (!varMap) cache[template] = output;
-
-    return output;
+    return varMap ? output : cache[template] = output;
 };

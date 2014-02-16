@@ -7,7 +7,7 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
-    reVar = /\{([a-zA-Z\-\d]+)\}/g,
+    reVar = /\{([\w\-]+)\}/g,
     toContentAttr = function(_, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
