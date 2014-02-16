@@ -40,8 +40,5 @@ module.exports = {
     slice: Array.prototype.slice,
     every: Array.prototype.every,
     each: Array.prototype.forEach,
-    filter: Array.prototype.filter,
-    some: Array.prototype.some,
-    push: Array.prototype.push,
-    map: Array.prototype.map
+    some: Array.prototype.some
 };

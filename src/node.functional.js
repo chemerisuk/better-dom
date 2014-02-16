@@ -4,13 +4,12 @@ var _ = require("./utils"),
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
                 BEGIN: "",
-                COUNT:  "this ? this.length : 0",
                 BODY:   "",
                 END:  "return this"
             };
 
         return function(options) {
-            var code = "%BEGIN%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%END%", key;
+            var code = "%BEGIN%\nfor(var i=0,n=this.length;i<n;++i){%BODY%}%END%", key;
 
             for (key in defaults) {
                 code = code.replace("%" + key + "%", options[key] || defaults[key]);
@@ -96,8 +95,8 @@ _.extend($Node.prototype, {
      * @function
      */
     reduce: makeLoopMethod({
-        BEGIN: "if (arguments.length < 2) that = this[0]",
-        BODY:  "that = cb(that, this[arguments.length < 2 ? i + 1 : i], i, this)",
+        BEGIN: "var len = arguments.length; if (len < 2) that = this[0]",
+        BODY:  "that = cb(that, this[len < 2 ? i + 1 : i], i, this)",
         END:   "return that"
     }),
     /**
@@ -109,8 +108,8 @@ _.extend($Node.prototype, {
      * @function
      */
     reduceRight: makeLoopMethod({
-        BEGIN: "var j; if (arguments.length < 2) that = this[this.length - 1]",
-        BODY:  "j = n - i - 1; that = cb(that, this[arguments.length < 2 ? j - 1 : j], j, this)",
+        BEGIN: "var j, len = arguments.length; if (len < 2) that = this[this.length - 1]",
+        BODY:  "j = n - i - 1; that = cb(that, this[len < 2 ? j - 1 : j], j, this)",
         END:   "return that"
     }),
     /**

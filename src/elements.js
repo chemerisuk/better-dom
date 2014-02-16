@@ -1,5 +1,4 @@
-var _ = require("./utils"),
-    $Element = require("./element");
+var $Element = require("./element");
 
 /**
  * Used to represent a collection of DOM elements
@@ -9,7 +8,11 @@ var _ = require("./utils"),
  * @private
  */
 function $Elements(elements) {
-    _.push.apply(this, _.map.call(elements, $Element));
+    for (var i = 0, n = elements && elements.length || 0; i < n; ++i) {
+        this[i] = $Element(elements[i]);
+    }
+
+    this.length = n;
 }
 
 $Elements.prototype = new $Element();

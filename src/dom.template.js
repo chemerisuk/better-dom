@@ -113,9 +113,9 @@ DOM.template = function(template, varMap) {
         }
     }
 
-    if (term) stack.unshift(term);
+    if (term) output.push(term);
 
-    output.push.apply(output, stack);
+    output = output.concat(stack);
 
     // transform RPN into html nodes
 
