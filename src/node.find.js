@@ -1,6 +1,6 @@
 /**
  * Element search support
- * @module search
+ * @module find
  */
 var _ = require("./utils"),
     $Node = require("./node"),

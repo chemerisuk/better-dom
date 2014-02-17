@@ -80,13 +80,13 @@ $Element.prototype.set = function(name, value) {
 /**
  * Watch for changes of a particular property/attribute
  * @memberOf module:accessors
- * @param  {String}   name    property/attribute name
- * @param  {Function} watcher watch callback the accepts (name, newValue, oldValue)
+ * @param  {String}   name     property/attribute name
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
  * @return {$Element}
  */
-$Element.prototype.watch = function(name, watcher) {
+$Element.prototype.watch = function(name, callback) {
     return this.each(function(el) {
-        (el._watchers[name] || (el._watchers[name] = [])).push(watcher);
+        (el._watchers[name] || (el._watchers[name] = [])).push(callback);
     });
 };
 
@@ -94,11 +94,11 @@ $Element.prototype.watch = function(name, watcher) {
  * Disable watching of a particular property/attribute
  * @memberOf module:accessors
  * @param  {String}   name    property/attribute name
- * @param  {Function} watcher watch callback
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
  * @return {$Element}
  */
-$Element.prototype.unwatch = function(name, watcher) {
-    var eq = function(w) { return w === watcher };
+$Element.prototype.unwatch = function(name, callback) {
+    var eq = function(w) { return w === callback };
 
     return this.each(function(el) {
         var watchers = el._watchers[name];

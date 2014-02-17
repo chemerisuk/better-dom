@@ -47,9 +47,9 @@
         "title": "Data property support",
         "files": ["src/element.data.js"]
     },
-    "search": {
+    "find": {
         "title": "Element search support",
-        "files": ["src/node.search.js"]
+        "files": ["src/node.find.js"]
     },
     "events": {
         "title": "Event handling support",

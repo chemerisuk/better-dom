@@ -6,11 +6,11 @@ var _ = require("./utils"),
     sandbox = document.createElement("body");
 
 /**
- * Create a $Element instance
+ * Create a new DOM element in memory
  * @memberOf DOM
  * @param  {Mixed}  value     HTMLString, EmmetString or native element
  * @param  {Object} [varMap]  key/value map of variables in emmet template
- * @return {$Element|$Elements} element
+ * @return {$Element|$Elements} element(s) wrapper
  */
 DOM.create = function(value, varMap) {
     if (value.nodeType === 1) return $Element(value);
