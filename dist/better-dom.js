@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 1.7.1 2014-02-15T16:28:54
+ * @version 1.7.2 2014-02-18T13:11:42
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -12,34 +12,32 @@ var _ = require("./utils"),
     $Elements = require("./elements"),
     DOM = require("./dom"),
     reSingleTag = /^\w+$/,
-    sandbox = document.createElement("div");
+    sandbox = document.createElement("body");
 
 /**
- * Create a $Element instance
+ * Create a new DOM element in memory
  * @memberOf DOM
- * @param  {Mixed}  value   HTMLString, EmmetString or native element
+ * @param  {Mixed}  value     HTMLString, EmmetString or native element
  * @param  {Object} [varMap]  key/value map of variables in emmet template
- * @return {$Element} element
+ * @return {$Element|$Elements} element(s) wrapper
  */
 DOM.create = function(value, varMap) {
     if (value.nodeType === 1) return $Element(value);
 
     if (typeof value !== "string") throw _.makeError("create", true);
 
-    var node;
-
     if (reSingleTag.test(value)) {
         value = document.createElement(value);
     } else {
         sandbox.innerHTML = DOM.template(value, varMap);
 
-        for (value = []; node = sandbox.firstChild; sandbox.removeChild(node)) {
-            if (node.nodeType === 1) value.push(node);
+        for (var nodes = []; value = sandbox.firstChild; sandbox.removeChild(value)) {
+            if (value.nodeType === 1) nodes.push(value);
         }
 
-        if (value.length !== 1) return new $Elements(value);
+        if (nodes.length !== 1) return new $Elements(nodes);
 
-        value = value[0];
+        value = nodes[0];
     }
 
     return new $Element(value);
@@ -309,7 +307,7 @@ module.exports = DOM.importStyles;
 var $Node = require("./node"),
     DOM = new $Node(document);
 
-DOM.version = "1.7.1";
+DOM.version = "1.7.2";
 DOM.template = function(str) { return str };
 
 /**
@@ -319,7 +317,7 @@ DOM.template = function(str) { return str };
  */
 module.exports = window.DOM = DOM;
 
-},{"./node":26}],6:[function(require,module,exports){
+},{"./node":27}],6:[function(require,module,exports){
 var _ = require("./utils"),
     DOM = require("./dom"),
     readyCallbacks = [],
@@ -378,11 +376,12 @@ var _ = require("./utils"),
     // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reTextTag = /<\?>|<\/\?>/g,
-    reAttr = /([\w\-]+)(?:=((?:`((?:\\.|[^`])*)`)|(?:'(?:(?:\\.|[^'])*)')|([^\s\]]+)))?/g,
+    reAttr = /([\w\-]+)(?:=(`([^`]*)`|'(?:(?:\\.|[^'])*)'|([^\s]+)))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    reVar = /\{([a-zA-Z\-\d]+)\}/g,
+    reVar = /\{([\w\-]+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
+    toString = function(term) { return term.join ? term.join("") : term },
     normalizeAttrs = function(term, name, value, rawValue, needQuotes) {
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
@@ -400,7 +399,7 @@ var _ = require("./utils"),
 
         if (!result) result = cache[tag] = "<" + tag + "></" + tag + ">";
 
-        return [result];
+        return result;
     },
     makeIndexedTerm = function(term) {
         return function(_, i, arr) {
@@ -410,9 +409,6 @@ var _ = require("./utils"),
                 return (fmt + index).slice(-fmt.length).split("$").join("0");
             });
         };
-    },
-    toString = function(term) {
-        return typeof term === "string" ? term : term.join("");
     };
 
 // populate empty tags
@@ -482,9 +478,9 @@ DOM.template = function(template, varMap) {
         }
     }
 
-    if (term) stack.unshift(term);
+    if (term) output.push(term);
 
-    output.push.apply(output, stack);
+    output = output.concat(stack);
 
     // transform RPN into html nodes
 
@@ -497,7 +493,7 @@ DOM.template = function(template, varMap) {
             term = stack.shift();
             node = stack.shift() || "?";
 
-            if (typeof node === "string") node = makeTerm(node);
+            if (typeof node === "string") node = [ makeTerm(node) ];
 
             switch(str) {
             case ".":
@@ -522,9 +518,7 @@ DOM.template = function(template, varMap) {
                 break;
 
             default:
-                if (typeof term === "string") term = makeTerm(term)[0];
-
-                term = toString(term);
+                term = typeof term === "string" ? makeTerm(term) : toString(term);
 
                 if (str === ">") {
                     term = injectTerm(term);
@@ -541,9 +535,7 @@ DOM.template = function(template, varMap) {
 
     output = toString(stack[0]).replace(reTextTag, "");
 
-    if (!varMap) cache[template] = output;
-
-    return output;
+    return varMap ? output : cache[template] = output;
 };
 
 },{"./dom":5,"./utils":30}],8:[function(require,module,exports){
@@ -629,13 +621,13 @@ $Element.prototype.set = function(name, value) {
 /**
  * Watch for changes of a particular property/attribute
  * @memberOf module:accessors
- * @param  {String}   name    property/attribute name
- * @param  {Function} watcher watch callback the accepts (name, newValue, oldValue)
+ * @param  {String}   name     property/attribute name
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
  * @return {$Element}
  */
-$Element.prototype.watch = function(name, watcher) {
+$Element.prototype.watch = function(name, callback) {
     return this.each(function(el) {
-        (el._watchers[name] || (el._watchers[name] = [])).push(watcher);
+        (el._watchers[name] || (el._watchers[name] = [])).push(callback);
     });
 };
 
@@ -643,11 +635,11 @@ $Element.prototype.watch = function(name, watcher) {
  * Disable watching of a particular property/attribute
  * @memberOf module:accessors
  * @param  {String}   name    property/attribute name
- * @param  {Function} watcher watch callback
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
  * @return {$Element}
  */
-$Element.prototype.unwatch = function(name, watcher) {
-    var eq = function(w) { return w === watcher };
+$Element.prototype.unwatch = function(name, callback) {
+    var eq = function(w) { return w === callback };
 
     return this.each(function(el) {
         var watchers = el._watchers[name];
@@ -728,7 +720,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
                 if (args.length === 1) {
                     return strategy.call(this, className);
                 } else {
-                    return _.every.call(args, strategy, this);
+                    return this.every.call(args, strategy, this);
                 }
             }
         };
@@ -843,7 +835,7 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
-    reVar = /\{([a-zA-Z\-\d]+)\}/g,
+    reVar = /\{([\w\-]+)\}/g,
     toContentAttr = function(_, attr) { return "\"attr(data-" + attr + ")\"" };
 
 /**
@@ -932,7 +924,7 @@ $Element.prototype.toString = function() {
 
 module.exports = $Element;
 
-},{"./node":26}],13:[function(require,module,exports){
+},{"./node":27}],13:[function(require,module,exports){
 /**
  * Element manipulation support
  * @module manipulation
@@ -1228,10 +1220,10 @@ function makeChildTraversingMethod(all) {
 
         if (!_.DOM2_EVENTS) {
             // fix IE8 bug with children collection
-            children = _.filter.call(children, function(node) { return node.nodeType === 1 });
+            children = this.filter.call(children, function(node) { return node.nodeType === 1 });
         }
 
-        if (all) return new $Elements(selector ? _.filter.call(children, SelectorMatcher(selector)) : children);
+        if (all) return new $Elements(selector ? this.filter.call(children, SelectorMatcher(selector)) : children);
 
         if (selector < 0) selector = children.length + selector;
 
@@ -1325,51 +1317,58 @@ var _ = require("./utils"),
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
-                var value = typeof fn === "function" ? fn(node) : fn,
-                    style = _.computeStyle(node),
-                    transitionDuration = readAnimationProp("transition-duration", style),
-                    animationDuration = readAnimationProp("animation-duration", style),
-                    iterationCount = readAnimationProp("animation-iteration-count", style),
+                var nodeStyle = node.style,
+                    computedStyle = _.computeStyle(node),
+                    value = typeof fn === "function" ? fn(node) : fn,
+                    transitionDuration = readAnimationProp("transition-duration", computedStyle),
+                    animationDuration = readAnimationProp("animation-duration", computedStyle),
+                    iterationCount = readAnimationProp("animation-iteration-count", computedStyle),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
+                    animationType = eventTypes[duration === transitionDuration ? 1 : 0],
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    completeAnimation = function(e) {
+                    animationDone = function() {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
-                            node.style.visibility = "hidden";
-                            node.style[absentStrategy[0]] = absentStrategy[1];
+                            nodeStyle.visibility = "hidden";
+                            nodeStyle[absentStrategy[0]] = absentStrategy[1];
                         }
 
-                        if (hasAnimation) {
-                            node.style.pointerEvents = "";
-                            node.removeEventListener(e.type, completeAnimation, false);
-                        }
+                        if (hasAnimation) node.removeEventListener(animationType, animationDone, false);
 
-                        if (callback) callback(el, index, ref);
+                        if (callback) {
+                            callback(el, index, ref);
+                            callback = null; // prevent executing the callback twise
+                        }
                     };
 
                 if (value) {
                     // store current inline value in a private property
-                    el._visibility = node.style[absentStrategy[0]];
+                    el._visibility = nodeStyle[absentStrategy[0]];
                     // do not store display:none
                     if (el._visibility === "none") el._visibility = "";
+                    // prevent accidental user actions during animation
+                    nodeStyle.pointerEvents = "none";
                 } else {
-                    node.style[absentStrategy[0]] = el._visibility || "";
+                    nodeStyle[absentStrategy[0]] = el._visibility || "";
+                    // visible element should be accessable
+                    nodeStyle.pointerEvents = "";
                 }
                 // set styles inline to override inherited
-                node.style.visibility = "visible";
+                nodeStyle.visibility = "visible";
 
                 if (hasAnimation) {
-                    // prevent accidental user actions during animation
-                    node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    node.addEventListener(eventTypes[duration === transitionDuration ? 1 : 0], completeAnimation, false);
+                    node.addEventListener(animationType, animationDone, false);
+                    // animation end event is not sometimes fired for small delays,
+                    // so make sure that animationDone will be called via setTimeout
+                    setTimeout(animationDone, duration + 100);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
-                // when there is no animation the completeAnimation call
+                // when there is no animation the animationDone call
                 // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.dispatch(completeAnimation);
+                if (!hasAnimation) el.dispatch(animationDone);
             });
         };
     },
@@ -1433,8 +1432,7 @@ $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
 });
 
 },{"./element":12,"./styleaccessor":29,"./utils":30}],19:[function(require,module,exports){
-var _ = require("./utils"),
-    $Element = require("./element");
+var $Element = require("./element");
 
 /**
  * Used to represent a collection of DOM elements
@@ -1444,7 +1442,11 @@ var _ = require("./utils"),
  * @private
  */
 function $Elements(elements) {
-    _.push.apply(this, _.map.call(elements, $Element));
+    for (var i = 0, n = elements && elements.length || 0; i < n; ++i) {
+        this[i] = $Element(elements[i]);
+    }
+
+    this.length = n;
 }
 
 $Elements.prototype = new $Element();
@@ -1452,7 +1454,7 @@ $Elements.prototype.toString = Array.prototype.join;
 
 module.exports = $Elements;
 
-},{"./element":12,"./utils":30}],20:[function(require,module,exports){
+},{"./element":12}],20:[function(require,module,exports){
 /*
  * Helper type to create an event handler
  */
@@ -1613,7 +1615,7 @@ $Node.prototype.contains = function(element) {
     throw _.makeError("contains");
 };
 
-},{"./element":12,"./node":26,"./utils":30}],22:[function(require,module,exports){
+},{"./element":12,"./node":27,"./utils":30}],22:[function(require,module,exports){
 var _ = require("./utils"),
     /**
      * Data property support
@@ -1668,7 +1670,7 @@ $Node.prototype.data = function(key, value) {
     throw _.makeError("data", this);
 };
 
-},{"./node":26,"./utils":30}],23:[function(require,module,exports){
+},{"./node":27,"./utils":30}],23:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     dispatcher = document.createElement("a"),
@@ -1717,7 +1719,7 @@ $Node.prototype.dispatch = function(method) {
     return result;
 };
 
-},{"./node":26,"./utils":30}],24:[function(require,module,exports){
+},{"./node":27,"./utils":30}],24:[function(require,module,exports){
 /**
  * Event handling support
  * @module events
@@ -1882,20 +1884,102 @@ $Node.prototype.fire = function(type) {
     });
 };
 
-},{"./eventhandler":20,"./node":26,"./utils":30}],25:[function(require,module,exports){
+},{"./eventhandler":20,"./node":27,"./utils":30}],25:[function(require,module,exports){
+/**
+ * Element search support
+ * @module find
+ */
+var _ = require("./utils"),
+    $Node = require("./node"),
+    $Element = require("./element"),
+    $Elements = require("./elements");
+
+// big part of code inspired by Sizzle:
+// https://github.com/jquery/sizzle/blob/master/sizzle.js
+
+var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+    rsibling = /[\x20\t\r\n\f]*[+~>]/,
+    rescape = /'|\\/g,
+    tmpId = "DOM" + new Date().getTime();
+
+/**
+ * Find the first matched element by css selector
+ * @memberOf module:search
+ * @param  {String} selector css selector
+ * @return {$Element} the first matched element
+ */
+$Node.prototype.find = function(selector, /*INTERNAL*/all) {
+    if (typeof selector !== "string") throw _.makeError("find");
+
+    var node = this._node,
+        quickMatch = rquickExpr.exec(selector),
+        elements, old, nid, context;
+
+    if (!node) return new $Element();
+
+    if (quickMatch) {
+        if (quickMatch[1]) {
+            // speed-up: "TAG"
+            elements = node.getElementsByTagName(selector);
+        } else {
+            // speed-up: ".CLASS"
+            elements = node.getElementsByClassName(quickMatch[2]);
+        }
+
+        if (elements && !all) elements = elements[0];
+    } else {
+        old = true;
+        nid = tmpId;
+        context = node;
+
+        if (node !== document) {
+            // qSA works strangely on Element-rooted queries
+            // We can work around this by specifying an extra ID on the root
+            // and working up from there (Thanks to Andrew Dupont for the technique)
+            if ( (old = node.getAttribute("id")) ) {
+                nid = old.replace(rescape, "\\$&");
+            } else {
+                node.setAttribute("id", nid);
+            }
+
+            nid = "[id='" + nid + "'] ";
+
+            context = rsibling.test(selector) ? node.parentNode : node;
+            selector = nid + selector.split(",").join("," + nid);
+        }
+
+        try {
+            elements = context[all ? "querySelectorAll" : "querySelector"](selector);
+        } finally {
+            if (!old) node.removeAttribute("id");
+        }
+    }
+
+    return all ? new $Elements(elements) : $Element(elements);
+};
+
+/**
+ * Find all matched elements by css selector
+ * @memberOf module:search
+ * @param  {String} selector css selector
+ * @return {$Element} matched elements
+ */
+$Node.prototype.findAll = function(selector) {
+    return this.find(selector, true);
+};
+},{"./element":12,"./elements":19,"./node":27,"./utils":30}],26:[function(require,module,exports){
 var _ = require("./utils"),
     $Node = require("./node"),
     makeLoopMethod = (function(){
         var rcallback = /cb\.call\(([^)]+)\)/g,
             defaults = {
                 BEGIN: "",
-                COUNT:  "this ? this.length : 0",
                 BODY:   "",
                 END:  "return this"
             };
 
         return function(options) {
-            var code = "%BEGIN%\nfor(var i=0,n=%COUNT%;i<n;++i){%BODY%}%END%", key;
+            var code = "%BEGIN%\nfor(var i=0,n=this.length;i<n;++i){%BODY%}%END%", key;
 
             for (key in defaults) {
                 code = code.replace("%" + key + "%", options[key] || defaults[key]);
@@ -1981,8 +2065,8 @@ _.extend($Node.prototype, {
      * @function
      */
     reduce: makeLoopMethod({
-        BEGIN: "if (arguments.length < 2) that = this[0]",
-        BODY:  "that = cb(that, this[arguments.length < 2 ? i + 1 : i], i, this)",
+        BEGIN: "var len = arguments.length; if (len < 2) that = this[0]",
+        BODY:  "that = cb(that, this[len < 2 ? i + 1 : i], i, this)",
         END:   "return that"
     }),
     /**
@@ -1994,8 +2078,8 @@ _.extend($Node.prototype, {
      * @function
      */
     reduceRight: makeLoopMethod({
-        BEGIN: "var j; if (arguments.length < 2) that = this[this.length - 1]",
-        BODY:  "j = n - i - 1; that = cb(that, this[arguments.length < 2 ? j - 1 : j], j, this)",
+        BEGIN: "var j, len = arguments.length; if (len < 2) that = this[this.length - 1]",
+        BODY:  "j = n - i - 1; that = cb(that, this[len < 2 ? j - 1 : j], j, this)",
         END:   "return that"
     }),
     /**
@@ -2011,7 +2095,7 @@ _.extend($Node.prototype, {
     })
 });
 
-},{"./node":26,"./utils":30}],26:[function(require,module,exports){
+},{"./node":27,"./utils":30}],27:[function(require,module,exports){
 /**
  * Used to represent a DOM node
  * @name $Node
@@ -2053,90 +2137,7 @@ $Node.prototype.set = function(name, value) {
 
 module.exports = $Node;
 
-},{}],27:[function(require,module,exports){
-/**
- * Element search support
- * @module search
- */
-var _ = require("./utils"),
-    $Node = require("./node"),
-    $Element = require("./element"),
-    $Elements = require("./elements");
-
-// big part of code inspired by Sizzle:
-// https://github.com/jquery/sizzle/blob/master/sizzle.js
-
-var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
-    rsibling = /[\x20\t\r\n\f]*[+~>]/,
-    rescape = /'|\\/g,
-    tmpId = "DOM" + new Date().getTime();
-
-/**
- * Find the first matched element by css selector
- * @memberOf module:search
- * @param  {String} selector css selector
- * @return {$Element} the first matched element
- */
-$Node.prototype.find = function(selector, /*INTERNAL*/all) {
-    if (typeof selector !== "string") throw _.makeError("find");
-
-    var node = this._node,
-        quickMatch = rquickExpr.exec(selector),
-        elements, old, nid, context;
-
-    if (!node) return new $Element();
-
-    if (quickMatch) {
-        if (quickMatch[1]) {
-            // speed-up: "TAG"
-            elements = node.getElementsByTagName(selector);
-        } else {
-            // speed-up: ".CLASS"
-            elements = node.getElementsByClassName(quickMatch[2]);
-        }
-
-        if (elements && !all) elements = elements[0];
-    } else {
-        old = true;
-        nid = tmpId;
-        context = node;
-
-        if (node !== document) {
-            // qSA works strangely on Element-rooted queries
-            // We can work around this by specifying an extra ID on the root
-            // and working up from there (Thanks to Andrew Dupont for the technique)
-            if ( (old = node.getAttribute("id")) ) {
-                nid = old.replace(rescape, "\\$&");
-            } else {
-                node.setAttribute("id", nid);
-            }
-
-            nid = "[id='" + nid + "'] ";
-
-            context = rsibling.test(selector) ? node.parentNode : node;
-            selector = nid + selector.split(",").join("," + nid);
-        }
-
-        try {
-            elements = context[all ? "querySelectorAll" : "querySelector"](selector);
-        } finally {
-            if (!old) node.removeAttribute("id");
-        }
-    }
-
-    return all ? new $Elements(elements) : $Element(elements);
-};
-
-/**
- * Find all matched elements by css selector
- * @memberOf module:search
- * @param  {String} selector css selector
- * @return {$Element} matched elements
- */
-$Node.prototype.findAll = function(selector) {
-    return this.find(selector, true);
-};
-},{"./element":12,"./elements":19,"./node":26,"./utils":30}],28:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 /*
  * Helper for css selectors
  */
@@ -2313,10 +2314,7 @@ module.exports = {
     slice: Array.prototype.slice,
     every: Array.prototype.every,
     each: Array.prototype.forEach,
-    filter: Array.prototype.filter,
-    some: Array.prototype.some,
-    push: Array.prototype.push,
-    map: Array.prototype.map
+    some: Array.prototype.some
 };
 
 },{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30])
