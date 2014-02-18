@@ -62,10 +62,10 @@ describe("visibility", function() {
             link.hide(spy);
 
             setTimeout(function() {
-                expect(spy).toHaveBeenCalled();
+                expect(spy.calls.count()).toBe(1);
 
                 done();
-            }, 50);
+            }, 150);
         });
 
         it("should support exec callback when transition is defined", function(done) {
@@ -76,13 +76,11 @@ describe("visibility", function() {
 
             link.hide(spy);
 
-            // expect(spy).not.toHaveBeenCalled();
-
             setTimeout(function() {
-                expect(spy).toHaveBeenCalled();
+                expect(spy.calls.count()).toBe(1);
 
                 done();
-            }, 50);
+            }, 150);
         });
 
         it("should work properly in legacy browsers", function() {

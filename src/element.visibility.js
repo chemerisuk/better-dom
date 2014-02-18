@@ -15,26 +15,24 @@ var _ = require("./utils"),
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
-                var value = typeof fn === "function" ? fn(node) : fn,
-                    style = _.computeStyle(node),
-                    transitionDuration = readAnimationProp("transition-duration", style),
-                    animationDuration = readAnimationProp("animation-duration", style),
-                    iterationCount = readAnimationProp("animation-iteration-count", style),
+                var nodeStyle = node.style,
+                    computedStyle = _.computeStyle(node),
+                    value = typeof fn === "function" ? fn(node) : fn,
+                    transitionDuration = readAnimationProp("transition-duration", computedStyle),
+                    animationDuration = readAnimationProp("animation-duration", computedStyle),
+                    iterationCount = readAnimationProp("animation-iteration-count", computedStyle),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     animationType = eventTypes[duration === transitionDuration ? 1 : 0],
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    completeAnimation = function() {
+                    animationDone = function() {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
-                            node.style.visibility = "hidden";
-                            node.style[absentStrategy[0]] = absentStrategy[1];
+                            nodeStyle.visibility = "hidden";
+                            nodeStyle[absentStrategy[0]] = absentStrategy[1];
                         }
 
-                        if (hasAnimation) {
-                            node.style.pointerEvents = "";
-                            node.removeEventListener(animationType, completeAnimation, false);
-                        }
+                        if (hasAnimation) node.removeEventListener(animationType, animationDone, false);
 
                         if (callback) {
                             callback(el, index, ref);
@@ -44,29 +42,31 @@ var _ = require("./utils"),
 
                 if (value) {
                     // store current inline value in a private property
-                    el._visibility = node.style[absentStrategy[0]];
+                    el._visibility = nodeStyle[absentStrategy[0]];
                     // do not store display:none
                     if (el._visibility === "none") el._visibility = "";
+                    // prevent accidental user actions during animation
+                    nodeStyle.pointerEvents = "none";
                 } else {
-                    node.style[absentStrategy[0]] = el._visibility || "";
+                    nodeStyle[absentStrategy[0]] = el._visibility || "";
+                    // visible element should be accessable
+                    nodeStyle.pointerEvents = "";
                 }
                 // set styles inline to override inherited
-                node.style.visibility = "visible";
+                nodeStyle.visibility = "visible";
 
                 if (hasAnimation) {
-                    // prevent accidental user actions during animation
-                    node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    node.addEventListener(animationType, completeAnimation, false);
+                    node.addEventListener(animationType, animationDone, false);
                     // animation end event is not sometimes fired for small delays,
-                    // so make sure that it will be called by using setTimeout
-                    setTimeout(completeAnimation, duration + 200);
+                    // so make sure that animationDone will be called via setTimeout
+                    setTimeout(animationDone, duration + 100);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
-                // when there is no animation the completeAnimation call
+                // when there is no animation the animationDone call
                 // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.dispatch(completeAnimation);
+                if (!hasAnimation) el.dispatch(animationDone);
             });
         };
     },
