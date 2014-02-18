@@ -21,8 +21,9 @@ var _ = require("./utils"),
                     animationDuration = readAnimationProp("animation-duration", style),
                     iterationCount = readAnimationProp("animation-iteration-count", style),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
+                    animationType = eventTypes[duration === transitionDuration ? 1 : 0],
                     hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    completeAnimation = function(e) {
+                    completeAnimation = function() {
                         // fix for quick hide/show when hiding is in progress
                         if (node.getAttribute("aria-hidden") === "true") {
                             // hide element and remove it from flow
@@ -32,10 +33,13 @@ var _ = require("./utils"),
 
                         if (hasAnimation) {
                             node.style.pointerEvents = "";
-                            node.removeEventListener(e.type, completeAnimation, false);
+                            node.removeEventListener(animationType, completeAnimation, false);
                         }
 
-                        if (callback) callback(el, index, ref);
+                        if (callback) {
+                            callback(el, index, ref);
+                            callback = null; // prevent executing the callback twise
+                        }
                     };
 
                 if (value) {
@@ -53,7 +57,10 @@ var _ = require("./utils"),
                     // prevent accidental user actions during animation
                     node.style.pointerEvents = "none";
                     // choose max delay to determine appropriate event type
-                    node.addEventListener(eventTypes[duration === transitionDuration ? 1 : 0], completeAnimation, false);
+                    node.addEventListener(animationType, completeAnimation, false);
+                    // animation end event is not sometimes fired for small delays,
+                    // so make sure that it will be called by using setTimeout
+                    setTimeout(completeAnimation, duration + 200);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
