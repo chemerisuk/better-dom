@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: node.dispatch.js</title>
+	<title>better-dom Source: node.find.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -145,58 +145,92 @@
 					
 
 
-		<h1 class="page-title">Source: node.dispatch.js</h1>
+		<h1 class="page-title">Source: node.find.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+            <pre class="sunlight-highlight-javascript ">/**
+ * Element search support
+ * @module find
+ */
+var _ = require("./utils"),
     $Node = require("./node"),
-    dispatcher = document.createElement("a"),
-    safePropName = "onpropertychange";
+    $Element = require("./element"),
+    $Elements = require("./elements");
 
-if (_.DOM2_EVENTS) {
-    // for modern browsers use late binding for safe calls
-    // dispatcher MUST have handleEvent property before registering
-    dispatcher[safePropName = "handleEvent"] = null;
-    dispatcher.addEventListener(safePropName, dispatcher, false);
-}
+// big part of code inspired by Sizzle:
+// https://github.com/jquery/sizzle/blob/master/sizzle.js
+
+var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+    rsibling = /[\x20\t\r\n\f]*[+~>]/,
+    rescape = /'|\\/g,
+    tmpId = "DOM" + new Date().getTime();
 
 /**
- * Make a safe method/function call
- * @param  {String|Function}  method  name of method or function for a safe call
- * @param  {...Object}        [args]  extra arguments to pass into each invokation
- * @return {Object} result of the invokation which is undefined if there was an exception
+ * Find the first matched element by css selector
+ * @memberOf module:search
+ * @param  {String} selector css selector
+ * @return {$Element} the first matched element
  */
-$Node.prototype.dispatch = function(method) {
-    var args = _.slice.call(arguments, 1),
-        methodType = typeof method,
-        el = this,
-        node = this._node,
-        handler, result, e;
+$Node.prototype.find = function(selector, /*INTERNAL*/all) {
+    if (typeof selector !== "string") throw _.makeError("find");
 
-    if (!node) return;
+    var node = this._node,
+        quickMatch = rquickExpr.exec(selector),
+        elements, old, nid, context;
 
-    if (methodType === "function") {
-        handler = function() { result = method.apply(el, args) };
-    } else if (methodType === "string") {
-        handler = function() { result = node[method].apply(node, args) };
+    if (!node) return new $Element();
+
+    if (quickMatch) {
+        if (quickMatch[1]) {
+            // speed-up: "TAG"
+            elements = node.getElementsByTagName(selector);
+        } else {
+            // speed-up: ".CLASS"
+            elements = node.getElementsByClassName(quickMatch[2]);
+        }
+
+        if (elements && !all) elements = elements[0];
     } else {
-        throw _.makeError("dispatch");
-    }
-    // register safe invokation handler
-    dispatcher[safePropName] = handler;
-    // make a safe call
-    if (_.DOM2_EVENTS) {
-        e = document.createEvent("HTMLEvents");
-        e.initEvent(safePropName, false, false);
-        dispatcher.dispatchEvent(e);
-    }
-    // cleanup references
-    dispatcher[safePropName] = null;
+        old = true;
+        nid = tmpId;
+        context = node;
 
-    return result;
+        if (node !== document) {
+            // qSA works strangely on Element-rooted queries
+            // We can work around this by specifying an extra ID on the root
+            // and working up from there (Thanks to Andrew Dupont for the technique)
+            if ( (old = node.getAttribute("id")) ) {
+                nid = old.replace(rescape, "\\$&");
+            } else {
+                node.setAttribute("id", nid);
+            }
+
+            nid = "[id='" + nid + "'] ";
+
+            context = rsibling.test(selector) ? node.parentNode : node;
+            selector = nid + selector.split(",").join("," + nid);
+        }
+
+        try {
+            elements = context[all ? "querySelectorAll" : "querySelector"](selector);
+        } finally {
+            if (!old) node.removeAttribute("id");
+        }
+    }
+
+    return all ? new $Elements(elements) : $Element(elements);
 };
-</pre>
+
+/**
+ * Find all matched elements by css selector
+ * @memberOf module:search
+ * @param  {String} selector css selector
+ * @return {$Element} matched elements
+ */
+$Node.prototype.findAll = function(selector) {
+    return this.find(selector, true);
+};</pre>
         </article>
     </section>
 
