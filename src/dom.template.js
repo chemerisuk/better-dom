@@ -8,17 +8,17 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
-    reTextTag = /<\?>|<\/\?>/g,
-    reAttr = /([\w\-]+)(?:=(`([^`]*)`|'(?:(?:\\.|[^'])*)'|([^\s]+)))?/g,
+    reAttr = /([\w\-]+)(?:=((?:(`|')((?:\\?.)*)?\3)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
     reVar = /\{([\w\-]+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
     toString = function(term) { return term.join ? term.join("") : term },
-    normalizeAttrs = function(term, name, value, rawValue, needQuotes) {
+    normalizeAttrs = function(term, name, value, quotes, rawValue) {
+        if (!quotes || quotes === "`") quotes = "\"";
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
-        return name + "=" + (needQuotes || rawValue || !value ? "\"" + (rawValue || value || name) + "\"" : value);
+        return name + "=" + quotes + (rawValue || value || name) + quotes;
     },
     injectTerm = function(term, first) {
         return function(el) {
@@ -124,7 +124,7 @@ DOM.template = function(template, varMap) {
 
         if (str in operators) {
             term = stack.shift();
-            node = stack.shift() || "?";
+            node = stack.shift() || [""];
 
             if (typeof node === "string") node = [ makeTerm(node) ];
 
@@ -166,7 +166,7 @@ DOM.template = function(template, varMap) {
         stack.unshift(str);
     }
 
-    output = toString(stack[0]).replace(reTextTag, "");
+    output = toString(stack[0]);
 
     return varMap ? output : cache[template] = output;
 };

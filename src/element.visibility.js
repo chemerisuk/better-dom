@@ -60,7 +60,7 @@ var _ = require("./utils"),
                     node.addEventListener(animationType, animationDone, false);
                     // animation end event is not sometimes fired for small delays,
                     // so make sure that animationDone will be called via setTimeout
-                    setTimeout(animationDone, duration + 100);
+                    setTimeout(animationDone, duration + 250);
                 }
                 // trigger native CSS animation
                 node.setAttribute("aria-hidden", value);
