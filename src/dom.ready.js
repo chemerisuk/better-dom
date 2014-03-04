@@ -3,6 +3,9 @@ var _ = require("./utils"),
     readyCallbacks = [],
     readyState = document.readyState;
 
+// declare dependency to fix issue with RequireJS
+require("./node.dispatch");
+
 function pageLoaded() {
     // safely trigger callbacks
     if (readyCallbacks) {

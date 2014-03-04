@@ -6,6 +6,9 @@ But more flexibility is required in a lot of cases. For example, delegated event
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
+* [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
+* [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
+
 ## Features
 * compact size: ~27kb minified and ~6kb gzipped version
 * clean, minimalistic and standards-based (if possible) APIs
@@ -42,20 +45,14 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ```
 
 ## Documentation
-* [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
-* [Introducing Live Extensions For Better-DOM: What They Are And How They Work](http://coding.smashingmagazine.com/2014/02/05/introducing-live-extensions-better-dom-javascript/) @smashingmagazine.com
-* [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
-
-Need more?
-
-* read [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
+* read the [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
 * Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
 * check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
 * walk through the sorce code of existing [projects that use better-dom](https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom).
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/26)
-* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/9)
+* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/10)
 * [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/5)
 * [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6)
 * [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/4)

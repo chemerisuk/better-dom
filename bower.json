@@ -14,7 +14,8 @@
     "legacy",
     "Gruntfile.js",
     "package.json",
-    "bower.json"
+    "bower.json",
+    "main.sublime-project"
   ],
   "devDependencies": {
     "jquery": "latest",
