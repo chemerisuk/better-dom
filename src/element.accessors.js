@@ -1,9 +1,5 @@
-/**
- * Smart getter and setter support
- * @module accessors
- * @see https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter
- */
 var _ = require("./utils"),
+    $Node = require("./node"),
     $Element = require("./element"),
     hooks = {get: {}, set: {}};
 
@@ -14,19 +10,40 @@ var _ = require("./utils"),
  * @return {Object} property/attribute value
  */
 $Element.prototype.get = function(name) {
-    var el = this,
+    var data = this._data,
         node = this._node,
-        hook = hooks.get[name];
+        hook = hooks.get[name],
+        key, value;
 
     if (!node) return;
 
-    if (hook || typeof name === "string") {
-        return hook ? hook(node, name) : (name in node ? node[name] : node.getAttribute(name));
+    if (hook) return hook(node, name);
+
+    if (typeof name === "string") {
+        if (name[0] === "_") {
+            key = name.substr(1);
+
+            if (key in data) {
+                value = data[key];
+            } else {
+                try {
+                    value = node.getAttribute("data-" + key);
+                    // parse object notation syntax
+                    if (value[0] === "{" && value[value.length - 1] === "}") {
+                        value = JSON.parse(value);
+                    }
+                } catch (err) { }
+
+                if (value != null) data[key] = value;
+            }
+
+            return value;
+        }
+
+        return name in node ? node[name] : node.getAttribute(name);
     }
 
-    if (Array.isArray(name)) return name.reduce(function(r, name) { return r[name] = el.get(name), r }, {});
-
-    throw _.makeError("get");
+    return $Node.prototype.get.call(this, name);
 };
 
 /**
@@ -51,29 +68,29 @@ $Element.prototype.set = function(name, value) {
 
         if (watchers) oldValue = el.get(name);
 
-        if (typeof newValue === "function") newValue = value(el, index, ref);
-
-        if (hook || nameType === "string") {
-            if (hook) {
-                hook(node, newValue);
-            } else if (newValue == null) {
-                node.removeAttribute(name);
-            } else if (name in node) {
-                node[name] = newValue;
-            } else {
-                node.setAttribute(name, newValue);
-            }
-        } else if (nameType === "object") {
-            return _.forOwn(name, function(value, name) { el.set(name, value) });
-        } else {
-            throw _.makeError("set");
+        if (name && name[0] === "_") {
+            el._data[name.substr(1)] = newValue;
+        } else if (typeof newValue === "function") {
+            newValue = value(el, index, ref);
         }
+
+        if (!hook && nameType !== "string") return $Node.prototype.set.call(el, name);
+
+        if (hook) {
+            hook(node, newValue);
+        } else if (newValue == null) {
+            node.removeAttribute(name);
+        } else if (name in node) {
+            node[name] = newValue;
+        } else {
+            node.setAttribute(name, newValue);
+        }
+        // trigger reflow manually in IE8
+        if (!_.DOM2_EVENTS) node.className = node.className;
 
         if (watchers) watchers.forEach(function(watcher) {
                 el.dispatch(watcher, name, newValue, oldValue);
             });
-        // trigger reflow manually in IE8
-        if (!_.DOM2_EVENTS) node.className = node.className;
     });
 };
 

@@ -36,13 +36,13 @@ describe("data", function() {
         });
     });
 
-    it("should accept array argument", function() {
-        var param = {a: "b", c: 1};
+    // it("should accept array argument", function() {
+    //     var param = {a: "b", c: 1};
 
-        input.data(param);
+    //     input.data(param);
 
-        expect(input.data(Object.keys(param))).toEqual(param);
-    });
+    //     expect(input.data(Object.keys(param))).toEqual(param);
+    // });
 
     it("should read an appropriate data-* attribute if it exists", function() {
         expect(input.data("a1")).toEqual("x");

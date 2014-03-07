@@ -15,38 +15,22 @@ var _ = require("./utils"),
  */
 $Node.prototype.data = function(key, value) {
     var len = arguments.length,
-        keyType = typeof key,
-        node = this._node,
-        data = this._data;
+        keyType = typeof key;
 
     if (len === 1) {
         if (keyType === "string") {
-            if (node) {
-                value = data[key];
-
-                if (value === undefined) {
-                    try {
-                        value = node.getAttribute("data-" + key);
-                        // parse object notation syntax
-                        if (value[0] === "{" && value[value.length - 1] === "}") {
-                            value = JSON.parse(value);
-                        }
-                    } catch (err) {}
-
-                    data[key] = value;
-                }
-            }
-
-            return value;
+            return this.get("_" + key);
         } else if (key && keyType === "object") {
             if (Array.isArray(key)) {
-                return key.reduce(function(r, key) { return r[key] = data[key], r; }, {});
+                return this.get(key.map(function(key) { return "_" + key }));
             } else {
-                return this.each(function(el) { _.extend(el._data, key) });
+                return _.forOwn(key, function(value, key) {
+                    this.set("_" + key, value);
+                }, this);
             }
         }
-    } else if (len === 2 && keyType === "string") {
-        return this.each(function(el) { el._data[key] = value });
+    } else if (len === 2) {
+        return this.each(function(el) { el.set("_" + key, value) });
     }
 
     throw _.makeError("data", this);

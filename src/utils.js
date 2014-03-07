@@ -31,6 +31,8 @@ module.exports = {
         Object.keys(obj).forEach(function(key) {
             fn.call(thisPtr, obj[key], key);
         });
+
+        return thisPtr;
     },
     extend: function(obj, mixins) {
         this.forOwn(mixins || {}, function(value, key) { obj[key] = value });
