@@ -59,7 +59,7 @@ var _ = require("./utils"),
 DOM.template = function(template, varMap) {
     if (typeof template !== "string") throw _.makeError("template", true);
     // handle varMap
-    if (varMap) template = template.replace(reVar, function(x, name) { return varMap[name] || x });
+    if (varMap) template = template.replace(reVar, function(x, name) { return name in varMap ? varMap[name] : x });
 
     var stack = [],
         output = [],

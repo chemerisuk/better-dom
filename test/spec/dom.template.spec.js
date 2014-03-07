@@ -79,6 +79,8 @@ describe("DOM.template", function() {
         checkExpr("a#{b}>`{c}`", "<a id=\"bbb\">test</a>", {c: "test", b: "bbb"});
         checkExpr("div[class=foo-{lang}]*2", "<div class=\"foo-en\"></div><div class=\"foo-en\"></div>", {lang: "en"});
         checkExpr("div[class=foo-$lang]*2", "<div class=\"foo-1lang\"></div><div class=\"foo-2lang\"></div>", {lang: "en"});
+        //checkExpr("i>`{0}`", "<i></i>", [""]);
+        checkExpr("i>`{0}:`", "<i>:</i>", [""]);
     });
 
     describe("groups", function() {
