@@ -88,9 +88,9 @@ $Element.prototype.set = function(name, value) {
         // trigger reflow manually in IE8
         if (!_.DOM2_EVENTS) node.className = node.className;
 
-        if (watchers) watchers.forEach(function(watcher) {
-                el.dispatch(watcher, name, newValue, oldValue);
-            });
+        if (watchers && oldValue !== newValue) {
+            watchers.forEach(function(w) { el.dispatch(w, name, newValue, oldValue) });
+        }
     });
 };
 
