@@ -29,10 +29,12 @@
     "karma-coverage": "~0.1",
     "karma-firefox-launcher": "0.1.0",
     "karma-safari-launcher": "0.1.1",
-    "karma-opera-launcher": "0.1.0"
+    "karma-opera-launcher": "0.1.0",
+    "coveralls": "^2.8.0"
   },
   "scripts": {
     "test": "grunt test",
+    "coveralls": "cat ./coverage/*.json | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
     "start": "grunt dev",
     "build": "npm install && bower install && grunt"
   }

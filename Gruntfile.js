@@ -45,12 +45,17 @@ module.exports = function(grunt) {
                 singleRun: true
             },
             coverage: {
-                preprocessors: { "build/*.js": "coverage" },
+                preprocessors: { "build/better-dom.js": "coverage" },
                 reporters: ["coverage", "progress"],
                 background: true
             },
             unit: {
-                singleRun: true
+                singleRun: true,
+                preprocessors: { "build/better-dom.js": "coverage" },
+                reporters: ["coverage", "progress"],
+                coverageReporter: {
+                    type: "lcovonly"
+                }
             }
         },
         shell: {

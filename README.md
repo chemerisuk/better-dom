@@ -1,4 +1,4 @@
-# better-dom [![Build Status](https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master)](http://travis-ci.org/chemerisuk/better-dom)
+# better-dom [![Build Status][travis-image]][travis-url]  [![Coverage Status][coveralls-image]][coveralls-url]
 > Live extension playground
 
 jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
@@ -103,3 +103,10 @@ IE requires that the HTC file must be in the same domain with as the HTML page w
 * Chrome for Android
 
 Opera Mini is out of the scope because of lack of support for CSS3 Animations.
+
+[travis-url]: http://travis-ci.org/chemerisuk/better-dom
+[travis-image]: https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master
+
+[coveralls-url]: https://coveralls.io/r/chemerisuk/better-dom
+[coveralls-image]: https://coveralls.io/repos/chemerisuk/better-dom/badge.png?branch=master
+
