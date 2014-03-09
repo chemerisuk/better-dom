@@ -63,7 +63,7 @@ var _ = require("./utils"),
                     setTimeout(animationDone, duration + 250);
                 }
                 // trigger native CSS animation
-                node.setAttribute("aria-hidden", value);
+                el.set("aria-hidden", value.toString());
                 // when there is no animation the animationDone call
                 // must be AFTER changing the aria-hidden attribute
                 if (!hasAnimation) el.dispatch(animationDone);

@@ -52,7 +52,7 @@ module.exports = function(grunt) {
             unit: {
                 singleRun: true,
                 preprocessors: { "build/better-dom.js": "coverage" },
-                reporters: ["coverage", "progress"],
+                reporters: ["coverage", "dots"],
                 coverageReporter: {
                     type: "lcovonly",
                     dir: "coverage/"
