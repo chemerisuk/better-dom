@@ -72,28 +72,6 @@ describe("set", function() {
         expect(link).toHaveAttr("data-test2", "test2");
     });
 
-    it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
-        var value = "set-test-changed";
-
-        link.set(value);
-        input.set(value);
-
-        expect(link).toHaveHtml(value);
-        expect(input).toHaveProp("value", value);
-
-        inputs.set("qqq").legacy(function(node) {
-            expect(node.value).toBe("qqq");
-        });
-    });
-
-    it("should set select value properly", function() {
-        var select = DOM.create("select>option>`AM`^option>`PM`)");
-
-        expect(select.get()).toBe("AM");
-        select.set("PM");
-        expect(select.get()).toBe("PM");
-    });
-
     it("should polyfill textContent", function() {
         expect(link.get("textContent")).toBe("set-test");
         link.set("textContent", "<i>changed</i>");
@@ -114,4 +92,27 @@ describe("set", function() {
         expect(document.title).toBe("abc");
     });
 
+    describe("value shortcut", function() {
+        it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
+            var value = "set-test-changed";
+
+            link.set(value);
+            input.set(value);
+
+            expect(link).toHaveHtml(value);
+            expect(input).toHaveProp("value", value);
+
+            inputs.set("qqq").legacy(function(node) {
+                expect(node.value).toBe("qqq");
+            });
+        });
+
+        it("should set select value properly", function() {
+            var select = DOM.create("select>option>`AM`^option>`PM`)");
+
+            expect(select.get()).toBe("AM");
+            select.set("PM");
+            expect(select.get()).toBe("PM");
+        });
+    });
 });

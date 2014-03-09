@@ -1,4 +1,4 @@
-# better-dom [![Build Status][travis-image]][travis-url]  [![Coverage Status][coveralls-image]][coveralls-url]
+# better-dom [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url]
 > Live extension playground
 
 jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. 

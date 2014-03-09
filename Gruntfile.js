@@ -54,7 +54,8 @@ module.exports = function(grunt) {
                 preprocessors: { "build/better-dom.js": "coverage" },
                 reporters: ["coverage", "progress"],
                 coverageReporter: {
-                    type: "lcovonly"
+                    type: "lcovonly",
+                    dir: "coverage/"
                 }
             }
         },
