@@ -14,10 +14,35 @@ module.exports = {
     injectElement: function(el) {
         return currentScript.parentNode.insertBefore(el, currentScript);
     },
+    raf: (function() {
+        var lastTime = 0,
+            propName = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+                var prop = name + "equestAnimationFrame";
 
+                return memo || window[prop] && prop;
+            }, null);
+
+        if (propName) {
+            return function(callback) { window[propName](callback) };
+        } else {
+            return function(callback) {
+                var currTime = new Date().getTime(),
+                    timeToCall = Math.max(0, 16 - (currTime - lastTime));
+
+                lastTime = currTime + timeToCall;
+
+                if (timeToCall) {
+                    setTimeout(callback, timeToCall);
+                } else {
+                    callback(currTime + timeToCall);
+                }
+            };
+        }
+    }()),
     // constants
     docEl: doc.documentElement,
     CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
+    LEGACY_ANDROID: ~navigator.userAgent.indexOf("Android 2"),
     DOM2_EVENTS: !!doc.addEventListener,
     WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
     RAF: ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {

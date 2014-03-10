@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Animation test</title>
+    <meta name="viewport" content="width=device-width,user-scalable=no">
+    <style>
+    #bar {
+        overflow: hidden;
+        border: 1px solid;
+        position: relative;
+        padding: 0 10px;
+    }
+
+    #bar, .bar-item {
+        width: 200px;
+        height: 200px;
+    }
+
+    .bar-item {
+        background: yellow;
+
+        -webkit-transition: -webkit-transform 0.5s linear;
+        transition: transform 0.5s linear;
+
+        -webkit-transform: translateX(0px);
+        transform: translateX(0px);
+    }
+
+    .bar-item[aria-hidden=true] {
+        -webkit-transform: translateX(-100%);
+        transform: translateX(-100%);
+    }
+
+    .bar-item + .bar-item {
+        background: green;
+
+        position: absolute;
+        left: 10px;
+        top: 0px;
+
+        visibility: hidden;
+    }
+
+    .bar-item + .bar-item[aria-hidden=true] {
+        -webkit-transform: translateX(100%);
+        transform: translateX(100%);
+    }
+    </style>
+</head>
+<body>
+    <div id="bar">
+        <div class="bar-item"></div>
+        <div class="bar-item" aria-hidden="true"></div>
+    </div>
+    <script>
+    var eventType = window.WebKitAnimationEvent ? "webkitTransitionEnd" : "transitionend",
+        bars = Array.prototype.slice.call(document.querySelectorAll(".bar-item"), 0),
+        prop = function(name) {
+            return window.WebKitAnimationEvent ? "webkitT" + name.substr(1) : name;
+        },
+        raf = (function() {
+            var lastTime = 0,
+                propName = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+                    var prop = name + "equestAnimationFrame";
+
+                    return memo || window[prop] && prop;
+                }, null);
+
+            if (propName) {
+                return function(callback) { window[propName](callback) };
+            } else {
+                return function(callback) {
+                    var currTime = new Date().getTime(),
+                        timeToCall = Math.max(0, 16 - (currTime - lastTime));
+
+                    lastTime = currTime + timeToCall;
+
+                    if (timeToCall) {
+                        setTimeout(callback, timeToCall);
+                    } else {
+                        callback(currTime + timeToCall);
+                    }
+                };
+            }
+        }());
+
+    setInterval(function() {
+        bars.forEach(function(bar) {
+            var style = bar.style,
+                cs = window.getComputedStyle(bar),
+                isHidden = bar.getAttribute("aria-hidden") === "true";
+
+            raf(function() {
+                var duration = 500,
+                    transitionProperty = cs[prop("transitionProperty")],
+                    transitionDelay = cs[prop("transitionDelay")],
+                    transitionDuration = cs[prop("transitionDuration")],
+                    completeVisibilityChange = function(e) {
+                        if (e.propertyName === "visibility") {
+                            e.stopImmediatePropagation(); // this is an internal event
+
+                            style[prop("transitionProperty")] = transitionProperty;
+                            style[prop("transitionDelay")] = transitionDelay;
+                            style[prop("transitionDuration")] = transitionDuration;
+
+                            bar.removeEventListener(eventType, completeVisibilityChange, false);
+
+                            if (style.visibility === "hidden") {
+                                style.position = "absolute";
+                            } else {
+                                style.pointerEvents = "";
+                            }
+                        }
+                    };
+
+                style[prop("transitionProperty")] = transitionProperty + ", visibility";
+                style[prop(isHidden ? "transitionDelay" : "transitionDuration")] = (isHidden ? transitionDelay : transitionDuration) + ", 0s";
+                style[prop(isHidden ? "transitionDuration" : "transitionDelay")] = (isHidden ? transitionDuration : transitionDelay) + ", " + duration + "ms";
+
+                bar.addEventListener(eventType, completeVisibilityChange, false);
+
+                if (isHidden) {
+                    style.position = "";
+                } else {
+                    style.pointerEvents = "none";
+                }
+
+                style.visibility = isHidden ? "visible" : "hidden";
+                bar.setAttribute("aria-hidden", String(!isHidden));
+            });
+        });
+    }, 1000);
+    </script>
+</body>
+</html>

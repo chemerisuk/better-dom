@@ -9,26 +9,32 @@ describe("visibility", function() {
         link = DOM.find("#vis");
     });
 
-    it("should use aria-hidden to toggle visibility", function() {
+    it("should use aria-hidden to toggle visibility", function(done) {
         expect(link.get("aria-hidden")).toBeFalsy();
-        link.hide();
-        expect(link.get("aria-hidden")).toBe("true");
-        link.show();
-        expect(link.get("aria-hidden")).toBe("false");
+
+        link.hide(function() {
+            expect(link.get("aria-hidden")).toBe("true");
+
+            link.show(function() {
+                expect(link.get("aria-hidden")).toBe("false");
+
+                done();
+            });
+        });
     });
 
     try {
-        DOM.importStyles("@keyframes show", "from {opacity: 1} to {opacity: 0}");
+        DOM.importStyles("@keyframes fade", "from {opacity: 1} to {opacity: 0}");
     } catch (e1) {
         try {
-            DOM.importStyles("@-webkit-keyframes show", "from {opacity: 1} to {opacity: 0}");
+            DOM.importStyles("@-webkit-keyframes fade", "from {opacity: 1} to {opacity: 0}");
         } catch (e2) {
             // do nothing for IE
         }
     }
 
-    DOM.importStyles(".hide", "opacity:1");
-    DOM.importStyles(".hide[aria-hidden=true]", "opacity:0");
+    DOM.importStyles(".fade", "opacity:1");
+    DOM.importStyles(".fade[aria-hidden=true]", "opacity:0");
 
     describe("hide", function() {
         it("should support optional delay argument", function(done) {
@@ -45,18 +51,16 @@ describe("visibility", function() {
             }, delay);
         });
 
-        it("should support exec callback when no animation is defined", function() {
+        it("should support exec callback when no animation is defined", function(done) {
             var spy = jasmine.createSpy();
 
-            link.hide(spy);
-
-            expect(spy).toHaveBeenCalled();
+            link.hide(spy.and.callFake(done));
         });
 
         it("should support exec callback when animation is defined", function(done) {
             var spy = jasmine.createSpy();
 
-            link = DOM.create("a[style='animation:show 10ms;-webkit-animation:show 10ms;display:block']>{abc}");
+            link = DOM.create("a[style='animation:fade 10ms;-webkit-animation:fade 10ms;display:block']>{abc}");
             jasmine.sandbox.set(link);
 
             link.hide(spy);
@@ -71,7 +75,7 @@ describe("visibility", function() {
         it("should support exec callback when transition is defined", function(done) {
             var spy = jasmine.createSpy();
 
-            link = DOM.create("a.hide[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>{abc}");
+            link = DOM.create("a.fade[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>{abc}");
             jasmine.sandbox.set(link);
 
             link.hide(spy);
@@ -83,25 +87,26 @@ describe("visibility", function() {
             }, 150);
         });
 
-        it("should work properly in legacy browsers", function() {
+        it("should work properly in legacy browsers", function(done) {
             var spy = jasmine.createSpy();
 
             link.style("transition-duration", "1");
-            link.hide(spy);
 
-            link.style("animation-duration", "1");
-            link.show(spy);
+            link.hide(spy.and.callFake(function() {
+                link.style("animation-duration", "1");
 
-            link.style("transition-duration", null);
-            link.hide(spy);
+                link.show(spy.and.callFake(function() {
+                    link.style("transition-duration", null);
 
-            expect(spy.calls.count()).toBe(3);
+                    link.hide(spy.and.callFake(done));
+                }));
+            }));
         });
 
         it("should skip infinite animations", function(done) {
             var spy = jasmine.createSpy();
 
-            link = DOM.create("a#inf[style='animation:show 10ms infinite;-webkit-animation:show 10ms infinite;display:block']>{abc}");
+            link = DOM.create("a[style='animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block']>{abc}");
             jasmine.sandbox.set(link);
 
             link.hide(spy);
@@ -123,19 +128,19 @@ describe("visibility", function() {
     });
 
     describe("show", function() {
-        it("show should support optional delay argument", function(done) {
-            var delay = 50;
+        it("should support optional delay argument", function(done) {
+            var delay = 50, start = Date.now();
 
-            link.hide();
-            expect(link.get("aria-hidden")).toBe("true");
-            expect(link.show(delay)).toBe(link);
-            expect(link.get("aria-hidden")).toBe("true");
+            link.hide(function() {
+                expect(link.get("aria-hidden")).toBe("true");
 
-            setTimeout(function() {
-                expect(link.get("aria-hidden")).not.toBe("true");
+                link.show(delay, function() {
+                    expect(link.get("aria-hidden")).toBe("false");
+                    expect(Date.now() - start).toBeGreaterThan(delay);
 
-                done();
-            }, delay);
+                    done();
+                });
+            });
         });
 
         it("should throw error if arguments are invalid", function() {
@@ -146,22 +151,32 @@ describe("visibility", function() {
     });
 
     describe("toggle", function() {
-        it("should allow to toggle visibility", function() {
+        it("should allow to toggle visibility", function(done) {
             expect(link.get("aria-hidden")).toBeFalsy();
-            expect(link.toggle().matches(":hidden")).toBe(true);
-            expect(link.toggle().matches(":hidden")).toBe(false);
+
+            link.toggle(function() {
+                expect(link.matches(":hidden")).toBe(true);
+
+                link.toggle(function() {
+                    expect(link.matches(":hidden")).toBe(false);
+
+                    done();
+                });
+            });
         });
 
-        it("should work properly with show/hide combination", function() {
+        it("should work properly with show/hide combination", function(done) {
             expect(link.style("visibility")).not.toBe("hidden");
 
-            link.toggle();
+            link.toggle(function() {
+                expect(link.style("visibility")).toBe("hidden");
 
-            expect(link.style("visibility")).toBe("hidden");
+                link.toggle(function() {
+                    expect(link.style("visibility")).toBe("visible");
 
-            link.toggle();
-
-            expect(link.style("visibility")).toBe("visible");
+                    done();
+                });
+            });
         });
     });
 
@@ -169,7 +184,8 @@ describe("visibility", function() {
         expect(link.matches(":hidden")).toBe(false);
         link.set("aria-hidden", "123");
         expect(link.matches(":hidden")).toBe(false);
-        link.toggle();
-        expect(link.matches(":hidden")).toBe(true);
+        link.toggle(function() {
+            expect(link.matches(":hidden")).toBe(true);
+        });
     });
 });

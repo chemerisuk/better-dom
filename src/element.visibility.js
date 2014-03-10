@@ -5,68 +5,84 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     styleAccessor = require("./styleaccessor"),
-    eventTypes = _.WEBKIT_PREFIX ? ["webkitAnimationEnd", "webkitTransitionEnd"] : ["animationend", "transitionend"],
-    absentStrategy = _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
+    eventType = _.WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+    // Android 2 devices are usually slow and have a lot of
+    // the implementation bugs, so disable animations for them
+    absentStrategy = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
     readAnimationProp = function(key, style) {
         var fn = styleAccessor.get[key];
 
         return fn && parseFloat(fn(style)) || 0;
     },
+    prop = function(name) {
+        return _.WEBKIT_PREFIX ? "webkitT" + name.substr(1) : name;
+    },
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
-                var nodeStyle = node.style,
+                var style = node.style,
                     computedStyle = _.computeStyle(node),
-                    value = typeof fn === "function" ? fn(node) : fn,
+                    isHidden = !(typeof fn === "function" ? fn(node) : fn),
                     transitionDuration = readAnimationProp("transition-duration", computedStyle),
                     animationDuration = readAnimationProp("animation-duration", computedStyle),
                     iterationCount = readAnimationProp("animation-iteration-count", computedStyle),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
-                    animationType = eventTypes[duration === transitionDuration ? 1 : 0],
-                    hasAnimation = _.CSS3_ANIMATIONS && duration && node.offsetWidth,
-                    animationDone = function() {
-                        // fix for quick hide/show when hiding is in progress
-                        if (node.getAttribute("aria-hidden") === "true") {
-                            // hide element and remove it from flow
-                            nodeStyle.visibility = "hidden";
-                            nodeStyle[absentStrategy[0]] = absentStrategy[1];
-                        }
+                    hasAnimation = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && duration && node.offsetWidth;
 
-                        if (hasAnimation) node.removeEventListener(animationType, animationDone, false);
+                _.raf(function() {
+                    var transitionProperty = computedStyle[prop("transitionProperty")],
+                        transitionDelay = computedStyle[prop("transitionDelay")],
+                        transitionDuration = computedStyle[prop("transitionDuration")],
+                        completeVisibilityChange = function() {
+                            if (style.visibility === "hidden") {
+                                style[absentStrategy[0]] = absentStrategy[1];
+                            } else {
+                                style.pointerEvents = "";
+                            }
 
-                        if (callback) {
-                            callback(el, index, ref);
-                            callback = null; // prevent executing the callback twise
-                        }
-                    };
+                            if (callback) callback(el, index, ref);
+                        };
 
-                if (value) {
-                    // store current inline value in a private property
-                    el._visibility = nodeStyle[absentStrategy[0]];
-                    // do not store display:none
-                    if (el._visibility === "none") el._visibility = "";
-                    // prevent accidental user actions during animation
-                    nodeStyle.pointerEvents = "none";
-                } else {
-                    nodeStyle[absentStrategy[0]] = el._visibility || "";
-                    // visible element should be accessable
-                    nodeStyle.pointerEvents = "";
-                }
-                // set styles inline to override inherited
-                nodeStyle.visibility = "visible";
+                    if (hasAnimation) {
+                        style[prop("transitionProperty")] = transitionProperty + ", visibility";
+                        style[prop(isHidden ? "transitionDelay" : "transitionDuration")] =
+                            (isHidden ? transitionDelay : transitionDuration) + ", 0s";
+                        style[prop(isHidden ? "transitionDuration" : "transitionDelay")] =
+                            (isHidden ? transitionDuration : transitionDelay) + ", " + duration + "ms";
 
-                if (hasAnimation) {
-                    // choose max delay to determine appropriate event type
-                    node.addEventListener(animationType, animationDone, false);
-                    // animation end event is not sometimes fired for small delays,
-                    // so make sure that animationDone will be called via setTimeout
-                    setTimeout(animationDone, duration + 250);
-                }
-                // trigger native CSS animation
-                el.set("aria-hidden", value.toString());
-                // when there is no animation the animationDone call
-                // must be AFTER changing the aria-hidden attribute
-                if (!hasAnimation) el.dispatch(animationDone);
+                        node.addEventListener(eventType, function completeAnimation(e) {
+                            if (e.propertyName === "visibility") {
+                                e.stopImmediatePropagation(); // this is an internal event
+
+                                style[prop("transitionProperty")] = transitionProperty;
+                                style[prop("transitionDelay")] = transitionDelay;
+                                style[prop("transitionDuration")] = transitionDuration;
+
+                                node.removeEventListener(eventType, completeAnimation, false);
+
+                                completeVisibilityChange();
+                            }
+                        }, false);
+                    }
+
+                    if (isHidden) {
+                        // restore initial property value if it exists
+                        style[absentStrategy[0]] = el._visibility || "";
+                    } else {
+                        // store current inline value in a private property
+                        el._visibility = style[absentStrategy[0]];
+                        // do not store display:none
+                        if (el._visibility === "none") el._visibility = "";
+                        // prevent accidental user actions during animation
+                        style.pointerEvents = "none";
+                    }
+
+                    style.visibility = isHidden ? "visible" : "hidden";
+                    // trigger native CSS animation
+                    el.set("aria-hidden", String(!isHidden));
+                    // must be AFTER changing the aria-hidden attribute
+                    if (!hasAnimation) completeVisibilityChange();
+                });
             });
         };
     },

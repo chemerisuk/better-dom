@@ -29,7 +29,7 @@ describe("watch", function() {
         expect(spy2).toHaveBeenCalledWith("title", "new", "modified");
     });
 
-    it("should execute for visibility methods", function() {
+    it("should execute for visibility methods", function(done) {
         var spy = jasmine.createSpy("watcher");
 
         link.watch("aria-hidden", spy);
@@ -40,16 +40,20 @@ describe("watch", function() {
             expect(oldValue).toBeFalsy();
         });
 
-        link.hide();
-        expect(spy.calls.count()).toBe(1);
+        link.hide(function() {
+            expect(spy.calls.count()).toBe(1);
 
-        spy.and.callFake(function(name, newValue, oldValue) {
-            expect(name).toBe("aria-hidden");
-            expect(newValue).toBe("false");
-            expect(oldValue).toBe("true");
+            spy.and.callFake(function(name, newValue, oldValue) {
+                expect(name).toBe("aria-hidden");
+                expect(newValue).toBe("false");
+                expect(oldValue).toBe("true");
+            });
+
+            link.show(function() {
+                expect(spy.calls.count()).toBe(2);
+
+                done();
+            });
         });
-
-        link.show();
-        expect(spy.calls.count()).toBe(2);
     });
 });
