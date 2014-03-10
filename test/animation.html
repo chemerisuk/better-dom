@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Animation test</title>
     <meta name="viewport" content="width=device-width,user-scalable=no">
+    <script src="../build/better-dom.js"></script>
     <style>
     #bar {
         overflow: hidden;
@@ -54,6 +55,13 @@
         <div class="bar-item" aria-hidden="true"></div>
     </div>
     <script>
+    var bars = DOM.findAll(".bar-item");
+
+    setInterval(function() {
+        bars.toggle();
+    }, 1000);
+    </script>
+    <!-- <script>
     var eventType = window.WebKitAnimationEvent ? "webkitTransitionEnd" : "transitionend",
         bars = Array.prototype.slice.call(document.querySelectorAll(".bar-item"), 0),
         prop = function(name) {
@@ -131,6 +139,6 @@
             });
         });
     }, 1000);
-    </script>
+    </script> -->
 </body>
 </html>

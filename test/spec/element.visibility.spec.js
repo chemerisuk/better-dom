@@ -33,8 +33,8 @@ describe("visibility", function() {
         }
     }
 
-    DOM.importStyles(".fade", "opacity:1");
-    DOM.importStyles(".fade[aria-hidden=true]", "opacity:0");
+    DOM.importStyles(".fade", "opacity:1;transform:scale(1,1);-webkit-transform:scale(1,1)");
+    DOM.importStyles(".fade[aria-hidden=true]", "opacity:0;transform:scale(0,0);-webkit-transform:scale(0,0)");
 
     describe("hide", function() {
         it("should support optional delay argument", function(done) {
@@ -143,6 +143,20 @@ describe("visibility", function() {
 
             link1.hide(spy1);
             link2.hide(spy2);
+        });
+
+        it("should work for several transitions", function(done) {
+            var start = Date.now();
+
+            link = DOM.create("a.fade[style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 10ms, -webkit-transform 200ms']>{abc}");
+
+            jasmine.sandbox.set(link);
+
+            link.hide(function() {
+                expect(Date.now() - start).toBeGreaterThan(100);
+
+                done();
+            });
         });
     });
 

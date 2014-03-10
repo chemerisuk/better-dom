@@ -9,13 +9,24 @@ var _ = require("./utils"),
     // Android 2 devices are usually slow and have a lot of
     // the implementation bugs, so disable animations for them
     absentStrategy = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
-    readAnimationProp = function(key, style) {
-        var fn = styleAccessor.get[key],
-            value = fn ? fn(style) : "0",
-            endIndex = value.length - 1;
+    parseTimeValue = function(value) {
+        var endIndex = value.length - 1;
 
         return value.lastIndexOf("ms") === endIndex - 1 || value.lastIndexOf("s") !== endIndex ?
             parseFloat(value) : parseFloat(value) * 1000;
+    },
+    calcDuration = function(style, animation) {
+        var prefix = animation ? "animation-" : "transition-",
+            delay = styleAccessor.get[prefix + "delay"](style).split(","),
+            duration = styleAccessor.get[prefix + "duration"](style).split(","),
+            iterationCount = animation ? styleAccessor.get[prefix + "iteration-count"](style).split(",") : [];
+
+        return Math.max.apply(Math, duration.map(function(value, index) {
+            var it = iterationCount[index] || "1";
+            // initial or empty value equals to 1
+            return (it === "initial" ? 1 : parseFloat(it)) *
+                parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
+        }));
     },
     setTransitionProperty = styleAccessor.set["transition-property"],
     setTransitionDelay = styleAccessor.set["transition-delay"],
@@ -29,13 +40,10 @@ var _ = require("./utils"),
                 var style = node.style,
                     computedStyle = _.computeStyle(node),
                     isHidden = typeof fn === "function" ? fn(node) : fn,
-                    transitionDuration = readAnimationProp("transition-duration", computedStyle),
-                    animationDuration = readAnimationProp("animation-duration", computedStyle),
-                    iterationCount = readAnimationProp("animation-iteration-count", computedStyle),
-                    duration = Math.max(iterationCount * animationDuration, transitionDuration),
+                    duration = Math.max(calcDuration(computedStyle), calcDuration(computedStyle, true)),
                     hasAnimation = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && duration && node.offsetWidth;
 
-                // requestAnimationFrame fixes several problems here:
+                // requestAnimationFrame fixes several issues here:
                 // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
                 // 2) firefox-specific animations sync quirks (because of getComputedStyle call)
                 // 3) power consuption: animations do nothing if page is not active
