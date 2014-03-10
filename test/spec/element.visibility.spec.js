@@ -1,3 +1,5 @@
+var hasAnimationSupport = true;
+
 try {
     DOM.importStyles("@keyframes fade", "from {opacity: 1} to {opacity: 0}");
 } catch (e1) {
@@ -5,6 +7,7 @@ try {
         DOM.importStyles("@-webkit-keyframes fade", "from {opacity: 1} to {opacity: 0}");
     } catch (e2) {
         // do nothing for IE
+        hasAnimationSupport = false;
     }
 }
 
@@ -17,9 +20,9 @@ describe("visibility", function() {
     var link;
 
     beforeEach(function() {
-        jasmine.sandbox.set("<a id='vis'>123</a>");
+        link = DOM.create("a>`123`");
 
-        link = DOM.find("#vis");
+        jasmine.sandbox.set(link);
     });
 
     it("should use aria-hidden to toggle visibility", function(done) {
@@ -51,111 +54,73 @@ describe("visibility", function() {
         });
 
         it("should support exec callback when no animation is defined", function(done) {
-            var spy = jasmine.createSpy();
-
-            expect(link.hide(spy.and.callFake(done))).toBe(link);
+            expect(link.hide(done)).toBe(link);
         });
 
         it("should support exec callback when animation is defined", function(done) {
-            var spy = jasmine.createSpy();
-
-            link = DOM.create("a[style='animation:fade 10ms;-webkit-animation:fade 10ms;display:block']>{abc}");
-            jasmine.sandbox.set(link);
-
-            link.hide(spy);
-
-            setTimeout(function() {
-                expect(spy.calls.count()).toBe(1);
-
-                done();
-            }, 150);
+            link.style("cssText", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+            link.hide(done);
         });
 
         it("should support exec callback when transition is defined", function(done) {
-            var spy = jasmine.createSpy();
-
-            link = DOM.create("a.fade[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>{abc}");
-            jasmine.sandbox.set(link);
-
-            link.hide(spy);
-
-            setTimeout(function() {
-                expect(spy.calls.count()).toBe(1);
-
-                done();
-            }, 150);
+            link.addClass("fade").style("cssText", "transition:opacity 10ms;-webkit-transition:opacity 10ms");
+            link.hide(done);
         });
 
         it("should work properly in legacy browsers", function(done) {
-            var spy = jasmine.createSpy();
-
             link.style("transition-duration", "1");
 
-            link.hide(spy.and.callFake(function() {
+            link.hide(function() {
                 link.style("animation-duration", "1");
 
-                link.show(spy.and.callFake(function() {
+                link.show(function() {
                     link.style("transition-duration", null);
 
-                    link.hide(spy.and.callFake(done));
-                }));
-            }));
+                    link.hide(done);
+                });
+            });
         });
 
         it("should skip infinite animations", function(done) {
-            var spy = jasmine.createSpy();
+            link.style("cssText", "animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block");
+            link.hide(done);
+        });
 
-            link = DOM.create("a[style='animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block']>{abc}");
-            jasmine.sandbox.set(link);
+        it("should respect ms and s suffixes for duration", function(done) {
+            var otherLink = DOM.create("a.fade[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>`abc`"),
+                spy = jasmine.createSpy("transition");
 
-            link.hide(spy);
+            link.style("cssText", "animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block");
+            link.after(otherLink);
+            otherLink.hide(spy);
 
-            // expect(spy).not.toHaveBeenCalled();
-
-            setTimeout(function() {
+            link.hide(function() {
                 expect(spy).toHaveBeenCalled();
 
                 done();
-            }, 50);
+            });
+        });
+
+        it("should work for several transitions", function(done) {
+            var start = Date.now();
+
+            link = DOM.create("a.fade[style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 10ms, -webkit-transform 200ms']>`abc`");
+
+            jasmine.sandbox.set(link);
+
+            link.hide(function() {
+                if (hasAnimationSupport) {
+                    expect(Date.now() - start).not.toBeLessThan(100);
+                }
+
+                done();
+            });
         });
 
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.hide("123") }).toThrow();
             expect(function() { link.hide(-10) }).toThrow();
             expect(function() { link.hide(true) }).toThrow();
-        });
-
-        it("should respect ms and s suffixes for duration", function(done) {
-            var link1 = DOM.create("a[style='animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block']>{abc}"),
-                link2 = DOM.create("a.fade[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>{abc}"),
-                spy1 = jasmine.createSpy("animation"),
-                spy2 = jasmine.createSpy("transition");
-
-            jasmine.sandbox.set(link1);
-            link1.after(link2);
-
-            spy1.and.callFake(function() {
-                expect(spy2).toHaveBeenCalled();
-
-                done();
-            });
-
-            link1.hide(spy1);
-            link2.hide(spy2);
-        });
-
-        it("should work for several transitions", function(done) {
-            var start = Date.now();
-
-            link = DOM.create("a.fade[style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 10ms, -webkit-transform 200ms']>{abc}");
-
-            jasmine.sandbox.set(link);
-
-            link.hide(function() {
-                expect(Date.now() - start).not.toBeLessThan(100);
-
-                done();
-            });
         });
     });
 
