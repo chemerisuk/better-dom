@@ -10,29 +10,39 @@ var _ = require("./utils"),
     // the implementation bugs, so disable animations for them
     absentStrategy = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
     readAnimationProp = function(key, style) {
-        var fn = styleAccessor.get[key];
+        var fn = styleAccessor.get[key],
+            value = fn ? fn(style) : "0",
+            endIndex = value.length - 1;
 
-        return fn && parseFloat(fn(style)) || 0;
+        return value.lastIndexOf("ms") === endIndex - 1 || value.lastIndexOf("s") !== endIndex ?
+            parseFloat(value) : parseFloat(value) * 1000;
     },
-    prop = function(name) {
-        return _.WEBKIT_PREFIX ? "webkitT" + name.substr(1) : name;
-    },
+    setTransitionProperty = styleAccessor.set["transition-property"],
+    setTransitionDelay = styleAccessor.set["transition-delay"],
+    setTransitionDuration = styleAccessor.set["transition-duration"],
+    getTransitionProperty = styleAccessor.get["transition-property"],
+    getTransitionDelay = styleAccessor.get["transition-delay"],
+    getTransitionDuration = styleAccessor.get["transition-duration"],
     changeVisibility = function(el, fn, callback) {
         return function() {
             el.legacy(function(node, el, index, ref) {
                 var style = node.style,
                     computedStyle = _.computeStyle(node),
-                    isHidden = !(typeof fn === "function" ? fn(node) : fn),
+                    isHidden = typeof fn === "function" ? fn(node) : fn,
                     transitionDuration = readAnimationProp("transition-duration", computedStyle),
                     animationDuration = readAnimationProp("animation-duration", computedStyle),
                     iterationCount = readAnimationProp("animation-iteration-count", computedStyle),
                     duration = Math.max(iterationCount * animationDuration, transitionDuration),
                     hasAnimation = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && duration && node.offsetWidth;
 
+                // requestAnimationFrame fixes several problems here:
+                // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
+                // 2) firefox-specific animations sync quirks (because of getComputedStyle call)
+                // 3) power consuption: animations do nothing if page is not active
                 _.raf(function() {
-                    var transitionProperty = computedStyle[prop("transitionProperty")],
-                        transitionDelay = computedStyle[prop("transitionDelay")],
-                        transitionDuration = computedStyle[prop("transitionDuration")],
+                    var transitionProperty = getTransitionProperty(computedStyle),
+                        transitionDelay = getTransitionDelay(computedStyle),
+                        transitionDuration = getTransitionDuration(computedStyle),
                         completeVisibilityChange = function() {
                             if (style.visibility === "hidden") {
                                 style[absentStrategy[0]] = absentStrategy[1];
@@ -44,19 +54,23 @@ var _ = require("./utils"),
                         };
 
                     if (hasAnimation) {
-                        style[prop("transitionProperty")] = transitionProperty + ", visibility";
-                        style[prop(isHidden ? "transitionDelay" : "transitionDuration")] =
-                            (isHidden ? transitionDelay : transitionDuration) + ", 0s";
-                        style[prop(isHidden ? "transitionDuration" : "transitionDelay")] =
-                            (isHidden ? transitionDuration : transitionDelay) + ", " + duration + "ms";
+                        setTransitionProperty(style, transitionProperty + ", visibility");
+
+                        if (isHidden) {
+                            setTransitionDuration(style, transitionDuration + ", 0s");
+                            setTransitionDelay(style, transitionDelay + ", " + duration + "ms");
+                        } else {
+                            setTransitionDelay(style, transitionDelay + ", 0s");
+                            setTransitionDuration(style, transitionDuration + ", " + duration + "ms");
+                        }
 
                         node.addEventListener(eventType, function completeAnimation(e) {
                             if (e.propertyName === "visibility") {
                                 e.stopImmediatePropagation(); // this is an internal event
 
-                                style[prop("transitionProperty")] = transitionProperty;
-                                style[prop("transitionDelay")] = transitionDelay;
-                                style[prop("transitionDuration")] = transitionDuration;
+                                setTransitionProperty(style, transitionProperty);
+                                setTransitionDelay(style, transitionDelay);
+                                setTransitionDuration(style, transitionDuration);
 
                                 node.removeEventListener(eventType, completeAnimation, false);
 
@@ -66,20 +80,20 @@ var _ = require("./utils"),
                     }
 
                     if (isHidden) {
-                        // restore initial property value if it exists
-                        style[absentStrategy[0]] = el._visibility || "";
-                    } else {
                         // store current inline value in a private property
                         el._visibility = style[absentStrategy[0]];
                         // do not store display:none
                         if (el._visibility === "none") el._visibility = "";
                         // prevent accidental user actions during animation
                         style.pointerEvents = "none";
+                    } else {
+                        // restore initial property value if it exists
+                        style[absentStrategy[0]] = el._visibility || "";
                     }
 
-                    style.visibility = isHidden ? "visible" : "hidden";
+                    style.visibility = isHidden ? "hidden" : "visible";
                     // trigger native CSS animation
-                    el.set("aria-hidden", String(!isHidden));
+                    el.set("aria-hidden", String(isHidden));
                     // must be AFTER changing the aria-hidden attribute
                     if (!hasAnimation) completeVisibilityChange();
                 });

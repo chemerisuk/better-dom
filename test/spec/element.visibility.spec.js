@@ -125,6 +125,25 @@ describe("visibility", function() {
             expect(function() { link.hide(-10) }).toThrow();
             expect(function() { link.hide(true) }).toThrow();
         });
+
+        it("should respect ms and s suffixes for duration", function(done) {
+            var link1 = DOM.create("a[style='animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block']>{abc}"),
+                link2 = DOM.create("a.fade[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>{abc}"),
+                spy1 = jasmine.createSpy("animation"),
+                spy2 = jasmine.createSpy("transition");
+
+            jasmine.sandbox.set(link1);
+            link1.after(link2);
+
+            spy1.and.callFake(function() {
+                expect(spy2).toHaveBeenCalled();
+
+                done();
+            });
+
+            link1.hide(spy1);
+            link2.hide(spy2);
+        });
     });
 
     describe("show", function() {
