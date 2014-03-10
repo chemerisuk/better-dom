@@ -1,3 +1,16 @@
+try {
+    DOM.importStyles("@keyframes fade", "from {opacity: 1} to {opacity: 0}");
+} catch (e1) {
+    try {
+        DOM.importStyles("@-webkit-keyframes fade", "from {opacity: 1} to {opacity: 0}");
+    } catch (e2) {
+        // do nothing for IE
+    }
+}
+
+DOM.importStyles(".fade", "opacity:1;transform:scale(1,1);-webkit-transform:scale(1,1)");
+DOM.importStyles(".fade[aria-hidden=true]", "opacity:0;transform:scale(0,0);-webkit-transform:scale(0,0)");
+
 describe("visibility", function() {
     "use strict";
 
@@ -10,51 +23,37 @@ describe("visibility", function() {
     });
 
     it("should use aria-hidden to toggle visibility", function(done) {
-        expect(link.get("aria-hidden")).toBeFalsy();
+        expect(link).not.toHaveAttr("aria-hidden");
 
         link.hide(function() {
-            expect(link.get("aria-hidden")).toBe("true");
+            expect(link).toHaveAttr("aria-hidden", "true");
 
             link.show(function() {
-                expect(link.get("aria-hidden")).toBe("false");
+                expect(link).toHaveAttr("aria-hidden", "false");
 
                 done();
             });
         });
     });
 
-    try {
-        DOM.importStyles("@keyframes fade", "from {opacity: 1} to {opacity: 0}");
-    } catch (e1) {
-        try {
-            DOM.importStyles("@-webkit-keyframes fade", "from {opacity: 1} to {opacity: 0}");
-        } catch (e2) {
-            // do nothing for IE
-        }
-    }
-
-    DOM.importStyles(".fade", "opacity:1;transform:scale(1,1);-webkit-transform:scale(1,1)");
-    DOM.importStyles(".fade[aria-hidden=true]", "opacity:0;transform:scale(0,0);-webkit-transform:scale(0,0)");
-
     describe("hide", function() {
         it("should support optional delay argument", function(done) {
-            var delay = 50;
+            var delay = 50, start = Date.now();
 
-            expect(link.get("aria-hidden")).not.toBe("true");
-            expect(link.hide(delay)).toBe(link);
-            expect(link.get("aria-hidden")).not.toBe("true");
+            expect(link).not.toHaveAttr("aria-hidden", "true");
 
-            setTimeout(function() {
-                expect(link.get("aria-hidden")).toBe("true");
+            link.hide(delay, function() {
+                expect(Date.now() - start).not.toBeLessThan(delay);
+                expect(link).toHaveAttr("aria-hidden", "true");
 
                 done();
-            }, delay);
+            });
         });
 
         it("should support exec callback when no animation is defined", function(done) {
             var spy = jasmine.createSpy();
 
-            link.hide(spy.and.callFake(done));
+            expect(link.hide(spy.and.callFake(done))).toBe(link);
         });
 
         it("should support exec callback when animation is defined", function(done) {
@@ -153,7 +152,7 @@ describe("visibility", function() {
             jasmine.sandbox.set(link);
 
             link.hide(function() {
-                expect(Date.now() - start).toBeGreaterThan(100);
+                expect(Date.now() - start).not.toBeLessThan(100);
 
                 done();
             });
@@ -165,10 +164,10 @@ describe("visibility", function() {
             var delay = 50, start = Date.now();
 
             link.hide(function() {
-                expect(link.get("aria-hidden")).toBe("true");
+                expect(link).toHaveAttr("aria-hidden", "true");
 
                 link.show(delay, function() {
-                    expect(link.get("aria-hidden")).toBe("false");
+                    expect(link).toHaveAttr("aria-hidden", "false");
                     expect(Date.now() - start).toBeGreaterThan(delay);
 
                     done();
@@ -185,7 +184,7 @@ describe("visibility", function() {
 
     describe("toggle", function() {
         it("should allow to toggle visibility", function(done) {
-            expect(link.get("aria-hidden")).toBeFalsy();
+            expect(link).not.toHaveAttr("aria-hidden");
 
             link.toggle(function() {
                 expect(link.matches(":hidden")).toBe(true);
@@ -199,13 +198,13 @@ describe("visibility", function() {
         });
 
         it("should work properly with show/hide combination", function(done) {
-            expect(link.style("visibility")).not.toBe("hidden");
+            expect(link).not.toHaveStyle("visibility", "hidden");
 
             link.toggle(function() {
-                expect(link.style("visibility")).toBe("hidden");
+                expect(link).toHaveStyle("visibility", "hidden");
 
                 link.toggle(function() {
-                    expect(link.style("visibility")).toBe("visible");
+                    expect(link).toHaveStyle("visibility", "visible");
 
                     done();
                 });

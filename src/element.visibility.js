@@ -45,8 +45,8 @@ var _ = require("./utils"),
 
                 // requestAnimationFrame fixes several issues here:
                 // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
-                // 2) firefox-specific animations sync quirks (because of getComputedStyle call)
-                // 3) power consuption: animations do nothing if page is not active
+                // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
+                // 3) power consuption: show/hide do almost nothing if page is not active
                 _.raf(function() {
                     var transitionProperty = getTransitionProperty(computedStyle),
                         transitionDelay = getTransitionDelay(computedStyle),
