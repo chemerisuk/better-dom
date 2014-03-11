@@ -74,10 +74,10 @@ $Element.prototype.set = function(name, value) {
             newValue = value(el, index, ref);
         }
 
-        if (!hook && nameType !== "string") return $Node.prototype.set.call(el, name);
-
         if (hook) {
             hook(node, newValue);
+        } else if (nameType !== "string") {
+            return $Node.prototype.set.call(el, name);
         } else if (newValue == null) {
             node.removeAttribute(name);
         } else if (name in node) {

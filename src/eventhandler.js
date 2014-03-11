@@ -18,7 +18,7 @@ var _ = require("./utils"),
             if (!debouncing) {
                 debouncing = true;
 
-                window[_.RAF](function() {
+                _.raf(function() {
                     originalHandler(e);
 
                     debouncing = false;

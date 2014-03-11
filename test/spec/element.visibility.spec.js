@@ -133,7 +133,7 @@ describe("visibility", function() {
 
                 link.show(delay, function() {
                     expect(link).toHaveAttr("aria-hidden", "false");
-                    expect(Date.now() - start).toBeGreaterThan(delay);
+                    expect(Date.now() - start).not.toBeLessThan(delay);
 
                     done();
                 });

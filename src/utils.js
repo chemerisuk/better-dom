@@ -45,12 +45,6 @@ module.exports = {
     LEGACY_ANDROID: ~navigator.userAgent.indexOf("Android 2"),
     DOM2_EVENTS: !!doc.addEventListener,
     WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
-    RAF: ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
-        var prop = name + "equestAnimationFrame";
-
-        return memo || window[prop] && prop;
-    }, null),
-
     // utilites
     forOwn: function(obj, fn, thisPtr) {
         Object.keys(obj).forEach(function(key) {
