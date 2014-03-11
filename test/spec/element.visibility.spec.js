@@ -140,6 +140,15 @@ describe("visibility", function() {
             });
         });
 
+        it("should trigger callback for initially hidden elements", function(done) {
+            link = link.clone(false).set("aria-hidden", "true");
+            link.style("cssText", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+
+            jasmine.sandbox.set(link);
+
+            link.show(done);
+        });
+
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.show("123") }).toThrow();
             expect(function() { link.show(-10) }).toThrow();

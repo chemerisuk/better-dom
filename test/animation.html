@@ -23,8 +23,6 @@
     }
 
     .bar-item {
-        background: yellow;
-
         -webkit-transition: -webkit-transform 0.5s linear;
         transition: transform 0.5s linear;
 
@@ -38,8 +36,6 @@
     }
 
     .bar-item + .bar-item {
-        background: green;
-
         position: absolute;
         left: 10px;
         top: 0px;
@@ -55,14 +51,31 @@
 </head>
 <body>
     <div id="bar">
-        <div class="bar-item"></div>
-        <div class="bar-item" aria-hidden="true"></div>
+        <div class="bar-item" style="background: yellow"></div>
+        <div class="bar-item" style="background: green" aria-hidden="true"></div>
     </div>
     <script>
-    var bars = DOM.findAll(".bar-item");
+    var bars = DOM.findAll(".bar-item"),
+        bar = DOM.find("#bar");
+
+    bars[1].remove();
 
     setInterval(function() {
-        bars.toggle();
+        bars.each(function(el, index) {
+            if (el.parent() == "") {
+                bar[index ? "append" : "prepend"](el);
+
+                el.show(function() {
+                    console.log("show");
+                });
+            } else {
+                el.hide(function() {
+                    console.log("hide");
+
+                    el.remove();
+                });
+            }
+        });
     }, 1000);
     </script>
     <!-- <script>

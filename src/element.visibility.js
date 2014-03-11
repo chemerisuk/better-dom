@@ -47,7 +47,7 @@ var _ = require("./utils"),
                 // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
                 // 3) power consuption: show/hide do almost nothing if page is not active
                 _.raf(function() {
-                    var duration, index, transitionProperty, transitionDelay, transitionDuration;
+                    var duration, index, transitionProperty, transitionDelay, transitionDuration, transitionTiming;
 
                     // Android 2 devices are usually slow and have a lot of the
                     // animation implementation bugs, so disable animations for them
@@ -56,20 +56,28 @@ var _ = require("./utils"),
                     }
 
                     if (duration) {
+                        // make sure that the visibility property will be changed
+                        // to trigger the completeAnimation callback
+                        if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
+
                         transitionProperty = styleAccessor.get["transition-property"](compStyle).split(", ");
                         transitionDuration = styleAccessor.get["transition-duration"](compStyle).split(", ");
                         transitionDelay = styleAccessor.get["transition-delay"](compStyle).split(", ");
-                        // update existing visibility transition if possible
+                        transitionTiming = styleAccessor.get["transition-timing-function"](compStyle).split(", ");
+
+                        // try to find existing or make a new visibility transition
                         index = transitionProperty.indexOf("visibility");
                         if (index < 0) index = transitionProperty.length;
 
                         transitionProperty[index] = "visibility";
+                        transitionTiming[index] = "linear";
                         (isHidden ? transitionDuration : transitionDelay)[index] = "0s";
                         (isHidden ? transitionDelay : transitionDuration)[index] = duration + "ms";
 
                         styleAccessor.set["transition-property"](style, transitionProperty.join(", "));
                         styleAccessor.set["transition-duration"](style, transitionDuration.join(", "));
                         styleAccessor.set["transition-delay"](style, transitionDelay.join(", "));
+                        styleAccessor.set["transition-timing-function"](style, transitionTiming.join(", "));
 
                         node.addEventListener(eventType, function completeAnimation(e) {
                             if (e.propertyName === "visibility") {
