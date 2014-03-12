@@ -2,8 +2,7 @@ describe("extend", function() {
     "use strict";
 
     var WAIT_FOR_WATCH_TIME = 50,
-        callback,
-        CLS_INDEX = 0;
+        callback, randomClass;
 
     DOM.extend(".watch11", {
         constructor: function() {
@@ -19,6 +18,7 @@ describe("extend", function() {
 
     beforeEach(function() {
         callback = jasmine.createSpy("callback");
+        randomClass = "ext" + Math.random().toString().split(".")[1];
     });
 
     it("should execute contructor for each element", function(done) {
@@ -27,17 +27,15 @@ describe("extend", function() {
         callback.and.callFake(function() {
             expect(this).toBeDefined();
             expect(this.length).toBe(1);
+
+            setTimeout(function() {
+                if (callback.calls.count() === 3) done();
+            }, 0);
         });
 
         DOM.extend(".watch", {
             constructor: callback
         });
-
-        setTimeout(function() {
-            expect(callback.calls.count()).toBe(3);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
     });
 
     // it("should not change interface if condition returns false", function() {
@@ -69,98 +67,80 @@ describe("extend", function() {
     it("should capture any future element on page", function(done) {
         DOM.extend(".watch1", {constructor: callback});
 
+        callback.and.callFake(function() {
+            if (callback.calls.count() === 2) done();
+        });
+
         jasmine.sandbox.set("<a class='watch1'></a><span class='watch1'></span>");
-
-        setTimeout(function() {
-            expect(callback.calls.count()).toBe(2);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
     });
 
     it("should not execute the same extension twice", function(done) {
         var link = DOM.create("a.ext1.ext2"),
-            spy = jasmine.createSpy("ext2");
+            spy = jasmine.createSpy("ext2"),
+            complete = function() {
+                if (callback.calls.count() === 1 && spy.calls.count() === 1) {
+                    link.remove();
+
+                    done();
+                }
+            };
 
         DOM.find("body").append(link);
 
-        DOM.extend(".ext1", {constructor: callback});
-        DOM.extend(".ext2", {constructor: spy});
-
-        setTimeout(function() {
-            link.remove();
-
-            expect(callback.calls.count()).toBe(1);
-            expect(spy.calls.count()).toBe(1);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
+        DOM.extend(".ext1", {constructor: callback.and.callFake(complete)});
+        DOM.extend(".ext2", {constructor: spy.and.callFake(complete)});
     });
 
     it("should accept several watchers of the same selector", function(done) {
         var spy = jasmine.createSpy("callback2"),
-            cls = "ext" + new Date().getTime();
+            complete = function() {
+                if (callback.calls.count() === 2 && spy.calls.count() === 2) done();
+            };
 
-        jasmine.sandbox.set("<a class=" + cls + "></a><b class=" + cls + "></b>");
+        jasmine.sandbox.set("<a class=" + randomClass + "></a><b class=" + randomClass + "></b>");
 
-        DOM.extend("." + cls, {constructor: callback});
-        DOM.extend("." + cls, {constructor: spy});
-
-        setTimeout(function() {
-            expect(callback.calls.count()).toBe(2);
-            expect(spy.calls.count()).toBe(2);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
+        DOM.extend("." + randomClass, {constructor: callback.and.callFake(complete)});
+        DOM.extend("." + randomClass, {constructor: spy.and.callFake(complete)});
     });
 
     it("should accept different selectors for the same element", function(done) {
         var spy = jasmine.createSpy("callback2"),
-            cls = "ext" + new Date().getTime();
+            complete = function() {
+                if (callback.calls.count() === 2 && spy.calls.count() === 1) done();
+            };
 
-        jasmine.sandbox.set("<a class=" + cls + "></a><b class=" + cls + "></b>");
+        jasmine.sandbox.set("<a class=" + randomClass + "></a><b class=" + randomClass + "></b>");
 
-        DOM.extend("." + cls, {constructor: callback});
-        DOM.extend("b", {constructor: spy});
-
-        setTimeout(function() {
-            expect(callback.calls.count()).toBe(2);
-            expect(spy.calls.count()).toBe(1);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
+        DOM.extend("." + randomClass, {constructor: callback.and.callFake(complete)});
+        DOM.extend("b", {constructor: spy.and.callFake(complete)});
     });
 
     it("should accept different selectors for the same element before ready", function(done) {
-        var el = DOM.create("div.watch11.watch12");
+        var el = DOM.create("div.watch11.watch12"),
+            spy = spyOn(el, "removeClass");
 
         DOM.ready(function() {
             jasmine.sandbox.set(el);
         });
 
-        setTimeout(function() {
-            expect(el.hasClass("watch11")).toBeFalsy();
-            expect(el.hasClass("watch12")).toBeFalsy();
+        spy.and.callFake(function(className) {
+            el.set("className", function() { return el.get("className").replace(className, "") });
 
-            done();
-        }, WAIT_FOR_WATCH_TIME);
+            if (!el.hasClass("watch11", "watch12")) done();
+        });
     });
 
     it("should not match parent elements", function(done) {
         var spy1 = jasmine.createSpy("spy1"),
-            spy2 = jasmine.createSpy("spy2");
+            spy2 = jasmine.createSpy("spy2"),
+            complete = function() {
+                if (spy1.calls.count() === 1 && spy2.calls.count() === 1) done();
+            };
 
         jasmine.sandbox.set("<form id='watch7'><input id='watch8'/></form>");
 
-        DOM.extend("#watch7", {constructor: spy1});
-        DOM.extend("#watch8", {constructor: spy2});
-
-        setTimeout(function() {
-            expect(spy1.calls.count()).toBe(1);
-            expect(spy2.calls.count()).toBe(1);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
+        DOM.extend("#watch7", {constructor: spy1.and.callFake(complete)});
+        DOM.extend("#watch8", {constructor: spy2.and.callFake(complete)});
     });
 
     it("should not initialize twise after hide/show", function(done) {
@@ -189,9 +169,7 @@ describe("extend", function() {
         var link = DOM.find(".extend02");
 
         callback.and.callFake(function() {
-            var parent = link.parent();
-
-            parent.append(link.remove());
+            link.parent().append(link.remove());
 
             setTimeout(function() {
                 expect(callback.calls.count()).toBe(1);
@@ -204,48 +182,43 @@ describe("extend", function() {
     });
 
     it("should allow extending the element prototype", function() {
-        DOM.extend("*", {
-            test: 555
-        });
+        DOM.extend("*", { test: 555 });
 
         expect(DOM.create("a").test).toBe(555);
     });
 
     it("should not expose removable methods", function(done) {
         var spy = jasmine.createSpy("callback2"),
-            cls = "ext" + new Date().getTime(), link;
+            complete = function() {
+                var link = this;
 
-        jasmine.sandbox.set("<a class=" + cls + "></a>");
+                setTimeout(function() {
+                    expect(typeof link.onClick).toBe("undefined");
+                    expect(typeof link.doSmth).toBe("undefined");
 
-        link = DOM.find("." + cls);
+                    done();
+                }, 0);
+            };
 
-        DOM.extend("." + cls, {
-            constructor: spy,
+        jasmine.sandbox.set("<a class=" + randomClass + "></a>");
+
+        DOM.extend("." + randomClass, {
+            constructor: spy.and.callFake(complete),
             onClick: function() {},
             doSmth: function() {}
         });
-
-        setTimeout(function() {
-            expect(spy.calls.count()).toBe(1);
-            expect(typeof link.onClick).toBe("undefined");
-            expect(typeof link.doSmth).toBe("undefined");
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
     });
 
     it("should catch nested elements", function(done) {
-        var cls = "watchhh" + CLS_INDEX++;
+        var spy = jasmine.createSpy("ctr");
 
-        DOM.extend("." + cls, {constructor: callback});
+        DOM.extend("." + randomClass, {constructor: spy});
 
-        jasmine.sandbox.set("<div class='" + cls + "'><div class='" + cls + "'></div></div>");
+        spy.and.callFake(function() {
+            if (spy.calls.count() === 2) done();
+        });
 
-        setTimeout(function() {
-            expect(callback.calls.count()).toBe(2);
-
-            done();
-        }, WAIT_FOR_WATCH_TIME);
+        jasmine.sandbox.set("<div class='" + randomClass + "'><div class='" + randomClass + "'></div></div>");
     });
 
     // FIXME: find a way to test without exception in browser
