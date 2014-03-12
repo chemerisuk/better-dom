@@ -65,13 +65,9 @@
             if (el.parent() == "") {
                 bar[index ? "append" : "prepend"](el);
 
-                el.show(function() {
-                    console.log("show");
-                });
+                el.show();
             } else {
                 el.hide(function() {
-                    console.log("hide");
-
                     el.remove();
                 });
             }

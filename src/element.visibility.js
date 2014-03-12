@@ -81,7 +81,7 @@ var _ = require("./utils"),
 
                         node.addEventListener(eventType, function completeAnimation(e) {
                             if (e.propertyName === "visibility") {
-                                e.stopImmediatePropagation(); // this is an internal event
+                                e.stopPropagation(); // this is an internal event
 
                                 node.removeEventListener(eventType, completeAnimation, false);
 

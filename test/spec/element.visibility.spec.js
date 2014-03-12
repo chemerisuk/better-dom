@@ -184,6 +184,25 @@ describe("visibility", function() {
                 });
             });
         });
+
+        it("should trigger callback only once", function(done) {
+            var showSpy = jasmine.createSpy("show"),
+                hideSpy = jasmine.createSpy("hide");
+
+            link.style("cssText", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+            link.toggle(hideSpy);
+
+            hideSpy.and.callFake(function() {
+                link.toggle(showSpy);
+
+                showSpy.and.callFake(function() {
+                    expect(hideSpy.calls.count()).toBe(1);
+                    expect(showSpy.calls.count()).toBe(1);
+
+                    done();
+                });
+            });
+        });
     });
 
     it("should handle unknown aria-hidden values as false", function() {
