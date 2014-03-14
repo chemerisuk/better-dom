@@ -7,7 +7,8 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
-    strings = {};
+    strings = {},
+    languages = [];
 
 /**
  * Get/set localized value
@@ -23,12 +24,14 @@ $Element.prototype.i18n = function(value, varMap) {
     if (!len) return node ? node.getAttribute("data-i18n") : undefined;
 
     if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
+    // update data-i18n-{lang} attributes
+    [value].concat(strings[value]).forEach(function(value, index) {
+        var attrName = "data-i18n" + (index ? "-" + languages[index - 1] : "");
 
-    this.set("").set("data-i18n", varMap ? _.format(value, varMap) : value);
-    // set localized strings
-    return _.forOwn(strings[value] || {}, function(value, lang) {
-        this.set("data-i18n-" + lang, varMap ? _.format(value, varMap) : value);
+        this.set(attrName, varMap ? _.format(value, varMap) : value);
     }, this);
+
+    return this.set("");
 };
 
 /**
@@ -41,15 +44,19 @@ $Element.prototype.i18n = function(value, varMap) {
  */
 DOM.importStrings = function(lang, key, value) {
     var keyType = typeof key,
-        entry = strings[key],
-        attrName = "data-i18n-" + lang;
+        attrName = "data-i18n-" + lang,
+        langIndex = languages.indexOf(lang);
 
     if (keyType === "string") {
-        if (!entry) strings[key] = entry = {};
+        if (langIndex === -1) {
+            langIndex = languages.push(lang) - 1;
+            // add global rule for the data-i18n-{lang} attribute
+            DOM.importStyles("[" + attrName + "]:lang(" + lang + "):before", "content:attr(" + attrName + ")");
+        }
 
-        entry[lang] = value;
-
-        DOM.importStyles("[" + attrName + "]:lang(" + lang + "):before", "content:attr(" + attrName + ")");
+        if (!strings[key]) strings[key] = [];
+        // store localized string internally
+        strings[key][langIndex] = value;
 
         DOM.ready(function() {
             DOM.findAll("[data-i18n=\"" + key + "\"]").set(attrName, value);
