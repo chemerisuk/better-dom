@@ -1,6 +1,7 @@
 var doc = document,
     win = window,
-    currentScript = doc.scripts[0];
+    currentScript = doc.scripts[0],
+    reVar = /\{([\w\-]+)\}/g;
 
 module.exports = {
     makeError: function(method, DOM) {
@@ -13,6 +14,9 @@ module.exports = {
     },
     injectElement: function(el) {
         return currentScript.parentNode.insertBefore(el, currentScript);
+    },
+    format: function(template, varMap) {
+        return template.replace(reVar, function(x, name) { return name in varMap ? varMap[name] : x });
     },
     raf: (function() {
         var lastTime = 0,

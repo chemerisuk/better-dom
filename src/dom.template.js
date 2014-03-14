@@ -10,7 +10,6 @@ var _ = require("./utils"),
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reAttr = /([\w\-]+)(?:=((?:(`|')((?:\\?.)*)?\3)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    reVar = /\{([\w\-]+)\}/g,
     reHtml = /^[\s<]/,
     cache = {},
     toString = function(term) { return term.join ? term.join("") : term },
@@ -59,7 +58,7 @@ var _ = require("./utils"),
 DOM.template = function(template, varMap) {
     if (typeof template !== "string") throw _.makeError("template", true);
     // handle varMap
-    if (varMap) template = template.replace(reVar, function(x, name) { return name in varMap ? varMap[name] : x });
+    if (varMap) template = _.format(template, varMap);
 
     var stack = [],
         output = [],

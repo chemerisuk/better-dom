@@ -7,8 +7,7 @@ var _ = require("./utils"),
     DOM = require("./dom"),
     $Element = require("./element"),
     importStyles = require("./dom.importstyles"),
-    reVar = /\{([\w\-]+)\}/g,
-    toContentAttr = function(_, attr) { return "\"attr(data-" + attr + ")\"" };
+    strings = {};
 
 /**
  * Get/set localized value
@@ -24,17 +23,12 @@ $Element.prototype.i18n = function(value, varMap) {
     if (!len) return node ? node.getAttribute("data-i18n") : undefined;
 
     if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
-    // localized srings with variables require different css
-    if (varMap) DOM.importStrings("", value, value);
 
-    varMap = _.extend({i18n: value}, varMap);
-
-    return this.legacy(function(node) {
-        // cleanup existing content
-        node.innerHTML = "";
-        // process variables
-        _.forOwn(varMap, function(value, key) { node.setAttribute("data-" + key, value) });
-    });
+    this.set("").set("data-i18n", varMap ? _.format(value, varMap) : value);
+    // set localized strings
+    return _.forOwn(strings[value] || {}, function(value, lang) {
+        this.set("data-i18n-" + lang, varMap ? _.format(value, varMap) : value);
+    }, this);
 };
 
 /**
@@ -47,15 +41,19 @@ $Element.prototype.i18n = function(value, varMap) {
  */
 DOM.importStrings = function(lang, key, value) {
     var keyType = typeof key,
-        selector, content;
+        entry = strings[key],
+        attrName = "data-i18n-" + lang;
 
     if (keyType === "string") {
-        selector = "[data-i18n=\"" + key + "\"]";
-        content = "content:\"" + value.replace(reVar, toContentAttr) + "\"";
-        // empty lang is for internal use only
-        if (lang) selector += ":lang(" + lang + ")";
+        if (!entry) strings[key] = entry = {};
 
-        DOM.importStyles(selector + ":before", content, !lang);
+        entry[lang] = value;
+
+        DOM.importStyles("[" + attrName + "]:lang(" + lang + "):before", "content:attr(" + attrName + ")");
+
+        DOM.ready(function() {
+            DOM.findAll("[data-i18n=\"" + key + "\"]").set(attrName, value);
+        });
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {
