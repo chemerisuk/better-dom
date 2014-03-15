@@ -14,11 +14,11 @@ describe("watch", function() {
         expect(link.watch("title", spy2)).toBe(link);
 
         link.set("href", "url_changed");
-        expect(spy1).toHaveBeenCalledWith("href", "url_changed", oldHref);
+        expect(spy1).toHaveBeenCalledWith("url_changed", oldHref, "href");
         expect(spy2).not.toHaveBeenCalled();
 
         link.set("title", "modified");
-        expect(spy2).toHaveBeenCalledWith("title", "modified", "text");
+        expect(spy2).toHaveBeenCalledWith("modified", "text", "title");
         expect(spy1.calls.count()).toBe(1);
 
         link.set("123");
@@ -26,7 +26,7 @@ describe("watch", function() {
         expect(spy1.calls.count()).toBe(1);
 
         link.set("title", "new");
-        expect(spy2).toHaveBeenCalledWith("title", "new", "modified");
+        expect(spy2).toHaveBeenCalledWith("new", "modified", "title");
     });
 
     it("should execute for visibility methods", function(done) {
@@ -34,7 +34,7 @@ describe("watch", function() {
 
         link.watch("aria-hidden", spy);
 
-        spy.and.callFake(function(name, newValue, oldValue) {
+        spy.and.callFake(function(newValue, oldValue, name) {
             expect(name).toBe("aria-hidden");
             expect(newValue).toBe("true");
             expect(oldValue).toBeFalsy();
@@ -43,7 +43,7 @@ describe("watch", function() {
         link.hide(function() {
             expect(spy.calls.count()).toBe(1);
 
-            spy.and.callFake(function(name, newValue, oldValue) {
+            spy.and.callFake(function(newValue, oldValue, name) {
                 expect(name).toBe("aria-hidden");
                 expect(newValue).toBe("false");
                 expect(oldValue).toBe("true");
@@ -55,5 +55,23 @@ describe("watch", function() {
                 done();
             });
         });
+    });
+
+    it("should allow to unregister handler", function() {
+        var spy = jasmine.createSpy("watcher");
+
+        expect(link.watch("title", spy)).toBe(link);
+
+        link.set("title", "modified");
+        expect(spy).toHaveBeenCalledWith("modified", "text", "title");
+        expect(spy.calls.count()).toBe(1);
+
+        expect(link.unwatch("href", spy)).toBe(link);
+        link.set("title", "modified1");
+        expect(spy.calls.count()).toBe(2);
+
+        expect(link.unwatch("title", spy)).toBe(link);
+        link.set("title", "modified2");
+        expect(spy.calls.count()).toBe(2);
     });
 });

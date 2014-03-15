@@ -20,27 +20,23 @@ describe("offset", function() {
     });
 
     it("should not change offsets when window is scrolling", function() {
-        var offset = normalize(link.offset());
+        var normalize = function(offset) {
+                var result = {};
+
+                Object.keys(offset).forEach(function(key) {
+                    result[key] = Math.floor(offset[key]);
+                });
+
+                return result;
+            },
+            offset = normalize(link.offset());
 
         window.scrollTo(0, window.outerHeight);
 
         expect(normalize(link.offset())).toEqual(offset);
     });
 
-    function normalize(offset) {
-        var result = {};
-
-        _forIn(offset, function(value, key) {
-            result[key] = Math.floor(value);
-        });
-
-        return result;
-    }
-
-    function _forIn(obj, callback, thisPtr) {
-        for (var prop in obj) {
-            callback.call(thisPtr, obj[prop], prop, obj);
-        }
-    }
-
+    it("should return undefined empty nodes", function() {
+        expect(DOM.find("xxx").offset()).toBeUndefined();
+    });
 });

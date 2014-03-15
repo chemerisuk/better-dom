@@ -49,6 +49,7 @@ describe("data", function() {
         expect(input.data("a2")).toEqual({ a: "b", c: 1, d: null });
         expect(input.data("a3")).toBe("1=2=3");
         expect(input.data("a4")).toBe("/url?q=:q");
+        expect(input.data("a5")).toBeNull();
     });
 
     it("should return reference to 'this' when called with 2 arguments", function() {

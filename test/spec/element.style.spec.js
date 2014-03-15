@@ -133,6 +133,13 @@ describe("style", function() {
             expect(function() { link.style(1); }).toThrow();
             expect(function() { link.style("color", "red", "yellow"); }).toThrow();
         });
+
+        it("should return undefined empty nodes", function() {
+            var emptyEl = DOM.find("xxx");
+
+            expect(emptyEl.style("color")).toBeUndefined();
+            expect(emptyEl.style("color", "red")).toBe(emptyEl);
+        });
     });
 
 });

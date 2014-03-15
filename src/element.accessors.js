@@ -89,7 +89,7 @@ $Element.prototype.set = function(name, value) {
         if (!_.DOM2_EVENTS) node.className = node.className;
 
         if (watchers && oldValue !== newValue) {
-            watchers.forEach(function(w) { el.dispatch(w, name, newValue, oldValue) });
+            watchers.forEach(function(w) { el.dispatch(w, newValue, oldValue, name) });
         }
     });
 };
@@ -98,7 +98,7 @@ $Element.prototype.set = function(name, value) {
  * Watch for changes of a particular property/attribute
  * @memberOf module:accessors
  * @param  {String}   name     property/attribute name
- * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
+ * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
  * @return {$Element}
  */
 $Element.prototype.watch = function(name, callback) {
@@ -115,7 +115,7 @@ $Element.prototype.watch = function(name, callback) {
  * @return {$Element}
  */
 $Element.prototype.unwatch = function(name, callback) {
-    var eq = function(w) { return w === callback };
+    var eq = function(w) { return w !== callback };
 
     return this.each(function(el) {
         var watchers = el._watchers[name];
