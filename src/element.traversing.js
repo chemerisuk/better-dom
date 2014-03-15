@@ -8,34 +8,32 @@ var _ = require("./utils"),
     $Elements = require("./elements"),
     SelectorMatcher = require("./selectormatcher");
 
-function makeTraversingMethod(propertyName, all) {
+function makeTraversingMethod(methodName, propertyName, all) {
     return function(selector, andSelf) {
+        if (selector && typeof selector !== "string") throw _.makeError(methodName);
+
         var matcher = SelectorMatcher(selector),
             nodes = all ? [] : null,
             it = this._node;
 
-        if (!andSelf && it) it = it[propertyName];
-
-        while (it) {
+        for (it = it && !andSelf ? it[propertyName] : it; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                if (!all) break;
+                if (!all) return $Element(it);
 
                 nodes.push(it);
             }
-
-            it = it[propertyName];
         }
 
-        return all ? new $Elements(nodes) : $Element(it);
+        return new $Elements(nodes);
     };
 }
 
 function makeChildTraversingMethod(all) {
     return function(selector) {
         if (all) {
-            if (selector && typeof selector !== "string") _.makeError("children");
+            if (selector && typeof selector !== "string") throw _.makeError("children");
         } else {
-            if (selector && typeof selector !== "number") _.makeError("child");
+            if (selector && typeof selector !== "number") throw _.makeError("child");
         }
 
         if (!this._node) return new $Element();
@@ -63,7 +61,7 @@ function makeChildTraversingMethod(all) {
  * @return {$Element} matched element
  * @function
  */
-$Element.prototype.next = makeTraversingMethod("nextSibling");
+$Element.prototype.next = makeTraversingMethod("next", "nextSibling");
 
 /**
  * Find previous sibling element filtered by optional selector
@@ -73,7 +71,7 @@ $Element.prototype.next = makeTraversingMethod("nextSibling");
  * @return {$Element} matched element
  * @function
  */
-$Element.prototype.prev = makeTraversingMethod("previousSibling");
+$Element.prototype.prev = makeTraversingMethod("prev", "previousSibling");
 
 /**
  * Find all next sibling elements filtered by optional selector
@@ -83,7 +81,7 @@ $Element.prototype.prev = makeTraversingMethod("previousSibling");
  * @return {$Element} collection of matched elements
  * @function
  */
-$Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
+$Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true);
 
 /**
  * Find all previous sibling elements filtered by optional selector
@@ -93,7 +91,7 @@ $Element.prototype.nextAll = makeTraversingMethod("nextSibling", true);
  * @return {$Element} collection of matched elements
  * @function
  */
-$Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
+$Element.prototype.prevAll = makeTraversingMethod("prevAll", "previousSibling", true);
 
 /**
  * Find parent element filtered by optional selector
@@ -103,7 +101,7 @@ $Element.prototype.prevAll = makeTraversingMethod("previousSibling", true);
  * @return {$Element} matched element
  * @function
  */
-$Element.prototype.parent = makeTraversingMethod("parentNode");
+$Element.prototype.parent = makeTraversingMethod("parent", "parentNode");
 
 /**
  * Return child element by index filtered by optional selector

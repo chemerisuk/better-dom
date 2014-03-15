@@ -61,6 +61,13 @@ describe("traversing", function() {
             expect(unknownEl.parent().length).toBe(0);
             expect(unknownEl.child(0).length).toBe(0);
         });
+
+        it("should throw error if arguments are invalid", function() {
+            expect(function() { link.child({}) }).toThrow();
+            expect(function() { link.child(function() {}) }).toThrow();
+            expect(function() { link.next({}) }).toThrow();
+            expect(function() { link.prev(function() {}) }).toThrow();
+        });
     });
 
     describe("children, nextAll, prevAll", function() {
@@ -113,6 +120,13 @@ describe("traversing", function() {
             expect(unknownEl.nextAll().length).toBe(0);
             expect(unknownEl.prevAll().length).toBe(0);
             expect(unknownEl.children().length).toBe(0);
+        });
+
+        it("should throw error if arguments are invalid", function() {
+            expect(function() { link.children({}) }).toThrow();
+            expect(function() { link.children(function() {}) }).toThrow();
+            expect(function() { link.nextAll({}) }).toThrow();
+            expect(function() { link.prevAll(function() {}) }).toThrow();
         });
     });
 
