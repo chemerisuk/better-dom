@@ -24,6 +24,7 @@ var _ = require("./utils"),
                 parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
         }));
     },
+    transitionProps = ["timing-function", "property", "duration", "delay"].map(function(p) { return "transition-" + p }),
     eventType = _.WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
     absentStrategy = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
     changeVisibility = function(el, fn, callback) {
@@ -47,7 +48,7 @@ var _ = require("./utils"),
                 // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
                 // 3) power consuption: show/hide do almost nothing if page is not active
                 _.raf(function() {
-                    var duration, index, transitionProperty, transitionDelay, transitionDuration, transitionTiming;
+                    var duration, index, transition;
 
                     // Android 2 devices are usually slow and have a lot of the
                     // animation implementation bugs, so disable animations for them
@@ -60,24 +61,23 @@ var _ = require("./utils"),
                         // to trigger the completeAnimation callback
                         if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
 
-                        transitionProperty = styleAccessor.get["transition-property"](compStyle).split(", ");
-                        transitionDuration = styleAccessor.get["transition-duration"](compStyle).split(", ");
-                        transitionDelay = styleAccessor.get["transition-delay"](compStyle).split(", ");
-                        transitionTiming = styleAccessor.get["transition-timing-function"](compStyle).split(", ");
+                        transition = transitionProps.map(function(prop, index) {
+                            return styleAccessor.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+                        });
 
-                        // try to find existing or make a new visibility transition
-                        index = transitionProperty.indexOf("visibility");
-                        if (index < 0) index = transitionProperty.length;
+                        // try to find existing or use 0s length or make a new visibility transition
+                        index = transition[1].indexOf("visibility");
+                        if (index < 0) index = transition[2].indexOf("0s");
+                        if (index < 0) index = transition[0].length;
 
-                        transitionProperty[index] = "visibility";
-                        transitionTiming[index] = "linear";
-                        (isHidden ? transitionDuration : transitionDelay)[index] = "0s";
-                        (isHidden ? transitionDelay : transitionDuration)[index] = duration + "ms";
+                        transition[0][index] = "linear";
+                        transition[1][index] = "visibility";
+                        transition[isHidden ? 2 : 3][index] = "0s";
+                        transition[isHidden ? 3 : 2][index] = duration + "ms";
 
-                        styleAccessor.set["transition-property"](style, transitionProperty.join(", "));
-                        styleAccessor.set["transition-duration"](style, transitionDuration.join(", "));
-                        styleAccessor.set["transition-delay"](style, transitionDelay.join(", "));
-                        styleAccessor.set["transition-timing-function"](style, transitionTiming.join(", "));
+                        transition.forEach(function(value, index) {
+                            styleAccessor.set[transitionProps[index]](style, value.join(", "));
+                        });
 
                         node.addEventListener(eventType, function completeAnimation(e) {
                             if (e.propertyName === "visibility") {

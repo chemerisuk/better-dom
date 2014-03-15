@@ -136,7 +136,7 @@ DOM.extend = function(selector, condition, mixins) {
             });
             // Any extension should be initialized after DOM.ready
             // MUST be after querySelectorAll because of legacy IEs behavior
-            importStyles(selector, styles, true);
+            DOM.importStyles(selector, styles);
         });
     }
 };

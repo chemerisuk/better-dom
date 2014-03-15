@@ -3,9 +3,7 @@ var _ = require("./utils"),
     styleAccessor = require("./styleaccessor"),
     styleNode = _.injectElement(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
-    styleRules = styleSheet.cssRules || styleSheet.rules,
-    // normalize pseudoelement selectors or quotes
-    norm = _.DOM2_EVENTS ? ["::", ":"] : ["\"", "'"];
+    styleRules = styleSheet.cssRules || styleSheet.rules;
 
 /**
  * Append global css styles
@@ -13,7 +11,7 @@ var _ = require("./utils"),
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  */
-DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
+DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
 
@@ -42,18 +40,13 @@ DOM.importStyles = function(selector, cssText, /*INTENAL*/unique) {
         throw _.makeError("importStyles", true);
     }
 
-    // check if the rule already exists
-    if (!unique || !_.some.call(styleRules, function(rule) {
-        return selector === (rule.selectorText || "").split(norm[0]).join(norm[1]);
-    })) {
-        if (styleSheet.cssRules) {
-            styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
-        } else {
-            // ie doesn't support multiple selectors in addRule
-            selector.split(",").forEach(function(selector) {
-                styleSheet.addRule(selector, cssText);
-            });
-        }
+    if (styleSheet.cssRules) {
+        styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
+    } else {
+        // ie doesn't support multiple selectors in addRule
+        selector.split(",").forEach(function(selector) {
+            styleSheet.addRule(selector, cssText);
+        });
     }
 };
 

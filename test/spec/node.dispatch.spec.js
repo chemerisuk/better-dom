@@ -26,4 +26,17 @@ describe("dispatch", function() {
         expect(input.dispatch("focus")).toBeUndefined();
         expect(spy).toHaveBeenCalled();
     });
+
+    it("should do nothing for empty elements", function() {
+        var spy = jasmine.createSpy("spy");
+
+        expect(DOM.mock().dispatch(spy)).toBeUndefined();
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it("should throw error for invalid argumetns", function() {
+        expect(function() { input.dispatch({}) }).toThrow();
+        expect(function() { input.dispatch(null) }).toThrow();
+        expect(function() { input.dispatch(1) }).toThrow();
+    });
 });

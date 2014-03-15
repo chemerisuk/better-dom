@@ -1,57 +1,41 @@
 describe("DOM.importStrings", function(){
     "use strict";
 
-    var importSpy;
+    var randomString;
 
     beforeEach(function() {
-        importSpy = spyOn(DOM, "importStyles");
+        randomString = Math.random().toString(32).split(".")[1];
     });
 
-    // it("should allow to add i18n strings", function() {
-    //     DOM.importStrings("en", "str0", "Hello {user}!");
-    //     expect(importSpy).toHaveBeenCalledWith(
-    //         "[data-i18n=\"str0\"]:lang(en):before",
-    //         "content:\"Hello \"attr(data-user)\"!\"",
-    //         false
-    //     );
+    it("should append global styles for new languages", function() {
+        var importSpy = spyOn(DOM, "importStyles");
 
-    //     DOM.importStrings("ru", "str3", "Hello!");
-    //     expect(importSpy).toHaveBeenCalledWith(
-    //         "[data-i18n=\"str3\"]:lang(ru):before",
-    //         "content:\"Hello!\"",
-    //         false
-    //     );
-    // });
+        DOM.importStrings("en", randomString, "");
+        expect(importSpy).toHaveBeenCalledWith("[data-i18n-en]:lang(en):before", "content:attr(data-i18n-en)");
 
-    // it("should support variables", function() {
-    //     DOM.importStrings("en", "str1", "Hello {user}! I'm {friend}.");
-    //     expect(importSpy).toHaveBeenCalledWith(
-    //         "[data-i18n=\"str1\"]:lang(en):before",
-    //         "content:\"Hello \"attr(data-user)\"! I'm \"attr(data-friend)\".\"",
-    //         false
-    //     );
+        DOM.importStrings("fr", randomString, "");
+        expect(importSpy).toHaveBeenCalledWith("[data-i18n-fr]:lang(fr):before", "content:attr(data-i18n-fr)");
+    });
 
-    //     DOM.importStrings("en", "str1", "Hello {0}! I'm {1}.");
-    //     expect(importSpy).toHaveBeenCalledWith(
-    //         "[data-i18n=\"str1\"]:lang(en):before",
-    //         "content:\"Hello \"attr(data-0)\"! I'm \"attr(data-1)\".\"",
-    //         false
-    //     );
-    // });
+    it("should support key/value map as argument", function() {
+        var spy = spyOn(DOM, "importStrings").and.callThrough();
 
-    // it("should allow to add banch of i18n strings", function() {
-    //     DOM.importStrings("en", {str4: "test1", str5: "test2"});
-    //     expect(importSpy).toHaveBeenCalledWith(
-    //         "[data-i18n=\"str4\"]:lang(en):before",
-    //         "content:\"test1\"",
-    //         false
-    //     );
-    //     expect(importSpy).toHaveBeenCalledWith(
-    //         "[data-i18n=\"str5\"]:lang(en):before",
-    //         "content:\"test2\"",
-    //         false
-    //     );
-    // });
+        DOM.importStrings("en", {a: "b", c: "d"});
+        expect(spy).toHaveBeenCalledWith("en", "a", "b");
+        expect(spy).toHaveBeenCalledWith("en", "c", "d");
+    });
+
+    it("should update all existing localized strings", function() {
+        var link = DOM.create("a");
+
+        jasmine.sandbox.set(link);
+
+        link.i18n(randomString).set("en");
+        expect(link.get("data-i18n-en")).toBeNull();
+
+        DOM.importStrings("en", randomString, "test");
+        expect(link.get("data-i18n-en")).toBe("test");
+    });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStrings(1, 2, 3); }).toThrow();

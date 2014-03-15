@@ -116,18 +116,18 @@ describe("extend", function() {
     });
 
     it("should accept different selectors for the same element before ready", function(done) {
-        var el = DOM.create("div.watch11.watch12"),
-            spy = spyOn(el, "removeClass");
+        var el = DOM.create("div.watch11.watch12");
 
         DOM.ready(function() {
             jasmine.sandbox.set(el);
         });
 
-        spy.and.callFake(function(className) {
-            el.set("className", function() { return el.get("className").replace(className, "") });
+        setTimeout(function() {
+            expect(el.hasClass("watch11")).toBeFalsy();
+            expect(el.hasClass("watch12")).toBeFalsy();
 
-            if (!el.hasClass("watch11", "watch12")) done();
-        });
+            done();
+        }, WAIT_FOR_WATCH_TIME);
     });
 
     it("should not match parent elements", function(done) {

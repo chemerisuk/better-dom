@@ -37,6 +37,6 @@ describe("offset", function() {
     });
 
     it("should return undefined empty nodes", function() {
-        expect(DOM.find("xxx").offset()).toBeUndefined();
+        expect(DOM.mock().offset()).toBeUndefined();
     });
 });
