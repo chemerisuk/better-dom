@@ -15,6 +15,14 @@ describe("data", function() {
         expect(input.data("func", func).data("func")).toEqual(func);
     });
 
+    // it("shoud accept array argument", function() {
+    //     var obj = {}, nmb = 321;
+
+    //     input.data("obj", obj).data("nmb", nmb);
+
+    //     expect(input.data(["obj", "nmb"])).toEqual({obj: obj, nmb: nmb});
+    // });
+
     it("should accept object argument", function() {
         var param = {a: "b", c: 1};
 

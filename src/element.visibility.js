@@ -62,6 +62,7 @@ var _ = require("./utils"),
                         if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
 
                         transition = transitionProps.map(function(prop, index) {
+                            // have to use regexp to split transition-timing-function value
                             return styleAccessor.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
                         });
 
