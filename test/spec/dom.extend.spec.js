@@ -221,6 +221,20 @@ describe("extend", function() {
         jasmine.sandbox.set("<div class='" + randomClass + "'><div class='" + randomClass + "'></div></div>");
     });
 
+    it("should not apply extension if condition returns false", function(done) {
+        var spy = jasmine.createSpy("ctr");
+
+        jasmine.sandbox.set("<a class=" + randomClass + "></a>");
+
+        DOM.extend("." + randomClass, false, {constructor: spy});
+
+        setTimeout(function() {
+            expect(spy).not.toHaveBeenCalled();
+
+            done();
+        }, WAIT_FOR_WATCH_TIME);
+    });
+
     // FIXME: find a way to test without exception in browser
     // it("should not stop handle other listeners if any throws an error", function() {
     //     var otherCallback = jasmine.createSpy("otherCallback");

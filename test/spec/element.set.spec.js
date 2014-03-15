@@ -113,6 +113,8 @@ describe("set", function() {
             expect(select.get()).toBe("AM");
             select.set("PM");
             expect(select.get()).toBe("PM");
+            select.set("MM");
+            expect(select.get()).toBe("");
         });
     });
 });

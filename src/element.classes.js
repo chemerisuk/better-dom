@@ -4,7 +4,7 @@
  */
 var _ = require("./utils"),
     $Element = require("./element"),
-    reClass = /[\n\t\r]/g;
+    reSpace = /[\n\t\r]/g;
 
 function makeClassesMethod(nativeStrategyName, strategy) {
     var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
@@ -50,7 +50,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
  * @function
  */
 $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
-    return (" " + this._node.className + " ").replace(reClass, " ").indexOf(" " + className + " ") >= 0;
+    return (" " + this._node.className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
 });
 
 /**
@@ -72,7 +72,7 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
  * @function
  */
 $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
-    className = (" " + this._node.className + " ").replace(reClass, " ").replace(" " + className + " ", " ");
+    className = (" " + this._node.className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
 
     this._node.className = className.trim();
 });
