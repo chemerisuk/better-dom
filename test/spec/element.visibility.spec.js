@@ -185,6 +185,20 @@ describe("visibility", function() {
             });
         });
 
+        it("should toggle aria-hidden for detached elements", function(done) {
+            link.remove();
+            expect(link).not.toHaveAttr("aria-hidden");
+            link.hide(function() {
+                expect(link).toHaveAttr("aria-hidden", "true");
+
+                link.show(function() {
+                    expect(link).toHaveAttr("aria-hidden", "false");
+
+                    done();
+                });
+            });
+        });
+
         // it("should trigger callback only once", function(done) {
         //     var showSpy = jasmine.createSpy("show"),
         //         hideSpy = jasmine.createSpy("hide");
@@ -205,12 +219,14 @@ describe("visibility", function() {
         // });
     });
 
-    it("should handle unknown aria-hidden values as false", function() {
+    it("should handle unknown aria-hidden values as false", function(done) {
         expect(link.matches(":hidden")).toBe(false);
         link.set("aria-hidden", "123");
         expect(link.matches(":hidden")).toBe(false);
         link.toggle(function() {
             expect(link.matches(":hidden")).toBe(true);
+
+            done();
         });
     });
 });

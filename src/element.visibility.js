@@ -33,6 +33,7 @@ var _ = require("./utils"),
                 var style = node.style,
                     compStyle = _.computeStyle(node),
                     isHidden = typeof fn === "function" ? fn(node) : fn,
+                    isDetached = !_.docEl.contains(node),
                     completeVisibilityChange = function() {
                         if (style.visibility === "hidden") {
                             style[absentStrategy[0]] = absentStrategy[1];
@@ -47,12 +48,14 @@ var _ = require("./utils"),
                 // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
                 // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
                 // 3) power consuption: show/hide do almost nothing if page is not active
-                _.raf(function() {
+                //
+                // for detached elements just use setTimeout
+                (isDetached ? setTimeout : _.raf)(function() {
                     var duration, index, transition;
 
                     // Android 2 devices are usually slow and have a lot of the
                     // animation implementation bugs, so disable animations for them
-                    if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
+                    if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && !isDetached) {
                         duration = Math.max(calcDuration(compStyle), calcDuration(compStyle, true));
                     }
 
@@ -108,7 +111,7 @@ var _ = require("./utils"),
                     el.set("aria-hidden", String(isHidden));
                     // must be AFTER changing the aria-hidden attribute
                     if (!duration) completeVisibilityChange();
-                });
+                }, 0);
             });
         };
     },
