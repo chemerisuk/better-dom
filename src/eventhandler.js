@@ -4,28 +4,8 @@
 var _ = require("./utils"),
     $Element = require("./element"),
     SelectorMatcher = require("./selectormatcher"),
-    createCustomEventWrapper = function(originalHandler, type) {
-        var handler = function() { if (window.event.srcUrn === type) originalHandler() };
-
-        handler._type = "dataavailable";
-
-        return handler;
-    },
-    createDebouncedEventWrapper = function(originalHandler) {
-        var debouncing;
-
-        return function(e) {
-            if (!debouncing) {
-                debouncing = true;
-
-                _.raf(function() {
-                    originalHandler(e);
-
-                    debouncing = false;
-                });
-            }
-        };
-    },
+    defaultArgs = ["target", "currentTarget", "defaultPrevented"],
+    CUSTOM_EVENT_TYPE = "dataavailable",
     hooks = {};
 
 module.exports = function(type, selector, callback, props, el, once) {
@@ -33,15 +13,16 @@ module.exports = function(type, selector, callback, props, el, once) {
         node = el._node,
         matcher = SelectorMatcher(selector, node),
         handler = function(e) {
-            if (module.exports.skip === type) return; // early stop in case of default action
-
             e = e || window.event;
-
-            var // srcElement could be null in legacy IE when target is document
-                target = e.target || e.srcElement || document,
+            // early stop in case of default action
+            if (module.exports.skip === type) return;
+            // handle custom events in legacy IE
+            if (handler._type === CUSTOM_EVENT_TYPE && e.srcUrn !== type) return;
+            // srcElement can be null in legacy IE when target is document
+            var target = e.target || e.srcElement || document,
                 currentTarget = matcher ? matcher(target) : node,
                 fn = typeof callback === "string" ? el[callback] : callback,
-                args = props || ["target", "currentTarget", "defaultPrevented"];
+                args = props || defaultArgs;
 
             // early stop for late binding or when target doesn't match selector
             if (typeof fn !== "function" || !currentTarget) return;
@@ -96,8 +77,8 @@ module.exports = function(type, selector, callback, props, el, once) {
 
     if (hook) handler = hook(handler, type) || handler;
     // handle custom events for IE8
-    if (!_.DOM2_EVENTS && !("on" + (handler._type || type) in el._node)) {
-        handler = createCustomEventWrapper(handler, type);
+    if (!_.DOM2_EVENTS && !("on" + (handler._type || type) in node)) {
+        handler._type = CUSTOM_EVENT_TYPE;
     }
 
     handler.type = selector ? type + " " + selector : type;
@@ -109,7 +90,14 @@ module.exports = function(type, selector, callback, props, el, once) {
 // EventHandler hooks
 
 ["scroll", "mousemove"].forEach(function(name) {
-    hooks[name] = createDebouncedEventWrapper;
+    // debounce frequent events
+    hooks[name] = function(handler) {
+        var free = true;
+
+        return function(e) {
+            if (free) free = _.raf(function() { free = !handler(e) });
+        };
+    };
 });
 
 if ("onfocusin" in _.docEl) {
@@ -124,10 +112,11 @@ if ("onfocusin" in _.docEl) {
 if (document.createElement("input").validity) {
     hooks.invalid = function(handler) { handler.capturing = true };
 }
-// fix non-bubbling submit event for IE8
+
 if (!_.DOM2_EVENTS) {
+    // fix non-bubbling submit event for IE8
     ["submit", "change", "reset"].forEach(function(name) {
-        hooks[name] = createCustomEventWrapper;
+        hooks[name] = function(handler) { handler._type = CUSTOM_EVENT_TYPE };
     });
 }
 
