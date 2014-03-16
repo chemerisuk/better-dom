@@ -6,20 +6,17 @@ describe("legacy", function() {
             htmlEl = DOM.find("html");
 
         htmlEl.legacy(spy);
-        expect(spy).toHaveBeenCalledWith(document.documentElement, htmlEl, 0);
+        expect(spy).toHaveBeenCalledWith(document.documentElement, htmlEl, 0, htmlEl);
     });
 
     it("should work for collections", function() {
         var spy = jasmine.createSpy("legacy"),
             scripts = DOM.findAll("script");
 
-        spy.and.callFake(function(node, el, index) {
-            expect(this).toBe(scripts);
+        spy.and.callFake(function(node, el, index, self) {
+            expect(self).toBe(scripts);
             expect(el).toBe(scripts[index]);
-
-            scripts[index].legacy(function(n) {
-                expect(node).toBe(n);
-            });
+            scripts[index].legacy(function(n) { expect(node).toBe(n) });
         });
 
         scripts.legacy(spy);

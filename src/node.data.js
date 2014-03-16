@@ -12,6 +12,7 @@ var _ = require("./utils"),
  * @param  {String|Object|Array}  key(s)  data key or key/value object or array of keys
  * @param  {Object}               [value] data value to store
  * @return {Object} data entry value or this in case of setter
+ * @deprecated see {@link https://github.com/chemerisuk/better-dom/issues/12}
  */
 $Node.prototype.data = function(key, value) {
     var len = arguments.length,

@@ -23,10 +23,6 @@
         "title": "Emmet abbreviation syntax support",
         "files": ["src/dom.template.js"]
     },
-    "accessors": {
-        "title": "Smart getter and setter support",
-        "files": ["src/element.accessors.js"]
-    },
     "offset": {
         "title": "Element offset calculation support",
         "files": ["src/element.offset.js"]

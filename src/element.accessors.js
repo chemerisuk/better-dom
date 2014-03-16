@@ -5,7 +5,6 @@ var _ = require("./utils"),
 
 /**
  * Get property or attribute value by name
- * @memberOf module:accessors
  * @param  {String|Array} [name] property/attribute name or array of names
  * @return {Object} property/attribute value
  */
@@ -48,7 +47,6 @@ $Element.prototype.get = function(name) {
 
 /**
  * Set property/attribute value by name
- * @memberOf module:accessors
  * @param {String}           [name]  property/attribute name
  * @param {String|Function}  value   property/attribute value or function that returns it
  * @return {$Element}
