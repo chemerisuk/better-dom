@@ -18,10 +18,9 @@ var _ = require("./utils"),
  * @return {String|$Element}
  */
 $Element.prototype.i18n = function(value, varMap) {
-    var len = arguments.length,
-        node = this._node;
+    var len = arguments.length;
 
-    if (!len) return node ? node.getAttribute("data-i18n") : undefined;
+    if (!len) return this.get("data-i18n");
 
     if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
     // update data-i18n-{lang} attributes

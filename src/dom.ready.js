@@ -1,25 +1,19 @@
 var _ = require("./utils"),
     DOM = require("./dom"),
-    readyCallbacks = [],
+    callbacks = [],
     readyState = document.readyState;
 
-// declare dependency to fix issue with RequireJS
-require("./node.dispatch");
-
 function pageLoaded() {
-    // safely trigger callbacks
-    if (readyCallbacks) {
-        readyCallbacks.forEach(DOM.dispatch, DOM);
-        // cleanup
-        readyCallbacks = null;
-    }
+    // safely trigger stored callbacks
+    if (callbacks) callbacks = callbacks.forEach(DOM.dispatch, DOM);
 }
 
 // Catch cases where ready is called after the browser event has already occurred.
 // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
 // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
 if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
-    pageLoaded();
+    // use setTimeout to make sure that the dispatch method exists
+    setTimeout(pageLoaded, 0);
 } else {
     if (_.DOM2_EVENTS) {
         window.addEventListener("load", pageLoaded, false);
@@ -40,8 +34,8 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
 DOM.ready = function(callback) {
     if (typeof callback !== "function") throw _.makeError("ready", true);
 
-    if (readyCallbacks) {
-        readyCallbacks.push(callback);
+    if (callbacks) {
+        callbacks.push(callback);
     } else {
         DOM.dispatch(callback);
     }

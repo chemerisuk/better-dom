@@ -16,6 +16,16 @@ var _ = require("./utils"),
     returnTrue = function() { return true },
     returnFalse = function() { return false },
     nativeEventType, animId, link, styles,
+    applyMixins = function(obj, mixins) {
+        _.forOwn(mixins, function(value, key) {
+            if (key !== "constructor") obj[key] = value;
+        });
+    },
+    applyExtensions = function(node, el) {
+        extensions.forEach(function(ext) { if (ext.accept(node)) ext(node, true) });
+
+        el.children().legacy(applyExtensions);
+    },
     stopExt = function(node, index) {
         return function(e) {
             var stop;
@@ -32,14 +42,10 @@ var _ = require("./utils"),
         };
     },
     makeExtHandler = function(node, skip) {
-        var el = $Element(node);
-
-        skip = skip || {};
-
         return function(ext, index) {
             // skip previously excluded or mismatched elements
             // make a safe call so live extensions can't break each other
-            if (!skip[index] && ext.accept(node)) el.dispatch(ext);
+            if (!skip[index] && ext.accept(node)) ext(node);
         };
     };
 
@@ -56,7 +62,7 @@ if (_.CSS3_ANIMATIONS) {
 
     document.addEventListener(nativeEventType, function(e) {
         if (e.animationName === animId) {
-            extensions.forEach(makeExtHandler(e.target, e._skip));
+            extensions.forEach(makeExtHandler(e.target, e._skip || {}));
         }
     }, false);
 } else {
@@ -71,7 +77,7 @@ if (_.CSS3_ANIMATIONS) {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
-            extensions.forEach(makeExtHandler(e.srcElement, e._skip));
+            extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));
         }
     });
 }
@@ -95,14 +101,13 @@ DOM.extend = function(selector, condition, mixins) {
 
     if (selector === "*") {
         // extending element prototype
-        _.extend($Element.prototype, mixins);
+        applyMixins($Element.prototype, mixins);
     } else {
         var eventHandlers = Object.keys(mixins).filter(function(prop) { return !!reRemovableMethod.exec(prop) }),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
-            ext = function(mock) {
-                var el = this,
-                    node = this._node;
+            ext = function(node, mock) {
+                var el = $Element(node);
 
                 if (_.CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
@@ -112,17 +117,12 @@ DOM.extend = function(selector, condition, mixins) {
 
                 if (mock !== true && condition(el) === false) return;
 
-                _.extend(el, mixins);
+                applyMixins(el, mixins);
 
-                try {
-                    if (ctr) ctr.call(el);
-                } finally {
-                    // remove event handlers from element's interface
-                    if (mock !== true) eventHandlers.forEach(function(prop) { delete el[prop] });
-                }
+                if (ctr) el.dispatch(ctr);
+                // remove event handlers from element's interface
+                if (mock !== true) eventHandlers.forEach(function(prop) { delete el[prop] });
             };
-
-        if (ctr) delete mixins.constructor;
 
         ext.accept = SelectorMatcher(selector);
         extensions.push(ext);
@@ -131,9 +131,7 @@ DOM.extend = function(selector, condition, mixins) {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            _.each.call(document.querySelectorAll(selector), function(node) {
-                $Element(node).dispatch(ext);
-            });
+            _.each.call(document.querySelectorAll(selector), ext);
             // Any extension should be initialized after DOM.ready
             // MUST be after querySelectorAll because of legacy IEs behavior
             DOM.importStyles(selector, styles);
@@ -150,14 +148,5 @@ DOM.extend = function(selector, condition, mixins) {
  * @return {$Element} mocked instance
  */
 DOM.mock = function(content, varMap) {
-    var el = content ? DOM.create(content, varMap) : new $Element(),
-        applyWatchers = function(el) {
-            extensions.forEach(function(ext) { if (ext.accept(el._node)) ext.call(el, true) });
-
-            el.children().each(applyWatchers);
-        };
-
-    if (content) applyWatchers(el);
-
-    return el;
+    return content ? DOM.create(content, varMap).legacy(applyExtensions) : new $Element();
 };

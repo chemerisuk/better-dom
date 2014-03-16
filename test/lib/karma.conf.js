@@ -5,6 +5,10 @@ module.exports = function(config) {
         basePath: "../..",
         frameworks: ["jasmine"],
         browsers: ["PhantomJS"],
+        coverageReporter: {
+            type: "html",
+            dir: "coverage/"
+        },
         files: [
             "./test/lib/jasmine-better-dom-matchers.js",
             "./build/better-dom-legacy.js",

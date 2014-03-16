@@ -57,11 +57,6 @@ module.exports = {
 
         return thisPtr;
     },
-    extend: function(obj, mixins) {
-        this.forOwn(mixins || {}, function(value, key) { obj[key] = value });
-
-        return obj;
-    },
     slice: Array.prototype.slice,
     every: Array.prototype.every,
     each: Array.prototype.forEach,
