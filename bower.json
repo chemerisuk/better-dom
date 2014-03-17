@@ -1,6 +1,6 @@
 {
   "name": "better-dom",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "main": [
     "dist/better-dom.js",
     "dist/better-dom-legacy.js",

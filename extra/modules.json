@@ -39,10 +39,6 @@
         "title": "Clonning of an element support",
         "files": ["src/element.clone.js"]
     },
-    "data": {
-        "title": "Data property support",
-        "files": ["src/element.data.js"]
-    },
     "find": {
         "title": "Element search support",
         "files": ["src/node.find.js"]

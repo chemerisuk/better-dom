@@ -1,6 +1,6 @@
 /**
  * @file better-dom-legacy.js
- * @version 1.7.2 2014-02-18T13:11:42
+ * @version 1.7.3 2014-03-17T16:07:34
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -1798,27 +1798,4 @@ if (!document.addEventListener) {
     });
 }
 
-},{}],6:[function(require,module,exports){
-// requestAnimationFrame implementation
-
-if (!window.requestAnimationFrame &&
-    !window.webkitRequestAnimationFrame &&
-    !window.mozRequestAnimationFrame &&
-    !window.oRequestAnimationFrame) {
-    var lastTime = 0;
-
-    window.requestAnimationFrame = function(callback) {
-        var currTime = new Date().getTime(),
-            timeToCall = Math.max(0, 16 - (currTime - lastTime));
-
-        lastTime = currTime + timeToCall;
-
-        if (timeToCall) {
-            setTimeout(callback, timeToCall);
-        } else {
-            callback(currTime + timeToCall);
-        }
-    };
-}
-
-},{}]},{},[3,4,5,6,2,1])
+},{}]},{},[3,4,5,2,1])

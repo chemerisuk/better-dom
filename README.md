@@ -6,19 +6,19 @@ But more flexibility is required in a lot of cases. For example, delegated event
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
+I'd recommend the articles below to get started:
 * [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
 * [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
 ## Features
-* compact size: ~27kb minified and ~6kb gzipped version
-* clean, minimalistic and standards-based (if possible) APIs
+* compact size: ~27kb minified and ~6kb gzipped version ([custom builds](#how-to-make-a-custom-build) are available to reduce file size even more)
+* clear, minimalistic and standards-based (where possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
 * [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
-* [custom builds](#how-to-make-a-custom-build)
-* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
+* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
@@ -45,10 +45,10 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ```
 
 ## Documentation
-* read the [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
+* Read the [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
 * Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
-* check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
-* walk through the sorce code of existing [projects that use better-dom](https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom).
+* Check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
+* Walk through the sorce code of existing [projects that use better-dom](https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom).
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/26)
