@@ -257,15 +257,19 @@ describe("on", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it("should debounce some events", function() {
+    it("should debounce some events", function(done) {
         var spy = jasmine.createSpy("callback");
 
-        form.on("scroll", spy);
-        form.fire("scroll");
-        form.fire("scroll");
-        form.fire("scroll");
+        form.on("mousemove", spy);
+        form.fire("mousemove");
+        form.fire("mousemove");
+        form.fire("mousemove");
 
-        expect(spy.calls.count()).toBe(1);
+        setTimeout(function() {
+            expect(spy.calls.count()).toBe(1);
+
+            done();
+        }, 50);
     });
 
     it("should throw error if arguments are invalid", function() {

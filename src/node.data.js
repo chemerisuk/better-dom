@@ -1,9 +1,4 @@
 var _ = require("./utils"),
-    /**
-     * Data property support
-     * @exports data
-     * @see https://github.com/chemerisuk/better-dom/wiki/Data-property
-     */
     $Node = require("./node");
 
 /**

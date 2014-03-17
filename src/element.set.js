@@ -1,54 +1,12 @@
 var _ = require("./utils"),
     $Node = require("./node"),
     $Element = require("./element"),
-    hooks = {get: {}, set: {}};
-
-/**
- * Get property or attribute value by name
- * @param  {String|Array} [name] property/attribute name or array of names
- * @return {Object} property/attribute value
- */
-$Element.prototype.get = function(name) {
-    var data = this._data,
-        node = this._node,
-        hook = hooks.get[name],
-        key, value;
-
-    if (!node) return;
-
-    if (hook) return hook(node, name);
-
-    if (typeof name === "string") {
-        if (name[0] === "_") {
-            key = name.substr(1);
-
-            if (key in data) {
-                value = data[key];
-            } else {
-                try {
-                    value = node.getAttribute("data-" + key);
-                    // parse object notation syntax
-                    if (value[0] === "{" && value[value.length - 1] === "}") {
-                        value = JSON.parse(value);
-                    }
-                } catch (err) { }
-
-                if (value != null) data[key] = value;
-            }
-
-            return value;
-        }
-
-        return name in node ? node[name] : node.getAttribute(name);
-    }
-
-    return $Node.prototype.get.call(this, name);
-};
+    hooks = {};
 
 /**
  * Set property/attribute value by name
- * @param {String}           [name]  property/attribute name
- * @param {String|Function}  value   property/attribute value or function that returns it
+ * @param {String|Object|Array} [name]  property/attribute name
+ * @param {String|Function}     value   property/attribute value or function that returns it
  * @return {$Element}
  */
 $Element.prototype.set = function(name, value) {
@@ -60,7 +18,7 @@ $Element.prototype.set = function(name, value) {
     }
 
     return this.legacy(function(node, el, index, ref) {
-        var hook = hooks.set[name],
+        var hook = hooks[name],
             watchers = el._watchers[name],
             newValue = value, oldValue;
 
@@ -94,7 +52,6 @@ $Element.prototype.set = function(name, value) {
 
 /**
  * Watch for changes of a particular property/attribute
- * @memberOf module:accessors
  * @param  {String}   name     property/attribute name
  * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
  * @return {$Element}
@@ -107,7 +64,6 @@ $Element.prototype.watch = function(name, callback) {
 
 /**
  * Disable watching of a particular property/attribute
- * @memberOf module:accessors
  * @param  {String}   name    property/attribute name
  * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
  * @return {$Element}
@@ -122,23 +78,9 @@ $Element.prototype.unwatch = function(name, callback) {
     });
 };
 
-// $Element.get/$Element.set hooks
+// $Element#set hooks
 
-hooks.get.undefined = function(node) {
-    var name;
-
-    if (node.tagName === "OPTION") {
-        name = node.hasAttribute("value") ? "value" : "text";
-    } else if (node.tagName === "SELECT") {
-        return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
-    } else {
-        name = node.type && "value" in node ? "value" : "innerHTML";
-    }
-
-    return node[name];
-};
-
-hooks.set.undefined = function(node, value) {
+hooks.undefined = function(node, value) {
     var name;
     // handle numbers, booleans etc.
     value = value == null ? "" : String(value);
@@ -158,12 +100,6 @@ hooks.set.undefined = function(node, value) {
     if (name) node[name] = value;
 };
 
-hooks.get.type = function(node) {
-    // some browsers don't recognize input[type=email] etc.
-    return node.getAttribute("type") || node.type;
-};
-
 if (!_.DOM2_EVENTS) {
-    hooks.get.textContent = function(node) { return node.innerText };
-    hooks.set.textContent = function(node, value) { node.innerText = value };
+    hooks.textContent = function(node, value) { node.innerText = value };
 }
