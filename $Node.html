@@ -43,10 +43,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="module-accessors.html">accessors</a>
-						</li>
-						
-						<li>
 							<a href="module-classes.html">classes</a>
 						</li>
 						
@@ -60,10 +56,6 @@
 						
 						<li>
 							<a href="module-css.html">css</a>
-						</li>
-						
-						<li>
-							<a href="module-data.html">data</a>
 						</li>
 						
 						<li>
@@ -247,6 +239,199 @@
         <h3 class="subsection-title">Methods</h3>
 
         <dl>
+            
+<dt>
+    <h4 class="name" id="data"><span class="type-signature"></span>data<span class="signature">(key(s), <span class="optional">value</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Getter/setter of a data entry value. Tries to read the appropriate
+HTML5 data-* attribute if it exists</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+
+		<th>Type</th>
+
+		
+		<th>Argument</th>
+		
+
+		
+
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+
+	<tbody>
+	
+
+        <tr>
+            
+                <td class="name"><code>key(s)</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>data key or key/value object or array of keys</p></td>
+        </tr>
+
+	
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>data value to store</p></td>
+        </tr>
+
+	
+	</tbody>
+</table>
+
+    
+    
+    
+<dl class="details">
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd><ul class="dummy"><li>see <a href="https://github.com/chemerisuk/better-dom/issues/12">https://github.com/chemerisuk/better-dom/issues/12</a></li><ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="node.data.js.html">node.data.js</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>data entry value or this in case of setter</p>
+</div>
+
+
+
+<dl>
+	<dt>
+		Type
+	</dt>
+	<dd>
+		
+<span class="param-type">Object</span>
+
+
+	</dd>
+</dl>
+
+
+        
+    
+    
+</dd>
+
+        
             
 <dt>
     <h4 class="name" id="dispatch"><span class="type-signature"></span>dispatch<span class="signature">(method, <span class="optional">args</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
@@ -506,7 +691,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (element, index, self)</p></td>
         </tr>
 
 	
@@ -686,7 +871,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (element, index, self)</p></td>
         </tr>
 
 	
@@ -870,7 +1055,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (element, index, self)</p></td>
         </tr>
 
 	
@@ -986,7 +1171,7 @@
         
             
 <dt>
-    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(name)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get<span class="signature">(key)</span><span class="type-signature"> &rarr; {Object}</span></h4>
     
     
 </dt>
@@ -1028,7 +1213,7 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>key</code></td>
             
 
             <td class="type">
@@ -1076,7 +1261,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="node.js.html">node.js</a>
+        <a href="node.accessors.js.html">node.accessors.js</a>
     </li></ul></dd>
     
 
@@ -1185,7 +1370,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (node, element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (node, element, index, self)</p></td>
         </tr>
 
 	
@@ -1332,7 +1517,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (element, index, self)</p></td>
         </tr>
 
 	
@@ -1516,7 +1701,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (memo, element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (memo, element, index, self)</p></td>
         </tr>
 
 	
@@ -1700,7 +1885,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (memo, element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (memo, element, index, self)</p></td>
         </tr>
 
 	
@@ -1816,7 +2001,7 @@
         
             
 <dt>
-    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(name, value)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
+    <h4 class="name" id="set"><span class="type-signature"></span>set<span class="signature">(key, value)</span><span class="type-signature"> &rarr; {<a href="$Node.html">$Node</a>}</span></h4>
     
     
 </dt>
@@ -1858,7 +2043,7 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>key</code></td>
             
 
             <td class="type">
@@ -1929,7 +2114,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="node.js.html">node.js</a>
+        <a href="node.accessors.js.html">node.accessors.js</a>
     </li></ul></dd>
     
 
@@ -2044,7 +2229,7 @@
 
             
 
-            <td class="description last"><p>function that accepts (element, index, this)</p></td>
+            <td class="description last"><p>function that accepts (element, index, self)</p></td>
         </tr>
 
 	
@@ -2183,7 +2368,7 @@
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Tue Feb 18 2014 13:11:49 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Mon Mar 17 2014 16:07:41 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>better-dom Source: element.matches.js</title>
+	<title>better-dom Source: element.set.js</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -137,43 +137,115 @@
 					
 
 
-		<h1 class="page-title">Source: element.matches.js</h1>
+		<h1 class="page-title">Source: element.set.js</h1>
     
     <section>
         <article>
-            <pre class="sunlight-highlight-javascript ">/**
- * CSS selector matching support
- * @module matches
- */
-var _ = require("./utils"),
+            <pre class="sunlight-highlight-javascript ">var _ = require("./utils"),
+    $Node = require("./node"),
     $Element = require("./element"),
-    SelectorMatcher = require("./selectormatcher"),
     hooks = {};
+
 /**
- * Check if the element matches selector
- * @memberOf module:matches
- * @param  {String}   selector  css selector for checking
+ * Set property/attribute value by name
+ * @param {String|Object|Array} [name]  property/attribute name
+ * @param {String|Function}     value   property/attribute value or function that returns it
  * @return {$Element}
  */
-$Element.prototype.matches = function(selector) {
-    if (!selector || typeof selector !== "string") throw _.makeError("matches");
+$Element.prototype.set = function(name, value) {
+    var nameType = typeof name;
 
-    var checker = hooks[selector] || SelectorMatcher(selector),
-        node = this._node;
+    if (arguments.length === 1 && nameType !== "object") {
+        value = name;
+        name = undefined;
+    }
 
-    return node && !!checker(node);
+    return this.legacy(function(node, el, index, ref) {
+        var hook = hooks[name],
+            watchers = el._watchers[name],
+            newValue = value, oldValue;
+
+        if (watchers) oldValue = el.get(name);
+
+        if (name && name[0] === "_") {
+            el._data[name.substr(1)] = newValue;
+        } else if (typeof newValue === "function") {
+            newValue = value(el, index, ref);
+        }
+
+        if (hook) {
+            hook(node, newValue);
+        } else if (nameType !== "string") {
+            return $Node.prototype.set.call(el, name);
+        } else if (newValue == null) {
+            node.removeAttribute(name);
+        } else if (name in node) {
+            node[name] = newValue;
+        } else {
+            node.setAttribute(name, newValue);
+        }
+        // trigger reflow manually in IE8
+        if (!_.DOM2_EVENTS) node.className = node.className;
+
+        if (watchers && oldValue !== newValue) {
+            watchers.forEach(function(w) { el.dispatch(w, newValue, oldValue, name) });
+        }
+    });
 };
 
-// $Element.matches hooks
-
-hooks[":focus"] = function(node) { return node === document.activeElement };
-
-hooks[":hidden"] = function(node) {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.computeStyle(node).display === "none" || !_.docEl.contains(node);
+/**
+ * Watch for changes of a particular property/attribute
+ * @param  {String}   name     property/attribute name
+ * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
+ * @return {$Element}
+ */
+$Element.prototype.watch = function(name, callback) {
+    return this.each(function(el) {
+        (el._watchers[name] || (el._watchers[name] = [])).push(callback);
+    });
 };
 
-hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
+/**
+ * Disable watching of a particular property/attribute
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
+ * @return {$Element}
+ */
+$Element.prototype.unwatch = function(name, callback) {
+    var eq = function(w) { return w !== callback };
+
+    return this.each(function(el) {
+        var watchers = el._watchers[name];
+
+        if (watchers) el._watchers[name] = watchers.filter(eq);
+    });
+};
+
+// $Element#set hooks
+
+hooks.undefined = function(node, value) {
+    var name;
+    // handle numbers, booleans etc.
+    value = value == null ? "" : String(value);
+
+    if (node.tagName === "SELECT") {
+        // selectbox has special case
+        if (_.every.call(node.options, function(o) { return !(o.selected = o.value === value) })) {
+            node.selectedIndex = -1;
+        }
+    } else if (node.type && "value" in node) {
+        // for IE use innerText because it doesn't trigger onpropertychange
+        name = _.DOM2_EVENTS ? "value" : "innerText";
+    } else {
+        name = "innerHTML";
+    }
+
+    if (name) node[name] = value;
+};
+
+if (!_.DOM2_EVENTS) {
+    hooks.textContent = function(node, value) { node.innerText = value };
+}
 </pre>
         </article>
     </section>

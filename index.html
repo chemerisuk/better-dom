@@ -43,10 +43,6 @@
 					<ul class="dropdown-menu ">
 						
 						<li>
-							<a href="module-accessors.html">accessors</a>
-						</li>
-						
-						<li>
 							<a href="module-classes.html">classes</a>
 						</li>
 						
@@ -60,10 +56,6 @@
 						
 						<li>
 							<a href="module-css.html">css</a>
-						</li>
-						
-						<li>
-							<a href="module-data.html">data</a>
 						</li>
 						
 						<li>
@@ -169,24 +161,26 @@
 
 
     <section>
-        <article><h1>better-dom <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master" alt="Build Status"></a></h1>
+        <article><h1>better-dom <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="https://coveralls.io/repos/chemerisuk/better-dom/badge.png?branch=master" alt="Coverage Status"></a></h1>
 <blockquote>
 <p>Live extension playground</p>
 </blockquote>
 <p>jQuery knows a concept called “<strong>live events</strong>”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
 But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce <strong><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></strong> and <strong>better-dom</strong> - a new library for working with the DOM.</p>
 <p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
+<p>I'd recommend the articles below to get started:
+<em> <a href="http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/">Introduction into the better-dom library in English</a> @smashingmagazine.com
+</em> <a href="http://habrahabr.ru/post/209140/">Введение в библиотеку better-dom по-русски</a> @habrahabr.ru</p>
 <h2>Features</h2>
 <ul>
-<li>compact size: ~27kb minified and ~6kb gzipped version</li>
-<li>clean, minimalistic and standards-based (if possible) APIs</li>
+<li>compact size: ~27kb minified and ~6kb gzipped version (<a href="#how-to-make-a-custom-build">custom builds</a> are available to reduce file size even more)</li>
+<li>clear, minimalistic and standards-based (where possible) APIs</li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></li>
 <li><a href="http://jsfiddle.net/C3WeM/5/">animations via CSS3</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Localization">i18n support</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">microtemplating using the Emmet syntax</a></li>
-<li><a href="#how-to-make-a-custom-build">custom builds</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Event-handling">improved event handling</a></li>
+<li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
 </ul>
 <h2>Installation</h2>
 <p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
@@ -208,21 +202,15 @@ But more flexibility is required in a lot of cases. For example, delegated event
 &lt;/html&gt;</code></pre>
 <h2>Documentation</h2>
 <ul>
-<li><a href="http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/">Introduction into the better-dom library in English</a> @smashingmagazine.com</li>
-<li><a href="http://coding.smashingmagazine.com/2014/02/05/introducing-live-extensions-better-dom-javascript/">Introducing Live Extensions For Better-DOM: What They Are And How They Work</a> @smashingmagazine.com</li>
-<li><a href="http://habrahabr.ru/post/209140/">Введение в библиотеку better-dom по-русски</a> @habrahabr.ru</li>
-</ul>
-<p>Need more?</p>
-<ul>
-<li>read <a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></li>
+<li>Read the <a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></li>
 <li>Take a look at the <a href="https://github.com/chemerisuk/better-dom/wiki">better-dom wiki</a></li>
-<li>check <a href="https://github.com/chemerisuk/better-dom/releases">releases tab</a> for getting the changes log</li>
-<li>walk through the sorce code of existing <a href="https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom">projects that use better-dom</a>.</li>
+<li>Check <a href="https://github.com/chemerisuk/better-dom/releases">releases tab</a> for getting the changes log</li>
+<li>Walk through the sorce code of existing <a href="https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom">projects that use better-dom</a>.</li>
 </ul>
 <h2>Performance</h2>
 <ul>
 <li><a href="http://jsperf.com/dom-create-vs-jquery/26">DOM.create vs jquery</a></li>
-<li><a href="http://jsperf.com/dom-find-all-vs-jquery-find/9">DOM.find[All] vs jQuery.find</a></li>
+<li><a href="http://jsperf.com/dom-find-all-vs-jquery-find/10">DOM.find[All] vs jQuery.find</a></li>
 <li><a href="http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/5">DOM getter/setter vs jQuery.attr/prop</a></li>
 <li><a href="http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6">better-dom vs jquery: classes manipulation</a></li>
 <li><a href="http://jsperf.com/better-dom-vs-jquery-array-methods/4">better-dom vs jquery: array methods</a></li>
@@ -282,7 +270,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Tue Feb 18 2014 13:11:49 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Mon Mar 17 2014 16:07:41 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
