@@ -21,10 +21,10 @@ var _ = require("./utils"),
             if (key !== "constructor") obj[key] = value;
         });
     },
-    applyExtensions = function(node, el) {
+    applyExtensions = function(node) {
         extensions.forEach(function(ext) { if (ext.accept(node)) ext(node, true) });
 
-        el.children().legacy(applyExtensions);
+        _.each.call(node.children, applyExtensions);
     },
     stopExt = function(node, index) {
         return function(e) {
@@ -44,7 +44,6 @@ var _ = require("./utils"),
     makeExtHandler = function(node, skip) {
         return function(ext, index) {
             // skip previously excluded or mismatched elements
-            // make a safe call so live extensions can't break each other
             if (!skip[index] && ext.accept(node)) ext(node);
         };
     };
@@ -118,7 +117,7 @@ DOM.extend = function(selector, condition, mixins) {
                 if (mock !== true && condition(el) === false) return;
 
                 applyMixins(el, mixins);
-
+                // make a safe call so live extensions can't break each other
                 if (ctr) el.dispatch(ctr);
                 // remove event handlers from element's interface
                 if (mock !== true) eventHandlers.forEach(function(prop) { delete el[prop] });

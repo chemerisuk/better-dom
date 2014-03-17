@@ -114,7 +114,7 @@ if (document.createElement("input").validity) {
 }
 
 if (!_.DOM2_EVENTS) {
-    // fix non-bubbling submit event for IE8
+    // fix non-bubbling form events for IE8
     ["submit", "change", "reset"].forEach(function(name) {
         hooks[name] = function(handler) { handler._type = CUSTOM_EVENT_TYPE };
     });

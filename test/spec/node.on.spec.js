@@ -140,20 +140,13 @@ describe("on", function() {
     // });
 
     it("should fix some non-bubbling events", function() {
-        DOM.on("focus", spy);
+        DOM.once("focus", spy);
         input.fire("focus");
         expect(spy).toHaveBeenCalled();
 
-        // FIXME: need to use better feature detection: Android 2.3 passes current
-        // if (input.get("validity")) {
-        //     DOM.on("invalid", spy);
-
-        //     input.legacy(function(node) {
-        //         node.checkValidity();
-
-        //         expect(spy.calls.count()).toBe(2);
-        //     });
-        // }
+        DOM.once("invalid", spy);
+        input.fire("invalid");
+        expect(spy.calls.count()).toBe(2);
     });
 
     it("should fix input event", function() {
@@ -264,17 +257,16 @@ describe("on", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    // it("should debounce some events", function() {
-    //     var spy = jasmine.createSpy("callback");
+    it("should debounce some events", function() {
+        var spy = jasmine.createSpy("callback");
 
-    //     form.on("scroll", spy);
-    //     form.fire("scroll");
-    //     form.fire("scroll");
-    //     form.fire("scroll");
+        form.on("scroll", spy);
+        form.fire("scroll");
+        form.fire("scroll");
+        form.fire("scroll");
 
-    //     expect(spy).toHaveBeenCalledWith(form, false);
-    //     expect(spy.calls.count()).toBe(1);
-    // });
+        expect(spy.calls.count()).toBe(1);
+    });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
