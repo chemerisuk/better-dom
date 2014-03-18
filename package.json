@@ -4,7 +4,6 @@
   "author": "Maksim Chemerisuk",
   "description": "Live extension playground",
   "license": "MIT",
-  "main": "dist/better-dom.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/chemerisuk/better-dom"

@@ -9,7 +9,7 @@ module.exports = function(grunt) {
         watch: {
             build: {
                 files: ["src/*.js"],
-                tasks: ["browserify:compile", "karma:coverage:run"]
+                tasks: ["browserify:compile", "karma:watch:run"]
             },
             legacy: {
                 files: ["legacy/*.js"],
@@ -17,7 +17,7 @@ module.exports = function(grunt) {
             },
             specs: {
                 files: ["test/spec/*.js"],
-                tasks: ["karma:coverage:run"]
+                tasks: ["karma:watch:run"]
             },
         },
         jshint: {
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
                 reporters: ["progress"],
                 singleRun: true
             },
-            coverage: {
+            watch: {
                 preprocessors: { "build/better-dom.js": "coverage" },
                 reporters: ["coverage", "progress"],
                 background: true
@@ -187,7 +187,7 @@ module.exports = function(grunt) {
         "browserify",
         "jshint",
         "connect",
-        "karma:coverage",
+        "karma:watch",
         "watch"
     ]);
 
