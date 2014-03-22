@@ -92,6 +92,35 @@ describe("set", function() {
         expect(document.title).toBe("abc");
     });
 
+    describe("private props", function() {
+        it("shoud touch private _data object", function() {
+            input.set("_test", "yeah");
+
+            expect(input).not.toHaveAttr("_test", "yeah");
+            expect(input).not.toHaveProp("_test", "yeah");
+        });
+
+        it("should store any kind of object", function() {
+            var obj = {}, nmb = 123, func = function() {};
+
+            expect(input.set("_obj", obj).get("_obj")).toEqual(obj);
+            expect(input.set("_nmb", nmb).get("_nmb")).toEqual(nmb);
+            expect(input.set("_func", func).get("_func")).toEqual(func);
+        });
+
+        it("should work with collections", function() {
+            var links = DOM.create("a[data-test]*2");
+
+            expect(links.get("_test")).toBeUndefined();
+            expect(links.set("_test", "x")).toBe(links);
+            expect(links.get("_test")).toBeUndefined();
+
+            links.each(function(link) {
+                expect(link.get("_test")).toBe("x");
+            });
+        });
+    });
+
     describe("value shortcut", function() {
         it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
             var value = "set-test-changed";

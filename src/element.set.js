@@ -26,23 +26,23 @@ $Element.prototype.set = function(name, value) {
 
         if (name && name[0] === "_") {
             el._data[name.substr(1)] = newValue;
-        } else if (typeof newValue === "function") {
-            newValue = value(el, index, ref);
-        }
-
-        if (hook) {
-            hook(node, newValue);
-        } else if (nameType !== "string") {
-            return $Node.prototype.set.call(el, name);
-        } else if (newValue == null) {
-            node.removeAttribute(name);
-        } else if (name in node) {
-            node[name] = newValue;
         } else {
-            node.setAttribute(name, newValue);
+            if (typeof newValue === "function") newValue = value(el, index, ref);
+
+            if (hook) {
+                hook(node, newValue);
+            } else if (nameType !== "string") {
+                return $Node.prototype.set.call(el, name);
+            } else if (newValue == null) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = newValue;
+            } else {
+                node.setAttribute(name, newValue);
+            }
+            // trigger reflow manually in IE8
+            if (!_.DOM2_EVENTS || _.LEGACY_ANDROID) node.className = node.className;
         }
-        // trigger reflow manually in IE8
-        if (!_.DOM2_EVENTS || _.LEGACY_ANDROID) node.className = node.className;
 
         if (watchers && oldValue !== newValue) {
             watchers.forEach(function(w) { el.dispatch(w, newValue, oldValue, name) });

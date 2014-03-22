@@ -46,8 +46,8 @@ var _ = require("./utils"),
                     processVisibilityChange = function() {
                         var duration, index, transition;
 
-                        // Android Browser is too slow and have a lot of bugs in
-                        // the animation implementation, so disable animations for them
+                        // Android Browser is too slow and has a lot of bugs in
+                        // the implementation, so disable animations for them
                         if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && !isDetached) {
                             duration = Math.max(calcDuration(compStyle), calcDuration(compStyle, true));
                         }
