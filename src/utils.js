@@ -1,5 +1,6 @@
 var doc = document,
     win = window,
+    userAgent = win.navigator.userAgent,
     currentScript = doc.scripts[0],
     reVar = /\{([\w\-]+)\}/g;
 
@@ -46,7 +47,7 @@ module.exports = {
     // constants
     docEl: doc.documentElement,
     CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
-    LEGACY_ANDROID: ~navigator.userAgent.indexOf("Android 2"),
+    LEGACY_ANDROID: ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0,
     DOM2_EVENTS: !!doc.addEventListener,
     WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
     // utilites

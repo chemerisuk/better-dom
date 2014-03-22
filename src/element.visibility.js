@@ -42,76 +42,79 @@ var _ = require("./utils"),
                         }
 
                         if (callback) callback(el, index, ref);
+                    },
+                    processVisibilityChange = function() {
+                        var duration, index, transition;
+
+                        // Android Browser is too slow and have a lot of bugs in
+                        // the animation implementation, so disable animations for them
+                        if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && !isDetached) {
+                            duration = Math.max(calcDuration(compStyle), calcDuration(compStyle, true));
+                        }
+
+                        if (duration) {
+                            // make sure that the visibility property will be changed
+                            // to trigger the completeAnimation callback
+                            if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
+
+                            transition = transitionProps.map(function(prop, index) {
+                                // have to use regexp to split transition-timing-function value
+                                return styleAccessor.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+                            });
+
+                            // try to find existing or use 0s length or make a new visibility transition
+                            index = transition[1].indexOf("visibility");
+                            if (index < 0) index = transition[2].indexOf("0s");
+                            if (index < 0) index = transition[0].length;
+
+                            transition[0][index] = "linear";
+                            transition[1][index] = "visibility";
+                            transition[isHidden ? 2 : 3][index] = "0s";
+                            transition[isHidden ? 3 : 2][index] = duration + "ms";
+
+                            transition.forEach(function(value, index) {
+                                styleAccessor.set[transitionProps[index]](style, value.join(", "));
+                            });
+
+                            node.addEventListener(eventType, function completeAnimation(e) {
+                                if (e.propertyName === "visibility") {
+                                    e.stopPropagation(); // this is an internal event
+
+                                    node.removeEventListener(eventType, completeAnimation, false);
+
+                                    completeVisibilityChange();
+                                }
+                            }, false);
+                        }
+
+                        if (isHidden) {
+                            // store current inline value in a private property
+                            el._visibility = style[absentStrategy[0]];
+                            // do not store display:none
+                            if (el._visibility === "none") el._visibility = "";
+                            // prevent accidental user actions during animation
+                            style.pointerEvents = "none";
+                        } else {
+                            // restore initial property value if it exists
+                            style[absentStrategy[0]] = el._visibility || "";
+                        }
+
+                        style.visibility = isHidden ? "hidden" : "visible";
+                        // trigger native CSS animation
+                        el.set("aria-hidden", String(isHidden));
+                        // must be AFTER changing the aria-hidden attribute
+                        if (!duration) completeVisibilityChange();
                     };
 
-                // requestAnimationFrame fixes several issues here:
+                // if element is not detached use requestAnimationFrame that fixes several issues:
                 // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
                 // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
                 // 3) power consuption: show/hide do almost nothing if page is not active
-                //
-                // for detached elements just use setTimeout
-                (isDetached ? setTimeout : _.raf)(function() {
-                    var duration, index, transition;
-
-                    // Android 2 devices are usually slow and have a lot of the
-                    // animation implementation bugs, so disable animations for them
-                    if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && !isDetached) {
-                        duration = Math.max(calcDuration(compStyle), calcDuration(compStyle, true));
-                    }
-
-                    if (duration) {
-                        // make sure that the visibility property will be changed
-                        // to trigger the completeAnimation callback
-                        if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
-
-                        transition = transitionProps.map(function(prop, index) {
-                            // have to use regexp to split transition-timing-function value
-                            return styleAccessor.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
-                        });
-
-                        // try to find existing or use 0s length or make a new visibility transition
-                        index = transition[1].indexOf("visibility");
-                        if (index < 0) index = transition[2].indexOf("0s");
-                        if (index < 0) index = transition[0].length;
-
-                        transition[0][index] = "linear";
-                        transition[1][index] = "visibility";
-                        transition[isHidden ? 2 : 3][index] = "0s";
-                        transition[isHidden ? 3 : 2][index] = duration + "ms";
-
-                        transition.forEach(function(value, index) {
-                            styleAccessor.set[transitionProps[index]](style, value.join(", "));
-                        });
-
-                        node.addEventListener(eventType, function completeAnimation(e) {
-                            if (e.propertyName === "visibility") {
-                                e.stopPropagation(); // this is an internal event
-
-                                node.removeEventListener(eventType, completeAnimation, false);
-
-                                completeVisibilityChange();
-                            }
-                        }, false);
-                    }
-
-                    if (isHidden) {
-                        // store current inline value in a private property
-                        el._visibility = style[absentStrategy[0]];
-                        // do not store display:none
-                        if (el._visibility === "none") el._visibility = "";
-                        // prevent accidental user actions during animation
-                        style.pointerEvents = "none";
-                    } else {
-                        // restore initial property value if it exists
-                        style[absentStrategy[0]] = el._visibility || "";
-                    }
-
-                    style.visibility = isHidden ? "hidden" : "visible";
-                    // trigger native CSS animation
-                    el.set("aria-hidden", String(isHidden));
-                    // must be AFTER changing the aria-hidden attribute
-                    if (!duration) completeVisibilityChange();
-                }, 0);
+                if (isDetached) {
+                    processVisibilityChange();
+                } else {
+                    _.raf(processVisibilityChange);
+                }
             });
         };
     },
