@@ -38,6 +38,7 @@
   "scripts": {
     "test": "grunt test",
     "start": "grunt dev",
+    "install": "grunt build",
     "build": "npm install && bower install && grunt",
     "coveralls": "cat ./coverage/PhantomJS*/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   }

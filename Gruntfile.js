@@ -193,8 +193,6 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("test", [
-        "clean:build",
-        "browserify",
         "jshint",
         "karma:unit"
     ]);
@@ -204,39 +202,31 @@ module.exports = function(grunt) {
         "jsdoc"
     ]);
 
-    grunt.registerTask("default", [
-        "clean:build",
-        "browserify",
-        "uglify"
-    ]);
+    grunt.registerTask("default", "information about modules", function() {
+        var modules = grunt.file.readJSON("extra/modules.json");
 
-    grunt.registerTask("build", "Make a custom build", function(excluded) {
-        var modules = grunt.file.readJSON("extra/modules.json"),
-            args, options;
+        grunt.log.writeln(
+            grunt.log.table([15, 40, 70],
+                ["\nMODULE", "\nDESCRIPTION", "\nURL"]
+            )
+        );
 
-        if (!excluded) {
+        Object.keys(modules).forEach(function(name) {
             grunt.log.writeln(
                 grunt.log.table([15, 40, 70],
-                    ["MODULE", "DESCRIPTION", "URL"]
+                    [name.yellow.bold, modules[name].title, pkg.docs + "/module-" + name + ".html"]
                 )
             );
+        });
 
-            Object.keys(modules).forEach(function(name) {
-                grunt.log.writeln(
-                    grunt.log.table([15, 40, 70],
-                        [name.yellow.bold, modules[name].title, pkg.docs + "/module-" + name + ".html"]
-                    )
-                );
-            });
+        grunt.log.writeln("\nPick one or several comma-separated modules above to exclude them from build, e.g.\n");
+        grunt.log.writeln("    grunt build:classes,offset,data");
+    });
 
-            grunt.log.writeln("\nPick one or several comma-separated modules above to exclude them from build, e.g.\n");
-            grunt.log.writeln("    grunt build:classes,offset,data");
-
-            return;
-        }
-
-        args = excluded === "min" ? Object.keys(modules) : excluded.split(",");
-        options = grunt.config.get("browserify.compile.options");
+    grunt.registerTask("build", "make a build", function(excluded) {
+        var modules = grunt.file.readJSON("extra/modules.json"),
+            args = excluded === "min" ? Object.keys(modules) : (excluded ? excluded.split(",") : []),
+            options = grunt.config.get("browserify.compile.options");
 
         options.ignore = args.reduce(function(memo, arg) {
             var module = modules[arg];
@@ -250,13 +240,13 @@ module.exports = function(grunt) {
 
         grunt.config.set("browserify.compile.options", options);
 
-        grunt.log.ok("Making a custom better-dom build that doesn't contain modules:");
-        grunt.log.subhead(args);
+        grunt.log.ok("Making a build that doesn't contain modules:");
+        grunt.log.subhead(args.length ? args : "All modules are included");
 
         grunt.task.run([
             "clean:build",
-            "browserify:compile",
-            "uglify:build"
+            "browserify",
+            "uglify"
         ]);
     });
 
