@@ -62,17 +62,19 @@ In order to create a custom build make sure that you installed [grunt-cli](https
 
     npm install -g grunt-cli
 
-Then you can print all available modules for customization via the task below:
+Then you can print all available modules for customization via the default task:
+
+    grunt
+
+To create a full build run `build` task without arguments:
 
     grunt build
 
-Pick modules that you want to exclude and pass them to the same task separated by comma:
+Your build will be created inside of the `build` folder including uglified version with source maps. Pick modules that you want to exclude and pass them to the same task separated by comma:
 
-    grunt build:classes,offset,data
+    grunt build:classes,offset,traversing
 
-Look at the [API documentation](http://chemerisuk.github.io/better-dom/) to find which functions are included into a particular module.
-
-Your custom build will be created inside of the `build` folder including uglified version and source maps.
+Look at the [API documentation](http://chemerisuk.github.io/better-dom/) to find which functions are included into a particular module (see *Modules* menu).
 
 ## Notes about old IEs
 For IE8-9 support you have to incude extra files via conditional comment (see [Installation](#installation) section).
