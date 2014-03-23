@@ -61,10 +61,8 @@ hooks.undefined = function(node) {
     return node[name];
 };
 
-hooks.type = function(node) {
-    // some browsers don't recognize input[type=email] etc.
-    return node.getAttribute("type") || node.type;
-};
+// some browsers don't recognize input[type=email] etc.
+hooks.type = (node) => node.getAttribute("type") || node.type;
 
 if (!_.DOM2_EVENTS) {
     hooks.textContent = function(node) { return node.innerText };

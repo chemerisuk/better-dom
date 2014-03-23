@@ -4,8 +4,10 @@
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
 var _ = require("./utils"),
-    $Node = require("./node"),
-    EventHandler = require("./eventhandler");
+    $Node = require("./node")/*,
+    EventHandler = require("./eventhandler")*/;
+
+import EventHandler from "./eventhandler";
 
 /**
  * Bind a DOM event

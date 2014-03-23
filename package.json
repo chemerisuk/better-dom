@@ -32,7 +32,8 @@
     "karma-firefox-launcher": "^0.1",
     "karma-safari-launcher": "^0.1",
     "karma-opera-launcher": "^0.1",
-    "watchify": "^0.6.3"
+    "es6-browserify": "0.0.7",
+    "browserify-es6-modules": "^0.1.1"
   },
   "scripts": {
     "test": "grunt test",

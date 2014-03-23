@@ -162,6 +162,7 @@ module.exports = function(grunt) {
                     "build/better-dom.js": ["src/*.js"]
                 },
                 options: {
+                    transform: ["browserify-es6-modules", "es6-browserify"],
                     postBundleCB: function(err, src, next) {
                         // append copyrights header
                         next(err, grunt.template.process(
