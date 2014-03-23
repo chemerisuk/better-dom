@@ -1,8 +1,8 @@
+import _ from "./utils";
 /*
  * Helper for accessing css
  */
-var _ = require("./utils"),
-    hooks = {get: {}, set: {}},
+var hooks = {get: {}, set: {}},
     reDash = /\-./g,
     reCamel = /[A-Z]/g,
     directions = ["Top", "Right", "Bottom", "Left"],
@@ -76,4 +76,4 @@ _.forOwn({
     };
 });
 
-module.exports = hooks;
+export default hooks;

@@ -1,5 +1,6 @@
-var $Node = require("./node"),
-    makeLoopMethod = (function(){
+import $Node from "./node";
+
+var makeLoopMethod = (function(){
         var reInvoke = /cb\.call\(([^)]+)\)/g,
             defaults = {
                 BEGIN: "",

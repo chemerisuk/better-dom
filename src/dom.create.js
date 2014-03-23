@@ -1,8 +1,9 @@
-var _ = require("./utils"),
-    $Element = require("./element"),
-    $Elements = require("./elements"),
-    DOM = require("./dom"),
-    reSingleTag = /^\w+$/,
+import _ from "./utils";
+import DOM from "./dom";
+import $Element from "./element";
+import $Elements from "./elements";
+
+var reSingleTag = /^\w+$/,
     sandbox = document.createElement("body");
 
 /**

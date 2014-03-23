@@ -1,9 +1,10 @@
+import _ from "./utils";
+import $Element from "./element";
+
 /**
  * Element manipulation support
  * @module manipulation
  */
-var _ = require("./utils"),
-    $Element = require("./element");
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function() {

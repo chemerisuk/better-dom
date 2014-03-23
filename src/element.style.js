@@ -1,10 +1,11 @@
+import _ from "./utils";
+import $Element from "./element";
+import styleAccessor from "./styleaccessor";
+
 /**
  * Changing of element styles support
  * @module css
  */
-var _ = require("./utils"),
-    $Element = require("./element"),
-    styleAccessor = require("./styleaccessor");
 
 /**
  * CSS properties accessor for an element

@@ -1,7 +1,8 @@
-var _ = require("./utils"),
-    DOM = require("./dom"),
-    styleAccessor = require("./styleaccessor"),
-    styleNode = _.injectElement(document.createElement("style")),
+import _ from "./utils";
+import DOM from "./dom";
+import styleAccessor from "./styleaccessor";
+
+var styleNode = _.injectElement(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules;
 
@@ -49,5 +50,3 @@ DOM.importStyles = function(selector, cssText) {
         });
     }
 };
-
-module.exports = DOM.importStyles;

@@ -4,7 +4,7 @@ var doc = document,
     currentScript = doc.scripts[0],
     reVar = /\{([\w\-]+)\}/g;
 
-module.exports = {
+export default {
     makeError: function(method, DOM) {
         var type = DOM ? "DOM" : "$Element";
 

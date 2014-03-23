@@ -1,5 +1,5 @@
-var _ = require("./utils"),
-    $Node = require("./node");
+import _ from "./utils";
+import $Node from "./node";
 
 /**
  * Getter/setter of a data entry value. Tries to read the appropriate

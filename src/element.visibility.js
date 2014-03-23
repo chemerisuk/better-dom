@@ -1,11 +1,13 @@
+import _ from "./utils";
+import $Element from "./element";
+import styleAccessor from "./styleaccessor";
+
 /**
  * Changing of element visibility support
  * @module visibility
  */
-var _ = require("./utils"),
-    $Element = require("./element"),
-    styleAccessor = require("./styleaccessor"),
-    parseTimeValue = function(value) {
+
+var parseTimeValue = function(value) {
         var endIndex = value.length - 1;
 
         return value.lastIndexOf("ms") === endIndex - 1 || value.lastIndexOf("s") !== endIndex ?

@@ -1,7 +1,8 @@
-var _ = require("./utils"),
-    $Node = require("./node"),
-    $Element = require("./element"),
-    hooks = {};
+import _ from "./utils";
+import $Node from "./node";
+import $Element from "./element";
+
+var hooks = {};
 
 /**
  * Get property or attribute value by name

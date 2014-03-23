@@ -1,10 +1,10 @@
+import _ from "./utils";
 /*
  * Helper for css selectors
  */
-var _ = require("./utils"),
-    rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
+var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
 // Quick matching inspired by jQuery
-module.exports = function(selector, context) {
+export default function(selector, context) {
     if (typeof selector !== "string") return null;
 
     var quick = rquickIs.exec(selector);
@@ -48,4 +48,4 @@ module.exports = function(selector, context) {
 
         return result && node;
     };
-};
+}

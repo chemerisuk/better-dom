@@ -16,4 +16,4 @@ function $Node(node) {
     this.length = node ? 1 : 0;
 }
 
-module.exports = $Node;
+export default $Node;

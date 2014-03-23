@@ -1,3 +1,8 @@
+import _ from "./utils";
+import DOM from "./dom";
+import $Element from "./element";
+import SelectorMatcher from "./selectormatcher";
+
 /**
  * Live extensions support
  * @module extend
@@ -6,12 +11,7 @@
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
-var _ = require("./utils"),
-    $Element = require("./element"),
-    DOM = require("./dom"),
-    SelectorMatcher = require("./selectormatcher"),
-    importStyles = require("./dom.importstyles"),
-    reRemovableMethod = /^(on|do)[A-Z]/,
+var reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
     returnTrue = function() { return true },
     returnFalse = function() { return false },
@@ -52,7 +52,7 @@ if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
-    importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}");
+    setTimeout(() => DOM.importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}"), 0);
 
     styles = {
         "animation-duration": "1ms !important",

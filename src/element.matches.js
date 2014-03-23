@@ -1,11 +1,13 @@
+import _ from "./utils";
+import $Element from "./element";
+import SelectorMatcher from "./selectormatcher";
+
 /**
  * CSS selector matching support
  * @module matches
  */
-var _ = require("./utils"),
-    $Element = require("./element"),
-    SelectorMatcher = require("./selectormatcher"),
-    hooks = {};
+
+var hooks = {};
 /**
  * Check if the element matches selector
  * @memberOf module:matches

@@ -1,12 +1,13 @@
+import _ from "./utils";
+import $Element from "./element";
+import $Elements from "./elements";
+import SelectorMatcher from "./selectormatcher";
+
 /**
  * Element traversing support
  * @module traversing
  * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
  */
-var _ = require("./utils"),
-    $Element = require("./element"),
-    $Elements = require("./elements"),
-    SelectorMatcher = require("./selectormatcher");
 
 function makeTraversingMethod(methodName, propertyName, all) {
     return function(selector, andSelf) {

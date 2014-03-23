@@ -1,4 +1,4 @@
-var $Node = require("./node");
+import $Node from "./node";
 
 /**
  * Used to represent a DOM element
@@ -25,4 +25,4 @@ $Element.prototype.toString = function() {
     return this._node ? this._node.tagName.toLowerCase() : "";
 };
 
-module.exports = $Element;
+export default $Element;

@@ -1,10 +1,12 @@
+import _ from "./utils";
+import $Element from "./element";
+import SelectorMatcher from "./selectormatcher";
+
 /*
  * Helper type to create an event handler
  */
-var _ = require("./utils"),
-    $Element = require("./element"),
-    SelectorMatcher = require("./selectormatcher"),
-    defaultArgs = ["target", "currentTarget", "defaultPrevented"],
+
+var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     CUSTOM_EVENT_TYPE = "dataavailable",
     hooks = {},
     EventHandler = function(type, selector, callback, props, el, once) {

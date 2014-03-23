@@ -1,5 +1,5 @@
-var _ = require("./utils"),
-    $Node = require("./node");
+import _ from "./utils";
+import $Node from "./node";
 
 /**
  * Get property value by name

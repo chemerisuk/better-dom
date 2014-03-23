@@ -1,4 +1,4 @@
-var $Element = require("./element");
+import $Element from "./element";
 
 /**
  * Used to represent a collection of DOM elements
@@ -18,4 +18,4 @@ function $Elements(elements) {
 $Elements.prototype = new $Element();
 $Elements.prototype.toString = Array.prototype.join;
 
-module.exports = $Elements;
+export default $Elements;

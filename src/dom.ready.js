@@ -1,6 +1,7 @@
-var _ = require("./utils"),
-    DOM = require("./dom"),
-    callbacks = [],
+import _ from "./utils";
+import DOM from "./dom";
+
+var callbacks = [],
     readyState = document.readyState;
 
 function pageLoaded() {

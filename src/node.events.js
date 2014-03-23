@@ -1,13 +1,12 @@
+import _ from "./utils";
+import $Node from "./node";
+import EventHandler from "./eventhandler";
+
 /**
  * Event handling support
  * @module events
  * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
  */
-var _ = require("./utils"),
-    $Node = require("./node")/*,
-    EventHandler = require("./eventhandler")*/;
-
-import EventHandler from "./eventhandler";
 
 /**
  * Bind a DOM event

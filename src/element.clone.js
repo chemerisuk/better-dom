@@ -1,9 +1,10 @@
+import _ from "./utils";
+import $Element from "./element";
+
 /**
  * Clonning of an element support
  * @module clone
  */
-var _ = require("./utils"),
-    $Element = require("./element");
 
 /**
  * Clone element

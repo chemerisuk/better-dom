@@ -1,9 +1,10 @@
+import _ from "./utils";
+import $Element from "./element";
+
 /**
  * Element offset calculation support
  * @module offset
  */
-var _ = require("./utils"),
-    $Element = require("./element");
 
 /**
  * Calculates offset of the current element

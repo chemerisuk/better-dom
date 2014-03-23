@@ -1,6 +1,7 @@
-var _ = require("./utils"),
-    $Node = require("./node"),
-    dispatcher = document.createElement("a"),
+import _ from "./utils";
+import $Node from "./node";
+
+var dispatcher = document.createElement("a"),
     safePropName = "onpropertychange";
 
 if (_.DOM2_EVENTS) {

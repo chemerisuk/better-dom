@@ -2,9 +2,9 @@
  * Ancestor check support
  * @module contains
  */
-var _ = require("./utils"),
-    $Node = require("./node"),
-    $Element = require("./element");
+import _ from "./utils";
+import $Node from "./node";
+import $Element from "./element";
 
 /**
  * Check if element is inside of context

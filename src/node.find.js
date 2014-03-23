@@ -1,11 +1,12 @@
+import _ from "./utils";
+import $Node from "./node";
+import $Element from "./element";
+import $Elements from "./elements";
+
 /**
  * Element search support
  * @module find
  */
-var _ = require("./utils"),
-    $Node = require("./node"),
-    $Element = require("./element"),
-    $Elements = require("./elements");
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js

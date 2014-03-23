@@ -2,9 +2,10 @@
  * Class manipulation support
  * @module classes
  */
-var _ = require("./utils"),
-    $Element = require("./element"),
-    reSpace = /[\n\t\r]/g;
+import _ from "./utils";
+import $Element from "./element";
+
+var reSpace = /[\n\t\r]/g;
 
 function makeClassesMethod(nativeStrategyName, strategy) {
     var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";

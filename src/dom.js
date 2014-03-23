@@ -1,5 +1,6 @@
-var $Node = require("./node"),
-    DOM = new $Node(document);
+import $Node from "./node";
+
+var DOM = new $Node(document);
 
 DOM.version = "<%= pkg.version %>";
 DOM.template = function(str) { return str };
@@ -9,4 +10,4 @@ DOM.template = function(str) { return str };
  * @namespace DOM
  * @extends $Node
  */
-module.exports = window.DOM = DOM;
+export default window.DOM = DOM;

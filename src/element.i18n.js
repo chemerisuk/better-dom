@@ -1,13 +1,14 @@
+import _ from "./utils";
+import DOM from "./dom";
+import $Element from "./element";
+
 /**
  * Internationalization support
  * @module i18n
  * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
-var _ = require("./utils"),
-    DOM = require("./dom"),
-    $Element = require("./element"),
-    importStyles = require("./dom.importstyles"),
-    strings = {},
+
+var strings = {},
     languages = [];
 
 /**
@@ -68,4 +69,4 @@ DOM.importStrings = function(lang, key, value) {
 };
 
 // by default just show data-i18n string
-importStyles("[data-i18n]:before", "content:attr(data-i18n)");
+setTimeout(() => DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)"), 0);
