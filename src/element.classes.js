@@ -32,7 +32,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
         return function(className) {
             var args = arguments;
 
-            return this.each(function(el) {
+            return this.each((el) => {
                 if (args.length === 1) {
                     strategy.call(el, className);
                 } else {

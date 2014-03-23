@@ -17,9 +17,8 @@ if (_.DOM2_EVENTS) {
  * @param  {...Object}        [args]  extra arguments to pass into each invokation
  * @return {Object} result of the invokation which is undefined if there was an exception
  */
-$Node.prototype.dispatch = function(method) {
-    var args = _.slice.call(arguments, 1),
-        methodType = typeof method,
+$Node.prototype.dispatch = function(method, ...args) {
+    var methodType = typeof method,
         el = this,
         node = this._node,
         handler, result, e;
@@ -27,9 +26,9 @@ $Node.prototype.dispatch = function(method) {
     if (!node) return;
 
     if (methodType === "function") {
-        handler = function() { result = method.apply(el, args) };
+        handler = () => { result = method.apply(el, args) };
     } else if (methodType === "string") {
-        handler = function() { result = node[method].apply(node, args) };
+        handler = () => { result = node[method].apply(node, args) };
     } else {
         throw _.makeError("dispatch");
     }

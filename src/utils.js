@@ -5,32 +5,32 @@ var doc = document,
     reVar = /\{([\w\-]+)\}/g;
 
 export default {
-    makeError: function(method, DOM) {
+    makeError: (method, DOM) => {
         var type = DOM ? "DOM" : "$Element";
 
         return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %> to verify the function call");
     },
-    computeStyle: function(node) {
+    computeStyle: (node) => {
         return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
     },
-    injectElement: function(el) {
+    injectElement: (el) => {
         return currentScript.parentNode.insertBefore(el, currentScript);
     },
-    format: function(template, varMap) {
-        return template.replace(reVar, function(x, name) { return name in varMap ? varMap[name] : x });
+    format: (template, varMap) => {
+        return template.replace(reVar, (x, name) => name in varMap ? varMap[name] : x);
     },
     raf: (function() {
         var lastTime = 0,
-            propName = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
+            propName = ["r", "webkitR", "mozR", "oR"].reduce((memo, name) => {
                 var prop = name + "equestAnimationFrame";
 
                 return memo || window[prop] && prop;
             }, null);
 
         if (propName) {
-            return function(callback) { window[propName](callback) };
+            return (callback) => { window[propName](callback) };
         } else {
-            return function(callback) {
+            return (callback) => {
                 var currTime = new Date().getTime(),
                     timeToCall = Math.max(0, 16 - (currTime - lastTime));
 
@@ -51,10 +51,8 @@ export default {
     DOM2_EVENTS: !!doc.addEventListener,
     WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
     // utilites
-    forOwn: function(obj, fn, thisPtr) {
-        Object.keys(obj).forEach(function(key) {
-            fn.call(thisPtr, obj[key], key);
-        });
+    forOwn: (obj, fn, thisPtr) => {
+        Object.keys(obj).forEach((key) => { fn.call(thisPtr, obj[key], key) });
 
         return thisPtr;
     },

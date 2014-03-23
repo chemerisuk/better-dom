@@ -1,6 +1,6 @@
 import $Node from "./node";
 
-var makeLoopMethod = (function(){
+var makeLoopMethod = (() => {
         var reInvoke = /cb\.call\(([^)]+)\)/g,
             defaults = {
                 BEGIN: "",
@@ -8,14 +8,14 @@ var makeLoopMethod = (function(){
                 END:  "return this"
             };
 
-        return function(options) {
+        return (options) => {
             var code = "%BEGIN%\nfor(var i=0,n=this.length;i<n;++i){%BODY%}%END%", key;
 
             for (key in defaults) {
                 code = code.replace("%" + key + "%", options[key] || defaults[key]);
             }
             // improve performance by using call method on demand
-            code = code.replace(reInvoke, function(expr, args) {
+            code = code.replace(reInvoke, (expr, args) => {
                 return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
             });
 

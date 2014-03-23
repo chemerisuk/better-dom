@@ -8,6 +8,7 @@ import SelectorMatcher from "./selectormatcher";
  */
 
 var hooks = {};
+
 /**
  * Check if the element matches selector
  * @memberOf module:matches
@@ -25,11 +26,11 @@ $Element.prototype.matches = function(selector) {
 
 // $Element.matches hooks
 
-hooks[":focus"] = function(node) { return node === document.activeElement };
+hooks[":focus"] = (node) => node === document.activeElement;
 
-hooks[":hidden"] = function(node) {
+hooks[":hidden"] = (node) => {
     return node.getAttribute("aria-hidden") === "true" ||
         _.computeStyle(node).display === "none" || !_.docEl.contains(node);
 };
 
-hooks[":visible"] = function(node) { return !hooks[":hidden"](node) };
+hooks[":visible"] = (node) => !hooks[":hidden"](node);

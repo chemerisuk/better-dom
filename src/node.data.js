@@ -18,15 +18,13 @@ $Node.prototype.data = function(key, value) {
             return this.get("_" + key);
         } else if (key && keyType === "object") {
             if (Array.isArray(key)) {
-                return this.get(key.map(function(key) { return "_" + key }));
+                return this.get(key.map((key) => "_" + key ));
             } else {
-                return _.forOwn(key, function(value, key) {
-                    this.set("_" + key, value);
-                }, this);
+                return _.forOwn(key, (value, key) => { this.set("_" + key, value) });
             }
         }
     } else if (len === 2) {
-        return this.each(function(el) { el.set("_" + key, value) });
+        return this.each((el) => { el.set("_" + key, value) });
     }
 
     throw _.makeError("data", this);

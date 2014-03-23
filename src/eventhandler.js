@@ -9,11 +9,11 @@ import SelectorMatcher from "./selectormatcher";
 var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     CUSTOM_EVENT_TYPE = "dataavailable",
     hooks = {},
-    EventHandler = function(type, selector, callback, props, el, once) {
+    EventHandler = (type, selector, callback, props, el, once) => {
         var hook = hooks[type],
             node = el._node,
             matcher = SelectorMatcher(selector, node),
-            handler = function(e) {
+            handler = (e) => {
                 e = e || window.event;
                 // early stop in case of default action
                 if (EventHandler.skip === type) return;
@@ -90,34 +90,31 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
 
 // EventHandler hooks
 
-["scroll", "mousemove"].forEach(function(name) {
-    // debounce frequent events
-    hooks[name] = function(handler) {
+["scroll", "mousemove"].forEach((name) => {
+    hooks[name] = (handler) => {
         var free = true;
-
-        return function(e) {
-            if (free) free = _.raf(function() { free = !handler(e) });
-        };
+        // debounce frequent events
+        return (e) => { if (free) free = _.raf(() => { free = !handler(e) }) };
     };
 });
 
 if ("onfocusin" in _.docEl) {
-    _.forOwn({focus: "focusin", blur: "focusout"}, function(value, prop) {
-        hooks[prop] = function(handler) { handler._type = value };
+    _.forOwn({focus: "focusin", blur: "focusout"}, (value, prop) => {
+        hooks[prop] = (handler) => { handler._type = value };
     });
 } else {
     // firefox doesn't support focusin/focusout events
-    hooks.focus = hooks.blur = function(handler) { handler.capturing = true };
+    hooks.focus = hooks.blur = (handler) => { handler.capturing = true };
 }
 
 if (document.createElement("input").validity) {
-    hooks.invalid = function(handler) { handler.capturing = true };
+    hooks.invalid = (handler) => { handler.capturing = true };
 }
 
 if (!_.DOM2_EVENTS) {
     // fix non-bubbling form events for IE8
     ["submit", "change", "reset"].forEach(function(name) {
-        hooks[name] = function(handler) { handler._type = CUSTOM_EVENT_TYPE };
+        hooks[name] = (handler) => { handler._type = CUSTOM_EVENT_TYPE };
     });
 }
 

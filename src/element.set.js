@@ -18,7 +18,7 @@ $Element.prototype.set = function(name, value) {
         name = undefined;
     }
 
-    return this.legacy(function(node, el, index, ref) {
+    return this.legacy((node, el, index, ref) => {
         var hook = hooks[name],
             watchers = el._watchers[name],
             newValue = value, oldValue;
@@ -46,7 +46,7 @@ $Element.prototype.set = function(name, value) {
         }
 
         if (watchers && oldValue !== newValue) {
-            watchers.forEach(function(w) { el.dispatch(w, newValue, oldValue, name) });
+            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue, name) });
         }
     });
 };
@@ -58,7 +58,7 @@ $Element.prototype.set = function(name, value) {
  * @return {$Element}
  */
 $Element.prototype.watch = function(name, callback) {
-    return this.each(function(el) {
+    return this.each((el) => {
         (el._watchers[name] || (el._watchers[name] = [])).push(callback);
     });
 };
@@ -70,9 +70,9 @@ $Element.prototype.watch = function(name, callback) {
  * @return {$Element}
  */
 $Element.prototype.unwatch = function(name, callback) {
-    var eq = function(w) { return w !== callback };
+    var eq = (w) => w !== callback;
 
-    return this.each(function(el) {
+    return this.each((el) => {
         var watchers = el._watchers[name];
 
         if (watchers) el._watchers[name] = watchers.filter(eq);
@@ -88,7 +88,7 @@ hooks.undefined = function(node, value) {
 
     if (node.tagName === "SELECT") {
         // selectbox has special case
-        if (_.every.call(node.options, function(o) { return !(o.selected = o.value === value) })) {
+        if (_.every.call(node.options, (o) => !(o.selected = o.value === value))) {
             node.selectedIndex = -1;
         }
     } else if (node.type && "value" in node) {
@@ -101,6 +101,4 @@ hooks.undefined = function(node, value) {
     if (name) node[name] = value;
 };
 
-if (!_.DOM2_EVENTS) {
-    hooks.textContent = function(node, value) { node.innerText = value };
-}
+if (!_.DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };

@@ -10,12 +10,12 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
     return function() {
         var args = arguments;
 
-        return this.legacy(function(node, el, index, ref) {
+        return this.legacy((node, el, index, ref) => {
             if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return;
 
             var html = "", value;
 
-            _.each.call(args, function(arg) {
+            _.each.call(args, (arg) => {
                 if (typeof arg === "function") arg = arg(el, index, ref);
 
                 if (typeof arg === "string") {
@@ -23,7 +23,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 } else if (arg instanceof $Element) {
                     if (!value) value = document.createDocumentFragment();
                     // populate fragment
-                    arg.legacy(function(node) { value.appendChild(node) });
+                    arg.legacy((node) => value.appendChild(node));
                 } else {
                     throw _.makeError(methodName);
                 }
@@ -47,7 +47,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
  * @return {$Element}
  * @function
  */
-$Element.prototype.after = makeManipulationMethod("after", "afterend", false, function(node, relatedNode) {
+$Element.prototype.after = makeManipulationMethod("after", "afterend", false, (node, relatedNode) => {
     node.parentNode.insertBefore(relatedNode, node.nextSibling);
 });
 
@@ -58,7 +58,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, fu
  * @return {$Element}
  * @function
  */
-$Element.prototype.before = makeManipulationMethod("before", "beforebegin", false, function(node, relatedNode) {
+$Element.prototype.before = makeManipulationMethod("before", "beforebegin", false, (node, relatedNode) => {
     node.parentNode.insertBefore(relatedNode, node);
 });
 
@@ -69,7 +69,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
  * @return {$Element}
  * @function
  */
-$Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", true, function(node, relatedNode) {
+$Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", true, (node, relatedNode) => {
     node.insertBefore(relatedNode, node.firstChild);
 });
 
@@ -80,7 +80,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
  * @return {$Element}
  * @function
  */
-$Element.prototype.append = makeManipulationMethod("append", "beforeend", true, function(node, relatedNode) {
+$Element.prototype.append = makeManipulationMethod("append", "beforeend", true, (node, relatedNode) => {
     node.appendChild(relatedNode);
 });
 
@@ -91,7 +91,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
  * @return {$Element}
  * @function
  */
-$Element.prototype.replace = makeManipulationMethod("replace", "", false, function(node, relatedNode) {
+$Element.prototype.replace = makeManipulationMethod("replace", "", false, (node, relatedNode) => {
     node.parentNode.replaceChild(relatedNode, node);
 });
 
@@ -101,6 +101,6 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", false, functi
  * @return {$Element}
  * @function
  */
-$Element.prototype.remove = makeManipulationMethod("remove", "", false, function(node) {
+$Element.prototype.remove = makeManipulationMethod("remove", "", false, (node) => {
     node.parentNode.removeChild(node);
 });

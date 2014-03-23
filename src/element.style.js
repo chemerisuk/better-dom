@@ -24,7 +24,7 @@ $Element.prototype.style = function(name, value) {
         if (node) {
             style = node.style;
 
-            value = (nameType === "string" ? [name] : name).reduce(function(memo, name) {
+            value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
                 hook = styleAccessor.get[name];
                 value = hook ? hook(style) : style[name];
 
@@ -44,9 +44,9 @@ $Element.prototype.style = function(name, value) {
         return node && nameType === "string" ? value[name] : value;
     }
 
-    return this.legacy(function(node, el, index, ref) {
+    return this.legacy((node, el, index, ref) => {
         var style = node.style,
-            appendCssText = function(value, key) {
+            appendCssText = (value, key) => {
                 var hook = styleAccessor.set[key];
 
                 if (typeof value === "function") value = value(el, index, ref);

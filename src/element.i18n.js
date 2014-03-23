@@ -25,11 +25,11 @@ $Element.prototype.i18n = function(value, varMap) {
 
     if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
     // update data-i18n-{lang} attributes
-    [value].concat(strings[value]).forEach(function(value, index) {
+    [value].concat(strings[value]).forEach((value, index) => {
         var attrName = "data-i18n" + (index ? "-" + languages[index - 1] : "");
 
         if (value) this.set(attrName, varMap ? _.format(value, varMap) : value);
-    }, this);
+    });
 
     return this.set("");
 };
@@ -58,9 +58,7 @@ DOM.importStrings = function(lang, key, value) {
         // store localized string internally
         strings[key][langIndex] = value;
 
-        DOM.ready(function() {
-            DOM.findAll("[data-i18n=\"" + key + "\"]").set(attrName, value);
-        });
+        DOM.ready(() => DOM.findAll("[data-i18n=\"" + key + "\"]").set(attrName, value));
     } else if (keyType === "object") {
         _.forOwn(key, function(value, key) { DOM.importStrings(lang, key, value) });
     } else {

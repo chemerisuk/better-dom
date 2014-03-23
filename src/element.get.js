@@ -65,6 +65,4 @@ hooks.undefined = function(node) {
 // some browsers don't recognize input[type=email] etc.
 hooks.type = (node) => node.getAttribute("type") || node.type;
 
-if (!_.DOM2_EVENTS) {
-    hooks.textContent = function(node) { return node.innerText };
-}
+if (!_.DOM2_EVENTS) hooks.textContent = (node) => node.innerText;

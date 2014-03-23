@@ -16,7 +16,7 @@ $Node.prototype.get = function(key) {
             return this._node[key];
         }
     } else if (Array.isArray(key)) {
-        return key.reduce(function(r, key) { return r[key] = el.get(key), r; }, {});
+        return key.reduce((r, key) => { return r[key] = el.get(key), r; }, {});
     }
 
     throw _.makeError("get");
@@ -40,9 +40,7 @@ $Node.prototype.set = function(key, value) {
 
         return this;
     } else if (key && keyType === "object") {
-        return _.forOwn(key, function(value, key) {
-            this.set(key, value);
-        }, this);
+        return _.forOwn(key, (value, key) => { this.set(key, value) });
     }
 
     throw _.makeError("set");

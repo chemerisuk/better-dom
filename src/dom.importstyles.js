@@ -16,7 +16,7 @@ DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
         var styleObj = {};
 
-        _.forOwn(cssText, function(value, prop) {
+        _.forOwn(cssText, (value, prop) => {
             var hook = styleAccessor.set[prop];
 
             value = typeof value === "number" ? value + "px" : value || "";
@@ -30,9 +30,7 @@ DOM.importStyles = function(selector, cssText) {
 
         cssText = [];
 
-        _.forOwn(styleObj, function(styles, selector) {
-            cssText.push(selector + ":" + styles);
-        });
+        _.forOwn(styleObj, (styles, selector) => cssText.push(selector + ":" + styles));
 
         cssText = cssText.join(";");
     }
@@ -45,8 +43,6 @@ DOM.importStyles = function(selector, cssText) {
         styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
     } else {
         // ie doesn't support multiple selectors in addRule
-        selector.split(",").forEach(function(selector) {
-            styleSheet.addRule(selector, cssText);
-        });
+        selector.split(",").forEach((selector) => styleSheet.addRule(selector, cssText));
     }
 };

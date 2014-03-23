@@ -7,25 +7,25 @@ import DOM from "./dom";
  * @param {...String} urls       script file urls
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  */
-DOM.importScripts = function() {
-    var args = _.slice.call(arguments, 0),
-        callback = function() {
-            var arg = args.shift(),
-                argType = typeof arg,
-                script;
+DOM.importScripts = function(...args) {
+    var callback = function() {
+        var arg = args.shift(),
+            argType = typeof arg,
+            script;
 
-            if (argType === "string") {
-                script = document.createElement("script");
-                script.src = arg;
-                script.onload = callback;
-                script.async = true;
-                _.injectElement(script);
-            } else if (argType === "function") {
-                arg();
-            } else if (arg) {
-                throw _.makeError("importScripts", true);
-            }
-        };
+        if (argType === "string") {
+            script = document.createElement("script");
+            script.src = arg;
+            script.onload = callback;
+            script.async = true;
+
+            _.injectElement(script);
+        } else if (argType === "function") {
+            arg();
+        } else if (arg) {
+            throw _.makeError("importScripts", true);
+        }
+    };
 
     callback();
 };

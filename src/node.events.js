@@ -36,9 +36,9 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         if (Array.isArray(type)) {
             args = _.slice.call(arguments, 1);
 
-            type.forEach(function(name) { this.on.apply(this, [name].concat(args)) }, this);
+            type.forEach((name) => { this.on.apply(this, [name].concat(args)) });
         } else {
-            _.forOwn(type, function(value, name) { this.on(name, value) }, this);
+            _.forOwn(type, (value, name) => { this.on(name, value) });
         }
 
         return this;
@@ -46,7 +46,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         throw _.makeError("on");
     }
 
-    return this.legacy(function(node, el) {
+    return this.legacy((node, el) => {
         var handler = EventHandler(type, selector, callback, props, el, once);
 
         if (_.DOM2_EVENTS) {
@@ -70,12 +70,8 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
  * @param  {Array}           [props] array of event properties to pass into the callback
  * @return {$Node}
  */
-$Node.prototype.once = function() {
-    var args = _.slice.call(arguments, 0);
-
-    args.push(true);
-
-    return this.on.apply(this, args);
+$Node.prototype.once = function(...args) {
+    return this.on.apply(this, args.concat(true));
 };
 
 /**
@@ -88,8 +84,8 @@ $Node.prototype.once = function() {
 $Node.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
-    return this.legacy(function(node, el) {
-        el._handlers = el._handlers.filter(function(handler) {
+    return this.legacy((node, el) => {
+        el._handlers = el._handlers.filter((handler) => {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 
             type = handler._type || handler.type;
@@ -113,9 +109,8 @@ $Node.prototype.off = function(type, callback) {
  * @param  {...Object}     [args]  extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
  */
-$Node.prototype.fire = function(type) {
-    var args = _.slice.call(arguments, 1),
-        eventType = typeof type,
+$Node.prototype.fire = function(type, ...args) {
+    var eventType = typeof type,
         handler = {}, hook;
 
     if (eventType === "string") {
@@ -126,7 +121,7 @@ $Node.prototype.fire = function(type) {
         throw _.makeError("fire");
     }
 
-    return this.every(function(el) {
+    return this.every((el) => {
         var node = el._node,
             e, canContinue;
 

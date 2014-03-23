@@ -13,39 +13,35 @@ var // operator type / priority object
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
     reHtml = /^[\s<]/,
     cache = {},
-    toString = function(term) { return term.join ? term.join("") : term },
-    normalizeAttrs = function(term, name, value, quotes, rawValue) {
+    toString = (term) => term.join ? term.join("") : term,
+    normalizeAttrs = (term, name, value, quotes, rawValue) => {
         if (!quotes || quotes === "`") quotes = "\"";
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
         return name + "=" + quotes + (rawValue || value || name) + quotes;
     },
-    injectTerm = function(term, first) {
-        return function(el) {
-            var index = first ? el.indexOf(">") : el.lastIndexOf("<");
-            // inject term into the html string
-            return el.substr(0, index) + term + el.substr(index);
-        };
+    injectTerm = (term, first) => (el) => {
+        var index = first ? el.indexOf(">") : el.lastIndexOf("<");
+        // inject term into the html string
+        return el.substr(0, index) + term + el.substr(index);
     },
-    makeTerm = function(tag) {
+    makeTerm = (tag) => {
         var result = cache[tag];
 
         if (!result) result = cache[tag] = "<" + tag + "></" + tag + ">";
 
         return result;
     },
-    makeIndexedTerm = function(term) {
-        return function(_, i, arr) {
-            return term.replace(reIndex, function(expr, fmt, sign, base) {
-                var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
-                // make zero-padding index string
-                return (fmt + index).slice(-fmt.length).split("$").join("0");
-            });
-        };
+    makeIndexedTerm = (term) => (_, i, arr) => {
+        return term.replace(reIndex, (expr, fmt, sign, base) => {
+            var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
+            // make zero-padding index string
+            return (fmt + index).slice(-fmt.length).split("$").join("0");
+        });
     };
 
 // populate empty tags
-"area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag) {
+"area base br col hr img input link meta param command keygen source".split(" ").forEach((tag) => {
     cache[tag] = "<" + tag + ">";
 });
 

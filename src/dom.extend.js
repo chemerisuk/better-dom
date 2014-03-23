@@ -13,21 +13,21 @@ import SelectorMatcher from "./selectormatcher";
 // https://github.com/csuwldcat/SelectorListener
 var reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
-    returnTrue = function() { return true },
-    returnFalse = function() { return false },
+    returnTrue = () => true,
+    returnFalse = () => false,
     nativeEventType, animId, link, styles,
-    applyMixins = function(obj, mixins) {
-        _.forOwn(mixins, function(value, key) {
+    applyMixins = (obj, mixins) => {
+        _.forOwn(mixins, (value, key) => {
             if (key !== "constructor") obj[key] = value;
         });
     },
-    applyExtensions = function(node) {
-        extensions.forEach(function(ext) { if (ext.accept(node)) ext(node, true) });
+    applyExtensions = (node) => {
+        extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });
 
         _.each.call(node.children, applyExtensions);
     },
-    stopExt = function(node, index) {
-        return function(e) {
+    stopExt = (node, index) => {
+        return (e) => {
             var stop;
 
             e = e || window.event;
@@ -41,8 +41,8 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
             if (stop) (e._skip = e._skip || {})[index] = true;
         };
     },
-    makeExtHandler = function(node, skip) {
-        return function(ext, index) {
+    makeExtHandler = (node, skip) => {
+        return (ext, index) => {
             // skip previously excluded or mismatched elements
             if (!skip[index] && ext.accept(node)) ext(node);
         };
@@ -59,7 +59,7 @@ if (_.CSS3_ANIMATIONS) {
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(nativeEventType, function(e) {
+    document.addEventListener(nativeEventType, (e) => {
         if (e.animationName === animId) {
             extensions.forEach(makeExtHandler(e.target, e._skip || {}));
         }
@@ -72,7 +72,7 @@ if (_.CSS3_ANIMATIONS) {
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
-    document.attachEvent(nativeEventType, function() {
+    document.attachEvent(nativeEventType, () => {
         var e = window.event;
 
         if (e.srcUrn === "dataavailable") {
@@ -102,10 +102,10 @@ DOM.extend = function(selector, condition, mixins) {
         // extending element prototype
         applyMixins($Element.prototype, mixins);
     } else {
-        var eventHandlers = Object.keys(mixins).filter(function(prop) { return !!reRemovableMethod.exec(prop) }),
+        var eventHandlers = Object.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
-            ext = function(node, mock) {
+            ext = (node, mock) => {
                 var el = $Element(node);
 
                 if (_.CSS3_ANIMATIONS) {
@@ -120,13 +120,13 @@ DOM.extend = function(selector, condition, mixins) {
                 // make a safe call so live extensions can't break each other
                 if (ctr) el.dispatch(ctr);
                 // remove event handlers from element's interface
-                if (mock !== true) eventHandlers.forEach(function(prop) { delete el[prop] });
+                if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
             };
 
         ext.accept = SelectorMatcher(selector);
         extensions.push(ext);
 
-        DOM.ready(function() {
+        DOM.ready(() => {
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.ready.
             // Also fixes legacy IEs when the HTC behavior is already attached

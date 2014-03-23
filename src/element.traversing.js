@@ -43,7 +43,7 @@ function makeChildTraversingMethod(all) {
 
         if (!_.DOM2_EVENTS) {
             // fix IE8 bug with children collection
-            children = this.filter.call(children, function(node) { return node.nodeType === 1 });
+            children = this.filter.call(children, (node) => node.nodeType === 1);
         }
 
         if (all) return new $Elements(selector ? this.filter.call(children, SelectorMatcher(selector)) : children);

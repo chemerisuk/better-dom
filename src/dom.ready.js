@@ -2,12 +2,11 @@ import _ from "./utils";
 import DOM from "./dom";
 
 var callbacks = [],
-    readyState = document.readyState;
-
-function pageLoaded() {
-    // safely trigger stored callbacks
-    if (callbacks) callbacks = callbacks.forEach(DOM.dispatch, DOM);
-}
+    readyState = document.readyState,
+    pageLoaded = () => {
+        // safely trigger stored callbacks
+        if (callbacks) callbacks = callbacks.forEach(DOM.dispatch, DOM);
+    };
 
 // Catch cases where ready is called after the browser event has already occurred.
 // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
@@ -21,7 +20,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
         document.addEventListener("DOMContentLoaded", pageLoaded, false);
     } else {
         window.attachEvent("onload", pageLoaded);
-        document.attachEvent("ondataavailable", function() {
+        document.attachEvent("ondataavailable", () => {
             if (window.event.srcUrn === "DOMContentLoaded") pageLoaded();
         });
     }

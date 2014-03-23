@@ -16,7 +16,7 @@ $Node.prototype.contains = function(element) {
     var node = this._node;
 
     if (element instanceof $Element) {
-        return node && element.every(function(el) { return node.contains(el._node) });
+        return node && element.every((el) => node.contains(el._node));
     }
 
     throw _.makeError("contains");
