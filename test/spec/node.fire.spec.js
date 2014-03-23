@@ -67,13 +67,13 @@ describe("fire", function() {
         expect(input.fire("focus")).toBe(false);
     });
 
-    it("should ignore event fire arguments when event props is specified", function() {
+    it("should not ignore event fire arguments when event props is specified", function() {
         var spy = jasmine.createSpy("on");
 
         input.on("my:test", spy, ["target"]);
         input.fire("my:test", 123);
 
-        expect(spy).toHaveBeenCalledWith(input);
+        expect(spy).toHaveBeenCalledWith(123, input);
     });
 
     it("should throw error if arguments are invalid", function() {

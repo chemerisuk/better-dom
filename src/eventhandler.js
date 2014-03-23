@@ -63,7 +63,7 @@ module.exports = function(type, selector, callback, props, el, once) {
                 return e[name];
             });
             // if props is not specified then prepend extra arguments if they exist
-            if (e._args && !props) args = e._args.concat(args);
+            if (e._args) args = e._args.concat(args);
 
             if (fn.apply(el, args) === false) {
                 // prevent default if handler returns false
