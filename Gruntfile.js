@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         },
         jsdoc: {
             dist: {
-                src: ["src/*.js", "README.md"],
+                src: ["build/*.js", "README.md"],
                 options: {
                     destination: "jsdoc",
                     template: "node_modules/ink-docstrap/template",
@@ -65,18 +65,10 @@ module.exports = function(grunt) {
                 command: "git tag -a v<%= pkg.version %> -m ''",
                 options: { failOnError: true }
             },
-            checkoutDocs: {
-                command: [
-                    // copy files to dist folder
-                    "cp build/*.js dist/",
-                    // commit all changes
-                    "git commit -am 'version <%= pkg.version %>'",
-                    // checkout jsdoc branch
-                    "git checkout gh-pages"
-                ].join(" && ")
-            },
             updateDocs: {
                 command: [
+                    // checkout jsdoc branch
+                    "git checkout gh-pages",
                     // get a list of all files in stage and delete everything except for targets, node_modules, cache, temp, and logs
                     // rm does not delete root level hidden files
                     "ls | grep -v ^jsdoc$ | grep -v ^node_modules$ | grep -v ^bower_components$ | xargs rm -r ",
@@ -87,9 +79,22 @@ module.exports = function(grunt) {
                     // add any files that may have been created
                     "git add -A",
                     // commit all files using the version number as the commit message
-                    "git commit -am 'Build: <%= grunt.file.read(\".build\") %>'",
+                    "git commit -am 'version <%= pkg.version %>'",
                     // switch back to the previous branch we started from
                     "git checkout -",
+
+                ].join(" && "),
+                options: {
+                    stdout: true,
+                    stderr: true
+                }
+            },
+            releaseVersion: {
+                command: [
+                    // copy files to dist folder
+                    "cp build/*.js dist/",
+                    // commit all changes
+                    "git commit -am 'version <%= pkg.version %>'",
                     // update version tag
                     "git tag -af v<%= pkg.version %> -m 'version <%= pkg.version %>'",
                     // push file changed
@@ -101,7 +106,7 @@ module.exports = function(grunt) {
                     stdout: true,
                     stderr: true
                 }
-            }
+            },
         },
         clean: {
             build: ["build/"],
@@ -253,7 +258,7 @@ module.exports = function(grunt) {
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
 
-        grunt.registerTask("updateFileVersion", function(filename) {
+        grunt.registerTask("updateVersion", function(filename) {
             var json = grunt.file.readJSON(filename);
 
             json.version = version;
@@ -261,23 +266,15 @@ module.exports = function(grunt) {
             grunt.file.write(filename, JSON.stringify(json, null, 2));
         });
 
-        grunt.registerTask("bumpDocsBuild", function() {
-            var path = require("path"),
-                build = ".build";
-
-            grunt.file.write(build, path.existsSync(build) ? parseInt(grunt.file.read(build), 10) + 1 : 1);
-        });
-
         grunt.task.run([
-            "shell:checkVersionTag",
             "karma:all",
-            "updateFileVersion:package.json",
-            "updateFileVersion:bower.json",
-            "browserify",
+            "shell:checkVersionTag",
             "docs",
-            "shell:checkoutDocs",
-            "bumpDocsBuild",
-            "shell:updateDocs"
+            "shell:updateDocs",
+            "browserify",
+            "updateVersion:package.json",
+            "updateVersion:bower.json",
+            "shell:releaseVersion"
         ]);
     });
 };

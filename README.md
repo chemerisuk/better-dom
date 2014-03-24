@@ -6,7 +6,8 @@ But more flexibility is required in a lot of cases. For example, delegated event
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
-I'd recommend the articles below to get started:
+## Quick start
+I'd recommend to read articles below that cover the main ideas of the library:
 * [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
 * [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
@@ -48,7 +49,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * Read the [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
 * Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
 * Check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
-* Walk through the sorce code of existing [projects that use better-dom](https://github.com/chemerisuk/better-dom/wiki/Projects-that-use-better-dom).
+* Walk through the sorce code of existing [projects that use better-dom](http://bower.io/search/?q=better-dom).
 
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/26)

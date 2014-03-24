@@ -18,7 +18,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
 
 /**
  * Find the first matched element by css selector
- * @memberOf module:search
+ * @memberOf module:find
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
@@ -74,7 +74,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all) {
 
 /**
  * Find all matched elements by css selector
- * @memberOf module:search
+ * @memberOf module:find
  * @param  {String} selector css selector
  * @return {$Element} matched elements
  */
