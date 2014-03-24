@@ -1,9 +1,10 @@
+import _ from "./utils";
+import $Element from "./element";
+
 /**
  * Class manipulation support
  * @module classes
  */
-import _ from "./utils";
-import $Element from "./element";
 
 var reSpace = /[\n\t\r]/g;
 

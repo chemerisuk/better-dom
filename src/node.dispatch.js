@@ -23,25 +23,25 @@ $Node.prototype.dispatch = function(method, ...args) {
         node = this._node,
         handler, result, e;
 
-    if (!node) return;
-
-    if (methodType === "function") {
-        handler = () => { result = method.apply(el, args) };
-    } else if (methodType === "string") {
-        handler = () => { result = node[method].apply(node, args) };
-    } else {
-        throw _.makeError("dispatch");
+    if (node) {
+        if (methodType === "function") {
+            handler = () => { result = method.apply(el, args) };
+        } else if (methodType === "string") {
+            handler = () => { result = node[method].apply(node, args) };
+        } else {
+            throw _.makeError("dispatch");
+        }
+        // register safe invokation handler
+        dispatcher[safePropName] = handler;
+        // make a safe call
+        if (_.DOM2_EVENTS) {
+            e = document.createEvent("HTMLEvents");
+            e.initEvent(safePropName, false, false);
+            dispatcher.dispatchEvent(e);
+        }
+        // cleanup references
+        dispatcher[safePropName] = null;
     }
-    // register safe invokation handler
-    dispatcher[safePropName] = handler;
-    // make a safe call
-    if (_.DOM2_EVENTS) {
-        e = document.createEvent("HTMLEvents");
-        e.initEvent(safePropName, false, false);
-        dispatcher.dispatchEvent(e);
-    }
-    // cleanup references
-    dispatcher[safePropName] = null;
 
     return result;
 };

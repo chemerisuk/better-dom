@@ -30,7 +30,7 @@ DOM.importStyles = function(selector, cssText) {
 
         cssText = [];
 
-        _.forOwn(styleObj, (styles, selector) => cssText.push(selector + ":" + styles));
+        _.forOwn(styleObj, (styles, selector) => { cssText.push(selector + ":" + styles) });
 
         cssText = cssText.join(";");
     }
@@ -43,6 +43,6 @@ DOM.importStyles = function(selector, cssText) {
         styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
     } else {
         // ie doesn't support multiple selectors in addRule
-        selector.split(",").forEach((selector) => styleSheet.addRule(selector, cssText));
+        selector.split(",").forEach((selector) => { styleSheet.addRule(selector, cssText) });
     }
 };

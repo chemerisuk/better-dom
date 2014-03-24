@@ -7,9 +7,9 @@ import DOM from "./dom";
  * @param {...String} urls       script file urls
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  */
-DOM.importScripts = function(...args) {
+DOM.importScripts = function(...urls) {
     var callback = function() {
-        var arg = args.shift(),
+        var arg = urls.shift(),
             argType = typeof arg,
             script;
 

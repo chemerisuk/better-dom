@@ -1,11 +1,12 @@
+import _ from "./utils";
+import DOM from "./dom";
+
 /**
  * Emmet abbreviation syntax support
  * @module template
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
  */
-import _ from "./utils";
-import DOM from "./dom";
 
 var // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},

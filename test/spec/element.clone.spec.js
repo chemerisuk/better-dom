@@ -43,7 +43,7 @@ describe("clone", function() {
         expect(function() { link.clone({}) }).toThrow();
         expect(function() { link.clone(function() {}) }).toThrow();
         expect(function() { link.clone(null) }).toThrow();
-        expect(function() { link.clone(undefined) }).toThrow();
+        expect(function() { link.clone("abc") }).toThrow();
     });
 
 });

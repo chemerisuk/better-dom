@@ -26,26 +26,22 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
 
         _.each.call(node.children, applyExtensions);
     },
-    stopExt = (node, index) => {
-        return (e) => {
-            var stop;
+    stopExt = (node, index) => (e) => {
+        var stop;
 
-            e = e || window.event;
-            // mark extension as processed via _.SKIPEXT bitmask
-            if (_.CSS3_ANIMATIONS) {
-                stop = e.animationName === animId && e.target === node;
-            } else {
-                stop = e.srcUrn === "dataavailable" && e.srcElement === node;
-            }
+        e = e || window.event;
+        // mark extension as processed via _.SKIPEXT bitmask
+        if (_.CSS3_ANIMATIONS) {
+            stop = e.animationName === animId && e.target === node;
+        } else {
+            stop = e.srcUrn === "dataavailable" && e.srcElement === node;
+        }
 
-            if (stop) (e._skip = e._skip || {})[index] = true;
-        };
+        if (stop) (e._skip = e._skip || {})[index] = true;
     },
-    makeExtHandler = (node, skip) => {
-        return (ext, index) => {
-            // skip previously excluded or mismatched elements
-            if (!skip[index] && ext.accept(node)) ext(node);
-        };
+    makeExtHandler = (node, skip) => (ext, index) => {
+        // skip previously excluded or mismatched elements
+        if (!skip[index] && ext.accept(node)) ext(node);
     };
 
 if (_.CSS3_ANIMATIONS) {

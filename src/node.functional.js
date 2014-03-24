@@ -1,27 +1,24 @@
 import $Node from "./node";
 
-var makeLoopMethod = (function() {
-        var reInvoke = /cb\.call\(([^)]+)\)/g,
-            defaults = {
-                BEGIN: "",
-                BODY:   "",
-                END:  "return this"
-            };
+var reInvoke = /cb\.call\(([^)]+)\)/g,
+    defaults = {
+        BEGIN: "",
+        BODY:   "",
+        END:  "return this"
+    },
+    makeLoopMethod = (options) => {
+        var code = "%BEGIN%\nfor(var i=0,n=this.length;i<n;++i){%BODY%}%END%", key;
 
-        return (options) => {
-            var code = "%BEGIN%\nfor(var i=0,n=this.length;i<n;++i){%BODY%}%END%", key;
+        for (key in defaults) {
+            code = code.replace("%" + key + "%", options[key] || defaults[key]);
+        }
+        // improve performance by using call method on demand
+        code = code.replace(reInvoke, (expr, args) => {
+            return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
+        });
 
-            for (key in defaults) {
-                code = code.replace("%" + key + "%", options[key] || defaults[key]);
-            }
-            // improve performance by using call method on demand
-            code = code.replace(reInvoke, (expr, args) => {
-                return "(that?" + expr + ":cb(" + args.split(",").slice(1).join() + "))";
-            });
-
-            return Function("cb", "that", "undefined", code);
-        };
-    })();
+        return Function("cb", "that", "undefined", code);
+    };
 
 /**
  * Execute callback on each element in the collection

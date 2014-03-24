@@ -1,10 +1,11 @@
+import _ from "./utils";
+import $Node from "./node";
+import $Element from "./element";
+
 /**
  * Ancestor check support
  * @module contains
  */
-import _ from "./utils";
-import $Node from "./node";
-import $Element from "./element";
 
 /**
  * Check if element is inside of context

@@ -12,9 +12,7 @@ import $Element from "./element";
  * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */
-$Element.prototype.clone = function(deep) {
-    if (!arguments.length) deep = true;
-
+$Element.prototype.clone = function(deep = true) {
     if (typeof deep !== "boolean") throw _.makeError("clone");
 
     var node = this._node, result;

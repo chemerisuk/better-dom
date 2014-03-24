@@ -17,12 +17,12 @@ export default function(selector, context) {
         if (quick[4]) quick[4] = " " + quick[4] + " ";
     }
 
-    return function(node) {
+    return (node) => {
         var result, found, test;
 
         if (!quick && !node.webkitMatchesSelector) {
             found = (context || document).querySelectorAll(selector);
-            test = function(x) { return x === node };
+            test = (x) => x === node;
         }
 
         for (; node && node.nodeType === 1; node = node.parentNode) {

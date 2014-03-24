@@ -31,7 +31,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 // off callback even if it throws an exception later
                 if (once) el.off(type, callback);
 
-                args = args.map(function(name) {
+                args = args.map((name) => {
                     if (!_.DOM2_EVENTS) {
                         switch (name) {
                         case "which":
@@ -113,7 +113,7 @@ if (document.createElement("input").validity) {
 
 if (!_.DOM2_EVENTS) {
     // fix non-bubbling form events for IE8
-    ["submit", "change", "reset"].forEach(function(name) {
+    ["submit", "change", "reset"].forEach((name) => {
         hooks[name] = (handler) => { handler._type = CUSTOM_EVENT_TYPE };
     });
 }
