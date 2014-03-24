@@ -1,6 +1,10 @@
 describe("i18n", function() {
     "use strict";
 
+    beforeEach(function() {
+        sessionStorage.clear();
+    });
+
     it("should return data-i18n value if no arguments specified", function() {
         expect(DOM.create("span[data-i18n=test]").i18n()).toBe("test");
     });

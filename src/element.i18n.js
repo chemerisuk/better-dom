@@ -8,22 +8,31 @@ import $Element from "./element";
  * @see https://github.com/chemerisuk/better-dom/wiki/Localization
  */
 
-var strings = {},
-    languages = [];
+var VALUE_SEPARATOR = "\n",
+    readValue = (key) => {
+        var value = sessionStorage["__" + key];
+
+        return value ? value.split(VALUE_SEPARATOR) : [];
+    },
+    languages = readValue("");
 
 /**
  * Get/set localized value
  * @memberOf module:i18n
- * @param  {String}       [value]   resource string key
+ * @param  {String}       [key]     resource string key
  * @param  {Object|Array} [varMap]  resource string variables
  * @return {String|$Element}
  */
-$Element.prototype.i18n = function(value, varMap) {
+$Element.prototype.i18n = function(key, varMap) {
     if (!arguments.length) return this.get("data-i18n");
 
-    if (value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
+    if (key && typeof key !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
     // update data-i18n-{lang} attributes
-    [value].concat(strings[value]).forEach((value, index) => {
+    var str = sessionStorage["__" + key];
+
+    str = str ? [key].concat(str.split(VALUE_SEPARATOR)) : [key];
+
+    str.forEach((value, index) => {
         var attrName = "data-i18n" + (index ? "-" + languages[index - 1] : "");
 
         if (value) this.set(attrName, varMap ? _.format(value, varMap) : value);
@@ -43,18 +52,21 @@ $Element.prototype.i18n = function(value, varMap) {
 DOM.importStrings = function(lang, key, value) {
     var keyType = typeof key,
         attrName = "data-i18n-" + lang,
-        langIndex = languages.indexOf(lang);
+        langIndex = languages.indexOf(lang),
+        str;
 
     if (keyType === "string") {
         if (langIndex === -1) {
             langIndex = languages.push(lang) - 1;
             // add global rule for the data-i18n-{lang} attribute
             DOM.importStyles("[" + attrName + "]:lang(" + lang + "):before", "content:attr(" + attrName + ")");
+            // persiste changed languages array
+            sessionStorage.__ = languages.join(VALUE_SEPARATOR);
         }
 
-        if (!strings[key]) strings[key] = [];
-        // store localized string internally
-        strings[key][langIndex] = value;
+        str = readValue(key);
+        str[langIndex] = value;
+        sessionStorage["__" + key] = str.join(VALUE_SEPARATOR);
 
         DOM.ready(() => DOM.findAll("[data-i18n=\"" + key + "\"]").set(attrName, value));
     } else if (keyType === "object") {

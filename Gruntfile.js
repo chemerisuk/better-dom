@@ -250,8 +250,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "clean:build",
-            "browserify",
-            "uglify"
+            "browserify"
         ]);
     });
 
