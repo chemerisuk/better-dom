@@ -1,6 +1,6 @@
 /**
  * @file better-dom-legacy.js
- * @version 1.7.3 2014-03-17T16:07:34
+ * @version 1.7.4 2014-03-25T14:05:45
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -1798,4 +1798,4 @@ if (!document.addEventListener) {
     });
 }
 
-},{}]},{},[3,4,5,2,1])
+},{}]},{},[3,4,5,2,1]);
