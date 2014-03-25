@@ -116,5 +116,5 @@ $Node.prototype.reduceRight = makeLoopMethod({
  * @function
  */
 $Node.prototype.legacy = makeLoopMethod({
-    BODY:  "cb.call(that, this[i]._node, this[i], i, this)"
+    BODY:  "cb.call(that, this[i]._._node, this[i], i, this)"
 });

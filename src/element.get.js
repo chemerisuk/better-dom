@@ -10,8 +10,8 @@ var hooks = {};
  * @return {Object} property/attribute value
  */
 $Element.prototype.get = function(name) {
-    var data = this._data,
-        node = this._node,
+    var data = this._,
+        node = data._node,
         hook = hooks[name],
         key, value;
 

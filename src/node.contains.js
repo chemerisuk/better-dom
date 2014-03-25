@@ -14,10 +14,10 @@ import $Element from "./element";
  * @return {Boolean} true if success
  */
 $Node.prototype.contains = function(element) {
-    var node = this._node;
+    var node = this._._node;
 
     if (element instanceof $Element) {
-        return node && element.every((el) => node.contains(el._node));
+        return node && element.every((el) => node.contains(el._._node));
     }
 
     throw _.makeError("contains");

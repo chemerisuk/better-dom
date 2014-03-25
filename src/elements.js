@@ -12,6 +12,7 @@ function $Elements(elements) {
         this[i] = $Element(elements[i]);
     }
 
+    this._ = {};
     this.length = n;
 }
 

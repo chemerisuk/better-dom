@@ -5,14 +5,9 @@
  * @private
  */
 function $Node(node) {
-    if (node) {
-        this._node = node;
-        this._data = {};
-        this._handlers = [];
+    if (node) this[0] = node.__dom__ = this;
 
-        this[0] = node.__dom__ = this;
-    }
-
+    this._ = {_node: node, _handlers: []};
     this.length = node ? 1 : 0;
 }
 

@@ -11,12 +11,12 @@ $Node.prototype.get = function(key) {
 
     if (typeof key === "string") {
         if (key[0] === "_") {
-            return this._data[key.substr(1)];
+            return this._[key.substr(1)];
         } else {
-            return this._node[key];
+            return this._._node[key];
         }
     } else if (Array.isArray(key)) {
-        return key.reduce((r, key) => { return r[key] = el.get(key), r; }, {});
+        return key.reduce((r, key) => { return r[key] = el.get(key), r }, {});
     }
 
     throw _.makeError("get");
@@ -33,9 +33,9 @@ $Node.prototype.set = function(key, value) {
 
     if (keyType === "string") {
         if (key[0] === "_") {
-            this._data[key.substr(1)] = value;
+            this._[key.substr(1)] = value;
         } else {
-            this._node[key] = value;
+            this._._node[key] = value;
         }
 
         return this;

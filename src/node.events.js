@@ -47,7 +47,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
     }
 
     return this.legacy((node, el) => {
-        var handler = EventHandler(type, selector, callback, props, el, once);
+        var handler = EventHandler(type, selector, callback, props, el, node, once);
 
         if (_.DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
@@ -58,7 +58,7 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
             node.attachEvent("on" + (handler._type || type), handler);
         }
         // store event entry
-        el._handlers.push(handler);
+        el._._handlers.push(handler);
     });
 };
 
@@ -85,7 +85,7 @@ $Node.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy((node, el) => {
-        el._handlers = el._handlers.filter((handler) => {
+        el.set("__handlers", el._._handlers.filter((handler) => {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 
             type = handler._type || handler.type;
@@ -98,7 +98,7 @@ $Node.prototype.off = function(type, callback) {
 
                 node.detachEvent("on" + type, handler);
             }
-        });
+        }));
     });
 };
 
@@ -122,7 +122,7 @@ $Node.prototype.fire = function(type, ...args) {
     }
 
     return this.every((el) => {
-        var node = el._node,
+        var node = el._._node,
             e, canContinue;
 
         if (_.DOM2_EVENTS) {

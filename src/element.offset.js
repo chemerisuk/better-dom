@@ -12,7 +12,7 @@ import $Element from "./element";
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
-    var node = this._node,
+    var node = this._._node,
         clientTop = _.docEl.clientTop,
         clientLeft = _.docEl.clientLeft,
         scrollTop = window.pageYOffset || _.docEl.scrollTop,

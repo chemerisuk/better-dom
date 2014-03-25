@@ -16,7 +16,7 @@ import styleAccessor from "./styleaccessor";
  */
 $Element.prototype.style = function(name, value) {
     var len = arguments.length,
-        node = this._node,
+        node = this._._node,
         nameType = typeof name,
         style, hook, computed;
 

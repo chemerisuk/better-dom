@@ -15,7 +15,7 @@ function makeTraversingMethod(methodName, propertyName, all) {
 
         var matcher = SelectorMatcher(selector),
             nodes = all ? [] : null,
-            it = this._node;
+            it = this._._node;
 
         for (it = it && !andSelf ? it[propertyName] : it; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
@@ -37,9 +37,10 @@ function makeChildTraversingMethod(all) {
             if (selector && typeof selector !== "number") throw _.makeError("child");
         }
 
-        if (!this._node) return new $Element();
+        var node = this._._node,
+            children = node ? node.children : null;
 
-        var children = this._node.children;
+        if (!node) return new $Element();
 
         if (!_.DOM2_EVENTS) {
             // fix IE8 bug with children collection

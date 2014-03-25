@@ -44,7 +44,7 @@ var parseTimeValue = (value) => {
                 if (callback) callback(el, index, ref);
             },
             processVisibilityChange = () => {
-                var duration, index, transition;
+                var duration, index, transition, absentance;
 
                 // Android Browser is too slow and has a lot of bugs in
                 // the implementation, so disable animations for them
@@ -88,15 +88,14 @@ var parseTimeValue = (value) => {
                 }
 
                 if (isHidden) {
-                    // store current inline value in a private property
-                    el._visibility = style[absentStrategy[0]];
-                    // do not store display:none
-                    if (el._visibility === "none") el._visibility = "";
+                    absentance = style[absentStrategy[0]];
+                    // store current inline value in a internal property
+                    if (absentance !== "none") el.set("__visibility", absentance);
                     // prevent accidental user actions during animation
                     style.pointerEvents = "none";
                 } else {
                     // restore initial property value if it exists
-                    style[absentStrategy[0]] = el._visibility || "";
+                    style[absentStrategy[0]] = el.get("__visibility") || "";
                 }
 
                 style.visibility = isHidden ? "hidden" : "visible";

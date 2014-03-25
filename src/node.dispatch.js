@@ -20,7 +20,7 @@ if (_.DOM2_EVENTS) {
 $Node.prototype.dispatch = function(method, ...args) {
     var methodType = typeof method,
         el = this,
-        node = this._node,
+        node = this._._node,
         handler, result, e;
 
     if (node) {

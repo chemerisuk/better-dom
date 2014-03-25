@@ -15,7 +15,7 @@ import $Element from "./element";
 $Element.prototype.clone = function(deep = true) {
     if (typeof deep !== "boolean") throw _.makeError("clone");
 
-    var node = this._node, result;
+    var node = this._._node, result;
 
     if (node) {
         if (_.DOM2_EVENTS) {

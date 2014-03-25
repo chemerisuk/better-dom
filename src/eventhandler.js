@@ -9,9 +9,8 @@ import SelectorMatcher from "./selectormatcher";
 var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     CUSTOM_EVENT_TYPE = "dataavailable",
     hooks = {},
-    EventHandler = (type, selector, callback, props, el, once) => {
+    EventHandler = (type, selector, callback, props, el, node, once) => {
         var hook = hooks[type],
-            node = el._node,
             matcher = SelectorMatcher(selector, node),
             handler = (e) => {
                 e = e || window.event;

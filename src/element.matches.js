@@ -19,7 +19,7 @@ $Element.prototype.matches = function(selector) {
     if (!selector || typeof selector !== "string") throw _.makeError("matches");
 
     var checker = hooks[selector] || SelectorMatcher(selector),
-        node = this._node;
+        node = this._._node;
 
     return node && !!checker(node);
 };

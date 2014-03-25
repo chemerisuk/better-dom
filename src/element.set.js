@@ -20,13 +20,13 @@ $Element.prototype.set = function(name, value) {
 
     return this.legacy((node, el, index, ref) => {
         var hook = hooks[name],
-            watchers = el._watchers[name],
+            watchers = (el._._watchers || {})[name],
             newValue = value, oldValue;
 
         if (watchers) oldValue = el.get(name);
 
         if (name && name[0] === "_") {
-            el._data[name.substr(1)] = newValue;
+            el._[name.substr(1)] = newValue;
         } else {
             if (typeof newValue === "function") newValue = value(el, index, ref);
 
@@ -59,7 +59,11 @@ $Element.prototype.set = function(name, value) {
  */
 $Element.prototype.watch = function(name, callback) {
     return this.each((el) => {
-        (el._watchers[name] || (el._watchers[name] = [])).push(callback);
+        var watchers = el._._watchers;
+
+        if (!watchers) el.set("__watchers", watchers = {});
+
+        (watchers[name] || (watchers[name] = [])).push(callback);
     });
 };
 
@@ -73,9 +77,9 @@ $Element.prototype.unwatch = function(name, callback) {
     var eq = (w) => w !== callback;
 
     return this.each((el) => {
-        var watchers = el._watchers[name];
+        var watchers = el._._watchers;
 
-        if (watchers) el._watchers[name] = watchers.filter(eq);
+        if (watchers) watchers[name] = (watchers[name] || []).filter(eq);
     });
 };
 

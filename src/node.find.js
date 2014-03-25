@@ -25,7 +25,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
 $Node.prototype.find = function(selector, /*INTERNAL*/all) {
     if (typeof selector !== "string") throw _.makeError("find");
 
-    var node = this._node,
+    var node = this._._node,
         quickMatch = rquickExpr.exec(selector),
         elements, old, nid, context;
 
