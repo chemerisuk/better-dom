@@ -101,6 +101,7 @@ describe("DOM.template", function() {
         checkExpr("span>`Hello world`", "<span>Hello world</span>");
         checkExpr("span>`Hello`+` world`", "<span>Hello world</span>");
         checkExpr("span>`Click `+(a[href=/url/]>`here`)+` for more info`", "<span>Click <a href=\"/url/\">here</a> for more info</span>");
+        checkExpr("a>`{0}: `+span+span", "<a>test: <span></span><span></span></a>", ["test"]);
     });
 
     it("should throw error on invalid args", function() {

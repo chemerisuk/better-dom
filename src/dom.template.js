@@ -77,6 +77,8 @@ DOM.template = function(template, varMap) {
         priority = operators[str];
 
         if (priority && (!skip || skip === str)) {
+            // fix for a>`text`+b
+            if (str === "+" && stack[0] === "`") str = ">";
             // remove redundat ^ operators from the stack when more than one exists
             if (str === "^" && stack[0] === "^") stack.shift();
 
