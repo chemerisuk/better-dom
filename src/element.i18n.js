@@ -77,4 +77,4 @@ DOM.importStrings = function(lang, key, value) {
 };
 
 // by default just show data-i18n string
-setTimeout(() => DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)"), 0);
+DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");

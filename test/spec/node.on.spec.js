@@ -269,7 +269,7 @@ describe("on", function() {
             expect(spy.calls.count()).toBe(1);
 
             done();
-        }, 50);
+        }, 100);
     });
 
     it("should throw error if arguments are invalid", function() {

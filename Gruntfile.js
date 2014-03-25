@@ -266,6 +266,7 @@ module.exports = function(grunt) {
         });
 
         grunt.task.run([
+            "jshint",
             "karma:all",
             "shell:checkVersionTag",
             "docs",
