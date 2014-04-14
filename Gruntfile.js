@@ -114,7 +114,7 @@ module.exports = function(grunt) {
         },
         uglify: {
             options: {
-                sourceMap: true,
+                sourceMap: false,
                 preserveComments: "some",
                 report: "gzip"
             },
@@ -272,6 +272,7 @@ module.exports = function(grunt) {
             "docs",
             "shell:updateDocs",
             "browserify",
+            "uglify",
             "updateVersion:package.json",
             "updateVersion:bower.json",
             "shell:releaseVersion"
