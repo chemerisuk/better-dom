@@ -20,7 +20,7 @@ $Element.prototype.set = function(name, value) {
 
     return this.legacy((node, el, index, ref) => {
         var hook = hooks[name],
-            watchers = (el._._watchers || {})[name],
+            watchers = (el._._watchers || {})[name || ("value" in node ? "value" : "innerHTML")],
             newValue = value, oldValue;
 
         if (watchers) oldValue = el.get(name);
@@ -46,7 +46,7 @@ $Element.prototype.set = function(name, value) {
         }
 
         if (watchers && oldValue !== newValue) {
-            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue, name) });
+            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue) });
         }
     });
 };
