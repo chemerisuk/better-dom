@@ -1,6 +1,7 @@
 import _ from "./utils";
 import $Node from "./node";
 import $Element from "./element";
+import CSS from "./css";
 
 var hooks = {};
 
@@ -13,13 +14,14 @@ $Element.prototype.get = function(name) {
     var data = this._,
         node = data._node,
         hook = hooks[name],
+        nameType = typeof name,
         key, value;
 
     if (!node) return;
 
     if (hook) return hook(node, name);
 
-    if (typeof name === "string") {
+    if (nameType === "string") {
         if (name[0] === "_") {
             key = name.substr(1);
 
@@ -43,7 +45,13 @@ $Element.prototype.get = function(name) {
             return value;
         }
 
-        return name in node ? node[name] : node.getAttribute(name);
+        if (name in CSS.get) {
+            hook = CSS.get[name];
+
+            return hook(node.style) || hook(_.computeStyle(node));
+        } else {
+            return name in node ? node[name] : node.getAttribute(name);
+        }
     }
 
     return $Node.prototype.get.call(this, name);

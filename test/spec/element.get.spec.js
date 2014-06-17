@@ -89,4 +89,46 @@ describe("get", function() {
         });
     });
 
+    describe("style", function() {
+        var links;
+
+        beforeEach(function() {
+            jasmine.sandbox.set("<a id='test0' style='z-index:2;line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a><a id='test1' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a>");
+
+            link = DOM.find("#test0");
+            links = DOM.findAll("#test0, #test1");
+        });
+
+        it("should read style property", function() {
+            expect(link.get("color")).toBe("red");
+        });
+
+        it("should read properties by dash-separated key", function() {
+            expect(link.get("line-height")).toBe("2");
+        });
+
+        it("should handle vendor-prefixed properties", function() {
+            // TODO
+        });
+
+        it("should handle composite properties", function() {
+            expect(link.get("padding")).toBe("5px 5px 5px 5px");
+            expect(link.get("margin")).toBe("2px 2px 2px 2px");
+            expect(link.get("border-width")).toBe("1px 1px 1px 1px");
+            expect(link.get("border-style")).toBe("solid solid solid solid");
+        });
+
+        it("should read runtime style property if style doesn't contain any value", function() {
+            expect(link.get("font-size")).toBeTruthy();
+        });
+
+        it("should fix float property name", function() {
+            expect(link.get("float")).toBe("left");
+        });
+
+        it("should support array", function() {
+            expect(link.get(["float","line-height"])).toEqual({"float": "left", "line-height": "2"});
+        });
+    });
+
 });
