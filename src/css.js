@@ -1,6 +1,7 @@
 import _ from "./utils";
+
 /*
- * Helper for accessing css
+ * Helper for accessing css properties
  */
 var hooks = {get: {}, set: {}},
     reDash = /\-./g,
@@ -21,14 +22,12 @@ props.forEach((propName) => {
         stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
     }
 
-    if (stylePropName !== propName) {
-        hooks.get[unprefixedName] = (style) => style[stylePropName];
-        hooks.set[unprefixedName] = (style, value) => {
-            value = typeof value === "number" ? value + "px" : value.toString();
-            // use cssText property to determine DOM.importStyles call
-            style["cssText" in style ? stylePropName : propName] = value;
-        };
-    }
+    hooks.get[unprefixedName] = (style) => style[stylePropName];
+    hooks.set[unprefixedName] = (style, value) => {
+        value = typeof value === "number" ? value + "px" : value.toString();
+        // use cssText property to determine DOM.importStyles call
+        style["cssText" in style ? stylePropName : propName] = value;
+    };
 });
 
 // Exclude the following css properties from adding px

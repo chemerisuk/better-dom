@@ -1,6 +1,6 @@
 import _ from "./utils";
 import $Element from "./element";
-import styleAccessor from "./styleaccessor";
+import CSS from "./css";
 
 /**
  * Changing of element visibility support
@@ -15,9 +15,9 @@ var parseTimeValue = (value) => {
     },
     calcDuration = (style, animation) => {
         var prefix = animation ? "animation-" : "transition-",
-            delay = styleAccessor.get[prefix + "delay"](style).split(","),
-            duration = styleAccessor.get[prefix + "duration"](style).split(","),
-            iterationCount = animation ? styleAccessor.get[prefix + "iteration-count"](style).split(",") : [];
+            delay = CSS.get[prefix + "delay"](style).split(","),
+            duration = CSS.get[prefix + "duration"](style).split(","),
+            iterationCount = animation ? CSS.get[prefix + "iteration-count"](style).split(",") : [];
 
         return Math.max.apply(Math, duration.map((value, index) => {
             var it = iterationCount[index] || "1";
@@ -61,7 +61,7 @@ var parseTimeValue = (value) => {
 
                     transition = transitionProps.map((prop, index) => {
                         // have to use regexp to split transition-timing-function value
-                        return styleAccessor.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+                        return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
                     });
 
                     // try to find existing or use 0s length or make a new visibility transition
@@ -75,7 +75,7 @@ var parseTimeValue = (value) => {
                     transition[isHidden ? 3 : 2][index] = duration + "ms";
 
                     transition.forEach((value, index) => {
-                        styleAccessor.set[transitionProps[index]](style, value.join(", "));
+                        CSS.set[transitionProps[index]](style, value.join(", "));
                     });
 
                     // use willChange to improve performance:

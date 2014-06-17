@@ -1,6 +1,6 @@
 import _ from "./utils";
 import DOM from "./dom";
-import styleAccessor from "./styleaccessor";
+import CSS from "./css";
 
 var styleNode = _.injectElement(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
@@ -17,7 +17,7 @@ DOM.importStyles = function(selector, cssText) {
         var styleObj = {};
 
         _.forOwn(cssText, (value, prop) => {
-            var hook = styleAccessor.set[prop];
+            var hook = CSS.set[prop];
 
             value = typeof value === "number" ? value + "px" : value || "";
 

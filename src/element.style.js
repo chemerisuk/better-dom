@@ -1,6 +1,6 @@
 import _ from "./utils";
 import $Element from "./element";
-import styleAccessor from "./styleaccessor";
+import CSS from "./css";
 
 /**
  * Changing of element styles support
@@ -25,7 +25,7 @@ $Element.prototype.style = function(name, value) {
             style = node.style;
 
             value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
-                hook = styleAccessor.get[name];
+                hook = CSS.get[name];
                 value = hook ? hook(style) : style[name];
 
                 if (!computed && !value) {
@@ -47,7 +47,7 @@ $Element.prototype.style = function(name, value) {
     return this.legacy((node, el, index, ref) => {
         var style = node.style,
             appendCssText = (value, key) => {
-                var hook = styleAccessor.set[key];
+                var hook = CSS.set[key];
 
                 if (typeof value === "function") value = value(el, index, ref);
 
