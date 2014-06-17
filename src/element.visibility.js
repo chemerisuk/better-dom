@@ -38,7 +38,9 @@ var parseTimeValue = (value) => {
                 if (style.visibility === "hidden") {
                     style[absentStrategy[0]] = absentStrategy[1];
                 } else {
-                    style.pointerEvents = "";
+                    // remove temporary properties
+                    style.pointerEvents = "auto";
+                    style.willChange = "auto";
                 }
 
                 if (callback) callback(el, index, ref);
@@ -76,6 +78,10 @@ var parseTimeValue = (value) => {
                         styleAccessor.set[transitionProps[index]](style, value.join(", "));
                     });
 
+                    // use willChange to improve performance:
+                    // http://dev.opera.com/articles/css-will-change-property/
+                    style.willChange = transition[1].join(", ");
+
                     node.addEventListener(eventType, function completeAnimation(e) {
                         if (e.propertyName === "visibility") {
                             e.stopPropagation(); // this is an internal event
@@ -89,7 +95,7 @@ var parseTimeValue = (value) => {
 
                 if (isHidden) {
                     absentance = style[absentStrategy[0]];
-                    // store current inline value in a internal property
+                    // store current inline value in the internal property
                     if (absentance !== "none") el.set("__visibility", absentance);
                     // prevent accidental user actions during animation
                     style.pointerEvents = "none";
@@ -108,7 +114,7 @@ var parseTimeValue = (value) => {
         // if element is not detached use requestAnimationFrame that fixes several issues:
         // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
         // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
-        // 3) power consuption: show/hide do almost nothing if page is not active
+        // 3) power consuption: looped show/hide does almost nothing if page is not active
         if (isDetached) {
             processVisibilityChange();
         } else {
