@@ -31,22 +31,16 @@ $Element.prototype.set = function(name, value) {
         } else {
             if (typeof newValue === "function") newValue = value(el, index, ref);
 
-            if (name in CSS.set) {
-                hook = CSS.set[name];
-
-                hook(node.style, newValue == null ? "" : newValue);
+            if (hook) {
+                hook(node, newValue);
+            } else if (nameType !== "string") {
+                return $Node.prototype.set.call(el, name);
+            } else if (newValue == null) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = newValue;
             } else {
-                if (hook) {
-                    hook(node, newValue);
-                } else if (nameType !== "string") {
-                    return $Node.prototype.set.call(el, name);
-                } else if (newValue == null) {
-                    node.removeAttribute(name);
-                } else if (name in node) {
-                    node[name] = newValue;
-                } else {
-                    node.setAttribute(name, newValue);
-                }
+                node.setAttribute(name, newValue);
             }
 
             // trigger reflow manually in IE8
@@ -112,5 +106,10 @@ hooks.undefined = function(node, value) {
 
     if (name) node[name] = value;
 };
+
+// register style property hooks
+_.forOwn(CSS.set, (fn, key) => {
+    hooks[key] = (node, value) => { fn(node.style, value || "") };
+});
 
 if (!_.DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };

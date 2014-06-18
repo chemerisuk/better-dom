@@ -45,13 +45,7 @@ $Element.prototype.get = function(name) {
             return value;
         }
 
-        if (name in CSS.get) {
-            hook = CSS.get[name];
-
-            return hook(node.style) || hook(_.computeStyle(node));
-        } else {
-            return name in node ? node[name] : node.getAttribute(name);
-        }
+        return name in node ? node[name] : node.getAttribute(name);
     }
 
     return $Node.prototype.get.call(this, name);
@@ -75,5 +69,10 @@ hooks.undefined = function(node) {
 
 // some browsers don't recognize input[type=email] etc.
 hooks.type = (node) => node.getAttribute("type") || node.type;
+
+// register style property hooks
+_.forOwn(CSS.get, (fn, key) => {
+    hooks[key] = (node) => fn(node.style) || fn(_.computeStyle(node));
+});
 
 if (!_.DOM2_EVENTS) hooks.textContent = (node) => node.innerText;
