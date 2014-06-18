@@ -48,7 +48,7 @@ $Element.prototype.set = function(name, value) {
         }
 
         if (watchers && oldValue !== newValue) {
-            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue) });
+            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue, el, index, ref) });
         }
     });
 };
