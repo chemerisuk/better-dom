@@ -107,7 +107,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
     } else {
         window.attachEvent("onload", readyCallback);
         document.attachEvent("ondataavailable", () => {
-            if (window.event.srcUrn === "DOMContentLoaded") readyCallback();
+            if (window.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
         });
     }
 }

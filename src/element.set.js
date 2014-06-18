@@ -31,6 +31,8 @@ $Element.prototype.set = function(name, value) {
         } else {
             if (typeof newValue === "function") newValue = value(el, index, ref);
 
+            if (window.stop) debugger;
+
             if (hook) {
                 hook(node, newValue);
             } else if (nameType !== "string") {
@@ -98,8 +100,8 @@ hooks.undefined = function(node, value) {
             node.selectedIndex = -1;
         }
     } else if (node.type && "value" in node) {
-        // for IE use innerText because it doesn't trigger onpropertychange
-        name = _.DOM2_EVENTS ? "value" : "innerText";
+        // for IE use innerText for textareabecause it doesn't trigger onpropertychange
+        name = _.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText";
     } else {
         name = "innerHTML";
     }
