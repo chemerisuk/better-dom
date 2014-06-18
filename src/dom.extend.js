@@ -3,12 +3,6 @@ import DOM from "./dom";
 import $Element from "./element";
 import SelectorMatcher from "./selectormatcher";
 
-/**
- * Live extensions support
- * @module extend
- * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
- */
-
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 var reRemovableMethod = /^(on|do)[A-Z]/,
@@ -114,10 +108,11 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
 
 /**
  * Declare a live extension
- * @memberOf module:extend
+ * @memberOf DOM
  * @param  {String}           selector         css selector of which elements to capture
  * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
  * @param  {Object}           mixins           extension declatation
+ * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  */
 DOM.extend = function(selector, condition, mixins) {
     if (arguments.length === 2) {
@@ -165,7 +160,7 @@ DOM.extend = function(selector, condition, mixins) {
 /**
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
- * @memberOf module:extend
+ * @memberOf DOM
  * @param  {Mixed}        [content]  HTMLString, EmmetString
  * @param  {Object|Array} [varMap]   key/value map of variables in emmet template
  * @return {$Element} mocked instance

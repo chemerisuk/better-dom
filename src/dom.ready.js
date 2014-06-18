@@ -30,6 +30,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
  * Execute callback when DOM is ready
  * @memberOf DOM
  * @param {Function} callback event listener
+ * @deprecated use DOM.extend instead
  */
 DOM.ready = function(callback) {
     if (typeof callback !== "function") throw _.makeError("ready", true);

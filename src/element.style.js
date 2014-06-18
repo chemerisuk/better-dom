@@ -13,6 +13,7 @@ import CSS from "./css";
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this
+ * @deprecated use getter and setter instead
  */
 $Element.prototype.style = function(name, value) {
     var len = arguments.length,

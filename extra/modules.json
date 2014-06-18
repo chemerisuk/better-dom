@@ -50,9 +50,5 @@
     "css": {
         "title": "Changing of element styles support",
         "files": ["src/element.style.js"]
-    },
-    "extend": {
-        "title": "Live extensions support",
-        "files": ["src/dom.extend.js"]
     }
 }

@@ -22,6 +22,7 @@ var reInvoke = /cb\.call\(([^)]+)\)/g,
 
 /**
  * Execute callback on each element in the collection
+ * @memberOf $Node.prototype
  * @param  {Function} callback  function that accepts (element, index, self)
  * @param  {Object}   [context] callback context
  * @return {$Node}
@@ -33,6 +34,7 @@ $Node.prototype.each = makeLoopMethod({
 
 /**
  * Check if the callback returns true for any element in the collection
+ * @memberOf $Node.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Boolean} true, if any element in the collection return true
@@ -45,6 +47,7 @@ $Node.prototype.some = makeLoopMethod({
 
 /**
  * Check if the callback returns true for all elements in the collection
+ * @memberOf $Node.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Boolean} true, if all elements in the collection returns true
@@ -58,6 +61,7 @@ $Node.prototype.every = makeLoopMethod({
 
 /**
  * Create an array of values by running each element in the collection through the callback
+ * @memberOf $Node.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Array} new array of the results of each callback execution
@@ -71,6 +75,7 @@ $Node.prototype.map = makeLoopMethod({
 
 /**
  * Examine each element in a collection, returning an array of all elements the callback returns truthy for
+ * @memberOf $Node.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Array} new array with elements where callback returned true
@@ -84,6 +89,7 @@ $Node.prototype.filter = makeLoopMethod({
 
 /**
  * Boil down a list of values into a single value (from start to end)
+ * @memberOf $Node.prototype
  * @param  {Function} callback function that accepts (memo, element, index, self)
  * @param  {Object}   [memo]   initial value of the accumulator
  * @return {Object} the accumulated value
@@ -97,6 +103,7 @@ $Node.prototype.reduce = makeLoopMethod({
 
 /**
  * Boil down a list of values into a single value (from end to start)
+ * @memberOf $Node.prototype
  * @param  {Function} callback function that accepts (memo, element, index, self)
  * @param  {Object}   [memo]   initial value of the accumulator
  * @return {Object} the accumulated value

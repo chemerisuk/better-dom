@@ -31,8 +31,6 @@ $Element.prototype.set = function(name, value) {
         } else {
             if (typeof newValue === "function") newValue = value(el, index, ref);
 
-            if (window.stop) debugger;
-
             if (hook) {
                 hook(node, newValue);
             } else if (nameType !== "string") {
