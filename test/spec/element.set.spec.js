@@ -162,8 +162,8 @@ describe("set", function() {
         });
 
         it("should set style properties", function() {
-            expect(link.set("color", "white")).toHaveStyle("color", "white");
-            expect(link.set("float", "right")).toHaveStyle("float", "right");
+            expect(link.set("color", "white").get("color")).toBe("white");
+            expect(link.set("float", "right").get("float")).toBe("right");
         });
 
         it("should support styles object", function() {
@@ -187,11 +187,11 @@ describe("set", function() {
         it("should support number values", function() {
             link.set("line-height", 7);
 
-            expect(link).toHaveStyle("line-height", "7");
+            expect(link.get("line-height")).toBe("7");
 
             link.set("width", 50);
 
-            expect(link).toHaveStyle("width", "50px");
+            expect(link.get("width")).toBe("50px");
         });
 
         it("should handle vendor-prefixed properties", function() {
@@ -219,12 +219,12 @@ describe("set", function() {
             link.set("line-height", spy);
 
             expect(spy).toHaveBeenCalledWith(link, 0, link);
-            expect(link).toHaveStyle("line-height", "7");
+            expect(link.get("line-height")).toBe("7");
         });
 
         it("should be suported by collections", function() {
             links.set("float", "right").each(function(el) {
-                expect(el).toHaveStyle("float", "right");
+                expect(el.get("float")).toBe("right");
             });
         });
 
