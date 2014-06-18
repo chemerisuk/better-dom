@@ -7,7 +7,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
 ## Quick start
-I'd recommend to read articles below that cover the main ideas of the library:
+I'd recommend to read one from the articles below to understand the main ideas of the library:
 * [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
 * [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 

@@ -27,7 +27,7 @@ $Element.prototype.i18n = function(value, varMap) {
     [value].concat(strings[value]).forEach((value, index) => {
         var attrName = "data-i18n" + (index ? "-" + languages[index - 1] : "");
 
-        if (value) this.set(attrName, varMap ? _.format(value, varMap) : value);
+        this.set(attrName, value && varMap ? _.format(value, varMap) : value);
     });
 
     return this.set("");

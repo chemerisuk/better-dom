@@ -32,6 +32,22 @@ describe("i18n", function() {
         });
     });
 
+    it("should remove data-* attribute if value is null", function() {
+        var span = DOM.create("span");
+
+        expect(span.i18n("key0")).toBe(span);
+        expect(span).toHaveAttr("data-i18n", "key0");
+
+        expect(span.i18n(null)).toBe(span);
+        expect(span).not.toHaveAttr("data-i18n");
+
+        expect(span.i18n("key1"));
+        expect(span).toHaveAttr("data-i18n", "key1");
+
+        expect(span.i18n(null, {a: 7}));
+        expect(span).not.toHaveAttr("data-i18n");
+    });
+
     it("should throw error if arguments are invalid", function() {
         var span = DOM.create("span");
 
