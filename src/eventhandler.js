@@ -21,8 +21,16 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 // srcElement can be null in legacy IE when target is document
                 var target = e.target || e.srcElement || document,
                     currentTarget = matcher ? matcher(target) : node,
-                    fn = typeof callback === "string" ? el[callback] : callback,
-                    args = props || defaultArgs;
+                    args = props || defaultArgs,
+                    fn = callback;
+
+                if (typeof callback === "string") {
+                    if (callback[0] === "_") {
+                        fn = el._[callback.substr(1)];
+                    } else {
+                        fn = el[callback];
+                    }
+                }
 
                 // early stop for late binding or when target doesn't match selector
                 if (typeof fn !== "function" || !currentTarget) return;

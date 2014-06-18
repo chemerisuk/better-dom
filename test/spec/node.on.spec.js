@@ -197,6 +197,17 @@ describe("on", function() {
         expect(spy.calls.count()).toBe(1);
     });
 
+    it("should support late binding for private props", function() {
+        spy.and.callFake(function() { expect(this).toBe(input) });
+        input.set("_callback", spy);
+        input.on("focus", "_callback").fire("focus");
+        expect(spy).toHaveBeenCalled();
+
+        input.set("_callback", null);
+        input.fire("focus");
+        expect(spy.calls.count()).toBe(1);
+    });
+
     it("should allow to prevent custom events", function() {
         var spy2 = jasmine.createSpy("spy2");
 
