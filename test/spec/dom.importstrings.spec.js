@@ -25,17 +25,17 @@ describe("DOM.importStrings", function(){
         expect(spy).toHaveBeenCalledWith("en", "c", "d");
     });
 
-    it("should update all existing localized strings", function() {
-        var link = DOM.create("a");
+    // it("should update all existing localized strings", function() {
+    //     var link = DOM.create("a");
 
-        jasmine.sandbox.set(link);
+    //     jasmine.sandbox.set(link);
 
-        link.i18n(randomString).set("en");
-        expect(link.get("data-i18n-en")).toBeNull();
+    //     link.i18n(randomString).set("en");
+    //     expect(link.get("data-i18n-en")).toBeNull();
 
-        DOM.importStrings("en", randomString, "test");
-        expect(link.get("data-i18n-en")).toBe("test");
-    });
+    //     DOM.importStrings("en", randomString, "test");
+    //     expect(link.get("data-i18n-en")).toBe("test");
+    // });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStrings(1, 2, 3); }).toThrow();

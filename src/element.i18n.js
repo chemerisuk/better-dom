@@ -56,14 +56,12 @@ DOM.importStrings = function(lang, key, value) {
         if (!strings[key]) strings[key] = [];
         // store localized string internally
         strings[key][langIndex] = value;
-
-        DOM.ready(() => DOM.findAll("[data-i18n=\"" + key + "\"]").set(attrName, value));
     } else if (keyType === "object") {
-        _.forOwn(key, (value, key) => DOM.importStrings(lang, key, value));
+        _.forOwn(key, (value, key) => { DOM.importStrings(lang, key, value) });
     } else {
         throw _.makeError("importStrings", true);
     }
 };
 
-// by default just show data-i18n string
+// by default just show data-i18n attribute value
 DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");
