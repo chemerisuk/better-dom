@@ -9,7 +9,6 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
-    readyState = document.readyState,
     nativeEventType, animId, link, styles,
     applyMixins = (obj, mixins) => {
         _.forOwn(mixins, (value, key) => {
@@ -38,22 +37,40 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         // skip previously excluded or mismatched elements
         if (!skip[index] && ext.accept(node)) ext(node);
     },
-    invokeExt = (ext) => {
+    startExt = (ext) => {
         // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.ready.
+        // have appropriate methods before they are used in other DOM.extend.
         // Also fixes legacy IEs when the HTC behavior is already attached
         _.each.call(document.querySelectorAll(ext.selector), ext);
-        // Any extension should be initialized after DOM.ready
         // MUST be after querySelectorAll because of legacy IEs behavior
         DOM.importStyles(ext.selector, styles);
     },
+    readyState = document.readyState,
     readyCallback = () => {
         if (readyCallback) {
-            extensions.forEach(invokeExt);
+            extensions.forEach(startExt);
 
             readyCallback = false;
         }
     };
+
+// Catch cases where ready is called after the browser event has already occurred.
+// IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
+// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
+    // use setTimeout to make sure that the library is fully initialized
+    setTimeout(readyCallback, 0);
+} else {
+    if (_.DOM2_EVENTS) {
+        window.addEventListener("load", readyCallback, false);
+        document.addEventListener("DOMContentLoaded", readyCallback, false);
+    } else {
+        window.attachEvent("onload", readyCallback);
+        document.attachEvent("ondataavailable", () => {
+            if (window.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
+        });
+    }
+}
 
 if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
@@ -86,24 +103,6 @@ if (_.CSS3_ANIMATIONS) {
             extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));
         }
     });
-}
-
-// Catch cases where ready is called after the browser event has already occurred.
-// IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
-// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
-    // use setTimeout to make sure that the library is fully initialized
-    setTimeout(readyCallback, 0);
-} else {
-    if (_.DOM2_EVENTS) {
-        window.addEventListener("load", readyCallback, false);
-        document.addEventListener("DOMContentLoaded", readyCallback, false);
-    } else {
-        window.attachEvent("onload", readyCallback);
-        document.attachEvent("ondataavailable", () => {
-            if (window.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
-        });
-    }
 }
 
 /**
@@ -153,7 +152,7 @@ DOM.extend = function(selector, condition, mixins) {
         ext.selector = selector;
         extensions.push(ext);
 
-        if (!readyCallback) invokeExt(ext);
+        if (!readyCallback) startExt(ext);
     }
 };
 
