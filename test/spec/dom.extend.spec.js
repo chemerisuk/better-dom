@@ -28,6 +28,16 @@ describe("extend", function() {
         DOM.extend(".watch", { constructor: callback });
     });
 
+    it("should support shortcut", function(done) {
+        DOM.extend("." + randomClass, callback);
+
+        callback.and.callFake(function() {
+            if (callback.calls.count() === 1) done();
+        });
+
+        jasmine.sandbox.set("<a class='" + randomClass + "'></a>");
+    });
+
     it("should capture any future element on page", function(done) {
         DOM.extend(".watch1", {constructor: callback});
 

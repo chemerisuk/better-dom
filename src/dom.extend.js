@@ -121,6 +121,8 @@ DOM.extend = function(selector, condition, mixins) {
 
     if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
 
+    if (typeof mixins === "function") mixins = {constructor: mixins};
+
     if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
 
     if (selector === "*") {
