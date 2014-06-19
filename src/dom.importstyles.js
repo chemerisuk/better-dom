@@ -14,19 +14,10 @@ var styleNode = _.injectElement(document.createElement("style")),
  */
 DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
+        // use styleObj to collect all style props for a new CSS rule
         var styleObj = {};
 
-        _.forOwn(cssText, (value, prop) => {
-            var hook = CSS.set[prop];
-
-            value = typeof value === "number" ? value + "px" : value || "";
-
-            if (hook) {
-                hook(styleObj, value);
-            } else {
-                styleObj[prop] = value;
-            }
-        });
+        _.forOwn(cssText, (value, prop) => { CSS.set[prop](styleObj, value) });
 
         cssText = [];
 

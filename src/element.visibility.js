@@ -8,16 +8,15 @@ import CSS from "./css";
  */
 
 var parseTimeValue = (value) => {
-        var endIndex = value.length - 1;
-
-        return value.lastIndexOf("ms") === endIndex - 1 || value.lastIndexOf("s") !== endIndex ?
-            parseFloat(value) : parseFloat(value) * 1000;
+        var result = parseFloat(value) || 0;
+        // if duration is in seconds, then multiple result value by 1000
+        return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
     },
-    calcDuration = (style, animation) => {
-        var prefix = animation ? "animation-" : "transition-",
-            delay = CSS.get[prefix + "delay"](style).split(","),
-            duration = CSS.get[prefix + "duration"](style).split(","),
-            iterationCount = animation ? CSS.get[prefix + "iteration-count"](style).split(",") : [];
+    calcDuration = (style, prefix, iterationCount) => {
+        var delay = CSS.get[prefix + "delay"](style).split(","),
+            duration = CSS.get[prefix + "duration"](style).split(",");
+
+        if (!iterationCount) iterationCount = CSS.get[prefix + "iteration-count"](style).split(",");
 
         return Math.max.apply(Math, duration.map((value, index) => {
             var it = iterationCount[index] || "1";
@@ -51,7 +50,7 @@ var parseTimeValue = (value) => {
                 // Android Browser is too slow and has a lot of bugs in
                 // the implementation, so disable animations for them
                 if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS && !isDetached) {
-                    duration = Math.max(calcDuration(compStyle), calcDuration(compStyle, true));
+                    duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
                 }
 
                 if (duration) {
