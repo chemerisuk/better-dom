@@ -17,7 +17,15 @@ DOM.importStyles = function(selector, cssText) {
         // use styleObj to collect all style props for a new CSS rule
         var styleObj = {};
 
-        _.forOwn(cssText, (value, prop) => { CSS.set[prop](styleObj, value) });
+        _.forOwn(cssText, (value, prop) => {
+            var hook = CSS.set[prop];
+
+            if (hook) {
+                hook(styleObj, value);
+            } else {
+                styleObj[prop] = value;
+            }
+        });
 
         cssText = [];
 
