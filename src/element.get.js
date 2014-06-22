@@ -1,7 +1,6 @@
 import _ from "./utils";
 import $Node from "./node";
 import $Element from "./element";
-import CSS from "./css";
 
 var hooks = {};
 
@@ -73,10 +72,5 @@ hooks.undefined = function(node) {
 
 // some browsers don't recognize input[type=email] etc.
 hooks.type = (node) => node.getAttribute("type") || node.type;
-
-// register style property hooks
-_.forOwn(CSS.get, (fn, key) => {
-    hooks[key] = (node) => fn(node.style) || fn(_.computeStyle(node));
-});
 
 if (!_.DOM2_EVENTS) hooks.textContent = (node) => node.innerText;

@@ -1,7 +1,6 @@
 import _ from "./utils";
 import $Node from "./node";
 import $Element from "./element";
-import CSS from "./css";
 
 var hooks = {};
 
@@ -106,10 +105,5 @@ hooks.undefined = function(node, value) {
 
     if (name) node[name] = value;
 };
-
-// register style property hooks
-_.forOwn(CSS.set, (fn, key) => {
-    hooks[key] = (node, value) => { fn(node.style, value || "") };
-});
 
 if (!_.DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };
