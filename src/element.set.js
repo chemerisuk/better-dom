@@ -26,7 +26,7 @@ $Element.prototype.set = function(name, value) {
 
         if (watchers) oldValue = el.get(name);
 
-        if (name && name[0] === "_") {
+        if (name && (name[0] === "_" || name[0] === "-")) {
             el._[name.substr(1)] = newValue;
         } else {
             if (typeof newValue === "function") newValue = value(el, index, ref);

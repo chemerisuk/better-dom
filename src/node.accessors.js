@@ -10,7 +10,7 @@ $Node.prototype.get = function(key) {
     var el = this;
 
     if (typeof key === "string") {
-        if (key[0] === "_") {
+        if (key[0] === "_" || key[0] === "-") {
             return this._[key.substr(1)];
         } else {
             return this._._node[key];
@@ -32,7 +32,7 @@ $Node.prototype.set = function(key, value) {
     var keyType = typeof key;
 
     if (keyType === "string") {
-        if (key[0] === "_") {
+        if (key[0] === "_" || key[0] === "-") {
             this._[key.substr(1)] = value;
         } else {
             this._._node[key] = value;
