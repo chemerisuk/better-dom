@@ -25,7 +25,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                     fn = callback;
 
                 if (typeof callback === "string") {
-                    if (callback[0] === "_") {
+                    if (callback[0] === "-") {
                         fn = el._[callback.substr(1)];
                     } else {
                         fn = el[callback];
