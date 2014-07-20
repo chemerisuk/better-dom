@@ -11,18 +11,14 @@ var strings = {},
     languages = [];
 
 /**
- * Get/set localized value
+ * Set inner content to a localized string
  * @memberOf module:i18n
  * @param  {String}       [key]     resource string key
  * @param  {Object|Array} [varMap]  resource string variables
  * @return {String|$Element}
  */
 $Element.prototype.i18n = function(key, varMap) {
-    var len = arguments.length;
-
-    if (!len) return this.get("data-i18n");
-
-    if (len > 2 || key && typeof key !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
+    if (typeof key !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
 
     return this.set(languages.concat("").reduce((memo, lang, index) => {
         var value = key in strings && strings[key][index] || key,
