@@ -13,24 +13,23 @@ var strings = {},
 /**
  * Get/set localized value
  * @memberOf module:i18n
- * @param  {String}       [value]   resource string key
+ * @param  {String}       [key]     resource string key
  * @param  {Object|Array} [varMap]  resource string variables
  * @return {String|$Element}
  */
-$Element.prototype.i18n = function(value, varMap) {
+$Element.prototype.i18n = function(key, varMap) {
     var len = arguments.length;
 
     if (!len) return this.get("data-i18n");
 
-    if (len > 2 || value && typeof value !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
-    // update data-i18n-{lang} attributes
-    [value].concat(strings[value]).forEach((value, index) => {
-        var attrName = "data-i18n" + (index ? "-" + languages[index - 1] : "");
+    if (len > 2 || key && typeof key !== "string" || varMap && typeof varMap !== "object") throw _.makeError("i18n");
 
-        this.set(attrName, value && varMap ? _.format(value, varMap) : value);
-    });
+    return this.set(languages.concat("").reduce((memo, lang, index) => {
+        var value = key in strings && strings[key][index] || key,
+            content = value && varMap ? _.format(value, varMap) : value;
 
-    return this.set("");
+        return memo + "<span data-i18n=" + lang + ">" + content + "</span>";
+    }, ""));
 };
 
 /**
@@ -43,14 +42,14 @@ $Element.prototype.i18n = function(value, varMap) {
  */
 DOM.importStrings = function(lang, key, value) {
     var keyType = typeof key,
-        attrName = "data-i18n-" + lang,
         langIndex = languages.indexOf(lang);
 
     if (keyType === "string") {
         if (langIndex === -1) {
             langIndex = languages.push(lang) - 1;
             // add global rule for the data-i18n-{lang} attribute
-            DOM.importStyles("[" + attrName + "]:lang(" + lang + "):before", "content:attr(" + attrName + ")");
+            DOM.importStyles(":lang(" + lang + ") > [data-i18n]", "display:none");
+            DOM.importStyles(":lang(" + lang + ") > [data-i18n=" + lang + "]", "display:inline");
         }
 
         if (!strings[key]) strings[key] = [];
@@ -64,4 +63,5 @@ DOM.importStrings = function(lang, key, value) {
 };
 
 // by default just show data-i18n attribute value
-DOM.importStyles("[data-i18n]:before", "content:attr(data-i18n)");
+DOM.importStyles("[data-i18n]", "display:none");
+DOM.importStyles("[data-i18n='']", "display:inline");
