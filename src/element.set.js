@@ -2,7 +2,8 @@ import _ from "./utils";
 import $Node from "./node";
 import $Element from "./element";
 
-var hooks = {};
+var hooks = {},
+    sandbox = document.createElement("body");
 
 /**
  * Set property/attribute value by name
@@ -87,7 +88,6 @@ $Element.prototype.unwatch = function(name, callback) {
 // $Element#set hooks
 
 hooks.undefined = function(node, value) {
-    var name;
     // handle numbers, booleans etc.
     value = value == null ? "" : String(value);
 
@@ -98,12 +98,19 @@ hooks.undefined = function(node, value) {
         }
     } else if (node.type && "value" in node) {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        name = _.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText";
+        node[_.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
     } else {
-        name = "innerHTML";
-    }
+        try {
+            node.innerHTML = value;
+        } catch (e) {
+            // sometimes browsers fail to set innerHTML, so fallback to appendChild then
+            // TODO: write a test
+            node.innerHTML = "";
+            sandbox.innerHTML = value;
 
-    if (name) node[name] = value;
+            for (var n; n = sandbox.firstChild; node.appendChild(n));
+        }
+    }
 };
 
 if (!_.DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };
