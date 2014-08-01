@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 1.7.6 2014-07-21T01:32:45
+ * @version 1.7.7 2014-08-01T19:33:23
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -219,7 +219,7 @@ if (_.CSS3_ANIMATIONS) {
     nativeEventType = "ondataavailable";
     link = document.querySelector("link[rel=htc]");
 
-    if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
+    if (!link) throw "In order to use live extensions you have to include link[rel=htc] for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
@@ -384,7 +384,7 @@ var $Node = require("./node")["default"];
 
 var DOM = new $Node(document);
 
-DOM.version = "1.7.6";
+DOM.version = "1.7.7";
 DOM.template = function(str)  {return str};
 
 /**
@@ -1030,50 +1030,15 @@ var $Element = require("./element")["default"];
 var SelectorMatcher = require("./selectormatcher")["default"];
 
 /**
- * CSS selector matching support
- * @module matches
+ * Positioning helpers
+ * @module positioning
  */
 
 var hooks = {};
 
 /**
- * Check if the element matches selector
- * @memberOf module:matches
- * @param  {String}   selector  css selector for checking
- * @return {$Element}
- */
-$Element.prototype.matches = function(selector) {
-    if (!selector || typeof selector !== "string") throw _.makeError("matches");
-
-    var checker = hooks[selector] || SelectorMatcher(selector),
-        node = this._._node;
-
-    return node && !!checker(node);
-};
-
-// $Element.matches hooks
-
-hooks[":focus"] = function(node)  {return node === document.activeElement};
-
-hooks[":hidden"] = function(node)  {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.computeStyle(node).display === "none" || !_.docEl.contains(node);
-};
-
-hooks[":visible"] = function(node)  {return !hooks[":hidden"](node)};
-},{"./element":13,"./selectormatcher":31,"./utils":32}],16:[function(require,module,exports){
-"use strict";
-var _ = require("./utils")["default"];
-var $Element = require("./element")["default"];
-
-/**
- * Element offset calculation support
- * @module offset
- */
-
-/**
  * Calculates offset of the current element
- * @memberOf module:offset
+ * @memberOf module:positioning
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
@@ -1097,13 +1062,41 @@ $Element.prototype.offset = function() {
         };
     }
 };
-},{"./element":13,"./utils":32}],17:[function(require,module,exports){
+
+/**
+ * Check if the element matches selector
+ * @memberOf module:positioning
+ * @param  {String}   selector  css selector for checking
+ * @return {$Element}
+ */
+$Element.prototype.matches = function(selector) {
+    if (!selector || typeof selector !== "string") throw _.makeError("matches");
+
+    var checker = hooks[selector] || SelectorMatcher(selector),
+        node = this._._node;
+
+    return node && !!checker(node, this);
+};
+
+// $Element.matches hooks
+
+hooks[":focus"] = function(node)  {return node === document.activeElement};
+
+hooks[":hidden"] = function(node, el)  {
+    // TODO: use just DOM.contains in 1.8
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.computeStyle(node).display === "none" || !DOM.create(DOM.get("documentElement")).contains(el);
+};
+
+hooks[":visible"] = function(node, el)  {return !hooks[":hidden"](node, el)};
+},{"./element":13,"./selectormatcher":31,"./utils":32}],16:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
 var $Element = require("./element")["default"];
 
-var hooks = {};
+var hooks = {},
+    sandbox = document.createElement("body");
 
 /**
  * Set property/attribute value by name
@@ -1153,42 +1146,9 @@ $Element.prototype.set = function(name, value) {
     });
 };
 
-/**
- * Watch for changes of a particular property/attribute
- * @param  {String}   name     property/attribute name
- * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
- * @return {$Element}
- */
-$Element.prototype.watch = function(name, callback) {
-    return this.each(function(el)  {
-        var watchers = el._._watchers;
-
-        if (!watchers) el.set("__watchers", watchers = {});
-
-        (watchers[name] || (watchers[name] = [])).push(callback);
-    });
-};
-
-/**
- * Disable watching of a particular property/attribute
- * @param  {String}   name    property/attribute name
- * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
- * @return {$Element}
- */
-$Element.prototype.unwatch = function(name, callback) {
-    var eq = function(w)  {return w !== callback};
-
-    return this.each(function(el)  {
-        var watchers = el._._watchers;
-
-        if (watchers) watchers[name] = (watchers[name] || []).filter(eq);
-    });
-};
-
 // $Element#set hooks
 
 hooks.undefined = function(node, value) {
-    var name;
     // handle numbers, booleans etc.
     value = value == null ? "" : String(value);
 
@@ -1199,16 +1159,23 @@ hooks.undefined = function(node, value) {
         }
     } else if (node.type && "value" in node) {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        name = _.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText";
+        node[_.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
     } else {
-        name = "innerHTML";
-    }
+        try {
+            node.innerHTML = value;
+        } catch (e) {
+            // sometimes browsers fail to set innerHTML, so fallback to appendChild then
+            // TODO: write a test
+            node.innerHTML = "";
+            sandbox.innerHTML = value;
 
-    if (name) node[name] = value;
+            for (var n; n = sandbox.firstChild; node.appendChild(n));
+        }
+    }
 };
 
 if (!_.DOM2_EVENTS) hooks.textContent = function(node, value)  { node.innerText = value };
-},{"./element":13,"./node":30,"./utils":32}],18:[function(require,module,exports){
+},{"./element":13,"./node":30,"./utils":32}],17:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -1216,12 +1183,12 @@ var CSS = require("./css")["default"];
 
 /**
  * Changing of element styles support
- * @module css
+ * @module style
  */
 
 /**
  * CSS properties accessor for an element
- * @memberOf module:css
+ * @memberOf module:style
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this
@@ -1282,7 +1249,7 @@ $Element.prototype.style = function(name, value) {
         }
     });
 };
-},{"./css":1,"./element":13,"./utils":32}],19:[function(require,module,exports){
+},{"./css":1,"./element":13,"./utils":32}],18:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -1408,7 +1375,7 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  * @function
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
-},{"./element":13,"./elements":21,"./selectormatcher":31,"./utils":32}],20:[function(require,module,exports){
+},{"./element":13,"./elements":21,"./selectormatcher":31,"./utils":32}],19:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -1449,89 +1416,94 @@ var parseTimeValue = function(value)  {
 
                 if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
                     // remove temporary properties
-                    style.pointerEvents = "";
                     style.willChange = "";
                 }
 
                 if (callback) callback(el, index, ref);
+            },
+            processVisibilityChange = function()  {
+                var compStyle = _.computeStyle(node),
+                    isHidden = typeof fn === "function" ? fn(node) : fn,
+                    duration, index, transition, absentance, completeAnimation, timeoutId;
+                // Legacy Android is too slow and has a lot of bugs in the CSS animations
+                // implementation, so skip animations for it (duration value is always zero)
+                if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
+                    duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
+                }
+
+                if (duration) {
+                    // make sure that the visibility property will be changed
+                    // to trigger the completeAnimation callback
+                    if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
+
+                    transition = transitionProps.map(function(prop, index)  {
+                        // have to use regexp to split transition-timing-function value
+                        return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+                    });
+
+                    // try to find existing or use 0s length or make a new visibility transition
+                    index = transition[1].indexOf("visibility");
+                    if (index < 0) index = transition[2].indexOf("0s");
+                    if (index < 0) index = transition[0].length;
+
+                    transition[0][index] = "linear";
+                    transition[1][index] = "visibility";
+                    transition[isHidden ? 2 : 3][index] = "0s";
+                    transition[isHidden ? 3 : 2][index] = duration + "ms";
+
+                    transition.forEach(function(value, index)  {
+                        CSS.set[transitionProps[index]](style, value.join(", "));
+                    });
+
+                    // use willChange to improve performance in modern browsers:
+                    // http://dev.opera.com/articles/css-will-change-property/
+                    style.willChange = transition[1].join(", ");
+
+                    completeAnimation = function(e)  {
+                        if (!e || e.propertyName === "visibility") {
+                            if (e) e.stopPropagation(); // this is an internal event
+
+                            clearTimeout(timeoutId);
+
+                            node.removeEventListener(eventType, completeAnimation, false);
+
+                            completeVisibilityChange();
+                        }
+                    };
+
+                    node.addEventListener(eventType, completeAnimation, false);
+                    // make sure that the completeAnimation callback will be called
+                    timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
+                }
+
+                if (isHidden) {
+                    absentance = style[absentStrategy[0]];
+                    // store current inline value in the internal property
+                    if (absentance !== "none") el.set("__visibility", absentance);
+                } else {
+                    // restore initial property value if it exists
+                    style[absentStrategy[0]] = el.get("__visibility") || "";
+                }
+
+                style.visibility = isHidden ? "hidden" : "visible";
+                // trigger native CSS animation
+                el.set("aria-hidden", String(isHidden));
+                // must be AFTER changing the aria-hidden attribute
+                if (!duration) completeVisibilityChange();
             };
 
         // by using requestAnimationFrame we fix several issues:
         // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
         // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
         // 3) power consuption: looped show/hide does almost nothing if page is not active
-        _.raf(function()  {
-            var compStyle = _.computeStyle(node),
-                isHidden = typeof fn === "function" ? fn(node) : fn,
-                duration, index, transition, absentance, completeAnimation, timeoutId;
-            // Legacy Android is too slow and has a lot of bugs in the CSS animations
-            // implementation, so skip animations for it (duration value is always zero)
-            if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
-                duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
-            }
 
-            if (duration) {
-                // make sure that the visibility property will be changed
-                // to trigger the completeAnimation callback
-                if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
-
-                transition = transitionProps.map(function(prop, index)  {
-                    // have to use regexp to split transition-timing-function value
-                    return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
-                });
-
-                // try to find existing or use 0s length or make a new visibility transition
-                index = transition[1].indexOf("visibility");
-                if (index < 0) index = transition[2].indexOf("0s");
-                if (index < 0) index = transition[0].length;
-
-                transition[0][index] = "linear";
-                transition[1][index] = "visibility";
-                transition[isHidden ? 2 : 3][index] = "0s";
-                transition[isHidden ? 3 : 2][index] = duration + "ms";
-
-                transition.forEach(function(value, index)  {
-                    CSS.set[transitionProps[index]](style, value.join(", "));
-                });
-
-                // prevent accidental user actions during animation
-                style.pointerEvents = "none";
-                // use willChange to improve performance in modern browsers:
-                // http://dev.opera.com/articles/css-will-change-property/
-                style.willChange = transition[1].join(", ");
-
-                completeAnimation = function(e)  {
-                    if (!e || e.propertyName === "visibility") {
-                        if (e) e.stopPropagation(); // this is an internal event
-
-                        clearTimeout(timeoutId);
-
-                        node.removeEventListener(eventType, completeAnimation, false);
-
-                        completeVisibilityChange();
-                    }
-                };
-
-                node.addEventListener(eventType, completeAnimation, false);
-                // make sure that the completeAnimation callback will be called
-                timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
-            }
-
-            if (isHidden) {
-                absentance = style[absentStrategy[0]];
-                // store current inline value in the internal property
-                if (absentance !== "none") el.set("__visibility", absentance);
-            } else {
-                // restore initial property value if it exists
-                style[absentStrategy[0]] = el.get("__visibility") || "";
-            }
-
-            style.visibility = isHidden ? "hidden" : "visible";
-            // trigger native CSS animation
-            el.set("aria-hidden", String(isHidden));
-            // must be AFTER changing the aria-hidden attribute
-            if (!duration) completeVisibilityChange();
-        });
+        // use _.raf only if element is in DOM to avoid quirks on hide().show() calls
+        // TODO: use just DOM.contains in 1.8
+        if (DOM.create(DOM.get("documentElement")).contains(el)) {
+            _.raf(processVisibilityChange);
+        } else {
+            processVisibilityChange();
+        }
     })}},
     makeVisibilityMethod = function(name, fn)  {return function(delay, callback) {
         var len = arguments.length,
@@ -1589,7 +1561,42 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
     return node.getAttribute("aria-hidden") !== "true";
 });
-},{"./css":1,"./element":13,"./utils":32}],21:[function(require,module,exports){
+},{"./css":1,"./element":13,"./utils":32}],20:[function(require,module,exports){
+"use strict";
+var $Element = require("./element")["default"];
+
+/**
+ * Watch for changes of a particular property/attribute
+ * @param  {String}   name     property/attribute name
+ * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
+ * @return {$Element}
+ */
+$Element.prototype.watch = function(name, callback) {
+    return this.each(function(el)  {
+        var watchers = el._._watchers;
+
+        if (!watchers) el.set("__watchers", watchers = {});
+
+        (watchers[name] || (watchers[name] = [])).push(callback);
+    });
+};
+
+/**
+ * Disable watching of a particular property/attribute
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
+ * @return {$Element}
+ */
+$Element.prototype.unwatch = function(name, callback) {
+    var eq = function(w)  {return w !== callback};
+
+    return this.each(function(el)  {
+        var watchers = el._._watchers;
+
+        if (watchers) watchers[name] = (watchers[name] || []).filter(eq);
+    });
+};
+},{"./element":13}],21:[function(require,module,exports){
 "use strict";
 var $Element = require("./element")["default"];
 
@@ -1801,13 +1808,8 @@ var $Node = require("./node")["default"];
 var $Element = require("./element")["default"];
 
 /**
- * Ancestor check support
- * @module contains
- */
-
-/**
  * Check if element is inside of context
- * @memberOf module:contains
+ * @memberOf $Node.prototype
  * @param  {$Element} element element to check
  * @return {Boolean} true if success
  */
@@ -1815,7 +1817,13 @@ $Node.prototype.contains = function(element) {
     var node = this._._node;
 
     if (element instanceof $Element) {
-        return node && element.every(function(el)  {return node.contains(el._._node)});
+        return node && element.every(function(el)  {
+            var otherNode = el._._node;
+
+            if (otherNode === node) return true;
+            // FIXME: document.contains does not exist in IE8!
+            return node.contains ? node.contains(otherNode) : node.compareDocumentPosition(otherNode) & 16;
+        });
     }
 
     throw _.makeError("contains");
