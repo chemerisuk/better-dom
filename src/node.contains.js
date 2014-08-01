@@ -3,13 +3,7 @@ import $Node from "./node";
 import $Element from "./element";
 
 /**
- * Ancestor check support
- * @module contains
- */
-
-/**
  * Check if element is inside of context
- * @memberOf module:contains
  * @param  {$Element} element element to check
  * @return {Boolean} true if success
  */

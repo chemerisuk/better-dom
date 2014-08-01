@@ -23,17 +23,9 @@
         "title": "Emmet abbreviation syntax support",
         "files": ["src/dom.template.js"]
     },
-    "offset": {
-        "title": "Element offset calculation support",
-        "files": ["src/element.offset.js"]
-    },
-    "matches": {
-        "title": "CSS selector matching support",
-        "files": ["src/element.matches.js"]
-    },
-    "contains": {
-        "title": "Ancestor check support",
-        "files": ["src/element.contains.js"]
+    "positioning": {
+        "title": "Positioning helpers",
+        "files": ["src/element.positioning.js"]
     },
     "clone": {
         "title": "Clonning of an element support",

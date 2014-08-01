@@ -1,14 +1,17 @@
 import _ from "./utils";
 import $Element from "./element";
+import SelectorMatcher from "./selectormatcher";
 
 /**
- * Element offset calculation support
- * @module offset
+ * Positioning helpers
+ * @module positioning
  */
+
+var hooks = {};
 
 /**
  * Calculates offset of the current element
- * @memberOf module:offset
+ * @memberOf module:positioning
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
@@ -32,3 +35,29 @@ $Element.prototype.offset = function() {
         };
     }
 };
+
+/**
+ * Check if the element matches selector
+ * @memberOf module:positioning
+ * @param  {String}   selector  css selector for checking
+ * @return {$Element}
+ */
+$Element.prototype.matches = function(selector) {
+    if (!selector || typeof selector !== "string") throw _.makeError("matches");
+
+    var checker = hooks[selector] || SelectorMatcher(selector),
+        node = this._._node;
+
+    return node && !!checker(node);
+};
+
+// $Element.matches hooks
+
+hooks[":focus"] = (node) => node === document.activeElement;
+
+hooks[":hidden"] = (node) => {
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.computeStyle(node).display === "none" || !DOM.contains(node.__dom__);
+};
+
+hooks[":visible"] = (node) => !hooks[":hidden"](node);
