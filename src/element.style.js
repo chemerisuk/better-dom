@@ -4,12 +4,12 @@ import CSS from "./css";
 
 /**
  * Changing of element styles support
- * @module css
+ * @module style
  */
 
 /**
  * CSS properties accessor for an element
- * @memberOf module:css
+ * @memberOf module:style
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this

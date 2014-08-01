@@ -39,7 +39,7 @@
         "title": "Event handling support",
         "files": ["src/node.events.js", "src/eventhandler.js"]
     },
-    "css": {
+    "style": {
         "title": "Changing of element styles support",
         "files": ["src/element.style.js"]
     }
