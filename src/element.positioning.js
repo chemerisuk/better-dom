@@ -48,16 +48,16 @@ $Element.prototype.matches = function(selector) {
     var checker = hooks[selector] || SelectorMatcher(selector),
         node = this._._node;
 
-    return node && !!checker(node);
+    return node && !!checker(node, this);
 };
 
 // $Element.matches hooks
 
 hooks[":focus"] = (node) => node === document.activeElement;
 
-hooks[":hidden"] = (node) => {
+hooks[":hidden"] = (node, el) => {
     return node.getAttribute("aria-hidden") === "true" ||
-        _.computeStyle(node).display === "none" || !DOM.contains(node.__dom__);
+        _.computeStyle(node).display === "none" || !DOM.contains(el);
 };
 
 hooks[":visible"] = (node) => !hooks[":hidden"](node);
