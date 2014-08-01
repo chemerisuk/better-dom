@@ -92,7 +92,7 @@ if (_.CSS3_ANIMATIONS) {
     nativeEventType = "ondataavailable";
     link = document.querySelector("link[rel=htc]");
 
-    if (!link) throw "You forgot to include <link rel='htc'> for IE < 10";
+    if (!link) throw "In order to use live extensions you have to include link[rel=htc] for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
