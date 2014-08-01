@@ -51,14 +51,6 @@
 						</li>
 						
 						<li>
-							<a href="module-contains.html">contains</a>
-						</li>
-						
-						<li>
-							<a href="module-css.html">css</a>
-						</li>
-						
-						<li>
 							<a href="module-events.html">events</a>
 						</li>
 						
@@ -75,11 +67,11 @@
 						</li>
 						
 						<li>
-							<a href="module-matches.html">matches</a>
+							<a href="module-positioning.html">positioning</a>
 						</li>
 						
 						<li>
-							<a href="module-offset.html">offset</a>
+							<a href="module-style.html">style</a>
 						</li>
 						
 						<li>
@@ -139,7 +131,7 @@
         <article>
             <pre class="sunlight-highlight-javascript ">/**
  * @file better-dom.js
- * @version 1.7.5 2014-07-21T01:23:01
+ * @version 1.7.6 2014-08-01T19:00:24
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -224,7 +216,7 @@ _.forOwn({
 });
 
 exports["default"] = hooks;
-},{"./utils":32}],2:[function(require,module,exports){
+},{"./utils":33}],2:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var DOM = require("./dom")["default"];
@@ -262,7 +254,7 @@ DOM.create = function(value, varMap) {
 
     return new $Element(value);
 };
-},{"./dom":6,"./element":13,"./elements":21,"./utils":32}],3:[function(require,module,exports){
+},{"./dom":6,"./element":13,"./elements":21,"./utils":33}],3:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var DOM = require("./dom")["default"];
@@ -358,7 +350,7 @@ if (_.CSS3_ANIMATIONS) {
     nativeEventType = "ondataavailable";
     link = document.querySelector("link[rel=htc]");
 
-    if (!link) throw "You forgot to include &lt;link rel='htc'> for IE &lt; 10";
+    if (!link) throw "In order to use live extensions you have to include link[rel=htc] for IE &lt; 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
@@ -435,7 +427,7 @@ DOM.extend = function(selector, condition, mixins) {
 DOM.mock = function(content, varMap) {
     return content ? DOM.create(content, varMap).legacy(applyExtensions) : new $Element();
 };
-},{"./dom":6,"./element":13,"./selectormatcher":31,"./utils":32}],4:[function(require,module,exports){
+},{"./dom":6,"./element":13,"./selectormatcher":32,"./utils":33}],4:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var DOM = require("./dom")["default"];
@@ -468,7 +460,7 @@ DOM.importScripts = function() {var SLICE$0 = Array.prototype.slice;var urls = S
 
     callback();
 };
-},{"./dom":6,"./utils":32}],5:[function(require,module,exports){
+},{"./dom":6,"./utils":33}],5:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var DOM = require("./dom")["default"];
@@ -517,13 +509,13 @@ DOM.importStyles = function(selector, cssText) {
         selector.split(",").forEach(function(selector)  { styleSheet.addRule(selector, cssText) });
     }
 };
-},{"./css":1,"./dom":6,"./utils":32}],6:[function(require,module,exports){
+},{"./css":1,"./dom":6,"./utils":33}],6:[function(require,module,exports){
 "use strict";
 var $Node = require("./node")["default"];
 
 var DOM = new $Node(document);
 
-DOM.version = "1.7.5";
+DOM.version = "1.7.6";
 DOM.template = function(str)  {return str};
 
 /**
@@ -577,7 +569,7 @@ DOM.ready = function(callback) {
         DOM.dispatch(callback);
     }
 };
-},{"./dom":6,"./utils":32}],8:[function(require,module,exports){
+},{"./dom":6,"./utils":33}],8:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var DOM = require("./dom")["default"];
@@ -750,7 +742,7 @@ DOM.template = function(template, varMap) {
 
     return varMap ? output : cache[template] = output;
 };
-},{"./dom":6,"./utils":32}],9:[function(require,module,exports){
+},{"./dom":6,"./utils":33}],9:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -847,7 +839,7 @@ $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className)
 
     if (oldClassName === this._._node.className) this.removeClass(className);
 });
-},{"./element":13,"./utils":32}],10:[function(require,module,exports){
+},{"./element":13,"./utils":33}],10:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -882,7 +874,7 @@ $Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 
 
     return result;
 };
-},{"./element":13,"./utils":32}],11:[function(require,module,exports){
+},{"./element":13,"./utils":33}],11:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
@@ -960,7 +952,7 @@ hooks.undefined = function(node) {
 hooks.type = function(node)  {return node.getAttribute("type") || node.type};
 
 if (!_.DOM2_EVENTS) hooks.textContent = function(node)  {return node.innerText};
-},{"./element":13,"./node":30,"./utils":32}],12:[function(require,module,exports){
+},{"./element":13,"./node":30,"./utils":33}],12:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var DOM = require("./dom")["default"];
@@ -1025,7 +1017,7 @@ DOM.importStrings = function(lang, key, value) {
 // by default just show data-i18n attribute value
 DOM.importStyles("[data-i18n]", "display:none");
 DOM.importStyles("[data-i18n='']", "display:inline");
-},{"./dom":6,"./element":13,"./utils":32}],13:[function(require,module,exports){
+},{"./dom":6,"./element":13,"./utils":33}],13:[function(require,module,exports){
 "use strict";
 var $Node = require("./node")["default"];
 
@@ -1162,57 +1154,22 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", false, functi
 $Element.prototype.remove = makeManipulationMethod("remove", "", false, function(node)  {
     node.parentNode.removeChild(node);
 });
-},{"./element":13,"./utils":32}],15:[function(require,module,exports){
+},{"./element":13,"./utils":33}],15:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
 var SelectorMatcher = require("./selectormatcher")["default"];
 
 /**
- * CSS selector matching support
- * @module matches
+ * Positioning helpers
+ * @module positioning
  */
 
 var hooks = {};
 
 /**
- * Check if the element matches selector
- * @memberOf module:matches
- * @param  {String}   selector  css selector for checking
- * @return {$Element}
- */
-$Element.prototype.matches = function(selector) {
-    if (!selector || typeof selector !== "string") throw _.makeError("matches");
-
-    var checker = hooks[selector] || SelectorMatcher(selector),
-        node = this._._node;
-
-    return node && !!checker(node);
-};
-
-// $Element.matches hooks
-
-hooks[":focus"] = function(node)  {return node === document.activeElement};
-
-hooks[":hidden"] = function(node)  {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.computeStyle(node).display === "none" || !_.docEl.contains(node);
-};
-
-hooks[":visible"] = function(node)  {return !hooks[":hidden"](node)};
-},{"./element":13,"./selectormatcher":31,"./utils":32}],16:[function(require,module,exports){
-"use strict";
-var _ = require("./utils")["default"];
-var $Element = require("./element")["default"];
-
-/**
- * Element offset calculation support
- * @module offset
- */
-
-/**
  * Calculates offset of the current element
- * @memberOf module:offset
+ * @memberOf module:positioning
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
@@ -1236,13 +1193,40 @@ $Element.prototype.offset = function() {
         };
     }
 };
-},{"./element":13,"./utils":32}],17:[function(require,module,exports){
+
+/**
+ * Check if the element matches selector
+ * @memberOf module:positioning
+ * @param  {String}   selector  css selector for checking
+ * @return {$Element}
+ */
+$Element.prototype.matches = function(selector) {
+    if (!selector || typeof selector !== "string") throw _.makeError("matches");
+
+    var checker = hooks[selector] || SelectorMatcher(selector),
+        node = this._._node;
+
+    return node && !!checker(node, this);
+};
+
+// $Element.matches hooks
+
+hooks[":focus"] = function(node)  {return node === document.activeElement};
+
+hooks[":hidden"] = function(node, el)  {
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.computeStyle(node).display === "none" || !DOM.contains(el);
+};
+
+hooks[":visible"] = function(node)  {return !hooks[":hidden"](node)};
+},{"./element":13,"./selectormatcher":32,"./utils":33}],16:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
 var $Element = require("./element")["default"];
 
-var hooks = {};
+var hooks = {},
+    sandbox = document.createElement("body");
 
 /**
  * Set property/attribute value by name
@@ -1292,42 +1276,9 @@ $Element.prototype.set = function(name, value) {
     });
 };
 
-/**
- * Watch for changes of a particular property/attribute
- * @param  {String}   name     property/attribute name
- * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
- * @return {$Element}
- */
-$Element.prototype.watch = function(name, callback) {
-    return this.each(function(el)  {
-        var watchers = el._._watchers;
-
-        if (!watchers) el.set("__watchers", watchers = {});
-
-        (watchers[name] || (watchers[name] = [])).push(callback);
-    });
-};
-
-/**
- * Disable watching of a particular property/attribute
- * @param  {String}   name    property/attribute name
- * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
- * @return {$Element}
- */
-$Element.prototype.unwatch = function(name, callback) {
-    var eq = function(w)  {return w !== callback};
-
-    return this.each(function(el)  {
-        var watchers = el._._watchers;
-
-        if (watchers) watchers[name] = (watchers[name] || []).filter(eq);
-    });
-};
-
 // $Element#set hooks
 
 hooks.undefined = function(node, value) {
-    var name;
     // handle numbers, booleans etc.
     value = value == null ? "" : String(value);
 
@@ -1338,16 +1289,23 @@ hooks.undefined = function(node, value) {
         }
     } else if (node.type && "value" in node) {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        name = _.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText";
+        node[_.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
     } else {
-        name = "innerHTML";
-    }
+        try {
+            node.innerHTML = value;
+        } catch (e) {
+            // sometimes browsers fail to set innerHTML, so fallback to appendChild then
+            // TODO: write a test
+            node.innerHTML = "";
+            sandbox.innerHTML = value;
 
-    if (name) node[name] = value;
+            for (var n; n = sandbox.firstChild; node.appendChild(n));
+        }
+    }
 };
 
 if (!_.DOM2_EVENTS) hooks.textContent = function(node, value)  { node.innerText = value };
-},{"./element":13,"./node":30,"./utils":32}],18:[function(require,module,exports){
+},{"./element":13,"./node":30,"./utils":33}],17:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -1355,12 +1313,12 @@ var CSS = require("./css")["default"];
 
 /**
  * Changing of element styles support
- * @module css
+ * @module style
  */
 
 /**
  * CSS properties accessor for an element
- * @memberOf module:css
+ * @memberOf module:style
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this
@@ -1421,7 +1379,7 @@ $Element.prototype.style = function(name, value) {
         }
     });
 };
-},{"./css":1,"./element":13,"./utils":32}],19:[function(require,module,exports){
+},{"./css":1,"./element":13,"./utils":33}],18:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -1547,7 +1505,7 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  * @function
  */
 $Element.prototype.children = makeChildTraversingMethod(true);
-},{"./element":13,"./elements":21,"./selectormatcher":31,"./utils":32}],20:[function(require,module,exports){
+},{"./element":13,"./elements":21,"./selectormatcher":32,"./utils":33}],19:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Element = require("./element")["default"];
@@ -1588,89 +1546,94 @@ var parseTimeValue = function(value)  {
 
                 if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
                     // remove temporary properties
-                    style.pointerEvents = "";
                     style.willChange = "";
                 }
 
                 if (callback) callback(el, index, ref);
+            },
+            processVisibilityChange = function()  {
+                var compStyle = _.computeStyle(node),
+                    isHidden = typeof fn === "function" ? fn(node) : fn,
+                    duration, index, transition, absentance, completeAnimation, timeoutId;
+                // Legacy Android is too slow and has a lot of bugs in the CSS animations
+                // implementation, so skip animations for it (duration value is always zero)
+                if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
+                    duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
+                }
+
+                if (duration) {
+                    // make sure that the visibility property will be changed
+                    // to trigger the completeAnimation callback
+                    if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
+
+                    transition = transitionProps.map(function(prop, index)  {
+                        // have to use regexp to split transition-timing-function value
+                        return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+                    });
+
+                    // try to find existing or use 0s length or make a new visibility transition
+                    index = transition[1].indexOf("visibility");
+                    if (index &lt; 0) index = transition[2].indexOf("0s");
+                    if (index &lt; 0) index = transition[0].length;
+
+                    transition[0][index] = "linear";
+                    transition[1][index] = "visibility";
+                    transition[isHidden ? 2 : 3][index] = "0s";
+                    transition[isHidden ? 3 : 2][index] = duration + "ms";
+
+                    transition.forEach(function(value, index)  {
+                        CSS.set[transitionProps[index]](style, value.join(", "));
+                    });
+
+                    // use willChange to improve performance in modern browsers:
+                    // http://dev.opera.com/articles/css-will-change-property/
+                    style.willChange = transition[1].join(", ");
+
+                    completeAnimation = function(e)  {
+                        if (!e || e.propertyName === "visibility") {
+                            if (e) e.stopPropagation(); // this is an internal event
+
+                            clearTimeout(timeoutId);
+
+                            node.removeEventListener(eventType, completeAnimation, false);
+
+                            completeVisibilityChange();
+                        }
+                    };
+
+                    node.addEventListener(eventType, completeAnimation, false);
+                    // make sure that the completeAnimation callback will be called
+                    timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
+                }
+
+                if (isHidden) {
+                    absentance = style[absentStrategy[0]];
+                    // store current inline value in the internal property
+                    if (absentance !== "none") el.set("__visibility", absentance);
+                } else {
+                    // restore initial property value if it exists
+                    style[absentStrategy[0]] = el.get("__visibility") || "";
+                }
+
+                style.visibility = isHidden ? "hidden" : "visible";
+                // trigger native CSS animation
+                el.set("aria-hidden", String(isHidden));
+                // must be AFTER changing the aria-hidden attribute
+                if (!duration) completeVisibilityChange();
             };
 
         // by using requestAnimationFrame we fix several issues:
         // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
         // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
         // 3) power consuption: looped show/hide does almost nothing if page is not active
-        _.raf(function()  {
-            var compStyle = _.computeStyle(node),
-                isHidden = typeof fn === "function" ? fn(node) : fn,
-                duration, index, transition, absentance, completeAnimation, timeoutId;
-            // Legacy Android is too slow and has a lot of bugs in the CSS animations
-            // implementation, so skip animations for it (duration value is always zero)
-            if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
-                duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
-            }
 
-            if (duration) {
-                // make sure that the visibility property will be changed
-                // to trigger the completeAnimation callback
-                if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
-
-                transition = transitionProps.map(function(prop, index)  {
-                    // have to use regexp to split transition-timing-function value
-                    return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
-                });
-
-                // try to find existing or use 0s length or make a new visibility transition
-                index = transition[1].indexOf("visibility");
-                if (index &lt; 0) index = transition[2].indexOf("0s");
-                if (index &lt; 0) index = transition[0].length;
-
-                transition[0][index] = "linear";
-                transition[1][index] = "visibility";
-                transition[isHidden ? 2 : 3][index] = "0s";
-                transition[isHidden ? 3 : 2][index] = duration + "ms";
-
-                transition.forEach(function(value, index)  {
-                    CSS.set[transitionProps[index]](style, value.join(", "));
-                });
-
-                // prevent accidental user actions during animation
-                style.pointerEvents = "none";
-                // use willChange to improve performance in modern browsers:
-                // http://dev.opera.com/articles/css-will-change-property/
-                style.willChange = transition[1].join(", ");
-
-                completeAnimation = function(e)  {
-                    if (!e || e.propertyName === "visibility") {
-                        if (e) e.stopPropagation(); // this is an internal event
-
-                        clearTimeout(timeoutId);
-
-                        node.removeEventListener(eventType, completeAnimation, false);
-
-                        completeVisibilityChange();
-                    }
-                };
-
-                node.addEventListener(eventType, completeAnimation, false);
-                // make sure that the completeAnimation callback will be called
-                timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
-            }
-
-            if (isHidden) {
-                absentance = style[absentStrategy[0]];
-                // store current inline value in the internal property
-                if (absentance !== "none") el.set("__visibility", absentance);
-            } else {
-                // restore initial property value if it exists
-                style[absentStrategy[0]] = el.get("__visibility") || "";
-            }
-
-            style.visibility = isHidden ? "hidden" : "visible";
-            // trigger native CSS animation
-            el.set("aria-hidden", String(isHidden));
-            // must be AFTER changing the aria-hidden attribute
-            if (!duration) completeVisibilityChange();
-        });
+        // use _.raf only if element is in DOM to avoid quirks on hide().show() calls
+        // TODO: use just DOM.contains in 1.8
+        if (DOM.create(DOM.get("documentElement")).contains(el)) {
+            _.raf(processVisibilityChange);
+        } else {
+            processVisibilityChange();
+        }
     })}},
     makeVisibilityMethod = function(name, fn)  {return function(delay, callback) {
         var len = arguments.length,
@@ -1728,7 +1691,42 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 $Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
     return node.getAttribute("aria-hidden") !== "true";
 });
-},{"./css":1,"./element":13,"./utils":32}],21:[function(require,module,exports){
+},{"./css":1,"./element":13,"./utils":33}],20:[function(require,module,exports){
+"use strict";
+var $Element = require("./element")["default"];
+
+/**
+ * Watch for changes of a particular property/attribute
+ * @param  {String}   name     property/attribute name
+ * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
+ * @return {$Element}
+ */
+$Element.prototype.watch = function(name, callback) {
+    return this.each(function(el)  {
+        var watchers = el._._watchers;
+
+        if (!watchers) el.set("__watchers", watchers = {});
+
+        (watchers[name] || (watchers[name] = [])).push(callback);
+    });
+};
+
+/**
+ * Disable watching of a particular property/attribute
+ * @param  {String}   name    property/attribute name
+ * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
+ * @return {$Element}
+ */
+$Element.prototype.unwatch = function(name, callback) {
+    var eq = function(w)  {return w !== callback};
+
+    return this.each(function(el)  {
+        var watchers = el._._watchers;
+
+        if (watchers) watchers[name] = (watchers[name] || []).filter(eq);
+    });
+};
+},{"./element":13}],21:[function(require,module,exports){
 "use strict";
 var $Element = require("./element")["default"];
 
@@ -1884,7 +1882,7 @@ if (!_.DOM2_EVENTS) {
 EventHandler.hooks = hooks;
 
 exports["default"] = EventHandler;
-},{"./element":13,"./selectormatcher":31,"./utils":32}],23:[function(require,module,exports){
+},{"./element":13,"./selectormatcher":32,"./utils":33}],23:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
@@ -1933,20 +1931,15 @@ $Node.prototype.set = function(key, value) {var this$0 = this;
 
     throw _.makeError("set");
 };
-},{"./node":30,"./utils":32}],24:[function(require,module,exports){
+},{"./node":30,"./utils":33}],24:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
 var $Element = require("./element")["default"];
 
 /**
- * Ancestor check support
- * @module contains
- */
-
-/**
  * Check if element is inside of context
- * @memberOf module:contains
+ * @memberOf $Node.prototype
  * @param  {$Element} element element to check
  * @return {Boolean} true if success
  */
@@ -1954,12 +1947,18 @@ $Node.prototype.contains = function(element) {
     var node = this._._node;
 
     if (element instanceof $Element) {
-        return node && element.every(function(el)  {return node.contains(el._._node)});
+        return node && element.every(function(el)  {
+            var otherNode = el._._node;
+
+            if (otherNode === node) return true;
+            // FIXME: document.contains does not exist in IE8!
+            return node.contains ? node.contains(otherNode) : node.compareDocumentPosition(otherNode) & 16;
+        });
     }
 
     throw _.makeError("contains");
 };
-},{"./element":13,"./node":30,"./utils":32}],25:[function(require,module,exports){
+},{"./element":13,"./node":30,"./utils":33}],25:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
@@ -1992,7 +1991,7 @@ $Node.prototype.data = function(key, value) {var this$0 = this;
 
     throw _.makeError("data", this);
 };
-},{"./node":30,"./utils":32}],26:[function(require,module,exports){
+},{"./node":30,"./utils":33}],26:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
@@ -2041,7 +2040,7 @@ $Node.prototype.dispatch = function(method) {var SLICE$0 = Array.prototype.slice
 
     return result;
 };
-},{"./node":30,"./utils":32}],27:[function(require,module,exports){
+},{"./node":30,"./utils":33}],27:[function(require,module,exports){
 var SLICE$0 = Array.prototype.slice;"use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
@@ -2202,7 +2201,7 @@ $Node.prototype.fire = function(type) {var args = SLICE$0.call(arguments, 1);
         return canContinue;
     });
 };
-},{"./eventhandler":22,"./node":30,"./utils":32}],28:[function(require,module,exports){
+},{"./eventhandler":22,"./node":30,"./utils":33}],28:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
 var $Node = require("./node")["default"];
@@ -2287,7 +2286,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all) {
 $Node.prototype.findAll = function(selector) {
     return this.find(selector, true);
 };
-},{"./element":13,"./elements":21,"./node":30,"./utils":32}],29:[function(require,module,exports){
+},{"./element":13,"./elements":21,"./node":30,"./utils":33}],29:[function(require,module,exports){
 "use strict";
 var $Node = require("./node")["default"];
 
@@ -2435,6 +2434,94 @@ exports["default"] = $Node;
 },{}],31:[function(require,module,exports){
 "use strict";
 var _ = require("./utils")["default"];
+var $Node = require("./node")["default"];
+var $Element = require("./element")["default"];
+var SelectorMatcher = require("./selectormatcher")["default"];
+
+var hooks = {};
+
+/**
+ * Various methods related to positioning
+ * @module positioning
+ */
+
+/**
+ * Check if element is inside of context
+ * @memberOf module:positioning
+ * @param  {$Element} element element to check
+ * @return {Boolean} true if success
+ */
+$Node.prototype.contains = function(element) {
+    var node = this._._node;
+
+    if (element instanceof $Element) {
+        return node && element.every(function(el)  {
+            var otherNode = el._._node;
+
+            if (otherNode === node) return true;
+
+            return node.contains ? node.contains(otherNode) : node.compareDocumentPosition(otherNode) & 16;
+        });
+    }
+
+    throw _.makeError("contains");
+};
+
+/**
+ * Calculates offset of the current element
+ * @memberOf module:positioning
+ * @return object with left, top, bottom, right, width and height properties
+ */
+$Element.prototype.offset = function() {
+    var node = this._._node,
+        clientTop = _.docEl.clientTop,
+        clientLeft = _.docEl.clientLeft,
+        scrollTop = window.pageYOffset || _.docEl.scrollTop,
+        scrollLeft = window.pageXOffset || _.docEl.scrollLeft,
+        boundingRect;
+
+    if (node) {
+        boundingRect = node.getBoundingClientRect();
+
+        return {
+            top: boundingRect.top + scrollTop - clientTop,
+            left: boundingRect.left + scrollLeft - clientLeft,
+            right: boundingRect.right + scrollLeft - clientLeft,
+            bottom: boundingRect.bottom + scrollTop - clientTop,
+            width: boundingRect.right - boundingRect.left,
+            height: boundingRect.bottom - boundingRect.top
+        };
+    }
+};
+
+/**
+ * Check if the element matches selector
+ * @memberOf module:positioning
+ * @param  {String}   selector  css selector for checking
+ * @return {$Element}
+ */
+$Element.prototype.matches = function(selector) {
+    if (!selector || typeof selector !== "string") throw _.makeError("matches");
+
+    var checker = hooks[selector] || SelectorMatcher(selector),
+        node = this._._node;
+
+    return node && !!checker(node);
+};
+
+// $Element.matches hooks
+
+hooks[":focus"] = function(node)  {return node === document.activeElement};
+
+hooks[":hidden"] = function(node)  {
+    return node.getAttribute("aria-hidden") === "true" ||
+        _.computeStyle(node).display === "none" || !_.docEl.contains(node);
+};
+
+hooks[":visible"] = function(node)  {return !hooks[":hidden"](node)};
+},{"./element":13,"./node":30,"./selectormatcher":32,"./utils":33}],32:[function(require,module,exports){
+"use strict";
+var _ = require("./utils")["default"];
 /*
  * Helper for css selectors
  */
@@ -2485,7 +2572,7 @@ exports["default"] = function(selector, context) {
         return result && node;
     };
 }
-},{"./utils":32}],32:[function(require,module,exports){
+},{"./utils":33}],33:[function(require,module,exports){
 "use strict";
 var doc = document,
     win = window,
@@ -2550,7 +2637,7 @@ exports["default"] = {
     each: Array.prototype.forEach,
     some: Array.prototype.some
 };
-},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32])</pre>
+},{}]},{},[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33])</pre>
         </article>
     </section>
 
@@ -2571,7 +2658,7 @@ exports["default"] = {
 					
 		<span class="jsdoc-message">
 		Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a>
-		on Mon Jul 21 2014 01:32:38 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
+		on Fri Aug 01 2014 19:05:27 GMT+0300 (FET) using the <a href="https://github.com/terryweiss/docstrap">DocStrap template</a>.
 		</span>
 				</footer>
 			</div>
