@@ -89,22 +89,22 @@ describe("extend", function() {
         DOM.extend("b", {constructor: spy.and.callFake(complete)});
     });
 
-    it("should accept different selectors for the same element before ready", function(done) {
-        var el = DOM.create("div.watch11.watch12");
+    // it("should accept different selectors for the same element before ready", function(done) {
+    //     var el = DOM.create("div.watch11.watch12");
 
-        DOM.ready(function() {
-            beforeSpy2.and.callFake(function() {
-                expect(beforeSpy1).toHaveBeenCalled();
+    //     DOM.ready(function() {
+    //         beforeSpy2.and.callFake(function() {
+    //             expect(beforeSpy1).toHaveBeenCalled();
 
-                beforeSpy1 = null;
-                beforeSpy2 = null;
+    //             beforeSpy1 = null;
+    //             beforeSpy2 = null;
 
-                done();
-            });
+    //             done();
+    //         });
 
-            jasmine.sandbox.set(el);
-        });
-    });
+    //         jasmine.sandbox.set(el);
+    //     });
+    // });
 
     it("should not match parent elements", function(done) {
         var spy1 = jasmine.createSpy("spy1"),
