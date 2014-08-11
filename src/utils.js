@@ -10,36 +10,11 @@ export default {
         return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %> to verify the function call");
     },
     computeStyle: (node) => {
-        return window.getComputedStyle ? window.getComputedStyle(node) : node.currentStyle;
+        return win.getComputedStyle ? win.getComputedStyle(node) : node.currentStyle;
     },
     injectElement: (el) => {
         return currentScript.parentNode.insertBefore(el, currentScript);
     },
-    raf: (function() {
-        var lastTime = 0,
-            propName = ["r", "webkitR", "mozR", "oR"].reduce((memo, name) => {
-                var prop = name + "equestAnimationFrame";
-
-                return memo || window[prop] && prop;
-            }, null);
-
-        if (propName) {
-            return (callback) => { window[propName](callback) };
-        } else {
-            return (callback) => {
-                var currTime = new Date().getTime(),
-                    timeToCall = Math.max(0, 16 - (currTime - lastTime));
-
-                lastTime = currTime + timeToCall;
-
-                if (timeToCall) {
-                    setTimeout(callback, timeToCall);
-                } else {
-                    callback(currTime + timeToCall);
-                }
-            };
-        }
-    }()),
     // constants
     docEl: doc.documentElement,
     CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,

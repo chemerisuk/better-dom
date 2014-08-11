@@ -101,7 +101,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     hooks[name] = (handler) => {
         var free = true;
         // debounce frequent events
-        return (e) => { if (free) free = _.raf(() => { free = !handler(e) }) };
+        return (e) => { if (free) free = DOM.raf(() => { free = !handler(e) }) };
     };
 });
 

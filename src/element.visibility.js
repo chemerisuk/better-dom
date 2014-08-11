@@ -118,10 +118,10 @@ var parseTimeValue = (value) => {
         // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
         // 3) power consuption: looped show/hide does almost nothing if page is not active
 
-        // use _.raf only if element is in DOM to avoid quirks on hide().show() calls
+        // use DOM.raf only if element is in DOM to avoid quirks on hide().show() calls
         // TODO: use just DOM.contains in 1.8
         if (DOM.create(DOM.get("documentElement")).contains(el)) {
-            _.raf(processVisibilityChange);
+            DOM.raf(processVisibilityChange);
         } else {
             processVisibilityChange();
         }
