@@ -199,11 +199,11 @@ describe("on", function() {
 
     it("should support late binding for private props", function() {
         spy.and.callFake(function() { expect(this).toBe(input) });
-        input.set("-callback", spy);
-        input.on("focus", "-callback").fire("focus");
+        input.set("--callback", spy);
+        input.on("focus", "--callback").fire("focus");
         expect(spy).toHaveBeenCalled();
 
-        input.set("-callback", null);
+        input.set("--callback", null);
         input.fire("focus");
         expect(spy.calls.count()).toBe(1);
     });

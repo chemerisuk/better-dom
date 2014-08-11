@@ -10,7 +10,7 @@ $Element.prototype.watch = function(name, callback) {
     return this.each((el) => {
         var watchers = el._._watchers;
 
-        if (!watchers) el.set("__watchers", watchers = {});
+        if (!watchers) el._._watchers = watchers = {};
 
         (watchers[name] || (watchers[name] = [])).push(callback);
     });

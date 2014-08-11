@@ -25,11 +25,8 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                     fn = callback;
 
                 if (typeof callback === "string") {
-                    if (callback[0] === "-") {
-                        fn = el._[callback.substr(1)];
-                    } else {
-                        fn = el[callback];
-                    }
+                    // use getter to handle custom properties
+                    fn = el[callback] || el.get(callback);
                 }
 
                 // early stop for late binding or when target doesn't match selector

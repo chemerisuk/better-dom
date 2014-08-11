@@ -81,11 +81,11 @@ describe("get", function() {
         });
 
         it("should read an appropriate data-* attribute if it exists", function() {
-            expect(input.get("-a1")).toEqual("x");
-            expect(input.get("-a2")).toEqual({ a: "b", c: 1, d: null });
-            expect(input.get("-a3")).toBe("1=2=3");
-            expect(input.get("-a4")).toBe("/url?q=:q");
-            expect(input.get("-a5")).toBeNull();
+            expect(input.get("--a1")).toEqual("x");
+            expect(input.get("--a2")).toEqual({ a: "b", c: 1, d: null });
+            expect(input.get("--a3")).toBe("1=2=3");
+            expect(input.get("--a4")).toBe("/url?q=:q");
+            expect(input.get("--a5")).toBeNull();
         });
     });
 

@@ -20,8 +20,8 @@ $Element.prototype.get = function(name) {
     if (hook) return hook(node, name);
 
     if (nameType === "string") {
-        if (name[0] === "-") {
-            key = name.substr(1);
+        if (name.substr(0, 2) === "--") {
+            key = name.substr(2);
 
             if (key in data) {
                 value = data[key];
