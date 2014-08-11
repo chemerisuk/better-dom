@@ -1,6 +1,6 @@
-import _ from "./utils";
+import _ from "./util";
 import $Element from "./element";
-import SelectorMatcher from "./selectormatcher";
+import SelectorMatcher from "./util/selectormatcher";
 
 /**
  * Positioning helpers

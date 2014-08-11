@@ -1,4 +1,4 @@
-import _ from "./utils";
+import _ from "./util";
 import DOM from "./dom";
 
 /**

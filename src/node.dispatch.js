@@ -1,4 +1,4 @@
-import _ from "./utils";
+import _ from "./util";
 import $Node from "./node";
 
 var dispatcher = document.createElement("a"),

@@ -1,6 +1,6 @@
-import _ from "./utils";
+import _ from "./util";
 import $Element from "./element";
-import CSS from "./css";
+import CSS from "./util/css";
 
 /**
  * Changing of element visibility support

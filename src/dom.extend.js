@@ -1,7 +1,7 @@
-import _ from "./utils";
+import _ from "./util";
 import DOM from "./dom";
 import $Element from "./element";
-import SelectorMatcher from "./selectormatcher";
+import SelectorMatcher from "./util/selectormatcher";
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener

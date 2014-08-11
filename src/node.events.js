@@ -1,6 +1,6 @@
-import _ from "./utils";
+import _ from "./util";
 import $Node from "./node";
-import EventHandler from "./eventhandler";
+import EventHandler from "./util/eventhandler";
 
 /**
  * Event handling support

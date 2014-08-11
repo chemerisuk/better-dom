@@ -1,7 +1,7 @@
-import _ from "./utils";
+import _ from "./util";
 import $Element from "./element";
 import $Elements from "./elements";
-import SelectorMatcher from "./selectormatcher";
+import SelectorMatcher from "./util/selectormatcher";
 
 /**
  * Element traversing support

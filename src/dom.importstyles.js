@@ -1,6 +1,6 @@
-import _ from "./utils";
+import _ from "./util";
 import DOM from "./dom";
-import CSS from "./css";
+import CSS from "./util/css";
 
 var styleNode = _.injectElement(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
