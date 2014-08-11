@@ -5,7 +5,6 @@
     "boss": true,
     "newcap": false,
     "evil": true,
-    "onevar": true,
     "eqnull": true,
 
     "quotmark": "double",

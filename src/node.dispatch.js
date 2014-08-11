@@ -19,13 +19,12 @@ if (_.DOM2_EVENTS) {
  */
 $Node.prototype.dispatch = function(method, ...args) {
     var methodType = typeof method,
-        el = this,
         node = this._._node,
         handler, result, e;
 
     if (node) {
         if (methodType === "function") {
-            handler = () => { result = method.apply(el, args) };
+            handler = () => { result = method.apply(this, args) };
         } else if (methodType === "string") {
             handler = () => { result = node[method].apply(node, args) };
         } else {

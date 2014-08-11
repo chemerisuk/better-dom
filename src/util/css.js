@@ -1,4 +1,4 @@
-import _ from "./index";
+import _ from "../util";
 
 /*
  * Helper for accessing css properties

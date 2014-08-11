@@ -12,7 +12,7 @@ import { $Node, $Element, $Elements } from "./index";
 var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
-    tmpId = "DOM" + new Date().getTime();
+    tmpId = "DOM" + Date.now();
 
 /**
  * Find the first matched element by css selector
@@ -20,25 +20,25 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
-$Node.prototype.find = function(selector, /*INTERNAL*/all) {
+$Node.prototype.find = function(selector, /*INTERNAL*/all = "") {
     if (typeof selector !== "string") throw _.makeError("find");
 
     var node = this._._node,
         quickMatch = rquickExpr.exec(selector),
-        elements, old, nid, context;
+        result, old, nid, context;
 
     if (!node) return new $Element();
 
     if (quickMatch) {
         if (quickMatch[1]) {
             // speed-up: "TAG"
-            elements = node.getElementsByTagName(selector);
+            result = node.getElementsByTagName(selector);
         } else {
             // speed-up: ".CLASS"
-            elements = node.getElementsByClassName(quickMatch[2]);
+            result = node.getElementsByClassName(quickMatch[2]);
         }
 
-        if (elements && !all) elements = elements[0];
+        if (result && !all) result = result[0];
     } else {
         old = true;
         nid = tmpId;
@@ -61,13 +61,13 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all) {
         }
 
         try {
-            elements = context[all ? "querySelectorAll" : "querySelector"](selector);
+            result = context["querySelector" + all](selector);
         } finally {
             if (!old) node.removeAttribute("id");
         }
     }
 
-    return all ? new $Elements(elements) : $Element(elements);
+    return all ? new $Elements(result) : $Element(result);
 };
 
 /**
@@ -77,5 +77,5 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all) {
  * @return {$Element} matched elements
  */
 $Node.prototype.findAll = function(selector) {
-    return this.find(selector, true);
+    return this.find(selector, "All");
 };

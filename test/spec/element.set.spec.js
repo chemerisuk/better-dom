@@ -93,30 +93,30 @@ describe("set", function() {
     });
 
     describe("private props", function() {
-        it("shoud touch private _data object", function() {
-            input.set("_test", "yeah");
+        it("shoud touch private -data object", function() {
+            input.set("-test", "yeah");
 
-            expect(input).not.toHaveAttr("_test", "yeah");
-            expect(input).not.toHaveProp("_test", "yeah");
+            expect(input).not.toHaveAttr("-test", "yeah");
+            expect(input).not.toHaveProp("-test", "yeah");
         });
 
         it("should store any kind of object", function() {
             var obj = {}, nmb = 123, func = function() {};
 
-            expect(input.set("_obj", obj).get("_obj")).toEqual(obj);
-            expect(input.set("_nmb", nmb).get("_nmb")).toEqual(nmb);
-            expect(input.set("_func", func).get("_func")).toEqual(func);
+            expect(input.set("-obj", obj).get("-obj")).toEqual(obj);
+            expect(input.set("-nmb", nmb).get("-nmb")).toEqual(nmb);
+            expect(input.set("-func", func).get("-func")).toEqual(func);
         });
 
         it("should work with collections", function() {
-            var links = DOM.create("a[data-test]*2");
+            var links = DOM.create("<a data-test=\"data-test\"></a><a data-test=\"data-test\"></a>");
 
-            expect(links.get("_test")).toBeUndefined();
-            expect(links.set("_test", "x")).toBe(links);
-            expect(links.get("_test")).toBeUndefined();
+            expect(links.get("-test")).toBeUndefined();
+            expect(links.set("-test", "x")).toBe(links);
+            expect(links.get("-test")).toBeUndefined();
 
             links.each(function(link) {
-                expect(link.get("_test")).toBe("x");
+                expect(link.get("-test")).toBe("x");
             });
         });
     });
