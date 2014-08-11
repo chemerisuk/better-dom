@@ -1,5 +1,5 @@
 import _ from "./util";
-import DOM from "./dom";
+import DOM from "./index";
 import CSS from "./util/css";
 
 var styleNode = _.injectElement(document.createElement("style")),

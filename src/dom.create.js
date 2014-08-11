@@ -1,7 +1,5 @@
 import _ from "./util";
-import DOM from "./dom";
-import $Element from "./element";
-import $Elements from "./elements";
+import { $Element, $Elements, default as DOM } from "./index";
 
 var sandbox = document.createElement("body");
 

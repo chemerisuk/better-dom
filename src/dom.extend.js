@@ -1,6 +1,5 @@
 import _ from "./util";
-import DOM from "./dom";
-import $Element from "./element";
+import { $Element, default as DOM } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
 // Inspired by trick discovered by Daniel Buchner:

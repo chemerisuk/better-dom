@@ -1,4 +1,4 @@
-import DOM from "./dom";
+import DOM from "./index";
 
 /**
  * Request animation frame helper

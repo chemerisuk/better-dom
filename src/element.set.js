@@ -1,6 +1,5 @@
 import _ from "./util";
-import $Node from "./node";
-import $Element from "./element";
+import { $Node, $Element } from "./index";
 
 var hooks = {},
     sandbox = document.createElement("body");

@@ -1,5 +1,5 @@
 import _ from "./index";
-import $Element from "../element";
+import { $Node, $Element } from "../index";
 import SelectorMatcher from "./selectormatcher";
 
 /*

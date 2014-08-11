@@ -1,4 +1,4 @@
-import $Node from "./node";
+import { $Node } from "./index";
 
 var reInvoke = /cb\.call\(([^)]+)\)/g,
     defaults = {

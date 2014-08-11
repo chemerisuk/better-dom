@@ -1,5 +1,5 @@
 import _ from "./util";
-import DOM from "./dom";
+import DOM from "./index";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done

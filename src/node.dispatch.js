@@ -1,5 +1,5 @@
 import _ from "./util";
-import $Node from "./node";
+import { $Node } from "./index";
 
 var dispatcher = document.createElement("a"),
     safePropName = "onpropertychange";
