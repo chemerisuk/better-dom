@@ -1,8 +1,7 @@
 var doc = document,
     win = window,
     userAgent = win.navigator.userAgent,
-    currentScript = doc.scripts[0],
-    reVar = /\{([\w\-]+)\}/g;
+    currentScript = doc.scripts[0];
 
 export default {
     makeError: (method, DOM) => {
@@ -15,9 +14,6 @@ export default {
     },
     injectElement: (el) => {
         return currentScript.parentNode.insertBefore(el, currentScript);
-    },
-    format: (template, varMap) => {
-        return template.replace(reVar, (x, name) => name in varMap ? varMap[name] : x);
     },
     raf: (function() {
         var lastTime = 0,

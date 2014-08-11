@@ -56,7 +56,7 @@ var // operator type / priority object
 DOM.template = function(template, varMap) {
     if (typeof template !== "string") throw _.makeError("template", true);
     // handle varMap
-    if (varMap) template = _.format(template, varMap);
+    if (varMap) template = DOM.format(template, varMap);
 
     var stack = [],
         output = [],

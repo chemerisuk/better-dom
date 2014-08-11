@@ -22,7 +22,7 @@ $Element.prototype.i18n = function(key, varMap) {
 
     return this.set(languages.concat("").reduce((memo, lang, index) => {
         var value = key in strings && strings[key][index] || key,
-            content = value && varMap ? _.format(value, varMap) : value;
+            content = value && varMap ? DOM.format(value, varMap) : value;
 
         return memo + "<span data-i18n=" + lang + ">" + content + "</span>";
     }, ""));
