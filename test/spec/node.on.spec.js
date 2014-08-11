@@ -243,7 +243,7 @@ describe("on", function() {
         input.set("123").fire("change");
         expect(spy).toHaveBeenCalled();
 
-        input = DOM.create("input[type=checkbox]");
+        input = DOM.create("<input type=\"checkbox\">");
         jasmine.sandbox.set(input);
 
         spy.calls.reset();
@@ -255,7 +255,7 @@ describe("on", function() {
         input.fire("click");
         expect(spy).toHaveBeenCalled();
 
-        input = DOM.create("input[type=radio]");
+        input = DOM.create("<input type=\"radio\">");
         jasmine.sandbox.set(input);
 
         spy.calls.reset();

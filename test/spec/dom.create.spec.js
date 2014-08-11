@@ -2,7 +2,7 @@ describe("create", function() {
     "use strict";
 
     it("should create single DOM element if parameter is not an HTML string", function() {
-        var link = DOM.create("a#{id}[title={title}]", {id: "b", title: "c"});
+        var link = DOM.create(DOM.format("<a id=\"{id}\" title=\"{title}\"></a>", {id: "b", title: "c"}));
 
         jasmine.sandbox.set(link);
 
@@ -37,14 +37,14 @@ describe("create", function() {
         expect(el.child(0)).toHaveTag("span");
     });
 
-    it("should parse emmet-like expressions", function() {
-        var el = DOM.create("ul>li");
+    // it("should parse emmet-like expressions", function() {
+    //     var el = DOM.create("ul>li");
 
-        jasmine.sandbox.set(el);
+    //     jasmine.sandbox.set(el);
 
-        expect(el).toHaveTag("ul");
-        expect(el.child(0)).toHaveTag("li");
-    });
+    //     expect(el).toHaveTag("ul");
+    //     expect(el.child(0)).toHaveTag("li");
+    // });
 
     it("should wrap element to div if HTML string has several root nodes", function() {
         var el = DOM.create("<a></a><b></b>");

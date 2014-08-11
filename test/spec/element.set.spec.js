@@ -137,7 +137,7 @@ describe("set", function() {
         });
 
         it("should set select value properly", function() {
-            var select = DOM.create("select>option>`AM`^option>`PM`)");
+            var select = DOM.create("<select><option>AM</option><option>PM</option></select>");
 
             expect(select.get()).toBe("AM");
             select.set("PM");

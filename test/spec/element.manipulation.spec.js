@@ -5,7 +5,7 @@ describe("manipulation", function() {
         var div, italics;
 
         beforeEach(function() {
-            div = DOM.create("div>a*2^i.removable*2");
+            div = DOM.create("<div><a></a><a></a></div><i class=\"removable\"></i><i class=\"removable\"></i>");
             italics = div.nextAll(".removable");
         });
 
@@ -77,7 +77,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 //var arg = DOM.create(createDiv(strategy));
                 var arg = DOM.create(createDivHtml(strategy)),
-                    otherDiv = DOM.create("div");
+                    otherDiv = DOM.create("<div></div>");
 
                 expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
 
@@ -88,17 +88,17 @@ describe("manipulation", function() {
             });
         });
 
-        it("should support emmet-like expressions", function() {
-            _forIn(checkStrategies, function(checkMethod, strategy) {
-                var arg = createDivEmmet(strategy);
+        // it("should support emmet-like expressions", function() {
+        //     _forIn(checkStrategies, function(checkMethod, strategy) {
+        //         var arg = createDivEmmet(strategy);
 
-                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
-            });
-        });
+        //         expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
+        //     });
+        // });
 
         it("should accept multiple arguments", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
-                expect(div[strategy](createDivHtml(strategy + 1), createDivEmmet(strategy + 2))).toBe(div);
+                expect(div[strategy](createDivHtml(strategy + 1), createDivHtml(strategy + 2))).toBe(div);
 
                 expect(checkMethod(div)).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
                 checkMethod(div).remove();
@@ -163,10 +163,6 @@ describe("manipulation", function() {
 
     function createDivHtmlWhitespaced(className) {
         return "   <div class='" + className + "'></div>  ";
-    }
-
-    function createDivEmmet(className) {
-        return "div." + className;
     }
 
     function expectToBeReplaced(id) {

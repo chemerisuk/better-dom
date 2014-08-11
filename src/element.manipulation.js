@@ -19,7 +19,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 if (typeof arg === "function") arg = arg(el, index, ref);
 
                 if (typeof arg === "string") {
-                    html += DOM.template(arg).trim();
+                    html += arg.trim();
                 } else if (arg instanceof $Element) {
                     if (!value) value = document.createDocumentFragment();
                     // populate fragment
@@ -43,7 +43,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 /**
  * Insert html string or $Element after the current
  * @memberOf module:manipulation
- * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -54,7 +54,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, (n
 /**
  * Insert html string or $Element before the current
  * @memberOf module:manipulation
- * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -65,7 +65,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
 /**
  * Prepend html string or $Element to the current
  * @memberOf module:manipulation
- * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -76,7 +76,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
 /**
  * Append html string or $Element to the current
  * @memberOf module:manipulation
- * @param {...Mixed} contents HTMLString, EmmetString, $Element or functor that returns content
+ * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -87,7 +87,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
 /**
  * Replace current element with html string or $Element
  * @memberOf module:manipulation
- * @param {Mixed} content HTMLString, EmmetString, $Element or functor that returns content
+ * @param {Mixed} content HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */

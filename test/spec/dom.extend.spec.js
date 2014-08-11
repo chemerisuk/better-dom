@@ -49,7 +49,7 @@ describe("extend", function() {
     });
 
     it("should not execute the same extension twice", function(done) {
-        var link = DOM.create("a.ext1.ext2"),
+        var link = DOM.create("<a class=\"ext1 ext2\"></a>"),
             spy = jasmine.createSpy("ext2"),
             complete = function() {
                 if (callback.calls.count() === 1 && spy.calls.count() === 1) {

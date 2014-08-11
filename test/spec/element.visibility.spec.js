@@ -21,7 +21,7 @@ describe("visibility", function() {
     var link;
 
     beforeEach(function() {
-        link = DOM.create("a>`123`");
+        link = DOM.create("<a>123</a>");
 
         jasmine.sandbox.set(link);
     });
@@ -88,7 +88,7 @@ describe("visibility", function() {
         });
 
         it("should respect ms and s suffixes for duration", function(done) {
-            var otherLink = DOM.create("a.fade[style='transition:opacity 10ms;-webkit-transition:opacity 10ms']>`abc`"),
+            var otherLink = DOM.create("<a class=\"fade\" style='transition:opacity 10ms;-webkit-transition:opacity 10ms'>abc</a>"),
                 spy = jasmine.createSpy("transition");
 
             link.style("cssText", "animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block");
@@ -105,7 +105,7 @@ describe("visibility", function() {
         it("should work for several transitions", function(done) {
             var start = Date.now();
 
-            link = DOM.create("a.fade[style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 10ms, -webkit-transform 200ms']>`abc`");
+            link = DOM.create("<a class=\"fade\" style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 10ms, -webkit-transform 200ms'>abc</a>");
 
             jasmine.sandbox.set(link);
 
