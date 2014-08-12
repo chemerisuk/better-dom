@@ -115,6 +115,9 @@
 
                     if (actual) {
                         actual.legacy(function(node) {
+                            // IE8 has upper cased props
+                            if (!(name in node.style)) name = name.toUpperCase();
+
                             result.pass = node.style[name] === value;
                         });
                     }

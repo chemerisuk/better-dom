@@ -37,6 +37,13 @@ describe("create", function() {
         expect(el.child(0)).toHaveTag("span");
     });
 
+    // it("should support varMap for HTML strings", function() {
+    //     var el = DOM.create("<a>{0}</a>", ["yo"]);
+
+    //     expect(el).toHaveTag("a");
+    //     expect(el.get()).toBe("yo");
+    // });
+
     // it("should parse emmet-like expressions", function() {
     //     var el = DOM.create("ul>li");
 

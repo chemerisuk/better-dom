@@ -1,5 +1,5 @@
 import _ from "./util";
-import { $Element, $Elements } from "./index";
+import { $Element, $Elements, DOM } from "./index";
 
 /**
  * Element search support
@@ -44,7 +44,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
         nid = tmpId;
         context = node;
 
-        if (node !== _.docEl) {
+        if (this !== DOM) {
             // qSA works strangely on Element-rooted queries
             // We can work around this by specifying an extra ID on the root
             // and working up from there (Thanks to Andrew Dupont for the technique)
