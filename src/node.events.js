@@ -85,7 +85,7 @@ $Node.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy((node, el) => {
-        el.set("__handlers", el._._handlers.filter((handler) => {
+        el._._handlers = el._._handlers.filter((handler) => {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 
             type = handler._type || handler.type;
@@ -98,7 +98,7 @@ $Node.prototype.off = function(type, callback) {
 
                 node.detachEvent("on" + type, handler);
             }
-        }));
+        });
     });
 };
 

@@ -100,10 +100,10 @@ var parseTimeValue = (value) => {
                 if (isHidden) {
                     absentance = style[absentStrategy[0]];
                     // store current inline value in the internal property
-                    if (absentance !== "none") el.set("__visibility", absentance);
+                    if (absentance !== "none") el._._visibility = absentance;
                 } else {
                     // restore initial property value if it exists
-                    style[absentStrategy[0]] = el.get("__visibility") || "";
+                    style[absentStrategy[0]] = el._._visibility || "";
                 }
 
                 style.visibility = isHidden ? "hidden" : "visible";
