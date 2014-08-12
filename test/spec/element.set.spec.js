@@ -93,17 +93,17 @@ describe("set", function() {
     });
 
     it("should access cssText for the style property", function() {
-        expect(link).not.toHaveStyle("z-index", "100");
+        expect(link).not.toHaveStyle("font-style", "italic");
         expect(link).not.toHaveStyle("float", "left");
 
-        link.set("style", "z-index:100");
+        link.set("style", "font-style:italic");
 
-        expect(link).toHaveStyle("z-index", "100");
+        expect(link).toHaveStyle("font-style", "italic");
         expect(link).not.toHaveStyle("float", "left");
 
         link.set("style", "float:left");
 
-        expect(link).not.toHaveStyle("z-index", "100");
+        expect(link).not.toHaveStyle("font-style", "italic");
         expect(link).toHaveStyle("float", "left");
     });
 

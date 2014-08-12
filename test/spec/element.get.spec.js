@@ -85,7 +85,7 @@ describe("get", function() {
 
         input.style("float", "left");
 
-        expect(input.get("style").trim()).toBe("float: left;");
+        expect(input.get("style").trim().toLowerCase().indexOf("float: left")).toBe(0);
     });
 
     describe("custom props", function() {

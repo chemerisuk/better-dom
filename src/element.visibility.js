@@ -119,8 +119,7 @@ var parseTimeValue = (value) => {
         // 3) power consuption: looped show/hide does almost nothing if page is not active
 
         // use DOM.raf only if element is in DOM to avoid quirks on hide().show() calls
-        // TODO: use just DOM.contains in 1.8
-        if (DOM.create(DOM.get("documentElement")).contains(el)) {
+        if (DOM.contains(el)) {
             DOM.raf(processVisibilityChange);
         } else {
             processVisibilityChange();

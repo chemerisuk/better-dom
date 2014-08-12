@@ -2,11 +2,10 @@ describe("legacy", function() {
     "use strict";
 
     it("should pass native element into callback", function() {
-        var spy = jasmine.createSpy("legacy"),
-            htmlEl = DOM.find("html");
+        var spy = jasmine.createSpy("legacy");
 
-        htmlEl.legacy(spy);
-        expect(spy).toHaveBeenCalledWith(document.documentElement, htmlEl, 0, htmlEl);
+        DOM.legacy(spy);
+        expect(spy).toHaveBeenCalledWith(document.documentElement, DOM, 0, DOM);
     });
 
     it("should work for collections", function() {

@@ -1,13 +1,13 @@
 import _ from "./util";
-import { $Node, $Element } from "./index";
+import { $Element } from "./index";
 
 /**
  * Check if element is inside of context
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {$Element} element element to check
  * @return {Boolean} true if success
  */
-$Node.prototype.contains = function(element) {
+$Element.prototype.contains = function(element) {
     var node = this._._node;
 
     if (element instanceof $Element) {
@@ -15,8 +15,12 @@ $Node.prototype.contains = function(element) {
             var otherNode = el._._node;
 
             if (otherNode === node) return true;
-            // FIXME: document.contains does not exist in IE8!
-            return node.contains ? node.contains(otherNode) : node.compareDocumentPosition(otherNode) & 16;
+
+            if (node.contains) {
+                return node.contains(otherNode);
+            } else {
+                return node.compareDocumentPosition(otherNode) & 16;
+            }
         });
     }
 

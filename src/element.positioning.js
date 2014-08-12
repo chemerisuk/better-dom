@@ -56,9 +56,8 @@ $Element.prototype.matches = function(selector) {
 hooks[":focus"] = (node) => node === document.activeElement;
 
 hooks[":hidden"] = (node, el) => {
-    // TODO: use just DOM.contains in 1.8
     return node.getAttribute("aria-hidden") === "true" ||
-        _.computeStyle(node).display === "none" || !DOM.create(DOM.get("documentElement")).contains(el);
+        _.computeStyle(node).display === "none" || !DOM.contains(el);
 };
 
 hooks[":visible"] = (node, el) => !hooks[":hidden"](node, el);

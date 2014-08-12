@@ -1,5 +1,5 @@
 import _ from "./util";
-import { $Node } from "./index";
+import { $Element } from "./index";
 
 var dispatcher = document.createElement("a"),
     safePropName = "onpropertychange";
@@ -17,7 +17,7 @@ if (_.DOM2_EVENTS) {
  * @param  {...Object}        [args]  extra arguments to pass into each invokation
  * @return {Object} result of the invokation which is undefined if there was an exception
  */
-$Node.prototype.dispatch = function(method, ...args) {
+$Element.prototype.dispatch = function(method, ...args) {
     var methodType = typeof method,
         node = this._._node,
         handler, result, e;

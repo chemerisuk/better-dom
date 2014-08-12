@@ -1,5 +1,5 @@
 import _ from "./util";
-import { $Node, $Element, $Elements } from "./index";
+import { $Element, $Elements } from "./index";
 
 /**
  * Element search support
@@ -20,7 +20,7 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
-$Node.prototype.find = function(selector, /*INTERNAL*/all = "") {
+$Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
     if (typeof selector !== "string") throw _.makeError("find");
 
     var node = this._._node,
@@ -44,7 +44,7 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all = "") {
         nid = tmpId;
         context = node;
 
-        if (node !== document) {
+        if (node !== _.docEl) {
             // qSA works strangely on Element-rooted queries
             // We can work around this by specifying an extra ID on the root
             // and working up from there (Thanks to Andrew Dupont for the technique)
@@ -76,6 +76,6 @@ $Node.prototype.find = function(selector, /*INTERNAL*/all = "") {
  * @param  {String} selector css selector
  * @return {$Element} matched elements
  */
-$Node.prototype.findAll = function(selector) {
+$Element.prototype.findAll = function(selector) {
     return this.find(selector, "All");
 };

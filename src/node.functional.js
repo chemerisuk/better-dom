@@ -1,4 +1,4 @@
-import { $Node } from "./index";
+import { $Element } from "./index";
 
 var reInvoke = /cb\.call\(([^)]+)\)/g,
     defaults = {
@@ -22,38 +22,38 @@ var reInvoke = /cb\.call\(([^)]+)\)/g,
 
 /**
  * Execute callback on each element in the collection
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback  function that accepts (element, index, self)
  * @param  {Object}   [context] callback context
- * @return {$Node}
+ * @return {$Element}
  * @function
  */
-$Node.prototype.each = makeLoopMethod({
+$Element.prototype.each = makeLoopMethod({
     BODY:  "cb.call(that, this[i], i, this)"
 });
 
 /**
  * Check if the callback returns true for any element in the collection
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Boolean} true, if any element in the collection return true
  * @function
  */
-$Node.prototype.some = makeLoopMethod({
+$Element.prototype.some = makeLoopMethod({
     BODY:  "if (cb.call(that, this[i], i, this) === true) return true",
     END:   "return false"
 });
 
 /**
  * Check if the callback returns true for all elements in the collection
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Boolean} true, if all elements in the collection returns true
  * @function
  */
-$Node.prototype.every = makeLoopMethod({
+$Element.prototype.every = makeLoopMethod({
     BEGIN: "var out = true",
     BODY:  "out = cb.call(that, this[i], i, this) && out",
     END:   "return out"
@@ -61,13 +61,13 @@ $Node.prototype.every = makeLoopMethod({
 
 /**
  * Create an array of values by running each element in the collection through the callback
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Array} new array of the results of each callback execution
  * @function
  */
-$Node.prototype.map = makeLoopMethod({
+$Element.prototype.map = makeLoopMethod({
     BEGIN: "var out = Array(this && this.length || 0)",
     BODY:  "out[i] = cb.call(that, this[i], i, this)",
     END:   "return out"
@@ -75,13 +75,13 @@ $Node.prototype.map = makeLoopMethod({
 
 /**
  * Examine each element in a collection, returning an array of all elements the callback returns truthy for
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Array} new array with elements where callback returned true
  * @function
  */
-$Node.prototype.filter = makeLoopMethod({
+$Element.prototype.filter = makeLoopMethod({
     BEGIN: "var out = []",
     BODY:  "if (cb.call(that, this[i], i, this)) out.push(this[i])",
     END:   "return out"
@@ -89,13 +89,13 @@ $Node.prototype.filter = makeLoopMethod({
 
 /**
  * Boil down a list of values into a single value (from start to end)
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback function that accepts (memo, element, index, self)
  * @param  {Object}   [memo]   initial value of the accumulator
  * @return {Object} the accumulated value
  * @function
  */
-$Node.prototype.reduce = makeLoopMethod({
+$Element.prototype.reduce = makeLoopMethod({
     BEGIN: "var len = arguments.length; if (len < 2) that = this[0]",
     BODY:  "that = cb(that, this[len < 2 ? i + 1 : i], i, this)",
     END:   "return that"
@@ -103,13 +103,13 @@ $Node.prototype.reduce = makeLoopMethod({
 
 /**
  * Boil down a list of values into a single value (from end to start)
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback function that accepts (memo, element, index, self)
  * @param  {Object}   [memo]   initial value of the accumulator
  * @return {Object} the accumulated value
  * @function
  */
-$Node.prototype.reduceRight = makeLoopMethod({
+$Element.prototype.reduceRight = makeLoopMethod({
     BEGIN: "var j, len = arguments.length; if (len < 2) that = this[this.length - 1]",
     BODY:  "j = n - i - 1; that = cb(that, this[len < 2 ? j - 1 : j], j, this)",
     END:   "return that"
@@ -117,11 +117,11 @@ $Node.prototype.reduceRight = makeLoopMethod({
 
 /**
  * Execute code in a 'unsafe' block where the first callback argument is native object.
- * @memberOf $Node.prototype
+ * @memberOf $Element.prototype
  * @param  {Function} callback function that accepts (node, element, index, self)
- * @return {$Node}
+ * @return {$Element}
  * @function
  */
-$Node.prototype.legacy = makeLoopMethod({
+$Element.prototype.legacy = makeLoopMethod({
     BODY:  "cb.call(that, this[i]._._node, this[i], i, this)"
 });

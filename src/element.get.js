@@ -1,5 +1,5 @@
 import _ from "./util";
-import { $Node, $Element } from "./index";
+import { $Element } from "./index";
 
 var hooks = {};
 
@@ -44,9 +44,11 @@ $Element.prototype.get = function(name) {
         }
 
         return name in node ? node[name] : node.getAttribute(name);
+    } else if (Array.isArray(name)) {
+        return name.reduce((r, key) => { return r[key] = this.get(key), r }, {});
+    } else {
+        throw _.makeError("get");
     }
-
-    return $Node.prototype.get.call(this, name);
 };
 
 // $Element#get hooks
@@ -57,6 +59,8 @@ $Element.prototype.get = function(name) {
 });
 
 hooks.style = (node) => node.style.cssText;
+
+hooks.title = (node) => node === _.docEl ? document.title : node.title;
 
 hooks.undefined = (node) => {
     var name;

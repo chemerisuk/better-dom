@@ -1,5 +1,5 @@
 import _ from "./util";
-import { $Node, $Element } from "./index";
+import { $Element } from "./index";
 
 var hooks = {},
     sandbox = document.createElement("body");
@@ -33,7 +33,11 @@ $Element.prototype.set = function(name, value) {
             if (hook) {
                 hook(node, newValue);
             } else if (nameType !== "string") {
-                return $Node.prototype.set.call(el, name);
+                if (name && nameType === "object") {
+                    return _.forOwn(name, (value, key) => { el.set(key, value) });
+                }
+
+                throw _.makeError("set");
             } else if (newValue == null) {
                 node.removeAttribute(name);
             } else if (name in node) {
@@ -55,6 +59,8 @@ $Element.prototype.set = function(name, value) {
 // $Element#set hooks
 
 hooks.style = (node, value) => { node.style.cssText = value };
+
+hooks.title = (node, value) => { (node === _.docEl ? document : node).title = value; };
 
 hooks.undefined = function(node, value) {
     // handle numbers, booleans etc.

@@ -1,5 +1,5 @@
 import _ from "./util";
-import { $Node } from "./index";
+import { $Element } from "./index";
 import EventHandler from "./util/eventhandler";
 
 /**
@@ -14,9 +14,9 @@ import EventHandler from "./util/eventhandler";
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Function|String} callback event callback or property name (for late binding)
  * @param  {Array}           [props] array of event properties to pass into the callback
- * @return {$Node}
+ * @return {$Element}
  */
-$Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
+$Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
     var eventType = typeof type,
         selector, index, args;
 
@@ -68,9 +68,9 @@ $Node.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Function|String} callback event callback or property name (for late binding)
  * @param  {Array}           [props] array of event properties to pass into the callback
- * @return {$Node}
+ * @return {$Element}
  */
-$Node.prototype.once = function(...args) {
+$Element.prototype.once = function(...args) {
     return this.on.apply(this, args.concat(true));
 };
 
@@ -79,9 +79,9 @@ $Node.prototype.once = function(...args) {
  * @memberOf module:events
  * @param  {String}          type type of event
  * @param  {Function|String} [callback] event handler
- * @return {$Node}
+ * @return {$Element}
  */
-$Node.prototype.off = function(type, callback) {
+$Element.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw _.makeError("off");
 
     return this.legacy((node, el) => {
@@ -109,7 +109,7 @@ $Node.prototype.off = function(type, callback) {
  * @param  {...Object}     [args]  extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented
  */
-$Node.prototype.fire = function(type, ...args) {
+$Element.prototype.fire = function(type, ...args) {
     var eventType = typeof type,
         handler = {}, hook;
 

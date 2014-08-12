@@ -1,34 +1,23 @@
 /**
- * Used to represent a DOM node
- * @name $Node
- * @constructor
- * @private
- */
-export function $Node(node) {
-    if (node) this[0] = node.__dom__ = this;
-
-    this._ = {_node: node, _handlers: []};
-    this.length = node ? 1 : 0;
-}
-
-/**
  * Used to represent a DOM element
  * @name $Element
  * @extends $Node
  * @constructor
  * @private
  */
-export function $Element(element) {
-    if (element && element.__dom__) return element.__dom__;
+export function $Element(node) {
+    if (node && node.__dom__) return node.__dom__;
 
     if (this instanceof $Element) {
-        $Node.call(this, element);
+        if (node) this[0] = node.__dom__ = this;
+
+        this._ = { _node: node, _handlers: [] };
+        this.length = node ? 1 : 0;
     } else {
-        return new $Element(element);
+        return new $Element(node);
     }
 }
 
-$Element.prototype = new $Node();
 $Element.prototype.toString = function() {
     var node = this._._node;
 
@@ -54,7 +43,7 @@ export function $Elements(elements) {
 $Elements.prototype = new $Element();
 $Elements.prototype.toString = Array.prototype.join;
 
-var DOM = new $Node(document);
+var DOM = new $Element(document.documentElement);
 
 DOM.version = "<%= pkg.version %>";
 
