@@ -92,7 +92,22 @@ describe("set", function() {
         expect(document.title).toBe("abc");
     });
 
-    describe("private props", function() {
+    it("should access cssText for the style property", function() {
+        expect(link).not.toHaveStyle("z-index", "100");
+        expect(link).not.toHaveStyle("float", "left");
+
+        link.set("style", "z-index:100");
+
+        expect(link).toHaveStyle("z-index", "100");
+        expect(link).not.toHaveStyle("float", "left");
+
+        link.set("style", "float:left");
+
+        expect(link).not.toHaveStyle("z-index", "100");
+        expect(link).toHaveStyle("float", "left");
+    });
+
+    describe("custom props", function() {
         it("shoud touch private --data object", function() {
             input.set("--test", "yeah");
 

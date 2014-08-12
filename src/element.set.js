@@ -54,6 +54,8 @@ $Element.prototype.set = function(name, value) {
 
 // $Element#set hooks
 
+hooks.style = (node, value) => { node.style.cssText = value };
+
 hooks.undefined = function(node, value) {
     // handle numbers, booleans etc.
     value = value == null ? "" : String(value);

@@ -80,6 +80,14 @@ describe("get", function() {
         expect(input.get("tabindex")).toBe(10);
     });
 
+    it("should return cssText on accessing style property", function() {
+        expect(input.get("style")).toBe("");
+
+        input.style("float", "left");
+
+        expect(input.get("style").trim()).toBe("float: left;");
+    });
+
     describe("custom props", function() {
         beforeEach(function() {
             input = DOM.create("<input data-a1=\"x\" data-a2='{\"a\":\"b\",\"c\":1,\"d\":null}' data-a3=\"1=2=3\" data-a4=\"/url?q=:q\">");

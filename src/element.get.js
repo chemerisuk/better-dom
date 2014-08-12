@@ -56,6 +56,8 @@ $Element.prototype.get = function(name) {
     hooks[key.toLowerCase()] = (node) => node[key];
 });
 
+hooks.style = (node) => node.style.cssText;
+
 hooks.undefined = (node) => {
     var name;
 
