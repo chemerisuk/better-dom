@@ -1,4 +1,4 @@
-import _ from "./util";
+import _ from "./util/index";
 import { $Element } from "./index";
 
 var dispatcher = document.createElement("a"),

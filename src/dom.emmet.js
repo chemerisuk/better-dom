@@ -1,4 +1,4 @@
-import _ from "./util";
+import _ from "./util/index";
 import DOM from "./index";
 
 /*es6-transpiler has-iterators:false, has-generators: false*/
@@ -62,7 +62,7 @@ DOM.emmet = function(template, varMap) {
     var stack = [],
         output = [],
         term = "",
-        priority, skip, node;
+        priority, skip, node, str;
 
     if (template in tagCache) return tagCache[template];
 
@@ -70,7 +70,7 @@ DOM.emmet = function(template, varMap) {
 
     // parse expression into RPN
 
-    for (let str of template) {
+    for (str of template) {
         // concat .c1.c2 into single space separated class string
         if (str === "." && stack[0] === ".") str = " ";
 
@@ -123,7 +123,7 @@ DOM.emmet = function(template, varMap) {
 
     stack = [];
 
-    for (let str of output) {
+    for (str of output) {
         if (str in operators) {
             term = stack.shift();
             node = stack.shift() || [""];

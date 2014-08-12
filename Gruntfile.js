@@ -1,19 +1,38 @@
+var path = require("path");
+var es6tr = require("es6-transpiler");
+
+var es6modules = require("es6-module-transpiler");
+var recast = require("es6-module-transpiler/node_modules/recast");
+var Container = es6modules.Container;
+var FileResolver = es6modules.FileResolver;
+var BundleFormatter = es6modules.formatters.bundle;
+
+var pkg = require("./package.json");
+var banner =
+    "/**\n" +
+    " * @file <%= filename %>\n" +
+    " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
+    " * @overview <%= pkg.description %>\n" +
+    " * @copyright 2013-<%= grunt.template.today('yyyy') %> <%= pkg.author %>\n" +
+    " * @license <%= pkg.license %>\n" +
+    " * @see <%= pkg.repository.url %>\n" +
+    " */\n";
+
 module.exports = function(grunt) {
     "use strict";
 
-    var pkg = grunt.file.readJSON("package.json"),
-        gruntDeps = function(name) { return !name.indexOf("grunt-") };
+    var gruntDeps = function(name) { return !name.indexOf("grunt-") };
 
     grunt.initConfig({
         pkg: pkg,
         watch: {
             build: {
-                files: ["src/*.js"],
-                tasks: ["browserify:compile", "karma:watch:run"]
+                files: ["src/*.js", "src/**/*.js"],
+                tasks: ["compile:main", "karma:watch:run"]
             },
             legacy: {
                 files: ["legacy/*.js"],
-                tasks: ["browserify:legacy"]
+                tasks: ["compile:legacy", "karma:watch:run"]
             },
             specs: {
                 files: ["test/spec/*.js"],
@@ -137,60 +156,57 @@ module.exports = function(grunt) {
                 }
             }
         },
-        browserify: {
-            legacy: {
-                files: {
-                    "build/better-dom-legacy.js": [
-                        "legacy/*.js",
-                        "bower_components/html5shiv/src/html5shiv.js",
-                        "bower_components/es5-shim/es5-shim.js"
-                    ]
-                },
-                options: {
-                    postBundleCB: function(err, src, next) {
-                        // append copyrights header
-                        next(err, grunt.template.process(
-                            "/**\n" +
-                            " * @file <%= pkg.name %>-legacy.js\n" +
-                            " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
-                            " * @overview <%= pkg.description %>\n" +
-                            " * @copyright 2013-<%= grunt.template.today('yyyy') %> <%= pkg.author %>\n" +
-                            " * @license <%= pkg.license %>\n" +
-                            " * @see <%= pkg.repository.url %>\n" +
-                            " */\n" +
-                        src));
-                    }
-                }
+        compile: {
+            main: {
+                src: "src/",
+                dest: "build/better-dom.js"
             },
-            compile: {
-                files: {
-                    "build/better-dom.js": ["src/*.js"]
-                },
-                options: {
-                    transform: ["browserify-es6-modules", "es6-browserify"],
-                    postBundleCB: function(err, src, next) {
-                        // append copyrights header
-                        next(err, grunt.template.process(
-                            "/**\n" +
-                            " * @file <%= pkg.name %>.js\n" +
-                            " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>\n" +
-                            " * @overview <%= pkg.description %>\n" +
-                            " * @copyright 2013-<%= grunt.template.today('yyyy') %> <%= pkg.author %>\n" +
-                            " * @license <%= pkg.license %>\n" +
-                            " * @see <%= pkg.repository.url %>\n" +
-                            " */\n" +
-                        src));
-                    }
-                }
+            legacy: {
+                src: "legacy/",
+                dest: "build/better-dom-legacy.js"
             }
         }
     });
 
     Object.keys(pkg.devDependencies).filter(gruntDeps).forEach(grunt.loadNpmTasks);
 
+    grunt.task.registerMultiTask("compile", function() {
+        var folder = this.data.src;
+        var outputFile = this.data.dest;
+
+        var container = new Container({
+                resolvers: [ new FileResolver([folder]) ],
+                formatter: new BundleFormatter()
+            });
+
+        grunt.file.recurse(folder, function(abspath, rootdir, subdir, filename) {
+            if (filename[0] === ".") return;
+
+            container.getModule(abspath.replace(folder, ""));
+        });
+
+        var ast = container.convert();
+        var code = recast.print(ast[0]).code;
+
+        code = grunt.template.process(banner + code, {data: {pkg: pkg, filename: path.basename(outputFile) }});
+
+        grunt.file.mkdir(path.dirname(outputFile));
+
+        var result = es6tr.run({
+            src: code,
+            globals: {DOM: true},
+            outputFilename: outputFile
+        });
+
+        if (result.errors.length > 0) {
+            grunt.file.write(outputFile, code);
+            grunt.fail.fatal("\n" + result.errors.join("\n"));
+        }
+    });
+
     grunt.registerTask("dev", [
         "clean:build",
-        "browserify",
+        "compile",
         "jshint",
         "connect",
         "karma:watch",

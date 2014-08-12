@@ -1,5 +1,6 @@
-import _ from "./util";
-import { $Element, $Elements, DOM } from "./index";
+import _ from "./util/index";
+import DOM from "./index";
+import { $Element, $Elements } from "./index";
 
 /**
  * Element search support

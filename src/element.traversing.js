@@ -1,4 +1,4 @@
-import _ from "./util";
+import _ from "./util/index";
 import { $Element, $Elements } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 

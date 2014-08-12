@@ -1,5 +1,5 @@
-import _ from "./util";
-import { $Element } from "./index";
+import _ from "./util/index";
+import { $Element, default as DOM } from "./index";
 import CSS from "./util/css";
 
 /**
