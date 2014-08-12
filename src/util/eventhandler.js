@@ -105,9 +105,8 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
 });
 
 if ("onfocusin" in _.docEl) {
-    _.forOwn({focus: "focusin", blur: "focusout"}, (value, prop) => {
-        hooks[prop] = (handler) => { handler._type = value };
-    });
+    hooks.focus = (handler) => { handler._type = "focusin" };
+    hooks.blur = (handler) => { handler._type = "focusout" };
 } else {
     // firefox doesn't support focusin/focusout events
     hooks.focus = hooks.blur = (handler) => { handler.capturing = true };

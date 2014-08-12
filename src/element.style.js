@@ -47,7 +47,7 @@ $Element.prototype.style = function(name, value) {
 
     return this.legacy((node, el, index, ref) => {
         var style = node.style,
-            appendCssText = (value, key) => {
+            appendCssText = (key, value) => {
                 var hook = CSS.set[key];
 
                 if (typeof value === "function") value = value(el, index, ref);
@@ -62,9 +62,9 @@ $Element.prototype.style = function(name, value) {
             };
 
         if (len === 1 && name && nameType === "object") {
-            _.forOwn(name, appendCssText);
+            Object.keys(name).forEach((key) => { appendCssText(key, name[key]) });
         } else if (len === 2 && nameType === "string") {
-            appendCssText(value, name);
+            appendCssText(name, value);
         } else {
             throw _.makeError("style");
         }

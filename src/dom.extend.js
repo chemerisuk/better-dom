@@ -11,8 +11,8 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
     returnFalse = () => false,
     nativeEventType, animId, link, styles,
     applyMixins = (obj, mixins) => {
-        _.forOwn(mixins, (value, key) => {
-            if (key !== "constructor") obj[key] = value;
+        Object.keys(mixins).forEach((key) => {
+            if (key !== "constructor") obj[key] = mixins[key];
         });
     },
     applyExtensions = (node) => {

@@ -15,23 +15,19 @@ var styleNode = _.injectElement(document.createElement("style")),
 DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
         // use styleObj to collect all style props for a new CSS rule
-        var styleObj = {};
-
-        _.forOwn(cssText, (value, prop) => {
+        var styleObj = Object.keys(cssText).reduce((styleObj, prop) => {
             var hook = CSS.set[prop];
 
             if (hook) {
-                hook(styleObj, value);
+                hook(styleObj, cssText[prop]);
             } else {
-                styleObj[prop] = value;
+                styleObj[prop] = cssText[prop];
             }
-        });
 
-        cssText = [];
+            return styleObj;
+        }, {});
 
-        _.forOwn(styleObj, (styles, selector) => { cssText.push(selector + ":" + styles) });
-
-        cssText = cssText.join(";");
+        cssText = Object.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -39,7 +35,7 @@ DOM.importStyles = function(selector, cssText) {
     }
 
     if (styleSheet.cssRules) {
-        styleSheet.insertRule(selector + " {" + cssText + "}", styleRules.length);
+        styleSheet.insertRule(`${selector} {${cssText}}`, styleRules.length);
     } else {
         // ie doesn't support multiple selectors in addRule
         selector.split(",").forEach((selector) => { styleSheet.addRule(selector, cssText) });

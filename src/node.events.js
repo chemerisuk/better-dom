@@ -38,7 +38,7 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
             type.forEach((name) => { this.on.apply(this, [name].concat(args)) });
         } else {
-            _.forOwn(type, (value, name) => { this.on(name, value) });
+            Object.keys(type).forEach((name) => { this.on(name, type[name]) });
         }
 
         return this;

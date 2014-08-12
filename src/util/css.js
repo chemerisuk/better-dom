@@ -11,7 +11,14 @@ var hooks = {get: {}, set: {}},
     // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
     props = computed.length ? _.slice.call(computed, 0) : Object.keys(computed).map((key) => {
         return key.replace(reCamel, (str) => "-" + str.toLowerCase());
-    });
+    }),
+    shortCuts = {
+        font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
+        padding: directions.map((dir) => "padding" + dir),
+        margin: directions.map((dir) => "margin" + dir),
+        "border-width": directions.map((dir) => "border" + dir + "Width"),
+        "border-style": directions.map((dir) => "border" + dir + "Style")
+    };
 
 props.forEach((propName) => {
     var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
@@ -46,13 +53,9 @@ props.forEach((propName) => {
 });
 
 // normalize property shortcuts
-_.forOwn({
-    font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-    padding: directions.map((dir) => "padding" + dir),
-    margin: directions.map((dir) => "margin" + dir),
-    "border-width": directions.map((dir) => "border" + dir + "Width"),
-    "border-style": directions.map((dir) => "border" + dir + "Style")
-}, (props, key) => {
+Object.keys(shortCuts).forEach((key) => {
+    var props = shortCuts[key];
+
     hooks.get[key] = (style) => {
         var result = [],
             hasEmptyStyleValue = (prop, index) => {

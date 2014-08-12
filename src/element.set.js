@@ -34,7 +34,7 @@ $Element.prototype.set = function(name, value) {
                 hook(node, newValue);
             } else if (nameType !== "string") {
                 if (name && nameType === "object") {
-                    return _.forOwn(name, (value, key) => { el.set(key, value) });
+                    return Object.keys(name).forEach((key) => { el.set(key, name[key]) });
                 }
 
                 throw _.makeError("set");

@@ -22,11 +22,6 @@ export default {
     DOM2_EVENTS: !!doc.addEventListener,
     WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
     // utilites
-    forOwn: (obj, fn, thisPtr) => {
-        Object.keys(obj).forEach((key) => { fn.call(thisPtr, obj[key], key) });
-
-        return thisPtr;
-    },
     slice: Array.prototype.slice,
     every: Array.prototype.every,
     each: Array.prototype.forEach,
