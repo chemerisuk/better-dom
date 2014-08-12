@@ -4,7 +4,7 @@ describe("get", function() {
     var link, input, textarea, form;
 
     beforeEach(function() {
-        jasmine.sandbox.set("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='email' id='get_input' value='test'/><textarea id='get_textarea'></textarea></form>");
+        jasmine.sandbox.set("<a id='test' href='test.html' data-attr='val'>get-test</a><form id='get_form' method='post'><input type='email' id='get_input' value='test' readonly='true' tabindex='10'/><textarea id='get_textarea'></textarea></form>");
 
         link = DOM.find("#test");
         input = DOM.find("#get_input");
@@ -29,7 +29,7 @@ describe("get", function() {
 
     it("should try to read property value first", function() {
         expect(link.get("href")).not.toBe("test.html");
-        expect(input.get("tabIndex")).toBe(0);
+        expect(input.get("tabIndex")).toBe(10);
         expect(input.get("form").nodeType).toBe(1);
     });
 
@@ -75,7 +75,12 @@ describe("get", function() {
         expect(link.get("data-test")).toBeNull();
     });
 
-    describe("private props", function() {
+    it("should fix camel cased attributes", function() {
+        expect(input.get("readonly")).toBe(true);
+        expect(input.get("tabindex")).toBe(10);
+    });
+
+    describe("custom props", function() {
         beforeEach(function() {
             input = DOM.create("<input data-a1=\"x\" data-a2='{\"a\":\"b\",\"c\":1,\"d\":null}' data-a3=\"1=2=3\" data-a4=\"/url?q=:q\">");
         });

@@ -51,7 +51,12 @@ $Element.prototype.get = function(name) {
 
 // $Element#get hooks
 
-hooks.undefined = function(node) {
+// fix camel cased attributes
+"tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {
+    hooks[key.toLowerCase()] = (node) => node[key];
+});
+
+hooks.undefined = (node) => {
     var name;
 
     switch(node.tagName) {
