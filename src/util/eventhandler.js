@@ -21,6 +21,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 // srcElement can be null in legacy IE when target is document
                 var target = e.target || e.srcElement || document,
                     currentTarget = matcher ? matcher(target) : node,
+                    extraArgs = e._args || [],
                     args = props || defaultArgs,
                     fn = callback;
 
@@ -36,6 +37,8 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 if (once) el.off(type, callback);
 
                 args = args.map((name) => {
+                    if (typeof name === "number") return extraArgs[name - 1];
+
                     if (!_.DOM2_EVENTS) {
                         switch (name) {
                         case "which":
@@ -67,10 +70,9 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
 
                     return e[name];
                 });
-                // if props is not specified then prepend extra arguments if they exist
-                if (e._args) args = e._args.concat(args);
 
-                if (fn.apply(el, args) === false) {
+                // if props is not specified then prepend extra arguments
+                if (fn.apply(el, props ? args : extraArgs.concat(args)) === false) {
                     // prevent default if handler returns false
                     if (_.DOM2_EVENTS) {
                         e.preventDefault();
