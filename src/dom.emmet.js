@@ -1,6 +1,8 @@
 import _ from "./util";
 import DOM from "./index";
 
+/*es6-transpiler has-iterators:false, has-generators: false*/
+
 /**
  * Emmet abbreviation syntax support
  * @module template
@@ -12,7 +14,6 @@ var // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reAttr = /([\w\-]+)(?:=((?:(`|')((?:\\?.)*)?\3)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    cache = {},
     toString = (term) => term.join ? term.join("") : term,
     normalizeAttrs = (term, name, value, quotes, rawValue) => {
         if (!quotes || quotes === "`") quotes = "\"";
@@ -26,9 +27,9 @@ var // operator type / priority object
         return el.substr(0, index) + term + el.substr(index);
     },
     makeTerm = (tag) => {
-        var result = cache[tag];
+        var result = tagCache[tag];
 
-        if (!result) result = cache[tag] = "<" + tag + "></" + tag + ">";
+        if (!result) result = tagCache[tag] = `<${tag}></${tag}>`;
 
         return result;
     },
@@ -38,12 +39,13 @@ var // operator type / priority object
             // make zero-padding index string
             return (fmt + index).slice(-fmt.length).split("$").join("0");
         });
-    };
+    },
+    // populate empty tags
+    tagCache = "area base br col hr img input link meta param command keygen source".split(" ").reduce((tagCache, tag) => {
+        tagCache[tag] = `<${tag}>`;
 
-// populate empty tags
-"area base br col hr img input link meta param command keygen source".split(" ").forEach((tag) => {
-    cache[tag] = "<" + tag + ">";
-});
+        return tagCache;
+    }, {});
 
 /**
  * Parse emmet-like template into a HTML string
@@ -60,16 +62,15 @@ DOM.emmet = function(template, varMap) {
     var stack = [],
         output = [],
         term = "",
-        i, n, str, priority, skip, node;
+        priority, skip, node;
 
-    if (template in cache) return cache[template];
+    if (template in tagCache) return tagCache[template];
 
     // if (!template || reHtml.exec(template)) return template;
 
     // parse expression into RPN
 
-    for (i = 0, n = template.length; i < n; ++i) {
-        str = template[i];
+    for (let str of template) {
         // concat .c1.c2 into single space separated class string
         if (str === "." && stack[0] === ".") str = " ";
 
@@ -122,9 +123,7 @@ DOM.emmet = function(template, varMap) {
 
     stack = [];
 
-    for (i = 0, n = output.length; i < n; ++i) {
-        str = output[i];
-
+    for (let str of output) {
         if (str in operators) {
             term = stack.shift();
             node = stack.shift() || [""];
@@ -133,11 +132,11 @@ DOM.emmet = function(template, varMap) {
 
             switch(str) {
             case ".":
-                term = injectTerm(" class=\"" + term + "\"", true);
+                term = injectTerm(` class="${term}"`, true);
                 break;
 
             case "#":
-                term = injectTerm(" id=\"" + term + "\"", true);
+                term = injectTerm(` id="${term}"`, true);
                 break;
 
             case "[":
@@ -171,5 +170,5 @@ DOM.emmet = function(template, varMap) {
 
     output = toString(stack[0]);
 
-    return varMap ? output : cache[template] = output;
+    return varMap ? output : tagCache[template] = output;
 };
