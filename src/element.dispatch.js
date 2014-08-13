@@ -1,16 +1,6 @@
 import _ from "./util/index";
 import { $Element } from "./index";
 
-var dispatcher = document.createElement("a"),
-    safePropName = "onpropertychange";
-
-if (_.DOM2_EVENTS) {
-    // for modern browsers use late binding for safe calls
-    // dispatcher MUST have handleEvent property before registering
-    dispatcher[safePropName = "handleEvent"] = null;
-    dispatcher.addEventListener(safePropName, dispatcher, false);
-}
-
 /**
  * Make a safe method/function call
  * @memberof! $Element#
@@ -20,29 +10,21 @@ if (_.DOM2_EVENTS) {
  * @return {Object} result of the invokation which is undefined if there was an exception
  */
 $Element.prototype.dispatch = function(method, ...args) {
-    var methodType = typeof method,
-        node = this._._node,
-        handler, result, e;
+    var context = this,
+        node = this._._node;
 
     if (node) {
-        if (methodType === "function") {
-            handler = () => { result = method.apply(this, args) };
-        } else if (methodType === "string") {
-            handler = () => { result = node[method].apply(node, args) };
-        } else {
-            throw _.makeError("dispatch");
+        if (typeof method === "string") {
+            context = node;
+            method = node[method];
         }
-        // register safe invokation handler
-        dispatcher[safePropName] = handler;
-        // make a safe call
-        if (_.DOM2_EVENTS) {
-            e = document.createEvent("HTMLEvents");
-            e.initEvent(safePropName, false, false);
-            dispatcher.dispatchEvent(e);
-        }
-        // cleanup references
-        dispatcher[safePropName] = null;
-    }
 
-    return result;
+        if (typeof method !== "function") throw _.makeError("dispatch");
+
+        try {
+            return method.apply(context, args);
+        } catch (err) {
+            if ("console" in window) window.console.error(err);
+        }
+    }
 };
