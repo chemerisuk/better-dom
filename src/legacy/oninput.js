@@ -6,18 +6,18 @@ if (document.attachEvent) {
             if (capturedNode && capturedNode.value !== capturedNodeValue) {
                 capturedNodeValue = capturedNode.value;
                 // trigger special event that bubbles
-                DOM.create(capturedNode).fire("input");
+                DOM.constructor(capturedNode).fire("input");
             }
         },
         clickEventHandler = function() {
             if (capturedNode && capturedNode.checked !== capturedNodeValue) {
                 capturedNodeValue = capturedNode.checked;
                 // trigger special event that bubbles
-                DOM.create(capturedNode).fire("change");
+                DOM.constructor(capturedNode).fire("change");
             }
         },
         changeEventHandler = function() {
-            DOM.create(capturedNode).fire("change");
+            DOM.constructor(capturedNode).fire("change");
         };
 
     if (document.createElement("input").oninput === null) {

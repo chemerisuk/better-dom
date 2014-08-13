@@ -2,7 +2,7 @@
 function handleFormEvent() {
     var e = window.event;
 
-    if (!e.cancelBubble) DOM.create(e.srcElement).fire(e.type);
+    if (!e.cancelBubble) DOM.constructor(e.srcElement).fire(e.type);
 
     return false;
 }
@@ -14,7 +14,7 @@ if (!document.addEventListener) {
             form = target.form;
 
         if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
-            DOM.create(form).fire("submit");
+            DOM.constructor(form).fire("submit");
 
             return false;
         }

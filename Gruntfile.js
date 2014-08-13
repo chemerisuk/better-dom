@@ -12,7 +12,7 @@ module.exports = function(grunt) {
             },
             legacy: {
                 files: ["src/legacy/*.js"],
-                tasks: ["compile:legacy", "karma:watch:run"]
+                tasks: ["compile:legacy"]
             },
             specs: {
                 files: ["test/spec/*.js"],

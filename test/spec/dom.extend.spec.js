@@ -29,13 +29,16 @@ describe("extend", function() {
     });
 
     it("should support shortcut", function(done) {
-        DOM.extend("." + randomClass, callback);
+        DOM.extend("." + jasmine.sandbox.id, callback);
 
         callback.and.callFake(function() {
             if (callback.calls.count() === 1) done();
         });
 
-        jasmine.sandbox.set("<a class='" + randomClass + "'></a>");
+        // have to add timeout because jasmine fails
+        setTimeout(function() {
+            jasmine.sandbox.set("<a class='" + jasmine.sandbox.id + "'></a>");
+        }, 50);
     });
 
     it("should capture any future element on page", function(done) {

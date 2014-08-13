@@ -1,7 +1,7 @@
 import _ from "./util/index";
 import { $Element, $Collection, DOM } from "./index";
 
-var reTest = /^(?:\w+|\s*(<.+>)\s*)$/,
+var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
     sandbox = document.createElement("body");
 
 /**
@@ -13,19 +13,17 @@ var reTest = /^(?:\w+|\s*(<.+>)\s*)$/,
  * @return {$Element|$Collection} element(s) wrapper
  */
 DOM.create = function(value, varMap) {
-    if (value.nodeType === 1) return $Element(value);
-
-    if (typeof value !== "string") throw _.makeError("create", true);
-
     var test = reTest.exec(value);
 
     if (test && !test[1]) {
         value = document.createElement(value);
     } else {
-        if (test[1]) {
+        if (test && test[1]) {
             value = varMap ? DOM.format(test[1], varMap) : test[1];
-        } else {
+        } else if (typeof value === "string") {
             value = DOM.emmet(value, varMap);
+        } else {
+            throw _.makeError("create", true);
         }
 
         sandbox.innerHTML = value;

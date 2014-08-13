@@ -18,7 +18,6 @@ function $Element(node) {
     }
 }
 
-$Element.prototype.constructor = $Element;
 $Element.prototype.toString = function() {
     var node = this._._node;
 
@@ -41,7 +40,6 @@ function $Collection(elements) {
 }
 
 $Collection.prototype = new $Element();
-$Collection.prototype.constructor = $Collection;
 $Collection.prototype.toString = Array.prototype.join;
 
 /**
@@ -52,5 +50,6 @@ $Collection.prototype.toString = Array.prototype.join;
 var DOM = new $Element(document.documentElement);
 
 DOM.version = "<%= pkg.version %>";
+DOM.constructor = (node) => new $Element(node);
 
 window.DOM = DOM;
