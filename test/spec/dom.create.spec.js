@@ -29,21 +29,21 @@ describe("create", function() {
         expect(el.child(0)).toHaveTag("span");
     });
 
-    // it("should support varMap for HTML strings", function() {
-    //     var el = DOM.create("<a>{0}</a>", ["yo"]);
+    it("should support varMap for HTML strings", function() {
+        var el = DOM.create("<a>{0}</a>", ["yo"]);
 
-    //     expect(el).toHaveTag("a");
-    //     expect(el.get()).toBe("yo");
-    // });
+        expect(el).toHaveTag("a");
+        expect(el.get()).toBe("yo");
+    });
 
-    // it("should parse emmet-like expressions", function() {
-    //     var el = DOM.create("ul>li");
+    it("should parse emmet-like expressions", function() {
+        var el = DOM.create("ul>li");
 
-    //     jasmine.sandbox.set(el);
+        jasmine.sandbox.set(el);
 
-    //     expect(el).toHaveTag("ul");
-    //     expect(el.child(0)).toHaveTag("li");
-    // });
+        expect(el).toHaveTag("ul");
+        expect(el.child(0)).toHaveTag("li");
+    });
 
     it("should wrap element to div if HTML string has several root nodes", function() {
         var el = DOM.create("<a></a><b></b>");
@@ -55,7 +55,7 @@ describe("create", function() {
     it("should throw error if argument is invalid", function() {
         expect(function() { DOM.create(2); }).toThrow();
         // expect(function() { DOM.create(null); }).toThrow();
-        // expect(function() { DOM.create({}); }).toThrow();
+        expect(function() { DOM.create({}); }).toThrow();
     });
 
 });

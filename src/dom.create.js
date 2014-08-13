@@ -15,7 +15,7 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
 DOM.create = function(value, varMap) {
     var test = reTest.exec(value);
 
-    if (test && !test[1]) {
+    if (value && test && !test[1]) {
         value = document.createElement(value);
     } else {
         if (test && test[1]) {
