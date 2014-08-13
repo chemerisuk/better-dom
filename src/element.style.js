@@ -3,13 +3,9 @@ import { $Element } from "./index";
 import CSS from "./util/css";
 
 /**
- * Changing of element styles support
- * @module style
- */
-
-/**
  * CSS properties accessor for an element
- * @memberOf module:style
+ * @memberof! $Element#
+ * @alias $Element#style
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this

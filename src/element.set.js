@@ -6,6 +6,8 @@ var hooks = {},
 
 /**
  * Set property/attribute value by name
+ * @memberof! $Element#
+ * @alias $Element#set
  * @param {String|Object|Array} [name]  property/attribute name
  * @param {String|Function}     value   property/attribute value or function that returns it
  * @return {$Element}

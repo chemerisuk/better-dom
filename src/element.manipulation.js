@@ -1,11 +1,6 @@
 import _ from "./util/index";
 import { $Element, DOM } from "./index";
 
-/**
- * Element manipulation support
- * @module manipulation
- */
-
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function() {
         var args = arguments;
@@ -42,7 +37,8 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
 
 /**
  * Insert html string or $Element after the current
- * @memberOf module:manipulation
+ * @memberof! $Element#
+ * @alias $Element#after
  * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -53,7 +49,8 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, (n
 
 /**
  * Insert html string or $Element before the current
- * @memberOf module:manipulation
+ * @memberof! $Element#
+ * @alias $Element#before
  * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -64,7 +61,8 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
 
 /**
  * Prepend html string or $Element to the current
- * @memberOf module:manipulation
+ * @memberof! $Element#
+ * @alias $Element#prepend
  * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -75,7 +73,8 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
 
 /**
  * Append html string or $Element to the current
- * @memberOf module:manipulation
+ * @memberof! $Element#
+ * @alias $Element#append
  * @param {...Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -86,7 +85,8 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
 
 /**
  * Replace current element with html string or $Element
- * @memberOf module:manipulation
+ * @memberof! $Element#
+ * @alias $Element#replace
  * @param {Mixed} content HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
@@ -97,7 +97,8 @@ $Element.prototype.replace = makeManipulationMethod("replace", "", false, (node,
 
 /**
  * Remove current element from DOM
- * @memberOf module:manipulation
+ * @memberof! $Element#
+ * @alias $Element#remove
  * @return {$Element}
  * @function
  */

@@ -2,6 +2,8 @@ import { $Element } from "./index";
 
 /**
  * Watch for changes of a particular property/attribute
+ * @memberof! $Element#
+ * @alias $Element#watch
  * @param  {String}   name     property/attribute name
  * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
  * @return {$Element}
@@ -18,6 +20,8 @@ $Element.prototype.watch = function(name, callback) {
 
 /**
  * Disable watching of a particular property/attribute
+ * @memberof! $Element#
+ * @alias $Element#unwatch
  * @param  {String}   name    property/attribute name
  * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
  * @return {$Element}

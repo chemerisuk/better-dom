@@ -8,7 +8,8 @@ var styleNode = _.injectElement(document.createElement("style")),
 
 /**
  * Append global css styles
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.importStyles
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  */

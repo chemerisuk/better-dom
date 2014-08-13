@@ -50,7 +50,8 @@ function makeChildTraversingMethod(all) {
 
 /**
  * Find next sibling element filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#next
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
@@ -60,7 +61,8 @@ $Element.prototype.next = makeTraversingMethod("next", "nextSibling");
 
 /**
  * Find previous sibling element filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#prev
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
@@ -70,7 +72,8 @@ $Element.prototype.prev = makeTraversingMethod("prev", "previousSibling");
 
 /**
  * Find all next sibling elements filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#nextAll
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
@@ -80,7 +83,8 @@ $Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true
 
 /**
  * Find all previous sibling elements filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#prevAll
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} collection of matched elements
@@ -90,7 +94,8 @@ $Element.prototype.prevAll = makeTraversingMethod("prevAll", "previousSibling", 
 
 /**
  * Find parent element filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#parent
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
@@ -100,7 +105,8 @@ $Element.prototype.parent = makeTraversingMethod("parent", "parentNode");
 
 /**
  * Return child element by index filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#child
  * @param  {Number} index child index
  * @return {$Element} matched child
  * @function
@@ -109,7 +115,8 @@ $Element.prototype.child = makeChildTraversingMethod(false);
 
 /**
  * Fetch children elements filtered by optional selector
- * @memberOf module:traversing
+ * @memberof! $Element#
+ * @alias $Element#children
  * @param  {String} [selector] css selector
  * @return {$Element} collection of matched elements
  * @function

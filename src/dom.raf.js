@@ -9,7 +9,8 @@ var lastTime = 0,
 
 /**
  * Request animation frame helper
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.raf
  * @param  {Function}  callback  request animation frame callback
  * @return {Number}    rafId
  */

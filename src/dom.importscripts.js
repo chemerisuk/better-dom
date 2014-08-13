@@ -3,7 +3,8 @@ import { DOM } from "./index";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.importScripts
  * @param {...String} urls       script file urls
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  */

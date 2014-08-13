@@ -3,7 +3,8 @@ import { $Element } from "./index";
 
 /**
  * Check if element is inside of context
- * @memberOf $Element.prototype
+ * @memberof! $Element#
+ * @alias $Element#contains
  * @param  {$Element} element element to check
  * @return {Boolean} true if success
  */

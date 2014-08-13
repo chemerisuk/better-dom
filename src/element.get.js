@@ -5,6 +5,8 @@ var hooks = {};
 
 /**
  * Get property or attribute value by name
+ * @memberof! $Element#
+ * @alias $Element#get
  * @param  {String|Array} [name] property/attribute name or array of names
  * @return {Object} property/attribute value
  */

@@ -147,7 +147,8 @@ var parseTimeValue = (value) => {
 
 /**
  * Show element with optional callback and delay
- * @memberOf module:visibility
+ * @memberof! $Element#
+ * @alias $Element#show
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -157,7 +158,8 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
  * Hide element with optional callback and delay
- * @memberOf module:visibility
+ * @memberof! $Element#
+ * @alias $Element#hide
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
@@ -167,7 +169,8 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
  * Toggle element visibility with optional callback and delay
- * @memberOf module:visibility
+ * @memberof! $Element#
+ * @alias $Element#toggle
  * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}

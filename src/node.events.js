@@ -3,14 +3,9 @@ import { $Element, DOM } from "./index";
 import EventHandler from "./util/eventhandler";
 
 /**
- * Event handling support
- * @module events
- * @see https://github.com/chemerisuk/better-dom/wiki/Event-handling
- */
-
-/**
  * Bind a DOM event
- * @memberOf module:events
+ * @memberof! $Element#
+ * @alias $Element#on
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Function|String} callback event callback or property name (for late binding)
  * @param  {Array}           [props] array of event properties to pass into the callback
@@ -64,7 +59,8 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
 /**
  * Bind a DOM event but fire once before being removed
- * @memberOf module:events
+ * @memberof! $Element#
+ * @alias $Element#once
  * @param  {String|Array}    type event type(s) with optional selector
  * @param  {Function|String} callback event callback or property name (for late binding)
  * @param  {Array}           [props] array of event properties to pass into the callback
@@ -104,7 +100,8 @@ $Element.prototype.off = function(type, callback) {
 
 /**
  * Triggers an event of specific type with optional extra arguments
- * @memberOf module:events
+ * @memberof! $Element#
+ * @alias $Element#fire
  * @param  {String}  type  type of event
  * @param  {...Object}     [args]  extra arguments to pass into each event handler
  * @return {Boolean} true if default action wasn't prevented

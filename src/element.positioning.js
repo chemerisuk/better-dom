@@ -2,16 +2,12 @@ import _ from "./util/index";
 import { $Element, DOM } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
-/**
- * Positioning helpers
- * @module positioning
- */
-
 var hooks = {};
 
 /**
  * Calculates offset of the current element
- * @memberOf module:positioning
+ * @memberof! $Element#
+ * @alias $Element#offset
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
@@ -38,7 +34,8 @@ $Element.prototype.offset = function() {
 
 /**
  * Check if the element matches selector
- * @memberOf module:positioning
+ * @memberof! $Element#
+ * @alias $Element#matches
  * @param  {String}   selector  css selector for checking
  * @return {$Element}
  */

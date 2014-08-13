@@ -1,11 +1,6 @@
 import _ from "./util/index";
 import { $Element } from "./index";
 
-/**
- * Class manipulation support
- * @module classes
- */
-
 var reSpace = /[\n\t\r]/g;
 
 function makeClassesMethod(nativeStrategyName, strategy) {
@@ -46,7 +41,8 @@ function makeClassesMethod(nativeStrategyName, strategy) {
 
 /**
  * Check if element contains class name(s)
- * @memberOf module:classes
+ * @memberof! $Element#
+ * @alias $Element#hasClass
  * @param  {...String} classNames class name(s)
  * @return {Boolean}   true if the element contains all classes
  * @function
@@ -57,7 +53,8 @@ $Element.prototype.hasClass = makeClassesMethod("contains", function(className) 
 
 /**
  * Add class(es) to element
- * @memberOf module:classes
+ * @memberof! $Element#
+ * @alias $Element#addClass
  * @param  {...String} classNames class name(s)
  * @return {$Element}
  * @function
@@ -68,7 +65,8 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
 
 /**
  * Remove class(es) from element
- * @memberOf module:classes
+ * @memberof! $Element#
+ * @alias $Element#removeClass
  * @param  {...String} classNames class name(s)
  * @return {$Element}
  * @function
@@ -81,7 +79,8 @@ $Element.prototype.removeClass = makeClassesMethod("remove", function(className)
 
 /**
  * Toggle class(es) on element
- * @memberOf module:classes
+ * @memberof! $Element#
+ * @alias $Element#toggleClass
  * @param  {...String}  classNames class name(s)
  * @return {$Element}
  * @function

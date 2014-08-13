@@ -13,6 +13,8 @@ if (_.DOM2_EVENTS) {
 
 /**
  * Make a safe method/function call
+ * @memberof! $Element#
+ * @alias $Element#dispatch
  * @param  {String|Function}  method  name of method or function for a safe call
  * @param  {...Object}        [args]  extra arguments to pass into each invokation
  * @return {Object} result of the invokation which is undefined if there was an exception

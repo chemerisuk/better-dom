@@ -3,13 +3,6 @@ import { DOM } from "./index";
 
 /*es6-transpiler has-iterators:false, has-generators: false*/
 
-/**
- * Emmet abbreviation syntax support
- * @module template
- * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
- * @see http://docs.emmet.io/cheat-sheet/
- */
-
 var // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
     reAttr = /([\w\-]+)(?:=((?:(`|')((?:\\?.)*)?\3)|[^\s]+))?/g,
@@ -49,10 +42,13 @@ var // operator type / priority object
 
 /**
  * Parse emmet-like template into a HTML string
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.emmet
  * @param  {String}       template  input EmmetString
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {String} HTML string
+ * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
+ * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.emmet = function(template, varMap) {
     if (typeof template !== "string") throw _.makeError("emmet", true);

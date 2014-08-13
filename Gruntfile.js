@@ -7,12 +7,12 @@ module.exports = function(grunt) {
         pkg: pkg,
         watch: {
             build: {
-                files: ["src/*.js", "src/**/*.js"],
+                files: ["src/*.js", "src/**/*.js", "!src/legacy/*.js"],
                 tasks: ["compile:main", "karma:watch:run"]
             },
             legacy: {
-                files: ["legacy/*.js"],
-                tasks: ["compile:legacy", "concat:legacy", "karma:watch:run"]
+                files: ["src/legacy/*.js"],
+                tasks: ["compile:legacy", "karma:watch:run"]
             },
             specs: {
                 files: ["test/spec/*.js"],

@@ -2,13 +2,9 @@ import _ from "./util/index";
 import { $Element, DOM } from "./index";
 
 /**
- * Clonning of an element support
- * @module clone
- */
-
-/**
  * Clone element
- * @memberOf module:clone
+ * @memberof! $Element#
+ * @alias $Element#clone
  * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} clone of current element
  */
