@@ -11,7 +11,7 @@ var reVar = /\{([\w\-]+)\}/g;
  * @param  {Object}  varMap    key/value map of variables
  * @return {String}  result string
  */
-DOM.format = (template, varMap) => {
+DOM.format = function(template, varMap) {
     if (typeof template !== "string" || varMap && typeof varMap !== "object") throw _.makeError("format", true);
 
     return template.replace(reVar, (x, name) => name in varMap ? String(varMap[name]) : x);

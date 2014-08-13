@@ -31,6 +31,8 @@ module.exports = function(grunt) {
 
         if (options.banner) code = options.banner + "\n" + code;
 
+        code = grunt.template.process(code);
+
         grunt.file.mkdir(path.dirname(outputFile));
 
         var result = es6tr.run({
