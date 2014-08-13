@@ -10,12 +10,12 @@
         "openGraph": {
             "title": "Live extension playground",
             "type": "website",
-            "image": "",
+            "image": "https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400",
             "site_name": "better-dom",
             "url": "https://github.com/chemerisuk/better-dom"
         },
         "meta": {
-            "title": "better-dom: Live extension playground",
+            "title": "",
             "description": "",
             "keyword": ""
         },

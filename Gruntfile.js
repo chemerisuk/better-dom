@@ -12,7 +12,7 @@ module.exports = function(grunt) {
             },
             legacy: {
                 files: ["legacy/*.js"],
-                tasks: ["compile:legacy", "karma:watch:run"]
+                tasks: ["compile:legacy", "concat:legacy", "karma:watch:run"]
             },
             specs: {
                 files: ["test/spec/*.js"],
@@ -71,8 +71,6 @@ module.exports = function(grunt) {
                     // get a list of all files in stage and delete everything except for targets, node_modules, cache, temp, and logs
                     // rm does not delete root level hidden files
                     "ls | grep -v ^jsdoc$ | grep -v ^node_modules$ | grep -v ^bower_components$ | xargs rm -r ",
-                    // remove incorrect <static> directives
-                    "grep -rl '&lt;static> ' jsdoc/*.html | xargs sed -i \"\" 's/&lt;static> //g'",
                     // copy from the stage folder to the current (root) folder
                     "cp -r jsdoc/* . && rm -r jsdoc",
                     // add any files that may have been created
@@ -150,11 +148,13 @@ module.exports = function(grunt) {
                 ].join("\n")
             },
             main: {
-                src: "src/",
+                cwd: "src/",
+                src: ["*.js", "**/*.js", "!legacy/*.js"],
                 dest: "build/better-dom.js"
             },
             legacy: {
-                src: "legacy/",
+                cwd: "src/legacy/",
+                src: ["*.js", "**/*.js"],
                 dest: "build/better-dom-legacy.js"
             }
         }

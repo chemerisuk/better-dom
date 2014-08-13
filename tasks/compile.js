@@ -11,25 +11,22 @@ var BundleFormatter = es6modules.formatters.bundle;
 
 module.exports = function(grunt) {
     grunt.task.registerMultiTask("compile", function() {
-        var outputFile = this.files.dest;
-
-        grunt.config.set("filename", path.basename(outputFile));
+        var outputFile = this.data.dest;
 
         var container = new Container({
-                resolvers: [ new FileResolver( this.filesSrc ) ],
+                resolvers: [ new FileResolver( [this.data.cwd || "./"] ) ],
                 formatter: new BundleFormatter()
             });
 
-        this.filesSrc.forEach(function(folder) {
-            grunt.file.recurse(folder, function(abspath, rootdir, subdir, filename) {
-                if (filename[0] === ".") return;
-
-                container.getModule(path.join(subdir || "", filename));
-            });
+        this.filesSrc.forEach(function(filename) {
+            container.getModule(filename);
         });
 
         var ast = container.convert();
         var code = recast.print(ast[0]).code;
+
+        grunt.config.set("filename", path.basename(outputFile));
+
         var options = this.options();
 
         if (options.banner) code = options.banner + "\n" + code;
@@ -37,14 +34,16 @@ module.exports = function(grunt) {
         grunt.file.mkdir(path.dirname(outputFile));
 
         var result = es6tr.run({
-            src: code,
-            globals: {DOM: true},
-            outputFilename: outputFile
-        });
+                src: code,
+                globals: {DOM: true},
+                outputFilename: outputFile,
+                environments: ["browser"]
+            });
 
         if (result.errors.length > 0) {
-            grunt.file.write(outputFile, code);
             grunt.fail.fatal("\n" + result.errors.join("\n"));
+
+            grunt.file.write(outputFile, code);
         }
     });
 };
