@@ -4,19 +4,22 @@
     },
     "plugins"   : ["plugins/markdown"],
     "templates" : {
-        "cleverLinks"     : false,
-        "monospaceLinks"  : false,
-        "default"         : {
-            "outputSourceFiles" : true
+        "applicationName": "better-dom",
+        "disqus": "",
+        "googleAnalytics": "",
+        "openGraph": {
+            "title": "",
+            "type": "website",
+            "image": "",
+            "site_name": "",
+            "url": ""
         },
-        "systemName"      : "better-dom",
-        "footer"          : "",
-        "copyright"       : "© 2013-2014 Maksim Chemerisuk",
-        "navType"         : "vertical",
-        "theme"           : "spruce",
-        "linenums"        : false,
-        "collapseSymbols" : false,
-        "inverseNav"      : false
+        "meta": {
+            "title": "",
+            "description": "",
+            "keyword": ""
+        },
+        "linenums": true
     },
     "markdown"  : {
         "parser"   : "gfm",

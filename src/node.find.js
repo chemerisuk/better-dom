@@ -2,11 +2,6 @@ import _ from "./util/index";
 import DOM from "./index";
 import { $Element, $Elements } from "./index";
 
-/**
- * Element search support
- * @module find
- */
-
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
@@ -17,7 +12,8 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
 
 /**
  * Find the first matched element by css selector
- * @memberOf module:find
+ * @memberof! $Element#
+ * @alias $Element#find
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
@@ -73,7 +69,8 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
 
 /**
  * Find all matched elements by css selector
- * @memberOf module:find
+ * @memberof! $Element#
+ * @alias $Element#findAll
  * @param  {String} selector css selector
  * @return {$Element} matched elements
  */

@@ -1,11 +1,12 @@
+export { $Element, $Elements };
+
 /**
  * Used to represent a DOM element
  * @name $Element
- * @extends $Node
- * @constructor
+ * @class
  * @private
  */
-export function $Element(node) {
+function $Element(node) {
     if (node && node.__dom__) return node.__dom__;
 
     if (this instanceof $Element) {
@@ -27,11 +28,11 @@ $Element.prototype.toString = function() {
 /**
  * Used to represent a collection of DOM elements
  * @name $Elements
+ * @class
  * @extends $Element
- * @constructor
  * @private
  */
-export function $Elements(elements) {
+function $Elements(elements) {
     for (var i = 0, n = elements && elements.length || 0; i < n; ++i) {
         this[i] = $Element(elements[i]);
     }
@@ -43,15 +44,15 @@ export function $Elements(elements) {
 $Elements.prototype = new $Element();
 $Elements.prototype.toString = Array.prototype.join;
 
+/**
+ * Global object to access DOM
+ * @namespace DOM
+ * @extends $Element
+ */
 var DOM = new $Element(document.documentElement);
 
 DOM.version = "<%= pkg.version %>";
 
 window.DOM = DOM;
 
-/**
- * Global object to access DOM
- * @namespace DOM
- * @extends $Node
- */
 export default DOM;

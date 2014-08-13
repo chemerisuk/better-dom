@@ -50,7 +50,7 @@ module.exports = function(grunt) {
                 src: ["build/*.js", "README.md"],
                 options: {
                     destination: "jsdoc",
-                    template: "node_modules/ink-docstrap/template",
+                    template: "node_modules/jaguarjs-jsdoc",
                     configure: "extra/jsdoc.conf.json"
                 }
             }
@@ -223,50 +223,50 @@ module.exports = function(grunt) {
         "jsdoc"
     ]);
 
-    grunt.registerTask("default", "information about modules", function() {
-        var modules = grunt.file.readJSON("extra/modules.json");
+    // grunt.registerTask("default", "information about modules", function() {
+    //     var modules = grunt.file.readJSON("extra/modules.json");
 
-        grunt.log.writeln(
-            grunt.log.table([15, 40, 70],
-                ["\nMODULE", "\nDESCRIPTION", "\nURL"]
-            )
-        );
+    //     grunt.log.writeln(
+    //         grunt.log.table([15, 40, 70],
+    //             ["\nMODULE", "\nDESCRIPTION", "\nURL"]
+    //         )
+    //     );
 
-        Object.keys(modules).forEach(function(name) {
-            grunt.log.writeln(
-                grunt.log.table([15, 40, 70],
-                    [name.yellow.bold, modules[name].title, pkg.docs + "/module-" + name + ".html"]
-                )
-            );
-        });
+    //     Object.keys(modules).forEach(function(name) {
+    //         grunt.log.writeln(
+    //             grunt.log.table([15, 40, 70],
+    //                 [name.yellow.bold, modules[name].title, pkg.docs + "/module-" + name + ".html"]
+    //             )
+    //         );
+    //     });
 
-        grunt.log.writeln("\nPick one or several comma-separated modules above to exclude them from build, e.g.\n");
-        grunt.log.writeln("    grunt build:classes,offset,data");
-    });
+    //     grunt.log.writeln("\nPick one or several comma-separated modules above to exclude them from build, e.g.\n");
+    //     grunt.log.writeln("    grunt build:classes,offset,data");
+    // });
 
-    grunt.registerTask("build", "make a build", function(excluded) {
-        var modules = grunt.file.readJSON("extra/modules.json"),
-            args = excluded === "min" ? Object.keys(modules) : (excluded ? excluded.split(",") : []),
-            options = grunt.config.get("browserify.compile.options");
+    grunt.registerTask("build", "make a build", function() {
+        // var modules = grunt.file.readJSON("extra/modules.json"),
+        //     args = excluded === "min" ? Object.keys(modules) : (excluded ? excluded.split(",") : []),
+        //     options = grunt.config.get("browserify.compile.options");
 
-        options.ignore = args.reduce(function(memo, arg) {
-            var module = modules[arg];
+        // options.ignore = args.reduce(function(memo, arg) {
+        //     var module = modules[arg];
 
-            if (!module) throw Error("Illegal module name '" + arg + "'\n\n");
+        //     if (!module) throw Error("Illegal module name '" + arg + "'\n\n");
 
-            memo.push.apply(memo, module.files);
+        //     memo.push.apply(memo, module.files);
 
-            return memo;
-        }, []);
+        //     return memo;
+        // }, []);
 
-        grunt.config.set("browserify.compile.options", options);
+        // grunt.config.set("browserify.compile.options", options);
 
-        grunt.log.ok("Making a build that doesn't contain modules:");
-        grunt.log.subhead(args.length ? args : "All modules are included");
+        // grunt.log.ok("Making a build that doesn't contain modules:");
+        // grunt.log.subhead(args.length ? args : "All modules are included");
 
         grunt.task.run([
             "clean:build",
-            "browserify"
+            "compile"
         ]);
     });
 
