@@ -1,16 +1,16 @@
 import _ from "./util/index";
-import DOM from "./index";
-import { $Element, $Elements } from "./index";
+import { $Element, $Collection, DOM } from "./index";
 
 var reTest = /^(?:\w+|\s*(<.+>)\s*)$/,
     sandbox = document.createElement("body");
 
 /**
  * Create a new DOM element in memory
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.create
  * @param  {Mixed}  value  EmmetString or HTMLString or native element
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {$Element|$Elements} element(s) wrapper
+ * @return {$Element|$Collection} element(s) wrapper
  */
 DOM.create = function(value, varMap) {
     if (value.nodeType === 1) return $Element(value);
@@ -34,7 +34,7 @@ DOM.create = function(value, varMap) {
             if (value.nodeType === 1) nodes.push(value);
         }
 
-        if (nodes.length !== 1) return new $Elements(nodes);
+        if (nodes.length !== 1) return new $Collection(nodes);
 
         value = nodes[0];
     }

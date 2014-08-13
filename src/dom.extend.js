@@ -1,6 +1,5 @@
 import _ from "./util/index";
-import DOM from "./index";
-import { $Element } from "./index";
+import { $Element, DOM } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
 // Inspired by trick discovered by Daniel Buchner:
@@ -76,6 +75,7 @@ if (_.CSS3_ANIMATIONS) {
     nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
+    // FIXME: get rid of setTimeout
     setTimeout(() => DOM.importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}"), 0);
 
     styles = {
@@ -107,7 +107,8 @@ if (_.CSS3_ANIMATIONS) {
 
 /**
  * Declare a live extension
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.extend
  * @param  {String}           selector         css selector of which elements to capture
  * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
  * @param  {Object}           mixins           extension declatation
@@ -161,7 +162,8 @@ DOM.extend = function(selector, condition, mixins) {
 /**
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
- * @memberOf DOM
+ * @memberof DOM
+ * @alias DOM.mock
  * @param  {HTMLString} [content] string to mock
  * @return {$Element} mocked instance
  */

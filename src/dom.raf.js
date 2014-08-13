@@ -1,4 +1,4 @@
-import DOM from "./index";
+import { DOM } from "./index";
 
 var lastTime = 0,
     propName = ["r", "webkitR", "mozR", "oR"].reduce((memo, name) => {

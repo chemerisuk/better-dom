@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import DOM from "./index";
+import { DOM } from "./index";
 
 var reVar = /\{([\w\-]+)\}/g;
 

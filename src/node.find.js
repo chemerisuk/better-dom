@@ -1,6 +1,5 @@
 import _ from "./util/index";
-import DOM from "./index";
-import { $Element, $Elements } from "./index";
+import { $Element, $Collection, DOM } from "./index";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -64,7 +63,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
         }
     }
 
-    return all ? new $Elements(result) : $Element(result);
+    return all ? new $Collection(result) : $Element(result);
 };
 
 /**

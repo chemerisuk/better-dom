@@ -1,11 +1,6 @@
 import _ from "./util/index";
-import { $Element, default as DOM } from "./index";
+import { $Element, DOM } from "./index";
 import CSS from "./util/css";
-
-/**
- * Changing of element visibility support
- * @module visibility
- */
 
 var parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;

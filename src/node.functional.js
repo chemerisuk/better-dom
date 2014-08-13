@@ -22,7 +22,8 @@ var reInvoke = /cb\.call\(([^)]+)\)/g,
 
 /**
  * Execute callback on each element in the collection
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#each
  * @param  {Function} callback  function that accepts (element, index, self)
  * @param  {Object}   [context] callback context
  * @return {$Element}
@@ -34,7 +35,8 @@ $Element.prototype.each = makeLoopMethod({
 
 /**
  * Check if the callback returns true for any element in the collection
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#some
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Boolean} true, if any element in the collection return true
@@ -47,7 +49,8 @@ $Element.prototype.some = makeLoopMethod({
 
 /**
  * Check if the callback returns true for all elements in the collection
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#every
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Boolean} true, if all elements in the collection returns true
@@ -61,7 +64,8 @@ $Element.prototype.every = makeLoopMethod({
 
 /**
  * Create an array of values by running each element in the collection through the callback
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#map
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Array} new array of the results of each callback execution
@@ -75,7 +79,8 @@ $Element.prototype.map = makeLoopMethod({
 
 /**
  * Examine each element in a collection, returning an array of all elements the callback returns truthy for
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#filter
  * @param  {Function} callback   function that accepts (element, index, self)
  * @param  {Object}   [context]  callback context
  * @return {Array} new array with elements where callback returned true
@@ -89,7 +94,8 @@ $Element.prototype.filter = makeLoopMethod({
 
 /**
  * Boil down a list of values into a single value (from start to end)
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#reduce
  * @param  {Function} callback function that accepts (memo, element, index, self)
  * @param  {Object}   [memo]   initial value of the accumulator
  * @return {Object} the accumulated value
@@ -103,7 +109,8 @@ $Element.prototype.reduce = makeLoopMethod({
 
 /**
  * Boil down a list of values into a single value (from end to start)
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#reduceRight
  * @param  {Function} callback function that accepts (memo, element, index, self)
  * @param  {Object}   [memo]   initial value of the accumulator
  * @return {Object} the accumulated value
@@ -117,7 +124,8 @@ $Element.prototype.reduceRight = makeLoopMethod({
 
 /**
  * Execute code in a 'unsafe' block where the first callback argument is native object.
- * @memberOf $Element.prototype
+ * @memberof! $Element.prototype
+ * @alias $Element#legacy
  * @param  {Function} callback function that accepts (node, element, index, self)
  * @return {$Element}
  * @function

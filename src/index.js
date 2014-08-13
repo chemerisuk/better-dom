@@ -1,9 +1,8 @@
-export { $Element, $Elements };
+export { $Element, $Collection, DOM };
 
 /**
  * Used to represent a DOM element
- * @name $Element
- * @class
+ * @class $Element
  * @private
  */
 function $Element(node) {
@@ -19,6 +18,7 @@ function $Element(node) {
     }
 }
 
+$Element.prototype.constructor = $Element;
 $Element.prototype.toString = function() {
     var node = this._._node;
 
@@ -27,12 +27,11 @@ $Element.prototype.toString = function() {
 
 /**
  * Used to represent a collection of DOM elements
- * @name $Elements
- * @class
+ * @class $Collection
  * @extends $Element
  * @private
  */
-function $Elements(elements) {
+function $Collection(elements) {
     for (var i = 0, n = elements && elements.length || 0; i < n; ++i) {
         this[i] = $Element(elements[i]);
     }
@@ -41,8 +40,9 @@ function $Elements(elements) {
     this.length = n;
 }
 
-$Elements.prototype = new $Element();
-$Elements.prototype.toString = Array.prototype.join;
+$Collection.prototype = new $Element();
+$Collection.prototype.constructor = $Collection;
+$Collection.prototype.toString = Array.prototype.join;
 
 /**
  * Global object to access DOM
@@ -54,5 +54,3 @@ var DOM = new $Element(document.documentElement);
 DOM.version = "<%= pkg.version %>";
 
 window.DOM = DOM;
-
-export default DOM;

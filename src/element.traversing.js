@@ -1,12 +1,6 @@
 import _ from "./util/index";
-import { $Element, $Elements } from "./index";
+import { $Element, $Collection } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
-
-/**
- * Element traversing support
- * @module traversing
- * @see https://github.com/chemerisuk/better-dom/wiki/Traversing
- */
 
 function makeTraversingMethod(methodName, propertyName, all) {
     return function(selector, andSelf) {
@@ -24,7 +18,7 @@ function makeTraversingMethod(methodName, propertyName, all) {
             }
         }
 
-        return new $Elements(nodes);
+        return new $Collection(nodes);
     };
 }
 
@@ -46,7 +40,7 @@ function makeChildTraversingMethod(all) {
             children = this.filter.call(children, (node) => node.nodeType === 1);
         }
 
-        if (all) return new $Elements(selector ? this.filter.call(children, SelectorMatcher(selector)) : children);
+        if (all) return new $Collection(selector ? this.filter.call(children, SelectorMatcher(selector)) : children);
 
         if (selector < 0) selector = children.length + selector;
 

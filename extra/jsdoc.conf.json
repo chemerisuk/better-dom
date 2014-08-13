@@ -5,17 +5,17 @@
     "plugins"   : ["plugins/markdown"],
     "templates" : {
         "applicationName": "better-dom",
-        "disqus": "",
+        "disqus": "better-dom",
         "googleAnalytics": "",
         "openGraph": {
-            "title": "",
+            "title": "Live extension playground",
             "type": "website",
             "image": "",
-            "site_name": "",
-            "url": ""
+            "site_name": "better-dom",
+            "url": "https://github.com/chemerisuk/better-dom"
         },
         "meta": {
-            "title": "",
+            "title": "better-dom: Live extension playground",
             "description": "",
             "keyword": ""
         },

@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, default as DOM } from "./index";
+import { $Element, DOM } from "./index";
 import EventHandler from "./util/eventhandler";
 
 /**
