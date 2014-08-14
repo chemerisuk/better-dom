@@ -54,18 +54,4 @@ DOM.constructor = (node) => new $Element(node);
 
 WINDOW.DOM = DOM; /* expose DOM namespace globally */
 
-// custom errors
-
-function MethodError(methodName, type = "$Element") {
-    this.message = type + "." + methodName + " was called with illegal arguments. Check <%= pkg.docs %> to verify the call";
-}
-
-MethodError.prototype = new TypeError();
-
-function StaticMethodError(methodName) {
-    MethodError.call(this, methodName, "DOM");
-}
-
-StaticMethodError.prototype = new TypeError();
-
-export { $Element, $Collection, DOM, MethodError, StaticMethodError };
+export { $Element, $Collection, DOM };

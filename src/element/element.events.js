@@ -1,6 +1,7 @@
 import _ from "../util/index";
+import { MethodError } from "../errors";
 import { DOM2_EVENTS, DOCUMENT } from "../constants";
-import { $Element, MethodError } from "../types";
+import { $Element } from "../types";
 import EventHandler from "../util/eventhandler";
 
 /**

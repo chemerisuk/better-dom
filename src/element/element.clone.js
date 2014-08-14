@@ -1,5 +1,6 @@
+import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../constants";
-import { $Element, DOM, MethodError } from "../types";
+import { $Element, DOM } from "../types";
 
 /**
  * Clone element

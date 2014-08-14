@@ -1,5 +1,6 @@
 import _ from "../util/index";
-import { $Element, MethodError } from "../types";
+import { MethodError } from "../errors";
+import { $Element } from "../types";
 import CSS from "../util/css";
 
 /**

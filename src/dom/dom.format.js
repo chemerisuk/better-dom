@@ -1,4 +1,5 @@
-import { DOM, StaticMethodError } from "../types";
+import { StaticMethodError } from "../errors";
+import { DOM } from "../types";
 
 var reVar = /\{([\w\-]+)\}/g;
 

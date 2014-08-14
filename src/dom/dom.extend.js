@@ -1,6 +1,7 @@
 import _ from "../util/index";
 import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT } from "../constants";
-import { $Element, DOM, StaticMethodError } from "../types";
+import { StaticMethodError } from "../errors";
+import { $Element, DOM } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
 // Inspired by trick discovered by Daniel Buchner:
