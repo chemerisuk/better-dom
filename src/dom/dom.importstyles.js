@@ -1,7 +1,7 @@
-import _ from "./util/index";
-import { DOCUMENT } from "./constants";
-import { DOM, StaticMethodError } from "./types";
-import CSS from "./util/css";
+import _ from "../util/index";
+import { DOCUMENT } from "../constants";
+import { DOM, StaticMethodError } from "../types";
+import CSS from "../util/css";
 
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,

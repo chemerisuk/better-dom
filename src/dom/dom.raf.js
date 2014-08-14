@@ -1,5 +1,5 @@
-import { WINDOW } from "./constants";
-import { DOM } from "./types";
+import { WINDOW } from "../constants";
+import { DOM } from "../types";
 
 var lastTime = 0,
     propName = ["r", "webkitR", "mozR", "oR"].reduce((memo, name) => {

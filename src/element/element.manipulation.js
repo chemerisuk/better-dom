@@ -1,6 +1,6 @@
-import _ from "./util/index";
-import { DOCUMENT } from "./constants";
-import { $Element, DOM, MethodError } from "./types";
+import _ from "../util/index";
+import { DOCUMENT } from "../constants";
+import { $Element, DOM, MethodError } from "../types";
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function() {

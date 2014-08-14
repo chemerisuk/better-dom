@@ -1,4 +1,4 @@
-import { $Element } from "./types";
+import { $Element } from "../types";
 
 var reInvoke = /cb\.call\(([^)]+)\)/g,
     defaults = {

@@ -1,7 +1,7 @@
-import _ from "./util/index";
-import { DOM2_EVENTS, DOCUMENT } from "./constants";
-import { $Element, MethodError } from "./types";
-import EventHandler from "./util/eventhandler";
+import _ from "../util/index";
+import { DOM2_EVENTS, DOCUMENT } from "../constants";
+import { $Element, MethodError } from "../types";
+import EventHandler from "../util/eventhandler";
 
 /**
  * Bind a DOM event

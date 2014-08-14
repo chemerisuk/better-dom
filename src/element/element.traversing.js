@@ -1,6 +1,6 @@
-import { DOM2_EVENTS } from "./constants";
-import { $Element, $Collection, MethodError } from "./types";
-import SelectorMatcher from "./util/selectormatcher";
+import { DOM2_EVENTS } from "../constants";
+import { $Element, $Collection, MethodError } from "../types";
+import SelectorMatcher from "../util/selectormatcher";
 
 function makeTraversingMethod(methodName, propertyName, all) {
     return function(selector, andSelf) {

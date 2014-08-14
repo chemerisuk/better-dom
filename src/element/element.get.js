@@ -1,5 +1,5 @@
-import { DOM2_EVENTS, HTML, DOCUMENT } from "./constants";
-import { $Element, MethodError } from "./types";
+import { DOM2_EVENTS, HTML, DOCUMENT } from "../constants";
+import { $Element, MethodError } from "../types";
 
 var hooks = {};
 

@@ -1,4 +1,4 @@
-import { DOM, StaticMethodError } from "./types";
+import { DOM, StaticMethodError } from "../types";
 
 var reVar = /\{([\w\-]+)\}/g;
 

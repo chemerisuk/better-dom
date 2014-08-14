@@ -1,4 +1,4 @@
-import { $Element, MethodError } from "./types";
+import { $Element, MethodError } from "../types";
 
 /**
  * Check if element is inside of context

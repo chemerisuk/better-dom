@@ -1,6 +1,6 @@
-import _ from "./util/index";
-import { DOCUMENT } from "./constants";
-import { DOM, StaticMethodError } from "./types";
+import _ from "../util/index";
+import { DOCUMENT } from "../constants";
+import { DOM, StaticMethodError } from "../types";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done

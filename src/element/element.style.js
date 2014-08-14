@@ -1,6 +1,6 @@
-import _ from "./util/index";
-import { $Element, MethodError } from "./types";
-import CSS from "./util/css";
+import _ from "../util/index";
+import { $Element, MethodError } from "../types";
+import CSS from "../util/css";
 
 /**
  * CSS properties accessor for an element

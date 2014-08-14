@@ -1,6 +1,6 @@
-import _ from "./util/index";
-import { HTML } from "./constants";
-import { $Element } from "./types";
+import _ from "../util/index";
+import { HTML } from "../constants";
+import { $Element } from "../types";
 
 var reSpace = /[\n\t\r]/g;
 

@@ -1,7 +1,7 @@
-import _ from "./util/index";
-import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "./constants";
-import { $Element, DOM, MethodError } from "./types";
-import CSS from "./util/css";
+import _ from "../util/index";
+import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
+import { $Element, DOM, MethodError } from "../types";
+import CSS from "../util/css";
 
 var parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;

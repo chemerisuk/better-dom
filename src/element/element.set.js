@@ -1,6 +1,6 @@
-import _ from "./util/index";
-import { DOM2_EVENTS, LEGACY_ANDROID, HTML, DOCUMENT } from "./constants";
-import { $Element, MethodError } from "./types";
+import _ from "../util/index";
+import { DOM2_EVENTS, LEGACY_ANDROID, HTML, DOCUMENT } from "../constants";
+import { $Element, MethodError } from "../types";
 
 var hooks = {},
     sandbox = DOCUMENT.createElement("body");
