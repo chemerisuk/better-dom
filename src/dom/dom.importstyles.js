@@ -2,7 +2,7 @@ import _ from "../helpers";
 import { StaticMethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { DOM } from "../types";
-import CSS from "../util/css";
+import CSS from "../util/stylehooks";
 
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,

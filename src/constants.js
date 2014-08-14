@@ -12,3 +12,4 @@ export var CSS3_ANIMATIONS = WINDOW.CSSKeyframesRule || !DOCUMENT.attachEvent;
 export var LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
 export var DOM2_EVENTS = !!DOCUMENT.addEventListener;
 export var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
+export var CUSTOM_EVENT_TYPE = "dataavailable";

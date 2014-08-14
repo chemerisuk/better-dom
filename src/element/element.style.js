@@ -1,7 +1,7 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
-import CSS from "../util/css";
+import CSS from "../util/stylehooks";
 
 /**
  * CSS properties accessor for an element

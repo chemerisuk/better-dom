@@ -1,5 +1,5 @@
 import _ from "../helpers";
-import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT } from "../constants";
+import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
@@ -29,7 +29,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         if (CSS3_ANIMATIONS) {
             stop = e.animationName === animId && e.target === node;
         } else {
-            stop = e.srcUrn === "dataavailable" && e.srcElement === node;
+            stop = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
         }
 
         if (stop) (e._skip = e._skip || {})[index] = true;
@@ -75,9 +75,8 @@ if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading")
 
 if (CSS3_ANIMATIONS) {
     nativeEventType = WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = "DOM" + new Date().getTime();
+    animId = "DOM" + Date.now();
 
-    // FIXME: get rid of setTimeout
     setTimeout(() => DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}"), 0);
 
     styles = {
@@ -101,7 +100,7 @@ if (CSS3_ANIMATIONS) {
     DOCUMENT.attachEvent(nativeEventType, () => {
         var e = WINDOW.event;
 
-        if (e.srcUrn === "dataavailable") {
+        if (e.srcUrn === CUSTOM_EVENT_TYPE) {
             extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));
         }
     });

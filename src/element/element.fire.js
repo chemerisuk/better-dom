@@ -1,7 +1,8 @@
 import { MethodError } from "../errors";
-import { DOM2_EVENTS, DOCUMENT } from "../constants";
+import { DOM2_EVENTS, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
 import { $Element } from "../types";
 import EventHandler from "../util/eventhandler";
+import HOOK from "../util/eventhooks";
 
 /**
  * Triggers an event of specific type with optional extra arguments
@@ -16,7 +17,7 @@ $Element.prototype.fire = function(type, ...args) {
         handler = {}, hook;
 
     if (eventType === "string") {
-        if (hook = EventHandler.hooks[type]) handler = hook(handler) || handler;
+        if (hook = HOOK[type]) handler = hook(handler) || handler;
 
         eventType = handler._type || type;
     } else {
@@ -37,9 +38,9 @@ $Element.prototype.fire = function(type, ...args) {
             e = DOCUMENT.createEventObject();
             e._args = args;
             // handle custom events for legacy IE
-            if (!("on" + eventType in node)) eventType = "dataavailable";
+            if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
             // store original event type
-            if (eventType === "dataavailable") e.srcUrn = type;
+            if (eventType === CUSTOM_EVENT_TYPE) e.srcUrn = type;
 
             node.fireEvent("on" + eventType, e);
 

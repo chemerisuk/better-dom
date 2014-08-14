@@ -1,9 +1,7 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
-import { DOM2_EVENTS, HTML, DOCUMENT } from "../constants";
 import { $Element } from "../types";
-
-var hooks = {};
+import PROP from "../util/accessorhooks";
 
 /**
  * Get property or attribute value by name
@@ -15,7 +13,7 @@ var hooks = {};
 $Element.prototype.get = function(name) {
     var data = this._,
         node = data._node,
-        hook = hooks[name],
+        hook = PROP.get[name],
         nameType = typeof name,
         key, value;
 
@@ -54,37 +52,3 @@ $Element.prototype.get = function(name) {
         throw new MethodError("get");
     }
 };
-
-// $Element#get hooks
-
-// fix camel cased attributes
-"tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {
-    hooks[key.toLowerCase()] = (node) => node[key];
-});
-
-hooks.style = (node) => node.style.cssText;
-
-hooks.title = (node) => node === HTML ? DOCUMENT.title : node.title;
-
-hooks.undefined = (node) => {
-    var name;
-
-    switch(node.tagName) {
-    case "SELECT":
-        return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
-
-    case "OPTION":
-        name = node.hasAttribute("value") ? "value" : "text";
-        break;
-
-    default:
-        name = node.type && "value" in node ? "value" : "innerHTML";
-    }
-
-    return node[name];
-};
-
-// some browsers don't recognize input[type=email] etc.
-hooks.type = (node) => node.getAttribute("type") || node.type;
-
-if (!DOM2_EVENTS) hooks.textContent = (node) => node.innerText;

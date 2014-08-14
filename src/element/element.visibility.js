@@ -2,7 +2,7 @@ import _ from "../helpers";
 import { MethodError } from "../errors";
 import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
 import { $Element, DOM } from "../types";
-import CSS from "../util/css";
+import CSS from "../util/stylehooks";
 
 var parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;

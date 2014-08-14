@@ -1,10 +1,8 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
-import { DOM2_EVENTS, LEGACY_ANDROID, HTML, DOCUMENT } from "../constants";
+import { DOM2_EVENTS, LEGACY_ANDROID } from "../constants";
 import { $Element } from "../types";
-
-var hooks = {},
-    sandbox = DOCUMENT.createElement("body");
+import PROP from "../util/accessorhooks";
 
 /**
  * Set property/attribute value by name
@@ -23,7 +21,7 @@ $Element.prototype.set = function(name, value) {
     }
 
     return this.legacy((node, el, index, ref) => {
-        var hook = hooks[name],
+        var hook = PROP.set[name],
             watchers = (el._._watchers || {})[name || ("value" in node ? "value" : "innerHTML")],
             newValue = value, oldValue;
 
@@ -50,7 +48,7 @@ $Element.prototype.set = function(name, value) {
                 node.setAttribute(name, newValue);
             }
 
-            // trigger reflow manually in IE8
+            // always trigger reflow manually for IE8 and legacy Android
             if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
         }
 
@@ -59,37 +57,3 @@ $Element.prototype.set = function(name, value) {
         }
     });
 };
-
-// $Element#set hooks
-
-hooks.style = (node, value) => { node.style.cssText = value };
-
-hooks.title = (node, value) => { (node === HTML ? DOCUMENT : node).title = value; };
-
-hooks.undefined = function(node, value) {
-    // handle numbers, booleans etc.
-    value = value == null ? "" : String(value);
-
-    if (node.tagName === "SELECT") {
-        // selectbox has special case
-        if (_.every.call(node.options, (o) => !(o.selected = o.value === value))) {
-            node.selectedIndex = -1;
-        }
-    } else if (node.type && "value" in node) {
-        // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        node[DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
-    } else {
-        try {
-            node.innerHTML = value;
-        } catch (e) {
-            // sometimes browsers fail to set innerHTML, so fallback to appendChild then
-            // TODO: write a test
-            node.innerHTML = "";
-            sandbox.innerHTML = value;
-
-            for (var n; n = sandbox.firstChild; node.appendChild(n));
-        }
-    }
-};
-
-if (!DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };
