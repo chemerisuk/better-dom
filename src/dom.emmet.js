@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { DOM, StaticMethodError } from "./index";
+import { DOM, StaticMethodError } from "./types";
 
 /*es6-transpiler has-iterators:false, has-generators: false*/
 

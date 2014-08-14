@@ -1,5 +1,5 @@
-import { DOM2_EVENTS, HTML, WINDOW, DOCUMENT } from "./const";
-import { $Element, DOM } from "../index";
+import { DOM2_EVENTS, HTML, WINDOW, DOCUMENT } from "../constants";
+import { $Element, DOM } from "../types";
 import SelectorMatcher from "./selectormatcher";
 
 /*

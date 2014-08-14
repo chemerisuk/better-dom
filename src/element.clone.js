@@ -1,5 +1,5 @@
-import { DOM2_EVENTS } from "./util/const";
-import { $Element, DOM, MethodError } from "./index";
+import { DOM2_EVENTS } from "./constants";
+import { $Element, DOM, MethodError } from "./types";
 
 /**
  * Clone element

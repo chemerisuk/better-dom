@@ -1,5 +1,5 @@
 import _ from "./index";
-import { HTML } from "./const";
+import { HTML } from "../constants";
 
 /*
  * Helper for accessing css properties

@@ -1,6 +1,6 @@
 import _ from "./util/index";
-import { HTML, WINDOW, DOCUMENT } from "./util/const";
-import { $Element, DOM, MethodError } from "./index";
+import { HTML, WINDOW, DOCUMENT } from "./constants";
+import { $Element, DOM, MethodError } from "./types";
 import SelectorMatcher from "./util/selectormatcher";
 
 var hooks = {};

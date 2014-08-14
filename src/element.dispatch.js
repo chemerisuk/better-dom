@@ -1,5 +1,5 @@
-import { WINDOW } from "./util/const";
-import { $Element, MethodError } from "./index";
+import { WINDOW } from "./constants";
+import { $Element, MethodError } from "./types";
 
 /**
  * Make a safe method/function call

@@ -1,5 +1,5 @@
-import { DOCUMENT } from "./util/const";
-import { $Element, $Collection, DOM, MethodError } from "./index";
+import { DOCUMENT } from "./constants";
+import { $Element, $Collection, DOM, MethodError } from "./types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js

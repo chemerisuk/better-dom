@@ -1,5 +1,5 @@
-import { DOCUMENT } from "./util/const";
-import { $Element, $Collection, DOM, StaticMethodError } from "./index";
+import { DOCUMENT } from "./constants";
+import { $Element, $Collection, DOM, StaticMethodError } from "./types";
 
 var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
     sandbox = DOCUMENT.createElement("body");

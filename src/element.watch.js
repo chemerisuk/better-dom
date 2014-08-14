@@ -1,4 +1,4 @@
-import { $Element } from "./index";
+import { $Element } from "./types";
 
 /**
  * Watch for changes of a particular property/attribute

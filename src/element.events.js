@@ -1,6 +1,6 @@
 import _ from "./util/index";
-import { DOM2_EVENTS, DOCUMENT } from "./util/const";
-import { $Element, MethodError } from "./index";
+import { DOM2_EVENTS, DOCUMENT } from "./constants";
+import { $Element, MethodError } from "./types";
 import EventHandler from "./util/eventhandler";
 
 /**

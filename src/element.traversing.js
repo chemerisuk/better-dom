@@ -1,5 +1,5 @@
-import { DOM2_EVENTS } from "./util/const";
-import { $Element, $Collection, MethodError } from "./index";
+import { DOM2_EVENTS } from "./constants";
+import { $Element, $Collection, MethodError } from "./types";
 import SelectorMatcher from "./util/selectormatcher";
 
 function makeTraversingMethod(methodName, propertyName, all) {

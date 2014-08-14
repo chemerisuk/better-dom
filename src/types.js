@@ -1,4 +1,4 @@
-import { WINDOW, HTML } from "./util/const";
+import { WINDOW, HTML } from "./constants";
 
 /**
  * Used to represent a DOM element
