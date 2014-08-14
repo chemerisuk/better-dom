@@ -18,9 +18,6 @@ describe("set", function() {
 
     it("should update an appropriate native object attribute", function() {
         expect(link.set("data-test", "t")).toHaveAttr("data-test", "t");
-        inputs.set("name", "abc").legacy(function(node) {
-            expect(node.name).toBe("abc");
-        });
     });
 
     it("should try to update an appropriate native object property first", function() {
@@ -53,15 +50,11 @@ describe("set", function() {
     // });
 
     it("should accept function", function() {
-        var spy = jasmine.createSpy("setter");
+        var spy = jasmine.createSpy("setter").and.returnValue("test_changed");
 
-        link.set("id", function(el, index) {
-            spy(el, index);
+        link.set("id", spy);
 
-            return "test_changed";
-        });
-
-        expect(spy).toHaveBeenCalledWith(link, 0);
+        expect(spy).toHaveBeenCalledWith(link, link._._node);
         expect(link).toHaveAttr("id", "test_changed");
     });
 
@@ -145,10 +138,6 @@ describe("set", function() {
 
             expect(link).toHaveHtml(value);
             expect(input).toHaveProp("value", value);
-
-            inputs.set("qqq").legacy(function(node) {
-                expect(node.value).toBe("qqq");
-            });
         });
 
         it("should set select value properly", function() {

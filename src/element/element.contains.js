@@ -11,18 +11,18 @@ import { $Element } from "../types";
 $Element.prototype.contains = function(element) {
     var node = this._._node;
 
+    if (!node) return false;
+
     if (element instanceof $Element) {
-        return node && element.every((el) => {
-            var otherNode = el._._node;
+        var otherNode = element._._node;
 
-            if (otherNode === node) return true;
+        if (otherNode === node) return true;
 
-            if (node.contains) {
-                return node.contains(otherNode);
-            } else {
-                return node.compareDocumentPosition(otherNode) & 16;
-            }
-        });
+        if (node.contains) {
+            return node.contains(otherNode);
+        } else {
+            return node.compareDocumentPosition(otherNode) & 16;
+        }
     }
 
     throw new MethodError("contains");

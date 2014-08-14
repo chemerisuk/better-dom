@@ -21,7 +21,7 @@ describe("dispatch", function() {
     it("should support method name as the first argument", function() {
         var spy;
 
-        input.legacy(function(node) { spy = spyOn(node, "focus") });
+        input.each(function(_, node) { spy = spyOn(node, "focus") });
 
         expect(input.dispatch("focus")).toBeUndefined();
         expect(spy).toHaveBeenCalled();

@@ -1,3 +1,4 @@
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../constants";
 import { $Element, $Collection } from "../types";
@@ -38,10 +39,10 @@ function makeChildTraversingMethod(all) {
 
         if (!DOM2_EVENTS) {
             // fix IE8 bug with children collection
-            children = this.filter.call(children, (node) => node.nodeType === 1);
+            children = _.filter.call(children, (node) => node.nodeType === 1);
         }
 
-        if (all) return new $Collection(selector ? this.filter.call(children, SelectorMatcher(selector)) : children);
+        if (all) return new $Collection(selector ? _.filter.call(children, SelectorMatcher(selector)) : children);
 
         if (selector < 0) selector = children.length + selector;
 

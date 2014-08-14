@@ -63,7 +63,7 @@ describe("find", function() {
 
         var foo = DOM.find(".foo");
 
-        foo.legacy(function(node) {
+        foo.each(function(_, node) {
             expect(node.querySelectorAll("div span").length).toBe(1);
         });
 

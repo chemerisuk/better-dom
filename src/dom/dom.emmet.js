@@ -145,8 +145,7 @@ DOM.emmet = function(template, varMap) {
                 break;
 
             case "*":
-                // Array.prototype.map doesn't work properly here
-                node = this.map.call(Array(+term), makeIndexedTerm(toString(node)));
+                node = Array.apply(0, Array(+term)).map(makeIndexedTerm(toString(node)));
                 break;
 
             default:

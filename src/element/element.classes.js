@@ -21,7 +21,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
                 if (args.length === 1) {
                     return strategy.call(this, className);
                 } else {
-                    return this.every.call(args, strategy, this);
+                    return _.every.call(args, strategy, this);
                 }
             }
         };

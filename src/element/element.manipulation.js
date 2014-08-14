@@ -1,26 +1,23 @@
-import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
-    return function() {
-        var args = arguments;
-
-        return this.legacy((node, el, index, ref) => {
+    return function(...args) {
+        return this.each((el, node) => {
             if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return;
 
             var html = "", value;
 
-            _.each.call(args, (arg) => {
-                if (typeof arg === "function") arg = arg(el, index, ref);
+            args.forEach((arg) => {
+                if (typeof arg === "function") arg = arg(el, node);
 
                 if (typeof arg === "string") {
                     html += arg.trim();
                 } else if (arg instanceof $Element) {
                     if (!value) value = DOCUMENT.createDocumentFragment();
                     // populate fragment
-                    arg.legacy((node) => value.appendChild(node));
+                    arg.each((el, node) => value.appendChild(node));
                 } else {
                     throw new MethodError(methodName);
                 }

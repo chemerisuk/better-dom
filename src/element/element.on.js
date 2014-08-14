@@ -43,7 +43,7 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         throw new MethodError("on");
     }
 
-    return this.legacy((node, el) => {
+    return this.each((el, node) => {
         var handler = EventHandler(type, selector, callback, props, el, node, once);
 
         if (DOM2_EVENTS) {

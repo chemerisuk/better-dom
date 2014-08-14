@@ -6,7 +6,7 @@
             if (typeof content === "string") {
                 el.innerHTML = content;
             } else if (typeof content === "object") {
-                content.legacy(function(node) {
+                content.each(function(_, node) {
                     el.innerHTML = "";
                     el.appendChild(node);
                 });
@@ -38,7 +38,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.legacy(function(node) {
+                    actual.each(function(_, node) {
                         result.pass = node.nodeName.toLowerCase() === tagName;
                     });
                 }
@@ -53,7 +53,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.legacy(function(node) {
+                    actual.each(function(_, node) {
                         result.pass = ~(" " + node.className + " ").indexOf(" " + className + " ");
                     });
                 }
@@ -68,7 +68,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.legacy(function(node) {
+                    actual.each(function(_, node) {
                         result.pass = node.id === value;
                     });
                 }
@@ -84,11 +84,11 @@
 
                 if (actual) {
                     if (arguments.length === 2) {
-                        actual.legacy(function(node) {
+                        actual.each(function(_, node) {
                             result.pass = node.hasAttribute(name);
                         });
                     } else if (arguments.length === 3) {
-                        actual.legacy(function(node) {
+                        actual.each(function(_, node) {
                             result.pass = node.getAttribute(name) === value;
                         });
                     }
@@ -104,7 +104,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.legacy(function(node) {
+                    actual.each(function(_, node) {
                         result.pass = node[name] === value;
                     });
                 }
@@ -130,7 +130,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.legacy(function(node) {
+                    actual.each(function(_, node) {
                         result.pass = node.innerHTML === value;
                     });
                 }
@@ -145,7 +145,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.legacy(function(node) {
+                    actual.each(function(_, node) {
                         // IE8 has upper cased props
                         if (!(name in node.style)) name = name.toUpperCase();
 

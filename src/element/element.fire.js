@@ -13,8 +13,10 @@ import HOOK from "../util/eventhooks";
  * @return {Boolean} true if default action wasn't prevented
  */
 $Element.prototype.fire = function(type, ...args) {
-    var eventType = typeof type,
-        handler = {}, hook;
+    var node = this._._node,
+        eventType = typeof type,
+        handler = {},
+        hook, e, canContinue;
 
     if (eventType === "string") {
         if (hook = HOOK[type]) handler = hook(handler) || handler;
@@ -24,39 +26,36 @@ $Element.prototype.fire = function(type, ...args) {
         throw new MethodError("fire");
     }
 
-    return this.every((el) => {
-        var node = el._._node,
-            e, canContinue;
+    if (!node) return false;
 
-        if (DOM2_EVENTS) {
-            e = DOCUMENT.createEvent("HTMLEvents");
-            e.initEvent(eventType, true, true);
-            e._args = args;
+    if (DOM2_EVENTS) {
+        e = DOCUMENT.createEvent("HTMLEvents");
+        e.initEvent(eventType, true, true);
+        e._args = args;
 
-            canContinue = node.dispatchEvent(e);
-        } else {
-            e = DOCUMENT.createEventObject();
-            e._args = args;
-            // handle custom events for legacy IE
-            if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
-            // store original event type
-            if (eventType === CUSTOM_EVENT_TYPE) e.srcUrn = type;
+        canContinue = node.dispatchEvent(e);
+    } else {
+        e = DOCUMENT.createEventObject();
+        e._args = args;
+        // handle custom events for legacy IE
+        if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
+        // store original event type
+        if (eventType === CUSTOM_EVENT_TYPE) e.srcUrn = type;
 
-            node.fireEvent("on" + eventType, e);
+        node.fireEvent("on" + eventType, e);
 
-            canContinue = e.returnValue !== false;
-        }
+        canContinue = e.returnValue !== false;
+    }
 
-        // Call native method. IE<9 dies on focus/blur to hidden element
-        if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
-            // Prevent re-triggering of the same event
-            EventHandler.skip = type;
+    // Call native method. IE<9 dies on focus/blur to hidden element
+    if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+        // Prevent re-triggering of the same event
+        EventHandler.skip = type;
 
-            node[type]();
+        node[type]();
 
-            EventHandler.skip = null;
-        }
+        EventHandler.skip = null;
+    }
 
-        return canContinue;
-    });
+    return canContinue;
 };

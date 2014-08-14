@@ -105,15 +105,11 @@ describe("css", function() {
         });
 
         it("should accept function", function() {
-            var spy = jasmine.createSpy("value");
+            var spy = jasmine.createSpy("value").and.returnValue(7);
 
-            link.css("line-height", function(el, index) {
-                spy(el, index);
+            link.css("line-height", spy);
 
-                return 7;
-            });
-
-            expect(spy).toHaveBeenCalledWith(link, 0);
+            expect(spy).toHaveBeenCalledWith(link, link._._node);
             expect(link.css("line-height")).toBe("7");
         });
 

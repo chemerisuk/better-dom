@@ -12,7 +12,7 @@ import { $Element } from "../types";
 $Element.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw new MethodError("off");
 
-    return this.legacy((node, el) => {
+    return this.each((el, node) => {
         el._._handlers = el._._handlers.filter((handler) => {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 

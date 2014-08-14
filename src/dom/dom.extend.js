@@ -169,5 +169,11 @@ DOM.extend = function(selector, condition, mixins) {
  * @return {$Element} mocked instance
  */
 DOM.mock = function(content, varMap) {
-    return content ? DOM.create(content, varMap).legacy(applyExtensions) : new $Element();
+    if (!content) return new $Element();
+
+    var result = DOM.create(content, varMap);
+
+    _.each.call(result, (el) => { el.each((_, node) => { applyExtensions(node) }) });
+
+    return result;
 };

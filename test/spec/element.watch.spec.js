@@ -14,11 +14,11 @@ describe("watch", function() {
         expect(link.watch("title", spy2)).toBe(link);
 
         link.set("href", "url_changed");
-        expect(spy1).toHaveBeenCalledWith("url_changed", oldHref, link, 0, link);
+        expect(spy1).toHaveBeenCalledWith("url_changed", oldHref);
         expect(spy2).not.toHaveBeenCalled();
 
         link.set("title", "modified");
-        expect(spy2).toHaveBeenCalledWith("modified", "text", link, 0, link);
+        expect(spy2).toHaveBeenCalledWith("modified", "text");
         expect(spy1.calls.count()).toBe(1);
 
         link.set("123");
@@ -26,7 +26,7 @@ describe("watch", function() {
         expect(spy1.calls.count()).toBe(1);
 
         link.set("title", "new");
-        expect(spy2).toHaveBeenCalledWith("new", "modified", link, 0, link);
+        expect(spy2).toHaveBeenCalledWith("new", "modified");
     });
 
     it("should execute for visibility methods", function(done) {
@@ -61,7 +61,7 @@ describe("watch", function() {
         expect(link.watch("title", spy)).toBe(link);
 
         link.set("title", "modified");
-        expect(spy).toHaveBeenCalledWith("modified", "text", link, 0, link);
+        expect(spy).toHaveBeenCalledWith("modified", "text");
         expect(spy.calls.count()).toBe(1);
 
         expect(link.unwatch("href", spy)).toBe(link);
@@ -80,13 +80,13 @@ describe("watch", function() {
         link.watch("innerHTML", spy);
         link.set("test1");
 
-        expect(spy).toHaveBeenCalledWith("test1", "", link, 0, link);
+        expect(spy).toHaveBeenCalledWith("test1", "");
 
         spy.calls.reset();
 
         input.watch("value", spy);
         input.set("test2");
 
-        expect(spy).toHaveBeenCalledWith("test2", "", input, 0, input);
+        expect(spy).toHaveBeenCalledWith("test2", "");
     });
 });

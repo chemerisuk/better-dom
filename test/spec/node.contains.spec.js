@@ -13,9 +13,9 @@ describe("contains", function() {
         expect(testEl.contains(testEl.find("a"))).toBeTruthy();
     });
 
-    it("should accept DOM collections", function() {
-        expect(testEl.contains(testEl.findAll("a"))).toBeTruthy();
-    });
+    // it("should accept DOM collections", function() {
+    //     expect(testEl.contains(testEl.findAll("a"))).toBeTruthy();
+    // });
 
     it("should return true for node itself", function() {
         expect(testEl.contains(testEl)).toBeTruthy();

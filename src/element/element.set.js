@@ -20,7 +20,7 @@ $Element.prototype.set = function(name, value) {
         name = undefined;
     }
 
-    return this.legacy((node, el, index, ref) => {
+    return this.each((el, node) => {
         var hook = PROP.set[name],
             watchers = (el._._watchers || {})[name || ("value" in node ? "value" : "innerHTML")],
             newValue = value, oldValue;
@@ -30,7 +30,7 @@ $Element.prototype.set = function(name, value) {
         if (typeof name === "string" && name.substr(0, 2) === "--") {
             el._[name.substr(2)] = newValue;
         } else {
-            if (typeof newValue === "function") newValue = value(el, index, ref);
+            if (typeof newValue === "function") newValue = value(el, node);
 
             if (hook) {
                 hook(node, newValue);
@@ -53,7 +53,7 @@ $Element.prototype.set = function(name, value) {
         }
 
         if (watchers && oldValue !== newValue) {
-            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue, el, index, ref) });
+            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue) });
         }
     });
 };

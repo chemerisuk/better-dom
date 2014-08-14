@@ -42,12 +42,12 @@ $Element.prototype.css = function(name, value) {
         return node && nameType === "string" ? value[name] : value;
     }
 
-    return this.legacy((node, el, index, ref) => {
+    return this.each((el, node) => {
         var style = node.style,
             appendCssText = (key, value) => {
                 var hook = HOOK.set[key];
 
-                if (typeof value === "function") value = value(el, index, ref);
+                if (typeof value === "function") value = value(el, node);
 
                 if (value == null) value = "";
 

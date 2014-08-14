@@ -22,7 +22,7 @@ describe("fire", function() {
     });
 
     it("should trigger native handlers", function() {
-        input.legacy(function(node) {
+        input.each(function(_, node) {
             node.onclick = callback.and.returnValue(false);
         });
 
@@ -36,7 +36,7 @@ describe("fire", function() {
 
         expect(input.matches(":focus")).toBe(true);
 
-        input.legacy(function(node) {
+        input.each(function(_, node) {
             expect(node).toBe(document.activeElement);
         });
     });
