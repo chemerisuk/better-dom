@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { StaticMethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { DOM } from "../types";
@@ -18,7 +18,7 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
 DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
         // use styleObj to collect all style props for a new CSS rule
-        var styleObj = Object.keys(cssText).reduce((styleObj, prop) => {
+        var styleObj = _.keys(cssText).reduce((styleObj, prop) => {
             var hook = CSS.set[prop];
 
             if (hook) {
@@ -30,7 +30,7 @@ DOM.importStyles = function(selector, cssText) {
             return styleObj;
         }, {});
 
-        cssText = Object.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
+        cssText = _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {

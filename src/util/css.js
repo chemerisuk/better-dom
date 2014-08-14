@@ -1,4 +1,4 @@
-import _ from "./index";
+import _ from "../helpers";
 import { HTML } from "../constants";
 
 /*
@@ -10,7 +10,7 @@ var hooks = {get: {}, set: {}},
     directions = ["Top", "Right", "Bottom", "Left"],
     computed = _.computeStyle(HTML),
     // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
-    props = computed.length ? _.slice.call(computed, 0) : Object.keys(computed).map((key) => {
+    props = computed.length ? _.slice.call(computed, 0) : _.keys(computed).map((key) => {
         return key.replace(reCamel, (str) => "-" + str.toLowerCase());
     }),
     shortCuts = {
@@ -54,7 +54,7 @@ props.forEach((propName) => {
 });
 
 // normalize property shortcuts
-Object.keys(shortCuts).forEach((key) => {
+_.keys(shortCuts).forEach((key) => {
     var props = shortCuts[key];
 
     hooks.get[key] = (style) => {

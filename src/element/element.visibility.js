@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
 import { $Element, DOM } from "../types";

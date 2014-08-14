@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
 import CSS from "../util/css";
@@ -18,7 +18,7 @@ $Element.prototype.style = function(name, value) {
         nameType = typeof name,
         style, hook, computed;
 
-    if (len === 1 && (nameType === "string" || Array.isArray(name))) {
+    if (len === 1 && (nameType === "string" || _.isArray(name))) {
         if (node) {
             style = node.style;
 
@@ -59,7 +59,7 @@ $Element.prototype.style = function(name, value) {
             };
 
         if (len === 1 && name && nameType === "object") {
-            Object.keys(name).forEach((key) => { appendCssText(key, name[key]) });
+            _.keys(name).forEach((key) => { appendCssText(key, name[key]) });
         } else if (len === 2 && nameType === "string") {
             appendCssText(name, value);
         } else {

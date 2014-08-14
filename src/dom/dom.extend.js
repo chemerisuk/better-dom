@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
@@ -12,7 +12,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
     returnFalse = () => false,
     nativeEventType, animId, link, styles,
     applyMixins = (obj, mixins) => {
-        Object.keys(mixins).forEach((key) => {
+        _.keys(mixins).forEach((key) => {
             if (key !== "constructor") obj[key] = mixins[key];
         });
     },
@@ -132,7 +132,7 @@ DOM.extend = function(selector, condition, mixins) {
         // extending element prototype
         applyMixins($Element.prototype, mixins);
     } else {
-        var eventHandlers = Object.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
+        var eventHandlers = _.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
             ext = (node, mock) => {

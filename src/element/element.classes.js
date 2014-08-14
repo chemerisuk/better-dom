@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { HTML } from "../constants";
 import { $Element } from "../types";
 

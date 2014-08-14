@@ -1,3 +1,4 @@
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS, HTML, DOCUMENT } from "../constants";
 import { $Element } from "../types";
@@ -47,7 +48,7 @@ $Element.prototype.get = function(name) {
         }
 
         return name in node ? node[name] : node.getAttribute(name);
-    } else if (Array.isArray(name)) {
+    } else if (_.isArray(name)) {
         return name.reduce((r, key) => { return r[key] = this.get(key), r }, {});
     } else {
         throw new MethodError("get");

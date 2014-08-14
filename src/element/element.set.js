@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS, LEGACY_ANDROID, HTML, DOCUMENT } from "../constants";
 import { $Element } from "../types";
@@ -38,7 +38,7 @@ $Element.prototype.set = function(name, value) {
                 hook(node, newValue);
             } else if (nameType !== "string") {
                 if (name && nameType === "object") {
-                    return Object.keys(name).forEach((key) => { el.set(key, name[key]) });
+                    return _.keys(name).forEach((key) => { el.set(key, name[key]) });
                 }
 
                 throw new MethodError("set");

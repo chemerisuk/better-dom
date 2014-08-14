@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";

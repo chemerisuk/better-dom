@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { StaticMethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { DOM } from "../types";

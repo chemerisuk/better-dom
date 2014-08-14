@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS, DOCUMENT } from "../constants";
 import { $Element } from "../types";
@@ -25,17 +25,17 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
             type = type.substr(0, index);
         }
 
-        if (!Array.isArray(props)) {
+        if (!_.isArray(props)) {
             once = props;
             props = undefined;
         }
     } else if (eventType === "object") {
-        if (Array.isArray(type)) {
+        if (_.isArray(type)) {
             args = _.slice.call(arguments, 1);
 
             type.forEach((name) => { this.on.apply(this, [name].concat(args)) });
         } else {
-            Object.keys(type).forEach((name) => { this.on(name, type[name]) });
+            _.keys(type).forEach((name) => { this.on(name, type[name]) });
         }
 
         return this;
