@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, DOM } from "./index";
+import { $Element, DOM, MethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
 var hooks = {};
@@ -40,7 +40,7 @@ $Element.prototype.offset = function() {
  * @return {$Element}
  */
 $Element.prototype.matches = function(selector) {
-    if (!selector || typeof selector !== "string") throw _.makeError("matches");
+    if (!selector || typeof selector !== "string") throw new MethodError("matches");
 
     var checker = hooks[selector] || SelectorMatcher(selector),
         node = this._._node;

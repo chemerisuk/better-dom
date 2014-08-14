@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { DOM } from "./index";
+import { DOM, StaticMethodError } from "./index";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done
@@ -24,7 +24,7 @@ DOM.importScripts = function(...urls) {
         } else if (argType === "function") {
             arg();
         } else if (arg) {
-            throw _.makeError("importScripts", true);
+            throw new StaticMethodError("importScripts");
         }
     };
 

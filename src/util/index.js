@@ -4,11 +4,6 @@ var doc = document,
     currentScript = doc.scripts[0];
 
 export default {
-    makeError: (method, DOM) => {
-        var type = DOM ? "DOM" : "$Element";
-
-        return TypeError(type + "." + method + " was called with illegal arguments. Check <%= pkg.docs %> to verify the function call");
-    },
     computeStyle: (node) => {
         return win.getComputedStyle ? win.getComputedStyle(node) : node.currentStyle;
     },

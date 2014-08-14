@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, DOM } from "./index";
+import { $Element, DOM, MethodError } from "./index";
 
 /**
  * Clone element
@@ -9,7 +9,7 @@ import { $Element, DOM } from "./index";
  * @return {$Element} clone of current element
  */
 $Element.prototype.clone = function(deep = true) {
-    if (typeof deep !== "boolean") throw _.makeError("clone");
+    if (typeof deep !== "boolean") throw new MethodError("clone");
 
     var node = this._._node, result;
 

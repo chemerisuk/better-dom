@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, DOM } from "./index";
+import { $Element, DOM, MethodError } from "./index";
 import CSS from "./util/css";
 
 var parseTimeValue = (value) => {
@@ -131,7 +131,7 @@ var parseTimeValue = (value) => {
 
         if (delay && (delayType !== "number" || delay < 0) ||
             callback && typeof callback !== "function") {
-            throw _.makeError(name);
+            throw new MethodError(name);
         }
 
         callback = changeVisibility(this, fn, callback);

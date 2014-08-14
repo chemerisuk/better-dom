@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, DOM } from "./index";
+import { $Element, DOM, StaticMethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
 // Inspired by trick discovered by Daniel Buchner:
@@ -124,7 +124,7 @@ DOM.extend = function(selector, condition, mixins) {
 
     if (typeof mixins === "function") mixins = {constructor: mixins};
 
-    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw _.makeError("extend", true);
+    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new StaticMethodError("extend");
 
     if (selector === "*") {
         // extending element prototype

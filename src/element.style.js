@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element } from "./index";
+import { $Element, MethodError } from "./index";
 import CSS from "./util/css";
 
 /**
@@ -62,7 +62,7 @@ $Element.prototype.style = function(name, value) {
         } else if (len === 2 && nameType === "string") {
             appendCssText(name, value);
         } else {
-            throw _.makeError("style");
+            throw new MethodError("style");
         }
     });
 };

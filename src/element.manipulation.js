@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, DOM } from "./index";
+import { $Element, DOM, MethodError } from "./index";
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function() {
@@ -20,7 +20,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                     // populate fragment
                     arg.legacy((node) => value.appendChild(node));
                 } else {
-                    throw _.makeError(methodName);
+                    throw new MethodError(methodName);
                 }
             });
 

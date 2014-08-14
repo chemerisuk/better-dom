@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element } from "./index";
+import { $Element, MethodError } from "./index";
 
 var hooks = {};
 
@@ -49,7 +49,7 @@ $Element.prototype.get = function(name) {
     } else if (Array.isArray(name)) {
         return name.reduce((r, key) => { return r[key] = this.get(key), r }, {});
     } else {
-        throw _.makeError("get");
+        throw new MethodError("get");
     }
 };
 

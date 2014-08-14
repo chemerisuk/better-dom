@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element } from "./index";
+import { $Element, MethodError } from "./index";
 
 var hooks = {},
     sandbox = document.createElement("body");
@@ -39,7 +39,7 @@ $Element.prototype.set = function(name, value) {
                     return Object.keys(name).forEach((key) => { el.set(key, name[key]) });
                 }
 
-                throw _.makeError("set");
+                throw new MethodError("set");
             } else if (newValue == null) {
                 node.removeAttribute(name);
             } else if (name in node) {

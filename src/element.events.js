@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element, DOM } from "./index";
+import { $Element, DOM, MethodError } from "./index";
 import EventHandler from "./util/eventhandler";
 
 /**
@@ -38,7 +38,7 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
 
         return this;
     } else {
-        throw _.makeError("on");
+        throw new MethodError("on");
     }
 
     return this.legacy((node, el) => {
@@ -78,7 +78,7 @@ $Element.prototype.once = function(...args) {
  * @return {$Element}
  */
 $Element.prototype.off = function(type, callback) {
-    if (typeof type !== "string") throw _.makeError("off");
+    if (typeof type !== "string") throw new MethodError("off");
 
     return this.legacy((node, el) => {
         el._._handlers = el._._handlers.filter((handler) => {
@@ -115,7 +115,7 @@ $Element.prototype.fire = function(type, ...args) {
 
         eventType = handler._type || type;
     } else {
-        throw _.makeError("fire");
+        throw new MethodError("fire");
     }
 
     return this.every((el) => {

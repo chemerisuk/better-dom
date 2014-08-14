@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { $Element } from "./index";
+import { $Element, MethodError } from "./index";
 
 /**
  * Check if element is inside of context
@@ -25,5 +25,5 @@ $Element.prototype.contains = function(element) {
         });
     }
 
-    throw _.makeError("contains");
+    throw new MethodError("contains");
 };

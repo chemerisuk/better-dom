@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { DOM } from "./index";
+import { DOM, StaticMethodError } from "./index";
 import CSS from "./util/css";
 
 var styleNode = _.injectElement(document.createElement("style")),
@@ -32,11 +32,11 @@ DOM.importStyles = function(selector, cssText) {
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {
-        throw _.makeError("importStyles", true);
+        throw new StaticMethodError("importStyles");
     }
 
     if (styleSheet.cssRules) {
-        styleSheet.insertRule(`${selector} {${cssText}}`, styleRules.length);
+        styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
     } else {
         // ie doesn't support multiple selectors in addRule
         selector.split(",").forEach((selector) => { styleSheet.addRule(selector, cssText) });

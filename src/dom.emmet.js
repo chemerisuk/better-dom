@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { DOM } from "./index";
+import { DOM, StaticMethodError } from "./index";
 
 /*es6-transpiler has-iterators:false, has-generators: false*/
 
@@ -9,7 +9,7 @@ var // operator type / priority object
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
     // populate empty tags
     tagCache = "area base br col hr img input link meta param command keygen source".split(" ").reduce((tagCache, tag) => {
-        tagCache[tag] = `<${tag}>`;
+        tagCache[tag] = "<" + tag + ">";
 
         return tagCache;
     }, {}),
@@ -28,7 +28,7 @@ var // operator type / priority object
     makeTerm = (tag) => {
         var result = tagCache[tag];
 
-        if (!result) result = tagCache[tag] = `<${tag}></${tag}>`;
+        if (!result) result = tagCache[tag] = "<" + tag + "></" + tag + ">";
 
         return result;
     },
@@ -51,7 +51,7 @@ var // operator type / priority object
  * @see http://docs.emmet.io/cheat-sheet/
  */
 DOM.emmet = function(template, varMap) {
-    if (typeof template !== "string") throw _.makeError("emmet", true);
+    if (typeof template !== "string") throw new StaticMethodError("emmet");
     // handle varMap
     if (varMap) template = DOM.format(template, varMap);
 
@@ -128,11 +128,11 @@ DOM.emmet = function(template, varMap) {
 
             switch(str) {
             case ".":
-                term = injectTerm(` class="${term}"`, true);
+                term = injectTerm(" class=\"" + term + "\"", true);
                 break;
 
             case "#":
-                term = injectTerm(` id="${term}"`, true);
+                term = injectTerm(" id=\"" + term + "\"", true);
                 break;
 
             case "[":

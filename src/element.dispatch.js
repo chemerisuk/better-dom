@@ -1,5 +1,4 @@
-import _ from "./util/index";
-import { $Element } from "./index";
+import { $Element, MethodError } from "./index";
 
 /**
  * Make a safe method/function call
@@ -19,7 +18,7 @@ $Element.prototype.dispatch = function(method, ...args) {
             method = node[method];
         }
 
-        if (typeof method !== "function") throw _.makeError("dispatch");
+        if (typeof method !== "function") throw new MethodError("dispatch");
 
         try {
             return method.apply(context, args);

@@ -1,5 +1,4 @@
-import _ from "./util/index";
-import { DOM } from "./index";
+import { DOM, StaticMethodError } from "./index";
 
 var reVar = /\{([\w\-]+)\}/g;
 
@@ -12,7 +11,7 @@ var reVar = /\{([\w\-]+)\}/g;
  * @return {String}  result string
  */
 DOM.format = function(template, varMap) {
-    if (typeof template !== "string" || varMap && typeof varMap !== "object") throw _.makeError("format", true);
+    if (typeof template !== "string" || varMap && typeof varMap !== "object") throw new StaticMethodError("format");
 
     return template.replace(reVar, (x, name) => name in varMap ? String(varMap[name]) : x);
 };

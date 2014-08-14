@@ -1,5 +1,4 @@
-import _ from "./util/index";
-import { $Element, $Collection, DOM } from "./index";
+import { $Element, $Collection, DOM, StaticMethodError } from "./index";
 
 var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
     sandbox = document.createElement("body");
@@ -23,7 +22,7 @@ DOM.create = function(value, varMap) {
         } else if (typeof value === "string") {
             value = DOM.emmet(value, varMap);
         } else {
-            throw _.makeError("create", true);
+            throw new StaticMethodError("create");
         }
 
         sandbox.innerHTML = value;

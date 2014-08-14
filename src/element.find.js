@@ -1,5 +1,4 @@
-import _ from "./util/index";
-import { $Element, $Collection, DOM } from "./index";
+import { $Element, $Collection, DOM, MethodError } from "./index";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -16,8 +15,8 @@ var rquickExpr = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
-$Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
-    if (typeof selector !== "string") throw _.makeError("find");
+$Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
+    if (typeof selector !== "string") throw new MethodError("find" + suffix);
 
     var node = this._._node,
         quickMatch = rquickExpr.exec(selector),
@@ -34,7 +33,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
             result = node.getElementsByClassName(quickMatch[2]);
         }
 
-        if (result && !all) result = result[0];
+        if (result && !suffix) result = result[0];
     } else {
         old = true;
         nid = tmpId;
@@ -57,13 +56,13 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
         }
 
         try {
-            result = context["querySelector" + all](selector);
+            result = context["querySelector" + suffix](selector);
         } finally {
             if (!old) node.removeAttribute("id");
         }
     }
 
-    return all ? new $Collection(result) : $Element(result);
+    return suffix ? new $Collection(result) : $Element(result);
 };
 
 /**

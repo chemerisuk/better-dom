@@ -1,10 +1,10 @@
 import _ from "./util/index";
-import { $Element, $Collection } from "./index";
+import { $Element, $Collection, MethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
 function makeTraversingMethod(methodName, propertyName, all) {
     return function(selector, andSelf) {
-        if (selector && typeof selector !== "string") throw _.makeError(methodName);
+        if (selector && typeof selector !== "string") throw new MethodError(methodName);
 
         var matcher = SelectorMatcher(selector),
             nodes = all ? [] : null,
@@ -25,9 +25,9 @@ function makeTraversingMethod(methodName, propertyName, all) {
 function makeChildTraversingMethod(all) {
     return function(selector) {
         if (all) {
-            if (selector && typeof selector !== "string") throw _.makeError("children");
+            if (selector && typeof selector !== "string") throw new MethodError("children");
         } else {
-            if (selector && typeof selector !== "number") throw _.makeError("child");
+            if (selector && typeof selector !== "number") throw new MethodError("child");
         }
 
         var node = this._._node,
