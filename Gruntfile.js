@@ -31,13 +31,13 @@ module.exports = function(grunt) {
                 options: {
                     destination: "jsdoc",
                     template: "node_modules/jaguarjs-jsdoc",
-                    configure: "extra/jsdoc.conf.json"
+                    configure: "conf/jsdoc.conf.json"
                 }
             }
         },
         karma: {
             options: {
-                configFile: "test/lib/karma.conf.js"
+                configFile: "conf/karma.conf.js"
             },
             all: {
                 browsers: ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"],
@@ -161,7 +161,7 @@ module.exports = function(grunt) {
     });
 
     // load local tasks
-    grunt.loadTasks("tasks");
+    grunt.loadTasks("task");
 
     // load NPM tasks.
     Object.keys(pkg.devDependencies).forEach(function(name) {
@@ -185,7 +185,8 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("docs", [
-        "clean:jsdoc",
+        "clean",
+        "compile",
         "jsdoc"
     ]);
 

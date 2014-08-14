@@ -6,7 +6,7 @@ var hooks = {get: {}, set: {}},
 
 // fix camel cased attributes
 "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {
-    hooks.get[key.toLowerCase()] = (node) => node[key];
+    hooks.get[ key.toLowerCase() ] = (node) => node[key];
 });
 
 // style hook
@@ -20,9 +20,9 @@ hooks.set.title = (node, value) => { (node === HTML ? DOCUMENT : node).title = v
 hooks.get.undefined = (node) => {
     var name;
 
-    switch(node.tagName) {
+    switch (node.tagName) {
     case "SELECT":
-        return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
+        return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
 
     case "OPTION":
         name = node.hasAttribute("value") ? "value" : "text";
