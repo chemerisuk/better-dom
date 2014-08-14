@@ -5,4 +5,3 @@ jsdoc
 coverage
 *.log
 build
-*.sublime-workspace
