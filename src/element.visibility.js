@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "./util/const";
 import { $Element, DOM, MethodError } from "./index";
 import CSS from "./util/css";
 
@@ -21,8 +22,8 @@ var parseTimeValue = (value) => {
         }));
     },
     transitionProps = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
-    eventType = _.WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-    absentStrategy = !_.LEGACY_ANDROID && _.CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
+    eventType = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+    absentStrategy = !LEGACY_ANDROID && CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
     changeVisibility = (el, fn, callback) => () => el.legacy((node, el, index, ref) => {
         var style = node.style,
             completeVisibilityChange = () => {
@@ -30,7 +31,7 @@ var parseTimeValue = (value) => {
                     style[absentStrategy[0]] = absentStrategy[1];
                 }
 
-                if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
+                if (!LEGACY_ANDROID && CSS3_ANIMATIONS) {
                     // remove temporary properties
                     style.willChange = "";
                 }
@@ -43,7 +44,7 @@ var parseTimeValue = (value) => {
                     duration, index, transition, absentance, completeAnimation, timeoutId;
                 // Legacy Android is too slow and has a lot of bugs in the CSS animations
                 // implementation, so skip animations for it (duration value is always zero)
-                if (!_.LEGACY_ANDROID && _.CSS3_ANIMATIONS) {
+                if (!LEGACY_ANDROID && CSS3_ANIMATIONS) {
                     duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
                 }
 

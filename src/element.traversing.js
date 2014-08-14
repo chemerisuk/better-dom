@@ -1,4 +1,4 @@
-import _ from "./util/index";
+import { DOM2_EVENTS } from "./util/const";
 import { $Element, $Collection, MethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
@@ -35,7 +35,7 @@ function makeChildTraversingMethod(all) {
 
         if (!node) return new $Element();
 
-        if (!_.DOM2_EVENTS) {
+        if (!DOM2_EVENTS) {
             // fix IE8 bug with children collection
             children = this.filter.call(children, (node) => node.nodeType === 1);
         }

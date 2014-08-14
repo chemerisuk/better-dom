@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { DOM2_EVENTS, LEGACY_ANDROID } from "./util/const";
 import { $Element, MethodError } from "./index";
 
 var hooks = {},
@@ -49,7 +50,7 @@ $Element.prototype.set = function(name, value) {
             }
 
             // trigger reflow manually in IE8
-            if (!_.DOM2_EVENTS || _.LEGACY_ANDROID) node.className = node.className;
+            if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
         }
 
         if (watchers && oldValue !== newValue) {
@@ -75,7 +76,7 @@ hooks.undefined = function(node, value) {
         }
     } else if (node.type && "value" in node) {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        node[_.DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
+        node[DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
     } else {
         try {
             node.innerHTML = value;
@@ -90,4 +91,4 @@ hooks.undefined = function(node, value) {
     }
 };
 
-if (!_.DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };
+if (!DOM2_EVENTS) hooks.textContent = (node, value) => { node.innerText = value };

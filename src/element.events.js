@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { DOM2_EVENTS } from "./util/const";
 import { $Element, DOM, MethodError } from "./index";
 import EventHandler from "./util/eventhandler";
 
@@ -44,7 +45,7 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
     return this.legacy((node, el) => {
         var handler = EventHandler(type, selector, callback, props, el, node, once);
 
-        if (_.DOM2_EVENTS) {
+        if (DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
         } else {
             // IE8 doesn't support onscroll on document level
@@ -86,7 +87,7 @@ $Element.prototype.off = function(type, callback) {
 
             type = handler._type || handler.type;
 
-            if (_.DOM2_EVENTS) {
+            if (DOM2_EVENTS) {
                 node.removeEventListener(type, handler, !!handler.capturing);
             } else {
                 // IE8 doesn't support onscroll on document level
@@ -122,7 +123,7 @@ $Element.prototype.fire = function(type, ...args) {
         var node = el._._node,
             e, canContinue;
 
-        if (_.DOM2_EVENTS) {
+        if (DOM2_EVENTS) {
             e = document.createEvent("HTMLEvents");
             e.initEvent(eventType, true, true);
             e._args = args;

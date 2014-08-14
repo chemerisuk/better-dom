@@ -1,4 +1,4 @@
-import _ from "./util/index";
+import { DOM2_EVENTS } from "./util/const";
 import { $Element, DOM, MethodError } from "./index";
 
 /**
@@ -14,7 +14,7 @@ $Element.prototype.clone = function(deep = true) {
     var node = this._._node, result;
 
     if (node) {
-        if (_.DOM2_EVENTS) {
+        if (DOM2_EVENTS) {
             result = new $Element(node.cloneNode(deep));
         } else {
             result = DOM.create(node.outerHTML);

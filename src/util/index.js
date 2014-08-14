@@ -1,6 +1,5 @@
 var doc = document,
     win = window,
-    userAgent = win.navigator.userAgent,
     currentScript = doc.scripts[0];
 
 export default {
@@ -12,10 +11,6 @@ export default {
     },
     // constants
     docEl: doc.documentElement,
-    CSS3_ANIMATIONS: win.CSSKeyframesRule || !doc.attachEvent,
-    LEGACY_ANDROID: ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0,
-    DOM2_EVENTS: !!doc.addEventListener,
-    WEBKIT_PREFIX: win.WebKitAnimationEvent ? "-webkit-" : "",
     // utilites
     slice: Array.prototype.slice,
     every: Array.prototype.every,

@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { DOM2_EVENTS } from "./util/const";
 import { $Element, MethodError } from "./index";
 
 var hooks = {};
@@ -85,4 +86,4 @@ hooks.undefined = (node) => {
 // some browsers don't recognize input[type=email] etc.
 hooks.type = (node) => node.getAttribute("type") || node.type;
 
-if (!_.DOM2_EVENTS) hooks.textContent = (node) => node.innerText;
+if (!DOM2_EVENTS) hooks.textContent = (node) => node.innerText;

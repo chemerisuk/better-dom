@@ -1,4 +1,5 @@
 import _ from "./index";
+import { DOM2_EVENTS } from "./const";
 import { $Element, DOM } from "../index";
 import SelectorMatcher from "./selectormatcher";
 
@@ -39,7 +40,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 args = args.map((name) => {
                     if (typeof name === "number") return extraArgs[name - 1];
 
-                    if (!_.DOM2_EVENTS) {
+                    if (!DOM2_EVENTS) {
                         switch (name) {
                         case "which":
                             return e.keyCode;
@@ -74,7 +75,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 // if props is not specified then prepend extra arguments
                 if (fn.apply(el, props ? args : extraArgs.concat(args)) === false) {
                     // prevent default if handler returns false
-                    if (_.DOM2_EVENTS) {
+                    if (DOM2_EVENTS) {
                         e.preventDefault();
                     } else {
                         e.returnValue = false;
@@ -84,7 +85,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
 
         if (hook) handler = hook(handler, type) || handler;
         // handle custom events for IE8
-        if (!_.DOM2_EVENTS && !("on" + (handler._type || type) in node)) {
+        if (!DOM2_EVENTS && !("on" + (handler._type || type) in node)) {
             handler._type = CUSTOM_EVENT_TYPE;
         }
 
@@ -116,7 +117,7 @@ if (document.createElement("input").validity) {
     hooks.invalid = (handler) => { handler.capturing = true };
 }
 
-if (!_.DOM2_EVENTS) {
+if (!DOM2_EVENTS) {
     // fix non-bubbling form events for IE8
     ["submit", "change", "reset"].forEach((name) => {
         hooks[name] = (handler) => { handler._type = CUSTOM_EVENT_TYPE };

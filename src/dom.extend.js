@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS } from "./util/const";
 import { $Element, DOM, StaticMethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
@@ -24,7 +25,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
 
         e = e || window.event;
         // mark extension as processed via _.SKIPEXT bitmask
-        if (_.CSS3_ANIMATIONS) {
+        if (CSS3_ANIMATIONS) {
             stop = e.animationName === animId && e.target === node;
         } else {
             stop = e.srcUrn === "dataavailable" && e.srcElement === node;
@@ -60,7 +61,7 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
     // use setTimeout to make sure that the library is fully initialized
     setTimeout(readyCallback, 0);
 } else {
-    if (_.DOM2_EVENTS) {
+    if (DOM2_EVENTS) {
         window.addEventListener("load", readyCallback, false);
         document.addEventListener("DOMContentLoaded", readyCallback, false);
     } else {
@@ -71,12 +72,12 @@ if (document.attachEvent ? readyState === "complete" : readyState !== "loading")
     }
 }
 
-if (_.CSS3_ANIMATIONS) {
-    nativeEventType = _.WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
+if (CSS3_ANIMATIONS) {
+    nativeEventType = WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + new Date().getTime();
 
     // FIXME: get rid of setTimeout
-    setTimeout(() => DOM.importStyles("@" + _.WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}"), 0);
+    setTimeout(() => DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}"), 0);
 
     styles = {
         "animation-duration": "1ms !important",
@@ -136,7 +137,7 @@ DOM.extend = function(selector, condition, mixins) {
             ext = (node, mock) => {
                 var el = $Element(node);
 
-                if (_.CSS3_ANIMATIONS) {
+                if (CSS3_ANIMATIONS) {
                     node.addEventListener(nativeEventType, stopExt(node, index), false);
                 } else {
                     node.attachEvent(nativeEventType, stopExt(node, index));
