@@ -1,10 +1,11 @@
+import { WINDOW } from "./util/const";
 import { DOM } from "./index";
 
 var lastTime = 0,
     propName = ["r", "webkitR", "mozR", "oR"].reduce((memo, name) => {
         var prop = name + "equestAnimationFrame";
 
-        return memo || window[prop] && prop;
+        return memo || WINDOW[prop] && prop;
     }, 0);
 
 /**
@@ -16,7 +17,7 @@ var lastTime = 0,
  */
 DOM.raf = function(callback) {
     if (propName) {
-        window[propName](callback);
+        WINDOW[propName](callback);
     } else {
         var currTime = Date.now(),
             timeToCall = Math.max(0, 16 - (currTime - lastTime));

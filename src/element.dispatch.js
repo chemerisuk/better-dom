@@ -1,3 +1,4 @@
+import { WINDOW } from "./util/const";
 import { $Element, MethodError } from "./index";
 
 /**
@@ -23,7 +24,7 @@ $Element.prototype.dispatch = function(method, ...args) {
         try {
             return method.apply(context, args);
         } catch (err) {
-            if ("console" in window) window.console.error(err);
+            if ("console" in WINDOW) WINDOW.console.error(err);
         }
     }
 };

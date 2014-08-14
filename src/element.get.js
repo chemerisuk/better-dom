@@ -1,5 +1,4 @@
-import _ from "./util/index";
-import { DOM2_EVENTS } from "./util/const";
+import { DOM2_EVENTS, HTML, DOCUMENT } from "./util/const";
 import { $Element, MethodError } from "./index";
 
 var hooks = {};
@@ -63,7 +62,7 @@ $Element.prototype.get = function(name) {
 
 hooks.style = (node) => node.style.cssText;
 
-hooks.title = (node) => node === _.docEl ? document.title : node.title;
+hooks.title = (node) => node === HTML ? DOCUMENT.title : node.title;
 
 hooks.undefined = (node) => {
     var name;

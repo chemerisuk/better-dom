@@ -9,8 +9,6 @@ export default {
     injectElement: (el) => {
         return currentScript.parentNode.insertBefore(el, currentScript);
     },
-    // constants
-    docEl: doc.documentElement,
     // utilites
     slice: Array.prototype.slice,
     every: Array.prototype.every,

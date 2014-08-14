@@ -1,5 +1,4 @@
-import _ from "./index";
-import { DOM2_EVENTS } from "./const";
+import { DOM2_EVENTS, HTML, WINDOW, DOCUMENT } from "./const";
 import { $Element, DOM } from "../index";
 import SelectorMatcher from "./selectormatcher";
 
@@ -14,13 +13,13 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
         var hook = hooks[type],
             matcher = SelectorMatcher(selector, node),
             handler = (e) => {
-                e = e || window.event;
+                e = e || WINDOW.event;
                 // early stop in case of default action
                 if (EventHandler.skip === type) return;
                 // handle custom events in legacy IE
                 if (handler._type === CUSTOM_EVENT_TYPE && e.srcUrn !== type) return;
                 // srcElement can be null in legacy IE when target is document
-                var target = e.target || e.srcElement || document,
+                var target = e.target || e.srcElement || DOCUMENT,
                     currentTarget = matcher ? matcher(target) : node,
                     extraArgs = e._args || [],
                     args = props || defaultArgs,
@@ -49,9 +48,9 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                             // click: 1 === left; 2 === middle; 3 === right
                             return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
                         case "pageX":
-                            return e.pageX || e.clientX + _.docEl.scrollLeft - _.docEl.clientLeft;
+                            return e.pageX || e.clientX + HTML.scrollLeft - HTML.clientLeft;
                         case "pageY":
-                            return e.clientY + _.docEl.scrollTop - _.docEl.clientTop;
+                            return e.clientY + HTML.scrollTop - HTML.clientTop;
                         }
                     }
 
@@ -105,7 +104,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     };
 });
 
-if ("onfocusin" in _.docEl) {
+if ("onfocusin" in HTML) {
     hooks.focus = (handler) => { handler._type = "focusin" };
     hooks.blur = (handler) => { handler._type = "focusout" };
 } else {
@@ -113,7 +112,7 @@ if ("onfocusin" in _.docEl) {
     hooks.focus = hooks.blur = (handler) => { handler.capturing = true };
 }
 
-if (document.createElement("input").validity) {
+if (DOCUMENT.createElement("input").validity) {
     hooks.invalid = (handler) => { handler.capturing = true };
 }
 

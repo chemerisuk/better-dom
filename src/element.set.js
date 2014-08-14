@@ -1,9 +1,9 @@
 import _ from "./util/index";
-import { DOM2_EVENTS, LEGACY_ANDROID } from "./util/const";
+import { DOM2_EVENTS, LEGACY_ANDROID, HTML, DOCUMENT } from "./util/const";
 import { $Element, MethodError } from "./index";
 
 var hooks = {},
-    sandbox = document.createElement("body");
+    sandbox = DOCUMENT.createElement("body");
 
 /**
  * Set property/attribute value by name
@@ -63,7 +63,7 @@ $Element.prototype.set = function(name, value) {
 
 hooks.style = (node, value) => { node.style.cssText = value };
 
-hooks.title = (node, value) => { (node === _.docEl ? document : node).title = value; };
+hooks.title = (node, value) => { (node === HTML ? DOCUMENT : node).title = value; };
 
 hooks.undefined = function(node, value) {
     // handle numbers, booleans etc.

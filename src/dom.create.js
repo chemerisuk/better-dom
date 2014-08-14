@@ -1,7 +1,8 @@
+import { DOCUMENT } from "./util/const";
 import { $Element, $Collection, DOM, StaticMethodError } from "./index";
 
 var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
-    sandbox = document.createElement("body");
+    sandbox = DOCUMENT.createElement("body");
 
 /**
  * Create a new DOM element in memory
@@ -15,7 +16,7 @@ DOM.create = function(value, varMap) {
     var test = reTest.exec(value);
 
     if (value && test && !test[1]) {
-        value = document.createElement(value);
+        value = DOCUMENT.createElement(value);
     } else {
         if (test && test[1]) {
             value = varMap ? DOM.format(test[1], varMap) : test[1];

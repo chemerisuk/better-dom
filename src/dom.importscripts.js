@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { DOCUMENT } from "./util/const";
 import { DOM, StaticMethodError } from "./index";
 
 /**
@@ -15,7 +16,7 @@ DOM.importScripts = function(...urls) {
             script;
 
         if (argType === "string") {
-            script = document.createElement("script");
+            script = DOCUMENT.createElement("script");
             script.src = arg;
             script.onload = callback;
             script.async = true;

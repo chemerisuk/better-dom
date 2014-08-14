@@ -1,4 +1,3 @@
-import _ from "./util/index";
 import { $Element, MethodError } from "./index";
 
 /**

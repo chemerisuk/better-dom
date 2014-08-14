@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { DOCUMENT } from "./util/const";
 import { $Element, DOM, MethodError } from "./index";
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
@@ -16,7 +17,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 if (typeof arg === "string") {
                     html += arg.trim();
                 } else if (arg instanceof $Element) {
-                    if (!value) value = document.createDocumentFragment();
+                    if (!value) value = DOCUMENT.createDocumentFragment();
                     // populate fragment
                     arg.legacy((node) => value.appendChild(node));
                 } else {

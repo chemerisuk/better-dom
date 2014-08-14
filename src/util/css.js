@@ -1,4 +1,5 @@
 import _ from "./index";
+import { HTML } from "./const";
 
 /*
  * Helper for accessing css properties
@@ -7,7 +8,7 @@ var hooks = {get: {}, set: {}},
     reDash = /\-./g,
     reCamel = /[A-Z]/g,
     directions = ["Top", "Right", "Bottom", "Left"],
-    computed = _.computeStyle(_.docEl),
+    computed = _.computeStyle(HTML),
     // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
     props = computed.length ? _.slice.call(computed, 0) : Object.keys(computed).map((key) => {
         return key.replace(reCamel, (str) => "-" + str.toLowerCase());

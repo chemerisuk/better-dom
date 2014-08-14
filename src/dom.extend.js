@@ -1,5 +1,5 @@
 import _ from "./util/index";
-import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS } from "./util/const";
+import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT } from "./util/const";
 import { $Element, DOM, StaticMethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
@@ -23,7 +23,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
     stopExt = (node, index) => (e) => {
         var stop;
 
-        e = e || window.event;
+        e = e || WINDOW.event;
         // mark extension as processed via _.SKIPEXT bitmask
         if (CSS3_ANIMATIONS) {
             stop = e.animationName === animId && e.target === node;
@@ -41,11 +41,11 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         // initialize extension manually to make sure that all elements
         // have appropriate methods before they are used in other DOM.extend.
         // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(document.querySelectorAll(ext.selector), ext);
+        _.each.call(DOCUMENT.querySelectorAll(ext.selector), ext);
         // MUST be after querySelectorAll because of legacy IEs behavior
         DOM.importStyles(ext.selector, styles);
     },
-    readyState = document.readyState,
+    readyState = DOCUMENT.readyState,
     readyCallback = () => {
         if (readyCallback) {
             extensions.forEach(startExt);
@@ -57,17 +57,17 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
 // Catch cases where ready is called after the browser event has already occurred.
 // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
 // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-if (document.attachEvent ? readyState === "complete" : readyState !== "loading") {
+if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading") {
     // use setTimeout to make sure that the library is fully initialized
     setTimeout(readyCallback, 0);
 } else {
     if (DOM2_EVENTS) {
-        window.addEventListener("load", readyCallback, false);
-        document.addEventListener("DOMContentLoaded", readyCallback, false);
+        WINDOW.addEventListener("load", readyCallback, false);
+        DOCUMENT.addEventListener("DOMContentLoaded", readyCallback, false);
     } else {
-        window.attachEvent("onload", readyCallback);
-        document.attachEvent("ondataavailable", () => {
-            if (window.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
+        WINDOW.attachEvent("onload", readyCallback);
+        DOCUMENT.attachEvent("ondataavailable", () => {
+            if (WINDOW.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
         });
     }
 }
@@ -84,21 +84,21 @@ if (CSS3_ANIMATIONS) {
         "animation-name": animId + " !important"
     };
 
-    document.addEventListener(nativeEventType, (e) => {
+    DOCUMENT.addEventListener(nativeEventType, (e) => {
         if (e.animationName === animId) {
             extensions.forEach(makeExtHandler(e.target, e._skip || {}));
         }
     }, false);
 } else {
     nativeEventType = "ondataavailable";
-    link = document.querySelector("link[rel=htc]");
+    link = DOCUMENT.querySelector("link[rel=htc]");
 
     if (!link) throw "In order to use live extensions you have to include link[rel=htc] for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
 
-    document.attachEvent(nativeEventType, () => {
-        var e = window.event;
+    DOCUMENT.attachEvent(nativeEventType, () => {
+        var e = WINDOW.event;
 
         if (e.srcUrn === "dataavailable") {
             extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));

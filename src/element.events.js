@@ -1,6 +1,6 @@
 import _ from "./util/index";
-import { DOM2_EVENTS } from "./util/const";
-import { $Element, DOM, MethodError } from "./index";
+import { DOM2_EVENTS, DOCUMENT } from "./util/const";
+import { $Element, MethodError } from "./index";
 import EventHandler from "./util/eventhandler";
 
 /**
@@ -48,9 +48,6 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         if (DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
         } else {
-            // IE8 doesn't support onscroll on document level
-            if (el === DOM && type === "scroll") node = window;
-
             node.attachEvent("on" + (handler._type || type), handler);
         }
         // store event entry
@@ -90,9 +87,6 @@ $Element.prototype.off = function(type, callback) {
             if (DOM2_EVENTS) {
                 node.removeEventListener(type, handler, !!handler.capturing);
             } else {
-                // IE8 doesn't support onscroll on document level
-                if (el === DOM && type === "scroll") node = window;
-
                 node.detachEvent("on" + type, handler);
             }
         });
@@ -124,13 +118,13 @@ $Element.prototype.fire = function(type, ...args) {
             e, canContinue;
 
         if (DOM2_EVENTS) {
-            e = document.createEvent("HTMLEvents");
+            e = DOCUMENT.createEvent("HTMLEvents");
             e.initEvent(eventType, true, true);
             e._args = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
-            e = document.createEventObject();
+            e = DOCUMENT.createEventObject();
             e._args = args;
             // handle custom events for legacy IE
             if (!("on" + eventType in node)) eventType = "dataavailable";

@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { HTML, WINDOW, DOCUMENT } from "./util/const";
 import { $Element, DOM, MethodError } from "./index";
 import SelectorMatcher from "./util/selectormatcher";
 
@@ -12,10 +13,10 @@ var hooks = {};
  */
 $Element.prototype.offset = function() {
     var node = this._._node,
-        clientTop = _.docEl.clientTop,
-        clientLeft = _.docEl.clientLeft,
-        scrollTop = window.pageYOffset || _.docEl.scrollTop,
-        scrollLeft = window.pageXOffset || _.docEl.scrollLeft,
+        clientTop = HTML.clientTop,
+        clientLeft = HTML.clientLeft,
+        scrollTop = WINDOW.pageYOffset || HTML.scrollTop,
+        scrollLeft = WINDOW.pageXOffset || HTML.scrollLeft,
         boundingRect;
 
     if (node) {
@@ -50,7 +51,7 @@ $Element.prototype.matches = function(selector) {
 
 // $Element.matches hooks
 
-hooks[":focus"] = (node) => node === document.activeElement;
+hooks[":focus"] = (node) => node === DOCUMENT.activeElement;
 
 hooks[":hidden"] = (node, el) => {
     return node.getAttribute("aria-hidden") === "true" ||

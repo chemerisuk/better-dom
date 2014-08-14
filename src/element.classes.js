@@ -1,4 +1,5 @@
 import _ from "./util/index";
+import { HTML } from "./util/const";
 import { $Element } from "./index";
 
 var reSpace = /[\n\t\r]/g;
@@ -6,7 +7,7 @@ var reSpace = /[\n\t\r]/g;
 function makeClassesMethod(nativeStrategyName, strategy) {
     var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
 
-    if (_.docEl.classList) {
+    if (HTML.classList) {
         strategy = function(className) {
             return this._._node.classList[nativeStrategyName](className);
         };

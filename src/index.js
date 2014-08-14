@@ -1,4 +1,4 @@
-export { $Element, $Collection, DOM, MethodError, StaticMethodError };
+import { WINDOW, HTML } from "./util/const";
 
 /**
  * Used to represent a DOM element
@@ -47,12 +47,12 @@ $Collection.prototype.toString = Array.prototype.join;
  * @namespace DOM
  * @extends $Element
  */
-var DOM = new $Element(document.documentElement);
+var DOM = new $Element(HTML);
 
 DOM.version = "<%= pkg.version %>";
 DOM.constructor = (node) => new $Element(node);
 
-window.DOM = DOM;
+WINDOW.DOM = DOM; /* expose DOM namespace globally */
 
 // custom errors
 
@@ -67,3 +67,5 @@ function StaticMethodError(methodName) {
 }
 
 StaticMethodError.prototype = new TypeError();
+
+export { $Element, $Collection, DOM, MethodError, StaticMethodError };

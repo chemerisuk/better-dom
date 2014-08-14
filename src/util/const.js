@@ -1,14 +1,14 @@
 /* jshint unused: false */
 
 // globals
-export var doc = document;
-export var win = window;
-export var docEl = doc.documentElement;
+export var WINDOW = window;
+export var DOCUMENT = WINDOW.document;
+export var HTML = DOCUMENT.documentElement;
 
-var userAgent = win.navigator.userAgent;
+var userAgent = WINDOW.navigator.userAgent;
 
 // feature checks
-export var CSS3_ANIMATIONS = win.CSSKeyframesRule || !doc.attachEvent;
+export var CSS3_ANIMATIONS = WINDOW.CSSKeyframesRule || !DOCUMENT.attachEvent;
 export var LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
-export var DOM2_EVENTS = !!doc.addEventListener;
-export var WEBKIT_PREFIX = win.WebKitAnimationEvent ? "-webkit-" : "";
+export var DOM2_EVENTS = !!DOCUMENT.addEventListener;
+export var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
