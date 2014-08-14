@@ -1,18 +1,18 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
-import CSS from "../util/stylehooks";
+import HOOK from "../util/stylehooks";
 
 /**
  * CSS properties accessor for an element
  * @memberof! $Element#
- * @alias $Element#style
+ * @alias $Element#css
  * @param  {String|Object}   name    style property name or key/value object
  * @param  {String|Function} [value] style property value or function that returns it
  * @return {String|$Element} property value or reference to this
  * @deprecated use getter and setter instead
  */
-$Element.prototype.style = function(name, value) {
+$Element.prototype.css = function(name, value) {
     var len = arguments.length,
         node = this._._node,
         nameType = typeof name,
@@ -23,7 +23,7 @@ $Element.prototype.style = function(name, value) {
             style = node.style;
 
             value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
-                hook = CSS.get[name];
+                hook = HOOK.get[name];
                 value = hook ? hook(style) : style[name];
 
                 if (!computed && !value) {
@@ -45,7 +45,7 @@ $Element.prototype.style = function(name, value) {
     return this.legacy((node, el, index, ref) => {
         var style = node.style,
             appendCssText = (key, value) => {
-                var hook = CSS.set[key];
+                var hook = HOOK.set[key];
 
                 if (typeof value === "function") value = value(el, index, ref);
 

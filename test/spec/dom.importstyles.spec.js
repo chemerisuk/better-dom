@@ -6,9 +6,9 @@ describe("DOM.importStyles", function() {
 
         var link = DOM.find("#importStyles1");
 
-        expect(link.style("display")).not.toBe("none");
+        expect(link.css("display")).not.toBe("none");
         DOM.importStyles("#importStyles1", "display: none");
-        expect(link.style("display")).toBe("none");
+        expect(link.css("display")).toBe("none");
     });
 
     it("should accept selector with style object", function() {
@@ -16,9 +16,9 @@ describe("DOM.importStyles", function() {
 
         var link = DOM.find("#importStyles2");
 
-        expect(link.style("display")).not.toBe("none");
+        expect(link.css("display")).not.toBe("none");
         DOM.importStyles("#importStyles2", {"display": "none"});
-        expect(link.style("display")).toBe("none");
+        expect(link.css("display")).toBe("none");
     });
 
     it("should handle vendor prefixed properties", function() {
@@ -26,9 +26,9 @@ describe("DOM.importStyles", function() {
 
         var link = DOM.find("#importStyles3");
 
-        expect(link.style("box-sizing")).not.toBe("border-box");
+        expect(link.css("box-sizing")).not.toBe("border-box");
         DOM.importStyles("#importStyles3", {"box-sizing": "border-box"});
-        expect(link.style("box-sizing")).toBe("border-box");
+        expect(link.css("box-sizing")).toBe("border-box");
     });
 
     it("should throw error if arguments are invalid", function() {

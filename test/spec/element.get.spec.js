@@ -83,7 +83,7 @@ describe("get", function() {
     it("should return cssText on accessing style property", function() {
         expect(input.get("style")).toBe("");
 
-        input.style("float", "left");
+        input.css("float", "left");
 
         expect(input.get("style").trim().toLowerCase().indexOf("float: left")).toBe(0);
     });

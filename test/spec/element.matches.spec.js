@@ -58,7 +58,7 @@ describe("matches", function() {
     });
 
     it("should support special :hidden and :visible pseudoselector for block elements", function(done) {
-        link.style("display", "block");
+        link.css("display", "block");
 
         expect(link.matches(":hidden")).toBe(false);
         expect(link.matches(":visible")).toBe(true);

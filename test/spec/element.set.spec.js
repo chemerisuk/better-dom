@@ -98,13 +98,13 @@ describe("set", function() {
 
         link.set("style", "font-style:italic");
 
-        expect(link.style("font-style")).toBe("italic");
-        expect(link.style("float")).not.toBe("left");
+        expect(link.css("font-style")).toBe("italic");
+        expect(link.css("float")).not.toBe("left");
 
         link.set("style", "float:left");
 
-        expect(link.style("font-style")).not.toBe("italic");
-        expect(link.style("float")).toBe("left");
+        expect(link.css("font-style")).not.toBe("italic");
+        expect(link.css("float")).toBe("left");
     });
 
     describe("custom props", function() {

@@ -2,7 +2,7 @@ import _ from "../helpers";
 import { StaticMethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { DOM } from "../types";
-import CSS from "../util/stylehooks";
+import HOOK from "../util/stylehooks";
 
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
@@ -19,7 +19,7 @@ DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
         // use styleObj to collect all style props for a new CSS rule
         var styleObj = _.keys(cssText).reduce((styleObj, prop) => {
-            var hook = CSS.set[prop];
+            var hook = HOOK.set[prop];
 
             if (hook) {
                 hook(styleObj, cssText[prop]);
