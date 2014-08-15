@@ -42,7 +42,7 @@ var // operator type / priority object
     };
 
 /**
- * Parse emmet-like template into a HTML string
+ * Parse emmet-like template and return resulting HTML string
  * @memberof DOM
  * @alias DOM.emmet
  * @param  {String}       template  input EmmetString
