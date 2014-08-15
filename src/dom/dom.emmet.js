@@ -1,4 +1,3 @@
-import _ from "../helpers";
 import { StaticMethodError } from "../errors";
 import { DOM } from "../types";
 
@@ -33,12 +32,18 @@ var // operator type / priority object
 
         return result;
     },
-    makeIndexedTerm = (term) => (_, i, arr) => {
-        return term.replace(reIndex, (expr, fmt, sign, base) => {
-            var index = (sign ? arr.length - i - 1 : i) + (base ? +base : 1);
-            // make zero-padding index string
-            return (fmt + index).slice(-fmt.length).split("$").join("0");
-        });
+    makeIndexedTerm = (n, term) => {
+        var result = [], i;
+
+        for (i = 0; i < n; ++i) {
+            result.push(term.replace(reIndex, (expr, fmt, sign, base) => {
+                var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
+                // handle zero-padded strings
+                return (fmt + index).slice(-fmt.length).split("$").join("0");
+            }));
+        }
+
+        return result;
     };
 
 /**
@@ -108,7 +113,7 @@ DOM.emmet = function(template, varMap) {
     }
 
     if (term) {
-        // quickly handle single tag case
+        // handle single tag case
         if (!output.length && !stack.length) return makeTerm(term);
 
         output.push(term);
@@ -145,7 +150,7 @@ DOM.emmet = function(template, varMap) {
                 break;
 
             case "*":
-                node = Array.apply(0, Array(+term)).map(makeIndexedTerm(toString(node)));
+                node = makeIndexedTerm(+term, toString(node));
                 break;
 
             default:

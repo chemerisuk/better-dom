@@ -1,8 +1,7 @@
 import _ from "../helpers";
 import { DOM2_EVENTS, HTML, DOCUMENT } from "../constants";
 
-var hooks = {get: {}, set: {}},
-    sandbox = DOCUMENT.createElement("body");
+var hooks = {get: {}, set: {}};
 
 // fix camel cased attributes
 "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {
@@ -48,16 +47,7 @@ hooks.set.undefined = function(node, value) {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
         node[DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
     } else {
-        try {
-            node.innerHTML = value;
-        } catch (e) {
-            // sometimes browsers fail to set innerHTML, so fallback to appendChild then
-            // TODO: write a test
-            node.innerHTML = "";
-            sandbox.innerHTML = value;
-
-            for (var n; n = sandbox.firstChild; node.appendChild(n));
-        }
+        node.innerHTML = value;
     }
 };
 

@@ -243,29 +243,29 @@ describe("on", function() {
         input.set("123").fire("change");
         expect(spy).toHaveBeenCalled();
 
-        input = DOM.create("<input type=\"checkbox\">");
-        jasmine.sandbox.set(input);
+        // input = DOM.create("<input type=\"checkbox\">");
+        // jasmine.sandbox.set(input);
 
-        spy.calls.reset();
-        input.fire("focus");
-        input.fire("click");
-        expect(spy).toHaveBeenCalled();
+        // spy.calls.reset();
+        // input.fire("focus");
+        // input.fire("click");
+        // expect(spy).toHaveBeenCalled();
 
-        spy.calls.reset();
-        input.fire("click");
-        expect(spy).toHaveBeenCalled();
+        // spy.calls.reset();
+        // input.fire("click");
+        // expect(spy).toHaveBeenCalled();
 
-        input = DOM.create("<input type=\"radio\">");
-        jasmine.sandbox.set(input);
+        // input = DOM.create("<input type=\"radio\">");
+        // jasmine.sandbox.set(input);
 
-        spy.calls.reset();
-        input.fire("focus");
-        input.fire("click");
-        expect(spy).toHaveBeenCalled();
+        // spy.calls.reset();
+        // input.fire("focus");
+        // input.fire("click");
+        // expect(spy).toHaveBeenCalled();
 
-        spy.calls.reset();
-        input.fire("click");
-        expect(spy).not.toHaveBeenCalled();
+        // spy.calls.reset();
+        // input.fire("click");
+        // expect(spy).not.toHaveBeenCalled();
     });
 
     it("should debounce some events", function(done) {

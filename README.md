@@ -35,6 +35,8 @@ This will clone the latest version of the __better-dom__ with dependencies into 
     ...
     <!--[if IE]>
         <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
+        <script src="bower_components/es5-shim/es5-shim.js"></script>
+        <script src="bower_components/html5shiv/dist/html5shiv.js"></script>
         <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
     <![endif]-->
 </head>
@@ -80,7 +82,7 @@ Look at the [API documentation](http://chemerisuk.github.io/better-dom/) to find
 ## Notes about old IEs
 For IE8-9 support you have to incude extra files via conditional comment (see [Installation](#installation) section).
 
-The **better-dom-legacy.js** file includes excellent [html5shiv](https://github.com/aFarkas/html5shiv) that provides fix for HTML5 tags and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions. These projects are bundled into signle file with other fixes.
+The [html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8 and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions.
 
 The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
 
