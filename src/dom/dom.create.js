@@ -1,6 +1,6 @@
 import { DOCUMENT } from "../constants";
 import { StaticMethodError } from "../errors";
-import { $Element, $Collection, DOM } from "../types";
+import { $Element, DOM } from "../types";
 
 var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
     sandbox = DOCUMENT.createElement("body");
@@ -11,7 +11,7 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
  * @alias DOM.create
  * @param  {Mixed}  value  EmmetString or HTMLString or native element
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {$Element|$Collection} element(s) wrapper
+ * @return {$Element|Array} element(s) wrapper
  */
 DOM.create = function(value, varMap) {
     var test = reTest.exec(value);
@@ -33,7 +33,7 @@ DOM.create = function(value, varMap) {
             if (value.nodeType === 1) nodes.push(value);
         }
 
-        if (nodes.length !== 1) return new $Collection(nodes);
+        if (nodes.length !== 1) return DOM.constructor(nodes);
 
         value = nodes[0];
     }

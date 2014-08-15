@@ -1,13 +1,12 @@
 describe("css", function() {
     "use strict";
 
-    var link, links;
+    var link;
 
     beforeEach(function() {
         jasmine.sandbox.set("<a id='test0' style='z-index:2;line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a><a id='test1' style='line-height:2;color:red;padding:5px;margin:2px;border:1px solid;float:left;display:block;width:100px'>test</a>");
 
         link = DOM.find("#test0");
-        links = DOM.findAll("#test0, #test1");
     });
 
     describe("getter", function() {
@@ -113,11 +112,11 @@ describe("css", function() {
             expect(link.css("line-height")).toBe("7");
         });
 
-        it("should be suported by collections", function() {
-            links.css("float", "right").each(function(el) {
-                expect(el.css("float")).toBe("right");
-            });
-        });
+        // it("should be suported by collections", function() {
+        //     links.css("float", "right").each(function(el) {
+        //         expect(el.css("float")).toBe("right");
+        //     });
+        // });
 
         it("should allow to clear style value", function() {
             expect(link.css("padding", null).css("padding")).toBe("0px 0px 0px 0px");

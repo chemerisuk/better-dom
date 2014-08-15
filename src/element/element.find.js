@@ -1,6 +1,6 @@
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
-import { $Element, $Collection, DOM } from "../types";
+import { $Element, DOM } from "../types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -64,7 +64,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
         }
     }
 
-    return suffix ? new $Collection(result) : $Element(result);
+    return suffix ? DOM.constructor(result) : $Element(result);
 };
 
 /**
@@ -72,7 +72,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
  * @memberof! $Element#
  * @alias $Element#findAll
  * @param  {String} selector css selector
- * @return {$Element} matched elements
+ * @return {Array} matched elements
  */
 $Element.prototype.findAll = function(selector) {
     return this.find(selector, "All");

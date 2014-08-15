@@ -1,19 +1,19 @@
 describe("set", function() {
     "use strict";
 
-    var link, input, inputs;
+    var link, input;
 
     beforeEach(function() {
         jasmine.sandbox.set("<a id='test' href='#'>set-test</a><input id='set_input'/><input id='set_input1'/>");
 
         link = DOM.find("#test");
         input = DOM.find("#set_input");
-        inputs = DOM.findAll("#set_input, #set_input1");
+        // inputs = DOM.findAll("#set_input, #set_input1");
     });
 
     it("should return reference to 'this'", function() {
         expect(link.set("id", "t")).toBe(link);
-        expect(inputs.set("id", "t")).toBe(inputs);
+        // expect(inputs.set("id", "t")).toBe(inputs);
     });
 
     it("should update an appropriate native object attribute", function() {
@@ -116,17 +116,17 @@ describe("set", function() {
             expect(input.set("--func", func).get("--func")).toEqual(func);
         });
 
-        it("should work with collections", function() {
-            var links = DOM.create("<a data-test=\"data-test\"></a><a data-test=\"data-test\"></a>");
+        // it("should work with collections", function() {
+        //     var links = DOM.create("<a data-test=\"data-test\"></a><a data-test=\"data-test\"></a>");
 
-            expect(links.get("--test")).toBeUndefined();
-            expect(links.set("--test", "x")).toBe(links);
-            expect(links.get("--test")).toBeUndefined();
+        //     expect(links.get("--test")).toBeUndefined();
+        //     expect(links.set("--test", "x")).toBe(links);
+        //     expect(links.get("--test")).toBeUndefined();
 
-            links.each(function(link) {
-                expect(link.get("--test")).toBe("x");
-            });
-        });
+        //     links.each(function(link) {
+        //         expect(link.get("--test")).toBe("x");
+        //     });
+        // });
     });
 
     describe("value shortcut", function() {

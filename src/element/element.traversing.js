@@ -1,7 +1,7 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../constants";
-import { $Element, $Collection } from "../types";
+import { $Element, DOM } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
 function makeTraversingMethod(methodName, propertyName, all) {
@@ -20,7 +20,7 @@ function makeTraversingMethod(methodName, propertyName, all) {
             }
         }
 
-        return new $Collection(nodes);
+        return DOM.constructor(nodes);
     };
 }
 
@@ -42,7 +42,7 @@ function makeChildTraversingMethod(all) {
             children = _.filter.call(children, (node) => node.nodeType === 1);
         }
 
-        if (all) return new $Collection(selector ? _.filter.call(children, SelectorMatcher(selector)) : children);
+        if (all) return DOM.constructor(selector ? _.filter.call(children, SelectorMatcher(selector)) : children);
 
         if (selector < 0) selector = children.length + selector;
 
@@ -78,7 +78,7 @@ $Element.prototype.prev = makeTraversingMethod("prev", "previousSibling");
  * @alias $Element#nextAll
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
- * @return {$Element} collection of matched elements
+ * @return {Array} collection of matched elements
  * @function
  */
 $Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true);
@@ -89,7 +89,7 @@ $Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true
  * @alias $Element#prevAll
  * @param {String} [selector] css selector
  * @param {Boolean} [andSelf] if true than search will start from the current element
- * @return {$Element} collection of matched elements
+ * @return {Array} collection of matched elements
  * @function
  */
 $Element.prototype.prevAll = makeTraversingMethod("prevAll", "previousSibling", true);
@@ -120,7 +120,7 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  * @memberof! $Element#
  * @alias $Element#children
  * @param  {String} [selector] css selector
- * @return {$Element} collection of matched elements
+ * @return {Array} collection of matched elements
  * @function
  */
 $Element.prototype.children = makeChildTraversingMethod(true);

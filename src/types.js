@@ -25,24 +25,6 @@ $Element.prototype.toString = function() {
 };
 
 /**
- * Used to represent a collection of DOM elements
- * @class $Collection
- * @extends $Element
- * @private
- */
-function $Collection(elements) {
-    for (var i = 0, n = elements && elements.length || 0; i < n; ++i) {
-        this[i] = $Element(elements[i]);
-    }
-
-    this._ = {};
-    this.length = n;
-}
-
-$Collection.prototype = new $Element();
-$Collection.prototype.toString = Array.prototype.join;
-
-/**
  * Global object to access DOM
  * @namespace DOM
  * @extends $Element
@@ -50,8 +32,7 @@ $Collection.prototype.toString = Array.prototype.join;
 var DOM = new $Element(HTML);
 
 DOM.version = "<%= pkg.version %>";
-DOM.constructor = (node) => new $Element(node);
 
 WINDOW.DOM = DOM; /* expose DOM namespace globally */
 
-export { $Element, $Collection, DOM };
+export { $Element, DOM };
