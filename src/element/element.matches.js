@@ -14,7 +14,7 @@ $Element.prototype.matches = function(selector) {
     if (!selector || typeof selector !== "string") throw new MethodError("matches");
 
     var checker = HOOK[selector] || SelectorMatcher(selector),
-        node = this._._node;
+        node = this[0];
 
     return node && !!checker(node, this);
 };

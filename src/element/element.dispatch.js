@@ -12,7 +12,7 @@ import { $Element } from "../types";
  */
 $Element.prototype.dispatch = function(method, ...args) {
     var context = this,
-        node = this._._node;
+        node = this[0];
 
     if (node) {
         if (typeof method === "string") {

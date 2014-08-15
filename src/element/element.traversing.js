@@ -10,7 +10,7 @@ function makeTraversingMethod(methodName, propertyName, all) {
 
         var matcher = SelectorMatcher(selector),
             nodes = all ? [] : null,
-            it = this._._node;
+            it = this[0];
 
         for (it = it && !andSelf ? it[propertyName] : it; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
@@ -32,7 +32,7 @@ function makeChildTraversingMethod(all) {
             if (selector && typeof selector !== "number") throw new MethodError("child");
         }
 
-        var node = this._._node,
+        var node = this[0],
             children = node ? node.children : null;
 
         if (!node) return all ? [] : new $Element();

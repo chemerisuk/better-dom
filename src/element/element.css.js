@@ -46,7 +46,7 @@ $Element.prototype.css = function(name, value) {
         appendCssText = (key, value) => {
             var hook = HOOK.set[key];
 
-            if (typeof value === "function") value = value(this, node);
+            if (typeof value === "function") value = value(this);
 
             if (value == null) value = "";
 

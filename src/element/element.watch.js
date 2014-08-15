@@ -11,8 +11,6 @@ import { $Element } from "../types";
 $Element.prototype.watch = function(name, callback) {
     var watchers = this._._watchers;
 
-    if (!watchers) this._._watchers = watchers = {};
-
     if (!watchers[name]) watchers[name] = [];
 
     watchers[name].push(callback);
@@ -31,7 +29,7 @@ $Element.prototype.watch = function(name, callback) {
 $Element.prototype.unwatch = function(name, callback) {
     var watchers = this._._watchers;
 
-    if (watchers && watchers[name]) {
+    if (watchers[name]) {
         watchers[name] = watchers[name].filter((w) => w !== callback);
     }
 

@@ -14,7 +14,7 @@ $Element.prototype.contains = function(element) {
     if (!node) return false;
 
     if (element instanceof $Element) {
-        var otherNode = element._._node;
+        var otherNode = element[0];
 
         if (otherNode === node) return true;
 

@@ -21,11 +21,11 @@ var rquickExpr = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
 $Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
     if (typeof selector !== "string") throw new MethodError("find" + suffix);
 
-    var node = this._._node,
+    var node = this[0],
         quickMatch = rquickExpr.exec(selector),
         result, old, nid, context;
 
-    if (!node) return new $Element();
+    if (!node) return suffix ? [] : new $Element();
 
     if (quickMatch) {
         if (quickMatch[1]) {

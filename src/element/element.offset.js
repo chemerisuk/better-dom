@@ -8,7 +8,7 @@ import { $Element } from "../types";
  * @return object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
-    var node = this._._node,
+    var node = this[0],
         clientTop = HTML.clientTop,
         clientLeft = HTML.clientLeft,
         scrollTop = WINDOW.pageYOffset || HTML.scrollTop,

@@ -15,14 +15,14 @@ function $Element(node) {
             this[0] = node;
         }
 
-        this._ = { _node: node, _handlers: [] };
+        this._ = { _handlers: [], _watchers: {}, _visibility: "" };
     } else {
         return new $Element(node);
     }
 }
 
 $Element.prototype.toString = function() {
-    var node = this._._node;
+    var node = this[0];
 
     return node ? node.tagName.toLowerCase() : "";
 };

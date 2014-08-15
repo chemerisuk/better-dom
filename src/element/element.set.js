@@ -24,7 +24,7 @@ $Element.prototype.set = function(name, value) {
     }
 
     var hook = PROP.set[name],
-        watchers = (this._._watchers || {})[name || ("value" in node ? "value" : "innerHTML")],
+        watchers = this._._watchers[name || ("value" in node ? "value" : "innerHTML")],
         newValue = value, oldValue;
 
     if (watchers) oldValue = this.get(name);
@@ -32,7 +32,7 @@ $Element.prototype.set = function(name, value) {
     if (typeof name === "string" && name.substr(0, 2) === "--") {
         this._[name.substr(2)] = newValue;
     } else {
-        if (typeof newValue === "function") newValue = value(this, node);
+        if (typeof newValue === "function") newValue = value(this);
 
         if (hook) {
             hook(node, newValue);

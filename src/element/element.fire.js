@@ -13,10 +13,12 @@ import HOOK from "../util/eventhooks";
  * @return {Boolean} true if default action wasn't prevented
  */
 $Element.prototype.fire = function(type, ...args) {
-    var node = this._._node,
+    var node = this[0],
         eventType = typeof type,
         handler = {},
         hook, e, canContinue;
+
+    if (!node) return false;
 
     if (eventType === "string") {
         if (hook = HOOK[type]) handler = hook(handler) || handler;
@@ -25,8 +27,6 @@ $Element.prototype.fire = function(type, ...args) {
     } else {
         throw new MethodError("fire");
     }
-
-    if (!node) return false;
 
     if (DOM2_EVENTS) {
         e = DOCUMENT.createEvent("HTMLEvents");

@@ -12,7 +12,7 @@ import PROP from "../util/accessorhooks";
  */
 $Element.prototype.get = function(name) {
     var data = this._,
-        node = data._node,
+        node = this[0],
         hook = PROP.get[name],
         nameType = typeof name,
         key, value;

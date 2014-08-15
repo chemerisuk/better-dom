@@ -54,7 +54,7 @@ describe("set", function() {
 
         link.set("id", spy);
 
-        expect(spy).toHaveBeenCalledWith(link, link._._node);
+        expect(spy).toHaveBeenCalledWith(link);
         expect(link).toHaveAttr("id", "test_changed");
     });
 

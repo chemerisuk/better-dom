@@ -108,7 +108,7 @@ describe("css", function() {
 
             link.css("line-height", spy);
 
-            expect(spy).toHaveBeenCalledWith(link, link._._node);
+            expect(spy).toHaveBeenCalledWith(link);
             expect(link.css("line-height")).toBe("7");
         });
 
