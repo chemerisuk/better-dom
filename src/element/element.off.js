@@ -12,8 +12,10 @@ import { $Element } from "../types";
 $Element.prototype.off = function(type, callback) {
     if (typeof type !== "string") throw new MethodError("off");
 
-    return this.each((el, node) => {
-        el._._handlers = el._._handlers.filter((handler) => {
+    var node = this[0];
+
+    if (node) {
+        this._._handlers = this._._handlers.filter((handler) => {
             if (type !== handler.type || callback && callback !== handler.callback) return true;
 
             type = handler._type || handler.type;
@@ -24,5 +26,7 @@ $Element.prototype.off = function(type, callback) {
                 node.detachEvent("on" + type, handler);
             }
         });
-    });
+    }
+
+    return this;
 };

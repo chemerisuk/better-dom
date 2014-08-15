@@ -6,10 +6,8 @@
             if (typeof content === "string") {
                 el.innerHTML = content;
             } else if (typeof content === "object") {
-                content.each(function(_, node) {
-                    el.innerHTML = "";
-                    el.appendChild(node);
-                });
+                el.innerHTML = "";
+                el.appendChild(content[0]);
             }
         },
         get: function() {
@@ -38,9 +36,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.each(function(_, node) {
-                        result.pass = node.nodeName.toLowerCase() === tagName;
-                    });
+                    result.pass = actual[0].nodeName.toLowerCase() === tagName;
                 }
 
                 return result;
@@ -53,9 +49,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.each(function(_, node) {
-                        result.pass = ~(" " + node.className + " ").indexOf(" " + className + " ");
-                    });
+                    result.pass = ~(" " + actual[0].className + " ").indexOf(" " + className + " ");
                 }
 
                 return result;
@@ -68,9 +62,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.each(function(_, node) {
-                        result.pass = node.id === value;
-                    });
+                    result.pass = actual[0].id === value;
                 }
 
                 return result;
@@ -84,13 +76,9 @@
 
                 if (actual) {
                     if (arguments.length === 2) {
-                        actual.each(function(_, node) {
-                            result.pass = node.hasAttribute(name);
-                        });
+                        result.pass = actual[0].hasAttribute(name);
                     } else if (arguments.length === 3) {
-                        actual.each(function(_, node) {
-                            result.pass = node.getAttribute(name) === value;
-                        });
+                        result.pass = actual[0].getAttribute(name) === value;
                     }
                 }
 
@@ -104,9 +92,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.each(function(_, node) {
-                        result.pass = node[name] === value;
-                    });
+                    result.pass = actual[0][name] === value;
                 }
 
                 return result;
@@ -130,9 +116,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.each(function(_, node) {
-                        result.pass = node.innerHTML === value;
-                    });
+                    result.pass = actual[0].innerHTML === value;
                 }
 
                 return result;
@@ -145,12 +129,14 @@
                 var result = {};
 
                 if (actual) {
-                    actual.each(function(_, node) {
-                        // IE8 has upper cased props
-                        if (!(name in node.style)) name = name.toUpperCase();
+                    var style = actual[0] && actual[0].style;
 
-                        result.pass = node.style[name] === value;
-                    });
+                    if (style) {
+                        // IE8 has upper cased props
+                        if (!(name in style)) name = name.toUpperCase();
+
+                        result.pass = style[name] === value;
+                    }
                 }
 
                 return result;

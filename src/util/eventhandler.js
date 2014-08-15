@@ -9,6 +9,8 @@ import HOOK from "./eventhooks";
 
 var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
     EventHandler = (type, selector, callback, props, el, node, once) => {
+        if (!node) return null;
+
         var hook = HOOK[type],
             matcher = SelectorMatcher(selector, node),
             handler = (e) => {

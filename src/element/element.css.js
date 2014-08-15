@@ -13,9 +13,9 @@ import HOOK from "../util/stylehooks";
  */
 $Element.prototype.css = function(name, value) {
     var len = arguments.length,
-        node = this._._node,
+        node = this[0],
         nameType = typeof name,
-        style, hook, computed;
+        style, hook, computed, appendCssText;
 
     if (len === 1 && (nameType === "string" || _.isArray(name))) {
         if (node) {
@@ -41,21 +41,21 @@ $Element.prototype.css = function(name, value) {
         return node && nameType === "string" ? value[name] : value;
     }
 
-    return this.each((el, node) => {
-        var style = node.style,
-            appendCssText = (key, value) => {
-                var hook = HOOK.set[key];
+    if (node) {
+        style = node.style;
+        appendCssText = (key, value) => {
+            var hook = HOOK.set[key];
 
-                if (typeof value === "function") value = value(el, node);
+            if (typeof value === "function") value = value(this, node);
 
-                if (value == null) value = "";
+            if (value == null) value = "";
 
-                if (hook) {
-                    hook(style, value);
-                } else {
-                    style[key] = typeof value === "number" ? value + "px" : value.toString();
-                }
-            };
+            if (hook) {
+                hook(style, value);
+            } else {
+                style[key] = typeof value === "number" ? value + "px" : value.toString();
+            }
+        };
 
         if (len === 1 && name && nameType === "object") {
             _.keys(name).forEach((key) => { appendCssText(key, name[key]) });
@@ -64,5 +64,7 @@ $Element.prototype.css = function(name, value) {
         } else {
             throw new MethodError("style");
         }
-    });
+    }
+
+    return this;
 };

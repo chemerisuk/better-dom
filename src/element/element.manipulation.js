@@ -4,33 +4,35 @@ import { $Element, DOM } from "../types";
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function(...args) {
-        return this.each((el, node) => {
-            if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return;
+        var node = this[0],
+            html = "",
+            value;
 
-            var html = "", value;
+        if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return this;
 
-            args.forEach((arg) => {
-                if (typeof arg === "function") arg = arg(el, node);
+        args.forEach((arg) => {
+            if (typeof arg === "function") arg = arg(this, node);
 
-                if (typeof arg === "string") {
-                    html += arg.trim();
-                } else if (arg instanceof $Element) {
-                    if (!value) value = DOCUMENT.createDocumentFragment();
-                    // populate fragment
-                    value.appendChild(arg[0]);
-                } else {
-                    throw new MethodError(methodName);
-                }
-            });
-
-            if (!fasterMethodName && html) value = DOM.create(html)._._node;
-
-            if (!fasterMethodName || value) {
-                strategy(node, value);
-            } else if (html) {
-                node.insertAdjacentHTML(fasterMethodName, html);
+            if (typeof arg === "string") {
+                html += arg.trim();
+            } else if (arg instanceof $Element) {
+                if (!value) value = DOCUMENT.createDocumentFragment();
+                // populate fragment
+                value.appendChild(arg[0]);
+            } else {
+                throw new MethodError(methodName);
             }
         });
+
+        if (!fasterMethodName && html) value = DOM.create(html)._._node;
+
+        if (!fasterMethodName || value) {
+            strategy(node, value);
+        } else if (html) {
+            node.insertAdjacentHTML(fasterMethodName, html);
+        }
+
+        return this;
     };
 }
 

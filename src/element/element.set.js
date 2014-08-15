@@ -13,47 +13,50 @@ import PROP from "../util/accessorhooks";
  * @return {$Element}
  */
 $Element.prototype.set = function(name, value) {
-    var nameType = typeof name;
+    var node = this[0],
+        nameType = typeof name;
+
+    if (!node) return this;
 
     if (arguments.length === 1 && nameType !== "object") {
         value = name;
         name = undefined;
     }
 
-    return this.each((el, node) => {
-        var hook = PROP.set[name],
-            watchers = (el._._watchers || {})[name || ("value" in node ? "value" : "innerHTML")],
-            newValue = value, oldValue;
+    var hook = PROP.set[name],
+        watchers = (this._._watchers || {})[name || ("value" in node ? "value" : "innerHTML")],
+        newValue = value, oldValue;
 
-        if (watchers) oldValue = el.get(name);
+    if (watchers) oldValue = this.get(name);
 
-        if (typeof name === "string" && name.substr(0, 2) === "--") {
-            el._[name.substr(2)] = newValue;
-        } else {
-            if (typeof newValue === "function") newValue = value(el, node);
+    if (typeof name === "string" && name.substr(0, 2) === "--") {
+        this._[name.substr(2)] = newValue;
+    } else {
+        if (typeof newValue === "function") newValue = value(this, node);
 
-            if (hook) {
-                hook(node, newValue);
-            } else if (nameType !== "string") {
-                if (name && nameType === "object") {
-                    return _.keys(name).forEach((key) => { el.set(key, name[key]) });
-                }
-
-                throw new MethodError("set");
-            } else if (newValue == null) {
-                node.removeAttribute(name);
-            } else if (name in node) {
-                node[name] = newValue;
-            } else {
-                node.setAttribute(name, newValue);
+        if (hook) {
+            hook(node, newValue);
+        } else if (nameType !== "string") {
+            if (name && nameType === "object") {
+                return _.keys(name).forEach((key) => { this.set(key, name[key]) });
             }
 
-            // always trigger reflow manually for IE8 and legacy Android
-            if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
+            throw new MethodError("set");
+        } else if (newValue == null) {
+            node.removeAttribute(name);
+        } else if (name in node) {
+            node[name] = newValue;
+        } else {
+            node.setAttribute(name, newValue);
         }
 
-        if (watchers && oldValue !== newValue) {
-            watchers.forEach((w) => { el.dispatch(w, newValue, oldValue) });
-        }
-    });
+        // always trigger reflow manually for IE8 and legacy Android
+        if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
+    }
+
+    if (watchers && oldValue !== newValue) {
+        watchers.forEach((w) => { this.dispatch(w, newValue, oldValue) });
+    }
+
+    return this;
 };

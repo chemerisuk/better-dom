@@ -63,9 +63,7 @@ describe("find", function() {
 
         var foo = DOM.find(".foo");
 
-        foo.each(function(_, node) {
-            expect(node.querySelectorAll("div span").length).toBe(1);
-        });
+        expect(foo[0].querySelectorAll("div span").length).toBe(1);
 
         expect(foo.findAll("div span").length).toBe(0);
         expect(foo.get("id")).toBeFalsy();

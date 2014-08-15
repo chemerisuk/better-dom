@@ -43,17 +43,20 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         throw new MethodError("on");
     }
 
-    return this.each((el, node) => {
-        var handler = EventHandler(type, selector, callback, props, el, node, once);
+    var node = this[0],
+        handler = EventHandler(type, selector, callback, props, this, node, once);
 
+    if (handler) {
         if (DOM2_EVENTS) {
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
         } else {
             node.attachEvent("on" + (handler._type || type), handler);
         }
         // store event entry
-        el._._handlers.push(handler);
-    });
+        this._._handlers.push(handler);
+    }
+
+    return this;
 };
 
 /**

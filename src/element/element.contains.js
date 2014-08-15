@@ -9,7 +9,7 @@ import { $Element } from "../types";
  * @return {Boolean} true if success
  */
 $Element.prototype.contains = function(element) {
-    var node = this._._node;
+    var node = this[0];
 
     if (!node) return false;
 

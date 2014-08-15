@@ -12,7 +12,7 @@ import { $Element, DOM } from "../types";
 $Element.prototype.clone = function(deep = true) {
     if (typeof deep !== "boolean") throw new MethodError("clone");
 
-    var node = this._._node, result;
+    var node = this[0], result;
 
     if (node) {
         if (DOM2_EVENTS) {

@@ -9,7 +9,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
 
     if (HTML.classList) {
         strategy = function(className) {
-            return this._._node.classList[nativeStrategyName](className);
+            return this[0].classList[nativeStrategyName](className);
         };
     }
 
@@ -17,7 +17,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
         return function(className) {
             var args = arguments;
 
-            if (this._._node) {
+            if (this[0]) {
                 if (args.length === 1) {
                     return strategy.call(this, className);
                 } else {
@@ -29,13 +29,13 @@ function makeClassesMethod(nativeStrategyName, strategy) {
         return function(className) {
             var args = arguments;
 
-            return this.each((el) => {
-                if (args.length === 1) {
-                    strategy.call(el, className);
-                } else {
-                    _.each.call(args, strategy, el);
-                }
-            });
+            if (args.length === 1) {
+                strategy.call(this, className);
+            } else {
+                _.each.call(args, strategy, this);
+            }
+
+            return this;
         };
     }
 }
@@ -49,7 +49,7 @@ function makeClassesMethod(nativeStrategyName, strategy) {
  * @function
  */
 $Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
-    return (" " + this._._node.className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
+    return (" " + this[0].className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
 });
 
 /**
@@ -61,7 +61,7 @@ $Element.prototype.hasClass = makeClassesMethod("contains", function(className) 
  * @function
  */
 $Element.prototype.addClass = makeClassesMethod("add", function(className) {
-    if (!this.hasClass(className)) this._._node.className += " " + className;
+    if (!this.hasClass(className)) this[0].className += " " + className;
 });
 
 /**
@@ -73,9 +73,9 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
  * @function
  */
 $Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
-    className = (" " + this._._node.className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
+    className = (" " + this[0].className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
 
-    this._._node.className = className.trim();
+    this[0].className = className.trim();
 });
 
 /**
@@ -87,9 +87,9 @@ $Element.prototype.removeClass = makeClassesMethod("remove", function(className)
  * @function
  */
 $Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
-    var oldClassName = this._._node.className;
+    var oldClassName = this[0].className;
 
     this.addClass(className);
 
-    if (oldClassName === this._._node.className) this.removeClass(className);
+    if (oldClassName === this[0].className) this.removeClass(className);
 });

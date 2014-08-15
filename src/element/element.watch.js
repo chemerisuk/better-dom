@@ -9,13 +9,15 @@ import { $Element } from "../types";
  * @return {$Element}
  */
 $Element.prototype.watch = function(name, callback) {
-    return this.each((el) => {
-        var watchers = el._._watchers;
+    var watchers = this._._watchers;
 
-        if (!watchers) el._._watchers = watchers = {};
+    if (!watchers) this._._watchers = watchers = {};
 
-        (watchers[name] || (watchers[name] = [])).push(callback);
-    });
+    if (!watchers[name]) watchers[name] = [];
+
+    watchers[name].push(callback);
+
+    return this;
 };
 
 /**
@@ -27,11 +29,11 @@ $Element.prototype.watch = function(name, callback) {
  * @return {$Element}
  */
 $Element.prototype.unwatch = function(name, callback) {
-    var eq = (w) => w !== callback;
+    var watchers = this._._watchers;
 
-    return this.each((el) => {
-        var watchers = el._._watchers;
+    if (watchers && watchers[name]) {
+        watchers[name] = watchers[name].filter((w) => w !== callback);
+    }
 
-        if (watchers) watchers[name] = (watchers[name] || []).filter(eq);
-    });
+    return this;
 };
