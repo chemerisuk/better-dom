@@ -3,7 +3,7 @@ describe("DOM.constructor", function() {
 
     it("should return $Element objects", function() {
         var node = document.createElement("a"),
-            el = DOM.constructor(node);
+            el = DOM.constructor(node)[0];
 
         expect(el).toHaveTag("a");
         expect(el._).toBeDefined();

@@ -16,7 +16,6 @@ function $Element(node) {
         }
 
         this._ = { _node: node, _handlers: [] };
-        this.length = node ? 1 : 0;
     } else {
         return new $Element(node);
     }

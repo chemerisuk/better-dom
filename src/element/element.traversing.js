@@ -35,7 +35,7 @@ function makeChildTraversingMethod(all) {
         var node = this._._node,
             children = node ? node.children : null;
 
-        if (!node) return new $Element();
+        if (!node) return all ? [] : new $Element();
 
         if (!DOM2_EVENTS) {
             // fix IE8 bug with children collection

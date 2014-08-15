@@ -16,6 +16,7 @@ export default {
     each: arrayProto.forEach,
     some: arrayProto.some,
     filter: arrayProto.filter,
+    map: arrayProto.map,
     isArray: Array.isArray,
     keys: Object.keys
 };

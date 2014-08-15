@@ -18,7 +18,7 @@ describe("extend", function() {
 
         callback.and.callFake(function() {
             expect(this).toBeDefined();
-            expect(this.length).toBe(1);
+            expect(this[0]).toBeDefined();
 
             setTimeout(function() {
                 if (callback.calls.count() === 3) done();

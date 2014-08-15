@@ -49,17 +49,17 @@ describe("traversing", function() {
 
         describe("parent", function() {
             it("should return empty node for html node", function() {
-                expect(DOM.find("html").parent().length).toBe(0);
+                expect(DOM.parent()[0]).toBeUndefined();
             });
         });
 
         it("should return empty element if value is not found", function() {
             var unknownEl = link.find("unknown");
 
-            expect(unknownEl.next().length).toBe(0);
-            expect(unknownEl.prev().length).toBe(0);
-            expect(unknownEl.parent().length).toBe(0);
-            expect(unknownEl.child(0).length).toBe(0);
+            expect(unknownEl.next()[0]).toBeUndefined();
+            expect(unknownEl.prev()[0]).toBeUndefined();
+            expect(unknownEl.parent()[0]).toBeUndefined();
+            expect(unknownEl.child(0)[0]).toBeUndefined();
         });
 
         it("should throw error if arguments are invalid", function() {
