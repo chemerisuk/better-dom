@@ -25,8 +25,9 @@ var parseTimeValue = (value) => {
     transitionProps = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
     eventType = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
     absentStrategy = !LEGACY_ANDROID && CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
-    changeVisibility = (el, fn, callback) => () => el.each((el, node) => {
-        var style = node.style,
+    changeVisibility = (el, fn, callback) => () => {
+        var node = el[0],
+            style = node.style,
             completeVisibilityChange = () => {
                 if (style.visibility === "hidden") {
                     style[absentStrategy[0]] = absentStrategy[1];
@@ -121,7 +122,7 @@ var parseTimeValue = (value) => {
         } else {
             processVisibilityChange();
         }
-    }),
+    },
     makeVisibilityMethod = (name, fn) => function(delay, callback) {
         var len = arguments.length,
             delayType = typeof delay;

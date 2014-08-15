@@ -2,18 +2,19 @@ import _ from "../helpers";
 import { $Element, DOM } from "../types";
 import extensions from "./dom.extend";
 
-var applyExtensions = (node) => {
-        extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });
+function applyExtensions(node) {
+    extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });
 
-        _.each.call(node.children, applyExtensions);
-    };
+    _.each.call(node.children, applyExtensions);
+}
 
 /**
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
  * @memberof DOM
  * @alias DOM.mock
- * @param  {HTMLString} [content] string to mock
+ * @param  {String}       value     EmmetString or HTMLString
+ * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} mocked instance
  */
 DOM.mock = function(content, varMap, /*INTERNAL*/all) {
@@ -22,9 +23,9 @@ DOM.mock = function(content, varMap, /*INTERNAL*/all) {
     var result = DOM.create(content, varMap, all);
 
     if (all) {
-        result.forEach((el) => { el.each((_, node) => { applyExtensions(node) }) });
+        result.forEach((el) => { applyExtensions(el[0]) });
     } else {
-        result.each((_, node) => { applyExtensions(node) });
+        applyExtensions(result[0]);
     }
 
     return result;
@@ -35,7 +36,8 @@ DOM.mock = function(content, varMap, /*INTERNAL*/all) {
  * Also exposes private event handler functions that aren't usually presented
  * @memberof DOM
  * @alias DOM.mockAll
- * @param  {HTMLString} [content] string to mock
+ * @param  {String}       value     EmmetString or HTMLString
+ * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array} collection of mocked {@link $Element} instances
  */
 DOM.mockAll = function(content, varMap) {

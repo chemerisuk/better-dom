@@ -1,3 +1,4 @@
+import _ from "../helpers";
 import { DOCUMENT } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
@@ -9,7 +10,7 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
  * Create a new DOM element in memory
  * @memberof DOM
  * @alias DOM.create
- * @param  {Mixed}  value  EmmetString or HTMLString or native element
+ * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} element wrapper
  */
@@ -36,7 +37,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
     }
 
     if (all) {
-        return DOM.constructor(nodes);
+        return _.map.call(nodes, $Element);
     } else {
         return $Element(nodes[0]);
     }
@@ -46,7 +47,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
  * Create a new DOM elements in memory
  * @memberof DOM
  * @alias DOM.createAll
- * @param  {Mixed}  value  EmmetString or HTMLString or native element
+ * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array} elements wrapper
  */

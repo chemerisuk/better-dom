@@ -1,3 +1,4 @@
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
@@ -64,7 +65,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
         }
     }
 
-    return suffix ? DOM.constructor(result) : $Element(result);
+    return suffix ? _.map.call(result, $Element) : $Element(result);
 };
 
 /**

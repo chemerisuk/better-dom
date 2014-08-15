@@ -1,7 +1,7 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../constants";
-import { $Element, DOM } from "../types";
+import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
 function makeTraversingMethod(methodName, propertyName, all) {
@@ -20,7 +20,7 @@ function makeTraversingMethod(methodName, propertyName, all) {
             }
         }
 
-        return DOM.constructor(nodes);
+        return _.map.call(nodes, $Element);
     };
 }
 
@@ -42,7 +42,7 @@ function makeChildTraversingMethod(all) {
             children = _.filter.call(children, (node) => node.nodeType === 1);
         }
 
-        if (all) return DOM.constructor(selector ? _.filter.call(children, SelectorMatcher(selector)) : children);
+        if (all) return _.map.call(selector ? _.filter.call(children, SelectorMatcher(selector)) : children, $Element);
 
         if (selector < 0) selector = children.length + selector;
 

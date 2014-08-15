@@ -17,7 +17,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
                 } else if (arg instanceof $Element) {
                     if (!value) value = DOCUMENT.createDocumentFragment();
                     // populate fragment
-                    arg.each((el, node) => value.appendChild(node));
+                    value.appendChild(arg[0]);
                 } else {
                     throw new MethodError(methodName);
                 }
