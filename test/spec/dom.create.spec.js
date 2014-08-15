@@ -19,7 +19,7 @@ describe("create", function() {
         expect(el).toHaveTag("a");
         expect(el.child(0)).toHaveTag("span");
 
-        expect(DOM.create("<b></b><a></a>").length).toBe(2);
+        expect(DOM.createAll("a+b").length).toBe(2);
     });
 
     it("should trim inner html strings", function() {
@@ -46,7 +46,7 @@ describe("create", function() {
     });
 
     it("should wrap element to div if HTML string has several root nodes", function() {
-        var el = DOM.create("<a></a><b></b>");
+        var el = DOM.createAll("a+b");
 
         expect(el[0]).toHaveTag("a");
         expect(el[1]).toHaveTag("b");

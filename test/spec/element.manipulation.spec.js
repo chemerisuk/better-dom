@@ -5,7 +5,7 @@ describe("manipulation", function() {
         var div;
 
         beforeEach(function() {
-            div = DOM.create("<div><a></a><a></a></div>");
+            div = DOM.create("div>a+a");
             // italics = div.nextAll(".removable");
         });
 
@@ -77,7 +77,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 //var arg = DOM.create(createDiv(strategy));
                 var arg = DOM.create(createDivHtml(strategy)),
-                    otherDiv = DOM.create("<div></div>");
+                    otherDiv = DOM.create("div");
 
                 expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
 

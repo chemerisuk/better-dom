@@ -11,13 +11,14 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
  * @alias DOM.create
  * @param  {Mixed}  value  EmmetString or HTMLString or native element
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {$Element|Array} element(s) wrapper
+ * @return {$Element} element wrapper
  */
-DOM.create = function(value, varMap) {
-    var test = reTest.exec(value);
+DOM.create = function(value, varMap, /*INTERNAL*/all) {
+    var test = reTest.exec(value),
+        nodes;
 
     if (value && test && !test[1]) {
-        value = DOCUMENT.createElement(value);
+        nodes = [ DOCUMENT.createElement(value) ];
     } else {
         if (test && test[1]) {
             value = varMap ? DOM.format(test[1], varMap) : test[1];
@@ -29,14 +30,26 @@ DOM.create = function(value, varMap) {
 
         sandbox.innerHTML = value;
 
-        for (var nodes = []; value = sandbox.firstChild; sandbox.removeChild(value)) {
+        for (nodes = []; value = sandbox.firstChild; sandbox.removeChild(value)) {
             if (value.nodeType === 1) nodes.push(value);
         }
-
-        if (nodes.length !== 1) return DOM.constructor(nodes);
-
-        value = nodes[0];
     }
 
-    return new $Element(value);
+    if (all) {
+        return DOM.constructor(nodes);
+    } else {
+        return $Element(nodes[0]);
+    }
+};
+
+/**
+ * Create a new DOM elements in memory
+ * @memberof DOM
+ * @alias DOM.createAll
+ * @param  {Mixed}  value  EmmetString or HTMLString or native element
+ * @param  {Object|Array} [varMap]  key/value map of variables
+ * @return {Array} elements wrapper
+ */
+DOM.createAll = function(value, varMap) {
+    return DOM.create(value, varMap, true);
 };

@@ -168,12 +168,28 @@ DOM.extend = function(selector, condition, mixins) {
  * @param  {HTMLString} [content] string to mock
  * @return {$Element} mocked instance
  */
-DOM.mock = function(content, varMap) {
+DOM.mock = function(content, varMap, /*INTERNAL*/all) {
     if (!content) return new $Element();
 
-    var result = DOM.create(content, varMap);
+    var result = DOM.create(content, varMap, all);
 
-    _.each.call(result, (el) => { el.each((_, node) => { applyExtensions(node) }) });
+    if (all) {
+        result.forEach((el) => { el.each((_, node) => { applyExtensions(node) }) });
+    } else {
+        result.each((_, node) => { applyExtensions(node) });
+    }
 
     return result;
+};
+
+/**
+ * Return Array of {@link $Element} initialized with all existing live extensions.
+ * Also exposes private event handler functions that aren't usually presented
+ * @memberof DOM
+ * @alias DOM.mockAll
+ * @param  {HTMLString} [content] string to mock
+ * @return {Array} mocked instances
+ */
+DOM.mockAll = function(content, varMap) {
+    return DOM.mock(content, varMap, true);
 };

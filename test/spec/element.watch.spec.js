@@ -75,7 +75,7 @@ describe("watch", function() {
 
     it("should work for the value shortcut", function() {
         var spy = jasmine.createSpy("watcher"),
-            input = DOM.create("<input>");
+            input = DOM.create("input");
 
         link.watch("innerHTML", spy);
         link.set("test1");

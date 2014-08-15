@@ -9,7 +9,11 @@ function $Element(node) {
     if (node && node.__dom__) return node.__dom__;
 
     if (this instanceof $Element) {
-        if (node) this[0] = node.__dom__ = this;
+        if (node) {
+            node.__dom__ = this;
+
+            this[0] = node;
+        }
 
         this._ = { _node: node, _handlers: [] };
         this.length = node ? 1 : 0;
