@@ -45,29 +45,10 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6)
 * [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/4)
 
-## How to make a custom build
-In order to create a custom build make sure that you installed [grunt-cli](https://github.com/gruntjs/grunt-cli) globally:
-
-    npm install -g grunt-cli
-
-Then you can print all available modules for customization via the default task:
-
-    grunt
-
-To create a full build run `build` task without arguments:
-
-    grunt build
-
-Your build will be created inside of the `build` folder including uglified version with source maps. Pick modules that you want to exclude and pass them to the same task separated by comma:
-
-    grunt build:classes,offset,traversing
-
-Look at the [API documentation](http://chemerisuk.github.io/better-dom/) to find which functions are included into a particular module (see *Modules* menu).
-
 ## Notes about old IEs
 For IE8-9 support you have to incude extra files via the conditional comment below into `<head>` on your page:
 
-```js
+```html
 <!--[if IE]>
     <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
@@ -76,9 +57,11 @@ For IE8-9 support you have to incude extra files via the conditional comment bel
 <![endif]-->
 ```
 
-The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
+[html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8.
 
-The [html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8 and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions.
+[es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
+
+The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
 
 #### Setup content-type header
 HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.
