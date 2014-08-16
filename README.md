@@ -26,25 +26,10 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include scripts below on your web page:
+This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include the script below before the end of `<body>` on your web page:
 
 ```html
-<!DOCTYPE html>
-<html>
-<head>
-    ...
-    <!--[if IE]>
-        <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
-        <script src="bower_components/es5-shim/es5-shim.js"></script>
-        <script src="bower_components/html5shiv/dist/html5shiv.js"></script>
-        <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
-    <![endif]-->
-</head>
-<body>
-    ...
-    <script src="bower_components/better-dom/dist/better-dom.js"></script>
-</body>
-</html>
+<script src="bower_components/better-dom/dist/better-dom.js"></script>
 ```
 
 ## Documentation
@@ -80,11 +65,20 @@ Your build will be created inside of the `build` folder including uglified versi
 Look at the [API documentation](http://chemerisuk.github.io/better-dom/) to find which functions are included into a particular module (see *Modules* menu).
 
 ## Notes about old IEs
-For IE8-9 support you have to incude extra files via conditional comment (see [Installation](#installation) section).
+For IE8-9 support you have to incude extra files via the conditional comment below into `<head>` on your page:
 
-The [html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8 and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions.
+```js
+<!--[if IE]>
+    <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/html5shiv/dist/html5shiv.js"></script>
+    <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
+<![endif]-->
+```
 
 The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
+
+The [html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8 and [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions.
 
 #### Setup content-type header
 HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.
@@ -100,7 +94,7 @@ IE requires that the HTC file must be in the same domain with as the HTML page w
 * Safari 6.0+
 * Firefox 16+
 * Opera 12.10+
-* IE8+
+* IE8+ (see [notes](#notes-about-old-ies))
 
 #### Mobile
 * iOS Safari 6+
