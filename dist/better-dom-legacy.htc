@@ -1,3 +1,125 @@
-<PUBLIC:COMPONENT lightweight="true" URN="dataavailable">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="element.fireEvent('ondataavailable', createEventObject())"/>
+<PUBLIC:COMPONENT lightweight="true">
+    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="init()"/>
+    <script type="text/javascript">
+    if (element.tagName === "HTML") {
+        var DOM2_EVENTS = !!element.addEventListener;
+
+        fixInputEvents(DOM2_EVENTS);
+
+        if (!DOM2_EVENTS) {
+            fixSubmitEvent();
+        }
+    }
+
+    function init() {
+        window.console.log("init " + element.tagName);
+
+        var e = createEventObject();
+
+        // DOMContentLoaded fix for IE8
+        if (element.tagName === "HTML") {
+            e.srcUrn = "DOMContentLoaded";
+        } else {
+            e.srcUrn = "dataavailable";
+        }
+
+        element.fireEvent("ondataavailable", e);
+    }
+
+    function fixInputEvents(DOM2_EVENTS) {
+        var inputEventHandler = function() {
+                if (capturedNode && capturedNode.value !== capturedNodeValue) {
+                    capturedNodeValue = capturedNode.value;
+                    // trigger special event that bubbles
+                    DOM.constructor(capturedNode)[0].fire("input");
+                }
+            },
+            clickEventHandler = function() {
+                if (capturedNode && capturedNode.checked !== capturedNodeValue) {
+                    capturedNodeValue = capturedNode.checked;
+                    // trigger special event that bubbles
+                    DOM.constructor(capturedNode)[0].fire("change");
+                }
+            },
+            changeEventHandler = function() {
+                DOM.constructor(capturedNode)[0].fire("change");
+            },
+            capturedNode, capturedNodeValue;
+
+        if (DOM2_EVENTS) {
+            // IE9 doesn't fire oninput when text is deleted, so use
+            // legacy onselectionchange event to detect such cases
+            // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
+            window.document.attachEvent("onselectionchange", inputEventHandler);
+        }
+
+        // input event fix via propertychange
+        element.attachEvent("onfocusin", function() {
+            if (capturedNode && !DOM2_EVENTS) {
+                capturedNode.detachEvent("onclick", clickEventHandler);
+                capturedNode.detachEvent("onchange", changeEventHandler);
+                capturedNode.detachEvent("onpropertychange", inputEventHandler);
+            }
+
+            capturedNode = window.event.srcElement;
+            capturedNodeValue = capturedNode.value;
+
+            if (DOM2_EVENTS) return;
+
+            var type = capturedNode.type;
+
+            if (type === "checkbox" || type === "radio") {
+                capturedNode.attachEvent("onclick", clickEventHandler);
+                capturedNodeValue = capturedNode.checked;
+            } else if (capturedNode.nodeType === 1) {
+                capturedNode.attachEvent("onchange", changeEventHandler);
+
+                if (type === "text" || type === "password" || type === "textarea") {
+                    capturedNode.attachEvent("onpropertychange", inputEventHandler);
+                }
+            }
+        });
+    }
+
+    function fixSubmitEvent() {
+        var handleFormEvent = function() {
+                var e = window.event;
+
+                if (!e.cancelBubble) DOM.constructor(e.srcElement)[0].fire(e.type);
+
+                return false;
+            };
+
+        element.attachEvent("onkeydown", function() {
+            var e = window.event,
+                target = e.srcElement,
+                form = target.form;
+
+            if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
+                DOM.constructor(form)[0].fire("submit");
+
+                return false;
+            }
+        });
+
+        element.attachEvent("onclick", function() {
+            var target = window.event.srcElement,
+                form = target.form,
+                type = target.type;
+
+            if (!form) return;
+
+            if (type === "submit" || type === "reset") {
+                form.detachEvent("on" + type, handleFormEvent);
+                form.attachEvent("on" + type, handleFormEvent);
+            }
+        });
+    }
+    </script>
+    // IE will sometimes hang for a long time on unload of pages with .htc behaviors
+    // attached to many elements, if the script block is a certain size. We can work
+    // around this by including an empty vbscript block at the end. For more details:
+    // http://www.pcreview.co.uk/forums/htc-components-512-bytes-javascript-slow-unload-t727396.html
+    // http://code.google.com/p/svgweb/source/browse/trunk/src/svg.htc
+    <script type="text/vbscript"></script>
 </PUBLIC:COMPONENT>

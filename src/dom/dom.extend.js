@@ -91,6 +91,8 @@ if (CSS3_ANIMATIONS) {
     if (!link) throw "In order to use live extensions you have to include link[rel=htc] for IE < 10";
 
     styles = {behavior: "url(" + link.href + ") !important"};
+    // append behavior for HTML element to apply several legacy fixes
+    setTimeout(() => DOM.importStyles("html", styles), 0);
 
     DOCUMENT.attachEvent(nativeEventType, () => {
         var e = WINDOW.event;
