@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <!--[if IE]>
+        <link href="../dist/better-dom.htc" rel="htc" />
+        <script src="../bower_components/es5-shim/es5-shim.js"></script>
+        <script src="../bower_components/html5shiv/dist/html5shiv.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <form action="#" onsubmit="return false">
+        <p>
+            <label>
+                <input type="checkbox" name="checkbox">Checkbox test
+            </label>
+        </p>
+        <p>
+            <label>
+                <input type="radio" name="radio" value="1">Radio test 1
+            </label>
+            <label>
+                <input type="radio" name="radio" value="2">Radio test 2
+            </label>
+        </p>
+        <p>
+            <label>
+                Textinput test<br>
+                <input type="text" name="text">
+            </label>
+        </p>
+        <p>
+            <textarea name="textarea"></textarea>
+        </p>
+        <p>
+            <button type="submit">Submit test</button>
+            <input type="reset" value="Reset test">
+        </p>
+    </form>
+    <script src="../build/better-dom.js"></script>
+    <script>
+    DOM.on("change", function(target) {
+        console.log("change for " + target);
+    });
+
+    DOM.on("input", function(target) {
+        console.log("input for " + target);
+    });
+
+    DOM.on("reset", function(target) {
+       console.log("reset for " + target);
+    });
+
+    DOM.on("submit", function(target) {
+       console.log("submit for " + target);
+    });
+    </script>
+</body>
+</html>

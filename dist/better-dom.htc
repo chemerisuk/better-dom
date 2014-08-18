@@ -12,8 +12,6 @@
     }
 
     function init() {
-        window.console.log("init " + element.tagName);
-
         var e = createEventObject();
 
         // DOMContentLoaded fix for IE8

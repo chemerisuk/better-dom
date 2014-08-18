@@ -50,10 +50,9 @@ For IE8-9 support you have to incude extra files via the conditional comment bel
 
 ```html
 <!--[if IE]>
-    <link href="bower_components/better-dom/dist/better-dom-legacy.htc" rel="htc"/>
+    <link href="bower_components/better-dom/dist/better-dom.htc" rel="htc"/>
     <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/html5shiv/dist/html5shiv.js"></script>
-    <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
 <![endif]-->
 ```
 
@@ -61,7 +60,7 @@ For IE8-9 support you have to incude extra files via the conditional comment bel
 
 [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
 
-The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
+The **better-dom.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
 
 #### Setup content-type header
 HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.

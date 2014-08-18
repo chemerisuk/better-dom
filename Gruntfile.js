@@ -6,13 +6,9 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: pkg,
         watch: {
-            build: {
-                files: ["src/*.js", "src/**/*.js", "!src/legacy/*.js"],
-                tasks: ["compile:main", "karma:watch:run"]
-            },
-            legacy: {
-                files: ["src/legacy/*.js"],
-                tasks: ["compile:legacy"]
+            lib: {
+                files: ["src/*.js", "src/**/*.js"],
+                tasks: ["compile", "karma:watch:run"]
             },
             specs: {
                 files: ["test/spec/*.js"],
@@ -115,15 +111,9 @@ module.exports = function(grunt) {
                 preserveComments: "some",
                 report: "gzip"
             },
-            build: {
-                files: {
-                    "build/<%= pkg.name %>.min.js": ["build/<%= pkg.name %>.js"]
-                }
-            },
-            legacy: {
-                files: {
-                    "build/<%= pkg.name %>-legacy.min.js": ["build/<%= pkg.name %>-legacy.js"]
-                }
+            lib: {
+                src: ["build/better-dom.js"],
+                dest: "build/better-dom.min.js"
             }
         },
         connect: {
@@ -138,7 +128,7 @@ module.exports = function(grunt) {
             options: {
                 banner: [
                     "/**",
-                    " * @file <%= filename %>",
+                    " * @file <%= pkg.name %>",
                     " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>",
                     " * @overview <%= pkg.description %>",
                     " * @copyright 2013-<%= grunt.template.today('yyyy') %> <%= pkg.author %>",
@@ -147,15 +137,10 @@ module.exports = function(grunt) {
                     " */"
                 ].join("\n")
             },
-            main: {
+            lib: {
                 cwd: "src/",
-                src: ["*.js", "**/*.js", "!legacy/*.js"],
-                dest: "build/better-dom.js"
-            },
-            legacy: {
-                cwd: "src/legacy/",
                 src: ["*.js", "**/*.js"],
-                dest: "build/better-dom-legacy.js"
+                dest: "build/better-dom.js"
             }
         }
     });

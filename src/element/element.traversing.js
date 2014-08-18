@@ -14,13 +14,13 @@ function makeTraversingMethod(methodName, propertyName, all) {
 
         for (it = it && !andSelf ? it[propertyName] : it; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                if (!all) return $Element(it);
+                if (!all) break;
 
                 nodes.push(it);
             }
         }
 
-        return _.map.call(nodes, $Element);
+        return all ? _.map.call(nodes, $Element) : $Element(it);
     };
 }
 
