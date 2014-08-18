@@ -88,10 +88,10 @@ if (CSS3_ANIMATIONS) {
     nativeEventType = "ondataavailable";
     link = DOCUMENT.querySelector("link[rel=htc]");
 
-    if (!link) throw "In order to use live extensions you have to include link[rel=htc] for IE < 10";
+    if (!link) throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies");
 
     styles = {behavior: "url(" + link.href + ") !important"};
-    // append behavior for HTML element to apply several legacy fixes
+    // append behavior for HTML element to apply several legacy IE-specific fixes
     setTimeout(() => DOM.importStyles("html", styles), 0);
 
     DOCUMENT.attachEvent(nativeEventType, () => {

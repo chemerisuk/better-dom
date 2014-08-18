@@ -5,8 +5,9 @@
     <title>Animation test</title>
     <meta name="viewport" content="width=device-width,user-scalable=no">
     <!--[if IE]>
-        <link href="../dist/better-dom-legacy.htc" rel="htc" />
-        <script src="../build/better-dom-legacy.js"></script>
+        <link href="../dist/better-dom.htc" rel="htc" />
+        <script src="../bower_components/es5-shim/es5-shim.js"></script>
+        <script src="../bower_components/html5shiv/dist/html5shiv.js"></script>
     <![endif]-->
     <script src="../build/better-dom.js"></script>
     <style>
@@ -61,8 +62,8 @@
     bars[1].remove();
 
     setInterval(function() {
-        bars.each(function(el, index) {
-            if (el.parent() == "") {
+        bars.forEach(function(el, index) {
+            if (!el.parent()[0]) {
                 bar[index ? "append" : "prepend"](el);
 
                 el.show();

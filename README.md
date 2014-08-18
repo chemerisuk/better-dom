@@ -58,7 +58,7 @@ For IE8-9 support you have to incude extra files via the conditional comment bel
 
 [html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8.
 
-[es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
+[es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
 
 The **better-dom.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
 
