@@ -26,6 +26,8 @@ $Element.prototype.dispatch = function(method, ...args) {
             return method.apply(context, args);
         } catch (err) {
             if ("console" in WINDOW) WINDOW.console.error(err);
+
+            return err;
         }
     }
 };

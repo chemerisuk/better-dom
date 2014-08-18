@@ -34,6 +34,18 @@ describe("dispatch", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
+    it("should return Error if exception was thrown", function() {
+        var error = window.console.error,
+            callback = jasmine.createSpy("callback").and.throwError("test");
+
+        delete window.console.error; // supress error logs temporary
+
+        expect(input.dispatch(callback).message).toBe("test");
+        expect(callback).toThrowError("test");
+
+        window.console.error = error;
+    });
+
     it("should throw error for invalid argumetns", function() {
         expect(function() { input.dispatch({}) }).toThrow();
         expect(function() { input.dispatch(null) }).toThrow();
