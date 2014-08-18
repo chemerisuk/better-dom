@@ -8,7 +8,7 @@ module.exports = function(grunt) {
         watch: {
             lib: {
                 files: ["src/*.js", "src/**/*.js"],
-                tasks: ["compile", "karma:watch:run"]
+                tasks: ["compile:build", "karma:watch:run"]
             },
             specs: {
                 files: ["test/spec/*.js"],
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
             },
         },
         jshint: {
-            all: ["src/*.js", "test/spec/*.js", "Gruntfile.js"],
+            all: ["src/*.js", "src/**/*.js", "test/spec/*.js", "Gruntfile.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
@@ -84,8 +84,6 @@ module.exports = function(grunt) {
             },
             releaseVersion: {
                 command: [
-                    // copy files to dist folder
-                    "cp build/*.js dist/",
                     // commit all changes
                     "git commit -am 'version <%= pkg.version %>'",
                     // update version tag
@@ -111,9 +109,13 @@ module.exports = function(grunt) {
                 preserveComments: "some",
                 report: "gzip"
             },
-            lib: {
+            build: {
                 src: ["build/better-dom.js"],
                 dest: "build/better-dom.min.js"
+            },
+            dist: {
+                src: ["dist/better-dom.js"],
+                dest: "dist/better-dom.min.js"
             }
         },
         connect: {
@@ -128,7 +130,7 @@ module.exports = function(grunt) {
             options: {
                 banner: [
                     "/**",
-                    " * @file <%= pkg.name %>",
+                    " * @file better-dom.js",
                     " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>",
                     " * @overview <%= pkg.description %>",
                     " * @copyright 2013-<%= grunt.template.today('yyyy') %> <%= pkg.author %>",
@@ -137,10 +139,15 @@ module.exports = function(grunt) {
                     " */"
                 ].join("\n")
             },
-            lib: {
+            build: {
                 cwd: "src/",
                 src: ["*.js", "**/*.js"],
                 dest: "build/better-dom.js"
+            },
+            dist: {
+                cwd: "src/",
+                src: ["*.js", "**/*.js"],
+                dest: "dist/better-dom.js"
             }
         }
     });
@@ -157,7 +164,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("dev", [
         "clean:build",
-        "compile",
+        "compile:build",
         "jshint",
         "connect",
         "karma:watch",
@@ -171,7 +178,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("docs", [
         "clean",
-        "compile",
+        "compile:build",
         "jsdoc"
     ]);
 
@@ -197,7 +204,7 @@ module.exports = function(grunt) {
 
         grunt.task.run([
             "clean:build",
-            "compile"
+            "compile:build"
         ]);
     });
 
@@ -216,10 +223,10 @@ module.exports = function(grunt) {
             "jshint",
             "karma:all",
             "shell:checkVersionTag",
-            "docs",
+            "jsdoc",
             "shell:updateDocs",
-            "browserify",
-            "uglify",
+            "compile:dist",
+            "uglify:dist",
             "updateVersion:package.json",
             "updateVersion:bower.json",
             "shell:releaseVersion"
