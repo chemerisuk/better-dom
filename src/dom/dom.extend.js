@@ -3,6 +3,7 @@ import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT, CUSTOM_E
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
+import importStyles from "./dom.importstyles";
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
@@ -20,13 +21,13 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         var stop;
 
         e = e || WINDOW.event;
-        // mark extension as processed via _.SKIPEXT bitmask
+
         if (CSS3_ANIMATIONS) {
             stop = e.animationName === animId && e.target === node;
         } else {
             stop = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
         }
-
+        // mark extension as processed via e._skip bitmask
         if (stop) (e._skip = e._skip || {})[index] = true;
     },
     makeExtHandler = (node, skip) => (ext, index) => {
@@ -38,8 +39,8 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         // have appropriate methods before they are used in other DOM.extend.
         // Also fixes legacy IEs when the HTC behavior is already attached
         _.each.call(DOCUMENT.querySelectorAll(ext.selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs behavior
-        DOM.importStyles(ext.selector, styles);
+        // MUST be after querySelectorAll because of legacy IEs quirks
+        importStyles(ext.selector, styles);
     },
     readyState = DOCUMENT.readyState,
     readyCallback = () => {
@@ -54,7 +55,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
 // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
 // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
 if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading") {
-    // use setTimeout to make sure that the library is fully initialized
+    // fix fox #14: use setTimeout to make sure that the library is fully initialized
     setTimeout(readyCallback, 0);
 } else {
     if (DOM2_EVENTS) {
@@ -72,7 +73,7 @@ if (CSS3_ANIMATIONS) {
     nativeEventType = WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
     animId = "DOM" + Date.now();
 
-    setTimeout(() => DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}"), 0);
+    importStyles("@" + WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}");
 
     styles = {
         "animation-duration": "1ms !important",
@@ -92,7 +93,7 @@ if (CSS3_ANIMATIONS) {
 
     styles = {behavior: "url(" + link.href + ") !important"};
     // append behavior for HTML element to apply several legacy IE-specific fixes
-    setTimeout(() => DOM.importStyles("html", styles), 0);
+    importStyles("html", styles);
 
     DOCUMENT.attachEvent(nativeEventType, () => {
         var e = WINDOW.event;

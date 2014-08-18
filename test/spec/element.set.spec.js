@@ -65,6 +65,13 @@ describe("set", function() {
         expect(link).toHaveAttr("data-test2", "test2");
     });
 
+    it("should accept array of key values", function() {
+        link.set(["autocomplete", "autocorrect"], "off");
+
+        expect(link).toHaveAttr("autocomplete", "off");
+        expect(link).toHaveAttr("autocorrect", "off");
+    });
+
     it("should polyfill textContent", function() {
         expect(link.get("textContent")).toBe("set-test");
         link.set("textContent", "<i>changed</i>");

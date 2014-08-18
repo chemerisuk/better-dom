@@ -59,12 +59,12 @@ describe("visibility", function() {
         });
 
         it("should support exec callback when animation is defined", function(done) {
-            link.css("cssText", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+            link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
             link.hide(done);
         });
 
         it("should support exec callback when transition is defined", function(done) {
-            link.addClass("fade").css("cssText", "transition:opacity 10ms;-webkit-transition:opacity 10ms");
+            link.addClass("fade").set("style", "transition:opacity 10ms;-webkit-transition:opacity 10ms");
             link.hide(done);
         });
 
@@ -83,7 +83,7 @@ describe("visibility", function() {
         });
 
         it("should skip infinite animations", function(done) {
-            link.css("cssText", "animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block");
+            link.set("style", "animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block");
             link.hide(done);
         });
 
@@ -91,7 +91,7 @@ describe("visibility", function() {
             var otherLink = DOM.create("<a class=\"fade\" style='transition:opacity 10ms;-webkit-transition:opacity 10ms'>abc</a>"),
                 spy = jasmine.createSpy("transition");
 
-            link.css("cssText", "animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block");
+            link.set("style", "animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block");
             link.after(otherLink);
             otherLink.hide(spy);
 
@@ -143,7 +143,7 @@ describe("visibility", function() {
 
         it("should trigger callback for initially hidden elements", function(done) {
             link = link.clone(false).set("aria-hidden", "true");
-            link.css("cssText", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+            link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
 
             jasmine.sandbox.set(link);
 
@@ -204,7 +204,7 @@ describe("visibility", function() {
         //     var showSpy = jasmine.createSpy("show"),
         //         hideSpy = jasmine.createSpy("hide");
 
-        //     link.css("cssText", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+        //     link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
         //     link.toggle(hideSpy);
 
         //     hideSpy.and.callFake(function() {

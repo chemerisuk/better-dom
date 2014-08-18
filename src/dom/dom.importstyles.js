@@ -44,3 +44,5 @@ DOM.importStyles = function(selector, cssText) {
         selector.split(",").forEach((selector) => { styleSheet.addRule(selector, cssText) });
     }
 };
+
+export default DOM.importStyles;

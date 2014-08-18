@@ -191,9 +191,17 @@ describe("extend", function() {
     it("should catch nested elements", function(done) {
         var spy = jasmine.createSpy("ctr");
 
-        DOM.extend("." + randomClass, {constructor: spy});
+        DOM.extend("." + randomClass, {constructor: spy, test: function() {}});
 
         spy.and.callFake(function() {
+            var child = this.find("." + randomClass);
+
+            if (child[0]) {
+                expect(this.test).not.toBeUndefined();
+            }
+
+            expect(this.test).not.toBeUndefined();
+
             if (spy.calls.count() === 2) done();
         });
 

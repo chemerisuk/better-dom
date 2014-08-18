@@ -37,7 +37,9 @@ $Element.prototype.set = function(name, value) {
         if (hook) {
             hook(node, newValue);
         } else if (nameType !== "string") {
-            if (name && nameType === "object") {
+            if (_.isArray(name)) {
+                return name.forEach((key) => { this.set(key, value) });
+            } else if (name && nameType === "object") {
                 return _.keys(name).forEach((key) => { this.set(key, name[key]) });
             }
 
