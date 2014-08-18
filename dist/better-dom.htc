@@ -80,14 +80,6 @@
     }
 
     function fixSubmitEvent() {
-        var handleFormEvent = function() {
-                var e = window.event;
-
-                if (!e.cancelBubble) DOM.constructor(e.srcElement)[0].fire(e.type);
-
-                return false;
-            };
-
         element.attachEvent("onkeydown", function() {
             var e = window.event,
                 target = e.srcElement,
@@ -105,11 +97,10 @@
                 form = target.form,
                 type = target.type;
 
-            if (!form) return;
-
-            if (type === "submit" || type === "reset") {
-                form.detachEvent("on" + type, handleFormEvent);
-                form.attachEvent("on" + type, handleFormEvent);
+            if (form && (type === "submit" || type === "reset")) {
+                // if fake event was canceled cancel this event as well
+                // to prevent default native browser behavior
+                return DOM.constructor(form)[0].fire(type);
             }
         });
     }

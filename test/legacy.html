@@ -10,7 +10,7 @@
     <![endif]-->
 </head>
 <body>
-    <form action="#" onsubmit="return false">
+    <form action="#">
         <p>
             <label>
                 <input type="checkbox" name="checkbox">Checkbox test
@@ -54,6 +54,8 @@
 
     DOM.on("submit", function(target) {
        console.log("submit for " + target);
+
+       return false;
     });
     </script>
 </body>
