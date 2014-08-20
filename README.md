@@ -12,11 +12,10 @@ I'd recommend to read one from the articles below to understand the main ideas o
 * [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
 ## Features
-* compact size: ~27kb minified and ~6kb gzipped version ([custom builds](#how-to-make-a-custom-build) are available to reduce file size even more)
+* lightweight: ~22kb minified and ~5kb gzipped version ([custom builds](#how-to-make-a-custom-build) are available to reduce file size even more)
 * clear, minimalistic and standards-based (where possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
-* [i18n support](https://github.com/chemerisuk/better-dom/wiki/Localization)
 * [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)

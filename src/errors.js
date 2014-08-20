@@ -1,7 +1,9 @@
 // customized errors
 
 function MethodError(methodName, type = "$Element") {
-    this.message = type + "." + methodName + " was called with illegal arguments. Check <%= pkg.docs %> to verify the call";
+    var url = "<%= pkg.docs %>" + type + ".html#" + methodName;
+
+    this.message = type + "#" + methodName + " was called with illegal arguments. Check " + url + " to verify the method call";
 }
 
 MethodError.prototype = new TypeError();

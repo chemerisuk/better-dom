@@ -5,7 +5,7 @@ import { $Element } from "../types";
  * Calculates offset of the current element
  * @memberof! $Element#
  * @alias $Element#offset
- * @return object with left, top, bottom, right, width and height properties
+ * @return {Object} object with left, top, bottom, right, width and height properties
  */
 $Element.prototype.offset = function() {
     var node = this[0],
