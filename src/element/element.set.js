@@ -13,47 +13,52 @@ import PROP from "../util/accessorhooks";
  * @return {$Element}
  */
 $Element.prototype.set = function(name, value) {
-    var node = this[0],
-        nameType = typeof name;
+    var node = this[0];
 
     if (!node) return this;
 
-    if (arguments.length === 1 && nameType !== "object") {
-        value = name;
-        name = undefined;
+    // handle vthe alue shortcut
+    if (arguments.length === 1 && typeof name !== "object") {
+        value = name == null ? "" : String(name);
+        name = "value" in node ? "value" : "innerHTML";
     }
 
     var hook = PROP.set[name],
-        watchers = this._._watchers[name || ("value" in node ? "value" : "innerHTML")],
+        nameType = typeof name,
+        watchers = this._._watchers[name],
         newValue = value, oldValue;
 
     if (watchers) oldValue = this.get(name);
 
-    if (typeof name === "string" && name[0] === "-" && name[1] === "-") {
-        this._[name.substr(2)] = newValue;
-    } else {
-        if (typeof newValue === "function") newValue = value(this);
+    if (hook) {
+        hook(node, newValue);
+    } else if (nameType === "string") {
+        if (name[0] === "-" && name[1] === "-") {
+            this._[name.substr(2)] = newValue;
+        } else {
+            if (typeof newValue === "function") newValue = value(this);
 
-        if (hook) {
-            hook(node, newValue);
-        } else if (nameType !== "string") {
-            if (_.isArray(name)) {
-                return name.forEach((key) => { this.set(key, value) });
-            } else if (name && nameType === "object") {
-                return _.keys(name).forEach((key) => { this.set(key, name[key]) });
+            if (newValue == null) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = newValue;
+            } else {
+                node.setAttribute(name, newValue);
             }
 
-            throw new MethodError("set");
-        } else if (newValue == null) {
-            node.removeAttribute(name);
-        } else if (name in node) {
-            node[name] = newValue;
+            // always trigger reflow manually for IE8 and legacy Android
+            if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
+        }
+    } else if (nameType === "object") {
+        if (_.isArray(name)) {
+            name.forEach((key) => { this.set(key, value) });
         } else {
-            node.setAttribute(name, newValue);
+            _.keys(name).forEach((key) => { this.set(key, name[key]) });
         }
 
-        // always trigger reflow manually for IE8 and legacy Android
-        if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
+        return this;
+    } else {
+        throw new MethodError("set");
     }
 
     if (watchers && oldValue !== newValue) {

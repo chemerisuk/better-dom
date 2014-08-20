@@ -34,20 +34,15 @@ hooks.get.undefined = (node) => {
     return node[name];
 };
 
-hooks.set.undefined = function(node, value) {
-    // handle numbers, booleans etc.
-    value = value == null ? "" : String(value);
-
+hooks.set.value = function(node, value) {
     if (node.tagName === "SELECT") {
         // selectbox has special case
         if (_.every.call(node.options, (o) => !(o.selected = o.value === value))) {
             node.selectedIndex = -1;
         }
-    } else if (node.type && "value" in node) {
+    } else {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
         node[DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
-    } else {
-        node.innerHTML = value;
     }
 };
 

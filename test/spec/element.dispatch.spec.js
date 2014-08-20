@@ -1,5 +1,5 @@
 describe("dispatch", function() {
-    var input;
+    var input, consl = "console" in window ? window.console : {error: {}};
 
     beforeEach(function() {
         jasmine.sandbox.set("<input id='input'/>");
@@ -35,15 +35,15 @@ describe("dispatch", function() {
     });
 
     it("should return Error if exception was thrown", function() {
-        var error = window.console.error,
+        var error = consl.error,
             callback = jasmine.createSpy("callback").and.throwError("test");
 
-        delete window.console.error; // supress error logs temporary
+        delete consl.error; // supress error logs temporary
 
         expect(input.dispatch(callback).message).toBe("test");
         expect(callback).toThrowError("test");
 
-        window.console.error = error;
+        consl.error = error;
     });
 
     it("should throw error for invalid argumetns", function() {
