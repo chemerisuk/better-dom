@@ -1,7 +1,7 @@
 // customized errors
 
 function MethodError(methodName, type = "$Element") {
-    var url = "<%= pkg.docs %>" + type + ".html#" + methodName;
+    var url = "<%= pkg.docs %>/" + type + ".html#" + methodName;
 
     this.message = type + "#" + methodName + " was called with illegal arguments. Check " + url + " to verify the method call";
 }

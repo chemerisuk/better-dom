@@ -29,7 +29,7 @@ $Element.prototype.set = function(name, value) {
 
     if (watchers) oldValue = this.get(name);
 
-    if (typeof name === "string" && name.substr(0, 2) === "--") {
+    if (typeof name === "string" && name[0] === "-" && name[1] === "-") {
         this._[name.substr(2)] = newValue;
     } else {
         if (typeof newValue === "function") newValue = value(this);

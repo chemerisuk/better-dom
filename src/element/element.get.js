@@ -22,7 +22,7 @@ $Element.prototype.get = function(name) {
     if (hook) return hook(node, name);
 
     if (nameType === "string") {
-        if (name.substr(0, 2) === "--") {
+        if (name[0] === "-" && name[1] === "-") {
             key = name.substr(2);
 
             if (key in data) {
