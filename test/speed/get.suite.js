@@ -3,7 +3,7 @@
 
     var nativeSandbox = document.createElement("a"),
         jquerySandbox = jQuery(nativeSandbox),
-        domSandbox = DOM.create(nativeSandbox);
+        domSandbox = DOM.constructor(nativeSandbox)[0];
 
     nativeSandbox.rel = "sandbox";
     document.body.appendChild(nativeSandbox);
@@ -26,7 +26,7 @@
         });
 
         benchmark("native#get", function() {
-            nativeSandbox.rel;
+            return nativeSandbox.rel;
         });
     }, {
         onComplete: function() {

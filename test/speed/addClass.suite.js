@@ -3,7 +3,7 @@
 
     var nativeSandbox = document.createElement("div"),
         jquerySandbox = jQuery(nativeSandbox),
-        domSandbox = DOM.create(nativeSandbox);
+        domSandbox = DOM.constructor(nativeSandbox)[0];
 
     document.body.appendChild(nativeSandbox);
 

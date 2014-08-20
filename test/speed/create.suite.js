@@ -22,7 +22,7 @@ suite("create", function () {
     });
 
     benchmark("DOM#create(Element)", function() {
-        DOM.create(document.createElement("a"));
+        DOM.constructor(document.createElement("a"));
     });
 
     benchmark("DOM#create(HtmlString)", function() {
