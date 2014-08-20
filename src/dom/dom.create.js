@@ -16,10 +16,12 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
  */
 DOM.create = function(value, varMap, /*INTERNAL*/all) {
     var test = reTest.exec(value),
-        nodes;
+        nodes, el;
 
     if (value && test && !test[1]) {
-        nodes = [ DOCUMENT.createElement(value) ];
+        nodes = DOCUMENT.createElement(value);
+
+        if (all) nodes = [ nodes ];
     } else {
         if (test && test[1]) {
             value = varMap ? DOM.format(test[1], varMap) : test[1];
@@ -29,18 +31,24 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
             throw new StaticMethodError("create");
         }
 
-        sandbox.innerHTML = value;
+        sandbox.innerHTML = value; // parse input HTML string
 
-        for (nodes = []; value = sandbox.firstChild; sandbox.removeChild(value)) {
-            if (value.nodeType === 1) nodes.push(value);
+        for (nodes = []; el = sandbox.firstChild; ) {
+            sandbox.removeChild(el); // detach element from the sandbox
+
+            if (el.nodeType === 1) {
+                if (all) {
+                    nodes.push(el);
+                } else {
+                    nodes = el;
+
+                    break; // stop early, because need only the first element
+                }
+            }
         }
     }
 
-    if (all) {
-        return _.map.call(nodes, $Element);
-    } else {
-        return $Element(nodes[0]);
-    }
+    return all ? _.map.call(nodes, $Element) : $Element(nodes);
 };
 
 /**
