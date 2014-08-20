@@ -13,6 +13,8 @@ DOM.constructor = function(nodes) {
     if (!nodes) return [];
 
     if ("nodeType" in nodes) {
+        if (nodes.nodeType !== 1) return [];
+
         nodes = [ nodes ];
     } else if ( !("length" in nodes) ) {
         throw new StaticMethodError("constructor");
