@@ -7,7 +7,6 @@ import { $Element, DOM } from "../types";
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
 var rquickExpr = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
-    rsibling = /[\x20\t\r\n\f]*[+~>]/,
     rescape = /'|\\/g,
     tmpId = "DOM" + Date.now();
 
@@ -18,14 +17,14 @@ var rquickExpr = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /
  * @param  {String} selector css selector
  * @return {$Element} the first matched element
  */
-$Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
-    if (typeof selector !== "string") throw new MethodError("find" + suffix);
+$Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
+    if (typeof selector !== "string") throw new MethodError("find" + all);
 
     var node = this[0],
         quickMatch = rquickExpr.exec(selector),
         result, old, nid, context;
 
-    if (!node) return suffix ? [] : new $Element();
+    if (!node) return all ? [] : new $Element();
 
     if (quickMatch) {
         if (quickMatch[1]) {
@@ -36,7 +35,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
             result = node.getElementsByClassName(quickMatch[2]);
         }
 
-        if (result && !suffix) result = result[0];
+        if (result && !all) result = result[0];
     } else {
         old = true;
         nid = tmpId;
@@ -53,19 +52,17 @@ $Element.prototype.find = function(selector, /*INTERNAL*/suffix = "") {
             }
 
             nid = "[id='" + nid + "'] ";
-
-            context = rsibling.test(selector) ? node.parentNode : node;
             selector = nid + selector.split(",").join("," + nid);
         }
 
         try {
-            result = context["querySelector" + suffix](selector);
+            result = context["querySelector" + all](selector);
         } finally {
             if (!old) node.removeAttribute("id");
         }
     }
 
-    return suffix ? _.map.call(result, $Element) : $Element(result);
+    return all ? _.map.call(result, $Element) : $Element(result);
 };
 
 /**

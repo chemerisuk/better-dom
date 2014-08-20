@@ -55,8 +55,6 @@ $Element.prototype.set = function(name, value) {
         } else {
             _.keys(name).forEach((key) => { this.set(key, name[key]) });
         }
-
-        return this;
     } else {
         throw new MethodError("set");
     }

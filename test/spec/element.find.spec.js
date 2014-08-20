@@ -42,12 +42,6 @@ describe("find", function() {
         jasmine.sandbox.set("<div class=test><a data-attr='2'>test</a></div>");
         expect(DOM.find(".test").find("[data-attr='2']")).toHaveAttr("data-attr");
 
-
-        jasmine.sandbox.set("<div id=test><a data-attr2='2'></a></div><a data-attr1='1'></a><a data-attr3='3'></a>");
-        expect(DOM.find("#test").find("> [data-attr2='2']")).toHaveAttr("data-attr2");
-        expect(DOM.find("#test").find("+ [data-attr1='1']")).toHaveAttr("data-attr1");
-        expect(DOM.find("#test").find("~ [data-attr3='3']")).toHaveAttr("data-attr3");
-
         // TODO: make a cotext bug fix test
     });
 
