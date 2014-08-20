@@ -7,10 +7,10 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
     sandbox = DOCUMENT.createElement("body");
 
 /**
- * Create a new DOM element in memory
+ * Create a new {@link $Element} from Emmet or HTML string
  * @memberof DOM
  * @alias DOM.create
- * @param  {String}       value     EmmetString or HTMLString
+ * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} element wrapper
  */
@@ -52,12 +52,18 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
 };
 
 /**
- * Create a new DOM elements in memory
+ * Create a new array of {@link $Element}s from Emmet or HTML string
  * @memberof DOM
  * @alias DOM.createAll
- * @param  {String}       value     EmmetString or HTMLString
+ * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {Array} elements wrapper
+ * @return {Array.<$Element>} element wrappers
+ * @example
+ * DOM.createAll("span+b");
+ * // => array with 2 $Elements: span and b
+ *
+ * DOM.createAll("li*5");
+ * // => array with 5 li $Elements
  */
 DOM.createAll = function(value, varMap) {
     return DOM.create(value, varMap, true);
