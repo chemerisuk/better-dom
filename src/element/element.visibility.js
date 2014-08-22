@@ -4,7 +4,11 @@ import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
 import { $Element, DOM } from "../types";
 import CSS from "../util/stylehooks";
 
-var parseTimeValue = (value) => {
+var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
+    TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
+    TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+    ABSENT_STRATEGY = ANIMATIONS_ENABLED ? ["position", "absolute"] : ["display", "none"],
+    parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
         return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
@@ -22,93 +26,90 @@ var parseTimeValue = (value) => {
                 parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
         }));
     },
-    transitionProps = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
-    eventType = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-    absentStrategy = !LEGACY_ANDROID && CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
+    calcAnimationDuration = (node, style, isHidden, complete) => {
+        var compStyle = _.computeStyle(node),
+            duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
+
+        if (duration) {
+            let visibilityTransitionIndex, transitionValues, completeAnimation, timeoutId;
+
+            transitionValues = TRANSITION_PROPS.map((prop, index) => {
+                // have to use regexp to split transition-timing-function value
+                return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+            });
+
+            // try to find existing or use 0s length or make a new visibility transition
+            visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
+            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
+            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[0].length;
+
+            transitionValues[0][visibilityTransitionIndex] = "linear";
+            transitionValues[1][visibilityTransitionIndex] = "visibility";
+            transitionValues[isHidden ? 2 : 3][visibilityTransitionIndex] = "0s";
+            transitionValues[isHidden ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+
+            transitionValues.forEach((value, index) => {
+                CSS.set[TRANSITION_PROPS[index]](style, value.join(", "));
+            });
+
+            // make sure that the visibility property will be changed
+            // to trigger the completeAnimation callback
+            style.visibility = isHidden ? "visible" : "hidden";
+            // use willChange to improve performance in modern browsers:
+            // http://dev.opera.com/articles/css-will-change-property/
+            style.willChange = transitionValues[1].join(", ");
+
+            completeAnimation = (e) => {
+                if (!e || e.propertyName === "visibility") {
+                    if (e) e.stopPropagation(); // this is an internal transition
+
+                    clearTimeout(timeoutId);
+
+                    node.removeEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
+
+                    complete();
+                }
+            };
+
+            node.addEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
+            // make sure that the completeAnimation callback will be called
+            timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
+        }
+
+        return duration;
+    },
     changeVisibility = (el, fn, callback) => () => {
         var node = el[0],
             style = node.style,
-            completeVisibilityChange = () => {
+            isHidden = typeof fn === "function" ? fn(node) : fn,
+            complete = () => {
                 if (style.visibility === "hidden") {
-                    style[absentStrategy[0]] = absentStrategy[1];
+                    style[ABSENT_STRATEGY[0]] = ABSENT_STRATEGY[1];
                 }
-
-                if (!LEGACY_ANDROID && CSS3_ANIMATIONS) {
-                    // remove temporary properties
-                    style.willChange = "";
-                }
+                // remove temporary properties
+                if (ANIMATIONS_ENABLED) style.willChange = "";
 
                 if (callback) callback(el, node);
             },
             processVisibilityChange = () => {
-                var compStyle = _.computeStyle(node),
-                    isHidden = typeof fn === "function" ? fn(node) : fn,
-                    duration, index, transition, absentance, completeAnimation, timeoutId;
                 // Legacy Android is too slow and has a lot of bugs in the CSS animations
                 // implementation, so skip animations for it (duration value is always zero)
-                if (!LEGACY_ANDROID && CSS3_ANIMATIONS) {
-                    duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
-                }
-
-                if (duration) {
-                    // make sure that the visibility property will be changed
-                    // to trigger the completeAnimation callback
-                    if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
-
-                    transition = transitionProps.map((prop, index) => {
-                        // have to use regexp to split transition-timing-function value
-                        return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
-                    });
-
-                    // try to find existing or use 0s length or make a new visibility transition
-                    index = transition[1].indexOf("visibility");
-                    if (index < 0) index = transition[2].indexOf("0s");
-                    if (index < 0) index = transition[0].length;
-
-                    transition[0][index] = "linear";
-                    transition[1][index] = "visibility";
-                    transition[isHidden ? 2 : 3][index] = "0s";
-                    transition[isHidden ? 3 : 2][index] = duration + "ms";
-
-                    transition.forEach((value, index) => {
-                        CSS.set[transitionProps[index]](style, value.join(", "));
-                    });
-
-                    // use willChange to improve performance in modern browsers:
-                    // http://dev.opera.com/articles/css-will-change-property/
-                    style.willChange = transition[1].join(", ");
-
-                    completeAnimation = (e) => {
-                        if (!e || e.propertyName === "visibility") {
-                            if (e) e.stopPropagation(); // this is an internal event
-
-                            clearTimeout(timeoutId);
-
-                            node.removeEventListener(eventType, completeAnimation, false);
-
-                            completeVisibilityChange();
-                        }
-                    };
-
-                    node.addEventListener(eventType, completeAnimation, false);
-                    // make sure that the completeAnimation callback will be called
-                    timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
-                }
+                var duration = ANIMATIONS_ENABLED ? calcAnimationDuration(node, style, isHidden, complete) : 0;
 
                 if (isHidden) {
-                    absentance = style[absentStrategy[0]];
+                    let absentance = style[ABSENT_STRATEGY[0]];
                     // store current inline value in the internal property
                     if (absentance !== "none") el._._visibility = absentance;
                 } else {
                     // restore initial property value if it exists
-                    style[absentStrategy[0]] = el._._visibility || "";
+                    style[ABSENT_STRATEGY[0]] = el._._visibility || "";
                 }
 
                 style.visibility = isHidden ? "hidden" : "visible";
                 // trigger native CSS animation
                 el.set("aria-hidden", String(isHidden));
                 // must be AFTER changing the aria-hidden attribute
-                if (!duration) completeVisibilityChange();
+                if (!duration) complete();
             };
 
         // by using requestAnimationFrame we fix several issues:
