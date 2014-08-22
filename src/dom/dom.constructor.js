@@ -3,11 +3,11 @@ import { StaticMethodError } from "../errors";
 import { DOM, $Element } from "../types";
 
 /**
- * Creates Array of {@link $Element} instances from a native object(s)
+ * Create array of {@link $Element} instances from a native object(s)
  * @memberof DOM
  * @alias DOM.constructor
  * @param  {Mixed}  nodes  native HTMLElement or Array-like collection of HTMLElement
- * @return {Array} collection of {@link $Element} instances
+ * @return {Array.<$Element>} element wrappers
  */
 DOM.constructor = function(nodes) {
     if (!nodes) return [];

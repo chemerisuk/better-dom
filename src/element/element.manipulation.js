@@ -1,35 +1,41 @@
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
 
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
-    return function(...args) {
-        var node = this[0],
-            html = "",
-            value;
+    return function(content = "") {
+        var node = this[0];
 
-        if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return this;
+        if (!standalone && (!node.parentNode || content === DOM)) return this;
 
-        args.forEach((arg) => {
-            if (typeof arg === "function") arg = arg(this, node);
+        if (typeof content === "function") content = content(this);
 
-            if (typeof arg === "string") {
-                html += arg.trim();
-            } else if (arg instanceof $Element) {
-                if (!value) value = DOCUMENT.createDocumentFragment();
-                // populate fragment
-                value.appendChild(arg[0]);
-            } else {
-                throw new MethodError(methodName);
+        if (typeof content === "string") {
+            if (content) {
+                // parse HTML string for the replace method
+                if (fasterMethodName) {
+                    content = content.trim();
+                } else {
+                    content = DOM.create(content)[0];
+                }
             }
-        });
+        } else if (content instanceof $Element) {
+            content = content[0];
+        } else if (_.isArray(content)) {
+            content = content.reduce((fragment, el) => {
+                fragment.appendChild(el[0]);
 
-        if (!fasterMethodName && html) value = DOM.create(html)[0];
+                return fragment;
+            }, DOCUMENT.createDocumentFragment());
+        } else {
+            throw new MethodError(methodName);
+        }
 
-        if (!fasterMethodName || value) {
-            strategy(node, value);
-        } else if (html) {
-            node.insertAdjacentHTML(fasterMethodName, html);
+        if (content && typeof content === "string") {
+            node.insertAdjacentHTML(fasterMethodName, content);
+        } else {
+            if (content || !fasterMethodName) strategy(node, content);
         }
 
         return this;
@@ -40,7 +46,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
  * Insert html string or $Element after the current
  * @memberof! $Element#
  * @alias $Element#after
- * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -52,7 +58,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, (n
  * Insert html string or $Element before the current
  * @memberof! $Element#
  * @alias $Element#before
- * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -64,7 +70,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
  * Prepend html string or $Element to the current
  * @memberof! $Element#
  * @alias $Element#prepend
- * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */
@@ -76,7 +82,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
  * Append html string or $Element to the current
  * @memberof! $Element#
  * @alias $Element#append
- * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} contents HTMLString, $Element or functor that returns content
  * @return {$Element}
  * @function
  */

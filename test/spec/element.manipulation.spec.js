@@ -88,25 +88,6 @@ describe("manipulation", function() {
             });
         });
 
-        // it("should support emmet-like expressions", function() {
-        //     _forIn(checkStrategies, function(checkMethod, strategy) {
-        //         var arg = createDivEmmet(strategy);
-
-        //         expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
-        //     });
-        // });
-
-        it("should accept multiple arguments", function() {
-            _forIn(checkStrategies, function(checkMethod, strategy) {
-                expect(div[strategy](createDivHtml(strategy + 1), createDivHtml(strategy + 2))).toBe(div);
-
-                expect(checkMethod(div)).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 1 : 2));
-                checkMethod(div).remove();
-                expect(checkMethod(div)).toHaveClass(strategy + (strategy === "prepend" || strategy === "after" ? 2 : 1));
-                checkMethod(div).remove();
-            });
-        });
-
         it("should throw error if argument is invalid", function() {
             var callProp = function(strategy) {
                     return function() {
