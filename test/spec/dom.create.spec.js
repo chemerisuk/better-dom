@@ -22,6 +22,13 @@ describe("create", function() {
         expect(DOM.createAll("a+b").length).toBe(2);
     });
 
+    it("should accept empty strings", function() {
+        var el = DOM.create("");
+
+        expect(el).toBeDefined();
+        expect(el[0]).not.toBeDefined();
+    });
+
     it("should trim inner html strings", function() {
         var el = DOM.create("   <a><span></span></a>  ");
 

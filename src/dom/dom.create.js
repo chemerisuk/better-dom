@@ -33,7 +33,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
 
         sandbox.innerHTML = value; // parse input HTML string
 
-        for (nodes = []; el = sandbox.firstChild; ) {
+        for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
             sandbox.removeChild(el); // detach element from the sandbox
 
             if (el.nodeType === 1) {

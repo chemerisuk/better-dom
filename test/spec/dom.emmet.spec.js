@@ -7,9 +7,7 @@ describe("DOM.emmet", function() {
         });
     }
 
-    // checkExpr("<a></a>", "<a></a>");
-    // checkExpr("  <a></a> ", "  <a></a> ");
-    // checkExpr("  \na", "  \na");
+    checkExpr("", "");
 
     describe("'+' operator", function() {
         checkExpr("a", "<a></a>");

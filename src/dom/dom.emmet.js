@@ -58,6 +58,8 @@ var // operator type / priority object
  */
 DOM.emmet = function(template, varMap) {
     if (typeof template !== "string") throw new StaticMethodError("emmet");
+
+    if (!template) return template;
     // handle varMap
     if (varMap) template = DOM.format(template, varMap);
 
