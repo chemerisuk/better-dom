@@ -1,8 +1,16 @@
-import _ from "../helpers";
+import { HTML } from "../constants";
+
 /*
  * Helper for css selectors
  */
-var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
+
+/*es6-transpiler has-iterators:false, has-generators: false*/
+var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
+    propName = "m oM msM mozM webkitM".split(" ").reduce((result, prefix) => {
+            var propertyName = prefix + "atchesSelector";
+
+            return result || HTML[propertyName] && propertyName;
+        }, null);
 // Quick matching inspired by jQuery
 export default function(selector, context) {
     if (typeof selector !== "string") return null;
@@ -17,12 +25,11 @@ export default function(selector, context) {
         if (quick[4]) quick[4] = " " + quick[4] + " ";
     }
 
-    return (node) => {
-        var result, found, test;
+    return function(node) {
+        var result, found;
 
-        if (!quick && !node.webkitMatchesSelector) {
+        if (!quick && !propName) {
             found = (context || document).querySelectorAll(selector);
-            test = (x) => x === node;
         }
 
         for (; node && node.nodeType === 1; node = node.parentNode) {
@@ -34,12 +41,12 @@ export default function(selector, context) {
                     (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
                 );
             } else {
-                // querySelectorAll is faster in all browsers except Webkit-based:
-                // http://jsperf.com/queryselectorall-vs-matches/3
-                if (node.webkitMatchesSelector) {
-                    result = node.webkitMatchesSelector(selector);
+                if (propName) {
+                    result = node[propName](selector);
                 } else {
-                    result = _.some.call(found, test);
+                    for (let n of found) {
+                        if (n === node) return n;
+                    }
                 }
             }
 

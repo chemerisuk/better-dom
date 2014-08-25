@@ -59,11 +59,10 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array.<$Element>} element wrappers
  * @example
- * DOM.createAll("span+b");
- * // => array with 2 $Elements: span and b
- *
- * DOM.createAll("li*5");
- * // => array with 5 li $Elements
+ * ```js
+ * DOM.createAll("span+b"); // => array with 2 $Elements: span and b
+ * DOM.createAll("li*5"); // => array with 5 li $Elements
+ * ```
  */
 DOM.createAll = function(value, varMap) {
     return DOM.create(value, varMap, true);
