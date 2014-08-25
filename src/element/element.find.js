@@ -1,7 +1,8 @@
-import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
+
+/* es6-transpiler has-iterators:false, has-generators: false */
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -62,7 +63,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
         }
     }
 
-    return all ? _.map.call(result, $Element) : $Element(result);
+    return all ? [for (n of result) $Element(n)] : $Element(result);
 };
 
 /**

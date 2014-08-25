@@ -14,7 +14,6 @@ export default {
     slice: arrayProto.slice,
     every: arrayProto.every,
     each: arrayProto.forEach,
-    map: arrayProto.map,
     isArray: Array.isArray,
     keys: Object.keys
 };

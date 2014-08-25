@@ -1,8 +1,9 @@
-import _ from "../helpers";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../constants";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
+
+/* es6-transpiler has-iterators:false, has-generators: false */
 
 function makeTraversingMethod(methodName, propertyName, all) {
     return function(selector, andSelf) {
@@ -20,7 +21,7 @@ function makeTraversingMethod(methodName, propertyName, all) {
             }
         }
 
-        return all ? _.map.call(nodes, $Element) : $Element(it);
+        return all ? [for (n of nodes) $Element(n)] : $Element(it);
     };
 }
 
@@ -33,6 +34,7 @@ function makeChildTraversingMethod(all) {
         }
 
         var node = this[0],
+            matcher = SelectorMatcher(selector),
             children = node ? node.children : null;
 
         if (!node) return all ? [] : new $Element();
@@ -42,11 +44,7 @@ function makeChildTraversingMethod(all) {
             children = [for (node of children) if (node.nodeType === 1) node];
         }
 
-        if (all) {
-            if (selector) children = [for (node of children) if (SelectorMatcher(selector)) node];
-
-            return _.map.call(children, $Element);
-        }
+        if (all) return [for (node of children) if (matcher && matcher(node)) $Element(node)];
 
         if (selector < 0) selector = children.length + selector;
 

@@ -1,6 +1,7 @@
-import _ from "../helpers";
 import { StaticMethodError } from "../errors";
 import { DOM, $Element } from "../types";
+
+/* es6-transpiler has-iterators:false, has-generators: false */
 
 /**
  * Create array of {@link $Element} instances from a native object(s)
@@ -20,5 +21,5 @@ DOM.constructor = function(nodes) {
         throw new StaticMethodError("constructor");
     }
 
-    return _.map.call(nodes, $Element);
+    return [for (n of nodes) $Element(n)];
 };

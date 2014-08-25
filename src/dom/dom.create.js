@@ -1,7 +1,8 @@
-import _ from "../helpers";
 import { DOCUMENT } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
+
+/* es6-transpiler has-iterators:false, has-generators: false */
 
 var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
     sandbox = DOCUMENT.createElement("body");
@@ -48,7 +49,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
         }
     }
 
-    return all ? _.map.call(nodes, $Element) : $Element(nodes);
+    return all ? [for (n of nodes) $Element(n)] : $Element(nodes);
 };
 
 /**
