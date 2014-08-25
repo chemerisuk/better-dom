@@ -4,6 +4,12 @@
     },
     "plugins"   : ["plugins/markdown"],
     "templates" : {
+        "linenums": true,
+        "cleverLinks": true,
+        "monospaceLinks": true,
+        "default": {
+            "outputSourceFiles" : true
+        },
         "applicationName": "better-dom",
         "disqus": "better-dom",
         "googleAnalytics": "",
@@ -18,8 +24,7 @@
             "title": "",
             "description": "",
             "keyword": ""
-        },
-        "linenums": true
+        }
     },
     "markdown"  : {
         "parser"   : "gfm",
