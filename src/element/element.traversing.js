@@ -44,7 +44,7 @@ function makeChildTraversingMethod(all) {
             children = [for (node of children) if (node.nodeType === 1) node];
         }
 
-        if (all) return [for (node of children) if (matcher && matcher(node)) $Element(node)];
+        if (all) return [for (n of children) if (matcher && matcher(n)) $Element(n)];
 
         if (selector < 0) selector = children.length + selector;
 

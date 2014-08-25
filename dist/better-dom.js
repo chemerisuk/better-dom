@@ -1,6 +1,6 @@
 /**
  * @file better-dom.js
- * @version 2.0.0-beta.1 2014-08-18T14:50:09
+ * @version 2.0.0-beta.2 2014-08-25T19:42:31
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -21,7 +21,9 @@
     var constants$$CUSTOM_EVENT_TYPE = "dataavailable";
 
     function errors$$MethodError(methodName) {var type = arguments[1];if(type === void 0)type = "$Element";
-        this.message = type + "." + methodName + " was called with illegal arguments. Check http://chemerisuk.github.io/better-dom to verify the call";
+        var url = "http://chemerisuk.github.io/better-dom/" + type + ".html#" + methodName;
+
+        this.message = type + "#" + methodName + " was called with illegal arguments. Check " + url + " to verify the method call";
     }
 
     errors$$MethodError.prototype = new TypeError();
@@ -46,9 +48,6 @@
         slice: helpers$$arrayProto.slice,
         every: helpers$$arrayProto.every,
         each: helpers$$arrayProto.forEach,
-        some: helpers$$arrayProto.some,
-        filter: helpers$$arrayProto.filter,
-        map: helpers$$arrayProto.map,
         isArray: Array.isArray,
         keys: Object.keys
     };
@@ -87,46 +86,54 @@
      */
     var types$$DOM = new types$$$Element(constants$$HTML);
 
-    types$$DOM.version = "2.0.0-beta.1";
+    types$$DOM.version = "2.0.0-beta.2";
 
     constants$$WINDOW.DOM = types$$DOM;
 
+    /* es6-transpiler has-iterators:false, has-generators: false */
+
     /**
-     * Creates Array of {@link $Element} instances from a native object(s)
+     * Create array of {@link $Element} instances from a native object(s)
      * @memberof DOM
      * @alias DOM.constructor
      * @param  {Mixed}  nodes  native HTMLElement or Array-like collection of HTMLElement
-     * @return {Array} collection of {@link $Element} instances
+     * @return {Array.<$Element>} element wrappers
      */
     types$$DOM.constructor = function(nodes) {
         if (!nodes) return [];
 
         if ("nodeType" in nodes) {
+            if (nodes.nodeType !== 1) return [];
+
             nodes = [ nodes ];
         } else if ( !("length" in nodes) ) {
             throw new errors$$StaticMethodError("constructor");
         }
 
-        return helpers$$default.map.call(nodes, types$$$Element);
+        return (function(){var $D$0;var $D$1;var $result$0 = [], n;$D$0 = 0;$D$1 = nodes.length;for(; $D$0 < $D$1; ){n = (nodes[$D$0++]);{$result$0.push(types$$$Element(n))}};;return $result$0})();
     };
+
+    /* es6-transpiler has-iterators:false, has-generators: false */
 
     var dom$dom$create$$reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
         dom$dom$create$$sandbox = constants$$DOCUMENT.createElement("body");
 
     /**
-     * Create a new DOM element in memory
+     * Create a new {@link $Element} from Emmet or HTML string
      * @memberof DOM
      * @alias DOM.create
-     * @param  {String}       value     EmmetString or HTMLString
+     * @param  {String}       value     Emmet or HTML string
      * @param  {Object|Array} [varMap]  key/value map of variables
      * @return {$Element} element wrapper
      */
     types$$DOM.create = function(value, varMap, /*INTERNAL*/all) {
         var test = dom$dom$create$$reTest.exec(value),
-            nodes;
+            nodes, el;
 
         if (value && test && !test[1]) {
-            nodes = [ constants$$DOCUMENT.createElement(value) ];
+            nodes = constants$$DOCUMENT.createElement(value);
+
+            if (all) nodes = [ nodes ];
         } else {
             if (test && test[1]) {
                 value = varMap ? types$$DOM.format(test[1], varMap) : test[1];
@@ -136,33 +143,44 @@
                 throw new errors$$StaticMethodError("create");
             }
 
-            dom$dom$create$$sandbox.innerHTML = value;
+            dom$dom$create$$sandbox.innerHTML = value; // parse input HTML string
 
-            for (nodes = []; value = dom$dom$create$$sandbox.firstChild; dom$dom$create$$sandbox.removeChild(value)) {
-                if (value.nodeType === 1) nodes.push(value);
+            for (nodes = all ? [] : null; el = dom$dom$create$$sandbox.firstChild; ) {
+                dom$dom$create$$sandbox.removeChild(el); // detach element from the sandbox
+
+                if (el.nodeType === 1) {
+                    if (all) {
+                        nodes.push(el);
+                    } else {
+                        nodes = el;
+
+                        break; // stop early, because need only the first element
+                    }
+                }
             }
         }
 
-        if (all) {
-            return helpers$$default.map.call(nodes, types$$$Element);
-        } else {
-            return types$$$Element(nodes[0]);
-        }
+        return all ? (function(){var $D$2;var $D$3;var $result$1 = [], n;$D$2 = 0;$D$3 = nodes.length;for(; $D$2 < $D$3; ){n = (nodes[$D$2++]);{$result$1.push(types$$$Element(n))}};;return $result$1})() : types$$$Element(nodes);
     };
 
     /**
-     * Create a new DOM elements in memory
+     * Create a new array of {@link $Element}s from Emmet or HTML string
      * @memberof DOM
      * @alias DOM.createAll
-     * @param  {String}       value     EmmetString or HTMLString
+     * @param  {String}       value     Emmet or HTML string
      * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {Array} elements wrapper
+     * @return {Array.<$Element>} element wrappers
+     * @example
+     * ```js
+     * DOM.createAll("span+b"); // => array with 2 $Elements: span and b
+     * DOM.createAll("li*5"); // => array with 5 li $Elements
+     * ```
      */
     types$$DOM.createAll = function(value, varMap) {
         return types$$DOM.create(value, varMap, true);
     };
 
-    /*es6-transpiler has-iterators:false, has-generators: false*/
+    /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
         dom$dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
@@ -217,8 +235,10 @@
      * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
      * @see http://docs.emmet.io/cheat-sheet/
      */
-    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;
+    types$$DOM.emmet = function(template, varMap) {var $D$12;var $D$13;
         if (typeof template !== "string") throw new errors$$StaticMethodError("emmet");
+
+        if (!template) return template;
         // handle varMap
         if (varMap) template = types$$DOM.format(template, varMap);
 
@@ -233,7 +253,7 @@
 
         // parse expression into RPN
 
-        $D$0 = 0;$D$1 = template.length;for (str ; $D$0 < $D$1; ){str = (template[$D$0++]);
+        $D$12 = 0;$D$13 = template.length;for (str ; $D$12 < $D$13; ){str = (template[$D$12++]);
             // concat .c1.c2 into single space separated class string
             if (str === "." && stack[0] === ".") str = " ";
 
@@ -271,7 +291,7 @@
             } else {
                 term += str;
             }
-        };$D$0 = $D$1 = void 0;
+        };$D$12 = $D$13 = void 0;
 
         if (term) {
             // handle single tag case
@@ -286,7 +306,7 @@
 
         stack = [];
 
-        $D$0 = 0;$D$1 = output.length;for (str ; $D$0 < $D$1; ){str = (output[$D$0++]);
+        $D$12 = 0;$D$13 = output.length;for (str ; $D$12 < $D$13; ){str = (output[$D$12++]);
             if (str in dom$dom$emmet$$operators) {
                 term = stack.shift();
                 node = stack.shift() || [""];
@@ -328,16 +348,24 @@
             }
 
             stack.unshift(str);
-        };$D$0 = $D$1 = void 0;
+        };$D$12 = $D$13 = void 0;
 
         output = dom$dom$emmet$$toString(stack[0]);
 
         return varMap ? output : dom$dom$emmet$$tagCache[template] = output;
     };
+
     /*
      * Helper for css selectors
      */
-    var util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/;
+
+    /*es6-transpiler has-iterators:false, has-generators: false*/
+    var util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
+        util$selectormatcher$$propName = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix)  {
+                var propertyName = prefix + "atchesSelector";
+
+                return result || constants$$HTML[propertyName] && propertyName;
+            }, null);
 
     var util$selectormatcher$$default = function(selector, context) {
         if (typeof selector !== "string") return null;
@@ -352,12 +380,11 @@
             if (quick[4]) quick[4] = " " + quick[4] + " ";
         }
 
-        return function(node)  {
-            var result, found, test;
+        return function(node) {var $D$14;var $D$15;
+            var result, found;
 
-            if (!quick && !node.webkitMatchesSelector) {
+            if (!quick && !util$selectormatcher$$propName) {
                 found = (context || document).querySelectorAll(selector);
-                test = function(x)  {return x === node};
             }
 
             for (; node && node.nodeType === 1; node = node.parentNode) {
@@ -369,12 +396,12 @@
                         (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
                     );
                 } else {
-                    // querySelectorAll is faster in all browsers except Webkit-based:
-                    // http://jsperf.com/queryselectorall-vs-matches/3
-                    if (node.webkitMatchesSelector) {
-                        result = node.webkitMatchesSelector(selector);
+                    if (util$selectormatcher$$propName) {
+                        result = node[util$selectormatcher$$propName](selector);
                     } else {
-                        result = helpers$$default.some.call(found, test);
+                        $D$14 = 0;$D$15 = found.length;for (var n ; $D$14 < $D$15; ){n = (found[$D$14++]);
+                            if (n === node) return n;
+                        };$D$14 = $D$15 = void 0;
                     }
                 }
 
@@ -1023,11 +1050,12 @@
         }
     };
 
+    /* es6-transpiler has-iterators:false, has-generators: false */
+
     // big part of code inspired by Sizzle:
     // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
     var element$element$find$$rquickExpr = constants$$DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
-        element$element$find$$rsibling = /[\x20\t\r\n\f]*[+~>]/,
         element$element$find$$rescape = /'|\\/g,
         element$element$find$$tmpId = "DOM" + Date.now();
 
@@ -1038,14 +1066,14 @@
      * @param  {String} selector css selector
      * @return {$Element} the first matched element
      */
-    types$$$Element.prototype.find = function(selector) {var suffix = arguments[1];if(suffix === void 0)suffix = "";
-        if (typeof selector !== "string") throw new errors$$MethodError("find" + suffix);
+    types$$$Element.prototype.find = function(selector) {var all = arguments[1];if(all === void 0)all = "";
+        if (typeof selector !== "string") throw new errors$$MethodError("find" + all);
 
         var node = this[0],
             quickMatch = element$element$find$$rquickExpr.exec(selector),
             result, old, nid, context;
 
-        if (!node) return suffix ? [] : new types$$$Element();
+        if (!node) return all ? [] : new types$$$Element();
 
         if (quickMatch) {
             if (quickMatch[1]) {
@@ -1056,7 +1084,7 @@
                 result = node.getElementsByClassName(quickMatch[2]);
             }
 
-            if (result && !suffix) result = result[0];
+            if (result && !all) result = result[0];
         } else {
             old = true;
             nid = element$element$find$$tmpId;
@@ -1073,19 +1101,17 @@
                 }
 
                 nid = "[id='" + nid + "'] ";
-
-                context = element$element$find$$rsibling.test(selector) ? node.parentNode : node;
                 selector = nid + selector.split(",").join("," + nid);
             }
 
             try {
-                result = context["querySelector" + suffix](selector);
+                result = context["querySelector" + all](selector);
             } finally {
                 if (!old) node.removeAttribute("id");
             }
         }
 
-        return suffix ? helpers$$default.map.call(result, types$$$Element) : types$$$Element(result);
+        return all ? (function(){var $D$4;var $D$5;var $result$2 = [], n;$D$4 = 0;$D$5 = result.length;for(; $D$4 < $D$5; ){n = (result[$D$4++]);{$result$2.push(types$$$Element(n))}};;return $result$2})() : types$$$Element(result);
     };
 
     /**
@@ -1313,20 +1339,15 @@
         return node[name];
     };
 
-    util$accessorhooks$$hooks.set.undefined = function(node, value) {
-        // handle numbers, booleans etc.
-        value = value == null ? "" : String(value);
-
+    util$accessorhooks$$hooks.set.value = function(node, value) {
         if (node.tagName === "SELECT") {
             // selectbox has special case
             if (helpers$$default.every.call(node.options, function(o)  {return !(o.selected = o.value === value)})) {
                 node.selectedIndex = -1;
             }
-        } else if (node.type && "value" in node) {
+        } else {
             // for IE use innerText for textareabecause it doesn't trigger onpropertychange
             node[constants$$DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
-        } else {
-            node.innerHTML = value;
         }
     };
 
@@ -1360,7 +1381,7 @@
         if (hook) return hook(node, name);
 
         if (nameType === "string") {
-            if (name.substr(0, 2) === "--") {
+            if (name[0] === "-" && name[1] === "-") {
                 key = name.substr(2);
 
                 if (key in data) {
@@ -1392,33 +1413,38 @@
     };
 
     function element$element$manipulation$$makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
-        return function() {var args = SLICE$0.call(arguments, 0);var this$0 = this;
-            var node = this[0],
-                html = "",
-                value;
+        return function() {var content = arguments[0];if(content === void 0)content = "";
+            var node = this[0];
 
-            if (!(standalone || node.parentNode && node.parentNode.nodeType === 1)) return this;
+            if (!standalone && (!node.parentNode || content === types$$DOM)) return this;
 
-            args.forEach(function(arg)  {
-                if (typeof arg === "function") arg = arg(this$0, node);
+            if (typeof content === "function") content = content(this);
 
-                if (typeof arg === "string") {
-                    html += arg.trim();
-                } else if (arg instanceof types$$$Element) {
-                    if (!value) value = constants$$DOCUMENT.createDocumentFragment();
-                    // populate fragment
-                    value.appendChild(arg[0]);
-                } else {
-                    throw new errors$$MethodError(methodName);
+            if (typeof content === "string") {
+                if (content) {
+                    // parse HTML string for the replace method
+                    if (fasterMethodName) {
+                        content = content.trim();
+                    } else {
+                        content = types$$DOM.create(content)[0];
+                    }
                 }
-            });
+            } else if (content instanceof types$$$Element) {
+                content = content[0];
+            } else if (helpers$$default.isArray(content)) {
+                content = content.reduce(function(fragment, el)  {
+                    fragment.appendChild(el[0]);
 
-            if (!fasterMethodName && html) value = types$$DOM.create(html)[0];
+                    return fragment;
+                }, constants$$DOCUMENT.createDocumentFragment());
+            } else {
+                throw new errors$$MethodError(methodName);
+            }
 
-            if (!fasterMethodName || value) {
-                strategy(node, value);
-            } else if (html) {
-                node.insertAdjacentHTML(fasterMethodName, html);
+            if (content && typeof content === "string") {
+                node.insertAdjacentHTML(fasterMethodName, content);
+            } else {
+                if (content || !fasterMethodName) strategy(node, content);
             }
 
             return this;
@@ -1429,7 +1455,7 @@
      * Insert html string or $Element after the current
      * @memberof! $Element#
      * @alias $Element#after
-     * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+     * @param {Mixed} contents HTMLString, $Element or functor that returns content
      * @return {$Element}
      * @function
      */
@@ -1441,7 +1467,7 @@
      * Insert html string or $Element before the current
      * @memberof! $Element#
      * @alias $Element#before
-     * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+     * @param {Mixed} contents HTMLString, $Element or functor that returns content
      * @return {$Element}
      * @function
      */
@@ -1453,7 +1479,7 @@
      * Prepend html string or $Element to the current
      * @memberof! $Element#
      * @alias $Element#prepend
-     * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+     * @param {Mixed} contents HTMLString, $Element or functor that returns content
      * @return {$Element}
      * @function
      */
@@ -1465,7 +1491,7 @@
      * Append html string or $Element to the current
      * @memberof! $Element#
      * @alias $Element#append
-     * @param {...Mixed} contents HTMLString, $Element or functor that returns content
+     * @param {Mixed} contents HTMLString, $Element or functor that returns content
      * @return {$Element}
      * @function
      */
@@ -1558,7 +1584,7 @@
      * Calculates offset of the current element
      * @memberof! $Element#
      * @alias $Element#offset
-     * @return object with left, top, bottom, right, width and height properties
+     * @return {Object} object with left, top, bottom, right, width and height properties
      */
     types$$$Element.prototype.offset = function() {
         var node = this[0],
@@ -1659,47 +1685,50 @@
      * @return {$Element}
      */
     types$$$Element.prototype.set = function(name, value) {var this$0 = this;
-        var node = this[0],
-            nameType = typeof name;
+        var node = this[0];
 
         if (!node) return this;
 
-        if (arguments.length === 1 && nameType !== "object") {
-            value = name;
-            name = undefined;
+        // handle vthe alue shortcut
+        if (arguments.length === 1 && typeof name !== "object") {
+            value = name == null ? "" : String(name);
+            name = "value" in node ? "value" : "innerHTML";
         }
 
         var hook = util$accessorhooks$$default.set[name],
-            watchers = this._._watchers[name || ("value" in node ? "value" : "innerHTML")],
+            nameType = typeof name,
+            watchers = this._._watchers[name],
             newValue = value, oldValue;
 
         if (watchers) oldValue = this.get(name);
 
-        if (typeof name === "string" && name.substr(0, 2) === "--") {
-            this._[name.substr(2)] = newValue;
-        } else {
-            if (typeof newValue === "function") newValue = value(this);
+        if (hook) {
+            hook(node, newValue);
+        } else if (nameType === "string") {
+            if (name[0] === "-" && name[1] === "-") {
+                this._[name.substr(2)] = newValue;
+            } else {
+                if (typeof newValue === "function") newValue = value(this);
 
-            if (hook) {
-                hook(node, newValue);
-            } else if (nameType !== "string") {
-                if (helpers$$default.isArray(name)) {
-                    return name.forEach(function(key)  { this$0.set(key, value) });
-                } else if (name && nameType === "object") {
-                    return helpers$$default.keys(name).forEach(function(key)  { this$0.set(key, name[key]) });
+                if (newValue == null) {
+                    node.removeAttribute(name);
+                } else if (name in node) {
+                    node[name] = newValue;
+                } else {
+                    node.setAttribute(name, newValue);
                 }
 
-                throw new errors$$MethodError("set");
-            } else if (newValue == null) {
-                node.removeAttribute(name);
-            } else if (name in node) {
-                node[name] = newValue;
-            } else {
-                node.setAttribute(name, newValue);
+                // always trigger reflow manually for IE8 and legacy Android
+                if (!constants$$DOM2_EVENTS || constants$$LEGACY_ANDROID) node.className = node.className;
             }
-
-            // always trigger reflow manually for IE8 and legacy Android
-            if (!constants$$DOM2_EVENTS || constants$$LEGACY_ANDROID) node.className = node.className;
+        } else if (nameType === "object") {
+            if (helpers$$default.isArray(name)) {
+                name.forEach(function(key)  { this$0.set(key, value) });
+            } else {
+                helpers$$default.keys(name).forEach(function(key)  { this$0.set(key, name[key]) });
+            }
+        } else {
+            throw new errors$$MethodError("set");
         }
 
         if (watchers && oldValue !== newValue) {
@@ -1708,6 +1737,8 @@
 
         return this;
     };
+
+    /* es6-transpiler has-iterators:false, has-generators: false */
 
     function element$element$traversing$$makeTraversingMethod(methodName, propertyName, all) {
         return function(selector, andSelf) {
@@ -1725,7 +1756,7 @@
                 }
             }
 
-            return all ? helpers$$default.map.call(nodes, types$$$Element) : types$$$Element(it);
+            return all ? (function(){var $D$6;var $D$7;var $result$3 = [], n;$D$6 = 0;$D$7 = nodes.length;for(; $D$6 < $D$7; ){n = (nodes[$D$6++]);{$result$3.push(types$$$Element(n))}};;return $result$3})() : types$$$Element(it);
         };
     }
 
@@ -1738,16 +1769,17 @@
             }
 
             var node = this[0],
+                matcher = util$selectormatcher$$default(selector),
                 children = node ? node.children : null;
 
             if (!node) return all ? [] : new types$$$Element();
 
             if (!constants$$DOM2_EVENTS) {
                 // fix IE8 bug with children collection
-                children = helpers$$default.filter.call(children, function(node)  {return node.nodeType === 1});
+                children = (function(){var $D$8;var $D$9;var $result$4 = [], node;$D$8 = 0;$D$9 = children.length;for(; $D$8 < $D$9; ){node = (children[$D$8++]);if(node.nodeType === 1){$result$4.push(node)}};;return $result$4})();
             }
 
-            if (all) return helpers$$default.map.call(selector ? helpers$$default.filter.call(children, util$selectormatcher$$default(selector)) : children, types$$$Element);
+            if (all) return (function(){var $D$10;var $D$11;var $result$5 = [], n;$D$10 = 0;$D$11 = children.length;for(; $D$10 < $D$11; ){n = (children[$D$10++]);if(matcher && matcher(n)){$result$5.push(types$$$Element(n))}};;return $result$5})();
 
             if (selector < 0) selector = children.length + selector;
 
@@ -1830,7 +1862,11 @@
      */
     types$$$Element.prototype.children = element$element$traversing$$makeChildTraversingMethod(true);
 
-    var element$element$visibility$$parseTimeValue = function(value)  {
+    var element$element$visibility$$ANIMATIONS_ENABLED = !constants$$LEGACY_ANDROID && constants$$CSS3_ANIMATIONS,
+        element$element$visibility$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
+        element$element$visibility$$TRANSITION_EVENT_TYPE = constants$$WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+        element$element$visibility$$ABSENT_STRATEGY = element$element$visibility$$ANIMATIONS_ENABLED ? ["position", "absolute"] : ["display", "none"],
+        element$element$visibility$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
             // if duration is in seconds, then multiple result value by 1000
             return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
@@ -1848,93 +1884,90 @@
                     element$element$visibility$$parseTimeValue(value) + (element$element$visibility$$parseTimeValue(delay[index]) || 0);
             }));
         },
-        element$element$visibility$$transitionProps = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
-        element$element$visibility$$eventType = constants$$WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-        element$element$visibility$$absentStrategy = !constants$$LEGACY_ANDROID && constants$$CSS3_ANIMATIONS ? ["position", "absolute"] : ["display", "none"],
+        element$element$visibility$$calcAnimationDuration = function(node, style, isHidden, complete)  {
+            var compStyle = helpers$$default.computeStyle(node),
+                duration = Math.max(element$element$visibility$$calcDuration(compStyle, "transition-", []), element$element$visibility$$calcDuration(compStyle, "animation-"));
+
+            if (duration) {
+                var visibilityTransitionIndex, transitionValues, completeAnimation, timeoutId;
+
+                transitionValues = element$element$visibility$$TRANSITION_PROPS.map(function(prop, index)  {
+                    // have to use regexp to split transition-timing-function value
+                    return util$stylehooks$$default.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+                });
+
+                // try to find existing or use 0s length or make a new visibility transition
+                visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
+                if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
+                if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[0].length;
+
+                transitionValues[0][visibilityTransitionIndex] = "linear";
+                transitionValues[1][visibilityTransitionIndex] = "visibility";
+                transitionValues[isHidden ? 2 : 3][visibilityTransitionIndex] = "0s";
+                transitionValues[isHidden ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+
+                transitionValues.forEach(function(value, index)  {
+                    util$stylehooks$$default.set[element$element$visibility$$TRANSITION_PROPS[index]](style, value.join(", "));
+                });
+
+                // make sure that the visibility property will be changed
+                // to trigger the completeAnimation callback
+                style.visibility = isHidden ? "visible" : "hidden";
+                // use willChange to improve performance in modern browsers:
+                // http://dev.opera.com/articles/css-will-change-property/
+                style.willChange = transitionValues[1].join(", ");
+
+                completeAnimation = function(e)  {
+                    if (!e || e.propertyName === "visibility") {
+                        if (e) e.stopPropagation(); // this is an internal transition
+
+                        clearTimeout(timeoutId);
+
+                        node.removeEventListener(element$element$visibility$$TRANSITION_EVENT_TYPE, completeAnimation, false);
+
+                        complete();
+                    }
+                };
+
+                node.addEventListener(element$element$visibility$$TRANSITION_EVENT_TYPE, completeAnimation, false);
+                // make sure that the completeAnimation callback will be called
+                timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
+            }
+
+            return duration;
+        },
         element$element$visibility$$changeVisibility = function(el, fn, callback)  {return function()  {
             var node = el[0],
                 style = node.style,
-                completeVisibilityChange = function()  {
+                isHidden = typeof fn === "function" ? fn(node) : fn,
+                complete = function()  {
                     if (style.visibility === "hidden") {
-                        style[element$element$visibility$$absentStrategy[0]] = element$element$visibility$$absentStrategy[1];
+                        style[element$element$visibility$$ABSENT_STRATEGY[0]] = element$element$visibility$$ABSENT_STRATEGY[1];
                     }
-
-                    if (!constants$$LEGACY_ANDROID && constants$$CSS3_ANIMATIONS) {
-                        // remove temporary properties
-                        style.willChange = "";
-                    }
+                    // remove temporary properties
+                    if (element$element$visibility$$ANIMATIONS_ENABLED) style.willChange = "";
 
                     if (callback) callback(el, node);
                 },
                 processVisibilityChange = function()  {
-                    var compStyle = helpers$$default.computeStyle(node),
-                        isHidden = typeof fn === "function" ? fn(node) : fn,
-                        duration, index, transition, absentance, completeAnimation, timeoutId;
                     // Legacy Android is too slow and has a lot of bugs in the CSS animations
                     // implementation, so skip animations for it (duration value is always zero)
-                    if (!constants$$LEGACY_ANDROID && constants$$CSS3_ANIMATIONS) {
-                        duration = Math.max(element$element$visibility$$calcDuration(compStyle, "transition-", []), element$element$visibility$$calcDuration(compStyle, "animation-"));
-                    }
-
-                    if (duration) {
-                        // make sure that the visibility property will be changed
-                        // to trigger the completeAnimation callback
-                        if (!style.visibility) style.visibility = isHidden ? "visible" : "hidden";
-
-                        transition = element$element$visibility$$transitionProps.map(function(prop, index)  {
-                            // have to use regexp to split transition-timing-function value
-                            return util$stylehooks$$default.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
-                        });
-
-                        // try to find existing or use 0s length or make a new visibility transition
-                        index = transition[1].indexOf("visibility");
-                        if (index < 0) index = transition[2].indexOf("0s");
-                        if (index < 0) index = transition[0].length;
-
-                        transition[0][index] = "linear";
-                        transition[1][index] = "visibility";
-                        transition[isHidden ? 2 : 3][index] = "0s";
-                        transition[isHidden ? 3 : 2][index] = duration + "ms";
-
-                        transition.forEach(function(value, index)  {
-                            util$stylehooks$$default.set[element$element$visibility$$transitionProps[index]](style, value.join(", "));
-                        });
-
-                        // use willChange to improve performance in modern browsers:
-                        // http://dev.opera.com/articles/css-will-change-property/
-                        style.willChange = transition[1].join(", ");
-
-                        completeAnimation = function(e)  {
-                            if (!e || e.propertyName === "visibility") {
-                                if (e) e.stopPropagation(); // this is an internal event
-
-                                clearTimeout(timeoutId);
-
-                                node.removeEventListener(element$element$visibility$$eventType, completeAnimation, false);
-
-                                completeVisibilityChange();
-                            }
-                        };
-
-                        node.addEventListener(element$element$visibility$$eventType, completeAnimation, false);
-                        // make sure that the completeAnimation callback will be called
-                        timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
-                    }
+                    var duration = element$element$visibility$$ANIMATIONS_ENABLED ? element$element$visibility$$calcAnimationDuration(node, style, isHidden, complete) : 0;
 
                     if (isHidden) {
-                        absentance = style[element$element$visibility$$absentStrategy[0]];
+                        var absentance = style[element$element$visibility$$ABSENT_STRATEGY[0]];
                         // store current inline value in the internal property
                         if (absentance !== "none") el._._visibility = absentance;
                     } else {
                         // restore initial property value if it exists
-                        style[element$element$visibility$$absentStrategy[0]] = el._._visibility || "";
+                        style[element$element$visibility$$ABSENT_STRATEGY[0]] = el._._visibility || "";
                     }
 
                     style.visibility = isHidden ? "hidden" : "visible";
                     // trigger native CSS animation
                     el.set("aria-hidden", String(isHidden));
                     // must be AFTER changing the aria-hidden attribute
-                    if (!duration) completeVisibilityChange();
+                    if (!duration) complete();
                 };
 
             // by using requestAnimationFrame we fix several issues:
@@ -2010,11 +2043,18 @@
     });
 
     /**
+     * Callback function for watching changes of a property/attribute
+     * @callback watchCallback
+     * @param {Object} newValue a current value
+     * @param {Object} oldValue a previous value
+     */
+
+    /**
      * Watch for changes of a particular property/attribute
      * @memberof! $Element#
      * @alias $Element#watch
-     * @param  {String}   name     property/attribute name
-     * @param  {Function} callback watch callback the accepts (newValue, oldValue, name)
+     * @param  {String}        name     property/attribute name
+     * @param  {watchCallback} callback function for watching changes of the property/attribute
      * @return {$Element}
      */
     types$$$Element.prototype.watch = function(name, callback) {
@@ -2031,8 +2071,8 @@
      * Disable watching of a particular property/attribute
      * @memberof! $Element#
      * @alias $Element#unwatch
-     * @param  {String}   name    property/attribute name
-     * @param  {Function} callback watch callback the accepts (name, newValue, oldValue)
+     * @param  {String}        name     property/attribute name
+     * @param  {watchCallback} callback function for watching changes of the property/attribute
      * @return {$Element}
      */
     types$$$Element.prototype.unwatch = function(name, callback) {
