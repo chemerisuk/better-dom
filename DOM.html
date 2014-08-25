@@ -26,7 +26,7 @@
     
     
     <script>
-    var config = {"monospaceLinks":false,"cleverLinks":false,"applicationName":"better-dom","disqus":"better-dom","googleAnalytics":"","openGraph":{"title":"Live extension playground","type":"website","image":"https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400","site_name":"better-dom","url":"https://github.com/chemerisuk/better-dom"},"meta":{"title":"","description":"","keyword":""},"linenums":true,"default":{}};
+    var config = {"monospaceLinks":true,"cleverLinks":true,"linenums":true,"default":{"outputSourceFiles":true},"applicationName":"better-dom","disqus":"better-dom","googleAnalytics":"","openGraph":{"title":"Live extension playground","type":"website","image":"https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400","site_name":"better-dom","url":"https://github.com/chemerisuk/better-dom"},"meta":{"title":"","description":"","keyword":""}};
     </script>
     
 
@@ -262,12 +262,12 @@
     <div class="nameContainer">
         <h4 class="name" id="constructor">
             
-            <span class="type-signature static">static</span>DOM.constructor<span class="signature">(nodes)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array}</span>
+            <span class="type-signature static">static</span>DOM.constructor<span class="signature">(nodes)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line101">line 101</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line102">line 102</a>
         </div>
         
     </div>
@@ -278,7 +278,7 @@
     
     
     <div class="description">
-        <p>Creates Array of <a href="$Element.html">$Element</a> instances from a native object(s)</p>
+        <p>Create array of <a href="$Element.html"><code>$Element</code></a> instances from a native object(s)</p>
     </div>
     
 
@@ -373,7 +373,7 @@
 
 
 <h5>Returns:</h5>
-of <a href="$Element.html">$Element</a> instances
+wrappers
 <br />
 
     
@@ -392,7 +392,7 @@ of <a href="$Element.html">$Element</a> instances
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line124">line 124</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line129">line 129</a>
         </div>
         
     </div>
@@ -403,7 +403,7 @@ of <a href="$Element.html">$Element</a> instances
     
     
     <div class="description">
-        <p>Create a new DOM element in memory</p>
+        <p>Create a new <a href="$Element.html"><code>$Element</code></a> from Emmet or HTML string</p>
     </div>
     
 
@@ -455,7 +455,7 @@ of <a href="$Element.html">$Element</a> instances
                         
                     
                 
-                <p>EmmetString or HTMLString</p></td>
+                <p>Emmet or HTML string</p></td>
         </tr>
 	
 	
@@ -550,12 +550,12 @@ wrapper
     <div class="nameContainer">
         <h4 class="name" id="createAll">
             
-            <span class="type-signature static">static</span>DOM.createAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array}</span>
+            <span class="type-signature static">static</span>DOM.createAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line161">line 161</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line179">line 179</a>
         </div>
         
     </div>
@@ -566,7 +566,7 @@ wrapper
     
     
     <div class="description">
-        <p>Create a new DOM elements in memory</p>
+        <p>Create a new array of <a href="$Element.html"><code>$Element</code></a>s from Emmet or HTML string</p>
     </div>
     
 
@@ -618,7 +618,7 @@ wrapper
                         
                     
                 
-                <p>EmmetString or HTMLString</p></td>
+                <p>Emmet or HTML string</p></td>
         </tr>
 	
 	
@@ -699,11 +699,20 @@ wrapper
 
 
 <h5>Returns:</h5>
-wrapper
+wrappers
 <br />
 
     
     
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code class="lang-js">DOM.createAll(&quot;span+b&quot;); // =&gt; array with 2 $Elements: span and b
+DOM.createAll(&quot;li*5&quot;); // =&gt; array with 5 li $Elements</code></pre>
+    
+
     
 </dd>
 
@@ -718,7 +727,7 @@ wrapper
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line220">line 220</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line238">line 238</a>
         </div>
         
     </div>
@@ -890,7 +899,7 @@ string
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line618">line 618</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line645">line 645</a>
         </div>
         
     </div>
@@ -1095,7 +1104,7 @@ string
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line675">line 675</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line702">line 702</a>
         </div>
         
     </div>
@@ -1243,7 +1252,7 @@ string
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line688">line 688</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line715">line 715</a>
         </div>
         
     </div>
@@ -1396,7 +1405,7 @@ string
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line478">line 478</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line505">line 505</a>
         </div>
         
     </div>
@@ -1538,7 +1547,7 @@ string
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line726">line 726</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line753">line 753</a>
         </div>
         
     </div>
@@ -1549,7 +1558,7 @@ string
     
     
     <div class="description">
-        <p>Return <a href="$Element.html">$Element</a> initialized with all existing live extensions.
+        <p>Return <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
 Also exposes private event handler functions that aren't usually presented</p>
     </div>
     
@@ -1702,7 +1711,7 @@ instance
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line749">line 749</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line776">line 776</a>
         </div>
         
     </div>
@@ -1713,7 +1722,7 @@ instance
     
     
     <div class="description">
-        <p>Return Array of <a href="$Element.html">$Element</a> initialized with all existing live extensions.
+        <p>Return Array of <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
 Also exposes private event handler functions that aren't usually presented</p>
     </div>
     
@@ -1847,7 +1856,7 @@ Also exposes private event handler functions that aren't usually presented</p>
 
 
 <h5>Returns:</h5>
-of mocked <a href="$Element.html">$Element</a> instances
+of mocked <a href="$Element.html"><code>$Element</code></a> instances
 <br />
 
     
@@ -1866,7 +1875,7 @@ of mocked <a href="$Element.html">$Element</a> instances
     
         
         <div class="tag-source">
-            <a href="global.html#better-dom.js">better-dom.js</a>, <a href="global.html#better-dom.js#line767">line 767</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line794">line 794</a>
         </div>
         
     </div>
@@ -1999,7 +2008,7 @@ of mocked <a href="$Element.html">$Element</a> instances
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Aug 18 2014 14:50:04 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Aug 25 2014 19:42:29 GMT+0300 (FET)
         </footer>
     </div>
 </div>

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Index</title>
+    <title>Global</title>
     
     
     
@@ -182,105 +182,8 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="index.html">Index</h1>
+        <h1 class="page-title" data-filename="global.html">Global</h1>
         
-
-
-    
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-    
-
-
-
-
-    <section>
-        <article class="readme"><h1>better-dom <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="https://coveralls.io/repos/chemerisuk/better-dom/badge.png?branch=master" alt="Coverage Status"></a></h1>
-<blockquote>
-<p>Live extension playground</p>
-</blockquote>
-<p>jQuery knows a concept called “<strong>live events</strong>”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
-But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce <strong><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></strong> and <strong>better-dom</strong> - a new library for working with the DOM.</p>
-<p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
-<h2>Quick start</h2>
-<p>I'd recommend to read one from the articles below to understand the main ideas of the library:
-<em> <a href="http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/">Introduction into the better-dom library in English</a> @smashingmagazine.com
-</em> <a href="http://habrahabr.ru/post/209140/">Введение в библиотеку better-dom по-русски</a> @habrahabr.ru</p>
-<h2>Features</h2>
-<ul>
-<li>lightweight: ~22kb minified and ~5kb gzipped version (<a href="#how-to-make-a-custom-build">custom builds</a> are available to reduce file size even more)</li>
-<li>clear, minimalistic and standards-based (where possible) APIs</li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></li>
-<li><a href="http://jsfiddle.net/C3WeM/5/">animations via CSS3</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">microtemplating using the Emmet syntax</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Event-handling">improved event handling</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
-</ul>
-<h2>Installation</h2>
-<p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
-<pre><code>bower install better-dom</code></pre>
-<p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include the script below before the end of <code>&lt;body&gt;</code> on your web page:</p>
-<pre><code class="lang-html">&lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;</code></pre>
-<h2>Documentation</h2>
-<ul>
-<li>Read the <a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></li>
-<li>Take a look at the <a href="https://github.com/chemerisuk/better-dom/wiki">better-dom wiki</a></li>
-<li>Check <a href="https://github.com/chemerisuk/better-dom/releases">releases tab</a> for getting the changes log</li>
-<li>Walk through the sorce code of existing <a href="http://bower.io/search/?q=better-dom">projects that use better-dom</a>.</li>
-</ul>
-<h2>Performance</h2>
-<ul>
-<li><a href="http://jsperf.com/dom-create-vs-jquery/26">DOM.create vs jquery</a></li>
-<li><a href="http://jsperf.com/dom-find-all-vs-jquery-find/10">DOM.find[All] vs jQuery.find</a></li>
-<li><a href="http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/5">DOM getter/setter vs jQuery.attr/prop</a></li>
-<li><a href="http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6">better-dom vs jquery: classes manipulation</a></li>
-<li><a href="http://jsperf.com/better-dom-vs-jquery-array-methods/4">better-dom vs jquery: array methods</a></li>
-</ul>
-<h2>Notes about old IEs</h2>
-<p>For IE8-9 support you have to incude extra files via the conditional comment below into <code>&lt;head&gt;</code> on your page:</p>
-<pre><code class="lang-html">&lt;!--[if IE]&gt;
-    &lt;link href=&quot;bower_components/better-dom/dist/better-dom.htc&quot; rel=&quot;htc&quot;/&gt;
-    &lt;script src=&quot;bower_components/es5-shim/es5-shim.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;bower_components/html5shiv/dist/html5shiv.js&quot;&gt;&lt;/script&gt;
-&lt;![endif]--&gt;</code></pre>
-<p><a href="https://github.com/aFarkas/html5shiv">html5shiv</a> provides a fix for HTML5 tags in IE8.</p>
-<p><a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill/fix missed standards-based functions for <code>Array</code>, <code>Object</code>, <code>Function</code>, <code>Date</code> classes.</p>
-<p>The <strong>better-dom.htc</strong> file helps to implement <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> support. This fact applies several important limitations that you must know in case when legacy browser support is required.</p>
-<h4>Setup content-type header</h4>
-<p>HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.</p>
-<pre><code>AddType text/x-component .htc</code></pre>
-<h4>Same domain limitation</h4>
-<p>IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.</p>
-<h2>Browser support</h2>
-<h4>Desktop</h4>
-<ul>
-<li>Chrome</li>
-<li>Safari 6.0+</li>
-<li>Firefox 16+</li>
-<li>Opera 12.10+</li>
-<li>IE8+ (see <a href="#notes-about-old-ies">notes</a>)</li>
-</ul>
-<h4>Mobile</h4>
-<ul>
-<li>iOS Safari 6+</li>
-<li>Android 2.3+</li>
-<li>Chrome for Android</li>
-</ul>
-<p>Opera Mini is out of the scope because of lack of support for CSS3 Animations.</p></article>
-    </section>
-
-
-
-
 
 
 
@@ -288,7 +191,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
     
 <header>
     <h2>
-    better-dom.js
+    
     </h2>
     
 </header>  
@@ -299,16 +202,11 @@ But more flexibility is required in a lot of cases. For example, delegated event
     
     
         
-            <div class="description"><p>Live extension playground</p></div>
-        
         
         
 <dl class="details">
     
         
-    
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.0.0-beta.1 2014-08-25T19:37:33</li></ul></dd>
     
     
     
@@ -318,13 +216,6 @@ But more flexibility is required in a lot of cases. For example, delegated event
     
     
     
-    <dt class="tag-copyright">Copyright:</dt>
-    <dd class="tag-copyright"><ul class="dummy"><li>2013-2014 Maksim Chemerisuk</li></ul></dd>
-    
-    
-    
-    <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
     
     
     
@@ -332,12 +223,6 @@ But more flexibility is required in a lot of cases. For example, delegated event
     
     
     
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom">https://github.com/chemerisuk/better-dom</a></li>
-        </ul>
-    </dd>
     
     
     
@@ -362,6 +247,149 @@ But more flexibility is required in a lot of cases. For example, delegated event
     
     
     
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+        
+        <dl>
+                
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="watchCallback">
+            
+            watchCallback<span class="signature">(newValue, oldValue)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2045">line 2045</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Callback function for watching changes of a property/attribute</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>newValue</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>a current value</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>oldValue</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>a previous value</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+</dd>
+
+            </dl>
     
     
     
