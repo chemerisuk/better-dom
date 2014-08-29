@@ -130,8 +130,16 @@ DOM.extend = function(selector, condition, mixins) {
         applyMixins($Element.prototype, mixins);
     } else {
         var eventHandlers = _.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
-            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             index = extensions.length,
+            ctr = mixins.hasOwnProperty("constructor") && function(el) {
+                try {
+                    // make a safe call so live extensions can't break each other
+                    mixins.constructor.call(el);
+                } catch (err) {
+                    // log invokation error if it was thrown
+                    if ("console" in WINDOW) WINDOW.console.error(err);
+                }
+            },
             ext = (node, mock) => {
                 var el = $Element(node);
 
@@ -141,13 +149,13 @@ DOM.extend = function(selector, condition, mixins) {
                     node.attachEvent(nativeEventType, stopExt(node, index));
                 }
 
-                if (mock !== true && condition(el) === false) return;
-
-                applyMixins(el, mixins);
-                // make a safe call so live extensions can't break each other
-                if (ctr) el.dispatch(ctr);
-                // remove event handlers from element's interface
-                if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
+                if (mock === true || condition(el) !== false) {
+                    applyMixins(el, mixins);
+                    // invoke constructor if it exists
+                    if (ctr) ctr(el);
+                    // remove event handlers from element's interface
+                    if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
+                }
             };
 
         ext.accept = SelectorMatcher(selector);

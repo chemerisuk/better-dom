@@ -55,7 +55,7 @@ $Element.prototype.set = function(name, value) {
     }
 
     if (watchers && oldValue !== value) {
-        watchers.forEach((w) => { this.dispatch(w, value, oldValue) });
+        watchers.forEach((w) => { setTimeout(() => { w.call(this, value, oldValue) }, 0) });
     }
 
     return this;
