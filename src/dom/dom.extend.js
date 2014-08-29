@@ -30,7 +30,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         // mark extension as processed via e._skip bitmask
         if (isEventValid) (e._skip = e._skip || {})[index] = true;
     },
-    makeExtHandler = (node, skip = {}) => (ext, index) => {
+    makeExtHandler = (node, skip) => (ext, index) => {
         // skip previously excluded or mismatched elements
         if (!skip[index] && ext.accept(node)) ext(node);
     },
@@ -82,7 +82,7 @@ if (CSS3_ANIMATIONS) {
 
     DOCUMENT.addEventListener(nativeEventType, (e) => {
         if (e.animationName === animId) {
-            extensions.forEach(makeExtHandler(e.target, e._skip));
+            extensions.forEach(makeExtHandler(e.target, e._skip || {}));
         }
     }, false);
 } else {
@@ -99,7 +99,7 @@ if (CSS3_ANIMATIONS) {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach(makeExtHandler(e.srcElement, e._skip));
+            extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));
         }
     });
 }

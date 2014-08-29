@@ -15,7 +15,7 @@ import EventHandler from "../util/eventhandler";
  */
 $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
     var eventType = typeof type,
-        selector, index, args;
+        selector, index;
 
     if (eventType === "string") {
         index = type.indexOf(" ");

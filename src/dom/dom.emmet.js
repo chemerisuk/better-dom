@@ -5,7 +5,7 @@ import { DOM } from "../types";
 
 var // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
-    reAttr = /([\w\-]+)(?:=((?:(`|')((?:\\?.)*)?\3)|[^\s]+))?/g,
+    reAttr = /([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
     // populate empty tags
     tagCache = "area base br col hr img input link meta param command keygen source".split(" ").reduce((tagCache, tag) => {
@@ -13,12 +13,11 @@ var // operator type / priority object
 
         return tagCache;
     }, {}),
-    toString = (term) => term.join ? term.join("") : term,
-    normalizeAttrs = (term, name, value, quotes, rawValue) => {
-        if (!quotes || quotes === "`") quotes = "\"";
+    normalizeAttrs = (_, name, value, singleValue) => {
+        var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
-        return name + "=" + quotes + (rawValue || value || name) + quotes;
+        return name + "=" + quotes + (singleValue || value || name) + quotes;
     },
     injectTerm = (term, first) => (el) => {
         var index = first ? el.indexOf(">") : el.lastIndexOf("<");
@@ -152,11 +151,11 @@ DOM.emmet = function(template, varMap) {
                 break;
 
             case "*":
-                node = makeIndexedTerm(+term, toString(node));
+                node = makeIndexedTerm(+term, typeof node === "string" ? node : node.join(""));
                 break;
 
             default:
-                term = typeof term === "string" ? makeTerm(term) : toString(term);
+                term = typeof term === "string" ? makeTerm(term) : term.join("");
 
                 if (str === ">") {
                     term = injectTerm(term);
@@ -171,7 +170,9 @@ DOM.emmet = function(template, varMap) {
         stack.unshift(str);
     }
 
-    output = toString(stack[0]);
+    output = stack[0];
+
+    if (typeof output !== "string") output = output.join("");
 
     return varMap ? output : tagCache[template] = output;
 };
