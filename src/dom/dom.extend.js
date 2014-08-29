@@ -18,19 +18,19 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         });
     },
     stopExt = (node, index) => (e) => {
-        var stop;
+        var isEventValid;
 
         e = e || WINDOW.event;
 
         if (CSS3_ANIMATIONS) {
-            stop = e.animationName === animId && e.target === node;
+            isEventValid = e.animationName === animId && e.target === node;
         } else {
-            stop = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
+            isEventValid = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
         }
         // mark extension as processed via e._skip bitmask
-        if (stop) (e._skip = e._skip || {})[index] = true;
+        if (isEventValid) (e._skip = e._skip || {})[index] = true;
     },
-    makeExtHandler = (node, skip) => (ext, index) => {
+    makeExtHandler = (node, skip = {}) => (ext, index) => {
         // skip previously excluded or mismatched elements
         if (!skip[index] && ext.accept(node)) ext(node);
     },
@@ -63,7 +63,7 @@ if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading")
         DOCUMENT.addEventListener("DOMContentLoaded", readyCallback, false);
     } else {
         WINDOW.attachEvent("onload", readyCallback);
-        DOCUMENT.attachEvent("ondataavailable", () => {
+        DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
             if (WINDOW.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
         });
     }
@@ -82,11 +82,11 @@ if (CSS3_ANIMATIONS) {
 
     DOCUMENT.addEventListener(nativeEventType, (e) => {
         if (e.animationName === animId) {
-            extensions.forEach(makeExtHandler(e.target, e._skip || {}));
+            extensions.forEach(makeExtHandler(e.target, e._skip));
         }
     }, false);
 } else {
-    nativeEventType = "ondataavailable";
+    nativeEventType = "on" + CUSTOM_EVENT_TYPE;
     link = DOCUMENT.querySelector("link[rel=htc]");
 
     if (!link) throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies");
@@ -99,7 +99,7 @@ if (CSS3_ANIMATIONS) {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));
+            extensions.forEach(makeExtHandler(e.srcElement, e._skip));
         }
     });
 }
@@ -120,7 +120,6 @@ DOM.extend = function(selector, condition, mixins) {
     }
 
     if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
-
     if (typeof mixins === "function") mixins = {constructor: mixins};
 
     if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new StaticMethodError("extend");

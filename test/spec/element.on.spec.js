@@ -38,13 +38,13 @@ describe("on", function() {
     });
 
     it("should fix currentTarget when selector exists", function() {
-        spy.and.callFake(function(target, currentTarget) {
+        spy.and.callFake(function(currentTarget) {
             expect(currentTarget).toHaveTag("a");
 
             return false;
         });
 
-        DOM.once("click a", spy);
+        DOM.once("click a", spy, ["currentTarget"]);
         link.find("i").fire("click");
         expect(spy).toHaveBeenCalled();
     });
@@ -96,27 +96,17 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should have default event properties", function() {
-        spy.and.callFake(function(target, currentTarget, defaultPrevented) {
-            expect(target).toBe(input);
-            expect(currentTarget).toBe(input);
-            expect(defaultPrevented).toBe(false);
-        });
-
-        input.on("focus", spy).fire("focus");
-        expect(spy).toHaveBeenCalled();
-
+    it("should not have default event properties", function() {
         var detail = {a: 1};
-
-        spy.calls.reset();
 
         spy.and.callFake(function(detail, target, currentTarget, defaultPrevented) {
             expect(detail).toBe(detail);
-            expect(target).toBe(input);
-            expect(currentTarget).toBe(input);
-            expect(defaultPrevented).toBe(false);
+            expect(target).not.toBeDefined();
+            expect(currentTarget).not.toBeDefined();
+            expect(defaultPrevented).not.toBeDefined();
         });
 
+        input.on("focus", spy);
         input.fire("focus", detail);
         expect(spy).toHaveBeenCalled();
 
@@ -226,10 +216,10 @@ describe("on", function() {
     it("should handle global DOM as target", function() {
         var spy = jasmine.createSpy("callback");
 
-        DOM.once("custom:event1", spy);
+        DOM.once("custom:event1", spy, ["target", "defaultPrevented"]);
         DOM.fire("custom:event1");
 
-        expect(spy).toHaveBeenCalledWith(DOM, DOM, false);
+        expect(spy).toHaveBeenCalledWith(DOM, false);
 
         spy.calls.reset();
         DOM.once("custom:event2 ul > li", spy);

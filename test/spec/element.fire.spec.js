@@ -49,11 +49,11 @@ describe("fire", function() {
 
             input.on("my:click", callback);
             input.fire("my:click", data1);
-            expect(callback).toHaveBeenCalledWith(data1, input, input, false);
+            expect(callback).toHaveBeenCalledWith(data1);
 
             input.on("click", callback);
             input.fire("click", data1, data2);
-            expect(callback).toHaveBeenCalledWith(data1, data2, input, input, false);
+            expect(callback).toHaveBeenCalledWith(data1, data2);
         });
 
         it("should ignore event fire arguments when event props is specified", function() {

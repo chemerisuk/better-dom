@@ -7,8 +7,7 @@ import HOOK from "./eventhooks";
  * Helper type to create an event handler
  */
 
-var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
-    EventHandler = (type, selector, callback, props, el, node, once) => {
+var EventHandler = (type, selector, callback, props, el, node, once) => {
         if (!node) return null;
 
         var hook = HOOK[type],
@@ -23,7 +22,7 @@ var defaultArgs = ["target", "currentTarget", "defaultPrevented"],
                 var target = e.target || e.srcElement || DOCUMENT,
                     currentTarget = matcher ? matcher(target) : node,
                     extraArgs = e._args || [],
-                    args = props || defaultArgs,
+                    args = props || [],
                     fn = callback;
 
                 if (typeof callback === "string") {
