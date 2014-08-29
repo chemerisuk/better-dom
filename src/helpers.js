@@ -11,7 +11,6 @@ export default {
         return currentScript.parentNode.insertBefore(el, currentScript);
     },
     // utilites
-    slice: arrayProto.slice,
     every: arrayProto.every,
     each: arrayProto.forEach,
     isArray: Array.isArray,

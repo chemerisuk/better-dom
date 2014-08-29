@@ -31,9 +31,7 @@ $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {
         }
     } else if (eventType === "object") {
         if (_.isArray(type)) {
-            args = _.slice.call(arguments, 1);
-
-            type.forEach((name) => { this.on.apply(this, [name].concat(args)) });
+            type.forEach((name) => { this.on(name, callback, props, once) });
         } else {
             _.keys(type).forEach((name) => { this.on(name, type[name]) });
         }
