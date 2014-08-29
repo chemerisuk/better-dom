@@ -69,8 +69,6 @@ DOM.emmet = function(template, varMap) {
 
     if (template in tagCache) return tagCache[template];
 
-    // if (!template || reHtml.exec(template)) return template;
-
     // parse expression into RPN
 
     for (str of template) {
@@ -80,14 +78,15 @@ DOM.emmet = function(template, varMap) {
         priority = operators[str];
 
         if (priority && (!skip || skip === str)) {
-            // fix for a>`text`+b
-            if (str === "+" && stack[0] === "`") str = ">";
             // remove redundat ^ operators from the stack when more than one exists
             if (str === "^" && stack[0] === "^") stack.shift();
 
             if (term) {
                 output.push(term);
                 term = "";
+            } else if (str === skip) {
+                // skip empty `...` and [...] sections
+                stack.shift();
             }
 
             if (str !== "(") {
@@ -113,14 +112,12 @@ DOM.emmet = function(template, varMap) {
         }
     }
 
-    if (term) {
-        // handle single tag case
-        if (!output.length && !stack.length) return makeTerm(term);
-
-        output.push(term);
-    }
+    if (term) output.push(term);
 
     output = output.concat(stack);
+
+    // handle single tag case
+    if (output.length === 1) return makeTerm(output[0]);
 
     // transform RPN into html nodes
 
@@ -147,11 +144,12 @@ DOM.emmet = function(template, varMap) {
                 break;
 
             case "`":
-                term = injectTerm(term);
+                stack.unshift(node);
+                node = [ term ];
                 break;
 
             case "*":
-                node = makeIndexedTerm(+term, typeof node === "string" ? node : node.join(""));
+                node = makeIndexedTerm(+term, node.join(""));
                 break;
 
             default:

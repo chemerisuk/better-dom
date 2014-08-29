@@ -43,6 +43,7 @@ describe("DOM.emmet", function() {
     });
 
     describe("attributes", function() {
+        checkExpr("a[]", "<a></a>");
         checkExpr("a[title]", "<a title=\"title\"></a>");
         checkExpr("a[title href]", "<a title=\"title\" href=\"href\"></a>");
         checkExpr("a.test[title href]", "<a class=\"test\" title=\"title\" href=\"href\"></a>");
@@ -77,7 +78,7 @@ describe("DOM.emmet", function() {
         checkExpr("a#{b}>`{c}`", "<a id=\"bbb\">test</a>", {c: "test", b: "bbb"});
         checkExpr("div[class=foo-{lang}]*2", "<div class=\"foo-en\"></div><div class=\"foo-en\"></div>", {lang: "en"});
         checkExpr("div[class=foo-$lang]*2", "<div class=\"foo-1lang\"></div><div class=\"foo-2lang\"></div>", {lang: "en"});
-        //checkExpr("i>`{0}`", "<i></i>", [""]);
+        checkExpr("i>`{0}`", "<i></i>", [""]);
         checkExpr("i>`{0}:`", "<i>:</i>", [""]);
     });
 
@@ -95,11 +96,11 @@ describe("DOM.emmet", function() {
     });
 
     describe("text nodes", function() {
-        checkExpr("span`Hello world`", "<span>Hello world</span>");
         checkExpr("span>`Hello world`", "<span>Hello world</span>");
         checkExpr("span>`Hello`+` world`", "<span>Hello world</span>");
         checkExpr("span>`Click `+(a[href=/url/]>`here`)+` for more info`", "<span>Click <a href=\"/url/\">here</a> for more info</span>");
         checkExpr("a>`{0}: `+span+span", "<a>test: <span></span><span></span></a>", ["test"]);
+        checkExpr("p>i.z+`{0}`+br+`{1}`", "<p><i class=\"z\"></i>{0}<br>{1}</p>");
     });
 
     it("should throw error on invalid args", function() {
