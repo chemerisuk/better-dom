@@ -22,8 +22,6 @@
     "lastsemic": true,
 
     "globals": {
-        "DOM": true,
-
         "beforeEach": true,
         "afterEach": true,
         "describe": true,

@@ -1,4 +1,8 @@
-import { WINDOW, HTML } from "./constants";
+import { HTML, WINDOW } from "./constants";
+
+// use a random property name to link JS wrappers and
+// native DOM elements.
+var wrapperProp = "__" + Math.random().toString().substr(2) + "__";
 
 /**
  * Used to represent a DOM element
@@ -6,11 +10,11 @@ import { WINDOW, HTML } from "./constants";
  * @private
  */
 function $Element(node) {
-    if (node && node.__dom__) return node.__dom__;
+    if (node && node[wrapperProp]) return node[wrapperProp];
 
     if (this instanceof $Element) {
         if (node) {
-            node.__dom__ = this;
+            node[wrapperProp] = this;
 
             this[0] = node;
         }
@@ -21,10 +25,12 @@ function $Element(node) {
     }
 }
 
-$Element.prototype.toString = function() {
-    var node = this[0];
+$Element.prototype = {
+    toString: function() {
+        var node = this[0];
 
-    return node ? node.tagName.toLowerCase() : "";
+        return node ? node.tagName.toLowerCase() : "";
+    }
 };
 
 /**
@@ -34,8 +40,6 @@ $Element.prototype.toString = function() {
  */
 var DOM = new $Element(HTML);
 
-DOM.version = "<%= pkg.version %>";
-
-WINDOW.DOM = DOM; /* expose DOM namespace globally */
+DOM.VERSION = "<%= pkg.version %>";
 
 export { $Element, DOM };

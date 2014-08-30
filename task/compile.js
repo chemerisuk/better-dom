@@ -37,7 +37,7 @@ module.exports = function(grunt) {
 
         var result = es6tr.run({
                 src: code,
-                globals: {DOM: true},
+                globals: {DOM: true, exports: true},
                 outputFilename: outputFile,
                 environments: ["browser"]
             });
