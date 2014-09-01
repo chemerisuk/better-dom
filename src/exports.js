@@ -9,7 +9,7 @@ DOM.noConflict = function() {
     }
 
     return DOM;
-}
+};
 
 // export better-dom to CommonJS environments
 if (typeof exports !== "undefined") {
