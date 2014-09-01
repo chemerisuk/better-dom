@@ -3,6 +3,13 @@ import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
 
+/**
+ * Callback function that returns a content for manipulation
+ * @callback manipulationCallback
+ * @param {$Element} el current element
+ * @return {Mixed} a HTMLString, {@link $Element} or Array.<{@link $Element}>
+ */
+
 function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
     return function(content = "") {
         var node = this[0];
@@ -46,7 +53,7 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
  * Insert html string or $Element after the current
  * @memberof! $Element#
  * @alias $Element#after
- * @param {Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or {@link manipulationCallback}
  * @return {$Element}
  * @function
  */
@@ -58,7 +65,7 @@ $Element.prototype.after = makeManipulationMethod("after", "afterend", false, (n
  * Insert html string or $Element before the current
  * @memberof! $Element#
  * @alias $Element#before
- * @param {Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or {@link manipulationCallback}
  * @return {$Element}
  * @function
  */
@@ -70,7 +77,7 @@ $Element.prototype.before = makeManipulationMethod("before", "beforebegin", fals
  * Prepend html string or $Element to the current
  * @memberof! $Element#
  * @alias $Element#prepend
- * @param {Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or {@link manipulationCallback}
  * @return {$Element}
  * @function
  */
@@ -82,7 +89,7 @@ $Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", tru
  * Append html string or $Element to the current
  * @memberof! $Element#
  * @alias $Element#append
- * @param {Mixed} contents HTMLString, $Element or functor that returns content
+ * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or {@link manipulationCallback}
  * @return {$Element}
  * @function
  */
@@ -94,7 +101,7 @@ $Element.prototype.append = makeManipulationMethod("append", "beforeend", true, 
  * Replace current element with html string or $Element
  * @memberof! $Element#
  * @alias $Element#replace
- * @param {Mixed} content HTMLString, $Element or functor that returns content
+ * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or {@link manipulationCallback}
  * @return {$Element}
  * @function
  */
