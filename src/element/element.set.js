@@ -5,11 +5,18 @@ import { $Element } from "../types";
 import PROP from "../util/accessorhooks";
 
 /**
+ * Callback function for changing a property/attribute
+ * @callback setterCallback
+ * @param {Object} currentValue current value of property/attribute
+ * @return {Object} a new value for property/attribute
+ */
+
+/**
  * Set property/attribute value by name
  * @memberof! $Element#
  * @alias $Element#set
- * @param {String|Object|Array} [name]  property/attribute name
- * @param {String|Function}     value   property/attribute value or function that returns it
+ * @param {String|Object|Array}   [name]  property/attribute name
+ * @param {String|setterCallback} value   property/attribute value or {@link setterCallback}
  * @return {$Element}
  */
 $Element.prototype.set = function(name, value) {
@@ -25,7 +32,11 @@ $Element.prototype.set = function(name, value) {
 
     var hook = PROP.set[name],
         watchers = this._._watchers[name],
-        oldValue = watchers && this.get(name);
+        oldValue;
+
+    if (watchers || typeof value === "function") {
+        oldValue = this.get(name);
+    }
 
     if (hook) {
         hook(node, value);
@@ -33,7 +44,9 @@ $Element.prototype.set = function(name, value) {
         if (name[0] === "-" && name[1] === "-") {
             this._[name.substr(2)] = value;
         } else {
-            if (typeof value === "function") value = value(this);
+            if (typeof value === "function") {
+                value = value.call(this, oldValue);
+            }
 
             if (value == null) {
                 node.removeAttribute(name);

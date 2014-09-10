@@ -4,11 +4,18 @@ import { $Element } from "../types";
 import HOOK from "../util/stylehooks";
 
 /**
+ * Callback function for changing a property/attribute
+ * @callback cssCallback
+ * @param  {String} currentValue current value of style property
+ * @return {String|Number} a new value for style property
+ */
+
+/**
  * CSS properties accessor for an element
  * @memberof! $Element#
  * @alias $Element#css
- * @param  {String|Object}   name    style property name or key/value object
- * @param  {String|Function} [value] style property value or function that returns it
+ * @param  {String|Object}      name    style property name or key/value object
+ * @param  {String|cssCallback} [value] style property value or {@link cssCallback}
  * @return {String|$Element} property value or reference to this
  */
 $Element.prototype.css = function(name, value) {
@@ -46,7 +53,9 @@ $Element.prototype.css = function(name, value) {
         appendCssText = (key, value) => {
             var hook = HOOK.set[key];
 
-            if (typeof value === "function") value = value(this);
+            if (typeof value === "function") {
+                value = value.call(this, this.css(key));
+            }
 
             if (value == null) value = "";
 

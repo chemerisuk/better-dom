@@ -57,102 +57,32 @@
     </div>
     <script>
     var bars = DOM.findAll(".bar-item"),
-        bar = DOM.find("#bar");
+        bar = DOM.find("#bar"),
+        andRemove = function(el) { el.remove() },
+        it = 0;
 
     bars[1].remove();
 
     setInterval(function() {
+        ++it;
+
         bars.forEach(function(el, index) {
-            if (!el.parent()[0]) {
-                bar[index ? "append" : "prepend"](el);
+            var otherBar = bars[index ? 0 : 1];
+
+            if ((it + index) % 2) {
+                bar.prepend(otherBar);
+
+                otherBar.show();
+
+                el.hide(andRemove);
+            } else {
+                bar.append(el);
 
                 el.show();
-            } else {
-                el.hide(function() {
-                    el.remove();
-                });
+                otherBar.hide(andRemove);
             }
         });
     }, 1000);
     </script>
-    <!-- <script>
-    var eventType = window.WebKitAnimationEvent ? "webkitTransitionEnd" : "transitionend",
-        bars = Array.prototype.slice.call(document.querySelectorAll(".bar-item"), 0),
-        prop = function(name) {
-            return window.WebKitAnimationEvent ? "webkitT" + name.substr(1) : name;
-        },
-        raf = (function() {
-            var lastTime = 0,
-                propName = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name) {
-                    var prop = name + "equestAnimationFrame";
-
-                    return memo || window[prop] && prop;
-                }, null);
-
-            if (propName) {
-                return function(callback) { window[propName](callback) };
-            } else {
-                return function(callback) {
-                    var currTime = new Date().getTime(),
-                        timeToCall = Math.max(0, 16 - (currTime - lastTime));
-
-                    lastTime = currTime + timeToCall;
-
-                    if (timeToCall) {
-                        setTimeout(callback, timeToCall);
-                    } else {
-                        callback(currTime + timeToCall);
-                    }
-                };
-            }
-        }());
-
-    setInterval(function() {
-        bars.forEach(function(bar) {
-            var style = bar.style,
-                cs = window.getComputedStyle(bar),
-                isHidden = bar.getAttribute("aria-hidden") === "true";
-
-            raf(function() {
-                var duration = 500,
-                    transitionProperty = cs[prop("transitionProperty")],
-                    transitionDelay = cs[prop("transitionDelay")],
-                    transitionDuration = cs[prop("transitionDuration")],
-                    completeVisibilityChange = function(e) {
-                        if (e.propertyName === "visibility") {
-                            e.stopImmediatePropagation(); // this is an internal event
-
-                            style[prop("transitionProperty")] = transitionProperty;
-                            style[prop("transitionDelay")] = transitionDelay;
-                            style[prop("transitionDuration")] = transitionDuration;
-
-                            bar.removeEventListener(eventType, completeVisibilityChange, false);
-
-                            if (style.visibility === "hidden") {
-                                style.position = "absolute";
-                            } else {
-                                style.pointerEvents = "";
-                            }
-                        }
-                    };
-
-                style[prop("transitionProperty")] = transitionProperty + ", visibility";
-                style[prop(isHidden ? "transitionDelay" : "transitionDuration")] = (isHidden ? transitionDelay : transitionDuration) + ", 0s";
-                style[prop(isHidden ? "transitionDuration" : "transitionDelay")] = (isHidden ? transitionDuration : transitionDelay) + ", " + duration + "ms";
-
-                bar.addEventListener(eventType, completeVisibilityChange, false);
-
-                if (isHidden) {
-                    style.position = "";
-                } else {
-                    style.pointerEvents = "none";
-                }
-
-                style.visibility = isHidden ? "visible" : "hidden";
-                bar.setAttribute("aria-hidden", String(!isHidden));
-            });
-        });
-    }, 1000);
-    </script> -->
 </body>
 </html>

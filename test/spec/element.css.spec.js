@@ -104,11 +104,13 @@ describe("css", function() {
         });
 
         it("should accept function", function() {
-            var spy = jasmine.createSpy("value").and.returnValue(7);
+            var spy = jasmine.createSpy("value").and.returnValue(7),
+                getSpy = spyOn(link, "css").and.callThrough();
 
             link.css("line-height", spy);
 
-            expect(spy).toHaveBeenCalledWith(link);
+            expect(getSpy.calls.count()).toBe(2);
+            expect(spy).toHaveBeenCalledWith("2");
             expect(link.css("line-height")).toBe("7");
         });
 
