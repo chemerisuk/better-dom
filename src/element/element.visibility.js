@@ -7,7 +7,6 @@ import CSS from "../util/stylehooks";
 var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
     TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
     TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-    ABSENT_STRATEGY = ANIMATIONS_ENABLED ? ["position", "absolute"] : ["display", "none"],
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
@@ -67,6 +66,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
                     node.removeEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
 
+                    style.willChange = ""; // remove temporary properties
+
                     complete();
                 }
             };
@@ -84,25 +85,19 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             isHidden = typeof fn === "function" ? fn(node) : fn,
             complete = () => {
                 if (style.visibility === "hidden") {
-                    style[ABSENT_STRATEGY[0]] = ABSENT_STRATEGY[1];
+                    style[strategy[0]] = strategy[1];
                 }
-                // remove temporary properties
-                if (ANIMATIONS_ENABLED) style.willChange = "";
 
                 if (callback) callback(el, node);
             },
             processVisibilityChange = () => {
-                // Legacy Android is too slow and has a lot of bugs in the CSS animations
-                // implementation, so skip animations for it (duration value is always zero)
-                var duration = ANIMATIONS_ENABLED ? calcAnimationDuration(node, style, isHidden, complete) : 0;
-
                 if (isHidden) {
-                    let absentance = style[ABSENT_STRATEGY[0]];
+                    let absentance = style[strategy[0]];
                     // store current inline value in the internal property
                     if (absentance !== "none") el._._visibility = absentance;
                 } else {
                     // restore initial property value if it exists
-                    style[ABSENT_STRATEGY[0]] = el._._visibility || "";
+                    style[strategy[0]] = el._._visibility || "";
                 }
 
                 style.visibility = isHidden ? "hidden" : "visible";
@@ -110,7 +105,11 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
                 el.set("aria-hidden", String(isHidden));
                 // must be AFTER changing the aria-hidden attribute
                 if (!duration) complete();
-            };
+            },
+            // Legacy Android is too slow and has a lot of bugs in the CSS animations
+            // implementation, so skip animations for it (duration value is always zero)
+            duration = ANIMATIONS_ENABLED ? calcAnimationDuration(node, style, isHidden, complete) : 0,
+            strategy = duration ? ["position", "absolute"] : ["display", "none"];
 
         // by using requestAnimationFrame we fix several issues:
         // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
@@ -118,7 +117,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         // 3) power consuption: looped show/hide does almost nothing if page is not active
 
         // use DOM.raf only if element is in DOM to avoid quirks on hide().show() calls
-        if (DOM.contains(el)) {
+        if (ANIMATIONS_ENABLED && DOM.contains(el)) {
             DOM.raf(processVisibilityChange);
         } else {
             processVisibilityChange();
