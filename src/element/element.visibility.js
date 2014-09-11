@@ -78,9 +78,16 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         return true;
     },
-    changeVisibility = (el, fn, callback) => () => {
-        var node = el[0],
-            style = node.style,
+    makeVisibilityMethod = (name, fn) => function(callback) {
+        var node = this[0];
+
+        if (callback && typeof callback !== "function") {
+            throw new MethodError(name);
+        }
+
+        if (!node) return this;
+
+        var style = node.style,
             displayValue = style.display,
             isHidden = typeof fn === "function" ? fn(node) : fn,
             done = () => {
@@ -88,22 +95,28 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
                     style.display = "none";
                 }
 
-                if (callback) callback.call(el);
+                if (callback) callback.call(this);
             },
-            // Legacy Android is too slow and has a lot of bugs in the CSS animations
-            // implementation, so skip animations for it (duration value is always zero)
-            hasAnimation = ANIMATIONS_ENABLED && scheduleAnimation(node, style, isHidden, done);
+            hasAnimation;
 
         if (isHidden) {
             if (displayValue !== "none") {
-                el._._visibility = displayValue;
+                this._._visibility = displayValue;
                 // we'll hide element later in the complete call
             }
         } else {
             if (displayValue === "none") {
                 // restore visibility
-                style.display = el._._visibility || "inherit";
+                style.display = this._._visibility || "inherit";
+            }
+        }
 
+        // Legacy Android is too slow and has a lot of bugs in the CSS animations
+        // implementation, so skip animations for it (duration value is always zero)
+        if (ANIMATIONS_ENABLED) {
+            hasAnimation = scheduleAnimation(node, style, isHidden, done);
+
+            if (hasAnimation && !isHidden) {
                 // Use offsetWidth to trigger reflow of the element
                 // after changing from display:none
                 //
@@ -111,38 +124,16 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
                 // https://github.com/snookca/prepareTransition
                 //
                 // We shouldn't change truthy of hasAnimation, so use ~
-                if (hasAnimation) hasAnimation = ~node.offsetWidth;
+                hasAnimation = ~node.offsetWidth;
             }
         }
 
         // trigger visibility transition when it exists
         style.visibility = isHidden ? "hidden" : "visible";
         // trigger native CSS animation
-        el.set("aria-hidden", String(isHidden));
+        this.set("aria-hidden", String(isHidden));
         // must be AFTER changing the aria-hidden attribute
         if (!hasAnimation) done();
-    },
-    makeVisibilityMethod = (name, fn) => function(delay, callback) {
-        var len = arguments.length,
-            delayType = typeof delay;
-
-        if (len === 1 && delayType === "function") {
-            callback = delay;
-            delay = 0;
-        }
-
-        if (delay && (delayType !== "number" || delay < 0) ||
-            callback && typeof callback !== "function") {
-            throw new MethodError(name);
-        }
-
-        callback = changeVisibility(this, fn, callback);
-
-        if (delay) {
-            setTimeout(callback, delay);
-        } else {
-            callback();
-        }
 
         return this;
     };
@@ -151,7 +142,6 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
  * Show element with optional callback and delay
  * @memberof! $Element#
  * @alias $Element#show
- * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function
@@ -162,7 +152,6 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
  * Hide element with optional callback and delay
  * @memberof! $Element#
  * @alias $Element#hide
- * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function
@@ -173,7 +162,6 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
  * Toggle element visibility with optional callback and delay
  * @memberof! $Element#
  * @alias $Element#toggle
- * @param {Number}   [delay=0]  time in miliseconds to wait
  * @param {Function} [callback] function that executes when animation is done
  * @return {$Element}
  * @function

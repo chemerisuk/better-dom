@@ -41,18 +41,18 @@ describe("visibility", function() {
     });
 
     describe("hide", function() {
-        it("should support optional delay argument", function(done) {
-            var delay = 50, start = Date.now();
+        // it("should support optional delay argument", function(done) {
+        //     var delay = 50, start = Date.now();
 
-            expect(link).not.toHaveAttr("aria-hidden", "true");
+        //     expect(link).not.toHaveAttr("aria-hidden", "true");
 
-            link.hide(delay, function() {
-                expect(Date.now() - start).not.toBeLessThan(delay);
-                expect(link).toHaveAttr("aria-hidden", "true");
+        //     link.hide(delay, function() {
+        //         expect(Date.now() - start).not.toBeLessThan(delay);
+        //         expect(link).toHaveAttr("aria-hidden", "true");
 
-                done();
-            });
-        });
+        //         done();
+        //     });
+        // });
 
         it("should support exec callback when no animation is defined", function(done) {
             expect(link.hide(done)).toBe(link);
@@ -126,20 +126,20 @@ describe("visibility", function() {
     });
 
     describe("show", function() {
-        it("should support optional delay argument", function(done) {
-            var delay = 50, start = Date.now();
+        // it("should support optional delay argument", function(done) {
+        //     var delay = 50, start = Date.now();
 
-            link.hide(function() {
-                expect(link).toHaveAttr("aria-hidden", "true");
+        //     link.hide(function() {
+        //         expect(link).toHaveAttr("aria-hidden", "true");
 
-                link.show(delay, function() {
-                    expect(link).toHaveAttr("aria-hidden", "false");
-                    expect(Date.now() - start).not.toBeLessThan(delay);
+        //         link.show(delay, function() {
+        //             expect(link).toHaveAttr("aria-hidden", "false");
+        //             expect(Date.now() - start).not.toBeLessThan(delay);
 
-                    done();
-                });
-            });
-        });
+        //             done();
+        //         });
+        //     });
+        // });
 
         it("should trigger callback for initially hidden elements", function(done) {
             link = link.clone(false).set("aria-hidden", "true");
