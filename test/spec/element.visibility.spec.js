@@ -54,16 +54,18 @@ describe("visibility", function() {
         //     });
         // });
 
-        it("should support exec callback when no animation is defined", function(done) {
+        it("should support exec callback when no transition is defined", function(done) {
             expect(link.hide(done)).toBe(link);
         });
 
-        it("should support exec callback when animation is defined", function(done) {
-            link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
-            link.hide(done);
-        });
+        // it("should support exec callback when animation is defined", function(done) {
+        //     link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+        //     link.hide(done);
+        // });
 
         it("should support exec callback when transition is defined", function(done) {
+            link = DOM.create("<a>123</a>");
+
             link.addClass("fade").set("style", "transition:opacity 10ms;-webkit-transition:opacity 10ms");
             link.hide(done);
         });
@@ -82,25 +84,25 @@ describe("visibility", function() {
             });
         });
 
-        it("should skip infinite animations", function(done) {
-            link.set("style", "animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block");
-            link.hide(done);
-        });
+        // it("should skip infinite animations", function(done) {
+        //     link.set("style", "animation:fade 10ms infinite;-webkit-animation:fade 10ms infinite;display:block");
+        //     link.hide(done);
+        // });
 
-        it("should respect ms and s suffixes for duration", function(done) {
-            var otherLink = DOM.create("<a class=\"fade\" style='transition:opacity 10ms;-webkit-transition:opacity 10ms'>abc</a>"),
-                spy = jasmine.createSpy("transition");
+        // it("should respect ms and s suffixes for duration", function(done) {
+        //     var otherLink = DOM.create("<a class=\"fade\" style='transition:opacity 10ms;-webkit-transition:opacity 10ms'>abc</a>"),
+        //         spy = jasmine.createSpy("transition");
 
-            link.set("style", "animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block");
-            link.after(otherLink);
-            otherLink.hide(spy);
+        //     link.set("style", "animation:fade 0.1s;-webkit-animation:fade 0.1s;display:block");
+        //     link.after(otherLink);
+        //     otherLink.hide(spy);
 
-            link.hide(function() {
-                expect(spy).toHaveBeenCalled();
+        //     link.hide(function() {
+        //         expect(spy).toHaveBeenCalled();
 
-                done();
-            });
-        });
+        //         done();
+        //     });
+        // });
 
         it("should work for several transitions", function(done) {
             var start = Date.now();
@@ -141,14 +143,14 @@ describe("visibility", function() {
         //     });
         // });
 
-        it("should trigger callback for initially hidden elements", function(done) {
-            link = link.clone(false).set("aria-hidden", "true");
-            link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
+        // it("should trigger callback for initially hidden elements", function(done) {
+        //     link = link.clone(false).set("aria-hidden", "true");
+        //     link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
 
-            jasmine.sandbox.set(link);
+        //     jasmine.sandbox.set(link);
 
-            link.show(done);
-        });
+        //     link.show(done);
+        // });
 
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.show("123") }).toThrow();

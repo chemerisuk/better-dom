@@ -12,28 +12,21 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         // if duration is in seconds, then multiple result value by 1000
         return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
     },
-    calcDuration = (style, prefix, iterationCount) => {
-        var delay = CSS.get[prefix + "delay"](style).split(","),
-            duration = CSS.get[prefix + "duration"](style).split(",");
-
-        if (!iterationCount) iterationCount = CSS.get[prefix + "iteration-count"](style).split(",");
+    calcTransitionDuration = (style, prefix) => {
+        var delay = CSS.get["transition-delay"](style).split(","),
+            duration = CSS.get["transition-duration"](style).split(",");
 
         return Math.max.apply(Math, duration.map((value, index) => {
-            var it = iterationCount[index] || "1";
-            // initial or empty value equals to 1
-            return (it === "initial" ? 1 : parseFloat(it)) *
-                parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
+            return parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
         }));
     },
-    scheduleAnimation = (node, style, isHidden, done) => {
+    scheduleTransition = (node, style, isHidden, done) => {
         var compStyle = _.computeStyle(node),
-            animationDuration = calcDuration(compStyle, "animation-"),
-            transitionDuration = calcDuration(compStyle, "transition-", []),
-            duration = Math.max(transitionDuration, animationDuration);
+            duration = calcTransitionDuration(compStyle);
 
         if (!duration) return false;
 
-        var visibilityTransitionIndex, transitionValues, completeAnimation;
+        var visibilityTransitionIndex, transitionValues, completeTransition;
 
         transitionValues = TRANSITION_PROPS.map((prop, index) => {
             // have to use regexp to split transition-timing-function value
@@ -62,11 +55,11 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         // http://dev.opera.com/articles/css-will-change-property/
         style.willChange = transitionValues[1].join(", ");
 
-        completeAnimation = (e) => {
+        completeTransition = (e) => {
             if (e.propertyName === "visibility" && e.target === node) {
                 e.stopPropagation(); // this is an internal transition
 
-                node.removeEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
+                node.removeEventListener(TRANSITION_EVENT_TYPE, completeTransition, false);
 
                 style.willChange = ""; // remove temporary properties
 
@@ -74,7 +67,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             }
         };
 
-        node.addEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
+        node.addEventListener(TRANSITION_EVENT_TYPE, completeTransition, false);
 
         return true;
     },
@@ -114,7 +107,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         // Legacy Android is too slow and has a lot of bugs in the CSS animations
         // implementation, so skip animations for it (duration value is always zero)
         if (ANIMATIONS_ENABLED) {
-            hasAnimation = scheduleAnimation(node, style, isHidden, done);
+            hasAnimation = scheduleTransition(node, style, isHidden, done);
 
             if (hasAnimation && !isHidden) {
                 // Use offsetWidth to trigger reflow of the element
