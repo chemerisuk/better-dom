@@ -1,7 +1,7 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
 import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
-import { $Element, DOM } from "../types";
+import { $Element } from "../types";
 import CSS from "../util/stylehooks";
 
 var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
@@ -30,7 +30,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             duration = Math.max(calcDuration(compStyle, "transition-", []), calcDuration(compStyle, "animation-"));
 
         if (duration) {
-            let visibilityTransitionIndex, transitionValues, completeAnimation, timeoutId;
+            let visibilityTransitionIndex, transitionValues, completeAnimation;
 
             transitionValues = TRANSITION_PROPS.map((prop, index) => {
                 // have to use regexp to split transition-timing-function value
@@ -59,10 +59,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             style.willChange = transitionValues[1].join(", ");
 
             completeAnimation = (e) => {
-                if (!e || e.propertyName === "visibility") {
-                    if (e) e.stopPropagation(); // this is an internal transition
-
-                    clearTimeout(timeoutId);
+                if (e.propertyName === "visibility") {
+                    e.stopPropagation(); // this is an internal transition
 
                     node.removeEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
 
@@ -73,8 +71,6 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             };
 
             node.addEventListener(TRANSITION_EVENT_TYPE, completeAnimation, false);
-            // make sure that the completeAnimation callback will be called
-            timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
         }
 
         return duration;
@@ -85,19 +81,34 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             isHidden = typeof fn === "function" ? fn(node) : fn,
             complete = () => {
                 if (style.visibility === "hidden") {
-                    style[strategy[0]] = strategy[1];
+                    style.display = "none";
                 }
 
-                if (callback) callback(el, node);
+                if (callback) callback.call(el);
             },
             processVisibilityChange = () => {
+                var currentValue = node.style.display,
+                    // Legacy Android is too slow and has a lot of bugs in the CSS animations
+                    // implementation, so skip animations for it (duration value is always zero)
+                    duration = ANIMATIONS_ENABLED ? calcAnimationDuration(node, style, isHidden, complete) : 0;
+
                 if (isHidden) {
-                    let absentance = style[strategy[0]];
-                    // store current inline value in the internal property
-                    if (absentance !== "none") el._._visibility = absentance;
+                    if (currentValue !== "none") {
+                        el._._visibility = currentValue;
+                        // we'll hide element later in the complete call
+                    }
                 } else {
-                    // restore initial property value if it exists
-                    style[strategy[0]] = el._._visibility || "";
+                    if (currentValue === "none") {
+                        // restore visibility
+                        node.style.display = el._._visibility || "inherit";
+                    }
+
+                    // Use offsetWidth to trigger reflow of the element
+                    // after changing from display:none
+                    //
+                    // Credits to Jonathan Snook's prepareTransition plugin:
+                    // https://github.com/snookca/prepareTransition
+                    if (duration) duration = node.offsetWidth;
                 }
 
                 style.visibility = isHidden ? "hidden" : "visible";
@@ -105,23 +116,9 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
                 el.set("aria-hidden", String(isHidden));
                 // must be AFTER changing the aria-hidden attribute
                 if (!duration) complete();
-            },
-            // Legacy Android is too slow and has a lot of bugs in the CSS animations
-            // implementation, so skip animations for it (duration value is always zero)
-            duration = ANIMATIONS_ENABLED ? calcAnimationDuration(node, style, isHidden, complete) : 0,
-            strategy = duration ? ["position", "absolute"] : ["display", "none"];
+            };
 
-        // by using requestAnimationFrame we fix several issues:
-        // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
-        // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
-        // 3) power consuption: looped show/hide does almost nothing if page is not active
-
-        // use DOM.raf only if element is in DOM to avoid quirks on hide().show() calls
-        if (ANIMATIONS_ENABLED && DOM.contains(el)) {
-            DOM.raf(processVisibilityChange);
-        } else {
-            processVisibilityChange();
-        }
+        processVisibilityChange();
     },
     makeVisibilityMethod = (name, fn) => function(delay, callback) {
         var len = arguments.length,

@@ -11,14 +11,14 @@
     <![endif]-->
     <script src="../build/better-dom.js"></script>
     <style>
-    #bar {
+    .bar {
         overflow: hidden;
         border: 1px solid;
         position: relative;
         padding: 0 10px;
     }
 
-    #bar, .bar-item {
+    .bar, .bar-item {
         width: 200px;
         height: 200px;
     }
@@ -51,37 +51,45 @@
     </style>
 </head>
 <body>
-    <div id="bar">
+    <h2>With removing from the DOM</h2>
+    <div class="bar">
+        <div class="bar-item" style="background: yellow"></div>
+        <div class="bar-item" style="background: green" aria-hidden="true"></div>
+    </div>
+    <h2>Without removing from the DOM</h2>
+    <div class="bar">
         <div class="bar-item" style="background: yellow"></div>
         <div class="bar-item" style="background: green" aria-hidden="true"></div>
     </div>
     <script>
-    var bars = DOM.findAll(".bar-item"),
-        bar = DOM.find("#bar"),
+    var bar = DOM.find(".bar"),
+        bars = bar.findAll(".bar-item"),
+        lastBars = bar.next(".bar").findAll(".bar-item"),
         andRemove = function(el) { el.remove() },
-        it = 0;
+        it = 1;
 
     bars[1].remove();
 
     setInterval(function() {
         ++it;
 
-        bars.forEach(function(el, index) {
-            var otherBar = bars[index ? 0 : 1];
+        if (it % 2) {
+            bar.prepend(bars[0]);
+            bars[0].show();
+            bars[1].hide(function() { bars[1].remove(); });
+        } else {
+            bar.append(bars[1]);
+            bars[1].show();
+            bars[0].hide(function() { bars[0].remove(); });
+        }
 
-            if ((it + index) % 2) {
-                bar.prepend(otherBar);
-
-                otherBar.show();
-
-                el.hide(andRemove);
-            } else {
-                bar.append(el);
-
-                el.show();
-                otherBar.hide(andRemove);
-            }
-        });
+        if (it % 2) {
+            lastBars[0].show();
+            lastBars[1].hide();
+        } else {
+            lastBars[1].show();
+            lastBars[0].hide();
+        }
     }, 1000);
     </script>
 </body>
