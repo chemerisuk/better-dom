@@ -7,6 +7,7 @@ import CSS from "../util/stylehooks";
 var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
     TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
     TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+    ANIMATION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
@@ -70,8 +71,34 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         return true;
     },
-    makeVisibilityMethod = (name, condition) => function(callback) {
+    scheduleAnimation = (node, style, animationName, hiding, done) => {
+        var completeAnimation = (e) => {
+            if (e.animationName === animationName && e.target === node) {
+                e.stopPropagation(); // this is an internal animation
+
+                node.removeEventListener(ANIMATION_EVENT_TYPE, completeAnimation, false);
+
+                CSS.set["animation-name"](style, ""); // remove temporary animation
+
+                done();
+            }
+        };
+
+        node.addEventListener(ANIMATION_EVENT_TYPE, completeAnimation, false);
+
+        // trigger animation start
+        CSS.set["animation-direction"](style, hiding ? "normal" : "reverse");
+        CSS.set["animation-name"](style, animationName);
+
+        return true;
+    },
+    makeVisibilityMethod = (name, condition) => function(animationName, callback) {
         var node = this[0];
+
+        if (typeof animationName !== "string") {
+            callback = animationName;
+            animationName = null;
+        }
 
         if (callback && typeof callback !== "function") {
             throw new MethodError(name);
@@ -84,18 +111,17 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             displayValue = computed.display,
             hiding = typeof condition === "boolean" ? condition : displayValue !== "none",
             done = () => {
-                if (style.visibility === "hidden") {
-                    style.display = "none";
-                }
+                // remove element from the flow
+                if (hiding) style.display = "none";
 
                 if (callback) callback.call(this);
             },
-            hasTransition;
+            animatable;
 
         if (hiding) {
             if (displayValue !== "none") {
                 this._._display = displayValue;
-                // we'll hide element later in the complete call
+                // we'll hide element later in the done call
             }
         } else {
             if (displayValue === "none") {
@@ -107,26 +133,29 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         // Legacy Android is too slow and has a lot of bugs in the CSS animations
         // implementation, so skip animations for it (duration value is always zero)
         if (ANIMATIONS_ENABLED) {
-            hasTransition = scheduleTransition(node, style, computed, hiding, done);
+            if (animationName) {
+                animatable = scheduleAnimation(node, style, animationName, hiding, done);
+            } else {
+                animatable = scheduleTransition(node, style, computed, hiding, done);
 
-            if (hasTransition && !hiding) {
-                // Use offsetWidth to trigger reflow of the element
-                // after changing from display:none
-                //
-                // Credits to Jonathan Snook's prepareTransition plugin:
-                // https://github.com/snookca/prepareTransition
-                //
-                // We shouldn't change truthy of hasTransition, so use ~
-                hasTransition = ~node.offsetWidth;
+                if (animatable && !hiding) {
+                    // Use offsetWidth to trigger reflow of the element
+                    // after changing from display:none
+                    //
+                    // Thanks idea from Jonathan Snook's plugin:
+                    // https://github.com/snookca/prepareTransition
+                    //
+                    // We shouldn't change truthy of animatable, so use ~
+                    animatable = ~node.offsetWidth;
+                }
+                // trigger visibility transition when it exists
+                style.visibility = hiding ? "hidden" : "visible";
             }
         }
-
-        // trigger visibility transition when it exists
-        style.visibility = hiding ? "hidden" : "visible";
         // trigger native CSS animation
         this.set("aria-hidden", String(hiding));
         // must be AFTER changing the aria-hidden attribute
-        if (!hasTransition) done();
+        if (!animatable) done();
 
         return this;
     };
@@ -135,7 +164,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
  * Show element with optional callback and delay
  * @memberof! $Element#
  * @alias $Element#show
- * @param {Function} [callback] function that executes when animation is done
+ * @param {String}   [animationName]  CSS animation to apply during transition
+ * @param {Function} [callback]       function that executes when animation is done
  * @return {$Element}
  * @function
  */
@@ -145,7 +175,8 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
  * Hide element with optional callback and delay
  * @memberof! $Element#
  * @alias $Element#hide
- * @param {Function} [callback] function that executes when animation is done
+ * @param {String}   [animationName]  CSS animation to apply during transition
+ * @param {Function} [callback]       function that executes when animation is done
  * @return {$Element}
  * @function
  */
@@ -155,7 +186,8 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
  * Toggle element visibility with optional callback and delay
  * @memberof! $Element#
  * @alias $Element#toggle
- * @param {Function} [callback] function that executes when animation is done
+ * @param {String}   [animationName]  CSS animation to apply during transition
+ * @param {Function} [callback]       function that executes when animation is done
  * @return {$Element}
  * @function
  */

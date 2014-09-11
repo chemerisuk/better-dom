@@ -18,7 +18,7 @@
         padding: 0 10px;
     }
 
-    .bar, .bar-item {
+    .bar, .bar-item, .animatable-bar-item {
         width: 200px;
         height: 200px;
     }
@@ -48,6 +48,31 @@
         -webkit-transform: translateX(100%);
         transform: translateX(100%);
     }
+
+    .animatable-bar-item {
+        -webkit-animation: none 0.5s linear;
+        animation: none 0.5s linear;
+    }
+
+    @-webkit-keyframes fade {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+      }
+    }
     </style>
 </head>
 <body>
@@ -61,11 +86,16 @@
         <div class="bar-item" style="background: yellow"></div>
         <div class="bar-item" style="background: green" aria-hidden="true"></div>
     </div>
+    <h2>Animation test</h2>
+    <div class="bar">
+        <div class="animatable-bar-item" style="background: blue"></div>
+    </div>
     <script>
     var bar = DOM.find(".bar"),
         bars = bar.findAll(".bar-item"),
         lastBars = bar.next(".bar").findAll(".bar-item"),
-        andRemove = function(el) { el.remove() },
+        animatableBar = DOM.find(".animatable-bar-item"),
+        andRemove = function() { this.remove() },
         it = 1;
 
     bars[1].remove();
@@ -76,11 +106,11 @@
         if (it % 2) {
             bar.prepend(bars[0]);
             bars[0].show();
-            bars[1].hide(function() { bars[1].remove(); });
+            bars[1].hide(andRemove);
         } else {
             bar.append(bars[1]);
             bars[1].show();
-            bars[0].hide(function() { bars[0].remove(); });
+            bars[0].hide(andRemove);
         }
 
         if (it % 2) {
@@ -89,6 +119,12 @@
         } else {
             lastBars[1].show();
             lastBars[0].hide();
+        }
+
+        if (it % 2) {
+            animatableBar.show("fade");
+        } else {
+            animatableBar.hide("fade");
         }
     }, 1000);
     </script>

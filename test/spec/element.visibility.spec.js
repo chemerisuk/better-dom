@@ -28,27 +28,14 @@ describe("visibility", function() {
     });
 
     describe("hide", function() {
-        // it("should support optional delay argument", function(done) {
-        //     var delay = 50, start = Date.now();
-
-        //     expect(link).not.toHaveAttr("aria-hidden", "true");
-
-        //     link.hide(delay, function() {
-        //         expect(Date.now() - start).not.toBeLessThan(delay);
-        //         expect(link).toHaveAttr("aria-hidden", "true");
-
-        //         done();
-        //     });
-        // });
-
         it("should support exec callback when no transition is defined", function(done) {
             expect(link.hide(done));
         });
 
-        // it("should support exec callback when animation is defined", function(done) {
-        //     link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
-        //     link.hide(done);
-        // });
+        it("should support exec callback when animation is defined", function(done) {
+            link.set("style", "animation:none 10ms;-webkit-animation:none 10ms;display:block");
+            link.hide("fade", done);
+        });
 
         it("should support exec callback when transition is defined", function(done) {
             link = DOM.create("<a>123</a>");
@@ -108,39 +95,22 @@ describe("visibility", function() {
         });
 
         it("should throw error if arguments are invalid", function() {
-            expect(function() { link.hide("123") }).toThrow();
+            // expect(function() { link.hide("123") }).toThrow();
             expect(function() { link.hide(-10) }).toThrow();
             expect(function() { link.hide(true) }).toThrow();
         });
     });
 
     describe("show", function() {
-        // it("should support optional delay argument", function(done) {
-        //     var delay = 50, start = Date.now();
+        it("should trigger callback for initially hidden elements", function(done) {
+            link.addClass("hidden");
+            link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;");
 
-        //     link.hide(function() {
-        //         expect(link).toHaveAttr("aria-hidden", "true");
-
-        //         link.show(delay, function() {
-        //             expect(link).toHaveAttr("aria-hidden", "false");
-        //             expect(Date.now() - start).not.toBeLessThan(delay);
-
-        //             done();
-        //         });
-        //     });
-        // });
-
-        // it("should trigger callback for initially hidden elements", function(done) {
-        //     link = link.clone(false).set("aria-hidden", "true");
-        //     link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
-
-        //     jasmine.sandbox.set(link);
-
-        //     link.show(done);
-        // });
+            link.show("fade", done);
+        });
 
         it("should throw error if arguments are invalid", function() {
-            expect(function() { link.show("123") }).toThrow();
+            // expect(function() { link.show("123") }).toThrow();
             expect(function() { link.show(-10) }).toThrow();
             expect(function() { link.show(true) }).toThrow();
         });
@@ -221,8 +191,8 @@ describe("visibility", function() {
         //     var showSpy = jasmine.createSpy("show"),
         //         hideSpy = jasmine.createSpy("hide");
 
-        //     link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;display:block");
-        //     link.toggle(hideSpy);
+        //     link.set("style", "animation:none 10ms;-webkit-animation:none 10ms;display:block");
+        //     link.toggle("fade", hideSpy);
 
         //     hideSpy.and.callFake(function() {
         //         link.toggle(showSpy);
