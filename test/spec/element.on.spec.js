@@ -258,21 +258,6 @@ describe("on", function() {
         // expect(spy).not.toHaveBeenCalled();
     });
 
-    it("should debounce some events", function(done) {
-        var spy = jasmine.createSpy("callback");
-
-        form.on("mousemove", spy);
-        form.fire("mousemove");
-        form.fire("mousemove");
-        form.fire("mousemove");
-
-        setTimeout(function() {
-            expect(spy.calls.count()).toBe(1);
-
-            done();
-        }, 100);
-    });
-
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
     });

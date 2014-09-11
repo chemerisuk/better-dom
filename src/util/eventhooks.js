@@ -2,14 +2,6 @@ import { DOM2_EVENTS, HTML, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
 
 var hooks = {};
 
-["scroll", "mousemove"].forEach((name) => {
-    hooks[name] = (handler) => {
-        var free = true;
-        // debounce frequent events
-        return (e) => { if (free) free = DOM.raf(() => { free = !handler(e) }) };
-    };
-});
-
 if ("onfocusin" in HTML) {
     hooks.focus = (handler) => { handler._type = "focusin" };
     hooks.blur = (handler) => { handler._type = "focusout" };
