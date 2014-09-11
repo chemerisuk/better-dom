@@ -12,7 +12,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         // if duration is in seconds, then multiple result value by 1000
         return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
     },
-    calcTransitionDuration = (style, prefix) => {
+    calcTransitionDuration = (style) => {
         var delay = CSS.get["transition-delay"](style).split(","),
             duration = CSS.get["transition-duration"](style).split(",");
 
@@ -20,9 +20,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             return parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
         }));
     },
-    scheduleTransition = (node, style, isHidden, done) => {
-        var compStyle = _.computeStyle(node),
-            duration = calcTransitionDuration(compStyle);
+    scheduleTransition = (node, style, computed, hiding, done) => {
+        var duration = calcTransitionDuration(computed);
 
         if (!duration) return false;
 
@@ -30,7 +29,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         transitionValues = TRANSITION_PROPS.map((prop, index) => {
             // have to use regexp to split transition-timing-function value
-            return CSS.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
+            return CSS.get[prop](computed).split(index ? ", " : /, (?!\d)/);
         });
 
         // try to find existing or use 0s length or make a new visibility transition
@@ -40,8 +39,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         transitionValues[0][visibilityTransitionIndex] = "linear";
         transitionValues[1][visibilityTransitionIndex] = "visibility";
-        transitionValues[isHidden ? 2 : 3][visibilityTransitionIndex] = "0s";
-        transitionValues[isHidden ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+        transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
+        transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
 
         // now set target duration and delay
         transitionValues.forEach((value, index) => {
@@ -50,7 +49,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         // make sure that the visibility property will be changed
         // so reset it to appropriate value with zero
-        style.visibility = isHidden ? "visible" : "hidden";
+        style.visibility = hiding ? "visible" : "hidden";
         // use willChange to improve performance in modern browsers:
         // http://dev.opera.com/articles/css-will-change-property/
         style.willChange = transitionValues[1].join(", ");
@@ -71,7 +70,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         return true;
     },
-    makeVisibilityMethod = (name, fn) => function(callback) {
+    makeVisibilityMethod = (name, condition) => function(callback) {
         var node = this[0];
 
         if (callback && typeof callback !== "function") {
@@ -81,8 +80,9 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         if (!node) return this;
 
         var style = node.style,
-            displayValue = style.display,
-            isHidden = typeof fn === "function" ? fn(node) : fn,
+            computed = _.computeStyle(node),
+            displayValue = computed.display,
+            hiding = typeof condition === "boolean" ? condition : displayValue !== "none",
             done = () => {
                 if (style.visibility === "hidden") {
                     style.display = "none";
@@ -90,43 +90,43 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
                 if (callback) callback.call(this);
             },
-            hasAnimation;
+            hasTransition;
 
-        if (isHidden) {
+        if (hiding) {
             if (displayValue !== "none") {
-                this._._visibility = displayValue;
+                this._._display = displayValue;
                 // we'll hide element later in the complete call
             }
         } else {
             if (displayValue === "none") {
                 // restore visibility
-                style.display = this._._visibility || "inherit";
+                style.display = this._._display || "inherit";
             }
         }
 
         // Legacy Android is too slow and has a lot of bugs in the CSS animations
         // implementation, so skip animations for it (duration value is always zero)
         if (ANIMATIONS_ENABLED) {
-            hasAnimation = scheduleTransition(node, style, isHidden, done);
+            hasTransition = scheduleTransition(node, style, computed, hiding, done);
 
-            if (hasAnimation && !isHidden) {
+            if (hasTransition && !hiding) {
                 // Use offsetWidth to trigger reflow of the element
                 // after changing from display:none
                 //
                 // Credits to Jonathan Snook's prepareTransition plugin:
                 // https://github.com/snookca/prepareTransition
                 //
-                // We shouldn't change truthy of hasAnimation, so use ~
-                hasAnimation = ~node.offsetWidth;
+                // We shouldn't change truthy of hasTransition, so use ~
+                hasTransition = ~node.offsetWidth;
             }
         }
 
         // trigger visibility transition when it exists
-        style.visibility = isHidden ? "hidden" : "visible";
+        style.visibility = hiding ? "hidden" : "visible";
         // trigger native CSS animation
-        this.set("aria-hidden", String(isHidden));
+        this.set("aria-hidden", String(hiding));
         // must be AFTER changing the aria-hidden attribute
-        if (!hasAnimation) done();
+        if (!hasTransition) done();
 
         return this;
     };
@@ -159,6 +159,4 @@ $Element.prototype.hide = makeVisibilityMethod("hide", true);
  * @return {$Element}
  * @function
  */
-$Element.prototype.toggle = makeVisibilityMethod("toggle", function(node) {
-    return node.getAttribute("aria-hidden") !== "true";
-});
+$Element.prototype.toggle = makeVisibilityMethod("toggle");

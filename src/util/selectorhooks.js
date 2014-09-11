@@ -1,16 +1,14 @@
 import _ from "../helpers";
-import { DOCUMENT } from "../constants";
-import { DOM } from "../types";
+import { HTML, DOCUMENT } from "../constants";
 
 var hooks = {};
 
 hooks[":focus"] = (node) => node === DOCUMENT.activeElement;
 
-hooks[":hidden"] = (node, el) => {
-    return node.getAttribute("aria-hidden") === "true" ||
-        _.computeStyle(node).display === "none" || !DOM.contains(el);
-};
+hooks[":hidden"] = (node) => !hooks[":visible"](node);
 
-hooks[":visible"] = (node, el) => !hooks[":hidden"](node, el);
+hooks[":visible"] = (node) => {
+    return _.computeStyle(node).display !== "none" && HTML.contains(node);
+};
 
 export default hooks;

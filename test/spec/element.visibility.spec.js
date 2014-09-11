@@ -12,6 +12,7 @@ try {
     }
 }
 
+DOM.importStyles(".hidden", "display:none");
 DOM.importStyles(".fade", "opacity:1;transform:scale(1,1);-webkit-transform:scale(1,1)");
 DOM.importStyles(".fade[aria-hidden=true]", "opacity:0;transform:scale(0,0);-webkit-transform:scale(0,0)");
 
@@ -24,20 +25,6 @@ describe("visibility", function() {
         link = DOM.create("<a>123</a>");
 
         jasmine.sandbox.set(link);
-    });
-
-    it("should use aria-hidden to toggle visibility", function(done) {
-        expect(link).not.toHaveAttr("aria-hidden");
-
-        link.hide(function() {
-            expect(link).toHaveAttr("aria-hidden", "true");
-
-            link.show(function() {
-                expect(link).toHaveAttr("aria-hidden", "false");
-
-                done();
-            });
-        });
     });
 
     describe("hide", function() {
@@ -55,7 +42,7 @@ describe("visibility", function() {
         // });
 
         it("should support exec callback when no transition is defined", function(done) {
-            expect(link.hide(done)).toBe(link);
+            expect(link.hide(done));
         });
 
         // it("should support exec callback when animation is defined", function(done) {
@@ -157,11 +144,25 @@ describe("visibility", function() {
             expect(function() { link.show(-10) }).toThrow();
             expect(function() { link.show(true) }).toThrow();
         });
+
+        it("should handle initially hidden element", function() {
+            link.addClass("hidden");
+            link.show();
+
+            expect(link).toHaveAttr("aria-hidden", "false");
+            expect(link.css("display")).not.toBe("none");
+        });
     });
 
     describe("toggle", function() {
+        beforeEach(function() {
+            link = DOM.create("<a>123</a>");
+
+            jasmine.sandbox.set(link);
+        });
+
         it("should allow to toggle visibility", function(done) {
-            expect(link).not.toHaveAttr("aria-hidden");
+            expect(link.matches(":hidden")).toBe(false);
 
             link.toggle(function() {
                 expect(link.matches(":hidden")).toBe(true);
@@ -175,13 +176,13 @@ describe("visibility", function() {
         });
 
         it("should work properly with show/hide combination", function(done) {
-            expect(link).not.toHaveStyle("visibility", "hidden");
+            expect(link).not.toHaveStyle("display", "none");
 
             link.toggle(function() {
-                expect(link).toHaveStyle("visibility", "hidden");
+                expect(link).toHaveStyle("display", "none");
 
                 link.toggle(function() {
-                    expect(link).toHaveStyle("visibility", "visible");
+                    expect(link).not.toHaveStyle("display", "none");
 
                     done();
                 });
@@ -191,6 +192,20 @@ describe("visibility", function() {
         it("should toggle aria-hidden for detached elements", function(done) {
             link.remove();
             expect(link).not.toHaveAttr("aria-hidden");
+            link.hide(function() {
+                expect(link).toHaveAttr("aria-hidden", "true");
+
+                link.show(function() {
+                    expect(link).toHaveAttr("aria-hidden", "false");
+
+                    done();
+                });
+            });
+        });
+
+        it("should update aria-hidden", function(done) {
+            expect(link).not.toHaveAttr("aria-hidden");
+
             link.hide(function() {
                 expect(link).toHaveAttr("aria-hidden", "true");
 

@@ -19,7 +19,7 @@ function $Element(node) {
             this[0] = node;
         }
 
-        this._ = { _handlers: [], _watchers: {}, _visibility: "" };
+        this._ = { _handlers: [], _watchers: {} };
     } else {
         return new $Element(node);
     }
