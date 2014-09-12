@@ -11,9 +11,4 @@ DOM.noConflict = function() {
     return DOM;
 };
 
-// export better-dom to CommonJS environments
-if (typeof exports !== "undefined") {
-    exports.DOM = DOM;
-} else {
-    WINDOW.DOM = DOM;
-}
+WINDOW.DOM = DOM;
