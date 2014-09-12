@@ -22,12 +22,14 @@ $Element.prototype.get = function(name) {
     if (hook) return hook(node, name);
 
     if (nameType === "string") {
-        if (name[0] === "-" && name[1] === "-") {
-            key = name.substr(2);
+        if (name[0] === "_") {
+            key = name.substr(1);
 
             if (key in data) {
                 value = data[key];
             } else {
+                // convert from camel case to dash-separated value
+                key = key.replace(/[A-Z]/g, (l) => "-" + l.toLowerCase());
                 value = node.getAttribute("data-" + key);
 
                 if (value != null) {

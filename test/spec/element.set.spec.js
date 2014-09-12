@@ -107,20 +107,20 @@ describe("set", function() {
         expect(link.css("float")).toBe("left");
     });
 
-    describe("custom props", function() {
-        it("shoud touch private --data object", function() {
-            input.set("--test", "yeah");
+    describe("private properties", function() {
+        it("shoud be stored in _ object", function() {
+            input.set("_test", "yeah");
 
-            expect(input).not.toHaveAttr("--test", "yeah");
-            expect(input).not.toHaveProp("--test", "yeah");
+            expect(input).not.toHaveAttr("_test", "yeah");
+            expect(input).not.toHaveProp("_test", "yeah");
         });
 
-        it("should store any kind of object", function() {
+        it("should accept any kind of object", function() {
             var obj = {}, nmb = 123, func = function() {};
 
-            expect(input.set("--obj", obj).get("--obj")).toEqual(obj);
-            expect(input.set("--nmb", nmb).get("--nmb")).toEqual(nmb);
-            expect(input.set("--func", func).get("--func")).toEqual(func);
+            expect(input.set("_obj", obj).get("_obj")).toEqual(obj);
+            expect(input.set("_nmb", nmb).get("_nmb")).toEqual(nmb);
+            expect(input.set("_func", func).get("_func")).toEqual(func);
         });
 
         // it("should work with collections", function() {

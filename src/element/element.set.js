@@ -41,8 +41,8 @@ $Element.prototype.set = function(name, value) {
     if (hook) {
         hook(node, value);
     } else if (typeof name === "string") {
-        if (name[0] === "-" && name[1] === "-") {
-            this._[name.substr(2)] = value;
+        if (name[0] === "_") {
+            this._[name.substr(1)] = value;
         } else {
             if (typeof value === "function") {
                 value = value.call(this, oldValue);
