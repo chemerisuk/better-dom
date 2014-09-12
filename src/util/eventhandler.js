@@ -7,10 +7,11 @@ import HOOK from "./eventhooks";
  * Helper type to create an event handler
  */
 
-var EventHandler = (type, selector, callback, props, el, node, once) => {
-        if (!node) return null;
+var EventHandler = (type, selector, callback, props, el, once) => {
+        if (!el[0]) return null;
 
-        var hook = HOOK[type],
+        var node = el[0],
+            hook = HOOK[type],
             matcher = SelectorMatcher(selector, node),
             handler = (e) => {
                 e = e || WINDOW.event;

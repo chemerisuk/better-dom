@@ -28,7 +28,7 @@ describe("on", function() {
     });
 
     it("should accept optional event filter", function() {
-        DOM.once("focus input", spy);
+        DOM.once("focus", "input", spy);
 
         link.fire("focus");
         expect(spy).not.toHaveBeenCalled();
@@ -44,7 +44,7 @@ describe("on", function() {
             return false;
         });
 
-        DOM.once("click a", spy, ["currentTarget"]);
+        DOM.once("click", "a", spy, ["currentTarget"]);
         link.find("i").fire("click");
         expect(spy).toHaveBeenCalled();
     });
@@ -143,11 +143,11 @@ describe("on", function() {
         input.on("input", spy).fire("input");
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("input a", spy);
+        DOM.on("input", "a", spy);
         input.fire("input");
         expect(spy.calls.count()).toBe(2);
 
-        DOM.on("input input", spy);
+        DOM.on("input", "input", spy);
         input.fire("input");
         expect(spy.calls.count()).toBe(4);
     });
@@ -158,11 +158,11 @@ describe("on", function() {
         form.on("submit", spy).fire("submit");
         expect(spy).toHaveBeenCalled();
 
-        DOM.on("submit a", spy);
+        DOM.on("submit", "a", spy);
         form.fire("submit");
         expect(spy.calls.count()).toBe(2);
 
-        DOM.on("submit form", spy);
+        DOM.on("submit", "form", spy);
         form.fire("submit");
         expect(spy.calls.count()).toBe(4);
     });
