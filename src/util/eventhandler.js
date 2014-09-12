@@ -25,11 +25,6 @@ var EventHandler = (type, selector, callback, props, el, node, once) => {
                     args = props || [],
                     fn = callback;
 
-                if (typeof callback === "string") {
-                    // use getter to handle custom properties
-                    fn = el[callback] || el.get(callback);
-                }
-
                 // early stop for late binding or when target doesn't match selector
                 if (typeof fn !== "function" || !currentTarget) return;
 

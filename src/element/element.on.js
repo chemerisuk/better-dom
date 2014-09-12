@@ -8,9 +8,9 @@ import EventHandler from "../util/eventhandler";
  * Bind a DOM event
  * @memberof! $Element#
  * @alias $Element#on
- * @param  {String|Array}    type event type(s) with optional selector
- * @param  {Function|String} callback event callback or property name (for late binding)
- * @param  {Array}           [props] array of event properties to pass into the callback
+ * @param  {String|Array}  type      event type(s) with optional selector
+ * @param  {Function}      callback  event callback or property name (for late binding)
+ * @param  {Array}         [props]   array of event properties to pass into the callback
  * @return {$Element}
  */
 $Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {

@@ -176,27 +176,27 @@ describe("on", function() {
         expect(spy.calls.count()).toBe(3);
     });
 
-    it("should support late binding", function() {
-        spy.and.callFake(function() { expect(this).toBe(input) });
-        input.callback = spy;
-        input.on("focus", "callback").fire("focus");
-        expect(spy).toHaveBeenCalled();
+    // it("should support late binding", function() {
+    //     spy.and.callFake(function() { expect(this).toBe(input) });
+    //     input.callback = spy;
+    //     input.on("focus", "callback").fire("focus");
+    //     expect(spy).toHaveBeenCalled();
 
-        delete input.callback;
-        input.fire("focus");
-        expect(spy.calls.count()).toBe(1);
-    });
+    //     delete input.callback;
+    //     input.fire("focus");
+    //     expect(spy.calls.count()).toBe(1);
+    // });
 
-    it("should support late binding for private props", function() {
-        spy.and.callFake(function() { expect(this).toBe(input) });
-        input.set("--callback", spy);
-        input.on("focus", "--callback").fire("focus");
-        expect(spy).toHaveBeenCalled();
+    // it("should support late binding for private props", function() {
+    //     spy.and.callFake(function() { expect(this).toBe(input) });
+    //     input.set("--callback", spy);
+    //     input.on("focus", "--callback").fire("focus");
+    //     expect(spy).toHaveBeenCalled();
 
-        input.set("--callback", null);
-        input.fire("focus");
-        expect(spy.calls.count()).toBe(1);
-    });
+    //     input.set("--callback", null);
+    //     input.fire("focus");
+    //     expect(spy.calls.count()).toBe(1);
+    // });
 
     it("should allow to prevent custom events", function() {
         var spy2 = jasmine.createSpy("spy2");
@@ -275,11 +275,11 @@ describe("on", function() {
             expect(spy.calls.count()).toBe(1);
         });
 
-        it("should work for with late binding", function() {
-            spy.and.callFake(function() { expect(this).toBe(input) });
-            input.callback = spy;
-            input.once("focus", "callback").fire("focus");
-            expect(spy).toHaveBeenCalled();
-        });
+        // it("should work for with late binding", function() {
+        //     spy.and.callFake(function() { expect(this).toBe(input) });
+        //     input.callback = spy;
+        //     input.once("focus", "callback").fire("focus");
+        //     expect(spy).toHaveBeenCalled();
+        // });
     });
 });

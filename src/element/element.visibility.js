@@ -4,6 +4,8 @@ import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
 import { $Element } from "../types";
 import CSS from "../util/stylehooks";
 
+// Legacy Android is too slow and has a lot of bugs in the CSS animations
+// implementation, so skip any animations for it
 var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
     TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
     TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
@@ -69,6 +71,16 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         node.addEventListener(TRANSITION_EVENT_TYPE, completeTransition, false);
 
+        // Use offsetWidth to trigger reflow of the element
+        // after changing from the hidden state
+        //
+        // Thanks idea from Jonathan Snook's plugin:
+        // https://github.com/snookca/prepareTransition
+        if (!hiding) node.offsetWidth = node.offsetWidth;
+
+        // trigger visibility transition when it exists
+        style.visibility = hiding ? "hidden" : "visible";
+
         return true;
     },
     scheduleAnimation = (node, style, animationName, hiding, done) => {
@@ -130,26 +142,11 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             }
         }
 
-        // Legacy Android is too slow and has a lot of bugs in the CSS animations
-        // implementation, so skip animations for it (duration value is always zero)
         if (ANIMATIONS_ENABLED) {
             if (animationName) {
                 animatable = scheduleAnimation(node, style, animationName, hiding, done);
             } else {
                 animatable = scheduleTransition(node, style, computed, hiding, done);
-
-                if (animatable && !hiding) {
-                    // Use offsetWidth to trigger reflow of the element
-                    // after changing from display:none
-                    //
-                    // Thanks idea from Jonathan Snook's plugin:
-                    // https://github.com/snookca/prepareTransition
-                    //
-                    // We shouldn't change truthy of animatable, so use ~
-                    animatable = ~node.offsetWidth;
-                }
-                // trigger visibility transition when it exists
-                style.visibility = hiding ? "hidden" : "visible";
             }
         }
         // trigger native CSS animation
