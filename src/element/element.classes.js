@@ -2,37 +2,46 @@ import _ from "../helpers";
 import { HTML } from "../constants";
 import { $Element } from "../types";
 
+/* es6-transpiler has-iterators:false, has-generators: false */
+
 var reSpace = /[\n\t\r]/g;
 
-function makeClassesMethod(nativeStrategyName, strategy) {
-    var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+function makeClassesMethod(nativeMethodName, fallback) {
+    var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
+    // use fallback if browser does not support classList API
+    if (!HTML.classList) nativeMethodName = null;
 
-    if (HTML.classList) {
-        strategy = function(className) {
-            return this[0].classList[nativeStrategyName](className);
-        };
-    }
+    if (methodName === "hasClass" || methodName === "toggleClass") {
+        return function(className, force) {
+            var node = this[0];
 
-    if (methodName === "hasClass") {
-        return function(className) {
-            var args = arguments;
+            if (node) {
+                if (typeof force === "boolean") {
+                    this[force ? "addClass" : "removeClass"](className);
 
-            if (this[0]) {
-                if (args.length === 1) {
-                    return strategy.call(this, className);
+                    return force;
+                }
+
+                if (nativeMethodName) {
+                    return node.classList[nativeMethodName](className);
                 } else {
-                    return _.every.call(args, strategy, this);
+                    return fallback(node, className);
                 }
             }
         };
     } else {
         return function(className) {
-            var args = arguments;
+            var node = this[0],
+                args = arguments;
 
-            if (args.length === 1) {
-                strategy.call(this, className);
-            } else {
-                _.each.call(args, strategy, this);
+            if (node) {
+                for (className of args) {
+                    if (nativeMethodName) {
+                        node.classList[nativeMethodName](className);
+                    } else {
+                        fallback(node, className);
+                    }
+                }
             }
 
             return this;
@@ -41,15 +50,15 @@ function makeClassesMethod(nativeStrategyName, strategy) {
 }
 
 /**
- * Check if element contains class name(s)
+ * Check if element contains class name
  * @memberof! $Element#
  * @alias $Element#hasClass
- * @param  {...String} classNames class name(s)
- * @return {Boolean}   true if the element contains all classes
+ * @param  {String}   className class name
+ * @return {Boolean}  true if the element contains the class
  * @function
  */
-$Element.prototype.hasClass = makeClassesMethod("contains", function(className) {
-    return (" " + this[0].className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
+$Element.prototype.hasClass = makeClassesMethod("contains", function(node, className) {
+    return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
 });
 
 /**
@@ -60,8 +69,8 @@ $Element.prototype.hasClass = makeClassesMethod("contains", function(className) 
  * @return {$Element}
  * @function
  */
-$Element.prototype.addClass = makeClassesMethod("add", function(className) {
-    if (!this.hasClass(className)) this[0].className += " " + className;
+$Element.prototype.addClass = makeClassesMethod("add", function(node, className) {
+    if (!this.hasClass(className)) node.className += " " + className;
 });
 
 /**
@@ -72,24 +81,29 @@ $Element.prototype.addClass = makeClassesMethod("add", function(className) {
  * @return {$Element}
  * @function
  */
-$Element.prototype.removeClass = makeClassesMethod("remove", function(className) {
-    className = (" " + this[0].className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
+$Element.prototype.removeClass = makeClassesMethod("remove", function(node, className) {
+    className = (" " + node.className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
 
-    this[0].className = className.trim();
+    node.className = className.trim();
 });
 
 /**
- * Toggle class(es) on element
+ * Toggle a class on element
  * @memberof! $Element#
  * @alias $Element#toggleClass
- * @param  {...String}  classNames class name(s)
- * @return {$Element}
+ * @param  {String}  className class name(s)
+ * @param  {Boolean} [force] if true then adds the className; if false - removes it
+ * @return {Boolean} true if the className is now present, and false otherwise.
  * @function
  */
-$Element.prototype.toggleClass = makeClassesMethod("toggle", function(className) {
-    var oldClassName = this[0].className;
+$Element.prototype.toggleClass = makeClassesMethod("toggle", function(node, className) {
+    var oldClassName = node.className;
 
     this.addClass(className);
 
-    if (oldClassName === this[0].className) this.removeClass(className);
+    if (oldClassName !== node.className) return true;
+
+    this.removeClass(className);
+
+    return false;
 });

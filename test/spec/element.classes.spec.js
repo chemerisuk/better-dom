@@ -15,25 +15,39 @@ describe("classes manipulation", function() {
             expect(link.hasClass("test2")).toBe(false);
         });
 
-        it("should accept multiple classes", function() {
+        it("should not accept multiple classes", function() {
             expect(link.hasClass("test", "test1")).toBe(true);
-            expect(link.hasClass("test", "test2")).toBe(false);
+            expect(link.hasClass("test", "test2")).toBe(true);
         });
-
     });
 
-    describe("addClass, removeClass, toggleClass", function() {
+    describe("toggleClass", function() {
+        it("should make appropriate changes with single class", function() {
+            expect(link.toggleClass("test3")).toBe(true);
+            expect(link).toHaveClass("test3");
+
+            expect(link.toggleClass("test3")).toBe(false);
+            expect(link).not.toHaveClass("test3");
+        });
+
+        it("should support optional argument force", function() {
+            expect(link.toggleClass("test", true)).toBe(true);
+            expect(link).toHaveClass("test");
+
+            expect(link.toggleClass("test3", false)).toBe(false);
+            expect(link).not.toHaveClass("test3");
+        });
+    });
+
+    describe("addClass, removeClass", function() {
         it("should return reference to 'this'", function() {
             expect(link.addClass("test2")).toBe(link);
             expect(link.removeClass("test2")).toBe(link);
-            expect(link.toggleClass("test2")).toBe(link);
         });
 
         it("should make appropriate changes with single class", function() {
             expect(link.addClass("test2")).toHaveClass("test2");
             expect(link.removeClass("test2")).not.toHaveClass("test2");
-            expect(link.toggleClass("test3")).toHaveClass("test3");
-            expect(link.toggleClass("test3")).not.toHaveClass("test3");
         });
 
         it("should make appropriate changes with multiple classes", function() {
@@ -46,11 +60,6 @@ describe("classes manipulation", function() {
 
             expect(link).not.toHaveClass("test2");
             expect(link).not.toHaveClass("test3");
-
-            link.toggleClass("test1", "test4");
-
-            expect(link).not.toHaveClass("test1");
-            expect(link).toHaveClass("test4");
         });
     });
 
