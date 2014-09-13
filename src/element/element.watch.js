@@ -14,6 +14,12 @@ import { $Element } from "../types";
  * @param  {String}        name     property/attribute name
  * @param  {watchCallback} callback function for watching changes of the property/attribute
  * @return {$Element}
+ * @example
+ * ```js
+ * targetInput.watch("value", function(value, oldValue) {
+ *   // do what you want AFTER the value of targetInput was changed
+ * });
+ * ```
  */
 $Element.prototype.watch = function(name, callback) {
     var watchers = this._._watchers;
