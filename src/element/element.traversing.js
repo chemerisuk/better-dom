@@ -6,14 +6,14 @@ import SelectorMatcher from "../util/selectormatcher";
 /* es6-transpiler has-iterators:false, has-generators: false */
 
 function makeTraversingMethod(methodName, propertyName, all) {
-    return function(selector, andSelf) {
+    return function(selector) {
         if (selector && typeof selector !== "string") throw new MethodError(methodName);
 
         var matcher = SelectorMatcher(selector),
             nodes = all ? [] : null,
             it = this[0];
 
-        for (it = it && !andSelf ? it[propertyName] : it; it; it = it[propertyName]) {
+        for (it = it && it[propertyName]; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
                 if (!all) break;
 
@@ -57,7 +57,6 @@ function makeChildTraversingMethod(all) {
  * @memberof! $Element#
  * @alias $Element#next
  * @param {String} [selector] css selector
- * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  */
@@ -68,7 +67,6 @@ $Element.prototype.next = makeTraversingMethod("next", "nextSibling");
  * @memberof! $Element#
  * @alias $Element#prev
  * @param {String} [selector] css selector
- * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  */
@@ -79,7 +77,6 @@ $Element.prototype.prev = makeTraversingMethod("prev", "previousSibling");
  * @memberof! $Element#
  * @alias $Element#nextAll
  * @param {String} [selector] css selector
- * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {Array} collection of matched elements
  * @function
  */
@@ -90,7 +87,6 @@ $Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true
  * @memberof! $Element#
  * @alias $Element#prevAll
  * @param {String} [selector] css selector
- * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {Array} collection of matched elements
  * @function
  */
@@ -101,7 +97,6 @@ $Element.prototype.prevAll = makeTraversingMethod("prevAll", "previousSibling", 
  * @memberof! $Element#
  * @alias $Element#parent
  * @param {String} [selector] css selector
- * @param {Boolean} [andSelf] if true than search will start from the current element
  * @return {$Element} matched element
  * @function
  */
