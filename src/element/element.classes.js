@@ -27,7 +27,7 @@ function makeClassesMethod(nativeMethodName, fallback) {
                 if (nativeMethodName) {
                     return node.classList[nativeMethodName](className);
                 } else {
-                    return fallback(node, className);
+                    return fallback(this, node, className);
                 }
             }
         };
@@ -43,7 +43,7 @@ function makeClassesMethod(nativeMethodName, fallback) {
                     if (nativeMethodName) {
                         node.classList[nativeMethodName](className);
                     } else {
-                        fallback(node, className);
+                        fallback(this, node, className);
                     }
                 }
             }
@@ -61,7 +61,7 @@ function makeClassesMethod(nativeMethodName, fallback) {
  * @return {Boolean}  true if the element contains the class
  * @function
  */
-$Element.prototype.hasClass = makeClassesMethod("contains", function(node, className) {
+$Element.prototype.hasClass = makeClassesMethod("contains", function(el, node, className) {
     return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
 });
 
@@ -73,8 +73,8 @@ $Element.prototype.hasClass = makeClassesMethod("contains", function(node, class
  * @return {$Element}
  * @function
  */
-$Element.prototype.addClass = makeClassesMethod("add", function(node, className) {
-    if (!this.hasClass(className)) node.className += " " + className;
+$Element.prototype.addClass = makeClassesMethod("add", function(el, node, className) {
+    if (!el.hasClass(className)) node.className += " " + className;
 });
 
 /**
@@ -85,7 +85,7 @@ $Element.prototype.addClass = makeClassesMethod("add", function(node, className)
  * @return {$Element}
  * @function
  */
-$Element.prototype.removeClass = makeClassesMethod("remove", function(node, className) {
+$Element.prototype.removeClass = makeClassesMethod("remove", function(el, node, className) {
     className = (" " + node.className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
 
     node.className = className.trim();
@@ -100,14 +100,14 @@ $Element.prototype.removeClass = makeClassesMethod("remove", function(node, clas
  * @return {Boolean} true if the className is now present, and false otherwise.
  * @function
  */
-$Element.prototype.toggleClass = makeClassesMethod("toggle", function(node, className) {
+$Element.prototype.toggleClass = makeClassesMethod("toggle", function(el, node, className) {
     var oldClassName = node.className;
 
-    this.addClass(className);
+    el.addClass(className);
 
     if (oldClassName !== node.className) return true;
 
-    this.removeClass(className);
+    el.removeClass(className);
 
     return false;
 });

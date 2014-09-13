@@ -5,73 +5,81 @@ describe("watch", function() {
         link = DOM.create("<a href=\"url\" title=\"text\"></a>");
     });
 
-    // it("should execute callback after the setter call", function() {
-    //     var spy1 = jasmine.createSpy("watcher1"),
-    //         spy2 = jasmine.createSpy("watcher2"),
-    //         oldHref = link.get("href");
+    it("should execute callback after the setter call", function(done) {
+        var spy1 = jasmine.createSpy("watcher1"),
+            spy2 = jasmine.createSpy("watcher2"),
+            oldHref = link.get("href");
 
-    //     expect(link.watch("href", spy1)).toBe(link);
-    //     expect(link.watch("title", spy2)).toBe(link);
+        expect(link.watch("href", spy1)).toBe(link);
+        expect(link.watch("title", spy2)).toBe(link);
 
-    //     link.set("href", "url_changed");
-    //     expect(spy1).toHaveBeenCalledWith("url_changed", oldHref);
-    //     expect(spy2).not.toHaveBeenCalled();
+        spy1.and.callFake(function(value, oldValue) {
+            expect(value).toBe("url_changed");
+            expect(oldValue).toBe(oldHref);
 
-    //     link.set("title", "modified");
-    //     expect(spy2).toHaveBeenCalledWith("modified", "text");
-    //     expect(spy1.calls.count()).toBe(1);
+            expect(spy2).not.toHaveBeenCalled();
 
-    //     link.set("123");
-    //     expect(spy1.calls.count()).toBe(1);
-    //     expect(spy1.calls.count()).toBe(1);
+            link.set("title", "modified");
+        });
 
-    //     link.set("title", "new");
-    //     expect(spy2).toHaveBeenCalledWith("new", "modified");
-    // });
+        spy2.and.callFake(function(value, oldValue) {
+            expect(value).toBe("modified");
+            expect(oldValue).toBe("text");
 
-    // it("should execute for visibility methods", function(done) {
-    //     var spy = jasmine.createSpy("watcher");
+            expect(spy1.calls.count()).toBe(1);
+            expect(spy2.calls.count()).toBe(1);
 
-    //     link.watch("aria-hidden", spy);
+            done();
+        });
 
-    //     spy.and.callFake(function(newValue, oldValue) {
-    //         expect(newValue).toBe("true");
-    //         expect(oldValue).toBeFalsy();
-    //     });
+        link.set("href", "url_changed");
+    });
 
-    //     link.hide(function() {
-    //         expect(spy.calls.count()).toBe(1);
+    it("should execute for visibility methods", function(done) {
+        var spy = jasmine.createSpy("watcher");
 
-    //         spy.and.callFake(function(newValue, oldValue) {
-    //             expect(newValue).toBe("false");
-    //             expect(oldValue).toBe("true");
-    //         });
+        link.watch("aria-hidden", spy);
 
-    //         link.show(function() {
-    //             expect(spy.calls.count()).toBe(2);
+        spy.and.callFake(function(newValue, oldValue) {
+            expect(newValue).toBe("true");
+            expect(oldValue).toBeFalsy();
+        });
 
-    //             done();
-    //         });
-    //     });
-    // });
+        link.hide();
 
-    // it("should allow to unregister handler", function() {
-    //     var spy = jasmine.createSpy("watcher");
+        setTimeout(function() {
+            expect(spy.calls.count()).toBe(1);
 
-    //     expect(link.watch("title", spy)).toBe(link);
+            spy.and.callFake(function(newValue, oldValue) {
+                expect(newValue).toBe("false");
+                expect(oldValue).toBe("true");
 
-    //     link.set("title", "modified");
-    //     expect(spy).toHaveBeenCalledWith("modified", "text");
-    //     expect(spy.calls.count()).toBe(1);
+                done();
+            });
 
-    //     expect(link.unwatch("href", spy)).toBe(link);
-    //     link.set("title", "modified1");
-    //     expect(spy.calls.count()).toBe(2);
+            link.show();
+        }, 50);
+    });
 
-    //     expect(link.unwatch("title", spy)).toBe(link);
-    //     link.set("title", "modified2");
-    //     expect(spy.calls.count()).toBe(2);
-    // });
+    it("should allow to unregister handler", function(done) {
+        var spy = jasmine.createSpy("watcher");
+
+        expect(link.watch("title", spy)).toBe(link);
+
+        spy.and.callFake(function() {
+            expect(link.unwatch("title", spy)).toBe(link);
+
+            link.set("title", "modified1");
+
+            setTimeout(function() {
+                expect(spy.calls.count()).toBe(1);
+
+                done();
+            }, 50);
+        });
+
+        link.set("title", "modified");
+    });
 
     it("should work for the value shortcut", function(done) {
         var spy = jasmine.createSpy("watcher"),
