@@ -38,7 +38,7 @@ DOM.mock = function(content, varMap, /*INTERNAL*/all) {
  * @alias DOM.mockAll
  * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {Array} collection of mocked {@link $Element} instances
+ * @return {Array.<$Element>} an array of element wrappers
  */
 DOM.mockAll = function(content, varMap) {
     return DOM.mock(content, varMap, true);

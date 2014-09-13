@@ -58,7 +58,7 @@ function makeClassesMethod(nativeMethodName, fallback) {
  * @memberof! $Element#
  * @alias $Element#hasClass
  * @param  {String}   className class name
- * @return {Boolean}  true if the element contains the class
+ * @return {Boolean}  returns <code>true</code> if the element contains the class
  * @function
  */
 $Element.prototype.hasClass = makeClassesMethod("contains", function(el, node, className) {
@@ -96,8 +96,8 @@ $Element.prototype.removeClass = makeClassesMethod("remove", function(el, node, 
  * @memberof! $Element#
  * @alias $Element#toggleClass
  * @param  {String}  className class name(s)
- * @param  {Boolean} [force] if true then adds the className; if false - removes it
- * @return {Boolean} true if the className is now present, and false otherwise.
+ * @param  {Boolean} [force] if <code>true</code> then adds the className; if <code>false</code> - removes it
+ * @return {Boolean} returns <code>true</code> if the className is now present, and <code>false</code> otherwise.
  * @function
  */
 $Element.prototype.toggleClass = makeClassesMethod("toggle", function(el, node, className) {

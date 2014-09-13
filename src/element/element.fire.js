@@ -10,7 +10,7 @@ import HOOK from "../util/eventhooks";
  * @alias $Element#fire
  * @param  {String}  type  type of event
  * @param  {...Object}     [args]  extra arguments to pass into each event handler
- * @return {Boolean} true if default action wasn't prevented
+ * @return {Boolean} returns <code>true</code> if default action wasn't prevented
  */
 $Element.prototype.fire = function(type, ...args) {
     var node = this[0],

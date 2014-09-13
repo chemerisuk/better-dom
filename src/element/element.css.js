@@ -16,7 +16,7 @@ import HOOK from "../util/stylehooks";
  * @alias $Element#css
  * @param  {String|Object}      name    style property name or key/value object
  * @param  {String|cssCallback} [value] style property value or {@link cssCallback}
- * @return {String|$Element} property value or reference to this
+ * @return {String|$Element} property value or reference to <code>this</code>
  */
 $Element.prototype.css = function(name, value) {
     var len = arguments.length,

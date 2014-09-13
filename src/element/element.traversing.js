@@ -57,7 +57,7 @@ function makeChildTraversingMethod(all) {
  * @memberof! $Element#
  * @alias $Element#next
  * @param {String} [selector] css selector
- * @return {$Element} matched element
+ * @return {$Element} matched element wrapper
  * @function
  */
 $Element.prototype.next = makeTraversingMethod("next", "nextSibling");
@@ -67,7 +67,7 @@ $Element.prototype.next = makeTraversingMethod("next", "nextSibling");
  * @memberof! $Element#
  * @alias $Element#prev
  * @param {String} [selector] css selector
- * @return {$Element} matched element
+ * @return {$Element} matched element wrapper
  * @function
  */
 $Element.prototype.prev = makeTraversingMethod("prev", "previousSibling");
@@ -77,7 +77,7 @@ $Element.prototype.prev = makeTraversingMethod("prev", "previousSibling");
  * @memberof! $Element#
  * @alias $Element#nextAll
  * @param {String} [selector] css selector
- * @return {Array} collection of matched elements
+ * @return {Array.<$Element>} an array of all matched element wrappers
  * @function
  */
 $Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true);
@@ -87,7 +87,7 @@ $Element.prototype.nextAll = makeTraversingMethod("nextAll", "nextSibling", true
  * @memberof! $Element#
  * @alias $Element#prevAll
  * @param {String} [selector] css selector
- * @return {Array} collection of matched elements
+ * @return {Array.<$Element>} an array of all matched element wrappers
  * @function
  */
 $Element.prototype.prevAll = makeTraversingMethod("prevAll", "previousSibling", true);
@@ -97,7 +97,7 @@ $Element.prototype.prevAll = makeTraversingMethod("prevAll", "previousSibling", 
  * @memberof! $Element#
  * @alias $Element#parent
  * @param {String} [selector] css selector
- * @return {$Element} matched element
+ * @return {$Element} matched element wrapper
  * @function
  */
 $Element.prototype.parent = makeTraversingMethod("parent", "parentNode");
@@ -117,7 +117,7 @@ $Element.prototype.child = makeChildTraversingMethod(false);
  * @memberof! $Element#
  * @alias $Element#children
  * @param  {String} [selector] css selector
- * @return {Array} collection of matched elements
+ * @return {Array.<$Element>} an array of all matched element wrappers
  * @function
  */
 $Element.prototype.children = makeChildTraversingMethod(true);

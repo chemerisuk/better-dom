@@ -13,7 +13,7 @@ var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
  * @alias DOM.create
  * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {$Element} element wrapper
+ * @return {$Element} an element wrapper
  */
 DOM.create = function(value, varMap, /*INTERNAL*/all) {
     var test = reTest.exec(value),
@@ -58,7 +58,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
  * @alias DOM.createAll
  * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {Array.<$Element>} element wrappers
+ * @return {Array.<$Element>} an array of element wrappers
  * @example
  * ```js
  * DOM.createAll("span+b"); // => array with 2 $Elements: span and b

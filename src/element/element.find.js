@@ -71,7 +71,7 @@ $Element.prototype.find = function(selector, /*INTERNAL*/all = "") {
  * @memberof! $Element#
  * @alias $Element#findAll
  * @param  {String} selector css selector
- * @return {Array} matched elements
+ * @return {Array.<$Element>} an array of element wrappers
  */
 $Element.prototype.findAll = function(selector) {
     return this.find(selector, "All");
