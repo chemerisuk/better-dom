@@ -1,4 +1,4 @@
-import _ from "../helpers";
+import { MethodError } from "../errors";
 import { HTML } from "../constants";
 import { $Element } from "../types";
 
@@ -16,11 +16,13 @@ function makeClassesMethod(nativeMethodName, fallback) {
             var node = this[0];
 
             if (node) {
-                if (typeof force === "boolean") {
+                if (typeof force === "boolean" && methodName === "toggleClass") {
                     this[force ? "addClass" : "removeClass"](className);
 
                     return force;
                 }
+
+                if (typeof className !== "string") throw new MethodError(methodName);
 
                 if (nativeMethodName) {
                     return node.classList[nativeMethodName](className);
@@ -36,6 +38,8 @@ function makeClassesMethod(nativeMethodName, fallback) {
 
             if (node) {
                 for (className of args) {
+                    if (typeof className !== "string") throw new MethodError(methodName);
+
                     if (nativeMethodName) {
                         node.classList[nativeMethodName](className);
                     } else {
