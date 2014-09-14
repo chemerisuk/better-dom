@@ -8,7 +8,12 @@ import HOOK from "../util/selectorhooks";
  * @memberof! $Element#
  * @alias $Element#matches
  * @param  {String}   selector  css selector for checking
- * @return {$Element}
+ * @return {Boolean} returns <code>true</code> if success and <code>false</code> otherwise
+ * @example
+ * ```js
+ * DOM.find("body").matches("html>body"); // => true
+ * DOM.find("body").matches("body>html"); // => false
+ * ```
  */
 $Element.prototype.matches = function(selector) {
     if (!selector || typeof selector !== "string") throw new MethodError("matches");

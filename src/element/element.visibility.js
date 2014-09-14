@@ -161,7 +161,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
     };
 
 /**
- * Show element with optional callback and delay
+ * Show an element using CSS3 transition or animation
  * @memberof! $Element#
  * @alias $Element#show
  * @param {String}   [animationName]  CSS animation to apply during transition
@@ -172,7 +172,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 $Element.prototype.show = makeVisibilityMethod("show", false);
 
 /**
- * Hide element with optional callback and delay
+ * Hide an element using CSS3 transition or animation
  * @memberof! $Element#
  * @alias $Element#hide
  * @param {String}   [animationName]  CSS animation to apply during transition
@@ -183,7 +183,7 @@ $Element.prototype.show = makeVisibilityMethod("show", false);
 $Element.prototype.hide = makeVisibilityMethod("hide", true);
 
 /**
- * Toggle element visibility with optional callback and delay
+ * Toggle an element using CSS3 transition or animation
  * @memberof! $Element#
  * @alias $Element#toggle
  * @param {String}   [animationName]  CSS animation to apply during transition

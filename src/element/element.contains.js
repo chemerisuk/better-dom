@@ -6,7 +6,12 @@ import { $Element } from "../types";
  * @memberof! $Element#
  * @alias $Element#contains
  * @param  {$Element} element element to check
- * @return {Boolean} true if success
+ * @return {Boolean} returns <code>true</code> if success and <code>false</code> otherwise
+ * @example
+ * ```js
+ * DOM.contains(DOM.find("body")); // => true
+ * DOM.find("body").contains(DOM); // => false
+ * ```
  */
 $Element.prototype.contains = function(element) {
     var node = this[0];

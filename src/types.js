@@ -35,9 +35,15 @@ $Element.prototype = {
 };
 
 /**
- * Global object to access DOM
+ * Global object to access the DOM
  * @namespace DOM
  * @extends $Element
+ * @example
+ * You can use `DOM.constructor` to create a native element wrapper:
+ * ```js
+ * var bodyEl = DOM.constructor(document.body);
+ * bodyEl.hide();
+ * ```
  */
 var DOM = new $Element(HTML);
 

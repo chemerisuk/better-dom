@@ -7,8 +7,8 @@ import PROP from "../util/accessorhooks";
  * Get property or attribute value by name
  * @memberof! $Element#
  * @alias $Element#get
- * @param  {String|Array} [name] property/attribute name or array of names
- * @return {Object} property/attribute value
+ * @param  {String|Array} [name] property or attribute name or array of names
+ * @return {Object} a property or attribute value
  */
 $Element.prototype.get = function(name) {
     var data = this._,
