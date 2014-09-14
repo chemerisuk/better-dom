@@ -5,54 +5,53 @@ import { $Element } from "../types";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
 
-var reSpace = /[\n\t\r]/g;
+var reSpace = /[\n\t\r]/g,
+    makeClassesMethod = (nativeMethodName, fallback) => {
+        var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
+        // use fallback if browser does not support classList API
+        if (!HTML.classList) nativeMethodName = null;
 
-function makeClassesMethod(nativeMethodName, fallback) {
-    var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
-    // use fallback if browser does not support classList API
-    if (!HTML.classList) nativeMethodName = null;
+        if (methodName === "hasClass" || methodName === "toggleClass") {
+            return function(className, force) {
+                var node = this[0];
 
-    if (methodName === "hasClass" || methodName === "toggleClass") {
-        return function(className, force) {
-            var node = this[0];
+                if (node) {
+                    if (typeof force === "boolean" && methodName === "toggleClass") {
+                        this[force ? "addClass" : "removeClass"](className);
 
-            if (node) {
-                if (typeof force === "boolean" && methodName === "toggleClass") {
-                    this[force ? "addClass" : "removeClass"](className);
+                        return force;
+                    }
 
-                    return force;
-                }
-
-                if (typeof className !== "string") throw new MethodError(methodName);
-
-                if (nativeMethodName) {
-                    return node.classList[nativeMethodName](className);
-                } else {
-                    return fallback(this, node, className);
-                }
-            }
-        };
-    } else {
-        return function(className) {
-            var node = this[0],
-                args = arguments;
-
-            if (node) {
-                for (className of args) {
                     if (typeof className !== "string") throw new MethodError(methodName);
 
                     if (nativeMethodName) {
-                        node.classList[nativeMethodName](className);
+                        return node.classList[nativeMethodName](className);
                     } else {
-                        fallback(this, node, className);
+                        return fallback(this, node, className);
                     }
                 }
-            }
+            };
+        } else {
+            return function(className) {
+                var node = this[0],
+                    args = arguments;
 
-            return this;
-        };
-    }
-}
+                if (node) {
+                    for (className of args) {
+                        if (typeof className !== "string") throw new MethodError(methodName);
+
+                        if (nativeMethodName) {
+                            node.classList[nativeMethodName](className);
+                        } else {
+                            fallback(this, node, className);
+                        }
+                    }
+                }
+
+                return this;
+            };
+        }
+    };
 
 _.assign($Element.prototype, {
     /**

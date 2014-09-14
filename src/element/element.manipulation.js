@@ -3,44 +3,42 @@ import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
 
-function makeManipulationMethod(methodName, fasterMethodName, standalone, strategy) {
-    return function(content = "") {
-        var node = this[0];
+var makeManipulationMethod = (methodName, fasterMethodName, standalone, strategy) => function(content = "") {
+    var node = this[0];
 
-        if (!standalone && (!node.parentNode || content === DOM)) return this;
+    if (!standalone && (!node.parentNode || content === DOM)) return this;
 
-        if (typeof content === "function") content = content.call(this);
+    if (typeof content === "function") content = content.call(this);
 
-        if (typeof content === "string") {
-            if (content) {
-                // parse HTML string for the replace method
-                if (fasterMethodName) {
-                    content = content.trim();
-                } else {
-                    content = DOM.create(content)[0];
-                }
+    if (typeof content === "string") {
+        if (content) {
+            // parse HTML string for the replace method
+            if (fasterMethodName) {
+                content = content.trim();
+            } else {
+                content = DOM.create(content)[0];
             }
-        } else if (content instanceof $Element) {
-            content = content[0];
-        } else if (_.isArray(content)) {
-            content = content.reduce((fragment, el) => {
-                fragment.appendChild(el[0]);
-
-                return fragment;
-            }, DOCUMENT.createDocumentFragment());
-        } else {
-            throw new MethodError(methodName);
         }
+    } else if (content instanceof $Element) {
+        content = content[0];
+    } else if (_.isArray(content)) {
+        content = content.reduce((fragment, el) => {
+            fragment.appendChild(el[0]);
 
-        if (content && typeof content === "string") {
-            node.insertAdjacentHTML(fasterMethodName, content);
-        } else {
-            if (content || !fasterMethodName) strategy(node, content);
-        }
+            return fragment;
+        }, DOCUMENT.createDocumentFragment());
+    } else {
+        throw new MethodError(methodName);
+    }
 
-        return this;
-    };
-}
+    if (content && typeof content === "string") {
+        node.insertAdjacentHTML(fasterMethodName, content);
+    } else {
+        if (content || !fasterMethodName) strategy(node, content);
+    }
+
+    return this;
+};
 
 _.assign($Element.prototype, {
     /**

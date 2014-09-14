@@ -5,8 +5,7 @@ import SelectorMatcher from "../util/selectormatcher";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
 
-function makeTraversingMethod(methodName, propertyName, all) {
-    return function(selector) {
+var makeTraversingMethod = (methodName, propertyName, all) => function(selector) {
         if (selector && typeof selector !== "string") throw new MethodError(methodName);
 
         var matcher = SelectorMatcher(selector),
@@ -23,7 +22,6 @@ function makeTraversingMethod(methodName, propertyName, all) {
 
         return all ? [for (n of nodes) $Element(n)] : $Element(it);
     };
-}
 
 _.assign($Element.prototype, {
     /**

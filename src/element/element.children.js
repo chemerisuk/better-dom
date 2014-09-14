@@ -4,32 +4,30 @@ import { DOM2_EVENTS } from "../constants";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-function makeChildrenMethod(all) {
-    return function(selector) {
-        if (all) {
-            if (selector && typeof selector !== "string") throw new MethodError("children");
-        } else {
-            if (selector && typeof selector !== "number") throw new MethodError("child");
-        }
+var makeChildrenMethod = (all) => function(selector) {
+    if (all) {
+        if (selector && typeof selector !== "string") throw new MethodError("children");
+    } else {
+        if (selector && typeof selector !== "number") throw new MethodError("child");
+    }
 
-        var node = this[0],
-            matcher = SelectorMatcher(selector),
-            children = node ? node.children : null;
+    var node = this[0],
+        matcher = SelectorMatcher(selector),
+        children = node ? node.children : null;
 
-        if (!node) return all ? [] : new $Element();
+    if (!node) return all ? [] : new $Element();
 
-        if (!DOM2_EVENTS) {
-            // fix IE8 bug with children collection
-            children = [for (node of children) if (node.nodeType === 1) node];
-        }
+    if (!DOM2_EVENTS) {
+        // fix IE8 bug with children collection
+        children = [for (node of children) if (node.nodeType === 1) node];
+    }
 
-        if (all) return [for (n of children) if (matcher && matcher(n)) $Element(n)];
+    if (all) return [for (n of children) if (matcher && matcher(n)) $Element(n)];
 
-        if (selector < 0) selector = children.length + selector;
+    if (selector < 0) selector = children.length + selector;
 
-        return $Element(children[selector]);
-    };
-}
+    return $Element(children[selector]);
+};
 
 _.assign($Element.prototype, {
     /**
