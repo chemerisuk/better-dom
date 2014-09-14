@@ -1,4 +1,4 @@
-# better-dom [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url]
+# better-dom [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] ![Download 5.08 kB](http://img.shields.io/badge/download-5.07%20kB-blue.svg)
 > Live extension playground
 
 **NOTE:** documentation is currently updating to reflect changes in version 2. If you use 1st version please use [v1.7.7 tag](https://github.com/chemerisuk/better-dom/tree/v1.7.7).
@@ -14,7 +14,7 @@ I'd recommend to read one from the articles below to understand the main ideas o
 * [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
 ## Features
-* lightweight: ~22kb minified and ~5kb gzipped version ([custom builds](#how-to-make-a-custom-build) are available to reduce file size even more)
+* lightweight: ~22 kB minified and ~5 kB gzipped version ([custom builds](#how-to-make-a-custom-build) are available to reduce file size even more)
 * clear, minimalistic and standards-based (where possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
@@ -87,8 +87,8 @@ IE requires that the HTC file must be in the same domain with as the HTML page w
 Opera Mini is out of the scope because of lack of support for CSS3 Animations.
 
 [travis-url]: http://travis-ci.org/chemerisuk/better-dom
-[travis-image]: https://api.travis-ci.org/chemerisuk/better-dom.png?branch=master
+[travis-image]: http://img.shields.io/travis/chemerisuk/better-dom/master.svg
 
 [coveralls-url]: https://coveralls.io/r/chemerisuk/better-dom
-[coveralls-image]: https://coveralls.io/repos/chemerisuk/better-dom/badge.png?branch=master
+[coveralls-image]: http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg
 
