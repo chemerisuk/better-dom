@@ -42,73 +42,75 @@ function makeManipulationMethod(methodName, fasterMethodName, standalone, strate
     };
 }
 
-/**
- * Insert HTMLString or {@link $Element} after the current element
- * @memberof! $Element#
- * @alias $Element#after
- * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
- * @return {$Element}
- * @function
- */
-$Element.prototype.after = makeManipulationMethod("after", "afterend", false, (node, relatedNode) => {
-    node.parentNode.insertBefore(relatedNode, node.nextSibling);
-});
+_.assign($Element.prototype, {
+    /**
+     * Insert HTMLString or {@link $Element} after the current element
+     * @memberof! $Element#
+     * @alias $Element#after
+     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @return {$Element}
+     * @function
+     */
+    after: makeManipulationMethod("after", "afterend", false, (node, relatedNode) => {
+        node.parentNode.insertBefore(relatedNode, node.nextSibling);
+    }),
 
-/**
- * Insert HTMLString or {@link $Element} before the current element
- * @memberof! $Element#
- * @alias $Element#before
- * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
- * @return {$Element}
- * @function
- */
-$Element.prototype.before = makeManipulationMethod("before", "beforebegin", false, (node, relatedNode) => {
-    node.parentNode.insertBefore(relatedNode, node);
-});
+    /**
+     * Insert HTMLString or {@link $Element} before the current element
+     * @memberof! $Element#
+     * @alias $Element#before
+     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @return {$Element}
+     * @function
+     */
+    before: makeManipulationMethod("before", "beforebegin", false, (node, relatedNode) => {
+        node.parentNode.insertBefore(relatedNode, node);
+    }),
 
-/**
- * Prepend HTMLString or {@link $Element} to the current element
- * @memberof! $Element#
- * @alias $Element#prepend
- * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
- * @return {$Element}
- * @function
- */
-$Element.prototype.prepend = makeManipulationMethod("prepend", "afterbegin", true, (node, relatedNode) => {
-    node.insertBefore(relatedNode, node.firstChild);
-});
+    /**
+     * Prepend HTMLString or {@link $Element} to the current element
+     * @memberof! $Element#
+     * @alias $Element#prepend
+     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @return {$Element}
+     * @function
+     */
+    prepend: makeManipulationMethod("prepend", "afterbegin", true, (node, relatedNode) => {
+        node.insertBefore(relatedNode, node.firstChild);
+    }),
 
-/**
- * Append HTMLString or {@link $Element} to the current element
- * @memberof! $Element#
- * @alias $Element#append
- * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
- * @return {$Element}
- * @function
- */
-$Element.prototype.append = makeManipulationMethod("append", "beforeend", true, (node, relatedNode) => {
-    node.appendChild(relatedNode);
-});
+    /**
+     * Append HTMLString or {@link $Element} to the current element
+     * @memberof! $Element#
+     * @alias $Element#append
+     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @return {$Element}
+     * @function
+     */
+    append: makeManipulationMethod("append", "beforeend", true, (node, relatedNode) => {
+        node.appendChild(relatedNode);
+    }),
 
-/**
- * Replace current element with HTMLString or {@link $Element}
- * @memberof! $Element#
- * @alias $Element#replace
- * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
- * @return {$Element}
- * @function
- */
-$Element.prototype.replace = makeManipulationMethod("replace", "", false, (node, relatedNode) => {
-    node.parentNode.replaceChild(relatedNode, node);
-});
+    /**
+     * Replace current element with HTMLString or {@link $Element}
+     * @memberof! $Element#
+     * @alias $Element#replace
+     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @return {$Element}
+     * @function
+     */
+    replace: makeManipulationMethod("replace", "", false, (node, relatedNode) => {
+        node.parentNode.replaceChild(relatedNode, node);
+    }),
 
-/**
- * Remove current element from the DOM
- * @memberof! $Element#
- * @alias $Element#remove
- * @return {$Element}
- * @function
- */
-$Element.prototype.remove = makeManipulationMethod("remove", "", false, (node) => {
-    node.parentNode.removeChild(node);
+    /**
+     * Remove current element from the DOM
+     * @memberof! $Element#
+     * @alias $Element#remove
+     * @return {$Element}
+     * @function
+     */
+    remove: makeManipulationMethod("remove", "", false, (node) => {
+        node.parentNode.removeChild(node);
+    })
 });

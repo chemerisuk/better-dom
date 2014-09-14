@@ -14,5 +14,12 @@ export default {
     every: arrayProto.every,
     each: arrayProto.forEach,
     isArray: Array.isArray,
-    keys: Object.keys
+    keys: Object.keys,
+    assign: (target, source) => {
+        Object.keys(source).forEach((key) => {
+            target[key] = source[key];
+        });
+
+        return target;
+    }
 };

@@ -160,35 +160,37 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         return this;
     };
 
-/**
- * Show an element using CSS3 transition or animation
- * @memberof! $Element#
- * @alias $Element#show
- * @param {String}   [animationName]  CSS animation to apply during transition
- * @param {Function} [callback]       function that executes when animation is done
- * @return {$Element}
- * @function
- */
-$Element.prototype.show = makeVisibilityMethod("show", false);
+_.assign($Element.prototype, {
+    /**
+     * Show an element using CSS3 transition or animation
+     * @memberof! $Element#
+     * @alias $Element#show
+     * @param {String}   [animationName]  CSS animation to apply during transition
+     * @param {Function} [callback]       function that executes when animation is done
+     * @return {$Element}
+     * @function
+     */
+    show: makeVisibilityMethod("show", false),
 
-/**
- * Hide an element using CSS3 transition or animation
- * @memberof! $Element#
- * @alias $Element#hide
- * @param {String}   [animationName]  CSS animation to apply during transition
- * @param {Function} [callback]       function that executes when animation is done
- * @return {$Element}
- * @function
- */
-$Element.prototype.hide = makeVisibilityMethod("hide", true);
+    /**
+     * Hide an element using CSS3 transition or animation
+     * @memberof! $Element#
+     * @alias $Element#hide
+     * @param {String}   [animationName]  CSS animation to apply during transition
+     * @param {Function} [callback]       function that executes when animation is done
+     * @return {$Element}
+     * @function
+     */
+    hide: makeVisibilityMethod("hide", true),
 
-/**
- * Toggle an element using CSS3 transition or animation
- * @memberof! $Element#
- * @alias $Element#toggle
- * @param {String}   [animationName]  CSS animation to apply during transition
- * @param {Function} [callback]       function that executes when animation is done
- * @return {$Element}
- * @function
- */
-$Element.prototype.toggle = makeVisibilityMethod("toggle");
+    /**
+     * Toggle an element using CSS3 transition or animation
+     * @memberof! $Element#
+     * @alias $Element#toggle
+     * @param {String}   [animationName]  CSS animation to apply during transition
+     * @param {Function} [callback]       function that executes when animation is done
+     * @return {$Element}
+     * @function
+     */
+    toggle: makeVisibilityMethod("toggle")
+});

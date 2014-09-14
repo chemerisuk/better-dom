@@ -1,3 +1,4 @@
+import _ from "../helpers";
 import { MethodError } from "../errors";
 import { HTML } from "../constants";
 import { $Element } from "../types";
@@ -53,61 +54,63 @@ function makeClassesMethod(nativeMethodName, fallback) {
     }
 }
 
-/**
- * Check if element contains class name
- * @memberof! $Element#
- * @alias $Element#hasClass
- * @param  {String}   className class name
- * @return {Boolean}  returns <code>true</code> if the element contains the class
- * @function
- */
-$Element.prototype.hasClass = makeClassesMethod("contains", function(el, node, className) {
-    return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
-});
+_.assign($Element.prototype, {
+    /**
+     * Check if element contains class name
+     * @memberof! $Element#
+     * @alias $Element#hasClass
+     * @param  {String}   className class name
+     * @return {Boolean}  returns <code>true</code> if the element contains the class
+     * @function
+     */
+    hasClass: makeClassesMethod("contains", (el, node, className) => {
+        return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + className + " ") >= 0;
+    }),
 
-/**
- * Add class(es) to element
- * @memberof! $Element#
- * @alias $Element#addClass
- * @param  {...String} classNames class name(s)
- * @return {$Element}
- * @function
- */
-$Element.prototype.addClass = makeClassesMethod("add", function(el, node, className) {
-    if (!el.hasClass(className)) node.className += " " + className;
-});
+    /**
+     * Add class(es) to element
+     * @memberof! $Element#
+     * @alias $Element#addClass
+     * @param  {...String} classNames class name(s)
+     * @return {$Element}
+     * @function
+     */
+    addClass: makeClassesMethod("add", (el, node, className) => {
+        if (!el.hasClass(className)) node.className += " " + className;
+    }),
 
-/**
- * Remove class(es) from element
- * @memberof! $Element#
- * @alias $Element#removeClass
- * @param  {...String} classNames class name(s)
- * @return {$Element}
- * @function
- */
-$Element.prototype.removeClass = makeClassesMethod("remove", function(el, node, className) {
-    className = (" " + node.className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
+    /**
+     * Remove class(es) from element
+     * @memberof! $Element#
+     * @alias $Element#removeClass
+     * @param  {...String} classNames class name(s)
+     * @return {$Element}
+     * @function
+     */
+    removeClass: makeClassesMethod("remove", (el, node, className) => {
+        className = (" " + node.className + " ").replace(reSpace, " ").replace(" " + className + " ", " ");
 
-    node.className = className.trim();
-});
+        node.className = className.trim();
+    }),
 
-/**
- * Toggle a class on element
- * @memberof! $Element#
- * @alias $Element#toggleClass
- * @param  {String}  className class name(s)
- * @param  {Boolean} [force] if <code>true</code> then adds the className; if <code>false</code> - removes it
- * @return {Boolean} returns <code>true</code> if the className is now present, and <code>false</code> otherwise.
- * @function
- */
-$Element.prototype.toggleClass = makeClassesMethod("toggle", function(el, node, className) {
-    var oldClassName = node.className;
+    /**
+     * Toggle a class on element
+     * @memberof! $Element#
+     * @alias $Element#toggleClass
+     * @param  {String}  className class name(s)
+     * @param  {Boolean} [force] if <code>true</code> then adds the className; if <code>false</code> - removes it
+     * @return {Boolean} returns <code>true</code> if the className is now present, and <code>false</code> otherwise.
+     * @function
+     */
+    toggleClass: makeClassesMethod("toggle", (el, node, className) => {
+        var oldClassName = node.className;
 
-    el.addClass(className);
+        el.addClass(className);
 
-    if (oldClassName !== node.className) return true;
+        if (oldClassName !== node.className) return true;
 
-    el.removeClass(className);
+        el.removeClass(className);
 
-    return false;
+        return false;
+    })
 });

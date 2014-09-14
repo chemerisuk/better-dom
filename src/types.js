@@ -13,7 +13,7 @@ function $Element(node) {
     if (node && node[wrapperProp]) return node[wrapperProp];
 
     if (this instanceof $Element) {
-        if (node && node.nodeType === 1) {
+        if (node) {
             node[wrapperProp] = this;
 
             this[0] = node;
@@ -26,8 +26,10 @@ function $Element(node) {
 }
 
 $Element.prototype = {
-    constructor: (node) => new $Element(node),
-    toString: function() {
+    constructor(node) {
+        return new $Element(node && node.nodeType === 1 ? node : null);
+    },
+    toString() {
         var node = this[0];
 
         return node ? node.tagName.toLowerCase() : "";
