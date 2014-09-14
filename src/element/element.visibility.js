@@ -70,14 +70,6 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         };
 
         node.addEventListener(TRANSITION_EVENT_TYPE, completeTransition, false);
-
-        // Use offsetWidth to trigger reflow of the element
-        // after changing from the hidden state
-        //
-        // Thanks idea from Jonathan Snook's plugin:
-        // https://github.com/snookca/prepareTransition
-        if (!hiding) node.offsetWidth = node.offsetWidth;
-
         // trigger visibility transition when it exists
         style.visibility = hiding ? "hidden" : "visible";
 
@@ -143,6 +135,17 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         }
 
         if (ANIMATIONS_ENABLED) {
+            // Use offsetWidth to trigger reflow of the element
+            // after changing from the hidden state
+            //
+            // Opera 12 has the same issue with animations
+            // so need to trigger reflow manually for it
+            //
+            // Thanks idea from Jonathan Snook's plugin:
+            // https://github.com/snookca/prepareTransition
+
+            if (!hiding) displayValue = node.offsetWidth;
+
             if (animationName) {
                 animatable = scheduleAnimation(node, style, animationName, hiding, done);
             } else {

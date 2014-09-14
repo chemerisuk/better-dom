@@ -38,8 +38,6 @@ describe("visibility", function() {
         });
 
         it("should support exec callback when transition is defined", function(done) {
-            link = DOM.create("<a>123</a>");
-
             link.addClass("fade").set("style", "transition:opacity 10ms;-webkit-transition:opacity 10ms");
             link.hide(done);
         });
@@ -103,8 +101,8 @@ describe("visibility", function() {
 
     describe("show", function() {
         it("should trigger callback for initially hidden elements", function(done) {
+            link.set("style", "animation:fade 50ms;-webkit-animation:fade 50ms;");
             link.addClass("hidden");
-            link.set("style", "animation:fade 10ms;-webkit-animation:fade 10ms;");
 
             link.show("fade", done);
         });

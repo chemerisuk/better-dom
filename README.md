@@ -1,6 +1,8 @@
 # better-dom [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url]
 > Live extension playground
 
+**NOTE:** documentation is currently updating to reflect changes in version 2. If you use 1st version please use [v1.7.7 tag](https://github.com/chemerisuk/better-dom/tree/v1.7.7).
+
 jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
 But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce **[live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)** and **better-dom** - a new library for working with the DOM.
 
