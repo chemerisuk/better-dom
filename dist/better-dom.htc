@@ -6,9 +6,7 @@
 
         fixInputEvents(DOM2_EVENTS);
 
-        if (!DOM2_EVENTS) {
-            fixSubmitEvent();
-        }
+        if (!DOM2_EVENTS) fixSubmitEvent();
     }
 
     function init() {
@@ -28,19 +26,19 @@
         var inputEventHandler = function() {
                 if (capturedNode && capturedNode.value !== capturedNodeValue) {
                     capturedNodeValue = capturedNode.value;
-                    // trigger special event that bubbles
-                    DOM.constructor(capturedNode)[0].fire("input");
+                    // trigger custom event that bubbles
+                    DOM.constructor(capturedNode).fire("input");
                 }
             },
             clickEventHandler = function() {
                 if (capturedNode && capturedNode.checked !== capturedNodeValue) {
                     capturedNodeValue = capturedNode.checked;
-                    // trigger special event that bubbles
-                    DOM.constructor(capturedNode)[0].fire("change");
+                    // trigger custom event that bubbles
+                    DOM.constructor(capturedNode).fire("change");
                 }
             },
             changeEventHandler = function() {
-                DOM.constructor(capturedNode)[0].fire("change");
+                DOM.constructor(capturedNode).fire("change");
             },
             capturedNode, capturedNodeValue;
 
@@ -86,7 +84,7 @@
                 form = target.form;
 
             if (form && target.type !== "textarea" && e.keyCode === 13 && e.returnValue !== false) {
-                DOM.constructor(form)[0].fire("submit");
+                DOM.constructor(form).fire("submit");
 
                 return false;
             }
@@ -100,7 +98,7 @@
             if (form && (type === "submit" || type === "reset")) {
                 // if fake event was canceled cancel this event as well
                 // to prevent default native browser behavior
-                return DOM.constructor(form)[0].fire(type);
+                return DOM.constructor(form).fire(type);
             }
         });
     }
