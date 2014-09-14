@@ -2,9 +2,7 @@ import { DOCUMENT } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 
-/* es6-transpiler has-iterators:false, has-generators: false */
-
-var reTest = /^(?:[a-zA-Z-]+|\s*(<.+>)\s*)$/,
+var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
     sandbox = DOCUMENT.createElement("body");
 
 /**
@@ -22,7 +20,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
     if (value && test && !test[1]) {
         nodes = DOCUMENT.createElement(value);
 
-        if (all) nodes = [ nodes ];
+        if (all) nodes = [ new $Element(nodes) ];
     } else {
         if (test && test[1]) {
             value = varMap ? DOM.format(test[1], varMap) : test[1];
@@ -39,7 +37,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
 
             if (el.nodeType === 1) {
                 if (all) {
-                    nodes.push(el);
+                    nodes.push(new $Element(el));
                 } else {
                     nodes = el;
 
@@ -49,7 +47,7 @@ DOM.create = function(value, varMap, /*INTERNAL*/all) {
         }
     }
 
-    return all ? [for (n of nodes) $Element(n)] : $Element(nodes);
+    return all ? nodes : new $Element(nodes);
 };
 
 /**
