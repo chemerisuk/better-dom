@@ -26,9 +26,9 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
     scheduleTransition = (node, style, computed, hiding, done) => {
         var duration = calcTransitionDuration(computed);
 
-        if (!duration) return false;
+        if (!duration) return false; // skip transitions with zero duration
 
-        var visibilityTransitionIndex, transitionValues, completeTransition;
+        var visibilityTransitionIndex, transitionValues;
 
         transitionValues = TRANSITION_PROPS.map((prop, index) => {
             // have to use regexp to split transition-timing-function value
@@ -50,14 +50,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             CSS.set[TRANSITION_PROPS[index]](style, value.join(", "));
         });
 
-        // make sure that the visibility property will be changed
-        // so reset it to appropriate value with zero
-        style.visibility = hiding ? "visible" : "hidden";
-        // use willChange to improve performance in modern browsers:
-        // http://dev.opera.com/articles/css-will-change-property/
-        style.willChange = transitionValues[1].join(", ");
-
-        completeTransition = (e) => {
+        node.addEventListener(TRANSITION_EVENT_TYPE, function completeTransition(e) {
             if (e.propertyName === "visibility" && e.target === node) {
                 e.stopPropagation(); // this is an internal transition
 
@@ -67,16 +60,25 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
                 done();
             }
-        };
+        }, false);
 
-        node.addEventListener(TRANSITION_EVENT_TYPE, completeTransition, false);
+        // make sure that the visibility property will be changed
+        // so reset it to appropriate value with zero
+        style.visibility = hiding ? "visible" : "hidden";
+        // use willChange to improve performance in modern browsers:
+        // http://dev.opera.com/articles/css-will-change-property/
+        style.willChange = transitionValues[1].join(", ");
         // trigger visibility transition when it exists
         style.visibility = hiding ? "hidden" : "visible";
 
         return true;
     },
-    scheduleAnimation = (node, style, animationName, hiding, done) => {
-        var completeAnimation = (e) => {
+    scheduleAnimation = (node, style, computed, animationName, hiding, done) => {
+        var duration = parseFloat(CSS.get["animation-duration"](computed));
+
+        if (!duration) return false; // skip animations with zero duration
+
+        node.addEventListener(ANIMATION_EVENT_TYPE, function completeAnimation(e) {
             if (e.animationName === animationName && e.target === node) {
                 e.stopPropagation(); // this is an internal animation
 
@@ -86,9 +88,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
                 done();
             }
-        };
-
-        node.addEventListener(ANIMATION_EVENT_TYPE, completeAnimation, false);
+        }, false);
 
         // trigger animation start
         CSS.set["animation-direction"](style, hiding ? "normal" : "reverse");
@@ -138,16 +138,16 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
             // Use offsetWidth to trigger reflow of the element
             // after changing from the hidden state
             //
-            // Opera 12 has the same issue with animations
+            // Opera 12 has an issue with animations as well,
             // so need to trigger reflow manually for it
             //
-            // Thanks idea from Jonathan Snook's plugin:
+            // Thanks to the idea from Jonathan Snook's plugin:
             // https://github.com/snookca/prepareTransition
 
             if (!hiding) displayValue = node.offsetWidth;
 
             if (animationName) {
-                animatable = scheduleAnimation(node, style, animationName, hiding, done);
+                animatable = scheduleAnimation(node, style, computed, animationName, hiding, done);
             } else {
                 animatable = scheduleTransition(node, style, computed, hiding, done);
             }

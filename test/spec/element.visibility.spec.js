@@ -101,7 +101,6 @@ describe("visibility", function() {
 
     describe("show", function() {
         it("should trigger callback for initially hidden elements", function(done) {
-            link.set("style", "animation:fade 50ms;-webkit-animation:fade 50ms;");
             link.addClass("hidden");
 
             link.show("fade", done);
