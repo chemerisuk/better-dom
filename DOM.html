@@ -78,8 +78,6 @@
             
                 <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
             
-                <li data-name="DOM.raf"><a href="DOM.html#raf">raf</a></li>
-            
             </ul>
             <ul class="events itemMembers">
             
@@ -263,7 +261,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line127">line 127</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line122">line 122</a>
         </div>
         
     </div>
@@ -407,7 +405,7 @@
 
 
 <h5>Returns:</h5>
-wrapper
+element wrapper
 <br />
 
     
@@ -426,7 +424,7 @@ wrapper
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line177">line 177</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line172">line 172</a>
         </div>
         
     </div>
@@ -570,7 +568,7 @@ wrapper
 
 
 <h5>Returns:</h5>
-wrappers
+array of element wrappers
 <br />
 
     
@@ -598,7 +596,7 @@ DOM.createAll(&quot;li*5&quot;); // =&gt; array with 5 li $Elements</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line235">line 235</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line230">line 230</a>
         </div>
         
     </div>
@@ -770,7 +768,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line642">line 642</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line637">line 637</a>
         </div>
         
     </div>
@@ -975,7 +973,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line706">line 706</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line701">line 701</a>
         </div>
         
     </div>
@@ -1123,7 +1121,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line719">line 719</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line714">line 714</a>
         </div>
         
     </div>
@@ -1276,7 +1274,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line502">line 502</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line497">line 497</a>
         </div>
         
     </div>
@@ -1418,7 +1416,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line757">line 757</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line752">line 752</a>
         </div>
         
     </div>
@@ -1577,12 +1575,12 @@ instance
     <div class="nameContainer">
         <h4 class="name" id="mockAll">
             
-            <span class="type-signature static">static</span>DOM.mockAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array}</span>
+            <span class="type-signature static">static</span>DOM.mockAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line780">line 780</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line775">line 775</a>
         </div>
         
     </div>
@@ -1727,129 +1725,8 @@ Also exposes private event handler functions that aren't usually presented</p>
 
 
 <h5>Returns:</h5>
-of mocked <a href="$Element.html"><code>$Element</code></a> instances
+array of element wrappers
 <br />
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="raf">
-            
-            <span class="type-signature static">static</span>DOM.raf<span class="signature">(callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Number}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line798">line 798</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Request animation frame helper</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                <p>request animation frame callback</p></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
 
     
     
@@ -1879,7 +1756,7 @@ of mocked <a href="$Element.html"><code>$Element</code></a> instances
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Sep 10 2014 22:36:48 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 14 2014 13:30:25 GMT+0300 (FET)
         </footer>
     </div>
 </div>

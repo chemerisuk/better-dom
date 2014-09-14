@@ -78,8 +78,6 @@
             
                 <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
             
-                <li data-name="DOM.raf"><a href="DOM.html#raf">raf</a></li>
-            
             </ul>
             <ul class="events itemMembers">
             
@@ -187,7 +185,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * @file better-dom.js
- * @version 2.0.0-beta.2 2014-09-10T22:33:02
+ * @version 2.0.0-beta.3 2014-09-14T13:02:48
  * @overview Live extension playground
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
@@ -240,7 +238,7 @@
                 this[0] = node;
             }
 
-            this._ = { _handlers: [], _watchers: {}, _visibility: "" };
+            this._ = { _handlers: [], _watchers: {} };
         } else {
             return new types$$$Element(node);
         }
@@ -262,7 +260,7 @@
      */
     var types$$DOM = new types$$$Element(constants$$HTML);
 
-    types$$DOM.VERSION = "2.0.0-beta.2";
+    types$$DOM.VERSION = "2.0.0-beta.3";
 
     var exports$$_DOM = constants$$WINDOW.DOM;
 
@@ -274,12 +272,7 @@
         return types$$DOM;
     };
 
-    // export better-dom to CommonJS environments
-    if (typeof exports !== "undefined") {
-        exports.DOM = types$$DOM;
-    } else {
-        constants$$WINDOW.DOM = types$$DOM;
-    }
+    constants$$WINDOW.DOM = types$$DOM;
 
     var helpers$$arrayProto = Array.prototype,
         helpers$$currentScript = constants$$DOCUMENT.scripts[0];
@@ -309,7 +302,7 @@
      * @alias DOM.create
      * @param  {String}       value     Emmet or HTML string
      * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {$Element} element wrapper
+     * @return {$Element} an element wrapper
      */
     types$$DOM.create = function(value, varMap, /*INTERNAL*/all) {
         var test = dom$dom$create$$reTest.exec(value),
@@ -354,7 +347,7 @@
      * @alias DOM.createAll
      * @param  {String}       value     Emmet or HTML string
      * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {Array.&lt;$Element>} element wrappers
+     * @return {Array.&lt;$Element>} an array of element wrappers
      * @example
      * ```js
      * DOM.createAll("span+b"); // => array with 2 $Elements: span and b
@@ -962,74 +955,56 @@
      * @alias DOM.mockAll
      * @param  {String}       value     EmmetString or HTMLString
      * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {Array} collection of mocked {@link $Element} instances
+     * @return {Array.&lt;$Element>} an array of element wrappers
      */
     types$$DOM.mockAll = function(content, varMap) {
         return types$$DOM.mock(content, varMap, true);
     };
 
-    var dom$dom$raf$$lastTime = 0,
-        dom$dom$raf$$propName = ["r", "webkitR", "mozR", "oR"].reduce(function(memo, name)  {
-            var prop = name + "equestAnimationFrame";
-
-            return memo || constants$$WINDOW[prop] && prop;
-        }, 0);
-
-    /**
-     * Request animation frame helper
-     * @memberof DOM
-     * @alias DOM.raf
-     * @param  {Function}  callback  request animation frame callback
-     * @return {Number}    rafId
-     */
-    types$$DOM.raf = function(callback) {
-        if (dom$dom$raf$$propName) {
-            constants$$WINDOW[dom$dom$raf$$propName](callback);
-        } else {
-            var currTime = Date.now(),
-                timeToCall = Math.max(0, 16 - (currTime - dom$dom$raf$$lastTime));
-
-            dom$dom$raf$$lastTime = currTime + timeToCall;
-
-            if (timeToCall) {
-                setTimeout(callback, timeToCall);
-            } else {
-                callback(currTime + timeToCall);
-            }
-        }
-    };
+    /* es6-transpiler has-iterators:false, has-generators: false */
 
     var element$element$classes$$reSpace = /[\n\t\r]/g;
 
-    function element$element$classes$$makeClassesMethod(nativeStrategyName, strategy) {
-        var methodName = nativeStrategyName === "contains" ? "hasClass" : nativeStrategyName + "Class";
+    function element$element$classes$$makeClassesMethod(nativeMethodName, fallback) {
+        var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
+        // use fallback if browser does not support classList API
+        if (!constants$$HTML.classList) nativeMethodName = null;
 
-        if (constants$$HTML.classList) {
-            strategy = function(className) {
-                return this[0].classList[nativeStrategyName](className);
-            };
-        }
+        if (methodName === "hasClass" || methodName === "toggleClass") {
+            return function(className, force) {
+                var node = this[0];
 
-        if (methodName === "hasClass") {
-            return function(className) {
-                var args = arguments;
+                if (node) {
+                    if (typeof force === "boolean" && methodName === "toggleClass") {
+                        this[force ? "addClass" : "removeClass"](className);
 
-                if (this[0]) {
-                    if (args.length === 1) {
-                        return strategy.call(this, className);
+                        return force;
+                    }
+
+                    if (typeof className !== "string") throw new errors$$MethodError(methodName);
+
+                    if (nativeMethodName) {
+                        return node.classList[nativeMethodName](className);
                     } else {
-                        return helpers$$default.every.call(args, strategy, this);
+                        return fallback(this, node, className);
                     }
                 }
             };
         } else {
-            return function(className) {
-                var args = arguments;
+            return function(className) {var $D$14;var $D$15;
+                var node = this[0],
+                    args = arguments;
 
-                if (args.length === 1) {
-                    strategy.call(this, className);
-                } else {
-                    helpers$$default.each.call(args, strategy, this);
+                if (node) {
+                    $D$14 = 0;$D$15 = args.length;for (className ; $D$14 &lt; $D$15; ){className = (args[$D$14++]);
+                        if (typeof className !== "string") throw new errors$$MethodError(methodName);
+
+                        if (nativeMethodName) {
+                            node.classList[nativeMethodName](className);
+                        } else {
+                            fallback(this, node, className);
+                        }
+                    };$D$14 = $D$15 = void 0;
                 }
 
                 return this;
@@ -1038,15 +1013,15 @@
     }
 
     /**
-     * Check if element contains class name(s)
+     * Check if element contains class name
      * @memberof! $Element#
      * @alias $Element#hasClass
-     * @param  {...String} classNames class name(s)
-     * @return {Boolean}   true if the element contains all classes
+     * @param  {String}   className class name
+     * @return {Boolean}  returns &lt;code>true&lt;/code> if the element contains the class
      * @function
      */
-    types$$$Element.prototype.hasClass = element$element$classes$$makeClassesMethod("contains", function(className) {
-        return (" " + this[0].className + " ").replace(element$element$classes$$reSpace, " ").indexOf(" " + className + " ") >= 0;
+    types$$$Element.prototype.hasClass = element$element$classes$$makeClassesMethod("contains", function(el, node, className) {
+        return (" " + node.className + " ").replace(element$element$classes$$reSpace, " ").indexOf(" " + className + " ") >= 0;
     });
 
     /**
@@ -1057,8 +1032,8 @@
      * @return {$Element}
      * @function
      */
-    types$$$Element.prototype.addClass = element$element$classes$$makeClassesMethod("add", function(className) {
-        if (!this.hasClass(className)) this[0].className += " " + className;
+    types$$$Element.prototype.addClass = element$element$classes$$makeClassesMethod("add", function(el, node, className) {
+        if (!el.hasClass(className)) node.className += " " + className;
     });
 
     /**
@@ -1069,26 +1044,31 @@
      * @return {$Element}
      * @function
      */
-    types$$$Element.prototype.removeClass = element$element$classes$$makeClassesMethod("remove", function(className) {
-        className = (" " + this[0].className + " ").replace(element$element$classes$$reSpace, " ").replace(" " + className + " ", " ");
+    types$$$Element.prototype.removeClass = element$element$classes$$makeClassesMethod("remove", function(el, node, className) {
+        className = (" " + node.className + " ").replace(element$element$classes$$reSpace, " ").replace(" " + className + " ", " ");
 
-        this[0].className = className.trim();
+        node.className = className.trim();
     });
 
     /**
-     * Toggle class(es) on element
+     * Toggle a class on element
      * @memberof! $Element#
      * @alias $Element#toggleClass
-     * @param  {...String}  classNames class name(s)
-     * @return {$Element}
+     * @param  {String}  className class name(s)
+     * @param  {Boolean} [force] if &lt;code>true&lt;/code> then adds the className; if &lt;code>false&lt;/code> - removes it
+     * @return {Boolean} returns &lt;code>true&lt;/code> if the className is now present, and &lt;code>false&lt;/code> otherwise.
      * @function
      */
-    types$$$Element.prototype.toggleClass = element$element$classes$$makeClassesMethod("toggle", function(className) {
-        var oldClassName = this[0].className;
+    types$$$Element.prototype.toggleClass = element$element$classes$$makeClassesMethod("toggle", function(el, node, className) {
+        var oldClassName = node.className;
 
-        this.addClass(className);
+        el.addClass(className);
 
-        if (oldClassName === this[0].className) this.removeClass(className);
+        if (oldClassName !== node.className) return true;
+
+        el.removeClass(className);
+
+        return false;
     });
 
     /**
@@ -1096,7 +1076,7 @@
      * @memberof! $Element#
      * @alias $Element#clone
      * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
-     * @return {$Element} clone of current element
+     * @return {$Element} a clone of current element
      */
     types$$$Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 0)deep = true;
         if (typeof deep !== "boolean") throw new errors$$MethodError("clone");
@@ -1158,7 +1138,7 @@
      * @alias $Element#css
      * @param  {String|Object}      name    style property name or key/value object
      * @param  {String|cssCallback} [value] style property value or {@link cssCallback}
-     * @return {String|$Element} property value or reference to this
+     * @return {String|$Element} a property value or reference to &lt;code>this&lt;/code>
      */
     types$$$Element.prototype.css = function(name, value) {var this$0 = this;
         var len = arguments.length,
@@ -1213,7 +1193,7 @@
             } else if (len === 2 && nameType === "string") {
                 appendCssText(name, value);
             } else {
-                throw new errors$$MethodError("style");
+                throw new errors$$MethodError("css");
             }
         }
 
@@ -1289,21 +1269,13 @@
      * @memberof! $Element#
      * @alias $Element#findAll
      * @param  {String} selector css selector
-     * @return {Array} matched elements
+     * @return {Array.&lt;$Element>} an array of element wrappers
      */
     types$$$Element.prototype.findAll = function(selector) {
         return this.find(selector, "All");
     };
 
     var util$eventhooks$$hooks = {};
-
-    ["scroll", "mousemove"].forEach(function(name)  {
-        util$eventhooks$$hooks[name] = function(handler)  {
-            var free = true;
-            // debounce frequent events
-            return function(e)  { if (free) free = DOM.raf(function()  { free = !handler(e) }) };
-        };
-    });
 
     if ("onfocusin" in constants$$HTML) {
         util$eventhooks$$hooks.focus = function(handler)  { handler._type = "focusin" };
@@ -1330,10 +1302,11 @@
      * Helper type to create an event handler
      */
 
-    var util$eventhandler$$EventHandler = function(type, selector, callback, props, el, node, once)  {
-            if (!node) return null;
+    var util$eventhandler$$EventHandler = function(type, selector, callback, props, el, once)  {
+            if (!el[0]) return null;
 
-            var hook = util$eventhooks$$default[type],
+            var node = el[0],
+                hook = util$eventhooks$$default[type],
                 matcher = util$selectormatcher$$default(selector, node),
                 handler = function(e)  {
                     e = e || constants$$WINDOW.event;
@@ -1347,11 +1320,6 @@
                         extraArgs = e._args || [],
                         args = props || [],
                         fn = callback;
-
-                    if (typeof callback === "string") {
-                        // use getter to handle custom properties
-                        fn = el[callback] || el.get(callback);
-                    }
 
                     // early stop for late binding or when target doesn't match selector
                     if (typeof fn !== "function" || !currentTarget) return;
@@ -1425,7 +1393,7 @@
      * @alias $Element#fire
      * @param  {String}  type  type of event
      * @param  {...Object}     [args]  extra arguments to pass into each event handler
-     * @return {Boolean} true if default action wasn't prevented
+     * @return {Boolean} returns &lt;code>true&lt;/code> if default action wasn't prevented
      */
     types$$$Element.prototype.fire = function(type) {var args = SLICE$0.call(arguments, 1);
         var node = this[0],
@@ -1550,12 +1518,14 @@
         if (hook) return hook(node, name);
 
         if (nameType === "string") {
-            if (name[0] === "-" && name[1] === "-") {
-                key = name.substr(2);
+            if (name[0] === "_") {
+                key = name.substr(1);
 
                 if (key in data) {
                     value = data[key];
                 } else {
+                    // convert from camel case to dash-separated value
+                    key = key.replace(/[A-Z]/g, function(l)  {return "-" + l.toLowerCase()});
                     value = node.getAttribute("data-" + key);
 
                     if (value != null) {
@@ -1695,12 +1665,11 @@
 
     util$selectorhooks$$hooks[":focus"] = function(node)  {return node === constants$$DOCUMENT.activeElement};
 
-    util$selectorhooks$$hooks[":hidden"] = function(node, el)  {
-        return node.getAttribute("aria-hidden") === "true" ||
-            helpers$$default.computeStyle(node).display === "none" || !types$$DOM.contains(el);
-    };
+    util$selectorhooks$$hooks[":hidden"] = function(node)  {return !util$selectorhooks$$hooks[":visible"](node)};
 
-    util$selectorhooks$$hooks[":visible"] = function(node, el)  {return !util$selectorhooks$$hooks[":hidden"](node, el)};
+    util$selectorhooks$$hooks[":visible"] = function(node)  {
+        return helpers$$default.computeStyle(node).display !== "none" && constants$$HTML.contains(node);
+    };
 
     var util$selectorhooks$$default = util$selectorhooks$$hooks;
 
@@ -1781,50 +1750,46 @@
      * Bind a DOM event
      * @memberof! $Element#
      * @alias $Element#on
-     * @param  {String|Array}    type event type(s) with optional selector
-     * @param  {Function|String} callback event callback or property name (for late binding)
-     * @param  {Array}           [props] array of event properties to pass into the callback
+     * @param  {String|Array}  type        event type(s) with optional selector
+     * @param  {String}        [selector]  event selector filter
+     * @param  {Function}      callback    event callback or property name (for late binding)
+     * @param  {Array}         [props]     array of event properties to pass into the callback
      * @return {$Element}
      */
-    types$$$Element.prototype.on = function(type, callback, props, /*INTERNAL*/once) {var this$0 = this;
-        var eventType = typeof type,
-            selector, index;
-
-        if (eventType === "string") {
-            index = type.indexOf(" ");
-
-            if (~index) {
-                selector = type.substr(index + 1);
-                type = type.substr(0, index);
+    types$$$Element.prototype.on = function(type, selector, callback, props, /*INTERNAL*/once) {var this$0 = this;
+        if (typeof type === "string") {
+            if (typeof selector === "function") {
+                once = props;
+                props = callback;
+                callback = selector;
+                selector = null;
             }
 
             if (!helpers$$default.isArray(props)) {
                 once = props;
-                props = undefined;
+                props = null;
             }
-        } else if (eventType === "object") {
+
+            var node = this[0],
+                handler = util$eventhandler$$default(type, selector, callback, props, this, once);
+
+            if (handler) {
+                if (constants$$DOM2_EVENTS) {
+                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                } else {
+                    node.attachEvent("on" + (handler._type || type), handler);
+                }
+                // store event entry
+                this._._handlers.push(handler);
+            }
+        } else if (typeof type === "object") {
             if (helpers$$default.isArray(type)) {
-                type.forEach(function(name)  { this$0.on(name, callback, props, once) });
+                type.forEach(function(name)  { this$0.on(name, selector, callback, props, once) });
             } else {
                 helpers$$default.keys(type).forEach(function(name)  { this$0.on(name, type[name]) });
             }
-
-            return this;
         } else {
             throw new errors$$MethodError("on");
-        }
-
-        var node = this[0],
-            handler = util$eventhandler$$default(type, selector, callback, props, this, node, once);
-
-        if (handler) {
-            if (constants$$DOM2_EVENTS) {
-                node.addEventListener(handler._type || type, handler, !!handler.capturing);
-            } else {
-                node.attachEvent("on" + (handler._type || type), handler);
-            }
-            // store event entry
-            this._._handlers.push(handler);
         }
 
         return this;
@@ -1880,8 +1845,8 @@
         if (hook) {
             hook(node, value);
         } else if (typeof name === "string") {
-            if (name[0] === "-" && name[1] === "-") {
-                this._[name.substr(2)] = value;
+            if (name[0] === "_") {
+                this._[name.substr(1)] = value;
             } else {
                 if (typeof value === "function") {
                     value = value.call(this, oldValue);
@@ -1916,14 +1881,14 @@
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     function element$element$traversing$$makeTraversingMethod(methodName, propertyName, all) {
-        return function(selector, andSelf) {
+        return function(selector) {
             if (selector && typeof selector !== "string") throw new errors$$MethodError(methodName);
 
             var matcher = util$selectormatcher$$default(selector),
                 nodes = all ? [] : null,
                 it = this[0];
 
-            for (it = it && !andSelf ? it[propertyName] : it; it; it = it[propertyName]) {
+            for (it = it && it[propertyName]; it; it = it[propertyName]) {
                 if (it.nodeType === 1 && (!matcher || matcher(it))) {
                     if (!all) break;
 
@@ -1967,8 +1932,7 @@
      * @memberof! $Element#
      * @alias $Element#next
      * @param {String} [selector] css selector
-     * @param {Boolean} [andSelf] if true than search will start from the current element
-     * @return {$Element} matched element
+     * @return {$Element} matched element wrapper
      * @function
      */
     types$$$Element.prototype.next = element$element$traversing$$makeTraversingMethod("next", "nextSibling");
@@ -1978,8 +1942,7 @@
      * @memberof! $Element#
      * @alias $Element#prev
      * @param {String} [selector] css selector
-     * @param {Boolean} [andSelf] if true than search will start from the current element
-     * @return {$Element} matched element
+     * @return {$Element} matched element wrapper
      * @function
      */
     types$$$Element.prototype.prev = element$element$traversing$$makeTraversingMethod("prev", "previousSibling");
@@ -1989,8 +1952,7 @@
      * @memberof! $Element#
      * @alias $Element#nextAll
      * @param {String} [selector] css selector
-     * @param {Boolean} [andSelf] if true than search will start from the current element
-     * @return {Array} collection of matched elements
+     * @return {Array.&lt;$Element>} an array of all matched element wrappers
      * @function
      */
     types$$$Element.prototype.nextAll = element$element$traversing$$makeTraversingMethod("nextAll", "nextSibling", true);
@@ -2000,8 +1962,7 @@
      * @memberof! $Element#
      * @alias $Element#prevAll
      * @param {String} [selector] css selector
-     * @param {Boolean} [andSelf] if true than search will start from the current element
-     * @return {Array} collection of matched elements
+     * @return {Array.&lt;$Element>} an array of all matched element wrappers
      * @function
      */
     types$$$Element.prototype.prevAll = element$element$traversing$$makeTraversingMethod("prevAll", "previousSibling", true);
@@ -2011,8 +1972,7 @@
      * @memberof! $Element#
      * @alias $Element#parent
      * @param {String} [selector] css selector
-     * @param {Boolean} [andSelf] if true than search will start from the current element
-     * @return {$Element} matched element
+     * @return {$Element} matched element wrapper
      * @function
      */
     types$$$Element.prototype.parent = element$element$traversing$$makeTraversingMethod("parent", "parentNode");
@@ -2032,151 +1992,163 @@
      * @memberof! $Element#
      * @alias $Element#children
      * @param  {String} [selector] css selector
-     * @return {Array} collection of matched elements
+     * @return {Array.&lt;$Element>} an array of all matched element wrappers
      * @function
      */
     types$$$Element.prototype.children = element$element$traversing$$makeChildTraversingMethod(true);
 
+    // Legacy Android is too slow and has a lot of bugs in the CSS animations
+    // implementation, so skip any animations for it
     var element$element$visibility$$ANIMATIONS_ENABLED = !constants$$LEGACY_ANDROID && constants$$CSS3_ANIMATIONS,
         element$element$visibility$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
         element$element$visibility$$TRANSITION_EVENT_TYPE = constants$$WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+        element$element$visibility$$ANIMATION_EVENT_TYPE = constants$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
         element$element$visibility$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
             // if duration is in seconds, then multiple result value by 1000
             return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
         },
-        element$element$visibility$$calcDuration = function(style, prefix, iterationCount)  {
-            var delay = util$stylehooks$$default.get[prefix + "delay"](style).split(","),
-                duration = util$stylehooks$$default.get[prefix + "duration"](style).split(",");
-
-            if (!iterationCount) iterationCount = util$stylehooks$$default.get[prefix + "iteration-count"](style).split(",");
+        element$element$visibility$$calcTransitionDuration = function(style)  {
+            var delay = util$stylehooks$$default.get["transition-delay"](style).split(","),
+                duration = util$stylehooks$$default.get["transition-duration"](style).split(",");
 
             return Math.max.apply(Math, duration.map(function(value, index)  {
-                var it = iterationCount[index] || "1";
-                // initial or empty value equals to 1
-                return (it === "initial" ? 1 : parseFloat(it)) *
-                    element$element$visibility$$parseTimeValue(value) + (element$element$visibility$$parseTimeValue(delay[index]) || 0);
+                return element$element$visibility$$parseTimeValue(value) + (element$element$visibility$$parseTimeValue(delay[index]) || 0);
             }));
         },
-        element$element$visibility$$calcAnimationDuration = function(node, style, isHidden, complete)  {
-            var compStyle = helpers$$default.computeStyle(node),
-                duration = Math.max(element$element$visibility$$calcDuration(compStyle, "transition-", []), element$element$visibility$$calcDuration(compStyle, "animation-"));
+        element$element$visibility$$scheduleTransition = function(node, style, computed, hiding, done)  {
+            var duration = element$element$visibility$$calcTransitionDuration(computed);
 
-            if (duration) {
-                var visibilityTransitionIndex, transitionValues, completeAnimation, timeoutId;
+            if (!duration) return false; // skip transitions with zero duration
 
-                transitionValues = element$element$visibility$$TRANSITION_PROPS.map(function(prop, index)  {
-                    // have to use regexp to split transition-timing-function value
-                    return util$stylehooks$$default.get[prop](compStyle).split(index ? ", " : /, (?!\d)/);
-                });
+            var visibilityTransitionIndex, transitionValues;
 
-                // try to find existing or use 0s length or make a new visibility transition
-                visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
-                if (visibilityTransitionIndex &lt; 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
-                if (visibilityTransitionIndex &lt; 0) visibilityTransitionIndex = transitionValues[0].length;
+            transitionValues = element$element$visibility$$TRANSITION_PROPS.map(function(prop, index)  {
+                // have to use regexp to split transition-timing-function value
+                return util$stylehooks$$default.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+            });
 
-                transitionValues[0][visibilityTransitionIndex] = "linear";
-                transitionValues[1][visibilityTransitionIndex] = "visibility";
-                transitionValues[isHidden ? 2 : 3][visibilityTransitionIndex] = "0s";
-                transitionValues[isHidden ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+            // try to find existing or use 0s length or make a new visibility transition
+            visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
+            if (visibilityTransitionIndex &lt; 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
+            if (visibilityTransitionIndex &lt; 0) visibilityTransitionIndex = transitionValues[0].length;
 
-                transitionValues.forEach(function(value, index)  {
-                    util$stylehooks$$default.set[element$element$visibility$$TRANSITION_PROPS[index]](style, value.join(", "));
-                });
+            transitionValues[0][visibilityTransitionIndex] = "linear";
+            transitionValues[1][visibilityTransitionIndex] = "visibility";
+            transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
+            transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
 
-                // make sure that the visibility property will be changed
-                // to trigger the completeAnimation callback
-                style.visibility = isHidden ? "visible" : "hidden";
-                // use willChange to improve performance in modern browsers:
-                // http://dev.opera.com/articles/css-will-change-property/
-                style.willChange = transitionValues[1].join(", ");
+            // now set target duration and delay
+            transitionValues.forEach(function(value, index)  {
+                util$stylehooks$$default.set[element$element$visibility$$TRANSITION_PROPS[index]](style, value.join(", "));
+            });
 
-                completeAnimation = function(e)  {
-                    if (!e || e.propertyName === "visibility") {
-                        if (e) e.stopPropagation(); // this is an internal transition
+            node.addEventListener(element$element$visibility$$TRANSITION_EVENT_TYPE, function completeTransition(e) {
+                if (e.propertyName === "visibility" && e.target === node) {
+                    e.stopPropagation(); // this is an internal transition
 
-                        clearTimeout(timeoutId);
+                    node.removeEventListener(element$element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, false);
 
-                        node.removeEventListener(element$element$visibility$$TRANSITION_EVENT_TYPE, completeAnimation, false);
+                    style.willChange = ""; // remove temporary properties
 
-                        style.willChange = ""; // remove temporary properties
+                    done();
+                }
+            }, false);
 
-                        complete();
-                    }
-                };
+            // make sure that the visibility property will be changed
+            // so reset it to appropriate value with zero
+            style.visibility = hiding ? "visible" : "hidden";
+            // use willChange to improve performance in modern browsers:
+            // http://dev.opera.com/articles/css-will-change-property/
+            style.willChange = transitionValues[1].join(", ");
+            // trigger visibility transition when it exists
+            style.visibility = hiding ? "hidden" : "visible";
 
-                node.addEventListener(element$element$visibility$$TRANSITION_EVENT_TYPE, completeAnimation, false);
-                // make sure that the completeAnimation callback will be called
-                timeoutId = setTimeout(completeAnimation, duration + 1000 / 60);
-            }
-
-            return duration;
+            return true;
         },
-        element$element$visibility$$changeVisibility = function(el, fn, callback)  {return function()  {
-            var node = el[0],
-                style = node.style,
-                isHidden = typeof fn === "function" ? fn(node) : fn,
-                complete = function()  {
-                    if (style.visibility === "hidden") {
-                        style[strategy[0]] = strategy[1];
-                    }
+        element$element$visibility$$scheduleAnimation = function(node, style, computed, animationName, hiding, done)  {
+            var duration = element$element$visibility$$parseTimeValue(util$stylehooks$$default.get["animation-duration"](computed));
 
-                    if (callback) callback(el, node);
-                },
-                processVisibilityChange = function()  {
-                    if (isHidden) {
-                        var absentance = style[strategy[0]];
-                        // store current inline value in the internal property
-                        if (absentance !== "none") el._._visibility = absentance;
-                    } else {
-                        // restore initial property value if it exists
-                        style[strategy[0]] = el._._visibility || "";
-                    }
+            if (!duration) return false; // skip animations with zero duration
 
-                    style.visibility = isHidden ? "hidden" : "visible";
-                    // trigger native CSS animation
-                    el.set("aria-hidden", String(isHidden));
-                    // must be AFTER changing the aria-hidden attribute
-                    if (!duration) complete();
-                },
-                // Legacy Android is too slow and has a lot of bugs in the CSS animations
-                // implementation, so skip animations for it (duration value is always zero)
-                duration = element$element$visibility$$ANIMATIONS_ENABLED ? element$element$visibility$$calcAnimationDuration(node, style, isHidden, complete) : 0,
-                strategy = duration ? ["position", "absolute"] : ["display", "none"];
+            node.addEventListener(element$element$visibility$$ANIMATION_EVENT_TYPE, function completeAnimation(e) {
+                if (e.animationName === animationName && e.target === node) {
+                    e.stopPropagation(); // this is an internal animation
 
-            // by using requestAnimationFrame we fix several issues:
-            // 1) animation of new added elements (http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/)
-            // 2) firefox-specific animations sync quirks (because of the getComputedStyle call)
-            // 3) power consuption: looped show/hide does almost nothing if page is not active
+                    node.removeEventListener(element$element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, false);
 
-            // use DOM.raf only if element is in DOM to avoid quirks on hide().show() calls
-            if (element$element$visibility$$ANIMATIONS_ENABLED && types$$DOM.contains(el)) {
-                types$$DOM.raf(processVisibilityChange);
-            } else {
-                processVisibilityChange();
-            }
-        }},
-        element$element$visibility$$makeVisibilityMethod = function(name, fn)  {return function(delay, callback) {
-            var len = arguments.length,
-                delayType = typeof delay;
+                    util$stylehooks$$default.set["animation-name"](style, ""); // remove temporary animation
 
-            if (len === 1 && delayType === "function") {
-                callback = delay;
-                delay = 0;
+                    done();
+                }
+            }, false);
+
+            // trigger animation start
+            util$stylehooks$$default.set["animation-direction"](style, hiding ? "normal" : "reverse");
+            util$stylehooks$$default.set["animation-name"](style, animationName);
+
+            return true;
+        },
+        element$element$visibility$$makeVisibilityMethod = function(name, condition)  {return function(animationName, callback) {var this$0 = this;
+            var node = this[0];
+
+            if (typeof animationName !== "string") {
+                callback = animationName;
+                animationName = null;
             }
 
-            if (delay && (delayType !== "number" || delay &lt; 0) ||
-                callback && typeof callback !== "function") {
+            if (callback && typeof callback !== "function") {
                 throw new errors$$MethodError(name);
             }
 
-            callback = element$element$visibility$$changeVisibility(this, fn, callback);
+            if (!node) return this;
 
-            if (delay) {
-                setTimeout(callback, delay);
+            var style = node.style,
+                computed = helpers$$default.computeStyle(node),
+                displayValue = computed.display,
+                hiding = typeof condition === "boolean" ? condition : displayValue !== "none",
+                done = function()  {
+                    // remove element from the flow
+                    if (hiding) style.display = "none";
+
+                    if (callback) callback.call(this$0);
+                },
+                animatable;
+
+            if (hiding) {
+                if (displayValue !== "none") {
+                    this._._display = displayValue;
+                    // we'll hide element later in the done call
+                }
             } else {
-                callback();
+                if (displayValue === "none") {
+                    // restore visibility
+                    style.display = this._._display || "inherit";
+                }
             }
+
+            if (element$element$visibility$$ANIMATIONS_ENABLED) {
+                // Use offsetWidth to trigger reflow of the element
+                // after changing from the hidden state
+                //
+                // Opera 12 has an issue with animations as well,
+                // so need to trigger reflow manually for it
+                //
+                // Thanks to the idea from Jonathan Snook's plugin:
+                // https://github.com/snookca/prepareTransition
+
+                if (!hiding) displayValue = node.offsetWidth;
+
+                if (animationName) {
+                    animatable = element$element$visibility$$scheduleAnimation(node, style, computed, animationName, hiding, done);
+                } else {
+                    animatable = element$element$visibility$$scheduleTransition(node, style, computed, hiding, done);
+                }
+            }
+            // trigger native CSS animation
+            this.set("aria-hidden", String(hiding));
+            // must be AFTER changing the aria-hidden attribute
+            if (!animatable) done();
 
             return this;
         }};
@@ -2185,8 +2157,8 @@
      * Show element with optional callback and delay
      * @memberof! $Element#
      * @alias $Element#show
-     * @param {Number}   [delay=0]  time in miliseconds to wait
-     * @param {Function} [callback] function that executes when animation is done
+     * @param {String}   [animationName]  CSS animation to apply during transition
+     * @param {Function} [callback]       function that executes when animation is done
      * @return {$Element}
      * @function
      */
@@ -2196,8 +2168,8 @@
      * Hide element with optional callback and delay
      * @memberof! $Element#
      * @alias $Element#hide
-     * @param {Number}   [delay=0]  time in miliseconds to wait
-     * @param {Function} [callback] function that executes when animation is done
+     * @param {String}   [animationName]  CSS animation to apply during transition
+     * @param {Function} [callback]       function that executes when animation is done
      * @return {$Element}
      * @function
      */
@@ -2207,14 +2179,12 @@
      * Toggle element visibility with optional callback and delay
      * @memberof! $Element#
      * @alias $Element#toggle
-     * @param {Number}   [delay=0]  time in miliseconds to wait
-     * @param {Function} [callback] function that executes when animation is done
+     * @param {String}   [animationName]  CSS animation to apply during transition
+     * @param {Function} [callback]       function that executes when animation is done
      * @return {$Element}
      * @function
      */
-    types$$$Element.prototype.toggle = element$element$visibility$$makeVisibilityMethod("toggle", function(node) {
-        return node.getAttribute("aria-hidden") !== "true";
-    });
+    types$$$Element.prototype.toggle = element$element$visibility$$makeVisibilityMethod("toggle");
 
     /**
      * Callback function for watching changes of a property/attribute
@@ -2230,6 +2200,12 @@
      * @param  {String}        name     property/attribute name
      * @param  {watchCallback} callback function for watching changes of the property/attribute
      * @return {$Element}
+     * @example
+     * ```js
+     * targetInput.watch("value", function(value, oldValue) {
+     *   // do what you want AFTER the value of targetInput was changed
+     * });
+     * ```
      */
     types$$$Element.prototype.watch = function(name, callback) {
         var watchers = this._._watchers;
@@ -2276,7 +2252,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Sep 10 2014 22:36:48 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sun Sep 14 2014 13:30:25 GMT+0300 (FET)
         </footer>
     </div>
 </div>
