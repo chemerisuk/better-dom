@@ -74,7 +74,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
         return true;
     },
     scheduleAnimation = (node, style, computed, animationName, hiding, done) => {
-        var duration = parseFloat(CSS.get["animation-duration"](computed));
+        var duration = parseTimeValue(CSS.get["animation-duration"](computed));
 
         if (!duration) return false; // skip animations with zero duration
 

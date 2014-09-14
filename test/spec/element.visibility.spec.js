@@ -1,5 +1,5 @@
 var userAgent = navigator.userAgent,
-    hasAnimationSupport = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
+    hasAnimationSupport = !(~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0);
 
 try {
     DOM.importStyles("@keyframes fade", "from {opacity: 1} to {opacity: 0}");
