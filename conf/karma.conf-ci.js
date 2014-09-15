@@ -116,9 +116,11 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
 
     sauceLabs: {
-      testName: 'better-dom'
+      testName: 'better-dom',
+      tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
+      recordScreenshots: false
     },
-    captureTimeout: 180000,
+    captureTimeout: 120000,
     customLaunchers: customLaunchers,
 
     // start these browsers
