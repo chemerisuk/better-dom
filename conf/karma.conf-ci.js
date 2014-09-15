@@ -5,30 +5,14 @@ var customLaunchers = {
   sl_chrome: {
     base: 'SauceLabs',
     browserName: 'chrome',
-    deviceName: ''
-  },
-  sl_chrome_canary: {
-    base: 'SauceLabs',
-    browserName: 'chrome',
-    version: 'beta',
-    deviceName: ''
+    platform: 'Windows 7',
+    version: '37'
   },
   sl_firefox: {
     base: 'SauceLabs',
     browserName: 'firefox',
-    deviceName: ''
-  },
-  sl_safari: {
-    base: 'SauceLabs',
-    browserName: 'safari',
-    version: '7',
-    deviceName: ''
-  },
-  sl_ie_11: {
-    base: 'SauceLabs',
-    browserName: 'internet explorer',
-    platform: 'Windows 8.1',
-    version: '11'
+    platform: 'Windows 7',
+    version: '31'
   },
   sl_ie_10: {
     base: 'SauceLabs',
@@ -39,33 +23,34 @@ var customLaunchers = {
   el_opera_12: {
     base: 'SauceLabs',
     browserName: 'opera',
-    platform: 'Windows XP',
+    platform: 'Windows 7',
     version: '12'
   },
-  sl_ios_safari_7: {
+  sl_safari: {
     base: 'SauceLabs',
-    browserName: 'iphone',
+    browserName: 'safari',
     platform: 'OS X 10.9',
-    version: '7.1'
+    version: '7',
+    deviceName: ''
   },
-  sl_ios_safari_6: {
+  sl_ie_11: {
     base: 'SauceLabs',
-    browserName: 'iphone',
-    platform: 'OS X 10.8',
-    version: '6.1'
+    browserName: 'internet explorer',
+    platform: 'Windows 7',
+    version: '11'
   },
-  sl_android_4_0: {
-    base: 'SauceLabs',
-    browserName: 'android',
-    platform: 'Linux',
-    version: '4.0'
-  },
-  sl_android_4_4: {
-    base: 'SauceLabs',
-    browserName: 'android',
-    platform: 'Linux',
-    version: '4.4'
-  }
+  // sl_ios_safari_7: {
+  //   base: 'SauceLabs',
+  //   browserName: 'iphone',
+  //   platform: 'OS X 10.9',
+  //   version: '7.1'
+  // },
+  // sl_android_4_4: {
+  //   base: 'SauceLabs',
+  //   browserName: 'android',
+  //   platform: 'Linux',
+  //   version: '4.4'
+  // },
 };
 
 module.exports = function(config) {
@@ -99,31 +84,21 @@ module.exports = function(config) {
         "./test/spec/*.spec.js"
     ],
 
-
-    // test results reporter to use
-    // possible values: 'dots', 'progress'
-    // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['dots', 'saucelabs'],
-
 
     // web server port
     port: 9876,
-
     colors: true,
+    captureTimeout: 120000,
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     logLevel: config.LOG_INFO,
 
     sauceLabs: {
-      testName: 'better-dom',
-      recordScreenshots: false,
-      startConnect: false,
-      connectOptions: {
-        tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
-      }
+      testName: 'better-dom'
     },
-    captureTimeout: 120000,
+
     customLaunchers: customLaunchers,
 
     // start these browsers
