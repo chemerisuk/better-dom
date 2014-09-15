@@ -118,6 +118,7 @@ module.exports = function(config) {
     sauceLabs: {
       testName: 'better-dom',
       recordScreenshots: false,
+      startConnect: false,
       connectOptions: {
         tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
       }
