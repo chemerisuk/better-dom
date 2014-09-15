@@ -53,6 +53,9 @@ module.exports = function(grunt) {
                     type: "lcovonly",
                     dir: "coverage/"
                 }
+            },
+            sauce: {
+                configFile: "conf/karma.conf-ci.js"
             }
         },
         shell: {

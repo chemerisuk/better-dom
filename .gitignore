@@ -5,3 +5,4 @@ jsdoc
 coverage
 *.log
 build
+sauce.json

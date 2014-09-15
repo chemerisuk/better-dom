@@ -32,6 +32,7 @@
     "karma-opera-launcher": "^0.1.0",
     "karma-phantomjs-launcher": "^0.1.0",
     "karma-safari-launcher": "^0.1.0",
+    "karma-sauce-launcher": "^0.2.10",
     "lodash": "1.2.1",
     "platform": "1.0.0"
   },
