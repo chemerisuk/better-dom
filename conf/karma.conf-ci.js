@@ -117,8 +117,10 @@ module.exports = function(config) {
 
     sauceLabs: {
       testName: 'better-dom',
-      tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER,
-      recordScreenshots: false
+      recordScreenshots: false,
+      connectOptions: {
+        tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+      }
     },
     captureTimeout: 120000,
     customLaunchers: customLaunchers,
