@@ -19,10 +19,10 @@ var makeChildrenMethod = (all) => function(selector) {
 
     if (!DOM2_EVENTS) {
         // fix IE8 bug with children collection
-        children = [for (node of children) if (node.nodeType === 1) node];
+        children = _.filter.call(children, (node) => node.nodeType === 1);
     }
 
-    if (all) return [for (n of children) if (matcher && matcher(n)) $Element(n)];
+    if (all) return _.map.call(children, $Element);
 
     if (selector < 0) selector = children.length + selector;
 

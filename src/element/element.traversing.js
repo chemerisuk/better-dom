@@ -3,8 +3,6 @@ import { MethodError } from "../errors";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-/* es6-transpiler has-iterators:false, has-generators: false */
-
 var makeTraversingMethod = (methodName, propertyName, all) => function(selector) {
         if (selector && typeof selector !== "string") throw new MethodError(methodName);
 
@@ -20,7 +18,7 @@ var makeTraversingMethod = (methodName, propertyName, all) => function(selector)
             }
         }
 
-        return all ? [for (n of nodes) $Element(n)] : $Element(it);
+        return all ? _.map.call(nodes, $Element) : $Element(it);
     };
 
 _.assign($Element.prototype, {

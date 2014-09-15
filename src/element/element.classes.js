@@ -3,8 +3,6 @@ import { MethodError } from "../errors";
 import { HTML } from "../constants";
 import { $Element } from "../types";
 
-/* es6-transpiler has-iterators:false, has-generators: false */
-
 var reSpace = /[\n\t\r]/g,
     makeClassesMethod = (nativeMethodName, fallback) => {
         var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";

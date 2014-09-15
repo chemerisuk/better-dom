@@ -13,6 +13,8 @@ export default {
     // utilites
     every: arrayProto.every,
     each: arrayProto.forEach,
+    filter: arrayProto.filter,
+    map: arrayProto.map,
     isArray: Array.isArray,
     keys: Object.keys,
     assign: (target, source) => {
