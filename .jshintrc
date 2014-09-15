@@ -10,7 +10,7 @@
     "quotmark": "double",
     "indent": 4,
     "eqeqeq": true,
-    "undef": false,
+    "undef": true,
     "noarg": true,
     "noempty": true,
     "trailing": true,
@@ -22,6 +22,8 @@
     "lastsemic": true,
 
     "globals": {
+        "DOM": true,
+
         "beforeEach": true,
         "afterEach": true,
         "describe": true,

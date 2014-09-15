@@ -22,11 +22,15 @@ var makeChildrenMethod = (all) => function(selector) {
         children = _.filter.call(children, (node) => node.nodeType === 1);
     }
 
-    if (all) return _.map.call(children, $Element);
+    if (all) {
+        if (matcher) children = _.filter.call(children, matcher);
 
-    if (selector < 0) selector = children.length + selector;
+        return _.map.call(children, $Element);
+    } else {
+        if (selector < 0) selector = children.length + selector;
 
-    return $Element(children[selector]);
+        return $Element(children[selector]);
+    }
 };
 
 _.assign($Element.prototype, {
