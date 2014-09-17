@@ -59,7 +59,7 @@ describe("fire", function() {
         it("should ignore event fire arguments when event props is specified", function() {
             var spy = jasmine.createSpy("on");
 
-            input.on("my:test", spy, ["target"]);
+            input.on("my:test", ["target"], spy);
             input.fire("my:test", 123);
 
             expect(spy).toHaveBeenCalledWith(input);
@@ -68,7 +68,7 @@ describe("fire", function() {
         it("should support numeric props", function() {
             var spy = jasmine.createSpy("on");
 
-            input.on("my:test", spy, [1, 3, "target"]);
+            input.on("my:test", [1, 3, "target"], spy);
             input.fire("my:test", 123, 555, "testing");
 
             expect(spy).toHaveBeenCalledWith(123, "testing", input);

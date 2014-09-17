@@ -51,7 +51,7 @@ module.exports = function(grunt) {
             },
             coveralls: {
                 singleRun: true,
-                reporters: ["coverage", "coveralls"],
+                reporters: ["coverage", "dots", "coveralls"],
                 coverageReporter: {
                     type: "lcovonly",
                     dir: "coverage/"

@@ -44,7 +44,7 @@ describe("on", function() {
             return false;
         });
 
-        DOM.once("click", "a", spy, ["currentTarget"]);
+        DOM.once("click", "a", ["currentTarget"], spy);
         link.find("i").fire("click");
         expect(spy).toHaveBeenCalled();
     });
@@ -84,7 +84,7 @@ describe("on", function() {
             expect(relatedTarget).toBeEmpty();
         });
 
-        input.on("click", spy, ["target", "currentTarget", "relatedTarget"]).fire("click");
+        input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
         spy.and.callFake(function(type, defaultPrevented) {
@@ -92,7 +92,7 @@ describe("on", function() {
             expect(defaultPrevented).toBe(false);
         });
 
-        input.on("focus", spy, ["type", "defaultPrevented"]).fire("focus");
+        input.on("focus", ["type", "defaultPrevented"], spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
@@ -201,7 +201,7 @@ describe("on", function() {
     it("should allow to prevent custom events", function() {
         var spy2 = jasmine.createSpy("spy2");
 
-        form.on("custom:on", spy, ["defaultPrevented"]);
+        form.on("custom:on", ["defaultPrevented"], spy);
         input.on("custom:on", spy2.and.returnValue(false));
 
         spy.and.callFake(function(defaultPrevented) {
@@ -216,7 +216,7 @@ describe("on", function() {
     it("should handle global DOM as target", function() {
         var spy = jasmine.createSpy("callback");
 
-        DOM.once("custom:event1", spy, ["target", "defaultPrevented"]);
+        DOM.once("custom:event1", ["target", "defaultPrevented"], spy);
         DOM.fire("custom:event1");
 
         expect(spy).toHaveBeenCalledWith(DOM, false);
