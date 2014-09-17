@@ -3,11 +3,8 @@ node_js:
   - 0.10
 before_install:
   - npm install -g grunt-cli
-after_success:
-  - npm run coveralls
 script:
-  - npm test
-  - grunt karma:sauce
+  - grunt travis
 env:
   global:
     - secure: JUEHpRY6mX0+vHbm/swGR+x0NZDSqusihJyk9oHY1PzoqPCiXLWxZu/3gxR9zwy4CF3EudNDVf+lNTLiAI0SsBRfQBgxwlVYEhbWk8Fcqt5WLEG/zkkv0NheFdrKQbgA6oerL6zstwRUwY5hgCN8MgVQaYnXlCiQmpMk/7HzVcM=

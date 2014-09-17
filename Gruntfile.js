@@ -47,8 +47,11 @@ module.exports = function(grunt) {
             },
             unit: {
                 singleRun: true,
-                preprocessors: { "build/better-dom.js": "coverage" },
-                reporters: ["coverage", "dots"],
+                reporters: ["dots"]
+            },
+            coveralls: {
+                singleRun: true,
+                reporters: ["coverage", "coveralls"],
                 coverageReporter: {
                     type: "lcovonly",
                     dir: "coverage/"
@@ -179,6 +182,8 @@ module.exports = function(grunt) {
         "karma:unit"
     ]);
 
+    grunt.registerTask("travis", ["jshint", "karma:coveralls", "karma:sauce"]);
+
     grunt.registerTask("docs", [
         "clean",
         "compile:build",
@@ -186,25 +191,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask("build", "make a build", function() {
-        // var modules = grunt.file.readJSON("extra/modules.json"),
-        //     args = excluded === "min" ? Object.keys(modules) : (excluded ? excluded.split(",") : []),
-        //     options = grunt.config.get("browserify.compile.options");
-
-        // options.ignore = args.reduce(function(memo, arg) {
-        //     var module = modules[arg];
-
-        //     if (!module) throw Error("Illegal module name '" + arg + "'\n\n");
-
-        //     memo.push.apply(memo, module.files);
-
-        //     return memo;
-        // }, []);
-
-        // grunt.config.set("browserify.compile.options", options);
-
-        // grunt.log.ok("Making a build that doesn't contain modules:");
-        // grunt.log.subhead(args.length ? args : "All modules are included");
-
+        // TODO: manage excluded modules
         grunt.task.run([
             "clean:build",
             "compile:build"

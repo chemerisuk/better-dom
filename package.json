@@ -11,7 +11,6 @@
   "docs": "http://chemerisuk.github.io/better-dom",
   "devDependencies": {
     "benchmark": "1.0.0",
-    "coveralls": "^2.10.0",
     "es6-module-transpiler": "^0.6.0",
     "es6-transpiler": "^0.7.14-2",
     "grunt": "^0.4.3",
@@ -27,6 +26,7 @@
     "karma": "^0.12.0",
     "karma-chrome-launcher": "^0.1.0",
     "karma-coverage": "^0.1.0",
+    "karma-coveralls": "^0.1.4",
     "karma-firefox-launcher": "^0.1.0",
     "karma-jasmine": "^0.2.0",
     "karma-opera-launcher": "^0.1.0",
@@ -38,8 +38,6 @@
   },
   "scripts": {
     "test": "grunt test",
-    "start": "grunt dev",
-    "install": "grunt build",
-    "coveralls": "cat ./coverage/PhantomJS*/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "start": "grunt dev"
   }
 }
