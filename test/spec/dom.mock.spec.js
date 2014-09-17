@@ -67,6 +67,15 @@ describe("DOM.mock", function() {
         expect(el.c).toBe(9);
     });
 
+    describe("mockAll", function() {
+        it("should return arrays", function() {
+            var links = DOM.mockAll("a");
+
+            expect(Array.isArray(links)).toBeTruthy();
+            expect(links[0]).toHaveTag("a");
+        });
+    });
+
     // it("should accept Emmet variables", function() {
     //     var el;
 

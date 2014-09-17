@@ -2,11 +2,24 @@ import _ from "../helpers";
 import { $Element, DOM } from "../types";
 import extensions from "./dom.extend";
 
-function applyExtensions(node) {
-    extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });
+var applyExtensions = (node) => {
+        extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });
 
-    _.each.call(node.children, applyExtensions);
-}
+        _.each.call(node.children, applyExtensions);
+    },
+    makeMockMethod = (all) => function(content, varMap) {
+        if (!content) return new $Element();
+
+        var result = DOM["create" + all](content, varMap);
+
+        if (all) {
+            result.forEach((el) => { applyExtensions(el[0]) });
+        } else {
+            applyExtensions(result[0]);
+        }
+
+        return result;
+    };
 
 /**
  * Return {@link $Element} initialized with all existing live extensions.
@@ -17,19 +30,7 @@ function applyExtensions(node) {
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} mocked instance
  */
-DOM.mock = function(content, varMap, /*INTERNAL*/all) {
-    if (!content) return new $Element();
-
-    var result = DOM.create(content, varMap, all);
-
-    if (all) {
-        result.forEach((el) => { applyExtensions(el[0]) });
-    } else {
-        applyExtensions(result[0]);
-    }
-
-    return result;
-};
+DOM.mock = makeMockMethod("");
 
 /**
  * Return Array of {@link $Element} initialized with all existing live extensions.
@@ -40,6 +41,4 @@ DOM.mock = function(content, varMap, /*INTERNAL*/all) {
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array.<$Element>} an array of element wrappers
  */
-DOM.mockAll = function(content, varMap) {
-    return DOM.mock(content, varMap, true);
-};
+DOM.mockAll = makeMockMethod("All");

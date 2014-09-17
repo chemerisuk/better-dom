@@ -18,7 +18,7 @@ var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
             } else if (typeof value === "string") {
                 value = DOM.emmet(value, varMap);
             } else {
-                throw new StaticMethodError("create");
+                throw new StaticMethodError("create" + all);
             }
 
             sandbox.innerHTML = value; // parse input HTML string
@@ -49,7 +49,7 @@ var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} an element wrapper
  */
-DOM.create = makeCreateMethod(false);
+DOM.create = makeCreateMethod("");
 
 /**
  * Create a new array of {@link $Element}s from Emmet or HTML string
@@ -64,4 +64,4 @@ DOM.create = makeCreateMethod(false);
  * DOM.createAll("li*5"); // => array with 5 li $Elements
  * ```
  */
-DOM.createAll = makeCreateMethod(true);
+DOM.createAll = makeCreateMethod("All");
