@@ -20,9 +20,7 @@ describe("extend", function() {
             expect(this).toBeDefined();
             expect(this[0]).toBeDefined();
 
-            setTimeout(function() {
-                if (callback.calls.count() === 3) done();
-            }, 0);
+            if (callback.calls.count() === 3) done();
         });
 
         DOM.extend(".watch", { constructor: callback });

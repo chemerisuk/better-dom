@@ -41,24 +41,20 @@ describe("watch", function() {
         link.watch("aria-hidden", spy);
 
         spy.and.callFake(function(newValue, oldValue) {
-            expect(newValue).toBe("true");
-            expect(oldValue).toBeFalsy();
-        });
+            if (spy.calls.count() === 1) {
+                expect(newValue).toBe("true");
+                expect(oldValue).toBeFalsy();
 
-        link.hide();
-
-        setTimeout(function() {
-            expect(spy.calls.count()).toBe(1);
-
-            spy.and.callFake(function(newValue, oldValue) {
+                link.show();
+            } else {
                 expect(newValue).toBe("false");
                 expect(oldValue).toBe("true");
 
                 done();
-            });
+            }
+        });
 
-            link.show();
-        }, 50);
+        link.hide();
     });
 
     it("should allow to unregister handler", function(done) {

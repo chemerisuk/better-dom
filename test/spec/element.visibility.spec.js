@@ -79,13 +79,13 @@ describe("visibility", function() {
         it("should work for several transitions", function(done) {
             var start = Date.now();
 
-            link = DOM.create("<a class=\"fade\" style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 10ms, -webkit-transform 200ms'>abc</a>");
+            link = DOM.create("<a class=\"fade\" style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 50ms, -webkit-transform 100ms'>abc</a>");
 
             jasmine.sandbox.set(link);
 
             link.hide(function() {
                 if (hasAnimationSupport) {
-                    expect(Date.now() - start).not.toBeLessThan(100);
+                    expect(Date.now() - start).toBeGreaterThan(75);
                 }
 
                 done();

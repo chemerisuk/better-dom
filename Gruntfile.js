@@ -33,7 +33,12 @@ module.exports = function(grunt) {
         },
         karma: {
             options: {
-                configFile: "conf/karma.conf.js"
+                configFile: "conf/karma.conf.js",
+                files: [
+                    "./test/lib/jasmine-better-dom-matchers.js",
+                    "./build/better-dom.js",
+                    "./test/spec/*.spec.js"
+                ]
             },
             all: {
                 browsers: ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"],

@@ -52,12 +52,23 @@ describe("create", function() {
         expect(el.child(0)).toHaveTag("li");
     });
 
-    it("should wrap element to div if HTML string has several root nodes", function() {
-        var el = DOM.createAll("a+b");
+    describe("createAll", function() {
+        it("should always return array of elements", function() {
+            var els = DOM.createAll("a");
 
-        expect(el[0]).toHaveTag("a");
-        expect(el[1]).toHaveTag("b");
+            expect(Array.isArray(els)).toBeTruthy();
+            expect(els[0]).toHaveTag("a");
+        });
+
+        it("should wrap element to div if HTML string has several root nodes", function() {
+            var el = DOM.createAll("a+b");
+
+            expect(el[0]).toHaveTag("a");
+            expect(el[1]).toHaveTag("b");
+        });
     });
+
+
 
     it("should throw error if argument is invalid", function() {
         expect(function() { DOM.create(2); }).toThrow();
