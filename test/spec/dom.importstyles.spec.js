@@ -7,7 +7,7 @@ describe("DOM.importStyles", function() {
         var link = DOM.find("#importStyles1");
 
         expect(link.css("display")).not.toBe("none");
-        DOM.importStyles("#importStyles1", "display: none");
+        DOM.importStyles("#importStyles1", "display: none;");
         expect(link.css("display")).toBe("none");
     });
 
@@ -27,8 +27,9 @@ describe("DOM.importStyles", function() {
         var link = DOM.find("#importStyles3");
 
         expect(link.css("box-sizing")).not.toBe("border-box");
-        DOM.importStyles("#importStyles3", {"box-sizing": "border-box"});
+        DOM.importStyles("#importStyles3", {"box-sizing": "border-box", "opacity": 0});
         expect(link.css("box-sizing")).toBe("border-box");
+        expect(link.css("opacity")).toBe("0");
     });
 
     it("should throw error if arguments are invalid", function() {

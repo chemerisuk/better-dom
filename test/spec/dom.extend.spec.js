@@ -222,21 +222,32 @@ describe("extend", function() {
         }, 50);
     });
 
-    // FIXME: find a way to test without exception in browser
-    // it("should not stop handle other listeners if any throws an error", function() {
-    //     var otherCallback = jasmine.createSpy("otherCallback");
+    it("should not stop handle other listeners if any throws an error", function(done) {
+        var otherCallback = jasmine.createSpy("otherCallback"),
+            errorSpy;
 
-    //     callback.andThrow("stop listeners");
+        if ("console" in window) {
+            errorSpy = spyOn(window.console, "error");
+        }
 
-    //     DOM.extend(".watch5", callback);
-    //     DOM.extend(".watch5", otherCallback);
+        callback.and.throwError("stop listeners");
 
-    //     jasmine.sandbox.set("<a class='watch5'></a>");
+        DOM.extend(".watch5", callback);
+        DOM.extend(".watch5", otherCallback);
 
-    //     waitsFor(function() {
-    //         return callback.calls.count() === 1 && otherCallback.calls.count() === 1;
-    //     });
-    // });
+        jasmine.sandbox.set("<a class='watch5'></a>");
+
+        setTimeout(function() {
+            expect(callback).toHaveBeenCalled();
+            expect(otherCallback).toHaveBeenCalled();
+
+            if (errorSpy) {
+                expect(errorSpy).toHaveBeenCalled();
+            }
+
+            done();
+        }, 50);
+    });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.extend(1); }).toThrow();

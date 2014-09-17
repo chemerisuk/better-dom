@@ -87,12 +87,13 @@ describe("on", function() {
         input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.and.callFake(function(type, defaultPrevented) {
+        spy.and.callFake(function(type, defaultPrevented, pageX) {
             expect(type).toBe("focus");
             expect(defaultPrevented).toBe(false);
+            expect(pageX).toBeUndefined();
         });
 
-        input.on("focus", ["type", "defaultPrevented"], spy).fire("focus");
+        input.on("focus", ["type", "defaultPrevented", "pageX"], spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
