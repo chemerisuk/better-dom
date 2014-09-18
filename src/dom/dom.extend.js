@@ -7,11 +7,13 @@ import importStyles from "./dom.importstyles";
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
-var reRemovableMethod = /^(on|do)[A-Z]/,
+
+var console = "console" in WINDOW ? WINDOW.console : null,
+    reRemovableMethod = /^(on|do)[A-Z]/,
     extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
-    nativeEventType, animId, link, styles,
+    nativeEventType, animId, styles,
     applyMixins = (obj, mixins) => {
         _.keys(mixins).forEach((key) => {
             if (key !== "constructor") obj[key] = mixins[key];
@@ -86,12 +88,24 @@ if (CSS3_ANIMATIONS) {
         }
     }, false);
 } else {
+    let link = DOCUMENT.querySelector("link[rel=htc]");
+
+    if (link) {
+        link = link.href;
+    } else {
+        if (console) {
+            console.log("WARNING: In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
+        }
+
+        let scripts = DOCUMENT.scripts;
+
+        link = scripts[scripts.length - 1].src.split("/");
+        link = "/" + link.slice(3, link.length - 1).concat("better-dom.htc").join("/");
+    }
+
+    styles = {behavior: "url(" + link + ") !important"};
     nativeEventType = "on" + CUSTOM_EVENT_TYPE;
-    link = DOCUMENT.querySelector("link[rel=htc]");
 
-    if (!link) throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies");
-
-    styles = {behavior: "url(" + link.href + ") !important"};
     // append behavior for HTML element to apply several legacy IE-specific fixes
     importStyles("html", styles);
 
@@ -136,7 +150,7 @@ DOM.extend = function(selector, condition, mixins) {
                     mixins.constructor.call(el);
                 } catch (err) {
                     // log invokation error if it was thrown
-                    if ("console" in WINDOW) WINDOW.console.error(err);
+                    if (console) console.error(err);
                 }
             },
             ext = (node, mock) => {

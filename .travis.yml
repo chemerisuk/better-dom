@@ -6,7 +6,7 @@ before_install:
 script:
   - grunt travis
 after_script:
-  - cat ./coverage/PhantomJS*/lcov.info | codeclimate
+  - codeclimate < coverage/**/lcov.info
 env:
   global:
     - secure: JUEHpRY6mX0+vHbm/swGR+x0NZDSqusihJyk9oHY1PzoqPCiXLWxZu/3gxR9zwy4CF3EudNDVf+lNTLiAI0SsBRfQBgxwlVYEhbWk8Fcqt5WLEG/zkkv0NheFdrKQbgA6oerL6zstwRUwY5hgCN8MgVQaYnXlCiQmpMk/7HzVcM=

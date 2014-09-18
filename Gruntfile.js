@@ -35,6 +35,11 @@ module.exports = function(grunt) {
             options: {
                 configFile: "conf/karma.conf.js",
                 files: [
+                    // legacy IE files
+                    {pattern: "./build/better-dom.htc", served: true, included: false},
+                    "./bower_components/es5-shim/es5-shim.js",
+                    "./bower_components/html5shiv/dist/html5shiv.js",
+                    // normal browser files
                     "./test/lib/jasmine-better-dom-matchers.js",
                     "./build/better-dom.js",
                     "./test/spec/*.spec.js"
@@ -42,20 +47,22 @@ module.exports = function(grunt) {
             },
             all: {
                 browsers: ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"],
-                reporters: ["progress"],
-                singleRun: true
+                reporters: ["progress"]
+            },
+            ievms: {
+                browsers: ["IE9 - Win7"],
+                reporters: ["progress"]
             },
             watch: {
                 preprocessors: { "build/better-dom.js": "coverage" },
                 reporters: ["coverage", "progress"],
-                background: true
+                background: true,
+                singleRun: false
             },
             unit: {
-                singleRun: true,
                 reporters: ["dots"]
             },
             travis: {
-                singleRun: true,
                 reporters: ["coverage", "dots", "coveralls"],
                 coverageReporter: {
                     type: "lcovonly",
@@ -113,6 +120,12 @@ module.exports = function(grunt) {
         clean: {
             build: ["build/"],
             jsdoc: ["jsdoc/"]
+        },
+        symlink: {
+            htc: {
+                src: "dist/better-dom.htc",
+                dest: "build/better-dom.htc",
+            }
         },
         uglify: {
             options: {
@@ -174,8 +187,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask("dev", [
-        "clean:build",
-        "compile:build",
+        "build",
         "jshint",
         "connect",
         "karma:watch",
@@ -199,6 +211,7 @@ module.exports = function(grunt) {
         // TODO: manage excluded modules
         grunt.task.run([
             "clean:build",
+            "symlink:htc",
             "compile:build"
         ]);
     });

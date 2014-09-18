@@ -3,6 +3,7 @@ module.exports = function(config) {
 
     config.set({
         basePath: "..",
+        singleRun: true,
         frameworks: ["jasmine"],
         browsers: ["PhantomJS"],
         coverageReporter: {

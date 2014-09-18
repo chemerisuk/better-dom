@@ -44,7 +44,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                             // click: 1 === left; 2 === middle; 3 === right
                             return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
                         case "pageX":
-                            return e.pageX || e.clientX + HTML.scrollLeft - HTML.clientLeft;
+                            return e.clientX + HTML.scrollLeft - HTML.clientLeft;
                         case "pageY":
                             return e.clientY + HTML.scrollTop - HTML.clientTop;
                         }
