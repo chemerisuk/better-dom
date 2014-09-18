@@ -107,6 +107,12 @@ describe("set", function() {
         expect(link.css("float")).toBe("left");
     });
 
+    it("should return this for empty nodes", function() {
+        var empty = DOM.find("some-node");
+
+        expect(empty.set("attr", "test")).toBe(empty);
+    });
+
     describe("private properties", function() {
         it("shoud be stored in _ object", function() {
             input.set("_test", "yeah");

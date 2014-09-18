@@ -9,7 +9,7 @@ import { $Element, DOM } from "../types";
 var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rescape = /'|\\/g,
     tmpId = "DOM" + Date.now(),
-    makeFindMethod = (all) => function(selector) {
+    makeMethod = (all) => function(selector) {
         if (typeof selector !== "string") throw new MethodError("find" + all);
 
         var node = this[0],
@@ -66,7 +66,7 @@ _.assign($Element.prototype, {
      * @return {$Element} the first matched element
      * @function
      */
-    find: makeFindMethod(""),
+    find: makeMethod(""),
 
     /**
      * Find all matched elements by css selector
@@ -76,5 +76,5 @@ _.assign($Element.prototype, {
      * @return {Array.<$Element>} an array of element wrappers
      * @function
      */
-    findAll: makeFindMethod("All")
+    findAll: makeMethod("All")
 });

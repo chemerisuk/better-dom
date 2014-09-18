@@ -13,10 +13,6 @@ describe("contains", function() {
         expect(testEl.contains(testEl.find("a"))).toBeTruthy();
     });
 
-    // it("should accept DOM collections", function() {
-    //     expect(testEl.contains(testEl.findAll("a"))).toBeTruthy();
-    // });
-
     it("should return true for node itself", function() {
         expect(testEl.contains(testEl)).toBeTruthy();
     });
@@ -25,4 +21,7 @@ describe("contains", function() {
         expect(function() { testEl.contains(2); }).toThrow();
     });
 
+    it("should return false for empty node", function() {
+        expect(DOM.find("some-node").contains(DOM)).toBe(false);
+    });
 });

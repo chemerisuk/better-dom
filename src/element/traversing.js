@@ -3,7 +3,7 @@ import { MethodError } from "../errors";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-var makeTraversingMethod = (methodName, propertyName, all) => function(selector) {
+var makeMethod = (methodName, propertyName, all) => function(selector) {
         if (selector && typeof selector !== "string") throw new MethodError(methodName);
 
         var matcher = SelectorMatcher(selector),
@@ -30,7 +30,7 @@ _.assign($Element.prototype, {
      * @return {$Element} matched element wrapper
      * @function
      */
-    next: makeTraversingMethod("next", "nextSibling"),
+    next: makeMethod("next", "nextSibling"),
 
     /**
      * Find previous sibling element filtered by optional selector
@@ -40,7 +40,7 @@ _.assign($Element.prototype, {
      * @return {$Element} matched element wrapper
      * @function
      */
-    prev: makeTraversingMethod("prev", "previousSibling"),
+    prev: makeMethod("prev", "previousSibling"),
 
     /**
      * Find all next sibling elements filtered by optional selector
@@ -50,7 +50,7 @@ _.assign($Element.prototype, {
      * @return {Array.<$Element>} an array of all matched element wrappers
      * @function
      */
-    nextAll: makeTraversingMethod("nextAll", "nextSibling", true),
+    nextAll: makeMethod("nextAll", "nextSibling", true),
 
     /**
      * Find all previous sibling elements filtered by optional selector
@@ -60,7 +60,7 @@ _.assign($Element.prototype, {
      * @return {Array.<$Element>} an array of all matched element wrappers
      * @function
      */
-    prevAll: makeTraversingMethod("prevAll", "previousSibling", true),
+    prevAll: makeMethod("prevAll", "previousSibling", true),
 
     /**
      * Find parent element filtered by optional selector
@@ -70,5 +70,5 @@ _.assign($Element.prototype, {
      * @return {$Element} matched element wrapper
      * @function
      */
-    parent: makeTraversingMethod("parent", "parentNode")
+    parent: makeMethod("parent", "parentNode")
 });

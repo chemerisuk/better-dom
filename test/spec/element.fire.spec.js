@@ -83,6 +83,10 @@ describe("fire", function() {
         expect(input.fire("focus")).toBe(false);
     });
 
+    it("should return false for empty node", function() {
+        expect(DOM.find("some-node").fire("click")).toBe(false);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.fire(1); }).toThrow();
     });

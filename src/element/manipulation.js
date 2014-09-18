@@ -3,7 +3,7 @@ import { MethodError } from "../errors";
 import { DOCUMENT } from "../constants";
 import { $Element, DOM } from "../types";
 
-var makeManipulationMethod = (methodName, fasterMethodName, standalone, strategy) => function(content = "") {
+var makeMethod = (methodName, fasterMethodName, standalone, strategy) => function(content = "") {
     var node = this[0];
 
     if (!standalone && (!node.parentNode || content === DOM)) return this;
@@ -49,7 +49,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    after: makeManipulationMethod("after", "afterend", false, (node, relatedNode) => {
+    after: makeMethod("after", "afterend", false, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node.nextSibling);
     }),
 
@@ -61,7 +61,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    before: makeManipulationMethod("before", "beforebegin", false, (node, relatedNode) => {
+    before: makeMethod("before", "beforebegin", false, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node);
     }),
 
@@ -73,7 +73,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    prepend: makeManipulationMethod("prepend", "afterbegin", true, (node, relatedNode) => {
+    prepend: makeMethod("prepend", "afterbegin", true, (node, relatedNode) => {
         node.insertBefore(relatedNode, node.firstChild);
     }),
 
@@ -85,7 +85,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    append: makeManipulationMethod("append", "beforeend", true, (node, relatedNode) => {
+    append: makeMethod("append", "beforeend", true, (node, relatedNode) => {
         node.appendChild(relatedNode);
     }),
 
@@ -97,7 +97,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    replace: makeManipulationMethod("replace", "", false, (node, relatedNode) => {
+    replace: makeMethod("replace", "", false, (node, relatedNode) => {
         node.parentNode.replaceChild(relatedNode, node);
     }),
 
@@ -108,7 +108,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    remove: makeManipulationMethod("remove", "", false, (node) => {
+    remove: makeMethod("remove", "", false, (node) => {
         node.parentNode.removeChild(node);
     })
 });

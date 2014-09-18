@@ -4,7 +4,7 @@ import { $Element, DOM } from "../types";
 
 var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
     sandbox = DOCUMENT.createElement("body"),
-    makeCreateMethod = (all) => function(value, varMap) {
+    makeMethod = (all) => function(value, varMap) {
         var test = reTest.exec(value),
             nodes, el;
 
@@ -50,7 +50,7 @@ var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
  * @return {$Element} an element wrapper
  * @function
  */
-DOM.create = makeCreateMethod("");
+DOM.create = makeMethod("");
 
 /**
  * Create a new array of {@link $Element}s from Emmet or HTML string
@@ -66,4 +66,4 @@ DOM.create = makeCreateMethod("");
  * DOM.createAll("li*5"); // => array with 5 li $Elements
  * ```
  */
-DOM.createAll = makeCreateMethod("All");
+DOM.createAll = makeMethod("All");

@@ -4,7 +4,7 @@ import { DOM2_EVENTS } from "../constants";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-var makeChildrenMethod = (all) => function(selector) {
+var makeMethod = (all) => function(selector) {
     if (all) {
         if (selector && typeof selector !== "string") throw new MethodError("children");
     } else {
@@ -42,7 +42,7 @@ _.assign($Element.prototype, {
      * @return {$Element} matched child
      * @function
      */
-    child: makeChildrenMethod(false),
+    child: makeMethod(false),
 
     /**
      * Fetch children elements filtered by optional selector
@@ -52,5 +52,5 @@ _.assign($Element.prototype, {
      * @return {Array.<$Element>} an array of all matched element wrappers
      * @function
      */
-    children: makeChildrenMethod(true)
+    children: makeMethod(true)
 });

@@ -6,7 +6,7 @@ import { $Element } from "../types";
 /* es6-transpiler has-iterators:false, has-generators: false */
 
 var reSpace = /[\n\t\r]/g,
-    makeClassesMethod = (nativeMethodName, fallback) => {
+    makeMethod = (nativeMethodName, fallback) => {
         var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
         // use fallback if browser does not support classList API
         if (!HTML.classList) nativeMethodName = null;
@@ -62,7 +62,7 @@ _.assign($Element.prototype, {
      * @return {Boolean}  returns <code>true</code> if the element contains the class
      * @function
      */
-    hasClass: makeClassesMethod("contains", (el, node, token) => {
+    hasClass: makeMethod("contains", (el, node, token) => {
         return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
     }),
 
@@ -74,7 +74,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    addClass: makeClassesMethod("add", (el, node, token) => {
+    addClass: makeMethod("add", (el, node, token) => {
         if (!el.hasClass(token)) node.className += " " + token;
     }),
 
@@ -86,7 +86,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    removeClass: makeClassesMethod("remove", (el, node, token) => {
+    removeClass: makeMethod("remove", (el, node, token) => {
         token = (" " + node.className + " ").replace(reSpace, " ").replace(" " + token + " ", " ");
 
         node.className = token.trim();
@@ -101,7 +101,7 @@ _.assign($Element.prototype, {
      * @return {Boolean} returns <code>true</code> if the className is now present, and <code>false</code> otherwise.
      * @function
      */
-    toggleClass: makeClassesMethod("toggle", (el, node, token) => {
+    toggleClass: makeMethod("toggle", (el, node, token) => {
         var oldClassName = node.className;
 
         el.addClass(token);

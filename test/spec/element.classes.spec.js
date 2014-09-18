@@ -19,6 +19,13 @@ describe("classes manipulation", function() {
             expect(link.hasClass("test", "test1")).toBe(true);
             expect(link.hasClass("test", "test2")).toBe(true);
         });
+
+        it("should throw error if the first arg is not a string", function() {
+            expect(function() { link.hasClass(1) }).toThrow();
+            expect(function() { link.hasClass(function() {}) }).toThrow();
+            expect(function() { link.hasClass(null) }).toThrow();
+            expect(function() { link.hasClass({}) }).toThrow();
+        });
     });
 
     describe("toggleClass", function() {
@@ -60,6 +67,18 @@ describe("classes manipulation", function() {
 
             expect(link).not.toHaveClass("test2");
             expect(link).not.toHaveClass("test3");
+        });
+
+        it("should throw error if the first arg is not a string", function() {
+            expect(function() { link.addClass(1) }).toThrow();
+            expect(function() { link.addClass(function() {}) }).toThrow();
+            expect(function() { link.addClass(null) }).toThrow();
+            expect(function() { link.addClass({}) }).toThrow();
+
+            expect(function() { link.removeClass(1) }).toThrow();
+            expect(function() { link.removeClass(function() {}) }).toThrow();
+            expect(function() { link.removeClass(null) }).toThrow();
+            expect(function() { link.removeClass({}) }).toThrow();
         });
     });
 

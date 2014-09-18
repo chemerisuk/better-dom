@@ -4,7 +4,7 @@ import { DOM2_EVENTS } from "../constants";
 import { $Element } from "../types";
 import EventHandler from "../util/eventhandler";
 
-var makeOnMethod = (method) => function(type, selector, props, callback) {
+var makeMethod = (method) => function(type, selector, props, callback) {
     if (typeof type === "string") {
         if (typeof props === "function") {
             callback = props;
@@ -60,7 +60,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    on: makeOnMethod("on"),
+    on: makeMethod("on"),
 
     /**
      * Bind a DOM event but fire once before being removed
@@ -73,5 +73,5 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    once: makeOnMethod("once")
+    once: makeMethod("once")
 });

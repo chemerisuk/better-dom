@@ -7,7 +7,7 @@ var applyExtensions = (node) => {
 
         _.each.call(node.children, applyExtensions);
     },
-    makeMockMethod = (all) => function(content, varMap) {
+    makeMethod = (all) => function(content, varMap) {
         if (!content) return new $Element();
 
         var result = DOM["create" + all](content, varMap);
@@ -31,7 +31,7 @@ var applyExtensions = (node) => {
  * @return {$Element} mocked instance
  * @function
  */
-DOM.mock = makeMockMethod("");
+DOM.mock = makeMethod("");
 
 /**
  * Return Array of {@link $Element} initialized with all existing live extensions.
@@ -43,4 +43,4 @@ DOM.mock = makeMockMethod("");
  * @return {Array.<$Element>} an array of element wrappers
  * @function
  */
-DOM.mockAll = makeMockMethod("All");
+DOM.mockAll = makeMethod("All");

@@ -96,7 +96,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
 
         return true;
     },
-    makeVisibilityMethod = (name, condition) => function(animationName, callback) {
+    makeMethod = (name, condition) => function(animationName, callback) {
         var node = this[0];
 
         if (typeof animationName !== "string") {
@@ -170,7 +170,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    show: makeVisibilityMethod("show", false),
+    show: makeMethod("show", false),
 
     /**
      * Hide an element using CSS3 transition or animation
@@ -181,7 +181,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    hide: makeVisibilityMethod("hide", true),
+    hide: makeMethod("hide", true),
 
     /**
      * Toggle an element using CSS3 transition or animation
@@ -192,5 +192,5 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    toggle: makeVisibilityMethod("toggle")
+    toggle: makeMethod("toggle")
 });
