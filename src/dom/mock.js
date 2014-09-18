@@ -1,6 +1,6 @@
 import _ from "../helpers";
 import { $Element, DOM } from "../types";
-import extensions from "./dom.extend";
+import extensions from "./extend";
 
 var applyExtensions = (node) => {
         extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });

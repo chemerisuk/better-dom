@@ -3,7 +3,7 @@ import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT, CUSTOM_E
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
-import importStyles from "./dom.importstyles";
+import importStyles from "./importstyles";
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
