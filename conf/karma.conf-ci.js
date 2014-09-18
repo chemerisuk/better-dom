@@ -89,7 +89,9 @@ module.exports = function(config) {
         logLevel: config.LOG_INFO,
 
         sauceLabs: {
-            testName: "better-dom"
+            testName: "better-dom",
+            startConnect: !process.env.TRAVIS_JOB_NUMBER,
+            tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
         },
 
         // start these browsers

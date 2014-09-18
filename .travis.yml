@@ -14,5 +14,6 @@ env:
     - secure: JUEHpRY6mX0+vHbm/swGR+x0NZDSqusihJyk9oHY1PzoqPCiXLWxZu/3gxR9zwy4CF3EudNDVf+lNTLiAI0SsBRfQBgxwlVYEhbWk8Fcqt5WLEG/zkkv0NheFdrKQbgA6oerL6zstwRUwY5hgCN8MgVQaYnXlCiQmpMk/7HzVcM=
     - secure: EaanBOOFDcsSnv6OkTsEeBRXVHhW9iGq4vnUg7qmsL3llWJdt2abcQEM6xlkGsA7xeX/CZwNIrwcb5mPD26gonJEctGsEsc/VWkI18zc0LVZbNMFxcn0IZijuPjs/jCpoXJ/y0szLb53zcrISz8pEur0Bt19DqUG/Vw/tYxfqmw=
 addons:
+  sauce_connect: true
   code_climate:
     repo_token: ecacfa88fefa94c855c6466fabd6ec76648acbe5c577eecb79c734f85ddc6f5c

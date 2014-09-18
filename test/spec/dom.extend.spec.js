@@ -26,16 +26,15 @@ describe("extend", function() {
         DOM.extend(".watch", { constructor: callback });
     });
 
-    // FIXME: for a some reason this test fails on sauce labs
-    // it("should support shortcut", function(done) {
-    //     DOM.extend(".watch0", callback);
+    it("should support shortcut", function(done) {
+        DOM.extend(".watch0", callback);
 
-    //     callback.and.callFake(function() {
-    //         done();
-    //     });
+        callback.and.callFake(function() {
+            done();
+        });
 
-    //     jasmine.sandbox.set("<a class='watch0'></a>");
-    // });
+        jasmine.sandbox.set("<a class='watch0'></a>");
+    });
 
     it("should capture any future element on page", function(done) {
         DOM.extend(".watch1", {constructor: callback});
