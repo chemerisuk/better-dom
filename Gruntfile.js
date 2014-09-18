@@ -63,6 +63,7 @@ module.exports = function(grunt) {
                 reporters: ["dots"]
             },
             travis: {
+                preprocessors: { "build/better-dom.js": "coverage" },
                 reporters: ["coverage", "dots", "coveralls"],
                 coverageReporter: {
                     type: "lcovonly",
