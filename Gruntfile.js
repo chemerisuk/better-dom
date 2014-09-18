@@ -35,11 +35,11 @@ module.exports = function(grunt) {
             options: {
                 configFile: "conf/karma.conf.js",
                 files: [
-                    // legacy IE files
+                    // legacy IE file includes
                     {pattern: "./build/better-dom.htc", served: true, included: false},
                     "./bower_components/es5-shim/es5-shim.js",
                     "./bower_components/html5shiv/dist/html5shiv.js",
-                    // normal browser files
+                    // regular browser file includes
                     "./test/lib/jasmine-better-dom-matchers.js",
                     "./build/better-dom.js",
                     "./test/spec/*.spec.js"
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
                 reporters: ["progress"]
             },
             ievms: {
-                browsers: ["IE9 - Win7"],
+                browsers: ["IE8 - WinXP"],
                 reporters: ["progress"]
             },
             watch: {

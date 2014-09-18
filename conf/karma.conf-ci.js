@@ -39,24 +39,24 @@ var customLaunchers = {
         platform: "Windows 7",
         version: "11"
     },
-    sl_ie_8: {
-        base: "SauceLabs",
-        browserName: "internet explorer",
-        platform: "Windows XP",
-        version: "8"
-    },
-    // sl_ie_9: {
+    // sl_ie_8: {
     //     base: "SauceLabs",
     //     browserName: "internet explorer",
-    //     platform: "Windows 7",
-    //     version: "9"
+    //     platform: "Windows XP",
+    //     version: "8"
     // },
-    sl_ios_safari_7: {
+    sl_ie_9: {
         base: "SauceLabs",
-        browserName: "iphone",
-        platform: "OS X 10.9",
-        version: "7.1"
+        browserName: "internet explorer",
+        platform: "Windows 7",
+        version: "9"
     },
+    // sl_ios_safari_7: {
+    //     base: "SauceLabs",
+    //     browserName: "iphone",
+    //     platform: "OS X 10.9",
+    //     version: "7.1"
+    // },
     sl_android_4_4: {
         base: "SauceLabs",
         browserName: "android",
@@ -84,7 +84,6 @@ module.exports = function(config) {
 
         reporters: ["saucelabs"],
 
-        port: 9876,
         colors: true,
         captureTimeout: 180000,
         logLevel: config.LOG_INFO,
