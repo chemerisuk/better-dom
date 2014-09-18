@@ -47,10 +47,10 @@ describe("DOM.importScripts", function() {
             el.onload();
         });
 
-        DOM.importScripts("test");
+        DOM.importScripts("http://test");
         expect(bodySpy).toHaveBeenCalled();
 
-        DOM.importScripts("test1", "test2", "test3");
+        DOM.importScripts("http://test1", "http://test2", "http://test3");
         expect(bodySpy.calls.count()).toBe(4);
     });
 

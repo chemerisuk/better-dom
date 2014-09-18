@@ -7,7 +7,7 @@ before_install:
   - bower install
 script:
   - grunt travis
-after_success:
+after_script:
   - codeclimate < coverage/**/lcov.info
 env:
   global:

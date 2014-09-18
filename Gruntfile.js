@@ -39,7 +39,7 @@ module.exports = function(grunt) {
                     {pattern: "./build/better-dom.htc", served: true, included: false},
                     "./bower_components/es5-shim/es5-shim.js",
                     "./bower_components/html5shiv/dist/html5shiv.js",
-                    // regular browser file includes
+                    // normal browser file includes
                     "./test/lib/jasmine-better-dom-matchers.js",
                     "./build/better-dom.js",
                     "./test/spec/*.spec.js"
@@ -49,7 +49,7 @@ module.exports = function(grunt) {
                 browsers: ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"],
                 reporters: ["progress"]
             },
-            ievms: {
+            ie: {
                 browsers: ["IE8 - WinXP"],
                 reporters: ["progress"]
             },
@@ -197,6 +197,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("test", [
         "jshint",
+        "build",
         "karma:unit"
     ]);
 
