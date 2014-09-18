@@ -54,7 +54,7 @@ module.exports = function(grunt) {
                 singleRun: true,
                 reporters: ["dots"]
             },
-            coveralls: {
+            travis: {
                 singleRun: true,
                 reporters: ["coverage", "dots", "coveralls"],
                 coverageReporter: {
@@ -187,7 +187,7 @@ module.exports = function(grunt) {
         "karma:unit"
     ]);
 
-    grunt.registerTask("travis", ["jshint", "karma:coveralls", "karma:sauce"]);
+    grunt.registerTask("travis", ["jshint", "karma:travis", "karma:sauce"]);
 
     grunt.registerTask("docs", [
         "clean",
