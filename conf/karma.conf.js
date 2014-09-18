@@ -5,7 +5,7 @@ module.exports = function(config) {
         basePath: "..",
         singleRun: true,
         frameworks: ["jasmine"],
-        browsers: ["IE8 - WinXP"],
+        browsers: ["PhantomJS"],
         coverageReporter: {
             type: "html",
             dir: "coverage/"
