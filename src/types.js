@@ -2,7 +2,7 @@ import { HTML } from "./constants";
 
 // use a random property name to link JS wrappers and
 // native DOM elements.
-var wrapperProp = "__" + Math.random().toString().substr(2) + "__";
+var wrapperProp = "__" + Math.random().toString(32).substr(2) + "__";
 
 /**
  * Used to represent a DOM element
@@ -26,6 +26,18 @@ function $Element(node) {
 }
 
 $Element.prototype = {
+    /**
+     * Create a {@link $Element} for a native DOM element
+     * @memberof DOM
+     * @alias DOM.constructor
+     * @param {Object}  [node]  native element
+     * @return {$Element} a wrapper object
+     * @example
+     * ```js
+     * var bodyEl = DOM.constructor(document.body);
+     * bodyEl.hide();
+     * ```
+     */
     constructor(node) {
         return new $Element(node && node.nodeType === 1 ? node : null);
     },
@@ -40,12 +52,6 @@ $Element.prototype = {
  * Global object to access the DOM
  * @namespace DOM
  * @extends $Element
- * @example
- * You can use `DOM.constructor` to create a native element wrapper:
- * ```js
- * var bodyEl = DOM.constructor(document.body);
- * bodyEl.hide();
- * ```
  */
 var DOM = new $Element(HTML);
 

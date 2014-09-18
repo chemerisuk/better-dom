@@ -58,6 +58,7 @@ _.assign($Element.prototype, {
      * @param  {Array}         [props]     array of event properties to pass into the callback
      * @param  {Function}      callback    event callback or property name (for late binding)
      * @return {$Element}
+     * @function
      */
     on: makeOnMethod(false),
 
@@ -70,6 +71,7 @@ _.assign($Element.prototype, {
      * @param  {Array}         [props]     array of event properties to pass into the callback
      * @param  {Function}      callback    event callback or property name (for late binding)
      * @return {$Element}
+     * @function
      */
     once: makeOnMethod(true)
 });

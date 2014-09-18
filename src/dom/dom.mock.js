@@ -29,6 +29,7 @@ var applyExtensions = (node) => {
  * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} mocked instance
+ * @function
  */
 DOM.mock = makeMockMethod("");
 
@@ -40,5 +41,6 @@ DOM.mock = makeMockMethod("");
  * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array.<$Element>} an array of element wrappers
+ * @function
  */
 DOM.mockAll = makeMockMethod("All");

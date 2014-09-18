@@ -48,6 +48,7 @@ var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
  * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} an element wrapper
+ * @function
  */
 DOM.create = makeCreateMethod("");
 
@@ -58,6 +59,7 @@ DOM.create = makeCreateMethod("");
  * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array.<$Element>} an array of element wrappers
+ * @function
  * @example
  * ```js
  * DOM.createAll("span+b"); // => array with 2 $Elements: span and b

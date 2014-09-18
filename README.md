@@ -1,9 +1,10 @@
-# better-dom [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url]
-> Live extension playground
+# [better-dom](https://github.com/chemerisuk/better-dom): live extension playground
+
+[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][fury-image]][fury-url]
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/chemerisuk.svg)](https://saucelabs.com/u/chemerisuk)
 
-**NOTE:** documentation is currently updating to reflect changes in version 2. If you need the 1st version please use [v1.7.7 tag](https://github.com/chemerisuk/better-dom/tree/v1.7.7).
+_**NOTE:** documentation is currently updating to reflect changes in version 2. If you need the 1st version please use [v1.7.7 tag](https://github.com/chemerisuk/better-dom/tree/v1.7.7)._
 
 jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
 But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce **[live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)** and **better-dom** - a new library for working with the DOM.
@@ -29,7 +30,7 @@ The simplest way is to use [bower](http://bower.io/):
 
     bower install better-dom
 
-This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include the script below before the end of `<body>` on your web page:
+This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include the script below on your web page:
 
 ```html
 <script src="bower_components/better-dom/dist/better-dom.js"></script>
@@ -93,3 +94,7 @@ Opera Mini is out of the scope because of lack of support for CSS3 Animations.
 
 [coveralls-url]: https://coveralls.io/r/chemerisuk/better-dom
 [coveralls-image]: http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg
+
+[fury-url]: http://badge.fury.io/bo/better-dom
+[fury-image]: https://badge.fury.io/bo/better-dom.svg
+
