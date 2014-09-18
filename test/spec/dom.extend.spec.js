@@ -30,13 +30,10 @@ describe("extend", function() {
         DOM.extend("." + jasmine.sandbox.id, callback);
 
         callback.and.callFake(function() {
-            if (callback.calls.count() === 1) done();
+            done();
         });
 
-        // have to add timeout because jasmine fails
-        setTimeout(function() {
-            jasmine.sandbox.set("<a class='" + jasmine.sandbox.id + "'></a>");
-        }, 50);
+        jasmine.sandbox.set("<a class='" + jasmine.sandbox.id + "'></a>");
     });
 
     it("should capture any future element on page", function(done) {
@@ -235,18 +232,15 @@ describe("extend", function() {
         DOM.extend(".watch5", callback);
         DOM.extend(".watch5", otherCallback);
 
-        jasmine.sandbox.set("<a class='watch5'></a>");
-
-        setTimeout(function() {
-            expect(callback).toHaveBeenCalled();
-            expect(otherCallback).toHaveBeenCalled();
-
+        otherCallback.and.callFake(function() {
             if (errorSpy) {
                 expect(errorSpy).toHaveBeenCalled();
             }
 
             done();
-        }, 50);
+        });
+
+        jasmine.sandbox.set("<a class='watch5'></a>");
     });
 
     it("should throw error if arguments are invalid", function() {
