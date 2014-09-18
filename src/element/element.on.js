@@ -4,7 +4,7 @@ import { DOM2_EVENTS } from "../constants";
 import { $Element } from "../types";
 import EventHandler from "../util/eventhandler";
 
-var makeOnMethod = (once) => function(type, selector, props, callback) {
+var makeOnMethod = (method) => function(type, selector, props, callback) {
     if (typeof type === "string") {
         if (typeof props === "function") {
             callback = props;
@@ -24,7 +24,7 @@ var makeOnMethod = (once) => function(type, selector, props, callback) {
         }
 
         var node = this[0],
-            handler = EventHandler(type, selector, callback, props, this, once);
+            handler = EventHandler(type, selector, callback, props, this, method === "once");
 
         if (handler) {
             if (DOM2_EVENTS) {
@@ -37,12 +37,12 @@ var makeOnMethod = (once) => function(type, selector, props, callback) {
         }
     } else if (typeof type === "object") {
         if (_.isArray(type)) {
-            type.forEach((name) => { this.on(name, selector, callback, props, once) });
+            type.forEach((name) => { this[method](name, selector, props, callback) });
         } else {
-            _.keys(type).forEach((name) => { this.on(name, type[name]) });
+            _.keys(type).forEach((name) => { this[method](name, type[name]) });
         }
     } else {
-        throw new MethodError(once ? "once" : "on");
+        throw new MethodError(method);
     }
 
     return this;
@@ -60,7 +60,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    on: makeOnMethod(false),
+    on: makeOnMethod("on"),
 
     /**
      * Bind a DOM event but fire once before being removed
@@ -73,5 +73,5 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      */
-    once: makeOnMethod(true)
+    once: makeOnMethod("once")
 });

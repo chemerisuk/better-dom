@@ -14,12 +14,12 @@ var customLaunchers = {
         platform: "Windows 7",
         version: "31"
     },
-    sl_ie_10: {
-        base: "SauceLabs",
-        browserName: "internet explorer",
-        platform: "Windows 7",
-        version: "10"
-    },
+    // sl_ie_10: {
+    //     base: "SauceLabs",
+    //     browserName: "internet explorer",
+    //     platform: "Windows 7",
+    //     version: "10"
+    // },
     el_opera_12: {
         base: "SauceLabs",
         browserName: "opera",
@@ -45,12 +45,12 @@ var customLaunchers = {
         platform: "Windows XP",
         version: "8"
     },
-    sl_ie_9: {
-        base: "SauceLabs",
-        browserName: "internet explorer",
-        platform: "Windows 7",
-        version: "9"
-    },
+    // sl_ie_9: {
+    //     base: "SauceLabs",
+    //     browserName: "internet explorer",
+    //     platform: "Windows 7",
+    //     version: "9"
+    // },
     // sl_ios_safari_7: {
     //     base: "SauceLabs",
     //     browserName: "iphone",
