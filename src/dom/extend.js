@@ -1,5 +1,5 @@
 import _ from "../helpers";
-import { LEGACY_IE, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
+import { LEGACY_IE, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 import importStyles from "./importstyles";
@@ -8,43 +8,10 @@ import ExtensionHandler from "../util/extensionhandler";
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
-var extensions = [], styles,
+var extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
-    readyState = DOCUMENT.readyState,
-    startExt = (ext) => {
-        // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.extend.
-        // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(DOCUMENT.querySelectorAll(ext.selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs quirks
-        importStyles(ext.selector, styles);
-    },
-    readyCallback = () => {
-        if (readyCallback) {
-            extensions.forEach(startExt);
-
-            readyCallback = false;
-        }
-    };
-
-// Catch cases where ready is called after the browser event has already occurred.
-// IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
-// discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading") {
-    // fix fox #14: use setTimeout to make sure that the library is fully initialized
-    setTimeout(readyCallback, 0);
-} else {
-    if (LEGACY_IE) {
-        // in better-dom.htc we use ondocumentready event that
-        // invokes a live extension after document is ready
-        readyCallback = null;
-    } else {
-        // use DOMContentLoaded to initialize live extensions
-        // only when document is completely parsed
-        DOCUMENT.addEventListener("DOMContentLoaded", readyCallback, false);
-    }
-}
+    readyCallback, styles;
 
 if (LEGACY_IE) {
     let link = DOCUMENT.querySelector("link[rel=htc]");
@@ -67,7 +34,7 @@ if (LEGACY_IE) {
     // append behavior for HTML element to apply several legacy IE-specific fixes
     importStyles("html", styles);
 
-    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
+    DOCUMENT.attachEvent("on" + ExtensionHandler.EVENT_TYPE, () => {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
@@ -75,6 +42,23 @@ if (LEGACY_IE) {
         }
     });
 } else {
+    let readyState = DOCUMENT.readyState;
+    // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
+    // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
+    if (DOCUMENT.attachEvent ? readyState !== "complete" : readyState === "loading") {
+        readyCallback = () => {
+            extensions.forEach((ext) => { ext.start() });
+
+            readyCallback = null;
+        };
+
+        // use DOMContentLoaded to initialize any live extension
+        // AFTER the document is completely parsed to avoid quirks
+        DOCUMENT.addEventListener("DOMContentLoaded", readyCallback, false);
+        // just in case the DOMContentLoaded event fails use onload
+        WINDOW.addEventListener("load", readyCallback, false);
+    }
+
     importStyles("@" + WEBKIT_PREFIX + "keyframes " + ExtensionHandler.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
 
     styles = {
@@ -115,9 +99,18 @@ DOM.extend = function(selector, condition, mixins) {
     } else {
         var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
 
+        ext.start = () => {
+            // initialize extension manually to make sure that all elements
+            // have appropriate methods before they are used in other DOM.extend.
+            // Also fixes legacy IEs when the HTC behavior is already attached
+            _.each.call(DOCUMENT.querySelectorAll(selector), ext);
+            // MUST be after querySelectorAll because of legacy IEs quirks
+            DOM.importStyles(selector, styles);
+        };
+
         extensions.push(ext);
 
-        if (!readyCallback) startExt(ext);
+        if (!readyCallback) ext.start();
     }
 };
 

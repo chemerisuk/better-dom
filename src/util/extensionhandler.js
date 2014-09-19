@@ -33,7 +33,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
                 var el = $Element(node);
 
                 if (LEGACY_IE) {
-                    node.attachEvent("on" + CUSTOM_EVENT_TYPE, stopExt(node, index));
+                    node.attachEvent("on" + ExtensionHandler.EVENT_TYPE, stopExt(node, index));
                 } else {
                     node.addEventListener(ExtensionHandler.EVENT_TYPE, stopExt(node, index), false);
                 }
@@ -48,13 +48,16 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
             };
 
         ext.accept = SelectorMatcher(selector);
-        ext.selector = selector;
 
         return ext;
     };
 
-ExtensionHandler.EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
-ExtensionHandler.ANIMATION_ID = ANIMATION_ID;
+if (LEGACY_IE) {
+    ExtensionHandler.EVENT_TYPE = CUSTOM_EVENT_TYPE;
+} else {
+    ExtensionHandler.ANIMATION_ID = ANIMATION_ID;
+    ExtensionHandler.EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
+}
 
 ExtensionHandler.traverse = (node, skip) => (ext, index) => {
     // skip previously excluded or mismatched elements
