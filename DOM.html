@@ -52,16 +52,6 @@
             </span>
             <ul class="members itemMembers">
             
-            <span class="subtitle">Members</span>
-            
-                <li data-name="DOM.create"><a href="DOM.html#create">create</a></li>
-            
-                <li data-name="DOM.createAll"><a href="DOM.html#createAll">createAll</a></li>
-            
-                <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
-            
-                <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
-            
             </ul>
             <ul class="typedefs itemMembers">
             
@@ -69,6 +59,12 @@
             <ul class="methods itemMembers">
             
             <span class="subtitle">Methods</span>
+            
+                <li data-name="DOM.constructor"><a href="DOM.html#constructor">constructor</a></li>
+            
+                <li data-name="DOM.create"><a href="DOM.html#create">create</a></li>
+            
+                <li data-name="DOM.createAll"><a href="DOM.html#createAll">createAll</a></li>
             
                 <li data-name="DOM.emmet"><a href="DOM.html#emmet">emmet</a></li>
             
@@ -79,6 +75,10 @@
                 <li data-name="DOM.importScripts"><a href="DOM.html#importScripts">importScripts</a></li>
             
                 <li data-name="DOM.importStyles"><a href="DOM.html#importStyles">importStyles</a></li>
+            
+                <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
+            
+                <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -92,12 +92,6 @@
                 
             </span>
             <ul class="members itemMembers">
-            
-            <span class="subtitle">Members</span>
-            
-                <li data-name="$Element#on"><a href="$Element.html#on">on</a></li>
-            
-                <li data-name="$Element#once"><a href="$Element.html#once">once</a></li>
             
             </ul>
             <ul class="typedefs itemMembers">
@@ -125,6 +119,8 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
+                <li data-name="$Element#empty"><a href="$Element.html#empty">empty</a></li>
+            
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
                 <li data-name="$Element#findAll"><a href="$Element.html#findAll">findAll</a></li>
@@ -144,6 +140,10 @@
                 <li data-name="$Element#nextAll"><a href="$Element.html#nextAll">nextAll</a></li>
             
                 <li data-name="$Element#offset"><a href="$Element.html#offset">offset</a></li>
+            
+                <li data-name="$Element#on"><a href="$Element.html#on">on</a></li>
+            
+                <li data-name="$Element#once"><a href="$Element.html#once">once</a></li>
             
                 <li data-name="$Element#parent"><a href="$Element.html#parent">parent</a></li>
             
@@ -230,16 +230,6 @@
 
         
         
-            <h3>Example</h3>
-            
-
-    
-    <p>You can use <code>DOM.constructor</code> to create a native element wrapper:</p>
-<pre class="prettyprint"><code class="lang-js">var bodyEl = DOM.constructor(document.body);
-bodyEl.hide();</code></pre>
-    
-
-        
     
     </div>
     
@@ -260,67 +250,92 @@ bodyEl.hide();</code></pre>
     
     
     
-        <h3 class="subsection-title">Members</h3>
+    
+    
+        <h3 class="subsection-title">Methods</h3>
         
         <dl>
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="create"><span class="type-signature static">static</span>DOM.create</h4>
-    </div>
-    
-    
-</dt>
-<dd>
-    
-    <div class="description">
-        <p>Create a new <a href="$Element.html"><code>$Element</code></a> from Emmet or HTML string</p>
-    </div>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-</dd>
-
-        
+        <h4 class="name" id="constructor">
             
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="createAll"><span class="type-signature static">static</span>DOM.createAll</h4>
-    </div>
+            <span class="type-signature static">static</span>DOM.constructor<span class="signature">(<span class="optional">node</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
     
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line73">line 73</a>
+        </div>
+        
+    </div>
+
     
 </dt>
 <dd>
     
+    
     <div class="description">
-        <p>Create a new array of <a href="$Element.html"><code>$Element</code></a>s from Emmet or HTML string</p>
+        <p>Create a <a href="$Element.html"><code>$Element</code></a> for a native DOM element</p>
     </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                <p>native element</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -348,14 +363,33 @@ bodyEl.hide();</code></pre>
     
 </dl>
 
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+wrapper object
+<br />
+
+    
     
     
         <h5>Example</h5>
         
 
     
-    <pre class="prettyprint"><code class="lang-js">DOM.createAll(&quot;span+b&quot;); // =&gt; array with 2 $Elements: span and b
-DOM.createAll(&quot;li*5&quot;); // =&gt; array with 5 li $Elements</code></pre>
+    <pre class="prettyprint"><code>var bodyEl = DOM.constructor(document.body);
+bodyEl.hide();</code></pre>
     
 
     
@@ -365,17 +399,115 @@ DOM.createAll(&quot;li*5&quot;); // =&gt; array with 5 li $Elements</code></pre>
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="mock"><span class="type-signature static">static</span>DOM.mock</h4>
-    </div>
+        <h4 class="name" id="create">
+            
+            <span class="type-signature static">static</span>DOM.create<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
     
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line181">line 181</a>
+        </div>
+        
+    </div>
+
     
 </dt>
 <dd>
     
+    
     <div class="description">
-        <p>Return <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented</p>
+        <p>Create a new <a href="$Element.html"><code>$Element</code></a> from Emmet or HTML string</p>
     </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                <p>Emmet or HTML string</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                <p>key/value map of variables</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -405,23 +537,149 @@ Also exposes private event handler functions that aren't usually presented</p>
 
     
     
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+element wrapper
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.create("div"); // => wrapper of &lt;div&gt;
+DOM.create("&lt;a&gt;&lt;span&gt;&lt;/span&gt;&lt;/a&gt;"); // => wrapper of &lt;a&gt; + innner &lt;span&gt;</code></pre>
+    
+
+    
 </dd>
 
         
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="mockAll"><span class="type-signature static">static</span>DOM.mockAll</h4>
-    </div>
+        <h4 class="name" id="createAll">
+            
+            <span class="type-signature static">static</span>DOM.createAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
+        </h4>
     
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line195">line 195</a>
+        </div>
+        
+    </div>
+
     
 </dt>
 <dd>
     
+    
     <div class="description">
-        <p>Return Array of <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented</p>
+        <p>Create a new array of <a href="$Element.html"><code>$Element</code></a>s from Emmet or HTML string</p>
     </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                <p>Emmet or HTML string</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                <p>key/value map of variables</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
     
     
     
@@ -451,15 +709,37 @@ Also exposes private event handler functions that aren't usually presented</p>
 
     
     
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+array of element wrappers
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.createAll("&lt;span&gt;&lt;/span&gt;&lt;b&gt;&lt;/b&gt;"); // => array with 2 $Elements: &lt;span&gt; and &lt;b&gt;
+DOM.createAll("li*5"); // => array with 5 &lt;li&gt; $Elements</code></pre>
+    
+
+    
 </dd>
 
-        </dl>
-    
-    
-    
-        <h3 class="subsection-title">Methods</h3>
         
-        <dl>
             
 <dt>
     <div class="nameContainer">
@@ -470,7 +750,7 @@ Also exposes private event handler functions that aren't usually presented</p>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line244">line 244</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line251">line 251</a>
         </div>
         
     </div>
@@ -623,7 +903,7 @@ Also exposes private event handler functions that aren't usually presented</p>
 
 
 <h5>Returns:</h5>
-string
+resulting HTML string
 <br />
 
     
@@ -642,7 +922,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line651">line 651</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line690">line 690</a>
         </div>
         
     </div>
@@ -847,7 +1127,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line715">line 715</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line737">line 737</a>
         </div>
         
     </div>
@@ -976,11 +1256,20 @@ string
 
 
 <h5>Returns:</h5>
-string
+resulting string
 <br />
 
     
     
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.format("foo {name}", {name: "bar"}); // => "foo bar"
+DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
+    
+
     
 </dd>
 
@@ -995,7 +1284,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line730">line 730</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line752">line 752</a>
         </div>
         
     </div>
@@ -1148,7 +1437,7 @@ string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line511">line 511</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line461">line 461</a>
         </div>
         
     </div>
@@ -1279,6 +1568,334 @@ string
     
 </dd>
 
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mock">
+            
+            <span class="type-signature static">static</span>DOM.mock<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line804">line 804</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Return <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
+Also exposes private event handler functions that aren't usually presented</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                <p>EmmetString or HTMLString</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                <p>key/value map of variables</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+instance
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="mockAll">
+            
+            <span class="type-signature static">static</span>DOM.mockAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line816">line 816</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Return Array of <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
+Also exposes private event handler functions that aren't usually presented</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                <p>EmmetString or HTMLString</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                <p>key/value map of variables</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+array of element wrappers
+<br />
+
+    
+    
+    
+</dd>
+
         </dl>
     
     
@@ -1302,7 +1919,7 @@ string
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Sep 17 2014 17:03:44 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Sep 19 2014 20:24:46 GMT+0300 (FET)
         </footer>
     </div>
 </div>

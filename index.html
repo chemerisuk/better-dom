@@ -52,16 +52,6 @@
             </span>
             <ul class="members itemMembers">
             
-            <span class="subtitle">Members</span>
-            
-                <li data-name="DOM.create"><a href="DOM.html#create">create</a></li>
-            
-                <li data-name="DOM.createAll"><a href="DOM.html#createAll">createAll</a></li>
-            
-                <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
-            
-                <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
-            
             </ul>
             <ul class="typedefs itemMembers">
             
@@ -69,6 +59,12 @@
             <ul class="methods itemMembers">
             
             <span class="subtitle">Methods</span>
+            
+                <li data-name="DOM.constructor"><a href="DOM.html#constructor">constructor</a></li>
+            
+                <li data-name="DOM.create"><a href="DOM.html#create">create</a></li>
+            
+                <li data-name="DOM.createAll"><a href="DOM.html#createAll">createAll</a></li>
             
                 <li data-name="DOM.emmet"><a href="DOM.html#emmet">emmet</a></li>
             
@@ -79,6 +75,10 @@
                 <li data-name="DOM.importScripts"><a href="DOM.html#importScripts">importScripts</a></li>
             
                 <li data-name="DOM.importStyles"><a href="DOM.html#importStyles">importStyles</a></li>
+            
+                <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
+            
+                <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -92,12 +92,6 @@
                 
             </span>
             <ul class="members itemMembers">
-            
-            <span class="subtitle">Members</span>
-            
-                <li data-name="$Element#on"><a href="$Element.html#on">on</a></li>
-            
-                <li data-name="$Element#once"><a href="$Element.html#once">once</a></li>
             
             </ul>
             <ul class="typedefs itemMembers">
@@ -125,6 +119,8 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
+                <li data-name="$Element#empty"><a href="$Element.html#empty">empty</a></li>
+            
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
                 <li data-name="$Element#findAll"><a href="$Element.html#findAll">findAll</a></li>
@@ -144,6 +140,10 @@
                 <li data-name="$Element#nextAll"><a href="$Element.html#nextAll">nextAll</a></li>
             
                 <li data-name="$Element#offset"><a href="$Element.html#offset">offset</a></li>
+            
+                <li data-name="$Element#on"><a href="$Element.html#on">on</a></li>
+            
+                <li data-name="$Element#once"><a href="$Element.html#once">once</a></li>
             
                 <li data-name="$Element#parent"><a href="$Element.html#parent">parent</a></li>
             
@@ -202,12 +202,12 @@
 
 
     <section>
-        <article class="readme"><h1>better-dom <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a></h1>
+        <article class="readme"><h1>better-dom <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a> <a href="http://badge.fury.io/bo/better-dom"><img src="https://badge.fury.io/bo/better-dom.svg" alt="Bower version"></a></h1>
 <blockquote>
 <p>Live extension playground</p>
 </blockquote>
 <p><a href="https://saucelabs.com/u/chemerisuk"><img src="https://saucelabs.com/browser-matrix/chemerisuk.svg" alt="Sauce Test Status"></a></p>
-<p><strong>NOTE:</strong> documentation is currently updating to reflect changes in version 2. If you need the 1st version please use <a href="https://github.com/chemerisuk/better-dom/tree/v1.7.7">v1.7.7 tag</a>.</p>
+<p><em><strong>NOTE:</strong> documentation is currently updating to reflect changes in version 2. If you need the 1st version please use <a href="https://github.com/chemerisuk/better-dom/tree/v1.7.7">v1.7.7 tag</a>.</em></p>
 <p>jQuery knows a concept called “<strong>live events</strong>”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
 But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce <strong><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></strong> and <strong>better-dom</strong> - a new library for working with the DOM.</p>
 <p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
@@ -217,7 +217,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
 </em> <a href="http://habrahabr.ru/post/209140/">Введение в библиотеку better-dom по-русски</a> @habrahabr.ru</p>
 <h2>Features</h2>
 <ul>
-<li>lightweight: ~22 kB minified and ~5 kB gzipped version (<a href="#how-to-make-a-custom-build">custom builds</a> are available to reduce file size even more)</li>
+<li>lightweight: ~22 kB minified and ~5 kB gzipped version</li>
 <li>clear, minimalistic and standards-based (where possible) APIs</li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></li>
 <li><a href="http://jsfiddle.net/C3WeM/5/">animations via CSS3</a></li>
@@ -228,7 +228,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
 <h2>Installation</h2>
 <p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
 <pre><code>bower install better-dom</code></pre>
-<p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include the script below before the end of <code>&lt;body&gt;</code> on your web page:</p>
+<p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include the script below on your web page:</p>
 <pre><code class="lang-html">&lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;</code></pre>
 <h2>Documentation</h2>
 <ul>
@@ -308,7 +308,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
         
     
     <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.0.0-rc.1 2014-09-17T16:07:38</li></ul></dd>
+    <dd class="tag-version"><ul class="dummy"><li>2.0.0-rc.2 2014-09-19T20:22:54</li></ul></dd>
     
     
     
@@ -382,7 +382,7 @@ But more flexibility is required in a lot of cases. For example, delegated event
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Wed Sep 17 2014 17:03:44 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Fri Sep 19 2014 20:24:46 GMT+0300 (FET)
         </footer>
     </div>
 </div>
