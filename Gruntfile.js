@@ -202,7 +202,11 @@ module.exports = function(grunt) {
         "karma:unit"
     ]);
 
-    grunt.registerTask("travis", ["jshint", "karma:travis", "karma:sauce"]);
+    grunt.registerTask("travis", [
+        "jshint",
+        "build",
+        "karma:travis"
+    ]);
 
     grunt.registerTask("docs", [
         "clean",

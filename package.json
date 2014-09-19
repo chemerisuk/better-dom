@@ -40,7 +40,6 @@
   },
   "scripts": {
     "test": "grunt test",
-    "start": "grunt dev",
-    "install": "grunt build"
+    "start": "grunt dev"
   }
 }
