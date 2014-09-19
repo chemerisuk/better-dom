@@ -1,41 +1,17 @@
 import _ from "../helpers";
-import { CSS3_ANIMATIONS, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
+import { LEGACY_IE, WEBKIT_PREFIX, DOM2_EVENTS, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
-import SelectorMatcher from "../util/selectormatcher";
 import importStyles from "./importstyles";
+import ExtensionHandler from "../util/extensionhandler";
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
-var console = "console" in WINDOW ? WINDOW.console : null,
-    reRemovableMethod = /^(on|do)[A-Z]/,
-    extensions = [],
+var extensions = [], styles,
     returnTrue = () => true,
     returnFalse = () => false,
-    nativeEventType, animId, styles,
-    applyMixins = (obj, mixins) => {
-        _.keys(mixins).forEach((key) => {
-            if (key !== "constructor") obj[key] = mixins[key];
-        });
-    },
-    stopExt = (node, index) => (e) => {
-        var isEventValid;
-
-        e = e || WINDOW.event;
-
-        if (CSS3_ANIMATIONS) {
-            isEventValid = e.animationName === animId && e.target === node;
-        } else {
-            isEventValid = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
-        }
-        // mark extension as processed via e._skip bitmask
-        if (isEventValid) (e._skip = e._skip || {})[index] = true;
-    },
-    makeExtHandler = (node, skip) => (ext, index) => {
-        // skip previously excluded or mismatched elements
-        if (!skip[index] && ext.accept(node)) ext(node);
-    },
+    readyState = DOCUMENT.readyState,
     startExt = (ext) => {
         // initialize extension manually to make sure that all elements
         // have appropriate methods before they are used in other DOM.extend.
@@ -44,7 +20,6 @@ var console = "console" in WINDOW ? WINDOW.console : null,
         // MUST be after querySelectorAll because of legacy IEs quirks
         importStyles(ext.selector, styles);
     },
-    readyState = DOCUMENT.readyState,
     readyCallback = () => {
         if (readyCallback) {
             extensions.forEach(startExt);
@@ -71,20 +46,17 @@ if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading")
     }
 }
 
-if (CSS3_ANIMATIONS) {
-    nativeEventType = WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
-    animId = "DOM" + Date.now();
-
-    importStyles("@" + WEBKIT_PREFIX + "keyframes " + animId, "from {opacity:.99} to {opacity:1}");
+if (LEGACY_IE) {
+    importStyles("@" + WEBKIT_PREFIX + "keyframes " + ExtensionHandler.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
 
     styles = {
         "animation-duration": "1ms !important",
-        "animation-name": animId + " !important"
+        "animation-name": ExtensionHandler.ANIMATION_ID + " !important"
     };
 
-    DOCUMENT.addEventListener(nativeEventType, (e) => {
-        if (e.animationName === animId) {
-            extensions.forEach(makeExtHandler(e.target, e._skip || {}));
+    DOCUMENT.addEventListener(ExtensionHandler.EVENT_TYPE, (e) => {
+        if (e.animationName === ExtensionHandler.ANIMATION_ID) {
+            extensions.forEach(ExtensionHandler.traverse(e.target, e._skip || {}));
         }
     }, false);
 } else {
@@ -93,27 +65,26 @@ if (CSS3_ANIMATIONS) {
     if (link) {
         link = link.href;
     } else {
-        if (console) {
-            console.log("WARNING: In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
+        if ("console" in WINDOW) {
+            WINDOW.console.log("WARNING: In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
         }
 
         let scripts = DOCUMENT.scripts;
-
+        // trying to guess HTC file location
         link = scripts[scripts.length - 1].src.split("/");
         link = "/" + link.slice(3, link.length - 1).concat("better-dom.htc").join("/");
     }
 
     styles = {behavior: "url(" + link + ") !important"};
-    nativeEventType = "on" + CUSTOM_EVENT_TYPE;
 
     // append behavior for HTML element to apply several legacy IE-specific fixes
     importStyles("html", styles);
 
-    DOCUMENT.attachEvent(nativeEventType, () => {
+    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach(makeExtHandler(e.srcElement, e._skip || {}));
+            extensions.forEach(ExtensionHandler.traverse(e.srcElement, e._skip || {}));
         }
     });
 }
@@ -140,39 +111,10 @@ DOM.extend = function(selector, condition, mixins) {
 
     if (selector === "*") {
         // extending element prototype
-        applyMixins($Element.prototype, mixins);
+        _.assign($Element.prototype, mixins);
     } else {
-        var eventHandlers = _.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
-            index = extensions.length,
-            ctr = mixins.hasOwnProperty("constructor") && function(el) {
-                try {
-                    // make a safe call so live extensions can't break each other
-                    mixins.constructor.call(el);
-                } catch (err) {
-                    // log invokation error if it was thrown
-                    if (console) console.error(err);
-                }
-            },
-            ext = (node, mock) => {
-                var el = $Element(node);
+        var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
 
-                if (CSS3_ANIMATIONS) {
-                    node.addEventListener(nativeEventType, stopExt(node, index), false);
-                } else {
-                    node.attachEvent(nativeEventType, stopExt(node, index));
-                }
-
-                if (mock === true || condition(el) !== false) {
-                    applyMixins(el, mixins);
-                    // invoke constructor if it exists
-                    if (ctr) ctr(el);
-                    // remove event handlers from element's interface
-                    if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
-                }
-            };
-
-        ext.accept = SelectorMatcher(selector);
-        ext.selector = selector;
         extensions.push(ext);
 
         if (!readyCallback) startExt(ext);

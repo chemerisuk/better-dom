@@ -1,12 +1,12 @@
 import _ from "../helpers";
 import { MethodError } from "../errors";
-import { CSS3_ANIMATIONS, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
+import { LEGACY_IE, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
 import { $Element } from "../types";
 import CSS from "../util/stylehooks";
 
 // Legacy Android is too slow and has a lot of bugs in the CSS animations
 // implementation, so skip any animations for it
-var ANIMATIONS_ENABLED = !LEGACY_ANDROID && CSS3_ANIMATIONS,
+var ANIMATIONS_ENABLED = !LEGACY_ANDROID && LEGACY_IE,
     TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
     TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
     ANIMATION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
