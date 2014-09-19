@@ -3,39 +3,43 @@ import { MethodError } from "../errors";
 import { HTML } from "../constants";
 import { $Element } from "../types";
 
+/* es6-transpiler has-iterators:false, has-generators: false */
+
 var reSpace = /[\n\t\r]/g,
     makeMethod = (nativeMethodName, strategy) => {
         var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
 
         if (HTML.classList) {
             // use native classList property if possible
-            strategy = function(token) {
-                if (typeof token !== "string") throw new MethodError(methodName);
-
-                return this[0].classList[nativeMethodName](token);
+            strategy = function(el, token) {
+                return el[0].classList[nativeMethodName](token);
             };
         }
 
         if (methodName === "hasClass" || methodName === "toggleClass") {
             return function(token, force) {
-                var node = this[0];
-
-                if (node) {
+                if (this[0]) {
                     if (typeof force === "boolean" && methodName === "toggleClass") {
                         this[force ? "addClass" : "removeClass"](token);
 
                         return force;
                     }
 
-                    return strategy.call(this, token);
+                    if (typeof token !== "string") throw new MethodError(methodName);
+
+                    return strategy(this, token);
                 }
             };
         } else {
-            return function(...tokens) {
-                var node = this[0];
+            return function() {
+                var tokens = arguments;
 
-                if (node) {
-                    tokens.forEach(strategy, this);
+                if (this[0]) {
+                    for (var token of tokens) {
+                        if (typeof token !== "string") throw new MethodError(methodName);
+
+                        strategy(this, token);
+                    }
                 }
 
                 return this;
@@ -54,10 +58,9 @@ _.assign($Element.prototype, {
      * @example
      * link.hasClass("foo");
      */
-    hasClass: makeMethod("contains", function(token) {
-        if (typeof token !== "string") throw new MethodError("hasClass");
-
-        return (" " + this[0].className + " ").replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
+    hasClass: makeMethod("contains", (el, token) => {
+        return (" " + el[0].className + " ")
+            .replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
     }),
 
     /**
@@ -70,8 +73,8 @@ _.assign($Element.prototype, {
      * @example
      * link.addClass("foo");
      */
-    addClass: makeMethod("add", function(token) {
-        if (!this.hasClass(token)) this[0].className += " " + token;
+    addClass: makeMethod("add", (el, token) => {
+        if (!el.hasClass(token)) el[0].className += " " + token;
     }),
 
     /**
@@ -84,12 +87,9 @@ _.assign($Element.prototype, {
      * @example
      * link.removeCLass("foo");
      */
-    removeClass: makeMethod("remove", function(token) {
-        if (typeof token !== "string") throw new MethodError("removeClass");
-
-        var node = this[0];
-
-        node.className = (" " + node.className + " ").replace(reSpace, " ").replace(" " + token + " ", " ").trim();
+    removeClass: makeMethod("remove", (el, token) => {
+        el[0].className = (" " + el[0].className + " ")
+            .replace(reSpace, " ").replace(" " + token + " ", " ").trim();
     }),
 
     /**
@@ -104,13 +104,13 @@ _.assign($Element.prototype, {
      * link.toggleClass("foo");
      * link.toggleClass("bar", true);
      */
-    toggleClass: makeMethod("toggle", function(token) {
-        var hasClass = this.hasClass(token);
+    toggleClass: makeMethod("toggle", (el, token) => {
+        var hasClass = el.hasClass(token);
 
         if (hasClass) {
-            this.removeClass(token);
+            el.removeClass(token);
         } else {
-            this[0].className += " " + token;
+            el[0].className += " " + token;
         }
 
         return !hasClass;
