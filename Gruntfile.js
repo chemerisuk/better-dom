@@ -224,6 +224,14 @@ module.exports = function(grunt) {
         ]);
     });
 
+    grunt.registerTask("ie", "test IE using ievms", function(version) {
+        if (version > 8) {
+            grunt.config.set("karma.ie.browsers", ["IE" + version + " - Win7"]);
+        }
+
+        grunt.task.run(["build", "karma:ie"]);
+    });
+
     grunt.registerTask("publish", "Publish a new version routine", function(version) {
         grunt.config.set("pkg.version", version);
 

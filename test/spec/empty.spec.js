@@ -22,5 +22,5 @@ describe("$Element#empty", function() {
         var node = DOM.find("some-node");
 
         expect(node.empty()).toBe(node);
-    })
+    });
 });

@@ -89,20 +89,10 @@ describe("manipulation", function() {
         });
 
         it("should access array of $Element", function() {
-            /* jshint quotmark:false */
-            var results = {
-                    append: '<div id="test"><i class="append"></i><b class="append"></b></div>',
-                    prepend: '<div id="test"><i class="prepend"></i><b class="prepend"></b></div>',
-                    after: '<div id="test"></div><i class="after"></i><b class="after"></b>',
-                    before: '<i class="before"></i><b class="before"></b><div id="test"></div><i class="after"></i><b class="after"></b>'
-                };
-
             _forIn(checkStrategies, function(_, strategy) {
-                var value = createArray(strategy);
+                div[strategy](createArray(strategy));
 
-                div.set("");
-
-                expect(div[strategy](value).parent().get()).toBe(results[strategy]);
+                expect(div.parent().findAll("." + strategy).length).toBe(2);
             });
         });
 
