@@ -9,7 +9,10 @@ var reVar = /\{([\w\-]+)\}/g;
  * @alias DOM.format
  * @param  {String}  template  template string
  * @param  {Object}  varMap    key/value map of variables
- * @return {String}  result string
+ * @return {String}  a resulting string
+ * @example
+ * DOM.format("foo {name}", {name: "bar"}); // => "foo bar"
+ * DOM.format("your {0}", ["title"]); // => "your title"
  */
 DOM.format = function(template, varMap) {
     if (typeof template !== "string" || varMap && typeof varMap !== "object") {

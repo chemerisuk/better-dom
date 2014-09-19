@@ -51,7 +51,7 @@ var // operator type / priority object
  * @alias DOM.emmet
  * @param  {String}       template  input EmmetString
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {String} HTML string
+ * @return {String} a resulting HTML string
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
  */

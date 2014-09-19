@@ -49,6 +49,9 @@ var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} an element wrapper
  * @function
+ * @example
+ * DOM.create("div"); // => wrapper of &lt;div&gt;
+ * DOM.create("&lt;a&gt;&lt;span&gt;&lt;/span&gt;&lt;/a&gt;"); // => wrapper of &lt;a&gt; + innner &lt;span&gt;
  */
 DOM.create = makeMethod("");
 
@@ -61,9 +64,7 @@ DOM.create = makeMethod("");
  * @return {Array.<$Element>} an array of element wrappers
  * @function
  * @example
- * ```js
- * DOM.createAll("span+b"); // => array with 2 $Elements: span and b
- * DOM.createAll("li*5"); // => array with 5 li $Elements
- * ```
+ * DOM.createAll("&lt;span&gt;&lt;/span&gt;&lt;b&gt;&lt;/b&gt;"); // => array with 2 $Elements: &lt;span&gt; and &lt;b&gt;
+ * DOM.createAll("li*5"); // => array with 5 &lt;li&gt; $Elements
  */
 DOM.createAll = makeMethod("All");

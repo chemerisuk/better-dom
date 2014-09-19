@@ -61,6 +61,8 @@ _.assign($Element.prototype, {
      * @param  {String}   token class name
      * @return {Boolean}  returns <code>true</code> if the element contains the class
      * @function
+     * @example
+     * link.hasClass("foo");
      */
     hasClass: makeMethod("contains", (el, node, token) => {
         return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
@@ -70,9 +72,11 @@ _.assign($Element.prototype, {
      * Add class(es) to element
      * @memberof! $Element#
      * @alias $Element#addClass
-     * @param  {...String} takens class name(s)
+     * @param  {...String} tokens class name(s)
      * @return {$Element}
      * @function
+     * @example
+     * link.addClass("foo");
      */
     addClass: makeMethod("add", (el, node, token) => {
         if (!el.hasClass(token)) node.className += " " + token;
@@ -82,9 +86,11 @@ _.assign($Element.prototype, {
      * Remove class(es) from element
      * @memberof! $Element#
      * @alias $Element#removeClass
-     * @param  {...String} takens class name(s)
+     * @param  {...String} tokens class name(s)
      * @return {$Element}
      * @function
+     * @example
+     * link.removeCLass("foo");
      */
     removeClass: makeMethod("remove", (el, node, token) => {
         token = (" " + node.className + " ").replace(reSpace, " ").replace(" " + token + " ", " ");
@@ -100,6 +106,9 @@ _.assign($Element.prototype, {
      * @param  {Boolean} [force] if <code>true</code> then adds the className; if <code>false</code> - removes it
      * @return {Boolean} returns <code>true</code> if the className is now present, and <code>false</code> otherwise.
      * @function
+     * @example
+     * link.toggleClass("foo");
+     * link.toggleClass("bar", true);
      */
     toggleClass: makeMethod("toggle", (el, node, token) => {
         var oldClassName = node.className;

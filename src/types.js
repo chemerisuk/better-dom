@@ -33,10 +33,8 @@ $Element.prototype = {
      * @param {Object}  [node]  native element
      * @return {$Element} a wrapper object
      * @example
-     * ```js
      * var bodyEl = DOM.constructor(document.body);
      * bodyEl.hide();
-     * ```
      */
     constructor(node) {
         return new $Element(node && node.nodeType === 1 ? node : null);

@@ -169,6 +169,16 @@ _.assign($Element.prototype, {
      * @param {Function} [callback]       function that executes when animation is done
      * @return {$Element}
      * @function
+     * @example
+     * link.show(); // displays element
+     *
+     * foo.show(function() {
+     *   // do something when transition is completed
+     * });
+     *
+     * bar.show("fade", function() {
+     *   // do something when "fade" animation is completed
+     * });
      */
     show: makeMethod("show", false),
 
@@ -180,6 +190,16 @@ _.assign($Element.prototype, {
      * @param {Function} [callback]       function that executes when animation is done
      * @return {$Element}
      * @function
+     * @example
+     * link.hide(); // hides element
+     *
+     * foo.hide(function() {
+     *   // do something when transition is completed
+     * });
+     *
+     * bar.hide("fade", function() {
+     *   // do something when "fade" animation is completed
+     * });
      */
     hide: makeMethod("hide", true),
 
@@ -191,6 +211,16 @@ _.assign($Element.prototype, {
      * @param {Function} [callback]       function that executes when animation is done
      * @return {$Element}
      * @function
+     * @example
+     * link.toggle(); // toggles element visibility
+     *
+     * foo.toggle(function() {
+     *   // do something when transition is completed
+     * });
+     *
+     * bar.toggle("fade", function() {
+     *   // do something when "fade" animation is completed
+     * });
      */
     toggle: makeMethod("toggle")
 });
