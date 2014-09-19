@@ -16,7 +16,7 @@ I'd recommend to read one from the articles below to understand the main ideas o
 * [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
 ## Features
-* lightweight: ~22 kB minified and ~5 kB gzipped version ([custom builds](#how-to-make-a-custom-build) are available to reduce file size even more)
+* lightweight: ~22 kB minified and ~5 kB gzipped version
 * clear, minimalistic and standards-based (where possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)

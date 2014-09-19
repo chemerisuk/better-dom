@@ -3,13 +3,18 @@ import { MethodError } from "../errors";
 import { HTML } from "../constants";
 import { $Element } from "../types";
 
-/* es6-transpiler has-iterators:false, has-generators: false */
-
 var reSpace = /[\n\t\r]/g,
-    makeMethod = (nativeMethodName, fallback) => {
+    makeMethod = (nativeMethodName, strategy) => {
         var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
-        // use fallback if browser does not support classList API
-        if (!HTML.classList) nativeMethodName = null;
+
+        if (HTML.classList) {
+            // use native classList property if possible
+            strategy = function(token) {
+                if (typeof token !== "string") throw new MethodError(methodName);
+
+                return this[0].classList[nativeMethodName](token);
+            };
+        }
 
         if (methodName === "hasClass" || methodName === "toggleClass") {
             return function(token, force) {
@@ -22,30 +27,15 @@ var reSpace = /[\n\t\r]/g,
                         return force;
                     }
 
-                    if (typeof token !== "string") throw new MethodError(methodName);
-
-                    if (nativeMethodName) {
-                        return node.classList[nativeMethodName](token);
-                    } else {
-                        return fallback(this, node, token);
-                    }
+                    return strategy.call(this, token);
                 }
             };
         } else {
-            return function() {
-                var node = this[0],
-                    args = arguments;
+            return function(...tokens) {
+                var node = this[0];
 
                 if (node) {
-                    for (let token of args) {
-                        if (typeof token !== "string") throw new MethodError(methodName);
-
-                        if (nativeMethodName) {
-                            node.classList[nativeMethodName](token);
-                        } else {
-                            fallback(this, node, token);
-                        }
-                    }
+                    tokens.forEach(strategy, this);
                 }
 
                 return this;
@@ -64,8 +54,10 @@ _.assign($Element.prototype, {
      * @example
      * link.hasClass("foo");
      */
-    hasClass: makeMethod("contains", (el, node, token) => {
-        return (" " + node.className + " ").replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
+    hasClass: makeMethod("contains", function(token) {
+        if (typeof token !== "string") throw new MethodError("hasClass");
+
+        return (" " + this[0].className + " ").replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
     }),
 
     /**
@@ -78,8 +70,8 @@ _.assign($Element.prototype, {
      * @example
      * link.addClass("foo");
      */
-    addClass: makeMethod("add", (el, node, token) => {
-        if (!el.hasClass(token)) node.className += " " + token;
+    addClass: makeMethod("add", function(token) {
+        if (!this.hasClass(token)) this[0].className += " " + token;
     }),
 
     /**
@@ -92,10 +84,12 @@ _.assign($Element.prototype, {
      * @example
      * link.removeCLass("foo");
      */
-    removeClass: makeMethod("remove", (el, node, token) => {
-        token = (" " + node.className + " ").replace(reSpace, " ").replace(" " + token + " ", " ");
+    removeClass: makeMethod("remove", function(token) {
+        if (typeof token !== "string") throw new MethodError("removeClass");
 
-        node.className = token.trim();
+        var node = this[0];
+
+        node.className = (" " + node.className + " ").replace(reSpace, " ").replace(" " + token + " ", " ").trim();
     }),
 
     /**
@@ -110,15 +104,15 @@ _.assign($Element.prototype, {
      * link.toggleClass("foo");
      * link.toggleClass("bar", true);
      */
-    toggleClass: makeMethod("toggle", (el, node, token) => {
-        var oldClassName = node.className;
+    toggleClass: makeMethod("toggle", function(token) {
+        var hasClass = this.hasClass(token);
 
-        el.addClass(token);
+        if (hasClass) {
+            this.removeClass(token);
+        } else {
+            this[0].className += " " + token;
+        }
 
-        if (oldClassName !== node.className) return true;
-
-        el.removeClass(token);
-
-        return false;
+        return !hasClass;
     })
 });
