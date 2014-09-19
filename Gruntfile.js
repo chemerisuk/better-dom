@@ -171,6 +171,7 @@ module.exports = function(grunt) {
                 dest: "build/better-dom.js"
             },
             dist: {
+                options: { jsdocs: false },
                 cwd: "src/",
                 src: ["*.js", "**/*.js"],
                 dest: "dist/better-dom.js"

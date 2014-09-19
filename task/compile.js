@@ -24,12 +24,15 @@ module.exports = function(grunt) {
 
         var ast = container.convert();
         var code = recast.print(ast[0]).code;
-        // remove jsdoc comments from the output
-        code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
 
         grunt.config.set("filename", path.basename(outputFile));
 
         var options = this.options();
+
+        if (options.jsdocs === false) {
+            // remove jsdoc comments from the output
+            code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
+        }
 
         if (options.banner) code = options.banner + "\n" + code;
 
