@@ -204,6 +204,14 @@ describe("visibility", function() {
         // });
     });
 
+    it("should return this for empty nodes", function() {
+        var emptyEl = DOM.find("some-node");
+
+        expect(emptyEl.show()).toBe(emptyEl);
+        expect(emptyEl.hide()).toBe(emptyEl);
+        expect(emptyEl.toggle()).toBe(emptyEl);
+    });
+
     it("should handle unknown aria-hidden values as false", function(done) {
         expect(link.matches(":hidden")).toBe(false);
         link.set("aria-hidden", "123");
