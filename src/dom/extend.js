@@ -35,31 +35,18 @@ if (DOCUMENT.attachEvent ? readyState === "complete" : readyState !== "loading")
     // fix fox #14: use setTimeout to make sure that the library is fully initialized
     setTimeout(readyCallback, 0);
 } else {
-    if (DOM2_EVENTS) {
-        WINDOW.addEventListener("load", readyCallback, false);
-        DOCUMENT.addEventListener("DOMContentLoaded", readyCallback, false);
+    if (LEGACY_IE) {
+        // in better-dom.htc we use ondocumentready event that
+        // invokes a live extension after document is ready
+        readyCallback = null;
     } else {
-        WINDOW.attachEvent("onload", readyCallback);
-        DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
-            if (WINDOW.event.srcUrn === "DOMContentLoaded" && readyCallback) readyCallback();
-        });
+        // use DOMContentLoaded to initialize live extensions
+        // only when document is completely parsed
+        DOCUMENT.addEventListener("DOMContentLoaded", readyCallback, false);
     }
 }
 
 if (LEGACY_IE) {
-    importStyles("@" + WEBKIT_PREFIX + "keyframes " + ExtensionHandler.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
-
-    styles = {
-        "animation-duration": "1ms !important",
-        "animation-name": ExtensionHandler.ANIMATION_ID + " !important"
-    };
-
-    DOCUMENT.addEventListener(ExtensionHandler.EVENT_TYPE, (e) => {
-        if (e.animationName === ExtensionHandler.ANIMATION_ID) {
-            extensions.forEach(ExtensionHandler.traverse(e.target, e._skip || {}));
-        }
-    }, false);
-} else {
     let link = DOCUMENT.querySelector("link[rel=htc]");
 
     if (link) {
@@ -87,6 +74,19 @@ if (LEGACY_IE) {
             extensions.forEach(ExtensionHandler.traverse(e.srcElement, e._skip || {}));
         }
     });
+} else {
+    importStyles("@" + WEBKIT_PREFIX + "keyframes " + ExtensionHandler.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
+
+    styles = {
+        "animation-duration": "1ms !important",
+        "animation-name": ExtensionHandler.ANIMATION_ID + " !important"
+    };
+
+    DOCUMENT.addEventListener(ExtensionHandler.EVENT_TYPE, (e) => {
+        if (e.animationName === ExtensionHandler.ANIMATION_ID) {
+            extensions.forEach(ExtensionHandler.traverse(e.target, e._skip || {}));
+        }
+    }, false);
 }
 
 /**

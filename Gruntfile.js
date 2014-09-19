@@ -11,7 +11,7 @@ module.exports = function(grunt) {
                 tasks: ["compile:build", "karma:watch:run"]
             },
             specs: {
-                files: ["test/spec/*.js"],
+                files: ["test/spec/*.js", "dist/better-dom.htc"],
                 tasks: ["karma:watch:run"]
             },
         },
@@ -54,6 +54,7 @@ module.exports = function(grunt) {
                 reporters: ["progress"]
             },
             watch: {
+                // browsers: ["IE8 - WinXP"],
                 preprocessors: { "build/better-dom.js": "coverage" },
                 reporters: ["coverage", "progress"],
                 background: true,

@@ -1,5 +1,5 @@
 <PUBLIC:COMPONENT lightweight="true">
-    <PUBLIC:ATTACH EVENT="oncontentready" ONEVENT="init()"/>
+    <PUBLIC:ATTACH EVENT="ondocumentready" ONEVENT="init()"/>
     <script type="text/javascript">
     if (element.tagName === "HTML") {
         var DOM2_EVENTS = !!element.addEventListener;
@@ -7,17 +7,14 @@
         fixInputEvents(DOM2_EVENTS);
 
         if (!DOM2_EVENTS) fixSubmitEvent();
+
+        element.detachEvent("ondocumentready", init);
     }
 
     function init() {
         var e = createEventObject();
 
-        // DOMContentLoaded fix for IE8
-        if (element.tagName === "HTML") {
-            e.srcUrn = "DOMContentLoaded";
-        } else {
-            e.srcUrn = "dataavailable";
-        }
+        e.srcUrn = "dataavailable";
 
         element.fireEvent("ondataavailable", e);
     }

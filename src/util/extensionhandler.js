@@ -11,9 +11,9 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         e = e || WINDOW.event;
 
         if (LEGACY_IE) {
-            isEventValid = e.animationName === ANIMATION_ID && e.target === node;
-        } else {
             isEventValid = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
+        } else {
+            isEventValid = e.animationName === ANIMATION_ID && e.target === node;
         }
         // mark extension as processed via e._skip bitmask
         if (isEventValid) (e._skip = e._skip || {})[index] = true;
@@ -33,9 +33,9 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
                 var el = $Element(node);
 
                 if (LEGACY_IE) {
-                    node.addEventListener(ExtensionHandler.EVENT_TYPE, stopExt(node, index), false);
-                } else {
                     node.attachEvent("on" + CUSTOM_EVENT_TYPE, stopExt(node, index));
+                } else {
+                    node.addEventListener(ExtensionHandler.EVENT_TYPE, stopExt(node, index), false);
                 }
 
                 if (mock === true || condition(el) !== false) {
