@@ -11,6 +11,9 @@ import HOOK from "../util/eventhooks";
  * @param  {String}  type  type of event
  * @param  {...Object}     [args]  extra arguments to pass into each event handler
  * @return {Boolean} returns <code>true</code> if default action wasn't prevented
+ * @example
+ * link.fire("click");                   // fire click event
+ * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments
  */
 $Element.prototype.fire = function(type, ...args) {
     var node = this[0],

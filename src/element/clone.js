@@ -8,6 +8,9 @@ import { $Element, DOM } from "../types";
  * @alias $Element#clone
  * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
  * @return {$Element} a clone of current element
+ * @example
+ * ul.clone();      // => clone of &lt;ul&gt; with all it's children
+ * ul.clone(false); // => clone of &lt;ul&gt; element ONLY
  */
 $Element.prototype.clone = function(deep = true) {
     if (typeof deep !== "boolean") throw new MethodError("clone");

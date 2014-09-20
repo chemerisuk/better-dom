@@ -20,7 +20,7 @@ import PROP from "../util/accessorhooks";
  * @return {$Element}
  * @example
  * link.set("title", "mytitle"); // set title property
- * link.set("data-custom-");     // set custom attribute data-custom
+ * link.set("data-custom");      // set custom attribute data-custom
  * link.set("inner html");       // set link's innerHTML
  * link.set("_prop", {a: "b"});  // update private property _prop
  */

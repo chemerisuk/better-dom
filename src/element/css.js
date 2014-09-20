@@ -17,6 +17,11 @@ import HOOK from "../util/stylehooks";
  * @param  {String|Object}      name    style property name or key/value object
  * @param  {String|cssCallback} [value] style property value or {@link cssCallback}
  * @return {String|$Element} a property value or reference to <code>this</code>
+ * @example
+ * link.css("color");                 // => element color property
+ * link.css("box-sizing");            // => value of "box-sizing" (no vendor prefix needed)
+ * link.css("color", "red");          // update element color
+ * link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix needed)
  */
 $Element.prototype.css = function(name, value) {
     var len = arguments.length,

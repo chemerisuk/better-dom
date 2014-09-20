@@ -9,6 +9,11 @@ import PROP from "../util/accessorhooks";
  * @alias $Element#get
  * @param  {String|Array} [name] property or attribute name or array of names
  * @return {Object} a property or attribute value
+ * @example
+ * link.get("title");       // => property title
+ * link.get("data-custom"); // => custom attribute data-custom
+ * link.get();              // => link's innerHTML
+ * link.get("_prop");       // => private property _prop
  */
 $Element.prototype.get = function(name) {
     var data = this._,

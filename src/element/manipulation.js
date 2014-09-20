@@ -48,6 +48,9 @@ _.assign($Element.prototype, {
      * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
+     * @example
+     * var link = DOM.create("a");  // &lt;a&gt;&lt;/a&gt;
+     * link.after(DOM.create("b")); // &lt;a&gt;&lt;/a&gt;&lt;b&gt;&lt;/b&gt;
      */
     after: makeMethod("after", "afterend", false, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node.nextSibling);
@@ -60,6 +63,9 @@ _.assign($Element.prototype, {
      * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
+     * @example
+     * var link = DOM.create("a");   // &lt;a&gt;&lt;/a&gt;
+     * link.before(DOM.create("b")); // &lt;b&gt;&lt;/b&gt;&lt;a&gt;&lt;/a&gt;
      */
     before: makeMethod("before", "beforebegin", false, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node);
@@ -72,6 +78,9 @@ _.assign($Element.prototype, {
      * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
+     * @example
+     * var link = DOM.create("a>`foo`"); // &lt;a&gt;foo&lt;/a&gt;
+     * link.prepend(DOM.create("b"));    // &lt;a&gt;&lt;b&gt;&lt;/b&gt;foo&lt;/a&gt;
      */
     prepend: makeMethod("prepend", "afterbegin", true, (node, relatedNode) => {
         node.insertBefore(relatedNode, node.firstChild);
@@ -84,6 +93,9 @@ _.assign($Element.prototype, {
      * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
+     * @example
+     * var link = DOM.create("a>`foo`"); // &lt;a&gt;foo&lt;/a&gt;
+     * link.append(DOM.create("b"));     // &lt;a&gt;foo&lt;b&gt;&lt;/b&gt;&lt;/a&gt;
      */
     append: makeMethod("append", "beforeend", true, (node, relatedNode) => {
         node.appendChild(relatedNode);
@@ -96,6 +108,9 @@ _.assign($Element.prototype, {
      * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
+     * @example
+     * var div = DOM.create("div>span>`foo`");      // &lt;div&gt;&lt;span&gt;foo&lt;/span&gt;&lt;/div&gt;
+     * div.child(0).replace(DOM.create("b>`bar`")); // &lt;div&gt;&lt;b&gt;bar&lt;/b&gt;&lt;/div&gt;
      */
     replace: makeMethod("replace", "", false, (node, relatedNode) => {
         node.parentNode.replaceChild(relatedNode, node);
@@ -107,6 +122,10 @@ _.assign($Element.prototype, {
      * @alias $Element#remove
      * @return {$Element}
      * @function
+     * @example
+     * var foo = DOM.find(".foo");
+     * foo.remove();
+     * DOM.contains(foo); // => false
      */
     remove: makeMethod("remove", "", false, (node) => {
         node.parentNode.removeChild(node);
