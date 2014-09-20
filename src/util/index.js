@@ -24,7 +24,7 @@ export default {
 
         return target;
     },
-    defer: function(func) {
+    defer: (func) => {
         return WINDOW.setTimeout(func, 1);
     }
 };

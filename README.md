@@ -41,6 +41,17 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * Check [releases tab](https://github.com/chemerisuk/better-dom/releases) for getting the changes log
 * Walk through the sorce code of existing [projects that use better-dom](http://bower.io/search/?q=better-dom).
 
+## Contributing
+In order to modify the source and submit a patch or improvement, you have to have [grunt](https://github.com/gruntjs/grunt-cli) installed globally:
+
+    npm install -g grunt-cli
+
+The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are making, recompiles `build/better-dom.js` and runs unit tests after it: 
+
+    npm start
+
+Of course any pull request should pass all tests. Code style guide is not formalized yet, but I'll look at it manully.
+
 ## Performance
 * [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/26)
 * [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/10)
