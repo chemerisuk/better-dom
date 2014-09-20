@@ -113,6 +113,10 @@ describe("set", function() {
         expect(empty.set("attr", "test")).toBe(empty);
     });
 
+    // it("should clear all children with empty string", function () {
+    //     // TODO: need to catch IE bug with innerHTML = ""
+    // });
+
     describe("private properties", function() {
         it("shoud be stored in _ object", function() {
             input.set("_test", "yeah");

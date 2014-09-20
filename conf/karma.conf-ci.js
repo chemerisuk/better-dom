@@ -14,12 +14,6 @@ var customLaunchers = {
         platform: "Windows 7",
         version: "31"
     },
-    // sl_ie_10: {
-    //     base: "SauceLabs",
-    //     browserName: "internet explorer",
-    //     platform: "Windows 7",
-    //     version: "10"
-    // },
     el_opera_12: {
         base: "SauceLabs",
         browserName: "opera",
@@ -38,6 +32,12 @@ var customLaunchers = {
         browserName: "internet explorer",
         platform: "Windows 7",
         version: "11"
+    },
+    sl_ie_10: {
+        base: "SauceLabs",
+        browserName: "internet explorer",
+        platform: "Windows 7",
+        version: "10"
     },
     // sl_ie_8: {
     //     base: "SauceLabs",
