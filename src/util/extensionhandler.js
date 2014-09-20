@@ -25,8 +25,8 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
                     // make a safe call so live extensions can't break each other
                     mixins.constructor.call(el);
                 } catch (err) {
-                    // log invokation error if it was thrown
-                    if ("console" in WINDOW) WINDOW.console.error(err);
+                    // use setTimeout for safe logging of an error
+                    setTimeout(() => { throw err }, 0);
                 }
             },
             ext = (node, mock) => {

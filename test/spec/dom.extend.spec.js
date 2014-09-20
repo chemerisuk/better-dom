@@ -221,11 +221,8 @@ describe("extend", function() {
 
     it("should not stop handle other listeners if any throws an error", function(done) {
         var otherCallback = jasmine.createSpy("otherCallback"),
-            errorSpy;
-
-        if ("console" in window) {
-            errorSpy = spyOn(window.console, "error");
-        }
+            // DOM.extend uses setTimeout for safe logging of an error
+            errorSpy = spyOn(window, "setTimeout");
 
         callback.and.throwError("stop listeners");
 
@@ -233,9 +230,7 @@ describe("extend", function() {
         DOM.extend(".watch5", otherCallback);
 
         otherCallback.and.callFake(function() {
-            if (errorSpy) {
-                expect(errorSpy).toHaveBeenCalled();
-            }
+            expect(errorSpy).toHaveBeenCalled();
 
             done();
         });
