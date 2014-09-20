@@ -80,6 +80,8 @@ describe("DOM.emmet", function() {
         checkExpr("div[class=foo-$lang]*2", "<div class=\"foo-1lang\"></div><div class=\"foo-2lang\"></div>", {lang: "en"});
         checkExpr("i>`{0}`", "<i></i>", [""]);
         checkExpr("i>`{0}:`", "<i>:</i>", [""]);
+        checkExpr("i>span+`{0}`", "<i><span></span></i>", [""]);
+        checkExpr("i>`{0}`+span", "<i><span></span></i>", [""]);
     });
 
     describe("groups", function() {

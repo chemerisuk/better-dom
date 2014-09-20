@@ -85,8 +85,14 @@ DOM.emmet = function(template, varMap) {
                 output.push(term);
                 term = "";
             } else if (str === skip) {
-                // skip empty `...` and [...] sections
-                stack.shift();
+                // process empty `...` and [...] sections
+                if (str === "`") {
+                    // for `` add dummy term into the output
+                    output.push("");
+                } else {
+                    // for [] just remove it from the stack
+                    stack.shift();
+                }
             }
 
             if (str !== "(") {
