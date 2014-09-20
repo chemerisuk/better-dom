@@ -68,7 +68,10 @@ $Element.prototype.set = function(name, value) {
     }
 
     if (watchers && oldValue !== value) {
-        watchers.forEach((w) => { setTimeout(() => { w.call(this, value, oldValue) }, 0) });
+        watchers.forEach((w) => {
+            // always invoke watchers in the next tick
+            _.defer(() => { w.call(this, value, oldValue) });
+        });
     }
 
     return this;

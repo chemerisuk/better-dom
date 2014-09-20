@@ -23,5 +23,8 @@ export default {
         });
 
         return target;
+    },
+    defer: function(func) {
+        return WINDOW.setTimeout(func, 1);
     }
 };

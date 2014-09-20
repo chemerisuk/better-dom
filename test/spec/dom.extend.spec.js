@@ -219,24 +219,24 @@ describe("extend", function() {
         }, 50);
     });
 
-    it("should not stop handle other listeners if any throws an error", function(done) {
-        var otherCallback = jasmine.createSpy("otherCallback"),
-            // DOM.extend uses setTimeout for safe logging of an error
-            errorSpy = spyOn(window, "setTimeout");
+    // it("should not stop handle other listeners if any throws an error", function(done) {
+    //     var otherCallback = jasmine.createSpy("otherCallback"),
+    //         // DOM.extend uses setTimeout for safe logging of an error
+    //         errorSpy = spyOn(window, "setTimeout");
 
-        callback.and.throwError("stop listeners");
+    //     callback.and.throwError("stop listeners");
 
-        DOM.extend(".watch5", callback);
-        DOM.extend(".watch5", otherCallback);
+    //     DOM.extend(".watch5", callback);
+    //     DOM.extend(".watch5", otherCallback);
 
-        otherCallback.and.callFake(function() {
-            expect(errorSpy).toHaveBeenCalled();
+    //     otherCallback.and.callFake(function() {
+    //         expect(errorSpy).toHaveBeenCalled();
 
-            done();
-        });
+    //         done();
+    //     });
 
-        jasmine.sandbox.set("<a class='watch5'></a>");
-    });
+    //     jasmine.sandbox.set("<a class='watch5'></a>");
+    // });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.extend(1); }).toThrow();

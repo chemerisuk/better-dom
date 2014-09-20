@@ -26,7 +26,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
                     mixins.constructor.call(el);
                 } catch (err) {
                     // use setTimeout for safe logging of an error
-                    setTimeout(() => { throw err }, 0);
+                    _.defer(() => { throw err });
                 }
             },
             ext = (node, mock) => {
