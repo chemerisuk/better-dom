@@ -51,7 +51,7 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ## Notes about old IEs
 For IE8-9 support you have to incude extra files via the conditional comment below into `<head>` on your page:
 
-```html
+```
 <!--[if IE]>
     <link href="bower_components/better-dom/dist/better-dom.htc" rel="htc"/>
     <script src="bower_components/es5-shim/es5-shim.js"></script>

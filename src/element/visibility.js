@@ -1,6 +1,6 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { MethodError } from "../errors";
-import { LEGACY_IE, WEBKIT_PREFIX, LEGACY_ANDROID } from "../constants";
+import { LEGACY_IE, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
 import { $Element } from "../types";
 import CSS from "../util/stylehooks";
 

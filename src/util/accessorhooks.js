@@ -1,5 +1,5 @@
-import _ from "../helpers";
-import { DOM2_EVENTS, HTML, DOCUMENT } from "../constants";
+import _ from "../util/index";
+import { DOM2_EVENTS, HTML, DOCUMENT } from "../const";
 
 var hooks = {get: {}, set: {}};
 

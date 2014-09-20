@@ -1,4 +1,4 @@
-import { HTML } from "../constants";
+import { HTML } from "../const";
 
 /*
  * Helper for css selectors

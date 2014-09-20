@@ -1,5 +1,5 @@
-import _ from "../helpers";
-import { HTML } from "../constants";
+import _ from "../util/index";
+import { HTML } from "../const";
 
 /*
  * Helper for accessing css properties

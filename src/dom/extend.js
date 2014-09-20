@@ -1,5 +1,5 @@
-import _ from "../helpers";
-import { LEGACY_IE, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
+import _ from "../util/index";
+import { LEGACY_IE, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 import importStyles from "./importstyles";
@@ -47,9 +47,13 @@ if (LEGACY_IE) {
     // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
     if (DOCUMENT.attachEvent ? readyState !== "complete" : readyState === "loading") {
         readyCallback = () => {
-            extensions.forEach((ext) => { ext.start() });
+            // MUST check for the readyCallback to avoid double
+            // initialization on window.onload event
+            if (readyCallback) {
+                extensions.forEach((ext) => { ext.start() });
 
-            readyCallback = null;
+                readyCallback = null;
+            }
         };
 
         // use DOMContentLoaded to initialize any live extension

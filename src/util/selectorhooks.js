@@ -1,5 +1,5 @@
-import _ from "../helpers";
-import { HTML, DOCUMENT } from "../constants";
+import _ from "../util/index";
+import { HTML, DOCUMENT } from "../const";
 
 var hooks = {};
 

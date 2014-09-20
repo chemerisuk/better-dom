@@ -1,4 +1,4 @@
-import { WINDOW } from "./constants";
+import { WINDOW } from "./const";
 import { DOM } from "./types";
 
 var _DOM = WINDOW.DOM;

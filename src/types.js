@@ -1,4 +1,4 @@
-import { HTML } from "./constants";
+import { HTML } from "./const";
 
 // use a random property name to link JS wrappers and
 // native DOM elements.

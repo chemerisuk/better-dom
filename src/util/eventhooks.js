@@ -1,4 +1,4 @@
-import { DOM2_EVENTS, HTML, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
+import { DOM2_EVENTS, HTML, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 
 var hooks = {};
 

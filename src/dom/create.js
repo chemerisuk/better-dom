@@ -1,4 +1,4 @@
-import { DOCUMENT } from "../constants";
+import { DOCUMENT } from "../const";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 

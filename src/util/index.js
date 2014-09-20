@@ -1,4 +1,4 @@
-import { WINDOW, DOCUMENT } from "./constants";
+import { WINDOW, DOCUMENT } from "../const";
 
 var arrayProto = Array.prototype,
     currentScript = DOCUMENT.scripts[0];

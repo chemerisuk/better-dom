@@ -1,6 +1,6 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOCUMENT } from "../constants";
+import { DOCUMENT } from "../const";
 import { $Element, DOM } from "../types";
 
 var makeMethod = (methodName, fasterMethodName, standalone, strategy) => function(content = "") {

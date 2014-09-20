@@ -1,4 +1,4 @@
-import { HTML, WINDOW } from "../constants";
+import { HTML, WINDOW } from "../const";
 import { $Element } from "../types";
 
 /**

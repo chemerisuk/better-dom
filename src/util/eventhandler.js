@@ -1,4 +1,4 @@
-import { DOM2_EVENTS, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
+import { DOM2_EVENTS, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";

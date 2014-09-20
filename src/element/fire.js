@@ -1,5 +1,5 @@
 import { MethodError } from "../errors";
-import { DOM2_EVENTS, DOCUMENT, CUSTOM_EVENT_TYPE } from "../constants";
+import { DOM2_EVENTS, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";

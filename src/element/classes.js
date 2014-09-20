@@ -1,6 +1,6 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { MethodError } from "../errors";
-import { HTML } from "../constants";
+import { HTML } from "../const";
 import { $Element } from "../types";
 
 /* es6-transpiler has-iterators:false, has-generators: false */

@@ -1,4 +1,4 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";

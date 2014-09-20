@@ -1,4 +1,4 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { $Element, DOM } from "../types";
 import extensions from "./extend";
 

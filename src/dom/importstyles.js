@@ -1,6 +1,6 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { StaticMethodError } from "../errors";
-import { DOCUMENT } from "../constants";
+import { DOCUMENT } from "../const";
 import { DOM } from "../types";
 import HOOK from "../util/stylehooks";
 

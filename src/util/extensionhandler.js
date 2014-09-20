@@ -1,6 +1,6 @@
-import _ from "../helpers";
+import _ from "../util/index";
 import { $Element } from "../types";
-import { WINDOW, LEGACY_IE, WEBKIT_PREFIX, CUSTOM_EVENT_TYPE } from "../constants";
+import { WINDOW, LEGACY_IE, WEBKIT_PREFIX, CUSTOM_EVENT_TYPE } from "../const";
 import SelectorMatcher from "../util/selectormatcher";
 
 var reRemovableMethod = /^(on|do)[A-Z]/,
