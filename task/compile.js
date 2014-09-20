@@ -11,6 +11,7 @@ var BundleFormatter = es6modules.formatters.bundle;
 
 module.exports = function(grunt) {
     grunt.task.registerMultiTask("compile", function() {
+        var options = this.options();
         var outputFile = this.data.dest;
 
         var container = new Container({
@@ -25,18 +26,18 @@ module.exports = function(grunt) {
         var ast = container.convert();
         var code = recast.print(ast[0]).code;
 
-        grunt.config.set("filename", path.basename(outputFile));
-
-        var options = this.options();
-
         if (options.jsdocs === false) {
             // remove jsdoc comments from the output
             code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
         }
 
-        if (options.banner) code = options.banner + "\n" + code;
+        if (options.banner) {
+            code = options.banner + "\n" + code;
+        }
 
         code = grunt.template.process(code);
+        // fix for browserify
+        code = code.replace("}).call(this)", "})()");
 
         grunt.file.mkdir(path.dirname(outputFile));
 

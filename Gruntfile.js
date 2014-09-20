@@ -156,9 +156,8 @@ module.exports = function(grunt) {
             options: {
                 banner: [
                     "/**",
-                    " * @file better-dom.js",
+                    " * @overview <%= pkg.name %>: <%= pkg.description %>",
                     " * @version <%= pkg.version %> <%= grunt.template.today('isoDateTime') %>",
-                    " * @overview <%= pkg.description %>",
                     " * @copyright 2013-<%= grunt.template.today('yyyy') %> <%= pkg.author %>",
                     " * @license <%= pkg.license %>",
                     " * @see <%= pkg.repository.url %>",
