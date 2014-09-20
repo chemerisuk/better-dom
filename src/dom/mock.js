@@ -24,23 +24,27 @@ var applyExtensions = (node) => {
 /**
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
+ * Accept same arguments as {@link DOM.create}
  * @memberof DOM
  * @alias DOM.mock
  * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {$Element} mocked instance
+ * @return {$Element} a mocked instance
  * @function
+ * @see DOM.create
  */
 DOM.mock = makeMethod("");
 
 /**
  * Return Array of {@link $Element} initialized with all existing live extensions.
  * Also exposes private event handler functions that aren't usually presented
+ * Accept same arguments as {@link DOM.createAll}
  * @memberof DOM
  * @alias DOM.mockAll
  * @param  {String}       value     EmmetString or HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
- * @return {Array.<$Element>} an array of element wrappers
+ * @return {Array.<$Element>} an array of mocked element wrappers
  * @function
+ * @see DOM.createAll
  */
 DOM.mockAll = makeMethod("All");

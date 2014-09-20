@@ -54,6 +54,11 @@ var // operator type / priority object
  * @return {String} a resulting HTML string
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
+ * @example
+ * DOM.emmet("a");                                 // => "&lt;a&gt;&lt;/a&gt;"
+ * DOM.emmet("ul>li*2");                           // => "&lt;ul&gt;&lt;li&gt;&lt;/li&gt;&lt;li&gt;&lt;/li&gt;&lt;/ul&gt;"
+ * DOM.emmet("b>`hello {user}`", {user: "world"}); // => "&lt;b&gt;hello world&lt;/b&gt;
+ * DOM.emmet("i.{0}+span", ["icon"]);              // => &lt;i class="icon"&gt;&lt;/i&gt&lt;span&gt;&lt;/span&gt;;
  */
 DOM.emmet = function(template, varMap) {
     if (typeof template !== "string") throw new StaticMethodError("emmet");

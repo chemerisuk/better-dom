@@ -85,6 +85,15 @@ if (LEGACY_IE) {
  * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
  * @param  {Object}           mixins           extension declatation
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
+ * @example
+ * DOM.extend("selector", {
+ *     constructor: function() {
+ *         // initialize component
+ *     },
+ *     publicMethod: function() {
+ *         // ...
+ *     }
+ * });
  */
 DOM.extend = function(selector, condition, mixins) {
     if (arguments.length === 2) {

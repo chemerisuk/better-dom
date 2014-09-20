@@ -59,11 +59,28 @@ _.assign($Element.prototype, {
      * @param  {Function}      callback    event callback or property name (for late binding)
      * @return {$Element}
      * @function
+     * @example
+     * link.on("focus", function() {
+     *     // do something on focus
+     * });
+     *
+     * link.on("click", "i", function() {
+     *     // do something on internal &lt;i&gt; click
+     * });
+     *
+     * link.on("click", "span", ["currentTarget"], function(span) {
+     *     // &lt;span&gt; is the element was clicked
+     * });
+     *
+     * link.on(["focus", "blur"], function() {
+     *     // you can pass several event types
+     * });
      */
     on: makeMethod("on"),
 
     /**
-     * Bind a DOM event but fire once before being removed
+     * Bind a DOM event but fire once before being removed. Same as
+     * {@link $Element#on}, but removes the handler after a fist event
      * @memberof! $Element#
      * @alias $Element#once
      * @param  {String|Array}  type        event type(s) with optional selector
@@ -72,6 +89,7 @@ _.assign($Element.prototype, {
      * @param  {Function}      callback    event callback or property name (for late binding)
      * @return {$Element}
      * @function
+     * @see $Element#on
      */
     once: makeMethod("once")
 });

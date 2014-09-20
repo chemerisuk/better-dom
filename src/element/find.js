@@ -65,6 +65,10 @@ _.assign($Element.prototype, {
      * @param  {String} selector css selector
      * @return {$Element} the first matched element
      * @function
+     * @example
+     * var body = DOM.find("body");  // => &lt;body&gt; wrapper
+     * var foo  = body.find(".foo"); // => the first element with class "foo"
+     * foo.find(".bar>span");        // => the first element that matches ".bar>span"
      */
     find: makeMethod(""),
 
@@ -75,6 +79,9 @@ _.assign($Element.prototype, {
      * @param  {String} selector css selector
      * @return {Array.<$Element>} an array of element wrappers
      * @function
+     * @example
+     * DOM.findAll("a"); // => all links in the document
+     * context.findAll("ol>li"); // => all &lt;li&gt; inside of &lt;ol&gt;
      */
     findAll: makeMethod("All")
 });

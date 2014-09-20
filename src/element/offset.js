@@ -6,6 +6,8 @@ import { $Element } from "../types";
  * @memberof! $Element#
  * @alias $Element#offset
  * @return {Object} object with left, top, bottom, right, width and height properties
+ * @example
+ * el.offset(); // => {left: 1, top: 2, right: 3, bottom: 4, width: 2, height: 2}
  */
 $Element.prototype.offset = function() {
     var node = this[0],

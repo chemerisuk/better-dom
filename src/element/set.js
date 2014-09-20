@@ -18,6 +18,11 @@ import PROP from "../util/accessorhooks";
  * @param {String|Object|Array}   [name]  property/attribute name
  * @param {String|setterCallback} value   property/attribute value or {@link setterCallback}
  * @return {$Element}
+ * @example
+ * link.set("title", "mytitle"); // set title property
+ * link.set("data-custom-");     // set custom attribute data-custom
+ * link.set("inner html");       // set link's innerHTML
+ * link.set("_prop", {a: "b"});  // update private property _prop
  */
 $Element.prototype.set = function(name, value) {
     var node = this[0];

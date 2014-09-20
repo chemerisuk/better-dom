@@ -34,6 +34,7 @@ $Element.prototype = {
      * @return {$Element} a wrapper object
      * @example
      * var bodyEl = DOM.constructor(document.body);
+     * // bodyEl is an instance of $Element
      * bodyEl.hide();
      */
     constructor(node) {
