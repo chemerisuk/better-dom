@@ -13,6 +13,7 @@ try {
 }
 
 DOM.importStyles(".hidden", "display:none");
+DOM.importStyles(".invisible", "visibility:hidden");
 DOM.importStyles(".fade", "opacity:1;transform:scale(1,1);-webkit-transform:scale(1,1)");
 DOM.importStyles(".fade[aria-hidden=true]", "opacity:0;transform:scale(0,0);-webkit-transform:scale(0,0)");
 
@@ -118,6 +119,14 @@ describe("visibility", function() {
 
             expect(link).toHaveAttr("aria-hidden", "false");
             expect(link.css("display")).not.toBe("none");
+        });
+
+        it("should handle initially invisible element", function() {
+            link.addClass("invisible");
+            link.show();
+
+            expect(link).toHaveAttr("aria-hidden", "false");
+            expect(link.css("visibility")).toBe("visible");
         });
     });
 

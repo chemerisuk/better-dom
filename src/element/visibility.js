@@ -68,8 +68,6 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         // use willChange to improve performance in modern browsers:
         // http://dev.opera.com/articles/css-will-change-property/
         style.willChange = transitionValues[1].join(", ");
-        // trigger visibility transition when it exists
-        style.visibility = hiding ? "hidden" : "visible";
 
         return true;
     },
@@ -152,6 +150,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
                 animatable = scheduleTransition(node, style, computed, hiding, done);
             }
         }
+        // update element visibility value
+        style.visibility = hiding ? "hidden" : "visible";
         // trigger native CSS animation
         this.set("aria-hidden", String(hiding));
         // must be AFTER changing the aria-hidden attribute

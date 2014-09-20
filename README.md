@@ -5,15 +5,9 @@
 
 _**NOTE:** documentation is currently updating to reflect changes in version 2. If you need the 1st version please use [v1.7.7 tag](https://github.com/chemerisuk/better-dom/tree/v1.7.7)._
 
-jQuery knows a concept called “**live events**”. Using the idea of event delegation they enabled developers to handle existing and future elements. 
-But more flexibility is required in a lot of cases. For example, delegated events fall short when the DOM needs to be mutated in order to initialize a widget. To handle such cases I'd like to introduce **[live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)** and **better-dom** - a new library for working with the DOM.
+This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main features that encoraged me to build a new library from scratch.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
-
-## Quick start
-I'd recommend to read one from the articles below to understand the main ideas of the library:
-* [Introduction into the better-dom library in English](http://coding.smashingmagazine.com/2014/01/13/better-javascript-library-for-the-dom/) @smashingmagazine.com
-* [Введение в библиотеку better-dom по-русски](http://habrahabr.ru/post/209140/) @habrahabr.ru
 
 ## Features
 * lightweight: ~22 kB minified and ~5 kB gzipped version
@@ -70,19 +64,17 @@ For IE8-9 support you have to incude extra files via the conditional comment bel
 <![endif]-->
 ```
 
-[html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8.
+The **better-dom.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required:
 
-[es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
-
-The **better-dom.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required.
-
-#### Setup content-type header
-HTC behaviors have to serve up with a content-type header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct content-type, but others are not.
+1) HTC behaviors have to serve up with a `content-type` header of `“text/x-component”`, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct `content-type`, but others are not:
 
     AddType text/x-component .htc
 
-#### Same domain limitation
-IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.
+2) IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.
+
+[html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8.
+
+[es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
 
 ## Browser support
 #### Desktop
