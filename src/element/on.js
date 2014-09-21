@@ -65,11 +65,11 @@ _.assign($Element.prototype, {
      * });
      *
      * link.on("click", "i", function() {
-     *     // do something on internal &lt;i&gt; click
+     *     // do something on internal <i> click
      * });
      *
      * link.on("click", "span", ["currentTarget"], function(span) {
-     *     // &lt;span&gt; is the element was clicked
+     *     // <span> is the element was clicked
      * });
      *
      * link.on(["focus", "blur"], function() {

@@ -71,7 +71,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      * @example
-     * link.addClass("foo");
+     * link.addClass("foo", "bar");
      */
     addClass: makeMethod("add", (el, token) => {
         if (!el.hasClass(token)) el[0].className += " " + token;
@@ -85,7 +85,7 @@ _.assign($Element.prototype, {
      * @return {$Element}
      * @function
      * @example
-     * link.removeCLass("foo");
+     * link.removeClass("foo", "bar");
      */
     removeClass: makeMethod("remove", (el, token) => {
         el[0].className = (" " + el[0].className + " ")

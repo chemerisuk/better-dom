@@ -42,9 +42,9 @@ _.assign($Element.prototype, {
      * @return {$Element} a matched child
      * @function
      * @example
-     * ul.child(0);  // => the first &lt;li&gt;
-     * ul.child(5);  // => 5th child &lt;li&gt;
-     * ul.child(-1); // => last child &lt;li&gt;
+     * ul.child(0);  // => the first <li>
+     * ul.child(2);  // => 3th child <li>
+     * ul.child(-1); // => last child <li>
      */
     child: makeMethod(false),
 
@@ -56,8 +56,8 @@ _.assign($Element.prototype, {
      * @return {Array.<$Element>} an array of all matched elements
      * @function
      * @example
-     * ul.children();       // => array with all child &lt;li&gt;
-     * ul.children(".foo"); // => array with of child &lt;li&gt; with class "foo"
+     * ul.children();       // => array with all child <li>
+     * ul.children(".foo"); // => array with of child <li> with class "foo"
      */
     children: makeMethod(true)
 });

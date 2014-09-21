@@ -29,6 +29,11 @@ _.assign($Element.prototype, {
      * @param {String} [selector] css selector
      * @return {$Element} matched element wrapper
      * @function
+     * @example
+     * var div = DOM.create("div>a+b+i"); // <div><a></a><b></b><i></i></div>
+     * var link = div.child(0);           // <a>
+     * link.next();                       // <b>
+     * link.next("i");                    // <i>
      */
     next: makeMethod("next", "nextSibling"),
 
@@ -39,6 +44,11 @@ _.assign($Element.prototype, {
      * @param {String} [selector] css selector
      * @return {$Element} matched element wrapper
      * @function
+     * @example
+     * var div = DOM.create("div>b+i+a"); // <div><b></b><i></i><a></a></div>
+     * var link = div.child(-1);          // <a>
+     * link.prev();                       // <i>
+     * link.prev("b");                    // <b>
      */
     prev: makeMethod("prev", "previousSibling"),
 
@@ -49,6 +59,11 @@ _.assign($Element.prototype, {
      * @param {String} [selector] css selector
      * @return {Array.<$Element>} an array of all matched element wrappers
      * @function
+     * @example
+     * var div = DOM.create("div>a+i+b+i"); // <div><a></a><i></i><b></b><i></i></div>
+     * var link = DOM.child(0);             // <a>
+     * link.nextAll();                      // [<i>, <b>, <i>]
+     * link.nextAll("i");                   // [<i>, <i>]
      */
     nextAll: makeMethod("nextAll", "nextSibling", true),
 
@@ -59,6 +74,11 @@ _.assign($Element.prototype, {
      * @param {String} [selector] css selector
      * @return {Array.<$Element>} an array of all matched element wrappers
      * @function
+     * @example
+     * var div = DOM.create("div>a+i+b+i"); // <div><i></i><b></b><i></i><a></a></div>
+     * var link = DOM.child(-1);            // <a>
+     * link.prevAll();                      // [<i>, <b>, <i>]
+     * link.prevAll("b");                   // [<b>]
      */
     prevAll: makeMethod("prevAll", "previousSibling", true),
 
@@ -69,6 +89,11 @@ _.assign($Element.prototype, {
      * @param {String} [selector] css selector
      * @return {$Element} matched element wrapper
      * @function
+     * @example
+     * var div = DOM.create("div.foo>div.bar>a"); // <div class="foo"><div class="bar"><a></a></div></div>
+     * var link = div.find("a");                  // <a>
+     * link.parent();                             // <div class="bar">
+     * link.parent(".foo");                       // <div class="foo">
      */
     parent: makeMethod("parent", "parentNode")
 });
