@@ -19,8 +19,8 @@ var // operator type / priority object
         // replace ` quotes with " except when it's a single quotes case
         return name + "=" + quotes + (singleValue || value || name) + quotes;
     },
-    injectTerm = (term, first) => (el) => {
-        var index = first ? el.indexOf(">") : el.lastIndexOf("<");
+    injectTerm = (term, append) => (el) => {
+        var index = append ? el.lastIndexOf("<") : el.indexOf(">");
         // inject term into the html string
         return el.substr(0, index) + term + el.substr(index);
     },
@@ -70,17 +70,17 @@ DOM.emmet = function(template, varMap) {
     var stack = [],
         output = [],
         term = "",
-        priority, skip, node, str;
+        skip;
 
     if (template in tagCache) return tagCache[template];
 
     // parse expression into RPN
 
-    for (str of template) {
+    for (let str of template) {
         // concat .c1.c2 into single space separated class string
         if (str === "." && stack[0] === ".") str = " ";
 
-        priority = operators[str];
+        let priority = operators[str];
 
         if (priority && (!skip || skip === str)) {
             // remove redundat ^ operators from the stack when more than one exists
@@ -95,7 +95,7 @@ DOM.emmet = function(template, varMap) {
                     // for `` add dummy term into the output
                     output.push("");
                 } else {
-                    // for [] just remove it from the stack
+                    // for [] simply remove it from the stack
                     stack.shift();
                 }
             }
@@ -134,24 +134,24 @@ DOM.emmet = function(template, varMap) {
 
     stack = [];
 
-    for (str of output) {
+    for (let str of output) {
         if (str in operators) {
-            term = stack.shift();
-            node = stack.shift() || [""];
+            let term = stack.shift();
+            let node = stack.shift();
 
             if (typeof node === "string") node = [ makeTerm(node) ];
 
             switch(str) {
             case ".":
-                term = injectTerm(" class=\"" + term + "\"", true);
+                term = injectTerm(" class=\"" + term + "\"");
                 break;
 
             case "#":
-                term = injectTerm(" id=\"" + term + "\"", true);
+                term = injectTerm(" id=\"" + term + "\"");
                 break;
 
             case "[":
-                term = injectTerm(" " + term.replace(reAttr, normalizeAttrs), true);
+                term = injectTerm(" " + term.replace(reAttr, normalizeAttrs));
                 break;
 
             case "`":
@@ -167,7 +167,7 @@ DOM.emmet = function(template, varMap) {
                 term = typeof term === "string" ? makeTerm(term) : term.join("");
 
                 if (str === ">") {
-                    term = injectTerm(term);
+                    term = injectTerm(term, true);
                 } else {
                     node.push(term);
                 }
@@ -179,9 +179,9 @@ DOM.emmet = function(template, varMap) {
         stack.unshift(str);
     }
 
-    output = stack[0];
+    output = stack[0].join("");
+    // cache static string results
+    if (varMap) tagCache[template] = output;
 
-    if (typeof output !== "string") output = output.join("");
-
-    return varMap ? output : tagCache[template] = output;
+    return output;
 };
