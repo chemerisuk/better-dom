@@ -31,7 +31,12 @@ $Element.prototype.set = function(name, value) {
 
     // handle the value shortcut
     if (arguments.length === 1 && typeof name !== "object") {
-        value = name == null ? "" : String(name);
+        if (typeof name === "function") {
+            value = name;
+        } else {
+            value = name == null ? "" : String(name);
+        }
+
         name = "value" in node ? "value" : "innerHTML";
     }
 
@@ -43,9 +48,7 @@ $Element.prototype.set = function(name, value) {
         oldValue = this.get(name);
     }
 
-    if (hook) {
-        hook(node, value);
-    } else if (typeof name === "string") {
+    if (typeof name === "string") {
         if (name[0] === "_") {
             this._[name.substr(1)] = value;
         } else {
@@ -53,7 +56,9 @@ $Element.prototype.set = function(name, value) {
                 value = value.call(this, oldValue);
             }
 
-            if (value == null) {
+            if (hook) {
+                hook(node, value);
+            } else if (value == null) {
                 node.removeAttribute(name);
             } else if (name in node) {
                 node[name] = value;

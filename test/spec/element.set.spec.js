@@ -166,6 +166,18 @@ describe("set", function() {
             select.set("MM");
             expect(select.get()).toBe("");
         });
+
+        it("should accept function", function() {
+            var spy = jasmine.createSpy("set").and.returnValue("ok");
+
+            link.set(spy);
+            input.set(spy);
+
+            expect(spy.calls.count()).toBe(2);
+
+            expect(link).toHaveHtml("ok");
+            expect(input).toHaveProp("value", "ok");
+        });
     });
 
 });
