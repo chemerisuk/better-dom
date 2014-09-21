@@ -4,11 +4,11 @@ import { DOM } from "../types";
 /* es6-transpiler has-iterators:false, has-generators: false */
 
 var // operator type / priority object
-    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
+    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"[": 7,".": 8,"#": 9},
     reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
     reAttr = /([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-    tagCache = {},
+    tagCache = {"": ""},
     normalizeAttrs = (_, name, value, singleValue) => {
         var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
         // always wrap attribute values with quotes if they don't exist
@@ -28,14 +28,14 @@ var // operator type / priority object
         return result;
     },
     makeIndexedTerm = (n, term) => {
-        var result = [], i;
+        var result = Array(n), i;
 
         for (i = 0; i < n; ++i) {
-            result.push(term.replace(reIndex, (expr, fmt, sign, base) => {
+            result[i] = term.replace(reIndex, (expr, fmt, sign, base) => {
                 var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
-                // handle zero-padded strings
+                // handle zero-padded index values
                 return (fmt + index).slice(-fmt.length).split("$").join("0");
-            }));
+            });
         }
 
         return result;
@@ -64,14 +64,11 @@ var // operator type / priority object
 DOM.emmet = function(template, varMap) {
     if (typeof template !== "string") throw new StaticMethodError("emmet");
 
-    if (!template) return template;
-    // handle varMap
     if (varMap) template = DOM.format(template, varMap);
 
-    var stack = [],
-        output = [];
-
     if (template in tagCache) return tagCache[template];
+
+    var stack = [], output = [];
 
     for (let str of template.match(reParse)) {
         let op = str[0];
@@ -79,13 +76,14 @@ DOM.emmet = function(template, varMap) {
 
         if (priority) {
             if (str !== "(") {
+                // for ^ operator need to skip > str.length times
                 for (let i = 0, n = (op === "^" ? str.length : 1); i < n; ++i) {
                     while (operators[stack[0]] > priority) {
-                        let value = stack.shift();
+                        let head = stack.shift();
 
-                        output.push(value);
+                        output.push(head);
                         // for ^ operator stop shifting when the first > is found
-                        if (op === "^" && value === ">") break;
+                        if (op === "^" && head === ">") break;
                     }
                 }
             }
