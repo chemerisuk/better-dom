@@ -1,13 +1,12 @@
-# better-dom<br>[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][fury-image]][fury-url]
-> Live extension playground
-
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/chemerisuk.svg)](https://saucelabs.com/u/chemerisuk)
+# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][fury-image]][fury-url]
 
 _**NOTE:** documentation is currently updating to reflect changes in version 2. If you need the 1st version please use [v1.7.7 tag](https://github.com/chemerisuk/better-dom/tree/v1.7.7)._
 
-This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main features that encoraged me to build a new library from scratch.
+This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main ideas that encoraged me to build a new library from scratch.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/chemerisuk.svg)](https://saucelabs.com/u/chemerisuk)
 
 ## Features
 * lightweight: ~22 kB minified and ~5 kB gzipped version

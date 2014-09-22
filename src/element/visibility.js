@@ -111,14 +111,23 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         var style = node.style,
             computed = _.computeStyle(node),
             displayValue = computed.display,
-            hiding = typeof condition === "boolean" ? condition : displayValue !== "none",
+            hiding = condition,
             done = () => {
-                // remove element from the flow
-                if (hiding) style.display = "none";
+                // Check equality of the flag and aria-hidden to recognize
+                // cases when an animation was toggled in the intermediate
+                // state. Don't need to proceed in such situation
+                if (String(hiding) === node.getAttribute("aria-hidden")) {
+                    // remove element from the flow when animation is done
+                    if (hiding) style.display = "none";
 
-                if (callback) callback.call(this);
+                    if (callback) callback.call(this);
+                }
             },
             animatable;
+
+        if (typeof hiding !== "boolean") {
+            hiding = displayValue !== "none" && node.getAttribute("aria-hidden") !== "true";
+        }
 
         if (hiding) {
             if (displayValue !== "none") {
