@@ -13,7 +13,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
-        return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
+        return !result || value.slice(-2) === "ms" ? result : result * 1000;
     },
     calcTransitionDuration = (style) => {
         var delay = CSS.get["transition-delay"](style).split(","),

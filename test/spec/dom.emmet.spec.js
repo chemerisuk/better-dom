@@ -8,9 +8,9 @@ describe("DOM.emmet", function() {
     }
 
     checkExpr("", "");
+    checkExpr("article", "<article></article>");
 
     describe("'+' operator", function() {
-        checkExpr("a", "<a></a>");
         checkExpr("p+p", "<p></p><p></p>");
         checkExpr("p.name+p+p", "<p class=\"name\"></p><p></p><p></p>");
     });

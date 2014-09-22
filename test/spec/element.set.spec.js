@@ -8,7 +8,6 @@ describe("set", function() {
 
         link = DOM.find("#test");
         input = DOM.find("#set_input");
-        // inputs = DOM.findAll("#set_input, #set_input1");
     });
 
     it("should return reference to 'this'", function() {
@@ -40,14 +39,6 @@ describe("set", function() {
         expect(link.set(1)).toHaveHtml("1");
         expect(link.set(true)).toHaveHtml("true");
     });
-
-
-    // it("should accept space-separated property names", function() {
-    //     link.set("id href", "changed");
-
-    //     expect(link).toHaveId("changed");
-    //     expect(link).toHaveAttr("href", "changed");
-    // });
 
     it("should accept function", function() {
         var spy = jasmine.createSpy("setter").and.returnValue("test_changed");
@@ -132,18 +123,6 @@ describe("set", function() {
             expect(input.set("_nmb", nmb).get("_nmb")).toEqual(nmb);
             expect(input.set("_func", func).get("_func")).toEqual(func);
         });
-
-        // it("should work with collections", function() {
-        //     var links = DOM.create("<a data-test=\"data-test\"></a><a data-test=\"data-test\"></a>");
-
-        //     expect(links.get("--test")).toBeUndefined();
-        //     expect(links.set("--test", "x")).toBe(links);
-        //     expect(links.get("--test")).toBeUndefined();
-
-        //     links.each(function(link) {
-        //         expect(link.get("--test")).toBe("x");
-        //     });
-        // });
     });
 
     describe("value shortcut", function() {
