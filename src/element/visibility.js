@@ -51,16 +51,16 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         });
 
         node.addEventListener(TRANSITION_EVENT_TYPE, function completeTransition(e) {
-            if (e.propertyName === "visibility" && e.target === node) {
+            if (e.propertyName === "visibility") {
                 e.stopPropagation(); // this is an internal transition
 
-                node.removeEventListener(TRANSITION_EVENT_TYPE, completeTransition, false);
+                node.removeEventListener(TRANSITION_EVENT_TYPE, completeTransition, true);
 
                 style.willChange = ""; // remove temporary properties
 
                 done();
             }
-        }, false);
+        }, true);
 
         // make sure that the visibility property will be changed
         // so reset it to appropriate value with zero
@@ -77,16 +77,16 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         if (!duration) return false; // skip animations with zero duration
 
         node.addEventListener(ANIMATION_EVENT_TYPE, function completeAnimation(e) {
-            if (e.animationName === animationName && e.target === node) {
+            if (e.animationName === animationName) {
                 e.stopPropagation(); // this is an internal animation
 
-                node.removeEventListener(ANIMATION_EVENT_TYPE, completeAnimation, false);
+                node.removeEventListener(ANIMATION_EVENT_TYPE, completeAnimation, true);
 
                 CSS.set["animation-name"](style, ""); // remove temporary animation
 
                 done();
             }
-        }, false);
+        }, true);
 
         // trigger animation start
         CSS.set["animation-direction"](style, hiding ? "normal" : "reverse");
@@ -129,15 +129,15 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
             hiding = displayValue !== "none" && node.getAttribute("aria-hidden") !== "true";
         }
 
-        if (hiding) {
-            if (displayValue !== "none") {
-                this._._display = displayValue;
-                // we'll hide element later in the done call
+        if (displayValue === "none") {
+            if (!hiding) {
+                // restore display property value
+                style.display = this._._display || "inherit";
             }
         } else {
-            if (displayValue === "none") {
-                // restore visibility
-                style.display = this._._display || "inherit";
+            if (hiding) {
+                this._._display = displayValue;
+                // we'll hide element later in the done call
             }
         }
 
@@ -160,8 +160,9 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
             }
         }
         // update element visibility value
-        style.visibility = hiding ? "hidden" : "visible";
-        // trigger native CSS animation
+        // for CSS3 animation element should always be visible
+        style.visibility = hiding && !animationName ? "hidden" : "visible";
+        // trigger CSS3 transition if it exists
         this.set("aria-hidden", String(hiding));
         // must be AFTER changing the aria-hidden attribute
         if (!animatable) done();
