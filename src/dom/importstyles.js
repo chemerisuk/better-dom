@@ -14,6 +14,10 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
  * @alias DOM.importStyles
  * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
+ * @example
+ * DOM.importStyles(".foo", {color: "red", padding: 5});
+ * // you can use strings CSS too
+ * DOM.importStyles(".bar", "background: white; color: gray");
  */
 DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
