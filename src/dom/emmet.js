@@ -6,14 +6,16 @@ import { DOM } from "../types";
 var // operator type / priority object
     operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"[": 7,".": 8,"#": 9},
     reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
-    reAttr = /([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
+    reAttr = /\s*([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
+    reDot = /\./g,
+    reDollar = /\$/g,
     tagCache = {"": ""},
-    normalizeAttrs = (_, name, value, singleValue) => {
+    normalizeAttrs = (_, name, value, cleanValue) => {
         var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
-        return name + "=" + quotes + (singleValue || value || name) + quotes;
+        return " " + name + "=" + quotes + (cleanValue || value || name) + quotes;
     },
     injectTerm = (term, append) => (html) => {
         var index = append ? html.lastIndexOf("<") : html.indexOf(">");
@@ -34,7 +36,7 @@ var // operator type / priority object
             result[i] = term.replace(reIndex, (expr, fmt, sign, base) => {
                 var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
                 // handle zero-padded index values
-                return (fmt + index).slice(-fmt.length).split("$").join("0");
+                return (fmt + index).slice(-fmt.length).replace(reDollar, "0");
             });
         }
 
@@ -69,6 +71,8 @@ DOM.emmet = function(template, varMap) {
 
     if (template in tagCache) return tagCache[template];
 
+    // transform template string into RPN
+
     var stack = [], output = [];
 
     for (let str of template.match(reParse)) {
@@ -94,11 +98,11 @@ DOM.emmet = function(template, varMap) {
             } else {
                 // handle values inside of `...` and [...] sections
                 if (op === "[" || op === "`") {
-                    output.push(str.substr(1, str.length - 2));
+                    output.push(str.slice(1, -1));
                 }
                 // handle multiple classes, e.g. a.one.two
                 if (op === ".") {
-                    output.push(str.substr(1).split(".").join(" "));
+                    output.push(str.substr(1).replace(reDot, " "));
                 }
 
                 stack.unshift(op);
@@ -134,9 +138,7 @@ DOM.emmet = function(template, varMap) {
                 break;
 
             case "[":
-                if (value) {
-                    value = injectTerm(" " + value.replace(reAttr, normalizeAttrs));
-                }
+                value = injectTerm(value.replace(reAttr, normalizeAttrs));
                 break;
 
             case "`":

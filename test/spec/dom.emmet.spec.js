@@ -56,8 +56,10 @@ describe("DOM.emmet", function() {
         checkExpr("a[title=`hello world` href=other name]", "<a title=\"hello world\" href=\"other\" name=\"name\"></a>");
         checkExpr("a[title=`hello world` href=other name]>em", "<a title=\"hello world\" href=\"other\" name=\"name\"><em></em></a>");
         checkExpr("section[id=javascript.files]", "<section id=\"javascript.files\"></section>");
-        checkExpr("a[b c=`d\\'f`]", "<a b=\"b\" c=\"d\\'f\"></a>");
+        checkExpr("a[b c=`d'f`]", "<a b=\"b\" c=\"d'f\"></a>");
+        checkExpr("a[b c=`d\"f`]", "<a b=\"b\" c='d\"f'></a>");
         checkExpr("input[type=text disabled]", "<input type=\"text\" disabled=\"disabled\">");
+        checkExpr("a[href=b   c]", "<a href=\"b\" c=\"c\"></a>");
     });
 
     describe("variables", function() {
