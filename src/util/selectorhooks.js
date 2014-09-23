@@ -5,10 +5,15 @@ var hooks = {};
 
 hooks[":focus"] = (node) => node === DOCUMENT.activeElement;
 
-hooks[":hidden"] = (node) => !hooks[":visible"](node);
+hooks[":hidden"] = (node) => {
+    if (node.getAttribute("aria-hidden") === "true") return true;
 
-hooks[":visible"] = (node) => {
-    return _.computeStyle(node).display !== "none" && HTML.contains(node);
+    var computed = _.computeStyle(node);
+
+    return computed.visibility === "hidden" ||
+        computed.display === "none" || !HTML.contains(node);
 };
+
+hooks[":visible"] = (node) => !hooks[":hidden"](node);
 
 export default hooks;

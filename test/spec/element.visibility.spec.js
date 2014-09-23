@@ -93,12 +93,12 @@ describe("visibility", function() {
             expect(function() { link.show(true) }).toThrow();
         });
 
-        it("should handle initially hidden element", function() {
+        it("should NOT handle initially hidden element", function() {
             link.addClass("hidden");
             link.show();
 
             expect(link).toHaveAttr("aria-hidden", "false");
-            expect(link.css("display")).not.toBe("none");
+            expect(link.css("display")).toBe("none");
         });
 
         it("should handle initially invisible element", function() {
@@ -106,7 +106,7 @@ describe("visibility", function() {
             link.show();
 
             expect(link).toHaveAttr("aria-hidden", "false");
-            expect(link.css("visibility")).toBe("visible");
+            expect(link.css("visibility")).toBe("inherit");
         });
     });
 
@@ -132,13 +132,13 @@ describe("visibility", function() {
         });
 
         it("should work properly with show/hide combination", function(done) {
-            expect(link).not.toHaveStyle("display", "none");
+            expect(link).not.toHaveStyle("visibility", "hidden");
 
             link.toggle(function() {
-                expect(link).toHaveStyle("display", "none");
+                expect(link).toHaveStyle("visibility", "hidden");
 
                 link.toggle(function() {
-                    expect(link).not.toHaveStyle("display", "none");
+                    expect(link).not.toHaveStyle("visibility", "hidden");
 
                     done();
                 });

@@ -35,43 +35,83 @@ describe("matches", function() {
         expect(function() { link.matches(1); }).toThrow();
     });
 
-    // it("should accept optional deep argument", function() {
-    //     expect(link.child(0).matches("a")).toBe(false);
-    //     expect(link.child(0).matches("a", true)).toBe(true);
-    // });
+    describe(":visible and :hidden", function() {
+        it("should change depending on visibility", function(done) {
+            expect(link.matches(":hidden")).toBe(false);
+            expect(link.matches(":visible")).toBe(true);
 
-    it("should support special :hidden and :visible pseudoselector", function(done) {
-        expect(link.matches(":hidden")).toBe(false);
-        expect(link.matches(":visible")).toBe(true);
+            link.hide(function() {
+                expect(link.matches(":hidden")).toBe(true);
+                expect(link.matches(":visible")).toBe(false);
 
-        link.hide(function() {
-            expect(link.matches(":hidden")).toBe(true);
-            expect(link.matches(":visible")).toBe(false);
+                link.show(function() {
+                    expect(link.matches(":hidden")).toBe(false);
+                    expect(link.matches(":visible")).toBe(true);
 
-            link.show(function() {
-                expect(link.matches(":hidden")).toBe(false);
-                expect(link.matches(":visible")).toBe(true);
-
-                done();
+                    done();
+                });
             });
         });
-    });
 
-    it("should support special :hidden and :visible pseudoselector for block elements", function(done) {
-        link.css("display", "block");
+        it("should respect aria-hidden attribute", function() {
+            expect(link.matches(":hidden")).toBe(false);
 
-        expect(link.matches(":hidden")).toBe(false);
-        expect(link.matches(":visible")).toBe(true);
-
-        link.hide(function() {
+            link.set("aria-hidden", "true");
             expect(link.matches(":hidden")).toBe(true);
-            expect(link.matches(":visible")).toBe(false);
 
-            link.show(function() {
-                expect(link.matches(":hidden")).toBe(false);
-                expect(link.matches(":visible")).toBe(true);
+            link.set("aria-hidden", "false");
+            expect(link.matches(":hidden")).toBe(false);
 
-                done();
+            link.set("aria-hidden", null);
+            expect(link.matches(":hidden")).toBe(false);
+        });
+
+        it("should respect CSS property visibility", function() {
+            expect(link.matches(":hidden")).toBe(false);
+
+            link.css("visibility", "hidden");
+            expect(link.matches(":hidden")).toBe(true);
+
+            link.css("visibility", "visible");
+            expect(link.matches(":hidden")).toBe(false);
+
+            link.css("visibility", "inherit");
+            expect(link.matches(":hidden")).toBe(false);
+        });
+
+        it("should respect CSS property display", function() {
+            expect(link.matches(":hidden")).toBe(false);
+
+            link.css("display", "none");
+            expect(link.matches(":hidden")).toBe(true);
+
+            link.css("display", "block");
+            expect(link.matches(":hidden")).toBe(false);
+        });
+
+        it("should respect availability in DOM", function() {
+            expect(link.matches(":hidden")).toBe(false);
+
+            link.remove();
+            expect(link.matches(":hidden")).toBe(true);
+        });
+
+        it("should support block elements as well", function(done) {
+            link.css("display", "block");
+
+            expect(link.matches(":hidden")).toBe(false);
+            expect(link.matches(":visible")).toBe(true);
+
+            link.hide(function() {
+                expect(link.matches(":hidden")).toBe(true);
+                expect(link.matches(":visible")).toBe(false);
+
+                link.show(function() {
+                    expect(link.matches(":hidden")).toBe(false);
+                    expect(link.matches(":visible")).toBe(true);
+
+                    done();
+                });
             });
         });
     });
