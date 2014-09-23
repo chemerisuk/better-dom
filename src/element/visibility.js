@@ -64,7 +64,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
 
         // make sure that the visibility property will be changed
         // so reset it to appropriate value with zero
-        style.visibility = hiding ? "visible" : "hidden";
+        style.visibility = hiding ? "inherit" : "hidden";
         // use willChange to improve performance in modern browsers:
         // http://dev.opera.com/articles/css-will-change-property/
         style.willChange = transitionValues[1].join(", ");
@@ -110,7 +110,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
 
         var style = node.style,
             computed = _.computeStyle(node),
-            displayValue = computed.display,
+            visibility = computed.visibility,
             hiding = condition,
             done = () => {
                 // Check equality of the flag and aria-hidden to recognize
@@ -118,7 +118,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
                 // state. Don't need to proceed in such situation
                 if (String(hiding) === node.getAttribute("aria-hidden")) {
                     // remove element from the flow when animation is done
-                    if (hiding) style.display = "none";
+                    if (hiding && animationName) style.visibility = "hidden";
 
                     if (callback) callback.call(this);
                 }
@@ -126,32 +126,20 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
             animatable;
 
         if (typeof hiding !== "boolean") {
-            hiding = displayValue !== "none" && node.getAttribute("aria-hidden") !== "true";
-        }
-
-        if (displayValue === "none") {
-            if (!hiding) {
-                // restore display property value
-                style.display = this._._display || "inherit";
-            }
-        } else {
-            if (hiding) {
-                this._._display = displayValue;
-                // we'll hide element later in the done call
-            }
+            hiding = visibility !== "hidden" && node.getAttribute("aria-hidden") !== "true";
         }
 
         if (ANIMATIONS_ENABLED) {
-            // Use offsetWidth to trigger reflow of the element
-            // after changing from the hidden state
+            // Use offsetWidth to trigger reflow of the element.
+            // It fixes animation of element inserted into the DOM
             //
             // Opera 12 has an issue with animations as well,
             // so need to trigger reflow manually for it
             //
-            // Thanks to the idea from Jonathan Snook's plugin:
+            // Thanks for the idea from Jonathan Snook's plugin:
             // https://github.com/snookca/prepareTransition
 
-            if (!hiding) displayValue = node.offsetWidth;
+            if (!hiding) visibility = node.offsetWidth;
 
             if (animationName) {
                 animatable = scheduleAnimation(node, style, computed, animationName, hiding, done);
@@ -161,7 +149,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         }
         // update element visibility value
         // for CSS3 animation element should always be visible
-        style.visibility = hiding && !animationName ? "hidden" : "visible";
+        // use value "inherit" to respect parent container visibility
+        style.visibility = hiding && !animationName ? "hidden" : "inherit";
         // trigger CSS3 transition if it exists
         this.set("aria-hidden", String(hiding));
         // must be AFTER changing the aria-hidden attribute
