@@ -187,7 +187,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * @overview better-dom: Live extension playground
- * @version 2.0.0-rc.3 2014-09-20T13:40:55
+ * @version 2.0.0-rc.4 2014-09-23T13:29:43
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -254,6 +254,7 @@
          * @return {$Element} a wrapper object
          * @example
          * var bodyEl = DOM.constructor(document.body);
+         * // bodyEl is an instance of $Element
          * bodyEl.hide();
          */
         constructor: function(node) {
@@ -273,7 +274,7 @@
      */
     var types$$DOM = new types$$$Element(const$$HTML);
 
-    types$$DOM.VERSION = "2.0.0-rc.3";
+    types$$DOM.VERSION = "2.0.0-rc.4";
 
     var exports$$_DOM = const$$WINDOW.DOM;
 
@@ -335,8 +336,9 @@
      * @return {$Element} an element wrapper
      * @function
      * @example
-     * DOM.create("div"); // => wrapper of &lt;div&gt;
-     * DOM.create("&lt;a&gt;&lt;span&gt;&lt;/span&gt;&lt;/a&gt;"); // => wrapper of &lt;a&gt; + innner &lt;span&gt;
+     * DOM.create("div");                  // => wrapper of &lt;div>
+     * DOM.create("span>`{0}`", ["foo"]);  // => wrapper of &lt;span>foo&lt;/span>
+     * DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner &lt;span>
      */
     types$$DOM.create = dom$create$$makeMethod("");
 
@@ -349,33 +351,29 @@
      * @return {Array.&lt;$Element>} an array of element wrappers
      * @function
      * @example
-     * DOM.createAll("&lt;span&gt;&lt;/span&gt;&lt;b&gt;&lt;/b&gt;"); // => array with 2 $Elements: &lt;span&gt; and &lt;b&gt;
-     * DOM.createAll("li*5"); // => array with 5 &lt;li&gt; $Elements
+     * DOM.createAll("li*5");                 // => array with 5 &lt;li> $Elements
+     * DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements: &lt;span> and &lt;b>
      */
     types$$DOM.createAll = dom$create$$makeMethod("All");
 
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
-        dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
+        dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"[": 7,".": 8,"#": 9},
+        dom$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
         dom$emmet$$reAttr = /([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
         dom$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-        // populate empty tags
-        dom$emmet$$tagCache = "area base br col hr img input link meta param command keygen source".split(" ").reduce(function(tagCache, tag)  {
-            tagCache[tag] = "&lt;" + tag + ">";
-
-            return tagCache;
-        }, {}),
+        dom$emmet$$tagCache = {"": ""},
         dom$emmet$$normalizeAttrs = function(_, name, value, singleValue)  {
             var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
             // always wrap attribute values with quotes if they don't exist
             // replace ` quotes with " except when it's a single quotes case
             return name + "=" + quotes + (singleValue || value || name) + quotes;
         },
-        dom$emmet$$injectTerm = function(term, first)  {return function(el)  {
-            var index = first ? el.indexOf(">") : el.lastIndexOf("&lt;");
+        dom$emmet$$injectTerm = function(term, append)  {return function(html)  {
+            var index = append ? html.lastIndexOf("&lt;") : html.indexOf(">");
             // inject term into the html string
-            return el.substr(0, index) + term + el.substr(index);
+            return html.substr(0, index) + term + html.substr(index);
         }},
         dom$emmet$$makeTerm = function(tag)  {
             var result = dom$emmet$$tagCache[tag];
@@ -385,18 +383,23 @@
             return result;
         },
         dom$emmet$$makeIndexedTerm = function(n, term)  {
-            var result = [], i;
+            var result = Array(n), i;
 
             for (i = 0; i &lt; n; ++i) {
-                result.push(term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
+                result[i] = term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
                     var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
-                    // handle zero-padded strings
+                    // handle zero-padded index values
                     return (fmt + index).slice(-fmt.length).split("$").join("0");
-                }));
+                });
             }
 
             return result;
         };
+
+    // populate empty tags
+    "area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag)  {
+        dom$emmet$$tagCache[tag] = "&lt;" + tag + ">";
+    });
 
     /**
      * Parse emmet-like template and return resulting HTML string
@@ -407,71 +410,58 @@
      * @return {String} a resulting HTML string
      * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
      * @see http://docs.emmet.io/cheat-sheet/
+     * @example
+     * DOM.emmet("a");                                    // => "&lt;a>&lt;/a>"
+     * DOM.emmet("ul>li*2");                              // => "&lt;ul>&lt;li>&lt;/li>&lt;li>&lt;/li>&lt;/ul>"
+     * DOM.emmet("b>`hello {user}`", {user: "world"});    // => "&lt;b>hello world&lt;/b>
+     * DOM.emmet("i.{0}+span", ["icon"]);                 // => "&lt;i class="icon">&lt;/i&gt&lt;span>&lt;/span>"
+     * DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;span id="bar">&lt;/span>&lt;/i>"
      */
-    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;
+    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
         if (typeof template !== "string") throw new errors$$StaticMethodError("emmet");
 
-        if (!template) return template;
-        // handle varMap
         if (varMap) template = types$$DOM.format(template, varMap);
-
-        var stack = [],
-            output = [],
-            term = "",
-            priority, skip, node, str;
 
         if (template in dom$emmet$$tagCache) {return dom$emmet$$tagCache[template];}
 
-        // parse expression into RPN
+        var stack = [], output = [];
 
-        $D$0 = 0;$D$1 = template.length;for (str ;$D$0 &lt; $D$1;){str = (template[$D$0++]);
-            // concat .c1.c2 into single space separated class string
-            if (str === "." && stack[0] === ".") str = " ";
+        $D$2 = (template.match(dom$emmet$$reParse));$D$0 = 0;$D$1 = $D$2.length;for (var str ;$D$0 &lt; $D$1;){str = ($D$2[$D$0++]);
+            var op = str[0];
+            var priority = dom$emmet$$operators[op];
 
-            priority = dom$emmet$$operators[str];
-
-            if (priority && (!skip || skip === str)) {
-                // remove redundat ^ operators from the stack when more than one exists
-                if (str === "^" && stack[0] === "^") stack.shift();
-
-                if (term) {
-                    output.push(term);
-                    term = "";
-                } else if (str === skip) {
-                    // process empty `...` and [...] sections
-                    if (str === "`") {
-                        // for `` add dummy term into the output
-                        output.push("");
-                    } else {
-                        // for [] just remove it from the stack
-                        stack.shift();
-                    }
-                }
-
+            if (priority) {
                 if (str !== "(") {
-                    while (dom$emmet$$operators[stack[0]] > priority) {
-                        output.push(stack.shift());
-                        // for ^ operator stop shifting when the first > is found
-                        if (str === "^" && output[output.length - 1] === ">") break;
+                    // for ^ operator need to skip > str.length times
+                    for (var i = 0, n = (op === "^" ? str.length : 1); i &lt; n; ++i) {
+                        while (dom$emmet$$operators[stack[0]] > priority) {
+                            var head = stack.shift();
+
+                            output.push(head);
+                            // for ^ operator stop shifting when the first > is found
+                            if (op === "^" && head === ">") break;
+                        }
                     }
                 }
 
                 if (str === ")") {
                     stack.shift(); // remove "(" symbol from stack
-                } else if (!skip) {
-                    stack.unshift(str);
-
-                    if (str === "[") skip = "]";
-                    if (str === "`") skip = "`";
                 } else {
-                    skip = false;
+                    // handle values inside of `...` and [...] sections
+                    if (op === "[" || op === "`") {
+                        output.push(str.substr(1, str.length - 2));
+                    }
+                    // handle multiple classes, e.g. a.one.two
+                    if (op === ".") {
+                        output.push(str.substr(1).split(".").join(" "));
+                    }
+
+                    stack.unshift(op);
                 }
             } else {
-                term += str;
+                output.push(str);
             }
-        };$D$0 = $D$1 = void 0;
-
-        if (term) output.push(term);
+        };$D$0 = $D$1 = $D$2 = void 0;
 
         output = output.concat(stack);
 
@@ -482,56 +472,58 @@
 
         stack = [];
 
-        $D$0 = 0;$D$1 = output.length;for (str ;$D$0 &lt; $D$1;){str = (output[$D$0++]);
-            if (str in dom$emmet$$operators) {
-                term = stack.shift();
-                node = stack.shift() || [""];
+        $D$0 = 0;$D$1 = output.length;for (var str$0 ;$D$0 &lt; $D$1;){str$0 = (output[$D$0++]);
+            if (str$0 in dom$emmet$$operators) {
+                var value = stack.shift();
+                var node = stack.shift();
 
                 if (typeof node === "string") node = [ dom$emmet$$makeTerm(node) ];
 
-                switch(str) {
+                switch(str$0) {
                 case ".":
-                    term = dom$emmet$$injectTerm(" class=\"" + term + "\"", true);
+                    value = dom$emmet$$injectTerm(" class=\"" + value + "\"");
                     break;
 
                 case "#":
-                    term = dom$emmet$$injectTerm(" id=\"" + term + "\"", true);
+                    value = dom$emmet$$injectTerm(" id=\"" + value + "\"");
                     break;
 
                 case "[":
-                    term = dom$emmet$$injectTerm(" " + term.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs), true);
+                    if (value) {
+                        value = dom$emmet$$injectTerm(" " + value.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs));
+                    }
                     break;
 
                 case "`":
                     stack.unshift(node);
-                    node = [ term ];
+                    node = [ value ];
                     break;
 
                 case "*":
-                    node = dom$emmet$$makeIndexedTerm(+term, node.join(""));
+                    node = dom$emmet$$makeIndexedTerm(+value, node.join(""));
                     break;
 
                 default:
-                    term = typeof term === "string" ? dom$emmet$$makeTerm(term) : term.join("");
+                    value = typeof value === "string" ? dom$emmet$$makeTerm(value) : value.join("");
 
-                    if (str === ">") {
-                        term = dom$emmet$$injectTerm(term);
+                    if (str$0 === ">") {
+                        value = dom$emmet$$injectTerm(value, true);
                     } else {
-                        node.push(term);
+                        node.push(value);
                     }
                 }
 
-                str = typeof term === "function" ? node.map(term) : node;
+                str$0 = typeof value === "function" ? node.map(value) : node;
             }
 
-            stack.unshift(str);
+            stack.unshift(str$0);
         };$D$0 = $D$1 = void 0;
 
-        output = stack[0];
+        output = stack[0].join("");
+        // cache static string results
+        if (varMap) dom$emmet$$tagCache[template] = output;
 
-        if (typeof output !== "string") output = output.join("");
-
-        return varMap ? output : dom$emmet$$tagCache[template] = output;
+        return output;
     };
 
     var util$index$$arrayProto = Array.prototype,
@@ -710,7 +702,7 @@
             if (quick[4]) quick[4] = " " + quick[4] + " ";
         }
 
-        return function(node) {var $D$2;var $D$3;
+        return function(node) {var $D$3;var $D$4;
             var result, found;
 
             if (!quick && !util$selectormatcher$$propName) {
@@ -729,9 +721,9 @@
                     if (util$selectormatcher$$propName) {
                         result = node[util$selectormatcher$$propName](selector);
                     } else {
-                        $D$2 = 0;$D$3 = found.length;for (var n ;$D$2 &lt; $D$3;){n = (found[$D$2++]);
+                        $D$3 = 0;$D$4 = found.length;for (var n ;$D$3 &lt; $D$4;){n = (found[$D$3++]);
                             if (n === node) return n;
-                        };$D$2 = $D$3 = void 0;
+                        };$D$3 = $D$4 = void 0;
                     }
                 }
 
@@ -885,6 +877,15 @@
      * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
      * @param  {Object}           mixins           extension declatation
      * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
+     * @example
+     * DOM.extend("selector", {
+     *     constructor: function() {
+     *         // initialize component
+     *     },
+     *     publicMethod: function() {
+     *         // ...
+     *     }
+     * });
      */
     types$$DOM.extend = function(selector, condition, mixins) {
         if (arguments.length === 2) {
@@ -993,24 +994,28 @@
     /**
      * Return {@link $Element} initialized with all existing live extensions.
      * Also exposes private event handler functions that aren't usually presented
+     * Accept same arguments as {@link DOM.create}
      * @memberof DOM
      * @alias DOM.mock
      * @param  {String}       value     EmmetString or HTMLString
      * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {$Element} mocked instance
+     * @return {$Element} a mocked instance
      * @function
+     * @see DOM.create
      */
     types$$DOM.mock = dom$mock$$makeMethod("");
 
     /**
      * Return Array of {@link $Element} initialized with all existing live extensions.
      * Also exposes private event handler functions that aren't usually presented
+     * Accept same arguments as {@link DOM.createAll}
      * @memberof DOM
      * @alias DOM.mockAll
      * @param  {String}       value     EmmetString or HTMLString
      * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {Array.&lt;$Element>} an array of element wrappers
+     * @return {Array.&lt;$Element>} an array of mocked element wrappers
      * @function
+     * @see DOM.createAll
      */
     types$$DOM.mockAll = dom$mock$$makeMethod("All");
 
@@ -1049,8 +1054,12 @@
          * @memberof! $Element#
          * @alias $Element#child
          * @param  {Number} index child index
-         * @return {$Element} matched child
+         * @return {$Element} a matched child
          * @function
+         * @example
+         * ul.child(0);  // => the first &lt;li>
+         * ul.child(2);  // => 3th child &lt;li>
+         * ul.child(-1); // => last child &lt;li>
          */
         child: element$children$$makeMethod(false),
 
@@ -1059,8 +1068,11 @@
          * @memberof! $Element#
          * @alias $Element#children
          * @param  {String} [selector] css selector
-         * @return {Array.&lt;$Element>} an array of all matched element wrappers
+         * @return {Array.&lt;$Element>} an array of all matched elements
          * @function
+         * @example
+         * ul.children();       // => array with all child &lt;li>
+         * ul.children(".foo"); // => array with of child &lt;li> with class "foo"
          */
         children: element$children$$makeMethod(true)
     });
@@ -1093,15 +1105,15 @@
                     }
                 };
             } else {
-                return function() {var $D$4;var $D$5;
+                return function() {var $D$5;var $D$6;
                     var tokens = arguments;
 
                     if (this[0]) {
-                        $D$4 = 0;$D$5 = tokens.length;for (var token ;$D$4 &lt; $D$5;){token = (tokens[$D$4++]);
+                        $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 &lt; $D$6;){token = (tokens[$D$5++]);
                             if (typeof token !== "string") throw new errors$$MethodError(methodName);
 
                             strategy(this, token);
-                        };$D$4 = $D$5 = void 0;
+                        };$D$5 = $D$6 = void 0;
                     }
 
                     return this;
@@ -1133,7 +1145,7 @@
          * @return {$Element}
          * @function
          * @example
-         * link.addClass("foo");
+         * link.addClass("foo", "bar");
          */
         addClass: element$classes$$makeMethod("add", function(el, token)  {
             if (!el.hasClass(token)) el[0].className += " " + token;
@@ -1147,7 +1159,7 @@
          * @return {$Element}
          * @function
          * @example
-         * link.removeCLass("foo");
+         * link.removeClass("foo", "bar");
          */
         removeClass: element$classes$$makeMethod("remove", function(el, token)  {
             el[0].className = (" " + el[0].className + " ")
@@ -1185,6 +1197,9 @@
      * @alias $Element#clone
      * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
      * @return {$Element} a clone of current element
+     * @example
+     * ul.clone();      // => clone of &lt;ul> with all it's children
+     * ul.clone(false); // => clone of &lt;ul> element ONLY
      */
     types$$$Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 0)deep = true;
         if (typeof deep !== "boolean") throw new errors$$MethodError("clone");
@@ -1250,6 +1265,11 @@
      * @param  {String|Object}      name    style property name or key/value object
      * @param  {String|cssCallback} [value] style property value or {@link cssCallback}
      * @return {String|$Element} a property value or reference to &lt;code>this&lt;/code>
+     * @example
+     * link.css("color");                 // => element color property
+     * link.css("box-sizing");            // => value of "box-sizing" (no vendor prefix needed)
+     * link.css("color", "red");          // update element color
+     * link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix needed)
      */
     types$$$Element.prototype.css = function(name, value) {var this$0 = this;
         var len = arguments.length,
@@ -1373,6 +1393,10 @@
          * @param  {String} selector css selector
          * @return {$Element} the first matched element
          * @function
+         * @example
+         * var body = DOM.find("body");  // => &lt;body> wrapper
+         * var foo  = body.find(".foo"); // => the first element with class "foo"
+         * foo.find(".bar>span");        // => the first element that matches ".bar>span"
          */
         find: element$find$$makeMethod(""),
 
@@ -1383,6 +1407,9 @@
          * @param  {String} selector css selector
          * @return {Array.&lt;$Element>} an array of element wrappers
          * @function
+         * @example
+         * DOM.findAll("a");         // => all links in the document
+         * context.findAll("ol>li"); // => all &lt;li> inside of &lt;ol>
          */
         findAll: element$find$$makeMethod("All")
     });
@@ -1506,6 +1533,9 @@
      * @param  {String}  type  type of event
      * @param  {...Object}     [args]  extra arguments to pass into each event handler
      * @return {Boolean} returns &lt;code>true&lt;/code> if default action wasn't prevented
+     * @example
+     * link.fire("click");                   // fire click event
+     * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments
      */
     types$$$Element.prototype.fire = function(type) {var args = SLICE$0.call(arguments, 1);
         var node = this[0],
@@ -1617,6 +1647,11 @@
      * @alias $Element#get
      * @param  {String|Array} [name] property or attribute name or array of names
      * @return {Object} a property or attribute value
+     * @example
+     * link.get("title");       // => property title
+     * link.get("data-custom"); // => custom attribute data-custom
+     * link.get();              // => link's innerHTML
+     * link.get("_prop");       // => private property _prop
      */
     types$$$Element.prototype.get = function(name) {var this$0 = this;
         var data = this._,
@@ -1708,6 +1743,9 @@
          * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
          * @return {$Element}
          * @function
+         * @example
+         * var link = DOM.create("a");  // &lt;a>&lt;/a>
+         * link.after(DOM.create("b")); // &lt;a>&lt;/a>&lt;b>&lt;/b>
          */
         after: element$manipulation$$makeMethod("after", "afterend", false, function(node, relatedNode)  {
             node.parentNode.insertBefore(relatedNode, node.nextSibling);
@@ -1720,6 +1758,9 @@
          * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
          * @return {$Element}
          * @function
+         * @example
+         * var link = DOM.create("a");   // &lt;a>&lt;/a>
+         * link.before(DOM.create("b")); // &lt;b>&lt;/b>&lt;a>&lt;/a>
          */
         before: element$manipulation$$makeMethod("before", "beforebegin", false, function(node, relatedNode)  {
             node.parentNode.insertBefore(relatedNode, node);
@@ -1732,6 +1773,9 @@
          * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
          * @return {$Element}
          * @function
+         * @example
+         * var link = DOM.create("a>`foo`"); // &lt;a>foo&lt;/a>
+         * link.prepend(DOM.create("b"));    // &lt;a>&lt;b>&lt;/b>foo&lt;/a>
          */
         prepend: element$manipulation$$makeMethod("prepend", "afterbegin", true, function(node, relatedNode)  {
             node.insertBefore(relatedNode, node.firstChild);
@@ -1744,6 +1788,9 @@
          * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
          * @return {$Element}
          * @function
+         * @example
+         * var link = DOM.create("a>`foo`"); // &lt;a>foo&lt;/a>
+         * link.append(DOM.create("b"));     // &lt;a>foo&lt;b>&lt;/b>&lt;/a>
          */
         append: element$manipulation$$makeMethod("append", "beforeend", true, function(node, relatedNode)  {
             node.appendChild(relatedNode);
@@ -1756,6 +1803,9 @@
          * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
          * @return {$Element}
          * @function
+         * @example
+         * var div = DOM.create("div>span>`foo`");      // &lt;div>&lt;span>foo&lt;/span>&lt;/div>
+         * div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div>
          */
         replace: element$manipulation$$makeMethod("replace", "", false, function(node, relatedNode)  {
             node.parentNode.replaceChild(relatedNode, node);
@@ -1767,6 +1817,10 @@
          * @alias $Element#remove
          * @return {$Element}
          * @function
+         * @example
+         * var foo = DOM.find(".foo");
+         * foo.remove();
+         * DOM.contains(foo); // => false
          */
         remove: element$manipulation$$makeMethod("remove", "", false, function(node)  {
             node.parentNode.removeChild(node);
@@ -1777,11 +1831,16 @@
 
     util$selectorhooks$$hooks[":focus"] = function(node)  {return node === const$$DOCUMENT.activeElement};
 
-    util$selectorhooks$$hooks[":hidden"] = function(node)  {return !util$selectorhooks$$hooks[":visible"](node)};
+    util$selectorhooks$$hooks[":hidden"] = function(node)  {
+        if (node.getAttribute("aria-hidden") === "true") return true;
 
-    util$selectorhooks$$hooks[":visible"] = function(node)  {
-        return util$index$$default.computeStyle(node).display !== "none" && const$$HTML.contains(node);
+        var computed = util$index$$default.computeStyle(node);
+
+        return computed.visibility === "hidden" ||
+            computed.display === "none" || !const$$HTML.contains(node);
     };
+
+    util$selectorhooks$$hooks[":visible"] = function(node)  {return !util$selectorhooks$$hooks[":hidden"](node)};
 
     var util$selectorhooks$$default = util$selectorhooks$$hooks;
 
@@ -1838,6 +1897,8 @@
      * @memberof! $Element#
      * @alias $Element#offset
      * @return {Object} object with left, top, bottom, right, width and height properties
+     * @example
+     * el.offset(); // => {left: 1, top: 2, right: 3, bottom: 4, width: 2, height: 2}
      */
     types$$$Element.prototype.offset = function() {
         var node = this[0],
@@ -1916,11 +1977,28 @@
          * @param  {Function}      callback    event callback or property name (for late binding)
          * @return {$Element}
          * @function
+         * @example
+         * link.on("focus", function() {
+         *     // do something on focus
+         * });
+         *
+         * link.on("click", "i", function() {
+         *     // do something on internal &lt;i> click
+         * });
+         *
+         * link.on("click", "span", ["currentTarget"], function(span) {
+         *     // &lt;span> is the element was clicked
+         * });
+         *
+         * link.on(["focus", "blur"], function() {
+         *     // you can pass several event types
+         * });
          */
         on: element$on$$makeMethod("on"),
 
         /**
-         * Bind a DOM event but fire once before being removed
+         * Bind a DOM event but fire once before being removed. Same as
+         * {@link $Element#on}, but removes the handler after a fist event
          * @memberof! $Element#
          * @alias $Element#once
          * @param  {String|Array}  type        event type(s) with optional selector
@@ -1929,6 +2007,7 @@
          * @param  {Function}      callback    event callback or property name (for late binding)
          * @return {$Element}
          * @function
+         * @see $Element#on
          */
         once: element$on$$makeMethod("once")
     });
@@ -1947,6 +2026,11 @@
      * @param {String|Object|Array}   [name]  property/attribute name
      * @param {String|setterCallback} value   property/attribute value or {@link setterCallback}
      * @return {$Element}
+     * @example
+     * link.set("title", "mytitle"); // set title property
+     * link.set("data-custom");      // set custom attribute data-custom
+     * link.set("inner html");       // set link's innerHTML
+     * link.set("_prop", {a: "b"});  // update private property _prop
      */
     types$$$Element.prototype.set = function(name, value) {var this$0 = this;
         var node = this[0];
@@ -1955,7 +2039,12 @@
 
         // handle the value shortcut
         if (arguments.length === 1 && typeof name !== "object") {
-            value = name == null ? "" : String(name);
+            if (typeof name === "function") {
+                value = name;
+            } else {
+                value = name == null ? "" : String(name);
+            }
+
             name = "value" in node ? "value" : "innerHTML";
         }
 
@@ -1967,9 +2056,7 @@
             oldValue = this.get(name);
         }
 
-        if (hook) {
-            hook(node, value);
-        } else if (typeof name === "string") {
+        if (typeof name === "string") {
             if (name[0] === "_") {
                 this._[name.substr(1)] = value;
             } else {
@@ -1977,7 +2064,9 @@
                     value = value.call(this, oldValue);
                 }
 
-                if (value == null) {
+                if (hook) {
+                    hook(node, value);
+                } else if (value == null) {
                     node.removeAttribute(name);
                 } else if (name in node) {
                     node[name] = value;
@@ -2032,6 +2121,11 @@
          * @param {String} [selector] css selector
          * @return {$Element} matched element wrapper
          * @function
+         * @example
+         * var div = DOM.create("div>a+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
+         * var link = div.child(0);           // &lt;a>
+         * link.next();                       // &lt;b>
+         * link.next("i");                    // &lt;i>
          */
         next: element$traversing$$makeMethod("next", "nextSibling"),
 
@@ -2042,6 +2136,11 @@
          * @param {String} [selector] css selector
          * @return {$Element} matched element wrapper
          * @function
+         * @example
+         * var div = DOM.create("div>b+i+a"); // &lt;div>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
+         * var link = div.child(-1);          // &lt;a>
+         * link.prev();                       // &lt;i>
+         * link.prev("b");                    // &lt;b>
          */
         prev: element$traversing$$makeMethod("prev", "previousSibling"),
 
@@ -2052,6 +2151,11 @@
          * @param {String} [selector] css selector
          * @return {Array.&lt;$Element>} an array of all matched element wrappers
          * @function
+         * @example
+         * var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
+         * var link = DOM.child(0);             // &lt;a>
+         * link.nextAll();                      // [&lt;i>, &lt;b>, &lt;i>]
+         * link.nextAll("i");                   // [&lt;i>, &lt;i>]
          */
         nextAll: element$traversing$$makeMethod("nextAll", "nextSibling", true),
 
@@ -2062,6 +2166,11 @@
          * @param {String} [selector] css selector
          * @return {Array.&lt;$Element>} an array of all matched element wrappers
          * @function
+         * @example
+         * var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
+         * var link = DOM.child(-1);            // &lt;a>
+         * link.prevAll();                      // [&lt;i>, &lt;b>, &lt;i>]
+         * link.prevAll("b");                   // [&lt;b>]
          */
         prevAll: element$traversing$$makeMethod("prevAll", "previousSibling", true),
 
@@ -2072,6 +2181,11 @@
          * @param {String} [selector] css selector
          * @return {$Element} matched element wrapper
          * @function
+         * @example
+         * var div = DOM.create("div.foo>div.bar>a"); // &lt;div class="foo">&lt;div class="bar">&lt;a>&lt;/a>&lt;/div>&lt;/div>
+         * var link = div.find("a");                  // &lt;a>
+         * link.parent();                             // &lt;div class="bar">
+         * link.parent(".foo");                       // &lt;div class="foo">
          */
         parent: element$traversing$$makeMethod("parent", "parentNode")
     });
@@ -2085,7 +2199,7 @@
         element$visibility$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
             // if duration is in seconds, then multiple result value by 1000
-            return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
+            return !result || value.slice(-2) === "ms" ? result : result * 1000;
         },
         element$visibility$$calcTransitionDuration = function(style)  {
             var delay = util$stylehooks$$default.get["transition-delay"](style).split(","),
@@ -2123,20 +2237,20 @@
             });
 
             node.addEventListener(element$visibility$$TRANSITION_EVENT_TYPE, function completeTransition(e) {
-                if (e.propertyName === "visibility" && e.target === node) {
+                if (e.propertyName === "visibility") {
                     e.stopPropagation(); // this is an internal transition
 
-                    node.removeEventListener(element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, false);
+                    node.removeEventListener(element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, true);
 
                     style.willChange = ""; // remove temporary properties
 
                     done();
                 }
-            }, false);
+            }, true);
 
             // make sure that the visibility property will be changed
             // so reset it to appropriate value with zero
-            style.visibility = hiding ? "visible" : "hidden";
+            style.visibility = hiding ? "inherit" : "hidden";
             // use willChange to improve performance in modern browsers:
             // http://dev.opera.com/articles/css-will-change-property/
             style.willChange = transitionValues[1].join(", ");
@@ -2149,16 +2263,16 @@
             if (!duration) return false; // skip animations with zero duration
 
             node.addEventListener(element$visibility$$ANIMATION_EVENT_TYPE, function completeAnimation(e) {
-                if (e.animationName === animationName && e.target === node) {
+                if (e.animationName === animationName) {
                     e.stopPropagation(); // this is an internal animation
 
-                    node.removeEventListener(element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, false);
+                    node.removeEventListener(element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, true);
 
                     util$stylehooks$$default.set["animation-name"](style, ""); // remove temporary animation
 
                     done();
                 }
-            }, false);
+            }, true);
 
             // trigger animation start
             util$stylehooks$$default.set["animation-direction"](style, hiding ? "normal" : "reverse");
@@ -2182,39 +2296,36 @@
 
             var style = node.style,
                 computed = util$index$$default.computeStyle(node),
-                displayValue = computed.display,
-                hiding = typeof condition === "boolean" ? condition : displayValue !== "none",
+                visibility = computed.visibility,
+                hiding = condition,
                 done = function()  {
-                    // remove element from the flow
-                    if (hiding) style.display = "none";
+                    // Check equality of the flag and aria-hidden to recognize
+                    // cases when an animation was toggled in the intermediate
+                    // state. Don't need to proceed in such situation
+                    if (String(hiding) === node.getAttribute("aria-hidden")) {
+                        // remove element from the flow when animation is done
+                        if (hiding && animationName) style.visibility = "hidden";
 
-                    if (callback) callback.call(this$0);
+                        if (callback) callback.call(this$0);
+                    }
                 },
                 animatable;
 
-            if (hiding) {
-                if (displayValue !== "none") {
-                    this._._display = displayValue;
-                    // we'll hide element later in the done call
-                }
-            } else {
-                if (displayValue === "none") {
-                    // restore visibility
-                    style.display = this._._display || "inherit";
-                }
+            if (typeof hiding !== "boolean") {
+                hiding = visibility !== "hidden" && node.getAttribute("aria-hidden") !== "true";
             }
 
             if (element$visibility$$ANIMATIONS_ENABLED) {
-                // Use offsetWidth to trigger reflow of the element
-                // after changing from the hidden state
+                // Use offsetWidth to trigger reflow of the element.
+                // It fixes animation of element inserted into the DOM
                 //
                 // Opera 12 has an issue with animations as well,
                 // so need to trigger reflow manually for it
                 //
-                // Thanks to the idea from Jonathan Snook's plugin:
+                // Thanks for the idea from Jonathan Snook's plugin:
                 // https://github.com/snookca/prepareTransition
 
-                if (!hiding) displayValue = node.offsetWidth;
+                if (!hiding) visibility = node.offsetWidth;
 
                 if (animationName) {
                     animatable = element$visibility$$scheduleAnimation(node, style, computed, animationName, hiding, done);
@@ -2223,8 +2334,10 @@
                 }
             }
             // update element visibility value
-            style.visibility = hiding ? "hidden" : "visible";
-            // trigger native CSS animation
+            // for CSS3 animation element should always be visible
+            // use value "inherit" to respect parent container visibility
+            style.visibility = hiding && !animationName ? "hidden" : "inherit";
+            // trigger CSS3 transition if it exists
             this.set("aria-hidden", String(hiding));
             // must be AFTER changing the aria-hidden attribute
             if (!animatable) done();
@@ -2313,7 +2426,7 @@
      * @return {$Element}
      * @example
      * targetInput.watch("value", function(value, oldValue) {
-     *   // do what you want AFTER the value of targetInput was changed
+     *     // do what you want AFTER the value of targetInput was changed
      * });
      */
     types$$$Element.prototype.watch = function(name, callback) {
@@ -2333,6 +2446,7 @@
      * @param  {String}        name     property/attribute name
      * @param  {watchCallback} callback function for watching changes of the property/attribute
      * @return {$Element}
+     * @see $Element#watch
      */
     types$$$Element.prototype.unwatch = function(name, callback) {
         var watchers = this._._watchers;
@@ -2361,7 +2475,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Sep 20 2014 13:42:13 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 23 2014 13:31:22 GMT+0300 (FET)
         </footer>
     </div>
 </div>

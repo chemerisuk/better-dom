@@ -263,7 +263,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line72">line 72</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line73">line 73</a>
         </div>
         
     </div>
@@ -387,6 +387,7 @@ wrapper object
 
     
     <pre class="prettyprint"><code>var bodyEl = DOM.constructor(document.body);
+// bodyEl is an instance of $Element
 bodyEl.hide();</code></pre>
     
 
@@ -404,7 +405,7 @@ bodyEl.hide();</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line154">line 154</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line156">line 156</a>
         </div>
         
     </div>
@@ -558,8 +559,9 @@ element wrapper
         
 
     
-    <pre class="prettyprint"><code>DOM.create("div"); // => wrapper of &lt;div&gt;
-DOM.create("&lt;a&gt;&lt;span&gt;&lt;/span&gt;&lt;/a&gt;"); // => wrapper of &lt;a&gt; + innner &lt;span&gt;</code></pre>
+    <pre class="prettyprint"><code>DOM.create("div");                  // => wrapper of &lt;div>
+DOM.create("span>`{0}`", ["foo"]);  // => wrapper of &lt;span>foo&lt;/span>
+DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner &lt;span></code></pre>
     
 
     
@@ -576,7 +578,7 @@ DOM.create("&lt;a&gt;&lt;span&gt;&lt;/span&gt;&lt;/a&gt;"); // => wrapper of &lt
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line168">line 168</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line170">line 170</a>
         </div>
         
     </div>
@@ -730,8 +732,8 @@ array of element wrappers
         
 
     
-    <pre class="prettyprint"><code>DOM.createAll("&lt;span&gt;&lt;/span&gt;&lt;b&gt;&lt;/b&gt;"); // => array with 2 $Elements: &lt;span&gt; and &lt;b&gt;
-DOM.createAll("li*5"); // => array with 5 &lt;li&gt; $Elements</code></pre>
+    <pre class="prettyprint"><code>DOM.createAll("li*5");                 // => array with 5 &lt;li> $Elements
+DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements: &lt;span> and &lt;b></code></pre>
     
 
     
@@ -748,7 +750,7 @@ DOM.createAll("li*5"); // => array with 5 &lt;li&gt; $Elements</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line224">line 224</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line233">line 233</a>
         </div>
         
     </div>
@@ -907,6 +909,18 @@ resulting HTML string
     
     
     
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.emmet("a");                                    // => "&lt;a>&lt;/a>"
+DOM.emmet("ul>li*2");                              // => "&lt;ul>&lt;li>&lt;/li>&lt;li>&lt;/li>&lt;/ul>"
+DOM.emmet("b>`hello {user}`", {user: "world"});    // => "&lt;b>hello world&lt;/b>
+DOM.emmet("i.{0}+span", ["icon"]);                 // => "&lt;i class="icon">&lt;/i&gt&lt;span>&lt;/span>"
+DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;span id="bar">&lt;/span>&lt;/i>"</code></pre>
+    
+
+    
 </dd>
 
         
@@ -920,7 +934,7 @@ resulting HTML string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line702">line 702</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line703">line 703</a>
         </div>
         
     </div>
@@ -1112,6 +1126,21 @@ resulting HTML string
     
     
     
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.extend("selector", {
+    constructor: function() {
+        // initialize component
+    },
+    publicMethod: function() {
+        // ...
+    }
+});</code></pre>
+    
+
+    
 </dd>
 
         
@@ -1125,7 +1154,7 @@ resulting HTML string
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line749">line 749</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line750">line 750</a>
         </div>
         
     </div>
@@ -1282,7 +1311,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line764">line 764</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line765">line 765</a>
         </div>
         
     </div>
@@ -1435,7 +1464,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line469">line 469</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line461">line 461</a>
         </div>
         
     </div>
@@ -1577,7 +1606,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line816">line 816</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line819">line 819</a>
         </div>
         
     </div>
@@ -1589,7 +1618,8 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
     <div class="description">
         <p>Return <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented</p>
+Also exposes private event handler functions that aren't usually presented
+Accept same arguments as <a href="DOM.html#create"><code>DOM.create</code></a></p>
     </div>
     
 
@@ -1703,6 +1733,13 @@ Also exposes private event handler functions that aren't usually presented</p>
     
     
     
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="DOM.html#create">DOM.create</a></li>
+        </ul>
+    </dd>
+    
     
     
 </dl>
@@ -1722,7 +1759,7 @@ Also exposes private event handler functions that aren't usually presented</p>
 
 
 <h5>Returns:</h5>
-instance
+mocked instance
 <br />
 
     
@@ -1741,7 +1778,7 @@ instance
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line828">line 828</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line833">line 833</a>
         </div>
         
     </div>
@@ -1753,7 +1790,8 @@ instance
     
     <div class="description">
         <p>Return Array of <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented</p>
+Also exposes private event handler functions that aren't usually presented
+Accept same arguments as <a href="DOM.html#createAll"><code>DOM.createAll</code></a></p>
     </div>
     
 
@@ -1867,6 +1905,13 @@ Also exposes private event handler functions that aren't usually presented</p>
     
     
     
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="DOM.html#createAll">DOM.createAll</a></li>
+        </ul>
+    </dd>
+    
     
     
 </dl>
@@ -1886,7 +1931,7 @@ Also exposes private event handler functions that aren't usually presented</p>
 
 
 <h5>Returns:</h5>
-array of element wrappers
+array of mocked element wrappers
 <br />
 
     
@@ -1917,7 +1962,7 @@ array of element wrappers
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Sep 20 2014 13:42:13 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 23 2014 13:31:22 GMT+0300 (FET)
         </footer>
     </div>
 </div>
