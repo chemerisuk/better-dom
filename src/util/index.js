@@ -24,7 +24,11 @@ export default {
 
         return target;
     },
-    defer: (func) => {
-        return WINDOW.setTimeout(func, 1);
+    safeInvoke: (fn, context, arg1, arg2) => {
+        try {
+            fn.call(context, arg1, arg2);
+        } catch (err) {
+            WINDOW.setTimeout(() => { throw err }, 0);
+        }
     }
 };

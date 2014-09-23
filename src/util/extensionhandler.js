@@ -20,15 +20,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
     },
     ExtensionHandler = (selector, condition, mixins, index) => {
         var eventHandlers = _.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
-            ctr = mixins.hasOwnProperty("constructor") && function(el) {
-                try {
-                    // make a safe call so live extensions can't break each other
-                    mixins.constructor.call(el);
-                } catch (err) {
-                    // use setTimeout for safe logging of an error
-                    _.defer(() => { throw err });
-                }
-            },
+            ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             ext = (node, mock) => {
                 var el = $Element(node);
 
@@ -41,7 +33,8 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
                 if (mock === true || condition(el) !== false) {
                     _.assign(el, mixins);
                     // invoke constructor if it exists
-                    if (ctr) ctr(el);
+                    // make a safe call so live extensions can't break each other
+                    if (ctr) _.safeInvoke(ctr, el);
                     // remove event handlers from element's interface
                     if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
                 }
