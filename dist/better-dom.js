@@ -1,6 +1,6 @@
 /**
  * @overview better-dom: Live extension playground
- * @version 2.0.0-rc.4 2014-09-20T13:42:14
+ * @version 2.0.0-rc.5 2014-09-23T13:31:23
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -66,7 +66,7 @@
 
     var types$$DOM = new types$$$Element(const$$HTML);
 
-    types$$DOM.VERSION = "2.0.0-rc.4";
+    types$$DOM.VERSION = "2.0.0-rc.5";
 
     var exports$$_DOM = const$$WINDOW.DOM;
 
@@ -126,25 +126,21 @@
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
-        dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"]": 5,"[": 6,".": 7,"#": 8},
+        dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"[": 7,".": 8,"#": 9},
+        dom$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
         dom$emmet$$reAttr = /([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
         dom$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-        // populate empty tags
-        dom$emmet$$tagCache = "area base br col hr img input link meta param command keygen source".split(" ").reduce(function(tagCache, tag)  {
-            tagCache[tag] = "<" + tag + ">";
-
-            return tagCache;
-        }, {}),
+        dom$emmet$$tagCache = {"": ""},
         dom$emmet$$normalizeAttrs = function(_, name, value, singleValue)  {
             var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
             // always wrap attribute values with quotes if they don't exist
             // replace ` quotes with " except when it's a single quotes case
             return name + "=" + quotes + (singleValue || value || name) + quotes;
         },
-        dom$emmet$$injectTerm = function(term, first)  {return function(el)  {
-            var index = first ? el.indexOf(">") : el.lastIndexOf("<");
+        dom$emmet$$injectTerm = function(term, append)  {return function(html)  {
+            var index = append ? html.lastIndexOf("<") : html.indexOf(">");
             // inject term into the html string
-            return el.substr(0, index) + term + el.substr(index);
+            return html.substr(0, index) + term + html.substr(index);
         }},
         dom$emmet$$makeTerm = function(tag)  {
             var result = dom$emmet$$tagCache[tag];
@@ -154,83 +150,69 @@
             return result;
         },
         dom$emmet$$makeIndexedTerm = function(n, term)  {
-            var result = [], i;
+            var result = Array(n), i;
 
             for (i = 0; i < n; ++i) {
-                result.push(term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
+                result[i] = term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
                     var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
-                    // handle zero-padded strings
+                    // handle zero-padded index values
                     return (fmt + index).slice(-fmt.length).split("$").join("0");
-                }));
+                });
             }
 
             return result;
         };
 
-    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;
+    // populate empty tags
+    "area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag)  {
+        dom$emmet$$tagCache[tag] = "<" + tag + ">";
+    });
+
+    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
         if (typeof template !== "string") throw new errors$$StaticMethodError("emmet");
 
-        if (!template) return template;
-        // handle varMap
         if (varMap) template = types$$DOM.format(template, varMap);
-
-        var stack = [],
-            output = [],
-            term = "",
-            priority, skip, node, str;
 
         if (template in dom$emmet$$tagCache) {return dom$emmet$$tagCache[template];}
 
-        // parse expression into RPN
+        var stack = [], output = [];
 
-        $D$0 = 0;$D$1 = template.length;for (str ;$D$0 < $D$1;){str = (template[$D$0++]);
-            // concat .c1.c2 into single space separated class string
-            if (str === "." && stack[0] === ".") str = " ";
+        $D$2 = (template.match(dom$emmet$$reParse));$D$0 = 0;$D$1 = $D$2.length;for (var str ;$D$0 < $D$1;){str = ($D$2[$D$0++]);
+            var op = str[0];
+            var priority = dom$emmet$$operators[op];
 
-            priority = dom$emmet$$operators[str];
-
-            if (priority && (!skip || skip === str)) {
-                // remove redundat ^ operators from the stack when more than one exists
-                if (str === "^" && stack[0] === "^") stack.shift();
-
-                if (term) {
-                    output.push(term);
-                    term = "";
-                } else if (str === skip) {
-                    // process empty `...` and [...] sections
-                    if (str === "`") {
-                        // for `` add dummy term into the output
-                        output.push("");
-                    } else {
-                        // for [] just remove it from the stack
-                        stack.shift();
-                    }
-                }
-
+            if (priority) {
                 if (str !== "(") {
-                    while (dom$emmet$$operators[stack[0]] > priority) {
-                        output.push(stack.shift());
-                        // for ^ operator stop shifting when the first > is found
-                        if (str === "^" && output[output.length - 1] === ">") break;
+                    // for ^ operator need to skip > str.length times
+                    for (var i = 0, n = (op === "^" ? str.length : 1); i < n; ++i) {
+                        while (dom$emmet$$operators[stack[0]] > priority) {
+                            var head = stack.shift();
+
+                            output.push(head);
+                            // for ^ operator stop shifting when the first > is found
+                            if (op === "^" && head === ">") break;
+                        }
                     }
                 }
 
                 if (str === ")") {
                     stack.shift(); // remove "(" symbol from stack
-                } else if (!skip) {
-                    stack.unshift(str);
-
-                    if (str === "[") skip = "]";
-                    if (str === "`") skip = "`";
                 } else {
-                    skip = false;
+                    // handle values inside of `...` and [...] sections
+                    if (op === "[" || op === "`") {
+                        output.push(str.substr(1, str.length - 2));
+                    }
+                    // handle multiple classes, e.g. a.one.two
+                    if (op === ".") {
+                        output.push(str.substr(1).split(".").join(" "));
+                    }
+
+                    stack.unshift(op);
                 }
             } else {
-                term += str;
+                output.push(str);
             }
-        };$D$0 = $D$1 = void 0;
-
-        if (term) output.push(term);
+        };$D$0 = $D$1 = $D$2 = void 0;
 
         output = output.concat(stack);
 
@@ -241,56 +223,58 @@
 
         stack = [];
 
-        $D$0 = 0;$D$1 = output.length;for (str ;$D$0 < $D$1;){str = (output[$D$0++]);
-            if (str in dom$emmet$$operators) {
-                term = stack.shift();
-                node = stack.shift() || [""];
+        $D$0 = 0;$D$1 = output.length;for (var str$0 ;$D$0 < $D$1;){str$0 = (output[$D$0++]);
+            if (str$0 in dom$emmet$$operators) {
+                var value = stack.shift();
+                var node = stack.shift();
 
                 if (typeof node === "string") node = [ dom$emmet$$makeTerm(node) ];
 
-                switch(str) {
+                switch(str$0) {
                 case ".":
-                    term = dom$emmet$$injectTerm(" class=\"" + term + "\"", true);
+                    value = dom$emmet$$injectTerm(" class=\"" + value + "\"");
                     break;
 
                 case "#":
-                    term = dom$emmet$$injectTerm(" id=\"" + term + "\"", true);
+                    value = dom$emmet$$injectTerm(" id=\"" + value + "\"");
                     break;
 
                 case "[":
-                    term = dom$emmet$$injectTerm(" " + term.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs), true);
+                    if (value) {
+                        value = dom$emmet$$injectTerm(" " + value.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs));
+                    }
                     break;
 
                 case "`":
                     stack.unshift(node);
-                    node = [ term ];
+                    node = [ value ];
                     break;
 
                 case "*":
-                    node = dom$emmet$$makeIndexedTerm(+term, node.join(""));
+                    node = dom$emmet$$makeIndexedTerm(+value, node.join(""));
                     break;
 
                 default:
-                    term = typeof term === "string" ? dom$emmet$$makeTerm(term) : term.join("");
+                    value = typeof value === "string" ? dom$emmet$$makeTerm(value) : value.join("");
 
-                    if (str === ">") {
-                        term = dom$emmet$$injectTerm(term);
+                    if (str$0 === ">") {
+                        value = dom$emmet$$injectTerm(value, true);
                     } else {
-                        node.push(term);
+                        node.push(value);
                     }
                 }
 
-                str = typeof term === "function" ? node.map(term) : node;
+                str$0 = typeof value === "function" ? node.map(value) : node;
             }
 
-            stack.unshift(str);
+            stack.unshift(str$0);
         };$D$0 = $D$1 = void 0;
 
-        output = stack[0];
+        output = stack[0].join("");
+        // cache static string results
+        if (varMap) dom$emmet$$tagCache[template] = output;
 
-        if (typeof output !== "string") output = output.join("");
-
-        return varMap ? output : dom$emmet$$tagCache[template] = output;
+        return output;
     };
 
     var util$index$$arrayProto = Array.prototype,
@@ -462,7 +446,7 @@
             if (quick[4]) quick[4] = " " + quick[4] + " ";
         }
 
-        return function(node) {var $D$2;var $D$3;
+        return function(node) {var $D$3;var $D$4;
             var result, found;
 
             if (!quick && !util$selectormatcher$$propName) {
@@ -481,9 +465,9 @@
                     if (util$selectormatcher$$propName) {
                         result = node[util$selectormatcher$$propName](selector);
                     } else {
-                        $D$2 = 0;$D$3 = found.length;for (var n ;$D$2 < $D$3;){n = (found[$D$2++]);
+                        $D$3 = 0;$D$4 = found.length;for (var n ;$D$3 < $D$4;){n = (found[$D$3++]);
                             if (n === node) return n;
-                        };$D$2 = $D$3 = void 0;
+                        };$D$3 = $D$4 = void 0;
                     }
                 }
 
@@ -782,15 +766,15 @@
                     }
                 };
             } else {
-                return function() {var $D$4;var $D$5;
+                return function() {var $D$5;var $D$6;
                     var tokens = arguments;
 
                     if (this[0]) {
-                        $D$4 = 0;$D$5 = tokens.length;for (var token ;$D$4 < $D$5;){token = (tokens[$D$4++]);
+                        $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 < $D$6;){token = (tokens[$D$5++]);
                             if (typeof token !== "string") throw new errors$$MethodError(methodName);
 
                             strategy(this, token);
-                        };$D$4 = $D$5 = void 0;
+                        };$D$5 = $D$6 = void 0;
                     }
 
                     return this;
@@ -1314,11 +1298,16 @@
 
     util$selectorhooks$$hooks[":focus"] = function(node)  {return node === const$$DOCUMENT.activeElement};
 
-    util$selectorhooks$$hooks[":hidden"] = function(node)  {return !util$selectorhooks$$hooks[":visible"](node)};
+    util$selectorhooks$$hooks[":hidden"] = function(node)  {
+        if (node.getAttribute("aria-hidden") === "true") return true;
 
-    util$selectorhooks$$hooks[":visible"] = function(node)  {
-        return util$index$$default.computeStyle(node).display !== "none" && const$$HTML.contains(node);
+        var computed = util$index$$default.computeStyle(node);
+
+        return computed.visibility === "hidden" ||
+            computed.display === "none" || !const$$HTML.contains(node);
     };
+
+    util$selectorhooks$$hooks[":visible"] = function(node)  {return !util$selectorhooks$$hooks[":hidden"](node)};
 
     var util$selectorhooks$$default = util$selectorhooks$$hooks;
 
@@ -1432,7 +1421,12 @@
 
         // handle the value shortcut
         if (arguments.length === 1 && typeof name !== "object") {
-            value = name == null ? "" : String(name);
+            if (typeof name === "function") {
+                value = name;
+            } else {
+                value = name == null ? "" : String(name);
+            }
+
             name = "value" in node ? "value" : "innerHTML";
         }
 
@@ -1444,9 +1438,7 @@
             oldValue = this.get(name);
         }
 
-        if (hook) {
-            hook(node, value);
-        } else if (typeof name === "string") {
+        if (typeof name === "string") {
             if (name[0] === "_") {
                 this._[name.substr(1)] = value;
             } else {
@@ -1454,7 +1446,9 @@
                     value = value.call(this, oldValue);
                 }
 
-                if (value == null) {
+                if (hook) {
+                    hook(node, value);
+                } else if (value == null) {
                     node.removeAttribute(name);
                 } else if (name in node) {
                     node[name] = value;
@@ -1522,7 +1516,7 @@
         element$visibility$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
             // if duration is in seconds, then multiple result value by 1000
-            return value.lastIndexOf("ms") === value.length - 2 ? result : result * 1000;
+            return !result || value.slice(-2) === "ms" ? result : result * 1000;
         },
         element$visibility$$calcTransitionDuration = function(style)  {
             var delay = util$stylehooks$$default.get["transition-delay"](style).split(","),
@@ -1560,20 +1554,20 @@
             });
 
             node.addEventListener(element$visibility$$TRANSITION_EVENT_TYPE, function completeTransition(e) {
-                if (e.propertyName === "visibility" && e.target === node) {
+                if (e.propertyName === "visibility") {
                     e.stopPropagation(); // this is an internal transition
 
-                    node.removeEventListener(element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, false);
+                    node.removeEventListener(element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, true);
 
                     style.willChange = ""; // remove temporary properties
 
                     done();
                 }
-            }, false);
+            }, true);
 
             // make sure that the visibility property will be changed
             // so reset it to appropriate value with zero
-            style.visibility = hiding ? "visible" : "hidden";
+            style.visibility = hiding ? "inherit" : "hidden";
             // use willChange to improve performance in modern browsers:
             // http://dev.opera.com/articles/css-will-change-property/
             style.willChange = transitionValues[1].join(", ");
@@ -1586,16 +1580,16 @@
             if (!duration) return false; // skip animations with zero duration
 
             node.addEventListener(element$visibility$$ANIMATION_EVENT_TYPE, function completeAnimation(e) {
-                if (e.animationName === animationName && e.target === node) {
+                if (e.animationName === animationName) {
                     e.stopPropagation(); // this is an internal animation
 
-                    node.removeEventListener(element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, false);
+                    node.removeEventListener(element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, true);
 
                     util$stylehooks$$default.set["animation-name"](style, ""); // remove temporary animation
 
                     done();
                 }
-            }, false);
+            }, true);
 
             // trigger animation start
             util$stylehooks$$default.set["animation-direction"](style, hiding ? "normal" : "reverse");
@@ -1619,39 +1613,36 @@
 
             var style = node.style,
                 computed = util$index$$default.computeStyle(node),
-                displayValue = computed.display,
-                hiding = typeof condition === "boolean" ? condition : displayValue !== "none",
+                visibility = computed.visibility,
+                hiding = condition,
                 done = function()  {
-                    // remove element from the flow
-                    if (hiding) style.display = "none";
+                    // Check equality of the flag and aria-hidden to recognize
+                    // cases when an animation was toggled in the intermediate
+                    // state. Don't need to proceed in such situation
+                    if (String(hiding) === node.getAttribute("aria-hidden")) {
+                        // remove element from the flow when animation is done
+                        if (hiding && animationName) style.visibility = "hidden";
 
-                    if (callback) callback.call(this$0);
+                        if (callback) callback.call(this$0);
+                    }
                 },
                 animatable;
 
-            if (hiding) {
-                if (displayValue !== "none") {
-                    this._._display = displayValue;
-                    // we'll hide element later in the done call
-                }
-            } else {
-                if (displayValue === "none") {
-                    // restore visibility
-                    style.display = this._._display || "inherit";
-                }
+            if (typeof hiding !== "boolean") {
+                hiding = visibility !== "hidden" && node.getAttribute("aria-hidden") !== "true";
             }
 
             if (element$visibility$$ANIMATIONS_ENABLED) {
-                // Use offsetWidth to trigger reflow of the element
-                // after changing from the hidden state
+                // Use offsetWidth to trigger reflow of the element.
+                // It fixes animation of element inserted into the DOM
                 //
                 // Opera 12 has an issue with animations as well,
                 // so need to trigger reflow manually for it
                 //
-                // Thanks to the idea from Jonathan Snook's plugin:
+                // Thanks for the idea from Jonathan Snook's plugin:
                 // https://github.com/snookca/prepareTransition
 
-                if (!hiding) displayValue = node.offsetWidth;
+                if (!hiding) visibility = node.offsetWidth;
 
                 if (animationName) {
                     animatable = element$visibility$$scheduleAnimation(node, style, computed, animationName, hiding, done);
@@ -1660,8 +1651,10 @@
                 }
             }
             // update element visibility value
-            style.visibility = hiding ? "hidden" : "visible";
-            // trigger native CSS animation
+            // for CSS3 animation element should always be visible
+            // use value "inherit" to respect parent container visibility
+            style.visibility = hiding && !animationName ? "hidden" : "inherit";
+            // trigger CSS3 transition if it exists
             this.set("aria-hidden", String(hiding));
             // must be AFTER changing the aria-hidden attribute
             if (!animatable) done();
