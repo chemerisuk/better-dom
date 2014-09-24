@@ -19,7 +19,7 @@ describe("DOM.emmet", function() {
         checkExpr("p>em", "<p><em></em></p>");
         checkExpr("ul>li>a", "<ul><li><a></a></li></ul>");
         checkExpr("p.hello>em.world>span", "<p class=\"hello\"><em class=\"world\"><span></span></em></p>");
-        checkExpr("a>b+i>span", "<a><b></b><i><span></span></i></a>");
+        checkExpr("a>b+(i>span)", "<a><b></b><i><span></span></i></a>");
     });
 
     describe("'^' operator", function() {
@@ -34,12 +34,14 @@ describe("DOM.emmet", function() {
         checkExpr("p.name", "<p class=\"name\"></p>");
         checkExpr("p.one.two.three", "<p class=\"one two three\"></p>");
         checkExpr("p.one.two-three", "<p class=\"one two-three\"></p>");
+        checkExpr("p.one_two-three", "<p class=\"one_two-three\"></p>");
     });
 
     describe("id", function() {
         checkExpr("p#myid", "<p id=\"myid\"></p>");
         checkExpr("p#myid.name_with-dash32.otherclass", "<p id=\"myid\" class=\"name_with-dash32 otherclass\"></p>");
         checkExpr("span#three.one.two", "<span id=\"three\" class=\"one two\"></span>");
+        checkExpr("span.one.two#three", "<span class=\"one two\" id=\"three\"></span>");
     });
 
     describe("attributes", function() {
@@ -60,6 +62,8 @@ describe("DOM.emmet", function() {
         checkExpr("a[b c=`d\"f`]", "<a b=\"b\" c='d\"f'></a>");
         checkExpr("input[type=text disabled]", "<input type=\"text\" disabled=\"disabled\">");
         checkExpr("a[href=b   c]", "<a href=\"b\" c=\"c\"></a>");
+        checkExpr("table[a=b].days>tr>td[c=d]*2", "<table a=\"b\" class=\"days\"><tr><td c=\"d\"></td><td c=\"d\"></td></tr></table>");
+        checkExpr("table.days[a=b]>tr>td[c=d]*2", "<table class=\"days\" a=\"b\"><tr><td c=\"d\"></td><td c=\"d\"></td></tr></table>");
     });
 
     describe("variables", function() {

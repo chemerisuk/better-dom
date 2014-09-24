@@ -4,7 +4,7 @@ import { DOM } from "../types";
 /* es6-transpiler has-iterators:false, has-generators: false */
 
 var // operator type / priority object
-    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 4,"*": 5,"`": 6,"[": 7,".": 8,"#": 9},
+    operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
     reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
     reAttr = /\s*([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
     reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
@@ -83,7 +83,7 @@ DOM.emmet = function(template, varMap) {
             if (str !== "(") {
                 // for ^ operator need to skip > str.length times
                 for (let i = 0, n = (op === "^" ? str.length : 1); i < n; ++i) {
-                    while (operators[stack[0]] > priority) {
+                    while (stack[0] !== op && operators[stack[0]] >= priority) {
                         let head = stack.shift();
 
                         output.push(head);
@@ -151,6 +151,7 @@ DOM.emmet = function(template, varMap) {
                 break;
 
             default:
+                // handle ">", "+" and "^" operators
                 value = typeof value === "string" ? makeTerm(value) : value.join("");
 
                 if (str === ">") {
