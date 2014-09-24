@@ -52,6 +52,12 @@ describe("create", function() {
         expect(el.child(0)).toHaveTag("li");
     });
 
+    it("should throw error if argument is invalid", function() {
+        expect(function() { DOM.create(2); }).toThrow();
+        // expect(function() { DOM.create(null); }).toThrow();
+        expect(function() { DOM.create({}); }).toThrow();
+    });
+
     describe("createAll", function() {
         it("should always return array of elements", function() {
             var els = DOM.createAll("a");
@@ -66,14 +72,13 @@ describe("create", function() {
             expect(el[0]).toHaveTag("a");
             expect(el[1]).toHaveTag("b");
         });
+
+        it("should skip non elements", function() {
+            var links = DOM.createAll("a+`text`+a");
+
+            expect(links.length).toBe(2);
+            expect(links[0]).toHaveTag("a");
+            expect(links[1]).toHaveTag("a");
+        });
     });
-
-
-
-    it("should throw error if argument is invalid", function() {
-        expect(function() { DOM.create(2); }).toThrow();
-        // expect(function() { DOM.create(null); }).toThrow();
-        expect(function() { DOM.create({}); }).toThrow();
-    });
-
 });

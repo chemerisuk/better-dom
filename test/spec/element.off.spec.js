@@ -23,20 +23,20 @@ describe("off", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    it("should remove event callback with context", function() {
-        var obj = {callback: function() {}};
+    // it("should remove event callback with context", function() {
+    //     var obj = {callback: function() {}};
 
-        spy = spyOn(obj, "callback");
+    //     spy = spyOn(obj, "callback");
 
-        input.on("click", obj, "callback").off("click").fire("click");
-        expect(spy).not.toHaveBeenCalled();
+    //     input.on("click", obj, "callback").off("click").fire("click");
+    //     expect(spy).not.toHaveBeenCalled();
 
-        input.on("click", obj, "callback").off("click", obj, "callback").fire("click");
-        expect(spy).not.toHaveBeenCalled();
+    //     input.on("click", obj, "callback").off("click", obj, "callback").fire("click");
+    //     expect(spy).not.toHaveBeenCalled();
 
-        input.on("click a", obj, "callback").off("click a", obj, "callback").fire("click");
-        expect(spy).not.toHaveBeenCalled();
-    });
+    //     input.on("click a", obj, "callback").off("click a", obj, "callback").fire("click");
+    //     expect(spy).not.toHaveBeenCalled();
+    // });
 
     it("should remove all event handlers if called without the second argument", function() {
         spyOn(obj, "test");

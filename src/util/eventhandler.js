@@ -8,8 +8,6 @@ import HOOK from "./eventhooks";
  */
 
 var EventHandler = (type, selector, callback, props, el, once) => {
-        if (!el[0]) return null;
-
         var node = el[0],
             hook = HOOK[type],
             matcher = SelectorMatcher(selector, node),
@@ -22,18 +20,17 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 // srcElement can be null in legacy IE when target is document
                 var target = e.target || e.srcElement || DOCUMENT,
                     currentTarget = matcher ? matcher(target) : node,
-                    extraArgs = e._args || [],
-                    args = props || [],
-                    fn = callback;
+                    eventArgs = e._args || [],
+                    args = props;
 
                 // early stop for late binding or when target doesn't match selector
-                if (typeof fn !== "function" || !currentTarget) return;
+                if (!currentTarget) return;
 
                 // off callback even if it throws an exception later
                 if (once) el.off(type, callback);
 
-                args = args.map((name) => {
-                    if (typeof name === "number") return extraArgs[name - 1];
+                args = !args ? eventArgs : args.map((name) => {
+                    if (typeof name === "number") return eventArgs[name - 1];
 
                     if (!DOM2_EVENTS) {
                         switch (name) {
@@ -68,7 +65,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 });
 
                 // if props is not specified then prepend extra arguments
-                if (fn.apply(el, props ? args : extraArgs.concat(args)) === false) {
+                if (callback.apply(el, args) === false) {
                     // prevent default if handler returns false
                     if (DOM2_EVENTS) {
                         e.preventDefault();
@@ -77,6 +74,8 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                     }
                 }
             };
+
+        if (!node) return null;
 
         if (hook) handler = hook(handler, type) || handler;
         // handle custom events for IE8

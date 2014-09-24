@@ -23,6 +23,10 @@ var makeMethod = (method) => function(type, selector, props, callback) {
             props = null;
         }
 
+        if (typeof callback !== "function") {
+            throw new MethodError(method);
+        }
+
         var node = this[0],
             handler = EventHandler(type, selector, callback, props, this, method === "once");
 

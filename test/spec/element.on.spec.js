@@ -87,12 +87,13 @@ describe("on", function() {
         input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
         expect(spy).toHaveBeenCalled();
 
-        spy.and.callFake(function(type, defaultPrevented) {
+        spy.and.callFake(function(type, defaultPrevented, shiftKey) {
             expect(type).toBe("focus");
             expect(defaultPrevented).toBe(false);
+            expect(shiftKey).toBeUndefined();
         });
 
-        input.on("focus", ["type", "defaultPrevented"], spy).fire("focus");
+        input.on("focus", ["type", "defaultPrevented", "shiftKey"], spy).fire("focus");
         expect(spy).toHaveBeenCalled();
     });
 
@@ -258,8 +259,15 @@ describe("on", function() {
         // expect(spy).not.toHaveBeenCalled();
     });
 
+    it("should do nothing for emapty nodes", function() {
+        var el = DOM.find("some-element");
+
+        expect(el.on("click", function() {})).toBe(el);
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { input.on(123); }).toThrow();
+        expect(function() { input.on("a", 123); }).toThrow();
     });
 
     describe("once", function() {
