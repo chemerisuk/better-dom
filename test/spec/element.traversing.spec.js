@@ -9,59 +9,50 @@ describe("traversing", function() {
         link = DOM.find("#test");
     });
 
-    describe("next, prev, parent, child", function() {
-        describe("next, prev, parent", function() {
-            it("should return an appropriate element", function() {
-                var expectedResults = {
-                        next: "b",
-                        prev: "i",
-                        parent: "div"
-                    };
+    describe("next, prev, closest", function() {
+        it("should return an appropriate element", function() {
+            var expectedResults = {
+                    next: "b",
+                    prev: "i"
+                };
 
-                _forIn(expectedResults, function(tagName, methodName) {
-                    expect(link[methodName]()).toHaveTag(tagName);
-                });
-            });
-
-            it("should search for the first matching element if selector exists", function() {
-                expect(link.next("i")).toHaveTag("i");
-                expect(link.prev("b")).toHaveTag("b");
-                expect(link.parent("body")).toHaveTag("body");
+            _forIn(expectedResults, function(tagName, methodName) {
+                expect(link[methodName]()).toHaveTag(tagName);
             });
         });
 
-        // describe("child", function() {
-        //     it("should accept optional filter", function() {
-        //         expect(link.child(0)).toHaveTag("strong");
-        //         expect(link.child(0, "a")).toBeEmpty();
-        //     });
-
-        //     it("should throw error if the first arg is not a number", function() {
-        //         expect(function() { link.child({}); }).toThrow();
-        //     });
-        // });
-
-        describe("parent", function() {
-            it("should return empty node for html node", function() {
-                expect(DOM.parent()[0]).toBeUndefined();
-            });
+        it("should search for the first matching element if selector exists", function() {
+            expect(link.next("i")).toHaveTag("i");
+            expect(link.prev("b")).toHaveTag("b");
         });
+    });
 
-        it("should return empty element if value is not found", function() {
-            var unknownEl = link.find("unknown");
-
-            expect(unknownEl.next()[0]).toBeUndefined();
-            expect(unknownEl.prev()[0]).toBeUndefined();
-            expect(unknownEl.parent()[0]).toBeUndefined();
-            expect(unknownEl.child(0)[0]).toBeUndefined();
+    describe("closest", function() {
+        it("should search for the first matching element if selector exists", function() {
+            expect(link.closest("body")).toHaveTag("body");
         });
+    });
 
-        it("should throw error if arguments are invalid", function() {
-            expect(function() { link.child({}) }).toThrow();
-            expect(function() { link.child(function() {}) }).toThrow();
-            expect(function() { link.next({}) }).toThrow();
-            expect(function() { link.prev(function() {}) }).toThrow();
+    describe("parent", function() {
+        it("should return empty node for html node", function() {
+            expect(DOM.closest("document")[0]).toBeUndefined();
         });
+    });
+
+    it("should return empty element if value is not found", function() {
+        var unknownEl = link.find("unknown");
+
+        expect(unknownEl.next()[0]).toBeUndefined();
+        expect(unknownEl.prev()[0]).toBeUndefined();
+        expect(unknownEl.closest("body")[0]).toBeUndefined();
+        expect(unknownEl.child(0)[0]).toBeUndefined();
+    });
+
+    it("should throw error if arguments are invalid", function() {
+        expect(function() { link.child({}) }).toThrow();
+        expect(function() { link.child(function() {}) }).toThrow();
+        expect(function() { link.next({}) }).toThrow();
+        expect(function() { link.prev(function() {}) }).toThrow();
     });
 
     describe("children, nextAll, prevAll", function() {

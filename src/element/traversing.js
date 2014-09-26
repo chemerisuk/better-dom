@@ -10,7 +10,9 @@ var makeMethod = (methodName, propertyName, all) => function(selector) {
             nodes = all ? [] : null,
             it = this[0];
 
-        for (it = it && it[propertyName]; it; it = it[propertyName]) {
+        if (it && methodName !== "closest") it = it[propertyName];
+
+        for (; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
                 if (!all) break;
 
@@ -83,17 +85,18 @@ _.assign($Element.prototype, {
     prevAll: makeMethod("prevAll", "previousSibling", true),
 
     /**
-     * Find parent element filtered by optional selector
+     * Find the closest ancestor of the current element (or the current element itself) which matches selector
      * @memberof! $Element#
-     * @alias $Element#parent
+     * @alias $Element#closest
      * @param {String} [selector] css selector
      * @return {$Element} matched element wrapper
      * @function
      * @example
      * var div = DOM.create("div.foo>div.bar>a"); // <div class="foo"><div class="bar"><a></a></div></div>
-     * var link = div.find("a");                  // <a>
-     * link.parent();                             // <div class="bar">
-     * link.parent(".foo");                       // <div class="foo">
+     * var link = div.find("a");                  // => <a>
+     * link.closest("a");                         // => itself
+     * link.closest(".bar");                      // => <div class="bar">
+     * link.closest(".foo");                      // => <div class="foo">
      */
-    parent: makeMethod("parent", "parentNode")
+    closest: makeMethod("closest", "parentNode")
 });

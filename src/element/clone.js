@@ -6,7 +6,7 @@ import { $Element, DOM } from "../types";
  * Clone element
  * @memberof! $Element#
  * @alias $Element#clone
- * @param {Boolean} [deep=true] true if all children should also be cloned, or false otherwise
+ * @param {Boolean} [deep=true] <code>true</code> if all children should also be cloned, or <code>false</code> otherwise
  * @return {$Element} a clone of current element
  * @example
  * ul.clone();      // => clone of <ul> with all it's children

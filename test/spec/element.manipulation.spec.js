@@ -92,7 +92,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(_, strategy) {
                 div[strategy](createArray(strategy));
 
-                expect(div.parent().findAll("." + strategy).length).toBe(2);
+                expect(div.closest("#" + jasmine.sandbox.id).findAll("." + strategy).length).toBe(2);
             });
         });
 
