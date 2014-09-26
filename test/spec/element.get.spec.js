@@ -107,6 +107,7 @@ describe("get", function() {
 
         it("should handle camel case syntax", function() {
             expect(input.get("_camelCased")).toBe("test");
+            expect(input._.camelCased).toBe("test");
         });
     });
 

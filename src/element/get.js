@@ -3,6 +3,23 @@ import { MethodError } from "../errors";
 import { $Element } from "../types";
 import PROP from "../util/accessorhooks";
 
+var reDash = /[A-Z]/g,
+    getPrivateProperty = (node, key) => {
+        // convert from camel case to dash-separated value
+        var value = node.getAttribute("data-" + key.replace(reDash, (l) => "-" + l.toLowerCase()));
+
+        if (value != null) {
+            // try to recognize and parse  object notation syntax
+            if (value[0] === "{" && value[value.length - 1] === "}") {
+                try {
+                    value = JSON.parse(value);
+                } catch (err) { }
+            }
+        }
+
+        return value;
+    };
+
 /**
  * Get property or attribute value by name
  * @memberof! $Element#
@@ -16,43 +33,31 @@ import PROP from "../util/accessorhooks";
  * link.get("_prop");       // => private property _prop
  */
 $Element.prototype.get = function(name) {
-    var data = this._,
-        node = this[0],
-        hook = PROP.get[name],
-        nameType = typeof name,
-        key, value;
+    var node = this[0],
+        hook = PROP.get[name];
 
     if (!node) return;
 
     if (hook) return hook(node, name);
 
-    if (nameType === "string") {
-        if (name[0] === "_") {
-            key = name.substr(1);
+    if (typeof name === "string") {
+        if (name in node) {
+            return node[name];
+        } else if (name[0] !== "_") {
+            return node.getAttribute(name);
+        } else {
+            let key = name.substr(1),
+                data = this._,
+                value;
 
             if (key in data) {
                 value = data[key];
             } else {
-                // convert from camel case to dash-separated value
-                key = key.replace(/[A-Z]/g, (l) => "-" + l.toLowerCase());
-                value = node.getAttribute("data-" + key);
-
-                if (value != null) {
-                    // try to recognize and parse  object notation syntax
-                    if (value[0] === "{" && value[value.length - 1] === "}") {
-                        try {
-                            value = JSON.parse(value);
-                        } catch (err) { }
-                    }
-
-                    data[key] = value;
-                }
+                value = data[key] = getPrivateProperty(node, key);
             }
 
             return value;
         }
-
-        return name in node ? node[name] : node.getAttribute(name);
     } else if (_.isArray(name)) {
         return name.reduce((r, key) => { return r[key] = this.get(key), r }, {});
     } else {
