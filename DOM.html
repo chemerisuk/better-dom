@@ -115,6 +115,8 @@
             
                 <li data-name="$Element#clone"><a href="$Element.html#clone">clone</a></li>
             
+                <li data-name="$Element#closest"><a href="$Element.html#closest">closest</a></li>
+            
                 <li data-name="$Element#contains"><a href="$Element.html#contains">contains</a></li>
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
@@ -142,8 +144,6 @@
                 <li data-name="$Element#on"><a href="$Element.html#on">on</a></li>
             
                 <li data-name="$Element#once"><a href="$Element.html#once">once</a></li>
-            
-                <li data-name="$Element#parent"><a href="$Element.html#parent">parent</a></li>
             
                 <li data-name="$Element#prepend"><a href="$Element.html#prepend">prepend</a></li>
             
@@ -263,7 +263,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line73">line 73</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line69">line 69</a>
         </div>
         
     </div>
@@ -405,7 +405,7 @@ bodyEl.hide();</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line156">line 156</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line153">line 153</a>
         </div>
         
     </div>
@@ -578,7 +578,7 @@ DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line170">line 170</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line167">line 167</a>
         </div>
         
     </div>
@@ -750,7 +750,7 @@ DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements:
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line233">line 233</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line232">line 232</a>
         </div>
         
     </div>
@@ -934,7 +934,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line703">line 703</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line704">line 704</a>
         </div>
         
     </div>
@@ -1154,7 +1154,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line750">line 750</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line751">line 751</a>
         </div>
         
     </div>
@@ -1311,7 +1311,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line765">line 765</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line772">line 772</a>
         </div>
         
     </div>
@@ -1451,6 +1451,18 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
     
     
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.importScripts("http://cdn/script1.js", function() {
+    // do something when the script is loaded
+});
+// loading several scripts sequentially
+DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre>
+    
+
+    
 </dd>
 
         
@@ -1464,7 +1476,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line461">line 461</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line469">line 469</a>
         </div>
         
     </div>
@@ -1593,6 +1605,16 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
     
     
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.importStyles(".foo", {color: "red", padding: 5});
+// you can use strings CSS too
+DOM.importStyles(".bar", "background: white; color: gray");</code></pre>
+    
+
+    
 </dd>
 
         
@@ -1606,7 +1628,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line819">line 819</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line826">line 826</a>
         </div>
         
     </div>
@@ -1778,7 +1800,7 @@ mocked instance
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line833">line 833</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line840">line 840</a>
         </div>
         
     </div>
@@ -1962,7 +1984,7 @@ array of mocked element wrappers
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Tue Sep 23 2014 13:31:22 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Sep 27 2014 16:31:52 GMT+0300 (FET)
         </footer>
     </div>
 </div>
