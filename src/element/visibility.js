@@ -111,6 +111,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         var style = node.style,
             computed = _.computeStyle(node),
             visibility = computed.visibility,
+            displayValue = computed.display,
             hiding = condition,
             done = () => {
                 // Check equality of the flag and aria-hidden to recognize
@@ -126,12 +127,13 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
             animatable;
 
         if (typeof hiding !== "boolean") {
-            hiding = visibility !== "hidden" && node.getAttribute("aria-hidden") !== "true";
+            hiding = displayValue !== "none" && visibility !== "hidden" &&
+                node.getAttribute("aria-hidden") !== "true";
         }
 
         if (ANIMATIONS_ENABLED) {
             // Use offsetWidth to trigger reflow of the element.
-            // It fixes animation of element inserted into the DOM
+            // Fixes animation of an element inserted into the DOM
             //
             // Opera 12 has an issue with animations as well,
             // so need to trigger reflow manually for it
@@ -147,6 +149,20 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
                 animatable = scheduleTransition(node, style, computed, hiding, done);
             }
         }
+
+        // handle old browsers or cases when there no animation
+        if (hiding) {
+            if (displayValue !== "none" && !animatable) {
+                this._._display = displayValue;
+                // we'll hide element later in the done call
+            }
+        } else {
+            if (displayValue === "none" && !animatable) {
+                // restore display property value
+                style.display = this._._display || "inherit";
+            }
+        }
+
         // update element visibility value
         // for CSS3 animation element should always be visible
         // use value "inherit" to respect parent container visibility

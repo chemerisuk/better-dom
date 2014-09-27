@@ -93,12 +93,12 @@ describe("visibility", function() {
             expect(function() { link.show(true) }).toThrow();
         });
 
-        it("should NOT handle initially hidden element", function() {
+        it("should handle initially hidden element", function() {
             link.addClass("hidden");
             link.show();
 
             expect(link).toHaveAttr("aria-hidden", "false");
-            expect(link.css("display")).toBe("none");
+            expect(link.css("display")).not.toBe("none");
         });
 
         it("should handle initially invisible element", function() {

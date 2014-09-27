@@ -104,10 +104,12 @@
         ++it;
 
         if (it % 2) {
+            bars[0] = bars[0].clone();
             bar.prepend(bars[0]);
             bars[0].show();
             bars[1].hide(andRemove);
         } else {
+            bars[1] = bars[1].clone();
             bar.append(bars[1]);
             bars[1].show();
             bars[0].hide(andRemove);
