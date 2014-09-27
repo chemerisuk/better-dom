@@ -89,10 +89,12 @@ describe("manipulation", function() {
         });
 
         it("should access array of $Element", function() {
+            var sandbox = DOM.find("#" + jasmine.sandbox.id);
+
             _forIn(checkStrategies, function(_, strategy) {
                 div[strategy](createArray(strategy));
 
-                expect(div.closest("#" + jasmine.sandbox.id).findAll("." + strategy).length).toBe(2);
+                expect(sandbox.findAll("." + strategy).length).toBe(2);
             });
         });
 

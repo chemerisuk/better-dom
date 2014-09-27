@@ -33,18 +33,11 @@ describe("traversing", function() {
         });
     });
 
-    describe("parent", function() {
-        it("should return empty node for html node", function() {
-            expect(DOM.closest("document")[0]).toBeUndefined();
-        });
-    });
-
     it("should return empty element if value is not found", function() {
         var unknownEl = link.find("unknown");
 
         expect(unknownEl.next()[0]).toBeUndefined();
         expect(unknownEl.prev()[0]).toBeUndefined();
-        expect(unknownEl.closest("body")[0]).toBeUndefined();
         expect(unknownEl.child(0)[0]).toBeUndefined();
     });
 

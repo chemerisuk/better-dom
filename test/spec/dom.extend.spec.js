@@ -143,10 +143,14 @@ describe("extend", function() {
         var link = DOM.find("." + randomClass);
 
         callback.and.callFake(function() {
-            link.closest("div").append(link.remove());
+            link.remove();
+
+            DOM.find("body").append(link);
 
             setTimeout(function() {
                 expect(callback.calls.count()).toBe(1);
+
+                link.remove();
 
                 done();
             }, 50);
