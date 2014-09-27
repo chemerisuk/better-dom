@@ -28,7 +28,7 @@ export default {
         try {
             fn.call(context, arg1, arg2);
         } catch (err) {
-            WINDOW.setTimeout(() => { throw err }, 0);
+            WINDOW.setTimeout(() => { throw err }, 1);
         }
     }
 };

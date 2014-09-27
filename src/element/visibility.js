@@ -119,7 +119,13 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
                 // state. Don't need to proceed in such situation
                 if (String(hiding) === node.getAttribute("aria-hidden")) {
                     // remove element from the flow when animation is done
-                    if (hiding && animationName) style.visibility = "hidden";
+                    if (hiding && animationName) {
+                        if (animatable) {
+                            style.visibility = "hidden";
+                        } else {
+                            style.display = "none";
+                        }
+                    }
 
                     if (callback) callback.call(this);
                 }

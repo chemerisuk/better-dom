@@ -90,7 +90,7 @@ describe("on", function() {
         spy.and.callFake(function(type, defaultPrevented, shiftKey) {
             expect(type).toBe("focus");
             expect(defaultPrevented).toBe(false);
-            expect(shiftKey).toBeUndefined();
+            expect(shiftKey).toBeFalsy();
         });
 
         input.on("focus", ["type", "defaultPrevented", "shiftKey"], spy).fire("focus");
