@@ -10,7 +10,9 @@ var wrapperProp = "__" + Math.random().toString(32).substr(2) + "__";
  * @private
  */
 function $Element(node) {
-    if (node && node[wrapperProp]) return node[wrapperProp];
+    var cached = node && node[wrapperProp];
+    // create a wrapper only once for each native element
+    if (cached) return cached;
 
     if (this instanceof $Element) {
         if (node) {
