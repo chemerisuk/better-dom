@@ -5,12 +5,16 @@ suite("create", function () {
         jQuery("<a>");
     });
 
+    benchmark("DOM#create(String)", function() {
+        DOM.create("a");
+    });
+
     benchmark("jquery#create(Element)", function() {
         jQuery(document.createElement("a"));
     });
 
-    benchmark("DOM#create(String)", function() {
-        DOM.create("a");
+    benchmark("DOM.constructor(Element)", function() {
+        DOM.constructor(document.createElement("a"));
     });
 
     benchmark("jquery#create(HtmlString) with vars", function() {
@@ -19,10 +23,6 @@ suite("create", function () {
 
     benchmark("jquery#create(HtmlString) without vars", function() {
         jQuery("<a id='a1' rel='b2'><span></span><i></i></a>");
-    });
-
-    benchmark("DOM#create(Element)", function() {
-        DOM.constructor(document.createElement("a"));
     });
 
     benchmark("DOM#create(HtmlString)", function() {

@@ -1,29 +1,23 @@
 import { HTML } from "./const";
 
-// use a random property name to link JS wrappers and
-// native DOM elements.
-var wrapperProp = "__" + Math.random().toString(32).substr(2) + "__";
-
 /**
  * Used to represent a DOM element
  * @class $Element
  * @private
  */
 function $Element(node) {
-    var cached = node && node[wrapperProp];
-    // create a wrapper only once for each native element
-    if (cached) return cached;
-
     if (this instanceof $Element) {
         if (node) {
-            node[wrapperProp] = this;
+            node.__dom__ = this;
 
             this[0] = node;
         }
 
         this._ = { _handlers: [], _watchers: {} };
     } else {
-        return new $Element(node);
+        var cached = node && node.__dom__;
+        // create a wrapper only once for each native element
+        return cached ? cached : new $Element(node);
     }
 }
 
@@ -40,7 +34,8 @@ $Element.prototype = {
      * bodyEl.hide();
      */
     constructor(node) {
-        return new $Element(node && node.nodeType === 1 ? node : null);
+        // filter non elements like text nodes, comments etc.
+        return $Element(node && node.nodeType === 1 ? node : null);
     },
     toString() {
         var node = this[0];
