@@ -11,23 +11,21 @@ var // operator type / priority object
     reDot = /\./g,
     reDollar = /\$/g,
     tagCache = {"": ""},
-    normalizeAttrs = (_, name, value, cleanValue) => {
-        var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
+    normalizeAttrs = (_, name, value, rawValue) => {
+        // try to detemnie which kind of quotes to use
+        var quote = value && value.indexOf("\"") >= 0 ? "'" : "\"";
         // always wrap attribute values with quotes if they don't exist
         // replace ` quotes with " except when it's a single quotes case
-        return " " + name + "=" + quotes + (cleanValue || value || name) + quotes;
+        return " " + name + "=" + quote + (rawValue || value || name) + quote;
     },
-    injectTerm = (term, append) => (html) => {
-        var index = append ? html.lastIndexOf("<") : html.indexOf(">");
-        // inject term into the html string
+    injectTerm = (term, end) => (html) => {
+        // find index of where to inject the term
+        var index = end ? html.lastIndexOf("<") : html.indexOf(">");
+        // inject the term into the HTML string
         return html.substr(0, index) + term + html.substr(index);
     },
     makeTerm = (tag) => {
-        var result = tagCache[tag];
-
-        if (!result) result = tagCache[tag] = "<" + tag + "></" + tag + ">";
-
-        return result;
+        return tagCache[tag] || (tagCache[tag] = "<" + tag + "></" + tag + ">");
     },
     makeIndexedTerm = (n, term) => {
         var result = Array(n), i;
@@ -35,7 +33,7 @@ var // operator type / priority object
         for (i = 0; i < n; ++i) {
             result[i] = term.replace(reIndex, (expr, fmt, sign, base) => {
                 var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
-                // handle zero-padded index values
+                // handle zero-padded index values, like $$$ etc.
                 return (fmt + index).slice(-fmt.length).replace(reDollar, "0");
             });
         }
@@ -43,7 +41,7 @@ var // operator type / priority object
         return result;
     };
 
-// populate empty tags
+// populate empty tag names with result
 "area base br col hr img input link meta param command keygen source".split(" ").forEach((tag) => {
     tagCache[tag] = "<" + tag + ">";
 });
@@ -114,9 +112,6 @@ DOM.emmet = function(template, varMap) {
 
     output = output.concat(stack);
 
-    // handle single tag case
-    if (output.length === 1) return makeTerm(output[0]);
-
     // transform RPN into html nodes
 
     stack = [];
@@ -126,7 +121,9 @@ DOM.emmet = function(template, varMap) {
             let value = stack.shift();
             let node = stack.shift();
 
-            if (typeof node === "string") node = [ makeTerm(node) ];
+            if (typeof node === "string") {
+                node = [ makeTerm(node) ];
+            }
 
             switch(str) {
             case ".":
@@ -141,17 +138,16 @@ DOM.emmet = function(template, varMap) {
                 value = injectTerm(value.replace(reAttr, normalizeAttrs));
                 break;
 
+            case "*":
+                node = makeIndexedTerm(+value, node.join(""));
+                break;
+
             case "`":
                 stack.unshift(node);
                 node = [ value ];
                 break;
 
-            case "*":
-                node = makeIndexedTerm(+value, node.join(""));
-                break;
-
-            default:
-                // handle ">", "+" and "^" operators
+            default: /* ">", "+", "^" */
                 value = typeof value === "string" ? makeTerm(value) : value.join("");
 
                 if (str === ">") {
@@ -167,9 +163,13 @@ DOM.emmet = function(template, varMap) {
         stack.unshift(str);
     }
 
-    output = stack[0].join("");
-    // cache static string results
-    if (varMap) tagCache[template] = output;
+    if (output.length === 1) {
+        // handle single tag case
+        output = makeTerm(stack[0]);
+    } else {
+        output = stack[0].join("");
+    }
 
-    return output;
+    // cache static string results for quicker parsing later
+    return varMap ? (tagCache[template] = output) : output;
 };
