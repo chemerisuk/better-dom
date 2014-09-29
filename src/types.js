@@ -5,17 +5,18 @@ import { HTML } from "./const";
  * @class $Element
  * @private
  */
-function $Element(node) {
+export function $Element(node) {
     if (this instanceof $Element) {
         if (node) {
-            node.__dom__ = this;
-
             this[0] = node;
+            // use a generated on compile time property to store
+            // reference to the wrapper for circular binding
+            node["__<%= Date.now() %>__"] = this;
         }
 
         this._ = { _handlers: [], _watchers: {} };
     } else {
-        var cached = node && node.__dom__;
+        var cached = node && node["__<%= Date.now() %>__"];
         // create a wrapper only once for each native element
         return cached ? cached : new $Element(node);
     }
@@ -41,6 +42,10 @@ $Element.prototype = {
         var node = this[0];
 
         return node ? node.tagName.toLowerCase() : "";
+    },
+    valueOf() {
+        // return version number string, e.g. "1.20.3" -> "1020300"
+        return "<%= pkg.version.replace(new RegExp('\\.(\\d+)', 'g'), function(_, n) { return ('000' + n).slice(-3) }) %>";
     }
 };
 
@@ -49,8 +54,4 @@ $Element.prototype = {
  * @namespace DOM
  * @extends $Element
  */
-var DOM = new $Element(HTML);
-
-DOM.VERSION = "<%= pkg.version %>";
-
-export { $Element, DOM };
+export var DOM = new $Element(HTML);
