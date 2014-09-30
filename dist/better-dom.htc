@@ -7,8 +7,6 @@
         fixInputEvents(DOM2_EVENTS);
 
         if (!DOM2_EVENTS) fixSubmitEvent();
-
-        element.detachEvent("ondocumentready", init);
     }
 
     function init() {

@@ -25,7 +25,7 @@ var reDash = /[A-Z]/g,
  * @memberof! $Element#
  * @alias $Element#get
  * @param  {String|Array} [name] property or attribute name or array of names
- * @return {Object} a property or attribute value
+ * @return {String|Object} a value of property or attribute
  * @example
  * link.get("title");       // => property title
  * link.get("data-custom"); // => custom attribute data-custom

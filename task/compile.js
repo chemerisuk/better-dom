@@ -1,3 +1,4 @@
+var pkg = require("../package.json");
 var path = require("path");
 var es6tr = require("es6-transpiler");
 
@@ -8,6 +9,9 @@ var Container = es6modules.Container;
 var FileResolver = es6modules.FileResolver;
 var BundleFormatter = es6modules.formatters.bundle;
 
+function zeropad(_, n) {
+    return ("000" + n).slice(-3);
+}
 
 module.exports = function(grunt) {
     grunt.task.registerMultiTask("compile", function() {
@@ -35,7 +39,11 @@ module.exports = function(grunt) {
             code = options.banner + "\n" + code;
         }
 
-        code = grunt.template.process(code);
+        code = grunt.template.process(code, {data: {
+            pkg: pkg,
+            // make a version number string, e.g. "1.20.3" -> "1020300"
+            VERSION_NUMBER: pkg.version.replace(/\.(\d+)/g, zeropad)
+        }});
         // fix for browserify
         code = code.replace("}).call(this)", "})()");
 

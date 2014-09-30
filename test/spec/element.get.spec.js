@@ -94,7 +94,7 @@ describe("get", function() {
 
     describe("private properties", function() {
         beforeEach(function() {
-            input = DOM.create("<input data-a1=\"x\" data-a2='{\"a\":\"b\",\"c\":1,\"d\":null}' data-a3=\"1=2=3\" data-a4=\"/url?q=:q\" data-camel-cased=\"test\"/>");
+            input = DOM.create("<input data-a1=\"x\" data-a2='{\"a\":\"b\",\"c\":1,\"d\":null}' data-a3=\"1=2=3\" data-a4=\"/url?q=:q\" data-camel-cased=\"test\" data-a101-value=\"numbered\"/>");
         });
 
         it("should read an appropriate data-* attribute if it exists", function() {
@@ -108,6 +108,9 @@ describe("get", function() {
         it("should handle camel case syntax", function() {
             expect(input.get("_camelCased")).toBe("test");
             expect(input._.camelCased).toBe("test");
+
+            expect(input.get("_a101Value")).toBe("numbered");
+            expect(input._.a101Value).toBe("numbered");
         });
     });
 

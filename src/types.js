@@ -10,13 +10,13 @@ export function $Element(node) {
         if (node) {
             this[0] = node;
             // use a generated on compile time property to store
-            // reference to the wrapper for circular binding
-            node["__<%= Date.now() %>__"] = this;
+            // a reference to the wrapper for circular binding
+            node["__<%= VERSION_NUMBER %>__"] = this;
         }
 
         this._ = { _handlers: [], _watchers: {} };
     } else {
-        var cached = node && node["__<%= Date.now() %>__"];
+        var cached = node && node["__<%= VERSION_NUMBER %>__"];
         // create a wrapper only once for each native element
         return cached ? cached : new $Element(node);
     }
@@ -44,8 +44,7 @@ $Element.prototype = {
         return node ? node.tagName.toLowerCase() : "";
     },
     valueOf() {
-        // return version number string, e.g. "1.20.3" -> "1020300"
-        return "<%= pkg.version.replace(new RegExp('\\.(\\d+)', 'g'), function(_, n) { return ('000' + n).slice(-3) }) %>";
+        return "<%= VERSION_NUMBER %>";
     }
 };
 
