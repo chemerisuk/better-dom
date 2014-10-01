@@ -11,12 +11,13 @@ module.exports = function(grunt) {
                 tasks: ["compile:build", "karma:watch:run"]
             },
             specs: {
-                files: ["test/spec/*.js", "dist/better-dom.htc"],
+                files: ["test/spec/*.js", "test/spec/**/*.js", "dist/better-dom.htc"],
                 tasks: ["karma:watch:run"]
             },
         },
         jshint: {
-            all: ["src/*.js", "src/**/*.js", "test/spec/*.js", "Gruntfile.js"],
+            src: ["src/*.js", "src/**/*.js", "Gruntfile.js"],
+            specs: ["test/spec/*.js", "test/spec/**/*.js"],
             options: {
                 jshintrc: ".jshintrc"
             }
@@ -42,7 +43,8 @@ module.exports = function(grunt) {
                     // normal browser file includes
                     "./test/lib/jasmine-better-dom-matchers.js",
                     "./build/better-dom.js",
-                    "./test/spec/*.spec.js"
+                    "./test/spec/*.spec.js",
+                    "./test/spec/**/*.spec.js"
                 ]
             },
             all: {
