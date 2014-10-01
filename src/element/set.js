@@ -30,14 +30,22 @@ $Element.prototype.set = function(name, value) {
     if (!node) return this;
 
     // handle the value shortcut
-    if (arguments.length === 1 && typeof name !== "object") {
+    if (arguments.length === 1) {
         if (typeof name === "function") {
             value = name;
         } else {
             value = name == null ? "" : String(name);
         }
 
-        name = "value" in node ? "value" : "innerHTML";
+        if (value !== "[object Object]") {
+            let tag = node.tagName.toLowerCase();
+
+            if (tag === "input" || tag === "textarea" ||  tag === "select") {
+                name = "value";
+            } else {
+                name = "innerHTML";
+            }
+        }
     }
 
     var hook = PROP.set[name],

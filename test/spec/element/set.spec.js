@@ -157,6 +157,20 @@ describe("set", function() {
             expect(link).toHaveHtml("ok");
             expect(input).toHaveProp("value", "ok");
         });
+
+        it("accept object with overriden toString", function() {
+            function Type() {
+                this.name = "bar";
+            }
+
+            Type.prototype.toString = function() {
+                return "foo";
+            };
+
+            input.set(new Type());
+            expect(input.get()).toBe("foo");
+            expect(input).not.toHaveAttr("name", "bar");
+        });
     });
 
 });
