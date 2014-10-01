@@ -88,6 +88,9 @@ describe("DOM.emmet", function() {
         checkExpr("i>`{0}:`", "<i>:</i>", [""]);
         checkExpr("i>span+`{0}`", "<i><span></span></i>", [""]);
         checkExpr("i>`{0}`+span", "<i><span></span></i>", [""]);
+
+        checkExpr("a[b={0}]>`{1}`", "<a b=\"\">test</a>", ["", "test"]);
+        checkExpr("a[b=`{0}`]>`{1}`", "<a b=\"\">test</a>", ["", "test"]);
     });
 
     describe("groups", function() {
