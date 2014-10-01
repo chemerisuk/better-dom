@@ -43,7 +43,6 @@ module.exports = function(grunt) {
                     // normal browser file includes
                     "./test/lib/jasmine-better-dom-matchers.js",
                     "./build/better-dom.js",
-                    "./test/spec/*.spec.js",
                     "./test/spec/**/*.spec.js"
                 ]
             },
