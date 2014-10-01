@@ -1,5 +1,7 @@
 import { HTML } from "./const";
 
+export function $NullElement() {}
+
 /**
  * Used to represent a DOM element
  * @class $Element
@@ -12,13 +14,15 @@ export function $Element(node) {
             // use a generated on compile time property to store
             // a reference to the wrapper for circular binding
             node["__<%= VERSION_NUMBER %>__"] = this;
-        }
 
-        this._ = { _handlers: [], _watchers: {} };
-    } else {
-        var cached = node && node["__<%= VERSION_NUMBER %>__"];
+            this._ = { _handlers: [], _watchers: {} };
+        }
+    } else if (node) {
+        var cached = node["__<%= VERSION_NUMBER %>__"];
         // create a wrapper only once for each native element
         return cached ? cached : new $Element(node);
+    } else {
+        return new $NullElement();
     }
 }
 
@@ -47,6 +51,8 @@ $Element.prototype = {
         return "<%= VERSION_NUMBER %>";
     }
 };
+
+$NullElement.prototype = new $Element();
 
 /**
  * Global object to access the DOM

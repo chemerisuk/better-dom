@@ -35,7 +35,9 @@ describe("clone", function() {
     });
 
     it("should work on empty elements", function() {
-        expect(DOM.mock().clone()).toBeTruthy();
+        var emptyEl = DOM.find("xxx");
+
+        expect(emptyEl.clone()).toBeTruthy();
     });
 
     it("should throw error if argument is invalud", function() {

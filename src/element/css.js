@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import HOOK from "../util/stylehooks";
 
 /**
@@ -26,59 +26,59 @@ import HOOK from "../util/stylehooks";
 $Element.prototype.css = function(name, value) {
     var len = arguments.length,
         node = this[0],
+        style = node.style,
         nameType = typeof name,
-        style, hook, computed, appendCssText;
+        hook, computed, appendCssText;
 
     if (len === 1 && (nameType === "string" || _.isArray(name))) {
-        if (node) {
-            style = node.style;
+        value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
+            hook = HOOK.get[name];
+            value = hook ? hook(style) : style[name];
 
-            value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
-                hook = HOOK.get[name];
+            if (!computed && !value) {
+                style = _.computeStyle(node);
                 value = hook ? hook(style) : style[name];
 
-                if (!computed && !value) {
-                    style = _.computeStyle(node);
-                    value = hook ? hook(style) : style[name];
+                computed = true;
+            }
 
-                    computed = true;
-                }
+            memo[name] = value;
 
-                memo[name] = value;
+            return memo;
+        }, {});
 
-                return memo;
-            }, {});
-        }
-
-        return node && nameType === "string" ? value[name] : value;
+        return nameType === "string" ? value[name] : value;
     }
 
-    if (node) {
-        style = node.style;
-        appendCssText = (key, value) => {
-            var hook = HOOK.set[key];
+    appendCssText = (key, value) => {
+        var hook = HOOK.set[key];
 
-            if (typeof value === "function") {
-                value = value.call(this, this.css(key));
-            }
-
-            if (value == null) value = "";
-
-            if (hook) {
-                hook(style, value);
-            } else {
-                style[key] = typeof value === "number" ? value + "px" : value.toString();
-            }
-        };
-
-        if (len === 1 && name && nameType === "object") {
-            _.keys(name).forEach((key) => { appendCssText(key, name[key]) });
-        } else if (len === 2 && nameType === "string") {
-            appendCssText(name, value);
-        } else {
-            throw new MethodError("css");
+        if (typeof value === "function") {
+            value = value.call(this, this.css(key));
         }
+
+        if (value == null) value = "";
+
+        if (hook) {
+            hook(style, value);
+        } else {
+            style[key] = typeof value === "number" ? value + "px" : value.toString();
+        }
+    };
+
+    if (len === 1 && name && nameType === "object") {
+        _.keys(name).forEach((key) => { appendCssText(key, name[key]) });
+    } else if (len === 2 && nameType === "string") {
+        appendCssText(name, value);
+    } else {
+        throw new MethodError("css");
     }
 
     return this;
+};
+
+$NullElement.prototype.css = function(name) {
+    if (arguments.length !== 1 || typeof name !== "string" && !_.isArray(name)) {
+        return this;
+    }
 };

@@ -1,6 +1,6 @@
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../const";
-import { $Element, DOM } from "../types";
+import { $Element, $NullElement, DOM } from "../types";
 
 /**
  * Clone element
@@ -17,17 +17,17 @@ $Element.prototype.clone = function(deep = true) {
 
     var node = this[0], result;
 
-    if (node) {
-        if (DOM2_EVENTS) {
-            result = new $Element(node.cloneNode(deep));
-        } else {
-            result = DOM.create(node.outerHTML);
-
-            if (!deep) result.set("innerHTML", "");
-        }
+    if (DOM2_EVENTS) {
+        result = new $Element(node.cloneNode(deep));
     } else {
-        result = new $Element();
+        result = DOM.create(node.outerHTML);
+
+        if (!deep) result.set("innerHTML", "");
     }
 
     return result;
 };
+
+$NullElement.prototype.clone = function() {
+    return new $NullElement();
+}

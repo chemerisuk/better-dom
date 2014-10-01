@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS, LEGACY_ANDROID } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import PROP from "../util/accessorhooks";
 
 /**
@@ -27,8 +27,6 @@ import PROP from "../util/accessorhooks";
 $Element.prototype.set = function(name, value) {
     var node = this[0];
 
-    if (!node) return this;
-
     // handle the value shortcut
     if (arguments.length === 1) {
         if (typeof name === "function") {
@@ -38,9 +36,9 @@ $Element.prototype.set = function(name, value) {
         }
 
         if (value !== "[object Object]") {
-            let tag = node.tagName.toLowerCase();
+            let tag = node.tagName;
 
-            if (tag === "input" || tag === "textarea" ||  tag === "select") {
+            if (tag === "INPUT" || tag === "TEXTAREA" ||  tag === "SELECT" || tag === "OPTION") {
                 name = "value";
             } else {
                 name = "innerHTML";
@@ -93,3 +91,5 @@ $Element.prototype.set = function(name, value) {
 
     return this;
 };
+
+$NullElement.prototype.set = function() { return this };

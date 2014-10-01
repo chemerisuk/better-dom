@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import PROP from "../util/accessorhooks";
 
 var reDash = /[A-Z]/g,
@@ -36,8 +36,6 @@ $Element.prototype.get = function(name) {
     var node = this[0],
         hook = PROP.get[name];
 
-    if (!node) return;
-
     if (hook) return hook(node, name);
 
     if (typeof name === "string") {
@@ -64,3 +62,5 @@ $Element.prototype.get = function(name) {
         throw new MethodError("get");
     }
 };
+
+$NullElement.prototype.get = function() {};
