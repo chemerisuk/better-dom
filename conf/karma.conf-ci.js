@@ -97,6 +97,17 @@ module.exports = function(config) {
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: Object.keys(customLaunchers),
-        customLaunchers: customLaunchers
+        customLaunchers: customLaunchers,
+
+        files: [
+            // legacy IE file includes
+            {pattern: "./build/better-dom.htc", served: true, included: false},
+            "./bower_components/es5-shim/es5-shim.js",
+            "./bower_components/html5shiv/dist/html5shiv.js",
+            // normal browser file includes
+            "./test/lib/jasmine-better-dom-matchers.js",
+            "./build/better-dom.js",
+            "./test/spec/**/*.spec.js"
+        ]
     });
 };
