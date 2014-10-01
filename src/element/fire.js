@@ -1,6 +1,6 @@
 import { MethodError } from "../errors";
 import { DOM2_EVENTS, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 
@@ -21,10 +21,10 @@ $Element.prototype.fire = function(type, ...args) {
         handler = {},
         hook, e, canContinue;
 
-    if (!node) return false;
-
     if (eventType === "string") {
-        if (hook = HOOK[type]) handler = hook(handler) || handler;
+        if (hook = HOOK[type]) {
+            handler = hook(handler) || handler;
+        }
 
         eventType = handler._type || type;
     } else {
@@ -61,4 +61,8 @@ $Element.prototype.fire = function(type, ...args) {
     }
 
     return canContinue;
+};
+
+$NullElement.prototype.fire = function() {
+    return false;
 };

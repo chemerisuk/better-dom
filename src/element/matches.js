@@ -1,5 +1,5 @@
 import { MethodError } from "../errors";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";
 
@@ -16,8 +16,11 @@ import HOOK from "../util/selectorhooks";
 $Element.prototype.matches = function(selector) {
     if (!selector || typeof selector !== "string") throw new MethodError("matches");
 
-    var checker = HOOK[selector] || SelectorMatcher(selector),
-        node = this[0];
+    var checker = HOOK[selector] || SelectorMatcher(selector);
 
-    return node && !!checker(node, this);
+    return !!checker(this[0], this);
+};
+
+$NullElement.prototype.matches = function() {
+    return false;
 };

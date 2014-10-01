@@ -1,6 +1,6 @@
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 
 /**
  * Unbind an event from the element
@@ -14,19 +14,21 @@ $Element.prototype.off = function(type, callback) {
 
     var node = this[0];
 
-    if (node) {
-        this._._handlers = this._._handlers.filter((handler) => {
-            if (type !== handler.type || callback && callback !== handler.callback) return true;
+    this._._handlers = this._._handlers.filter((handler) => {
+        if (type !== handler.type || callback && callback !== handler.callback) return true;
 
-            type = handler._type || handler.type;
+        type = handler._type || handler.type;
 
-            if (DOM2_EVENTS) {
-                node.removeEventListener(type, handler, !!handler.capturing);
-            } else {
-                node.detachEvent("on" + type, handler);
-            }
-        });
-    }
+        if (DOM2_EVENTS) {
+            node.removeEventListener(type, handler, !!handler.capturing);
+        } else {
+            node.detachEvent("on" + type, handler);
+        }
+    });
 
+    return this;
+};
+
+$NullElement.prototype.off = function() {
     return this;
 };

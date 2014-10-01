@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { LEGACY_IE, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import CSS from "../util/stylehooks";
 
 // Legacy Android is too slow and has a lot of bugs in the CSS animations
@@ -95,8 +95,6 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         return true;
     },
     makeMethod = (name, condition) => function(animationName, callback) {
-        var node = this[0];
-
         if (typeof animationName !== "string") {
             callback = animationName;
             animationName = null;
@@ -106,9 +104,8 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
             throw new MethodError(name);
         }
 
-        if (!node) return this;
-
-        var style = node.style,
+        var node = this[0],
+            style = node.style,
             computed = _.computeStyle(node),
             visibility = computed.visibility,
             displayValue = computed.display,
@@ -179,69 +176,76 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         if (!animatable) done();
 
         return this;
+    },
+    methods = {
+        /**
+         * Show an element using CSS3 transition or animation
+         * @memberof! $Element#
+         * @alias $Element#show
+         * @param {String}   [animationName]  CSS animation to apply during transition
+         * @param {Function} [callback]       function that executes when animation is done
+         * @return {$Element}
+         * @function
+         * @example
+         * link.show(); // displays element
+         *
+         * foo.show(function() {
+         *   // do something when transition is completed
+         * });
+         *
+         * bar.show("fade", function() {
+         *   // do something when "fade" animation is completed
+         * });
+         */
+        show: makeMethod("show", false),
+
+        /**
+         * Hide an element using CSS3 transition or animation
+         * @memberof! $Element#
+         * @alias $Element#hide
+         * @param {String}   [animationName]  CSS animation to apply during transition
+         * @param {Function} [callback]       function that executes when animation is done
+         * @return {$Element}
+         * @function
+         * @example
+         * link.hide(); // hides element
+         *
+         * foo.hide(function() {
+         *   // do something when transition is completed
+         * });
+         *
+         * bar.hide("fade", function() {
+         *   // do something when "fade" animation is completed
+         * });
+         */
+        hide: makeMethod("hide", true),
+
+        /**
+         * Toggle an element using CSS3 transition or animation
+         * @memberof! $Element#
+         * @alias $Element#toggle
+         * @param {String}   [animationName]  CSS animation to apply during transition
+         * @param {Function} [callback]       function that executes when animation is done
+         * @return {$Element}
+         * @function
+         * @example
+         * link.toggle(); // toggles element visibility
+         *
+         * foo.toggle(function() {
+         *   // do something when transition is completed
+         * });
+         *
+         * bar.toggle("fade", function() {
+         *   // do something when "fade" animation is completed
+         * });
+         */
+        toggle: makeMethod("toggle")
     };
 
-_.assign($Element.prototype, {
-    /**
-     * Show an element using CSS3 transition or animation
-     * @memberof! $Element#
-     * @alias $Element#show
-     * @param {String}   [animationName]  CSS animation to apply during transition
-     * @param {Function} [callback]       function that executes when animation is done
-     * @return {$Element}
-     * @function
-     * @example
-     * link.show(); // displays element
-     *
-     * foo.show(function() {
-     *   // do something when transition is completed
-     * });
-     *
-     * bar.show("fade", function() {
-     *   // do something when "fade" animation is completed
-     * });
-     */
-    show: makeMethod("show", false),
+_.assign($Element.prototype, methods);
 
-    /**
-     * Hide an element using CSS3 transition or animation
-     * @memberof! $Element#
-     * @alias $Element#hide
-     * @param {String}   [animationName]  CSS animation to apply during transition
-     * @param {Function} [callback]       function that executes when animation is done
-     * @return {$Element}
-     * @function
-     * @example
-     * link.hide(); // hides element
-     *
-     * foo.hide(function() {
-     *   // do something when transition is completed
-     * });
-     *
-     * bar.hide("fade", function() {
-     *   // do something when "fade" animation is completed
-     * });
-     */
-    hide: makeMethod("hide", true),
-
-    /**
-     * Toggle an element using CSS3 transition or animation
-     * @memberof! $Element#
-     * @alias $Element#toggle
-     * @param {String}   [animationName]  CSS animation to apply during transition
-     * @param {Function} [callback]       function that executes when animation is done
-     * @return {$Element}
-     * @function
-     * @example
-     * link.toggle(); // toggles element visibility
-     *
-     * foo.toggle(function() {
-     *   // do something when transition is completed
-     * });
-     *
-     * bar.toggle("fade", function() {
-     *   // do something when "fade" animation is completed
-     * });
-     */
-    toggle: makeMethod("toggle")
+_.keys(methods).forEach((methodName) => {
+    $NullElement.prototype[methodName] = function() {
+        return this;
+    };
 });

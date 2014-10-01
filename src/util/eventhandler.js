@@ -75,8 +75,6 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 }
             };
 
-        if (!node) return null;
-
         if (hook) handler = hook(handler, type) || handler;
         // handle custom events for IE8
         if (!DOM2_EVENTS && !("on" + (handler._type || type) in node)) {

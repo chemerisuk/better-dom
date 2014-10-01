@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
 var makeMethod = (all) => function(selector) {
@@ -13,9 +13,7 @@ var makeMethod = (all) => function(selector) {
 
     var node = this[0],
         matcher = SelectorMatcher(selector),
-        children = node ? node.children : null;
-
-    if (!node) return all ? [] : new $Element();
+        children = node.children;
 
     if (!DOM2_EVENTS) {
         // fix IE8 bug with children collection
@@ -60,4 +58,13 @@ _.assign($Element.prototype, {
      * ul.children(".foo"); // => array with of child <li> with class "foo"
      */
     children: makeMethod(true)
+});
+
+_.assign($NullElement.prototype, {
+    child: function() {
+        return new $NullElement();
+    },
+    children: function() {
+        return [];
+    }
 });

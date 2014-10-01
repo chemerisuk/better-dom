@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { DOM2_EVENTS } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 import EventHandler from "../util/eventhandler";
 
 var makeMethod = (method) => function(type, selector, props, callback) {
@@ -96,4 +96,13 @@ _.assign($Element.prototype, {
      * @see $Element#on
      */
     once: makeMethod("once")
+});
+
+_.assign($NullElement.prototype, {
+    on: function() {
+        return this;
+    },
+    once: function() {
+        return this;
+    }
 });

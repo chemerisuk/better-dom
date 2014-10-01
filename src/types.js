@@ -11,11 +11,10 @@ export function $Element(node) {
     if (this instanceof $Element) {
         if (node) {
             this[0] = node;
+            this._ = { _handlers: [], _watchers: {} };
             // use a generated on compile time property to store
             // a reference to the wrapper for circular binding
             node["__<%= VERSION_NUMBER %>__"] = this;
-
-            this._ = { _handlers: [], _watchers: {} };
         }
     } else if (node) {
         var cached = node["__<%= VERSION_NUMBER %>__"];

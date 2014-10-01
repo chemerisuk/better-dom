@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { $Element, DOM } from "../types";
+import { $NullElement, DOM } from "../types";
 import extensions from "./extend";
 
 var applyExtensions = (node) => {
@@ -8,7 +8,7 @@ var applyExtensions = (node) => {
         _.each.call(node.children, applyExtensions);
     },
     makeMethod = (all) => function(content, varMap) {
-        if (!content) return new $Element();
+        if (!content) return new $NullElement();
 
         var result = DOM["create" + all](content, varMap);
 

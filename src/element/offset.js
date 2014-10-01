@@ -1,5 +1,5 @@
 import { HTML, WINDOW } from "../const";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 
 /**
  * Calculates offset of the current element
@@ -29,4 +29,8 @@ $Element.prototype.offset = function() {
             height: boundingRect.bottom - boundingRect.top
         };
     }
+};
+
+$NullElement.prototype.offset = function() {
+    return { top : 0, left : 0, right : 0, bottom : 0, width : 0, height : 0 };
 };

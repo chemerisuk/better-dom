@@ -30,4 +30,4 @@ $Element.prototype.clone = function(deep = true) {
 
 $NullElement.prototype.clone = function() {
     return new $NullElement();
-}
+};

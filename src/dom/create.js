@@ -1,5 +1,5 @@
 import { DOCUMENT } from "../const";
-import { $Element, DOM } from "../types";
+import { $Element, $NullElement, DOM } from "../types";
 import tagCache from "./emmet";
 
 var sandbox = DOCUMENT.createElement("body"),
@@ -36,7 +36,7 @@ var sandbox = DOCUMENT.createElement("body"),
             }
         }
 
-        return all ? nodes : new $Element(nodes);
+        return all ? nodes : $Element(nodes);
     };
 
 /**

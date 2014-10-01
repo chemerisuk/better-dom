@@ -1,5 +1,5 @@
 import { MethodError } from "../errors";
-import { $Element } from "../types";
+import { $Element, $NullElement } from "../types";
 
 /**
  * Check if element is inside of context
@@ -13,8 +13,6 @@ import { $Element } from "../types";
  */
 $Element.prototype.contains = function(element) {
     var node = this[0];
-
-    if (!node) return false;
 
     if (element instanceof $Element) {
         var otherNode = element[0];
@@ -30,3 +28,7 @@ $Element.prototype.contains = function(element) {
 
     throw new MethodError("contains");
 };
+
+$NullElement.prototype.contains = function() {
+    return false;
+}

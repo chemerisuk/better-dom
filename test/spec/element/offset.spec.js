@@ -36,7 +36,7 @@ describe("offset", function() {
         expect(normalize(link.offset())).toEqual(offset);
     });
 
-    it("should return undefined empty nodes", function() {
-        expect(DOM.mock().offset()).toBeUndefined();
+    it("should return mocked object for empty nodes", function() {
+        expect(DOM.mock().offset()).toEqual({ top : 0, left : 0, right : 0, bottom : 0, width : 0, height : 0 });
     });
 });

@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { DOCUMENT } from "../const";
-import { $Element, DOM } from "../types";
+import { $Element, $NullElement, DOM } from "../types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -15,8 +15,6 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
         var node = this[0],
             quickMatch = rquick.exec(selector),
             result, old, nid, context;
-
-        if (!node) return all ? [] : new $Element();
 
         if (quickMatch) {
             if (quickMatch[1]) {
@@ -84,4 +82,13 @@ _.assign($Element.prototype, {
      * context.findAll("ol>li"); // => all <li> inside of <ol>
      */
     findAll: makeMethod("All")
+});
+
+_.assign($NullElement.prototype, {
+    find: function() {
+        return new $NullElement();
+    },
+    findAll: function() {
+        return [];
+    }
 });
