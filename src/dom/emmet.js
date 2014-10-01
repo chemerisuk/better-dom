@@ -177,6 +177,7 @@ DOM.emmet = function(template, varMap) {
         output = stack[0].join("");
     }
 
-    // cache static string results for quicker parsing later
-    return varMap ? (tagCache[template] = output) : output;
+    return output;
 };
+
+export default tagCache;

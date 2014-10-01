@@ -1,24 +1,22 @@
 import { DOCUMENT } from "../const";
-import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
+import tagCache from "./emmet";
 
-var reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
-    sandbox = DOCUMENT.createElement("body"),
+var sandbox = DOCUMENT.createElement("body"),
     makeMethod = (all) => function(value, varMap) {
-        var test = reTest.exec(value),
-            nodes, el;
+        var nodes, el;
 
-        if (value && test && !test[1]) {
+        if (value && value in tagCache) {
             nodes = DOCUMENT.createElement(value);
 
             if (all) nodes = [ new $Element(nodes) ];
         } else {
-            if (test && test[1]) {
-                value = varMap ? DOM.format(test[1], varMap) : test[1];
-            } else if (typeof value === "string") {
-                value = DOM.emmet(value, varMap);
+            value = value.trim();
+
+            if (value[0] === "<" && value[value.length - 1] === ">") {
+                value = varMap ? DOM.format(value, varMap) : value;
             } else {
-                throw new StaticMethodError("create" + all);
+                value = DOM.emmet(value, varMap);
             }
 
             sandbox.innerHTML = value; // parse input HTML string
