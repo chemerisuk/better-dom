@@ -1,13 +1,13 @@
 import { HTML } from "./const";
 
-export function $NullElement() {}
+function $NullElement() {}
 
 /**
  * Used to represent a DOM element
  * @class $Element
  * @private
  */
-export function $Element(node) {
+function $Element(node) {
     if (this instanceof $Element) {
         if (node) {
             this[0] = node;
@@ -58,4 +58,6 @@ $NullElement.prototype = new $Element();
  * @namespace DOM
  * @extends $Element
  */
-export var DOM = new $Element(HTML);
+var DOM = new $Element(HTML);
+
+export { $Element, $NullElement, DOM };

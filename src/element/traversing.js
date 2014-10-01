@@ -98,7 +98,7 @@ var makeMethod = (methodName, propertyName, all) => function(selector) {
          * link.closest(".foo");                      // => <div class="foo">
          */
         closest: makeMethod("closest", "parentNode")
-    }
+    };
 
 _.assign($Element.prototype, methods);
 

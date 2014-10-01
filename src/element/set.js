@@ -92,4 +92,6 @@ $Element.prototype.set = function(name, value) {
     return this;
 };
 
-$NullElement.prototype.set = function() { return this };
+$NullElement.prototype.set = function() {
+    return this;
+};

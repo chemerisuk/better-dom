@@ -1,5 +1,5 @@
 import { DOCUMENT } from "../const";
-import { $Element, $NullElement, DOM } from "../types";
+import { $Element, DOM } from "../types";
 import tagCache from "./emmet";
 
 var sandbox = DOCUMENT.createElement("body"),

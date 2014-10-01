@@ -31,4 +31,4 @@ $Element.prototype.contains = function(element) {
 
 $NullElement.prototype.contains = function() {
     return false;
-}
+};
