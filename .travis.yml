@@ -2,12 +2,12 @@ language: node_js
 node_js:
   - 0.10
 before_install:
-  - npm install -g grunt-cli
+  - npm install -g gulp
   - npm install -g bower
   - bower install
 script:
-  - grunt travis
-  - grunt karma:sauce --force
+  - gulp travis
+  - gulp sauce
 env:
   global:
     - secure: JUEHpRY6mX0+vHbm/swGR+x0NZDSqusihJyk9oHY1PzoqPCiXLWxZu/3gxR9zwy4CF3EudNDVf+lNTLiAI0SsBRfQBgxwlVYEhbWk8Fcqt5WLEG/zkkv0NheFdrKQbgA6oerL6zstwRUwY5hgCN8MgVQaYnXlCiQmpMk/7HzVcM=

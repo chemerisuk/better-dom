@@ -10,32 +10,40 @@ var Container = es6modules.Container;
 var FileResolver = es6modules.FileResolver;
 var BundleFormatter = es6modules.formatters.bundle;
 
+var banner = [
+    "/**",
+    " * @overview <%= pkg.name %>: <%= pkg.description %>",
+    " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
+    " * @copyright 2013-2014 <%= pkg.author %>",
+    " * @license <%= pkg.license %>",
+    " * @see <%= pkg.repository.url %>",
+    " */"
+].join("\n");
 
 module.exports = function(dest, options) {
     if (!dest) throw new PluginError("compile", "Missing file option for compile");
 
     options = options || {};
 
-    var container = new Container({
-        resolvers: [ new FileResolver(["src/"]) ],
-        formatter: new BundleFormatter()
-    });
-
     var firstFile = null;
+    var container = null;
 
     function bufferContents(file) {
         if (file.isNull()) return; // ignore
 
-        container.getModule(file.path);
+        if (!firstFile) {
+            firstFile = file;
+            container = new Container({
+                resolvers: [ new FileResolver([file.cwd]) ],
+                formatter: new BundleFormatter()
+            });
+        }
 
-        if (!firstFile) firstFile = file;
+        container.getModule(file.path);
     }
 
     function endStream() {
-        if (!firstFile || firstFile.isNull()) {
-            cb(null, firstFile);
-            return;
-        }
+        if (!firstFile || firstFile.isNull()) return;
 
         try {
             var ast = container.convert();
@@ -46,10 +54,7 @@ module.exports = function(dest, options) {
                 code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
             }
 
-            if (options.banner) {
-                code = options.banner + "\n" + code;
-            }
-
+            code = banner + "\n" + code;
             // fix for browserify
             code = code.replace("}).call(this)", "})()");
 
