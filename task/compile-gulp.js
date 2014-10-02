@@ -12,6 +12,7 @@ var BundleFormatter = es6modules.formatters.bundle;
 
 var banner = [
     "/**",
+    " * @file better-dom.js",
     " * @overview <%= pkg.name %>: <%= pkg.description %>",
     " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
     " * @copyright 2013-2014 <%= pkg.author %>",

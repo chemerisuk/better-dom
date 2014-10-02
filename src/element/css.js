@@ -4,13 +4,6 @@ import { $Element, $NullElement } from "../types";
 import HOOK from "../util/stylehooks";
 
 /**
- * Callback function for changing a property/attribute
- * @callback cssCallback
- * @param  {String} currentValue current value of style property
- * @return {String|Number} a new value for style property
- */
-
-/**
  * CSS properties accessor for an element
  * @memberof! $Element#
  * @alias $Element#css
@@ -82,3 +75,10 @@ $NullElement.prototype.css = function(name) {
         return this;
     }
 };
+
+/**
+ * Callback function for changing a property/attribute
+ * @callback cssCallback
+ * @param  {String} currentValue current value of style property
+ * @return {String|Number} a new value for style property
+ */

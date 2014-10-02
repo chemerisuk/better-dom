@@ -5,7 +5,6 @@ function $NullElement() {}
 /**
  * Used to represent a DOM element
  * @class $Element
- * @private
  */
 function $Element(node) {
     if (this instanceof $Element) {

@@ -7,6 +7,8 @@ var template = require("gulp-template");
 var jshint = require("gulp-jshint");
 var symlink = require("gulp-symlink");
 var argv = require("yargs").argv;
+var jsdoc = require("gulp-jsdoc");
+var clean = require("gulp-clean");
 
 // make a version number string, e.g. "1.20.3" -> "1020300"
 var VERSION = pkg.version.replace(/\.(\d+)/g, function(_, n) {
@@ -65,7 +67,7 @@ gulp.task("dev", ["compile", "symlink", "lint"], function() {
     });
 });
 
-gulp.task("travis", ["compile", "lint"], function(done) {
+gulp.task("travis", ["compile", "symlink", "lint"], function(done) {
     karma.start({
         configFile: require.resolve("./conf/karma.conf"),
         preprocessors: { "build/better-dom.js": "coverage" },
@@ -78,6 +80,17 @@ gulp.task("travis", ["compile", "lint"], function(done) {
 });
 
 gulp.task("sauce", function() {
-    // always return 0 for this task
+    // should always return 0 for this task
     karma.start({configFile: require.resolve("./conf/karma.conf-ci.js")});
+});
+
+gulp.task("clean-jsdoc", function () {
+    return gulp.src("jsdoc", {read: false}).pipe(clean());
+});
+
+gulp.task("docs", ["clean-jsdoc", "compile"], function() {
+    var config = require("./conf/jsdoc.conf");
+
+    return gulp.src(["build/*.js", "README.md"])
+        .pipe(jsdoc("jsdoc", config));
 });

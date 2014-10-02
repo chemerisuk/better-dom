@@ -5,13 +5,6 @@ import { $Element, $NullElement } from "../types";
 import PROP from "../util/accessorhooks";
 
 /**
- * Callback function for changing a property/attribute
- * @callback setterCallback
- * @param {Object} currentValue current value of property/attribute
- * @return {Object} a new value for property/attribute
- */
-
-/**
  * Set property/attribute value by name
  * @memberof! $Element#
  * @alias $Element#set
@@ -95,3 +88,11 @@ $Element.prototype.set = function(name, value) {
 $NullElement.prototype.set = function() {
     return this;
 };
+
+/**
+ * Callback function for changing a property/attribute
+ * @callback setterCallback
+ * @param {Object} currentValue current value of property/attribute
+ * @return {Object} a new value for property/attribute
+ */
+
