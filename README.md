@@ -35,9 +35,9 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * Walk through the sorce code of existing [projects that use better-dom](http://bower.io/search/?q=better-dom).
 
 ## Contributing
-In order to modify the source and submit a patch or improvement, you have to have [grunt](https://github.com/gruntjs/grunt-cli) installed globally:
+In order to modify the source and submit a patch or improvement, you have to have [gulp](http://gulpjs.com) installed globally:
 
-    npm install -g grunt-cli
+    npm install -g gulp
 
 The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are making, recompiles `build/better-dom.js` and runs unit tests after it: 
 

@@ -1,6 +1,7 @@
-var pkg = require("../package.json");
 var path = require("path");
-var es6tr = require("es6-transpiler");
+var through = require("through")
+var gutil = require("gulp-util");
+var PluginError = gutil.PluginError;
 
 var es6modules = require("es6-module-transpiler");
 var recast = require("es6-module-transpiler/node_modules/recast");
@@ -9,57 +10,66 @@ var Container = es6modules.Container;
 var FileResolver = es6modules.FileResolver;
 var BundleFormatter = es6modules.formatters.bundle;
 
-function zeropad(_, n) {
-    return ("000" + n).slice(-3);
-}
+var banner = [
+    "/**",
+    " * @file better-dom.js",
+    " * @overview <%= pkg.name %>: <%= pkg.description %>",
+    " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
+    " * @copyright 2013-2014 <%= pkg.author %>",
+    " * @license <%= pkg.license %>",
+    " * @see <%= pkg.repository.url %>",
+    " */"
+].join("\n");
 
-module.exports = function(grunt) {
-    grunt.task.registerMultiTask("compile", function() {
-        var options = this.options();
-        var outputFile = this.data.dest;
+module.exports = function(dest, options) {
+    if (!dest) throw new PluginError("compile", "Missing file option for compile");
 
-        var container = new Container({
-                resolvers: [ new FileResolver( [this.data.cwd || "./"] ) ],
+    options = options || {};
+
+    var firstFile = null;
+    var container = null;
+
+    function bufferContents(file) {
+        if (file.isNull()) return; // ignore
+
+        if (!firstFile) {
+            firstFile = file;
+            container = new Container({
+                resolvers: [ new FileResolver([file.cwd]) ],
                 formatter: new BundleFormatter()
             });
-
-        this.filesSrc.forEach(function(filename) {
-            container.getModule(filename);
-        });
-
-        var ast = container.convert();
-        var code = recast.print(ast[0]).code;
-
-        if (options.jsdocs === false) {
-            // remove jsdoc comments from the output
-            code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
         }
 
-        if (options.banner) {
-            code = options.banner + "\n" + code;
+        container.getModule(file.path);
+    }
+
+    function endStream() {
+        if (!firstFile || firstFile.isNull()) return;
+
+        try {
+            var ast = container.convert();
+            var code = recast.print(ast[0]).code;
+
+            if (options.jsdocs === false) {
+                // remove jsdoc comments from the output
+                code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
+            }
+
+            code = banner + "\n" + code;
+            // fix for browserify
+            code = code.replace("}).call(this)", "})()");
+
+            firstFile = firstFile.clone({contents: false});
+            firstFile.path = path.join(firstFile.base, dest);
+            firstFile.contents = new Buffer(code);
+
+            this.emit("data", firstFile);
+        } catch (err) {
+            this.emit("error", new PluginError("compile", err, {fileName: firstFile.path}));
         }
 
-        code = grunt.template.process(code, {data: {
-            pkg: pkg,
-            // make a version number string, e.g. "1.20.3" -> "1020300"
-            VERSION_NUMBER: pkg.version.replace(/\.(\d+)/g, zeropad)
-        }});
-        // fix for browserify
-        code = code.replace("}).call(this)", "})()");
+        this.emit("end");
+    }
 
-        grunt.file.mkdir(path.dirname(outputFile));
-
-        var result = es6tr.run({
-                src: code,
-                globals: {DOM: true, exports: true},
-                outputFilename: outputFile,
-                environments: ["browser"]
-            });
-
-        if (result.errors.length > 0) {
-            grunt.fail.fatal("\n" + result.errors.join("\n"));
-
-            grunt.file.write(outputFile, code);
-        }
-    });
+    return through(bufferContents, endStream);
 };

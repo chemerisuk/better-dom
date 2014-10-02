@@ -2,7 +2,7 @@ var gulp = require("gulp");
 var gutil = require("gulp-util");
 var pkg = require("./package.json");
 var karma = require("karma").server;
-var compile = require("./task/compile-gulp");
+var compile = require("./task/compile");
 var es6transpiler = require("gulp-es6-transpiler");
 var template = require("gulp-template");
 var jshint = require("gulp-jshint");
@@ -23,16 +23,20 @@ gulp.task("compile", function() {
     var version = argv.tag;
     var dest = version ? "dist/" : "build/";
 
-    if (version) pkg.version = version;
+    if (version) {
+        pkg.version = version;
+    } else {
+        version = pkg.version;
+    }
 
     // make a version number string, e.g. "1.20.3" -> "1020300"
-    var VERSION = pkg.version.replace(/\.(\d+)/g, function(_, n) {
+    version = version.replace(/\.(\d+)/g, function(_, n) {
         return ("000" + n).slice(-3);
     });
 
     return gulp.src(["src/*.js", "src/**/*.js"], {buffer: false})
         .pipe(compile("better-dom.js"))
-        .pipe(template({ pkg: pkg, VERSION_NUMBER: VERSION }))
+        .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())
         .pipe(gulp.dest(dest));
 });
@@ -57,9 +61,7 @@ gulp.task("test", ["compile", "symlink", "lint"], function(done) {
     } else if (argv.ie8) {
         browsers = ["IE8 - WinXP"];
     } else if (argv.ie9 || argv.ie10 || argv.ie11) {
-        var version = argv.ie9 ? "9" : (argv.ie10 ? "10" : "11");
-
-        browsers = ["IE" + version + " - Win7"];
+        browsers = ["IE" + (argv.ie9 ? "9" : (argv.ie10 ? "10" : "11")) + " - Win7"];
     }
 
     karma.start({
@@ -109,16 +111,13 @@ gulp.task("docs", ["clean-jsdoc", "compile"], function() {
         .pipe(jsdoc("jsdoc", config));
 });
 
-gulp.task("deploy", ["docs"], function() {
+gulp.task("gh-pages", ["docs"], function() {
     var lib = require.resolve("./build/better-dom");
 
     return gulp.src("./jsdoc/**/*")
+        // remove absolute paths from jsdocs
         .pipe(replace(lib, "better-dom.js"))
         .pipe(deploy());
-});
-
-gulp.task("clean-min", function() {
-    return gulp.src("dist/", {read: false}).pipe(clean());
 });
 
 gulp.task("compress", ["compile"], function() {
@@ -132,7 +131,7 @@ gulp.task("compress", ["compile"], function() {
 });
 
 gulp.task("bump", function() {
-    return gulp.src(["./package.json", "./bower.json"])
+    return gulp.src(["./*.json"])
         .pipe(bump({version: argv.tag}))
         .pipe(gulp.dest("./"));
 });
