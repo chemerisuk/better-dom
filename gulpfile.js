@@ -21,6 +21,7 @@ var tag_version = require("gulp-tag-version");
 
 gulp.task("compile", function() {
     var version = argv.tag;
+    var jsdoc = !version;
     var dest = version ? "dist/" : "build/";
 
     if (version) {
@@ -34,8 +35,8 @@ gulp.task("compile", function() {
         return ("000" + n).slice(-3);
     });
 
-    return gulp.src(["src/*.js", "src/**/*.js"], {buffer: false})
-        .pipe(compile("better-dom.js"))
+    return gulp.src(["*.js", "**/*.js"], {buffer: false, cwd: "./src"})
+        .pipe(compile("better-dom.js", {jsdoc: jsdoc}))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())
         .pipe(gulp.dest(dest));

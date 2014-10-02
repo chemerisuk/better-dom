@@ -40,7 +40,7 @@ module.exports = function(dest, options) {
             });
         }
 
-        container.getModule(file.path);
+        container.getModule(path.relative(file.cwd, file.path));
     }
 
     function endStream() {
@@ -50,7 +50,7 @@ module.exports = function(dest, options) {
             var ast = container.convert();
             var code = recast.print(ast[0]).code;
 
-            if (options.jsdocs === false) {
+            if (options.jsdoc === false) {
                 // remove jsdoc comments from the output
                 code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
             }
