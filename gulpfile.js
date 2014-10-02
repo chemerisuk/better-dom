@@ -1,4 +1,5 @@
 var gulp = require("gulp");
+var gutil = require("gulp-util");
 var pkg = require("./package.json");
 var karma = require("karma").server;
 var compile = require("./task/compile-gulp");
@@ -13,18 +14,27 @@ var uglify = require("gulp-uglifyjs");
 var bump = require("gulp-bump");
 var deploy = require("gulp-gh-pages");
 var replace = require("gulp-replace");
+var git = require("gulp-git");
+var filter = require("gulp-filter");
+var tag_version = require("gulp-tag-version");
 
-// make a version number string, e.g. "1.20.3" -> "1020300"
-var VERSION = pkg.version.replace(/\.(\d+)/g, function(_, n) {
-    return ("000" + n).slice(-3);
-});
 
 gulp.task("compile", function() {
+    var version = argv.tag;
+    var dest = version ? "dist/" : "build/";
+
+    if (version) pkg.version = version;
+
+    // make a version number string, e.g. "1.20.3" -> "1020300"
+    var VERSION = pkg.version.replace(/\.(\d+)/g, function(_, n) {
+        return ("000" + n).slice(-3);
+    });
+
     return gulp.src(["src/*.js", "src/**/*.js"], {buffer: false})
         .pipe(compile("better-dom.js"))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: VERSION }))
         .pipe(es6transpiler())
-        .pipe(gulp.dest("build/"));
+        .pipe(gulp.dest(dest));
 });
 
 gulp.task("lint", function() {
@@ -107,17 +117,33 @@ gulp.task("deploy", ["docs"], function() {
         .pipe(deploy());
 });
 
-gulp.task("compress", function() {
-    gulp.src("build/*.js")
+gulp.task("clean-min", function() {
+    return gulp.src("dist/", {read: false}).pipe(clean());
+});
+
+gulp.task("compress", ["compile"], function() {
+    var dest = argv.tag ? "dist/" : "build/";
+
+    return gulp.src(dest + "better-dom.js")
         .pipe(uglify("better-dom.min.js", {
             output: {comments: /^!|@preserve|@license|@cc_on/i}
         }))
-        .pipe(gulp.dest("build/"));
+        .pipe(gulp.dest(dest));
 });
 
 gulp.task("bump", function() {
-    // major, minor, patch, prerelease
-    gulp.src(["./package.json", "./bower.json"])
-        .pipe(bump({type: argv.type}))
+    return gulp.src(["./package.json", "./bower.json"])
+        .pipe(bump({version: argv.tag}))
         .pipe(gulp.dest("./"));
+});
+
+gulp.task("release", ["bump", "compress"], function() {
+    var version = argv.tag;
+
+    if (!version) throw new gutil.PluginError("release", "You need to specify --tag parameter");
+
+    gulp.src(["./*.json", "./dist/*.js"])
+        .pipe(git.commit("version " + version))
+        .pipe(filter("package.json"))
+        .pipe(tag_version());
 });

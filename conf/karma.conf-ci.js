@@ -72,8 +72,8 @@ module.exports = function(config) {
             console.log("Create a sauce.json with your credentials based on the https://github.com/saucelabs/karma-sauce-example/blob/master/sauce-sample.json file.");
             process.exit(1);
         } else {
-            process.env.SAUCE_USERNAME = require("../sauce").username;
-            process.env.SAUCE_ACCESS_KEY = require("../sauce").accessKey;
+            process.env.SAUCE_USERNAME = require("./sauce").username;
+            process.env.SAUCE_ACCESS_KEY = require("./sauce").accessKey;
         }
     }
 
