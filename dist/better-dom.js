@@ -1,6 +1,7 @@
 /**
+ * @file better-dom.js
  * @overview better-dom: Live extension playground
- * @version 2.0.0-rc.6 2014-09-27T16:31:53
+ * @version 2.0.0-rc.7 Thu, 02 Oct 2014 17:33:57 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -33,19 +34,23 @@
 
     errors$$StaticMethodError.prototype = new TypeError();
 
+    function types$$$NullElement() {}
+
     function types$$$Element(node) {
         if (this instanceof types$$$Element) {
             if (node) {
-                node.__dom__ = this;
-
                 this[0] = node;
+                this._ = { _handlers: [], _watchers: {} };
+                // use a generated on compile time property to store
+                // a reference to the wrapper for circular binding
+                node["__2000000-rc007__"] = this;
             }
-
-            this._ = { _handlers: [], _watchers: {} };
-        } else {
-            var cached = node && node.__dom__;
+        } else if (node) {
+            var cached = node["__2000000-rc007__"];
             // create a wrapper only once for each native element
             return cached ? cached : new types$$$Element(node);
+        } else {
+            return new types$$$NullElement();
         }
     }
 
@@ -58,12 +63,15 @@
             var node = this[0];
 
             return node ? node.tagName.toLowerCase() : "";
+        },
+        valueOf: function() {
+            return "2000000-rc007";
         }
     };
 
-    var types$$DOM = new types$$$Element(const$$HTML);
+    types$$$NullElement.prototype = new types$$$Element();
 
-    types$$DOM.VERSION = "2.0.0-rc.6";
+    var types$$DOM = new types$$$Element(const$$HTML);
 
     var exports$$_DOM = const$$WINDOW.DOM;
 
@@ -77,76 +85,38 @@
 
     const$$WINDOW.DOM = types$$DOM;
 
-    var dom$create$$reTest = /^(?:[a-z-]+|\s*(<.+>)\s*)$/i,
-        dom$create$$sandbox = const$$DOCUMENT.createElement("body"),
-        dom$create$$makeMethod = function(all)  {return function(value, varMap) {
-            var test = dom$create$$reTest.exec(value),
-                nodes, el;
-
-            if (value && test && !test[1]) {
-                nodes = const$$DOCUMENT.createElement(value);
-
-                if (all) nodes = [ new types$$$Element(nodes) ];
-            } else {
-                if (test && test[1]) {
-                    value = varMap ? types$$DOM.format(test[1], varMap) : test[1];
-                } else if (typeof value === "string") {
-                    value = types$$DOM.emmet(value, varMap);
-                } else {
-                    throw new errors$$StaticMethodError("create" + all);
-                }
-
-                dom$create$$sandbox.innerHTML = value; // parse input HTML string
-
-                for (nodes = all ? [] : null; el = dom$create$$sandbox.firstChild; ) {
-                    dom$create$$sandbox.removeChild(el); // detach element from the sandbox
-
-                    if (el.nodeType === 1) {
-                        if (all) {
-                            nodes.push(new types$$$Element(el));
-                        } else {
-                            nodes = el;
-
-                            break; // stop early, because need only the first element
-                        }
-                    }
-                }
-            }
-
-            return all ? nodes : new types$$$Element(nodes);
-        }};
-
-    types$$DOM.create = dom$create$$makeMethod("");
-
-    types$$DOM.createAll = dom$create$$makeMethod("All");
-
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
         dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
         dom$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
-        dom$emmet$$reAttr = /\s*([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
+        dom$emmet$$reAttr = /\s*([\w\-]+)(?:=((?:`([^`]*)`)|[^\s]*))?/g,
         dom$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
         dom$emmet$$reDot = /\./g,
         dom$emmet$$reDollar = /\$/g,
         dom$emmet$$tagCache = {"": ""},
-        dom$emmet$$normalizeAttrs = function(_, name, value, cleanValue)  {
-            var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
-            // always wrap attribute values with quotes if they don't exist
-            // replace ` quotes with " except when it's a single quotes case
-            return " " + name + "=" + quotes + (cleanValue || value || name) + quotes;
+        dom$emmet$$normalizeAttrs = function(_, name, value, rawValue)  {
+            // try to detemnie which kind of quotes to use
+            var quote = value && value.indexOf("\"") >= 0 ? "'" : "\"";
+
+            if (typeof rawValue === "string") {
+                // grab unquoted value for smart quotes
+                value = rawValue;
+            } else if (typeof value !== "string") {
+                // handle boolean attributes by using name as value
+                value = name;
+            }
+            // always wrap attribute values with quotes even they don't exist
+            return " " + name + "=" + quote + value + quote;
         },
-        dom$emmet$$injectTerm = function(term, append)  {return function(html)  {
-            var index = append ? html.lastIndexOf("<") : html.indexOf(">");
-            // inject term into the html string
+        dom$emmet$$injectTerm = function(term, end)  {return function(html)  {
+            // find index of where to inject the term
+            var index = end ? html.lastIndexOf("<") : html.indexOf(">");
+            // inject the term into the HTML string
             return html.substr(0, index) + term + html.substr(index);
         }},
         dom$emmet$$makeTerm = function(tag)  {
-            var result = dom$emmet$$tagCache[tag];
-
-            if (!result) result = dom$emmet$$tagCache[tag] = "<" + tag + "></" + tag + ">";
-
-            return result;
+            return dom$emmet$$tagCache[tag] || (dom$emmet$$tagCache[tag] = "<" + tag + "></" + tag + ">");
         },
         dom$emmet$$makeIndexedTerm = function(n, term)  {
             var result = Array(n), i;
@@ -154,7 +124,7 @@
             for (i = 0; i < n; ++i) {
                 result[i] = term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
                     var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
-                    // handle zero-padded index values
+                    // handle zero-padded index values, like $$$ etc.
                     return (fmt + index).slice(-fmt.length).replace(dom$emmet$$reDollar, "0");
                 });
             }
@@ -162,7 +132,7 @@
             return result;
         };
 
-    // populate empty tags
+    // populate empty tag names with result
     "area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag)  {
         dom$emmet$$tagCache[tag] = "<" + tag + ">";
     });
@@ -217,9 +187,6 @@
 
         output = output.concat(stack);
 
-        // handle single tag case
-        if (output.length === 1) {return dom$emmet$$makeTerm(output[0]);}
-
         // transform RPN into html nodes
 
         stack = [];
@@ -229,7 +196,9 @@
                 var value = stack.shift();
                 var node = stack.shift();
 
-                if (typeof node === "string") node = [ dom$emmet$$makeTerm(node) ];
+                if (typeof node === "string") {
+                    node = [ dom$emmet$$makeTerm(node) ];
+                }
 
                 switch(str$0) {
                 case ".":
@@ -244,17 +213,16 @@
                     value = dom$emmet$$injectTerm(value.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs));
                     break;
 
+                case "*":
+                    node = dom$emmet$$makeIndexedTerm(+value, node.join(""));
+                    break;
+
                 case "`":
                     stack.unshift(node);
                     node = [ value ];
                     break;
 
-                case "*":
-                    node = dom$emmet$$makeIndexedTerm(+value, node.join(""));
-                    break;
-
-                default:
-                    // handle ">", "+" and "^" operators
+                default: /* ">", "+", "^" */
                     value = typeof value === "string" ? dom$emmet$$makeTerm(value) : value.join("");
 
                     if (str$0 === ">") {
@@ -270,12 +238,58 @@
             stack.unshift(str$0);
         };$D$0 = $D$1 = void 0;
 
-        output = stack[0].join("");
-        // cache static string results
-        if (varMap) dom$emmet$$tagCache[template] = output;
+        if (output.length === 1) {
+            // handle single tag case
+            output = dom$emmet$$makeTerm(stack[0]);
+        } else {
+            output = stack[0].join("");
+        }
 
         return output;
     };
+
+    var dom$emmet$$default = dom$emmet$$tagCache;
+
+    var dom$create$$sandbox = const$$DOCUMENT.createElement("body"),
+        dom$create$$makeMethod = function(all)  {return function(value, varMap) {
+            var nodes, el;
+
+            if (value && value in dom$emmet$$default) {
+                nodes = const$$DOCUMENT.createElement(value);
+
+                if (all) nodes = [ new types$$$Element(nodes) ];
+            } else {
+                value = value.trim();
+
+                if (value[0] === "<" && value[value.length - 1] === ">") {
+                    value = varMap ? types$$DOM.format(value, varMap) : value;
+                } else {
+                    value = types$$DOM.emmet(value, varMap);
+                }
+
+                dom$create$$sandbox.innerHTML = value; // parse input HTML string
+
+                for (nodes = all ? [] : null; el = dom$create$$sandbox.firstChild; ) {
+                    dom$create$$sandbox.removeChild(el); // detach element from the sandbox
+
+                    if (el.nodeType === 1) {
+                        if (all) {
+                            nodes.push(new types$$$Element(el));
+                        } else {
+                            nodes = el;
+
+                            break; // stop early, because need only the first element
+                        }
+                    }
+                }
+            }
+
+            return all ? nodes : types$$$Element(nodes);
+        }};
+
+    types$$DOM.create = dom$create$$makeMethod("");
+
+    types$$DOM.createAll = dom$create$$makeMethod("All");
 
     var util$index$$arrayProto = Array.prototype,
         util$index$$currentScript = const$$DOCUMENT.scripts[0];
@@ -646,12 +660,12 @@
 
     var dom$format$$reVar = /\{([\w\-]+)\}/g;
 
-    types$$DOM.format = function(template, varMap) {
-        if (typeof template !== "string" || varMap && typeof varMap !== "object") {
-            throw new errors$$StaticMethodError("format");
-        }
+    types$$DOM.format = function(tmpl, varMap) {
+        if (typeof tmpl !== "string") throw new errors$$StaticMethodError("format");
 
-        return template.replace(dom$format$$reVar, function(x, name)  {return name in varMap ? String(varMap[name]) : x});
+        if (!varMap || typeof varMap !== "object") varMap = {};
+
+        return tmpl.replace(dom$format$$reVar, function(x, name)  {return name in varMap ? String(varMap[name]) : x});
     };
 
     types$$DOM.importScripts = function() {var urls = SLICE$0.call(arguments, 0);
@@ -683,7 +697,7 @@
             util$index$$default.each.call(node.children, dom$mock$$applyExtensions);
         },
         dom$mock$$makeMethod = function(all)  {return function(content, varMap) {
-            if (!content) return new types$$$Element();
+            if (!content) return new types$$$NullElement();
 
             var result = types$$DOM["create" + all](content, varMap);
 
@@ -709,9 +723,7 @@
 
         var node = this[0],
             matcher = util$selectormatcher$$default(selector),
-            children = node ? node.children : null;
-
-        if (!node) return all ? [] : new types$$$Element();
+            children = node.children;
 
         if (!const$$DOM2_EVENTS) {
             // fix IE8 bug with children collection
@@ -735,6 +747,15 @@
         children: element$children$$makeMethod(true)
     });
 
+    util$index$$default.assign(types$$$NullElement.prototype, {
+        child: function() {
+            return new types$$$NullElement();
+        },
+        children: function() {
+            return [];
+        }
+    });
+
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     var element$classes$$reSpace = /[\n\t\r]/g,
@@ -750,61 +771,68 @@
 
             if (methodName === "hasClass" || methodName === "toggleClass") {
                 return function(token, force) {
-                    if (this[0]) {
-                        if (typeof force === "boolean" && methodName === "toggleClass") {
-                            this[force ? "addClass" : "removeClass"](token);
+                    if (typeof force === "boolean" && methodName === "toggleClass") {
+                        this[force ? "addClass" : "removeClass"](token);
 
-                            return force;
-                        }
-
-                        if (typeof token !== "string") throw new errors$$MethodError(methodName);
-
-                        return strategy(this, token);
+                        return force;
                     }
+
+                    if (typeof token !== "string") throw new errors$$MethodError(methodName);
+
+                    return strategy(this, token);
                 };
             } else {
                 return function() {var $D$5;var $D$6;
                     var tokens = arguments;
 
-                    if (this[0]) {
-                        $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 < $D$6;){token = (tokens[$D$5++]);
-                            if (typeof token !== "string") throw new errors$$MethodError(methodName);
+                    $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 < $D$6;){token = (tokens[$D$5++]);
+                        if (typeof token !== "string") throw new errors$$MethodError(methodName);
 
-                            strategy(this, token);
-                        };$D$5 = $D$6 = void 0;
-                    }
+                        strategy(this, token);
+                    };$D$5 = $D$6 = void 0;
 
                     return this;
                 };
             }
+        },
+        element$classes$$methods = {
+            hasClass: element$classes$$makeMethod("contains", function(el, token)  {
+                return (" " + el[0].className + " ")
+                    .replace(element$classes$$reSpace, " ").indexOf(" " + token + " ") >= 0;
+            }),
+
+            addClass: element$classes$$makeMethod("add", function(el, token)  {
+                if (!el.hasClass(token)) el[0].className += " " + token;
+            }),
+
+            removeClass: element$classes$$makeMethod("remove", function(el, token)  {
+                el[0].className = (" " + el[0].className + " ")
+                    .replace(element$classes$$reSpace, " ").replace(" " + token + " ", " ").trim();
+            }),
+
+            toggleClass: element$classes$$makeMethod("toggle", function(el, token)  {
+                var hasClass = el.hasClass(token);
+
+                if (hasClass) {
+                    el.removeClass(token);
+                } else {
+                    el[0].className += " " + token;
+                }
+
+                return !hasClass;
+            })
         };
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        hasClass: element$classes$$makeMethod("contains", function(el, token)  {
-            return (" " + el[0].className + " ")
-                .replace(element$classes$$reSpace, " ").indexOf(" " + token + " ") >= 0;
-        }),
+    util$index$$default.assign(types$$$Element.prototype, element$classes$$methods);
 
-        addClass: element$classes$$makeMethod("add", function(el, token)  {
-            if (!el.hasClass(token)) el[0].className += " " + token;
-        }),
-
-        removeClass: element$classes$$makeMethod("remove", function(el, token)  {
-            el[0].className = (" " + el[0].className + " ")
-                .replace(element$classes$$reSpace, " ").replace(" " + token + " ", " ").trim();
-        }),
-
-        toggleClass: element$classes$$makeMethod("toggle", function(el, token)  {
-            var hasClass = el.hasClass(token);
-
-            if (hasClass) {
-                el.removeClass(token);
+    util$index$$default.keys(element$classes$$methods).forEach(function(methodName)  {
+        types$$$NullElement.prototype[methodName] = function() {
+            if (methodName === "hasClass" || methodName === "toggleClass") {
+                return false;
             } else {
-                el[0].className += " " + token;
+                return this;
             }
-
-            return !hasClass;
-        })
+        };
     });
 
     types$$$Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 0)deep = true;
@@ -812,25 +840,23 @@
 
         var node = this[0], result;
 
-        if (node) {
-            if (const$$DOM2_EVENTS) {
-                result = new types$$$Element(node.cloneNode(deep));
-            } else {
-                result = types$$DOM.create(node.outerHTML);
-
-                if (!deep) result.set("innerHTML", "");
-            }
+        if (const$$DOM2_EVENTS) {
+            result = new types$$$Element(node.cloneNode(deep));
         } else {
-            result = new types$$$Element();
+            result = types$$DOM.create(node.outerHTML);
+
+            if (!deep) result.set("innerHTML", "");
         }
 
         return result;
     };
 
+    types$$$NullElement.prototype.clone = function() {
+        return new types$$$NullElement();
+    };
+
     types$$$Element.prototype.contains = function(element) {
         var node = this[0];
-
-        if (!node) return false;
 
         if (element instanceof types$$$Element) {
             var otherNode = element[0];
@@ -847,64 +873,68 @@
         throw new errors$$MethodError("contains");
     };
 
+    types$$$NullElement.prototype.contains = function() {
+        return false;
+    };
+
     types$$$Element.prototype.css = function(name, value) {var this$0 = this;
         var len = arguments.length,
             node = this[0],
+            style = node.style,
             nameType = typeof name,
-            style, hook, computed, appendCssText;
+            hook, computed, appendCssText;
 
         if (len === 1 && (nameType === "string" || util$index$$default.isArray(name))) {
-            if (node) {
-                style = node.style;
+            value = (nameType === "string" ? [name] : name).reduce(function(memo, name)  {
+                hook = util$stylehooks$$default.get[name];
+                value = hook ? hook(style) : style[name];
 
-                value = (nameType === "string" ? [name] : name).reduce(function(memo, name)  {
-                    hook = util$stylehooks$$default.get[name];
+                if (!computed && !value) {
+                    style = util$index$$default.computeStyle(node);
                     value = hook ? hook(style) : style[name];
 
-                    if (!computed && !value) {
-                        style = util$index$$default.computeStyle(node);
-                        value = hook ? hook(style) : style[name];
+                    computed = true;
+                }
 
-                        computed = true;
-                    }
+                memo[name] = value;
 
-                    memo[name] = value;
+                return memo;
+            }, {});
 
-                    return memo;
-                }, {});
-            }
-
-            return node && nameType === "string" ? value[name] : value;
+            return nameType === "string" ? value[name] : value;
         }
 
-        if (node) {
-            style = node.style;
-            appendCssText = function(key, value)  {
-                var hook = util$stylehooks$$default.set[key];
+        appendCssText = function(key, value)  {
+            var hook = util$stylehooks$$default.set[key];
 
-                if (typeof value === "function") {
-                    value = value.call(this$0, this$0.css(key));
-                }
-
-                if (value == null) value = "";
-
-                if (hook) {
-                    hook(style, value);
-                } else {
-                    style[key] = typeof value === "number" ? value + "px" : value.toString();
-                }
-            };
-
-            if (len === 1 && name && nameType === "object") {
-                util$index$$default.keys(name).forEach(function(key)  { appendCssText(key, name[key]) });
-            } else if (len === 2 && nameType === "string") {
-                appendCssText(name, value);
-            } else {
-                throw new errors$$MethodError("css");
+            if (typeof value === "function") {
+                value = value.call(this$0, this$0.css(key));
             }
+
+            if (value == null) value = "";
+
+            if (hook) {
+                hook(style, value);
+            } else {
+                style[key] = typeof value === "number" ? value + "px" : value.toString();
+            }
+        };
+
+        if (len === 1 && name && nameType === "object") {
+            util$index$$default.keys(name).forEach(function(key)  { appendCssText(key, name[key]) });
+        } else if (len === 2 && nameType === "string") {
+            appendCssText(name, value);
+        } else {
+            throw new errors$$MethodError("css");
         }
 
         return this;
+    };
+
+    types$$$NullElement.prototype.css = function(name) {
+        if (arguments.length !== 1 || typeof name !== "string" && !util$index$$default.isArray(name)) {
+            return this;
+        }
     };
 
     // big part of code inspired by Sizzle:
@@ -919,8 +949,6 @@
             var node = this[0],
                 quickMatch = element$find$$rquick.exec(selector),
                 result, old, nid, context;
-
-            if (!node) return all ? [] : new types$$$Element();
 
             if (quickMatch) {
                 if (quickMatch[1]) {
@@ -965,6 +993,15 @@
         find: element$find$$makeMethod(""),
 
         findAll: element$find$$makeMethod("All")
+    });
+
+    util$index$$default.assign(types$$$NullElement.prototype, {
+        find: function() {
+            return new types$$$NullElement();
+        },
+        findAll: function() {
+            return [];
+        }
     });
 
     var util$eventhooks$$hooks = {};
@@ -1062,8 +1099,6 @@
                     }
                 };
 
-            if (!node) return null;
-
             if (hook) handler = hook(handler, type) || handler;
             // handle custom events for IE8
             if (!const$$DOM2_EVENTS && !("on" + (handler._type || type) in node)) {
@@ -1084,10 +1119,10 @@
             handler = {},
             hook, e, canContinue;
 
-        if (!node) return false;
-
         if (eventType === "string") {
-            if (hook = util$eventhooks$$default[type]) handler = hook(handler) || handler;
+            if (hook = util$eventhooks$$default[type]) {
+                handler = hook(handler) || handler;
+            }
 
             eventType = handler._type || type;
         } else {
@@ -1124,6 +1159,10 @@
         }
 
         return canContinue;
+    };
+
+    types$$$NullElement.prototype.fire = function() {
+        return false;
     };
 
     var util$accessorhooks$$hooks = {get: {}, set: {}};
@@ -1203,8 +1242,6 @@
         var node = this[0],
             hook = util$accessorhooks$$default.get[name];
 
-        if (!node) return;
-
         if (hook) return hook(node, name);
 
         if (typeof name === "string") {
@@ -1232,67 +1269,76 @@
         }
     };
 
+    types$$$NullElement.prototype.get = function() {};
+
     var element$manipulation$$makeMethod = function(methodName, fasterMethodName, standalone, strategy)  {return function() {var content = arguments[0];if(content === void 0)content = "";
-        var node = this[0];
+            var node = this[0];
 
-        if (!standalone && (!node.parentNode || content === types$$DOM)) return this;
+            if (!standalone && (!node.parentNode || content === types$$DOM)) return this;
 
-        if (typeof content === "function") content = content.call(this);
+            if (typeof content === "function") content = content.call(this);
 
-        if (typeof content === "string") {
-            if (content) {
-                // parse HTML string for the replace method
-                if (fasterMethodName) {
-                    content = content.trim();
-                } else {
-                    content = types$$DOM.create(content)[0];
+            if (typeof content === "string") {
+                if (content) {
+                    // parse HTML string for the replace method
+                    if (fasterMethodName) {
+                        content = content.trim();
+                    } else {
+                        content = types$$DOM.create(content)[0];
+                    }
                 }
+            } else if (content instanceof types$$$Element) {
+                content = content[0];
+            } else if (util$index$$default.isArray(content)) {
+                content = content.reduce(function(fragment, el)  {
+                    fragment.appendChild(el[0]);
+
+                    return fragment;
+                }, const$$DOCUMENT.createDocumentFragment());
+            } else {
+                throw new errors$$MethodError(methodName);
             }
-        } else if (content instanceof types$$$Element) {
-            content = content[0];
-        } else if (util$index$$default.isArray(content)) {
-            content = content.reduce(function(fragment, el)  {
-                fragment.appendChild(el[0]);
 
-                return fragment;
-            }, const$$DOCUMENT.createDocumentFragment());
-        } else {
-            throw new errors$$MethodError(methodName);
-        }
+            if (content && typeof content === "string") {
+                node.insertAdjacentHTML(fasterMethodName, content);
+            } else {
+                if (content || !fasterMethodName) strategy(node, content);
+            }
 
-        if (content && typeof content === "string") {
-            node.insertAdjacentHTML(fasterMethodName, content);
-        } else {
-            if (content || !fasterMethodName) strategy(node, content);
-        }
+            return this;
+        }},
+        element$manipulation$$methods = {
+            after: element$manipulation$$makeMethod("after", "afterend", false, function(node, relatedNode)  {
+                node.parentNode.insertBefore(relatedNode, node.nextSibling);
+            }),
 
-        return this;
-    }};
+            before: element$manipulation$$makeMethod("before", "beforebegin", false, function(node, relatedNode)  {
+                node.parentNode.insertBefore(relatedNode, node);
+            }),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        after: element$manipulation$$makeMethod("after", "afterend", false, function(node, relatedNode)  {
-            node.parentNode.insertBefore(relatedNode, node.nextSibling);
-        }),
+            prepend: element$manipulation$$makeMethod("prepend", "afterbegin", true, function(node, relatedNode)  {
+                node.insertBefore(relatedNode, node.firstChild);
+            }),
 
-        before: element$manipulation$$makeMethod("before", "beforebegin", false, function(node, relatedNode)  {
-            node.parentNode.insertBefore(relatedNode, node);
-        }),
+            append: element$manipulation$$makeMethod("append", "beforeend", true, function(node, relatedNode)  {
+                node.appendChild(relatedNode);
+            }),
 
-        prepend: element$manipulation$$makeMethod("prepend", "afterbegin", true, function(node, relatedNode)  {
-            node.insertBefore(relatedNode, node.firstChild);
-        }),
+            replace: element$manipulation$$makeMethod("replace", "", false, function(node, relatedNode)  {
+                node.parentNode.replaceChild(relatedNode, node);
+            }),
 
-        append: element$manipulation$$makeMethod("append", "beforeend", true, function(node, relatedNode)  {
-            node.appendChild(relatedNode);
-        }),
+            remove: element$manipulation$$makeMethod("remove", "", false, function(node)  {
+                node.parentNode.removeChild(node);
+            })
+        };
 
-        replace: element$manipulation$$makeMethod("replace", "", false, function(node, relatedNode)  {
-            node.parentNode.replaceChild(relatedNode, node);
-        }),
+    util$index$$default.assign(types$$$Element.prototype, element$manipulation$$methods);
 
-        remove: element$manipulation$$makeMethod("remove", "", false, function(node)  {
-            node.parentNode.removeChild(node);
-        })
+    util$index$$default.keys(element$manipulation$$methods).forEach(function(methodName)  {
+        types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
     });
 
     var util$selectorhooks$$hooks = {};
@@ -1315,10 +1361,13 @@
     types$$$Element.prototype.matches = function(selector) {
         if (!selector || typeof selector !== "string") throw new errors$$MethodError("matches");
 
-        var checker = util$selectorhooks$$default[selector] || util$selectormatcher$$default(selector),
-            node = this[0];
+        var checker = util$selectorhooks$$default[selector] || util$selectormatcher$$default(selector);
 
-        return node && !!checker(node, this);
+        return !!checker(this[0], this);
+    };
+
+    types$$$NullElement.prototype.matches = function() {
+        return false;
     };
 
     types$$$Element.prototype.off = function(type, callback) {
@@ -1326,20 +1375,22 @@
 
         var node = this[0];
 
-        if (node) {
-            this._._handlers = this._._handlers.filter(function(handler)  {
-                if (type !== handler.type || callback && callback !== handler.callback) return true;
+        this._._handlers = this._._handlers.filter(function(handler)  {
+            if (type !== handler.type || callback && callback !== handler.callback) return true;
 
-                type = handler._type || handler.type;
+            type = handler._type || handler.type;
 
-                if (const$$DOM2_EVENTS) {
-                    node.removeEventListener(type, handler, !!handler.capturing);
-                } else {
-                    node.detachEvent("on" + type, handler);
-                }
-            });
-        }
+            if (const$$DOM2_EVENTS) {
+                node.removeEventListener(type, handler, !!handler.capturing);
+            } else {
+                node.detachEvent("on" + type, handler);
+            }
+        });
 
+        return this;
+    };
+
+    types$$$NullElement.prototype.off = function() {
         return this;
     };
 
@@ -1349,90 +1400,103 @@
             clientLeft = const$$HTML.clientLeft,
             scrollTop = const$$WINDOW.pageYOffset || const$$HTML.scrollTop,
             scrollLeft = const$$WINDOW.pageXOffset || const$$HTML.scrollLeft,
-            boundingRect;
-
-        if (node) {
             boundingRect = node.getBoundingClientRect();
 
-            return {
-                top: boundingRect.top + scrollTop - clientTop,
-                left: boundingRect.left + scrollLeft - clientLeft,
-                right: boundingRect.right + scrollLeft - clientLeft,
-                bottom: boundingRect.bottom + scrollTop - clientTop,
-                width: boundingRect.right - boundingRect.left,
-                height: boundingRect.bottom - boundingRect.top
-            };
-        }
+        return {
+            top: boundingRect.top + scrollTop - clientTop,
+            left: boundingRect.left + scrollLeft - clientLeft,
+            right: boundingRect.right + scrollLeft - clientLeft,
+            bottom: boundingRect.bottom + scrollTop - clientTop,
+            width: boundingRect.right - boundingRect.left,
+            height: boundingRect.bottom - boundingRect.top
+        };
+    };
+
+    types$$$NullElement.prototype.offset = function() {
+        return { top : 0, left : 0, right : 0, bottom : 0, width : 0, height : 0 };
     };
 
     var element$on$$makeMethod = function(method)  {return function(type, selector, props, callback) {var this$0 = this;
-        if (typeof type === "string") {
-            if (typeof props === "function") {
-                callback = props;
+            if (typeof type === "string") {
+                if (typeof props === "function") {
+                    callback = props;
 
-                if (typeof selector === "string") {
-                    props = null;
-                } else {
-                    props = selector;
-                    selector = null;
+                    if (typeof selector === "string") {
+                        props = null;
+                    } else {
+                        props = selector;
+                        selector = null;
+                    }
                 }
-            }
 
-            if (typeof selector === "function") {
-                callback = selector;
-                selector = null;
-                props = null;
-            }
+                if (typeof selector === "function") {
+                    callback = selector;
+                    selector = null;
+                    props = null;
+                }
 
-            if (typeof callback !== "function") {
+                if (typeof callback !== "function") {
+                    throw new errors$$MethodError(method);
+                }
+
+                var node = this[0],
+                    handler = util$eventhandler$$default(type, selector, callback, props, this, method === "once");
+
+                if (handler) {
+                    if (const$$DOM2_EVENTS) {
+                        node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    } else {
+                        node.attachEvent("on" + (handler._type || type), handler);
+                    }
+                    // store event entry
+                    this._._handlers.push(handler);
+                }
+            } else if (typeof type === "object") {
+                if (util$index$$default.isArray(type)) {
+                    type.forEach(function(name)  { this$0[method](name, selector, props, callback) });
+                } else {
+                    util$index$$default.keys(type).forEach(function(name)  { this$0[method](name, type[name]) });
+                }
+            } else {
                 throw new errors$$MethodError(method);
             }
 
-            var node = this[0],
-                handler = util$eventhandler$$default(type, selector, callback, props, this, method === "once");
+            return this;
+        }},
+        element$on$$methods = {
+            on: element$on$$makeMethod("on"),
 
-            if (handler) {
-                if (const$$DOM2_EVENTS) {
-                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
-                } else {
-                    node.attachEvent("on" + (handler._type || type), handler);
-                }
-                // store event entry
-                this._._handlers.push(handler);
-            }
-        } else if (typeof type === "object") {
-            if (util$index$$default.isArray(type)) {
-                type.forEach(function(name)  { this$0[method](name, selector, props, callback) });
-            } else {
-                util$index$$default.keys(type).forEach(function(name)  { this$0[method](name, type[name]) });
-            }
-        } else {
-            throw new errors$$MethodError(method);
-        }
+            once: element$on$$makeMethod("once")
+        };
 
-        return this;
-    }};
+    util$index$$default.assign(types$$$Element.prototype, element$on$$methods);
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        on: element$on$$makeMethod("on"),
-
-        once: element$on$$makeMethod("once")
+    util$index$$default.keys(element$on$$methods).forEach(function(methodName)  {
+        types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
     });
 
     types$$$Element.prototype.set = function(name, value) {var this$0 = this;
         var node = this[0];
 
-        if (!node) return this;
-
         // handle the value shortcut
-        if (arguments.length === 1 && typeof name !== "object") {
+        if (arguments.length === 1) {
             if (typeof name === "function") {
                 value = name;
             } else {
                 value = name == null ? "" : String(name);
             }
 
-            name = "value" in node ? "value" : "innerHTML";
+            if (value !== "[object Object]") {
+                var tag = node.tagName;
+
+                if (tag === "INPUT" || tag === "TEXTAREA" ||  tag === "SELECT" || tag === "OPTION") {
+                    name = "value";
+                } else {
+                    name = "innerHTML";
+                }
+            }
         }
 
         var hook = util$accessorhooks$$default.set[name],
@@ -1481,6 +1545,10 @@
         return this;
     };
 
+    types$$$NullElement.prototype.set = function() {
+        return this;
+    };
+
     var element$traversing$$makeMethod = function(methodName, propertyName, all)  {return function(selector) {
             if (selector && typeof selector !== "string") throw new errors$$MethodError(methodName);
 
@@ -1499,18 +1567,29 @@
             }
 
             return all ? util$index$$default.map.call(nodes, types$$$Element) : types$$$Element(it);
-        }};
+        }},
+        element$traversing$$methods = {
+            next: element$traversing$$makeMethod("next", "nextSibling"),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        next: element$traversing$$makeMethod("next", "nextSibling"),
+            prev: element$traversing$$makeMethod("prev", "previousSibling"),
 
-        prev: element$traversing$$makeMethod("prev", "previousSibling"),
+            nextAll: element$traversing$$makeMethod("nextAll", "nextSibling", true),
 
-        nextAll: element$traversing$$makeMethod("nextAll", "nextSibling", true),
+            prevAll: element$traversing$$makeMethod("prevAll", "previousSibling", true),
 
-        prevAll: element$traversing$$makeMethod("prevAll", "previousSibling", true),
+            closest: element$traversing$$makeMethod("closest", "parentNode")
+        };
 
-        closest: element$traversing$$makeMethod("closest", "parentNode")
+    util$index$$default.assign(types$$$Element.prototype, element$traversing$$methods);
+
+    util$index$$default.keys(element$traversing$$methods).forEach(function(methodName)  {
+        types$$$NullElement.prototype[methodName] = function() {
+            if (methodName.slice(-3) === "All") {
+                return [];
+            } else {
+                return new types$$$NullElement();
+            }
+        };
     });
 
     // Legacy Android is too slow and has a lot of bugs in the CSS animations
@@ -1604,8 +1683,6 @@
             return true;
         },
         element$visibility$$makeMethod = function(name, condition)  {return function(animationName, callback) {var this$0 = this;
-            var node = this[0];
-
             if (typeof animationName !== "string") {
                 callback = animationName;
                 animationName = null;
@@ -1615,9 +1692,8 @@
                 throw new errors$$MethodError(name);
             }
 
-            if (!node) return this;
-
-            var style = node.style,
+            var node = this[0],
+                style = node.style,
                 computed = util$index$$default.computeStyle(node),
                 visibility = computed.visibility,
                 displayValue = computed.display,
@@ -1688,33 +1764,50 @@
             if (!animatable) done();
 
             return this;
-        }};
+        }},
+        element$visibility$$methods = {
+            show: element$visibility$$makeMethod("show", false),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        show: element$visibility$$makeMethod("show", false),
+            hide: element$visibility$$makeMethod("hide", true),
 
-        hide: element$visibility$$makeMethod("hide", true),
+            toggle: element$visibility$$makeMethod("toggle")
+        };
 
-        toggle: element$visibility$$makeMethod("toggle")
+    util$index$$default.assign(types$$$Element.prototype, element$visibility$$methods);
+
+    util$index$$default.keys(element$visibility$$methods).forEach(function(methodName)  {
+        types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
     });
 
-    types$$$Element.prototype.watch = function(name, callback) {
-        var watchers = this._._watchers;
+    var element$watch$$methods = {
+            watch: function(name, callback) {
+                var watchers = this._._watchers;
 
-        if (!watchers[name]) watchers[name] = [];
+                if (!watchers[name]) watchers[name] = [];
 
-        watchers[name].push(callback);
+                watchers[name].push(callback);
 
-        return this;
-    };
+                return this;
+            },
 
-    types$$$Element.prototype.unwatch = function(name, callback) {
-        var watchers = this._._watchers;
+            unwatch: function(name, callback) {
+                var watchers = this._._watchers;
 
-        if (watchers[name]) {
-            watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
-        }
+                if (watchers[name]) {
+                    watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
+                }
 
-        return this;
-    };
+                return this;
+            }
+        };
+
+    util$index$$default.assign(types$$$Element.prototype, element$watch$$methods);
+
+    util$index$$default.keys(element$watch$$methods).forEach(function(methodName)  {
+        types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
+    });
 })();
