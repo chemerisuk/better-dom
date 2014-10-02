@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Source: better-dom.js</title>
+    <title>Source: /Users/chemerisuk/git/better-dom/build/better-dom.js</title>
     
     
     
@@ -26,7 +26,7 @@
     
     
     <script>
-    var config = {"monospaceLinks":true,"cleverLinks":true,"linenums":true,"default":{"outputSourceFiles":true},"applicationName":"better-dom","disqus":"better-dom","googleAnalytics":"","openGraph":{"title":"Live extension playground","type":"website","image":"https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400","site_name":"better-dom","url":"https://github.com/chemerisuk/better-dom"},"meta":{"title":"","description":"","keyword":""}};
+    var config = {"default":{"outputSourceFiles":true},"monospaceLinks":true,"cleverLinks":true,"linenums":true,"applicationName":"better-dom","disqus":"better-dom","googleAnalytics":"","openGraph":{"title":"Live extension playground","type":"website","image":"https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400","site_name":"better-dom","url":"https://github.com/chemerisuk/better-dom"},"meta":{"title":"","description":"","keyword":""}};
     </script>
     
 
@@ -178,7 +178,7 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="better-dom.js.html">Source: better-dom.js</h1>
+        <h1 class="page-title" data-filename="better-dom.js.html">Source: /Users/chemerisuk/git/better-dom/build/better-dom.js</h1>
         
 
 
@@ -186,62 +186,66 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
+ * @file better-dom.js
  * @overview better-dom: Live extension playground
- * @version 2.0.0-rc.5 2014-09-27T16:29:40
+ * @version 2.0.0-rc.6 Thu, 02 Oct 2014 14:15:26 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
 (function() {
     "use strict";var SLICE$0 = Array.prototype.slice;
-    var const$$WINDOW = window;
-    var const$$DOCUMENT = const$$WINDOW.document;
-    var const$$HTML = const$$DOCUMENT.documentElement;
+    var $Users$chemerisuk$git$better$dom$src$const$$WINDOW = window;
+    var $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.document;
+    var $Users$chemerisuk$git$better$dom$src$const$$HTML = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.documentElement;
 
-    var const$$userAgent = const$$WINDOW.navigator.userAgent;
+    var $Users$chemerisuk$git$better$dom$src$const$$userAgent = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.navigator.userAgent;
 
-    var const$$LEGACY_IE = const$$DOCUMENT.attachEvent && !const$$WINDOW.CSSKeyframesRule;
-    var const$$LEGACY_ANDROID = ~const$$userAgent.indexOf("Android") && const$$userAgent.indexOf("Chrome") &lt; 0;
-    var const$$DOM2_EVENTS = !!const$$DOCUMENT.addEventListener;
-    var const$$WEBKIT_PREFIX = const$$WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
-    var const$$CUSTOM_EVENT_TYPE = "dataavailable";
+    var $Users$chemerisuk$git$better$dom$src$const$$LEGACY_IE = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.attachEvent &amp;&amp; !$Users$chemerisuk$git$better$dom$src$const$$WINDOW.CSSKeyframesRule;
+    var $Users$chemerisuk$git$better$dom$src$const$$LEGACY_ANDROID = ~$Users$chemerisuk$git$better$dom$src$const$$userAgent.indexOf("Android") &amp;&amp; $Users$chemerisuk$git$better$dom$src$const$$userAgent.indexOf("Chrome") &lt; 0;
+    var $Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS = !!$Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.addEventListener;
+    var $Users$chemerisuk$git$better$dom$src$const$$WEBKIT_PREFIX = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
+    var $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE = "dataavailable";
 
-    function errors$$MethodError(methodName) {var type = arguments[1];if(type === void 0)type = "$Element";
+    function $Users$chemerisuk$git$better$dom$src$errors$$MethodError(methodName) {var type = arguments[1];if(type === void 0)type = "$Element";
         var url = "http://chemerisuk.github.io/better-dom/" + type + ".html#" + methodName;
 
         this.message = type + "#" + methodName + " was called with illegal arguments. Check " + url + " to verify the method call";
     }
 
-    errors$$MethodError.prototype = new TypeError();
+    $Users$chemerisuk$git$better$dom$src$errors$$MethodError.prototype = new TypeError();
 
-    function errors$$StaticMethodError(methodName) {
-        errors$$MethodError.call(this, methodName, "DOM");
+    function $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError(methodName) {
+        $Users$chemerisuk$git$better$dom$src$errors$$MethodError.call(this, methodName, "DOM");
     }
 
-    errors$$StaticMethodError.prototype = new TypeError();
+    $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError.prototype = new TypeError();
+
+    function $Users$chemerisuk$git$better$dom$src$types$$$NullElement() {}
 
     /**
      * Used to represent a DOM element
      * @class $Element
-     * @private
      */
-    function types$$$Element(node) {
-        if (this instanceof types$$$Element) {
+    function $Users$chemerisuk$git$better$dom$src$types$$$Element(node) {
+        if (this instanceof $Users$chemerisuk$git$better$dom$src$types$$$Element) {
             if (node) {
-                node.__dom__ = this;
-
                 this[0] = node;
+                this._ = { _handlers: [], _watchers: {} };
+                // use a generated on compile time property to store
+                // a reference to the wrapper for circular binding
+                node["__2000000-rc006__"] = this;
             }
-
-            this._ = { _handlers: [], _watchers: {} };
-        } else {
-            var cached = node && node.__dom__;
+        } else if (node) {
+            var cached = node["__2000000-rc006__"];
             // create a wrapper only once for each native element
-            return cached ? cached : new types$$$Element(node);
+            return cached ? cached : new $Users$chemerisuk$git$better$dom$src$types$$$Element(node);
+        } else {
+            return new $Users$chemerisuk$git$better$dom$src$types$$$NullElement();
         }
     }
 
-    types$$$Element.prototype = {
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype = {
         /**
          * Create a {@link $Element} for a native DOM element
          * @memberof DOM
@@ -255,149 +259,89 @@
          */
         constructor: function(node) {
             // filter non elements like text nodes, comments etc.
-            return types$$$Element(node && node.nodeType === 1 ? node : null);
+            return $Users$chemerisuk$git$better$dom$src$types$$$Element(node &amp;&amp; node.nodeType === 1 ? node : null);
         },
         toString: function() {
             var node = this[0];
 
             return node ? node.tagName.toLowerCase() : "";
+        },
+        valueOf: function() {
+            return "2000000-rc006";
         }
     };
+
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype = new $Users$chemerisuk$git$better$dom$src$types$$$Element();
 
     /**
      * Global object to access the DOM
      * @namespace DOM
      * @extends $Element
      */
-    var types$$DOM = new types$$$Element(const$$HTML);
+    var $Users$chemerisuk$git$better$dom$src$types$$DOM = new $Users$chemerisuk$git$better$dom$src$types$$$Element($Users$chemerisuk$git$better$dom$src$const$$HTML);
 
-    types$$DOM.VERSION = "2.0.0-rc.5";
+    var $Users$chemerisuk$git$better$dom$src$exports$$_DOM = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.DOM;
 
-    var exports$$_DOM = const$$WINDOW.DOM;
-
-    types$$DOM.noConflict = function() {
-        if (const$$WINDOW.DOM === types$$DOM) {
-            const$$WINDOW.DOM = exports$$_DOM;
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.noConflict = function() {
+        if ($Users$chemerisuk$git$better$dom$src$const$$WINDOW.DOM === $Users$chemerisuk$git$better$dom$src$types$$DOM) {
+            $Users$chemerisuk$git$better$dom$src$const$$WINDOW.DOM = $Users$chemerisuk$git$better$dom$src$exports$$_DOM;
         }
 
-        return types$$DOM;
+        return $Users$chemerisuk$git$better$dom$src$types$$DOM;
     };
 
-    const$$WINDOW.DOM = types$$DOM;
-
-    var dom$create$$reTest = /^(?:[a-z-]+|\s*(&lt;.+>)\s*)$/i,
-        dom$create$$sandbox = const$$DOCUMENT.createElement("body"),
-        dom$create$$makeMethod = function(all)  {return function(value, varMap) {
-            var test = dom$create$$reTest.exec(value),
-                nodes, el;
-
-            if (value && test && !test[1]) {
-                nodes = const$$DOCUMENT.createElement(value);
-
-                if (all) nodes = [ new types$$$Element(nodes) ];
-            } else {
-                if (test && test[1]) {
-                    value = varMap ? types$$DOM.format(test[1], varMap) : test[1];
-                } else if (typeof value === "string") {
-                    value = types$$DOM.emmet(value, varMap);
-                } else {
-                    throw new errors$$StaticMethodError("create" + all);
-                }
-
-                dom$create$$sandbox.innerHTML = value; // parse input HTML string
-
-                for (nodes = all ? [] : null; el = dom$create$$sandbox.firstChild; ) {
-                    dom$create$$sandbox.removeChild(el); // detach element from the sandbox
-
-                    if (el.nodeType === 1) {
-                        if (all) {
-                            nodes.push(new types$$$Element(el));
-                        } else {
-                            nodes = el;
-
-                            break; // stop early, because need only the first element
-                        }
-                    }
-                }
-            }
-
-            return all ? nodes : new types$$$Element(nodes);
-        }};
-
-    /**
-     * Create a new {@link $Element} from Emmet or HTML string
-     * @memberof DOM
-     * @alias DOM.create
-     * @param  {String}       value     Emmet or HTML string
-     * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {$Element} an element wrapper
-     * @function
-     * @example
-     * DOM.create("div");                  // => wrapper of &lt;div>
-     * DOM.create("span>`{0}`", ["foo"]);  // => wrapper of &lt;span>foo&lt;/span>
-     * DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner &lt;span>
-     */
-    types$$DOM.create = dom$create$$makeMethod("");
-
-    /**
-     * Create a new array of {@link $Element}s from Emmet or HTML string
-     * @memberof DOM
-     * @alias DOM.createAll
-     * @param  {String}       value     Emmet or HTML string
-     * @param  {Object|Array} [varMap]  key/value map of variables
-     * @return {Array.&lt;$Element>} an array of element wrappers
-     * @function
-     * @example
-     * DOM.createAll("li*5");                 // => array with 5 &lt;li> $Elements
-     * DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements: &lt;span> and &lt;b>
-     */
-    types$$DOM.createAll = dom$create$$makeMethod("All");
+    $Users$chemerisuk$git$better$dom$src$const$$WINDOW.DOM = $Users$chemerisuk$git$better$dom$src$types$$DOM;
 
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
-        dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
-        dom$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
-        dom$emmet$$reAttr = /\s*([\w\-]+)(?:=((?:`((?:\\?.)*)?`)|[^\s]+))?/g,
-        dom$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-        dom$emmet$$reDot = /\./g,
-        dom$emmet$$reDollar = /\$/g,
-        dom$emmet$$tagCache = {"": ""},
-        dom$emmet$$normalizeAttrs = function(_, name, value, cleanValue)  {
-            var quotes = value && value.indexOf("\"") >= 0 ? "'" : "\"";
-            // always wrap attribute values with quotes if they don't exist
-            // replace ` quotes with " except when it's a single quotes case
-            return " " + name + "=" + quotes + (cleanValue || value || name) + quotes;
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$reAttr = /\s*([\w\-]+)(?:=((?:`([^`]*)`)|[^\s]*))?/g,
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$reDot = /\./g,
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$reDollar = /\$/g,
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache = {"": ""},
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$normalizeAttrs = function(_, name, value, rawValue)  {
+            // try to detemnie which kind of quotes to use
+            var quote = value &amp;&amp; value.indexOf("\"") >= 0 ? "'" : "\"";
+
+            if (typeof rawValue === "string") {
+                // grab unquoted value for smart quotes
+                value = rawValue;
+            } else if (typeof value !== "string") {
+                // handle boolean attributes by using name as value
+                value = name;
+            }
+            // always wrap attribute values with quotes even they don't exist
+            return " " + name + "=" + quote + value + quote;
         },
-        dom$emmet$$injectTerm = function(term, append)  {return function(html)  {
-            var index = append ? html.lastIndexOf("&lt;") : html.indexOf(">");
-            // inject term into the html string
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$injectTerm = function(term, end)  {return function(html)  {
+            // find index of where to inject the term
+            var index = end ? html.lastIndexOf("&lt;") : html.indexOf(">");
+            // inject the term into the HTML string
             return html.substr(0, index) + term + html.substr(index);
         }},
-        dom$emmet$$makeTerm = function(tag)  {
-            var result = dom$emmet$$tagCache[tag];
-
-            if (!result) result = dom$emmet$$tagCache[tag] = "&lt;" + tag + ">&lt;/" + tag + ">";
-
-            return result;
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$makeTerm = function(tag)  {
+            return $Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache[tag] || ($Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache[tag] = "&lt;" + tag + ">&lt;/" + tag + ">");
         },
-        dom$emmet$$makeIndexedTerm = function(n, term)  {
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$makeIndexedTerm = function(n, term)  {
             var result = Array(n), i;
 
             for (i = 0; i &lt; n; ++i) {
-                result[i] = term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
+                result[i] = term.replace($Users$chemerisuk$git$better$dom$src$dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
                     var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
-                    // handle zero-padded index values
-                    return (fmt + index).slice(-fmt.length).replace(dom$emmet$$reDollar, "0");
+                    // handle zero-padded index values, like $$$ etc.
+                    return (fmt + index).slice(-fmt.length).replace($Users$chemerisuk$git$better$dom$src$dom$emmet$$reDollar, "0");
                 });
             }
 
             return result;
         };
 
-    // populate empty tags
+    // populate empty tag names with result
     "area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag)  {
-        dom$emmet$$tagCache[tag] = "&lt;" + tag + ">";
+        $Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache[tag] = "&lt;" + tag + ">";
     });
 
     /**
@@ -413,34 +357,34 @@
      * DOM.emmet("a");                                    // => "&lt;a>&lt;/a>"
      * DOM.emmet("ul>li*2");                              // => "&lt;ul>&lt;li>&lt;/li>&lt;li>&lt;/li>&lt;/ul>"
      * DOM.emmet("b>`hello {user}`", {user: "world"});    // => "&lt;b>hello world&lt;/b>
-     * DOM.emmet("i.{0}+span", ["icon"]);                 // => "&lt;i class="icon">&lt;/i&gt&lt;span>&lt;/span>"
+     * DOM.emmet("i.{0}+span", ["icon"]);                 // => "&lt;i class="icon">&lt;/i&amp;gt&lt;span>&lt;/span>"
      * DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;span id="bar">&lt;/span>&lt;/i>"
      */
-    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
-        if (typeof template !== "string") throw new errors$$StaticMethodError("emmet");
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
+        if (typeof template !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError("emmet");
 
-        if (varMap) template = types$$DOM.format(template, varMap);
+        if (varMap) template = $Users$chemerisuk$git$better$dom$src$types$$DOM.format(template, varMap);
 
-        if (template in dom$emmet$$tagCache) {return dom$emmet$$tagCache[template];}
+        if (template in $Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache) {return $Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache[template];}
 
         // transform template string into RPN
 
         var stack = [], output = [];
 
-        $D$2 = (template.match(dom$emmet$$reParse));$D$0 = 0;$D$1 = $D$2.length;for (var str ;$D$0 &lt; $D$1;){str = ($D$2[$D$0++]);
+        $D$2 = (template.match($Users$chemerisuk$git$better$dom$src$dom$emmet$$reParse));$D$0 = 0;$D$1 = $D$2.length;for (var str ;$D$0 &lt; $D$1;){str = ($D$2[$D$0++]);
             var op = str[0];
-            var priority = dom$emmet$$operators[op];
+            var priority = $Users$chemerisuk$git$better$dom$src$dom$emmet$$operators[op];
 
             if (priority) {
                 if (str !== "(") {
                     // for ^ operator need to skip > str.length times
                     for (var i = 0, n = (op === "^" ? str.length : 1); i &lt; n; ++i) {
-                        while (stack[0] !== op && dom$emmet$$operators[stack[0]] >= priority) {
+                        while (stack[0] !== op &amp;&amp; $Users$chemerisuk$git$better$dom$src$dom$emmet$$operators[stack[0]] >= priority) {
                             var head = stack.shift();
 
                             output.push(head);
                             // for ^ operator stop shifting when the first > is found
-                            if (op === "^" && head === ">") break;
+                            if (op === "^" &amp;&amp; head === ">") break;
                         }
                     }
                 }
@@ -454,7 +398,7 @@
                     }
                     // handle multiple classes, e.g. a.one.two
                     if (op === ".") {
-                        output.push(str.substr(1).replace(dom$emmet$$reDot, " "));
+                        output.push(str.substr(1).replace($Users$chemerisuk$git$better$dom$src$dom$emmet$$reDot, " "));
                     }
 
                     stack.unshift(op);
@@ -466,31 +410,34 @@
 
         output = output.concat(stack);
 
-        // handle single tag case
-        if (output.length === 1) {return dom$emmet$$makeTerm(output[0]);}
-
         // transform RPN into html nodes
 
         stack = [];
 
         $D$0 = 0;$D$1 = output.length;for (var str$0 ;$D$0 &lt; $D$1;){str$0 = (output[$D$0++]);
-            if (str$0 in dom$emmet$$operators) {
+            if (str$0 in $Users$chemerisuk$git$better$dom$src$dom$emmet$$operators) {
                 var value = stack.shift();
                 var node = stack.shift();
 
-                if (typeof node === "string") node = [ dom$emmet$$makeTerm(node) ];
+                if (typeof node === "string") {
+                    node = [ $Users$chemerisuk$git$better$dom$src$dom$emmet$$makeTerm(node) ];
+                }
 
                 switch(str$0) {
                 case ".":
-                    value = dom$emmet$$injectTerm(" class=\"" + value + "\"");
+                    value = $Users$chemerisuk$git$better$dom$src$dom$emmet$$injectTerm(" class=\"" + value + "\"");
                     break;
 
                 case "#":
-                    value = dom$emmet$$injectTerm(" id=\"" + value + "\"");
+                    value = $Users$chemerisuk$git$better$dom$src$dom$emmet$$injectTerm(" id=\"" + value + "\"");
                     break;
 
                 case "[":
-                    value = dom$emmet$$injectTerm(value.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs));
+                    value = $Users$chemerisuk$git$better$dom$src$dom$emmet$$injectTerm(value.replace($Users$chemerisuk$git$better$dom$src$dom$emmet$$reAttr, $Users$chemerisuk$git$better$dom$src$dom$emmet$$normalizeAttrs));
+                    break;
+
+                case "*":
+                    node = $Users$chemerisuk$git$better$dom$src$dom$emmet$$makeIndexedTerm(+value, node.join(""));
                     break;
 
                 case "`":
@@ -498,16 +445,11 @@
                     node = [ value ];
                     break;
 
-                case "*":
-                    node = dom$emmet$$makeIndexedTerm(+value, node.join(""));
-                    break;
-
-                default:
-                    // handle ">", "+" and "^" operators
-                    value = typeof value === "string" ? dom$emmet$$makeTerm(value) : value.join("");
+                default: /* ">", "+", "^" */
+                    value = typeof value === "string" ? $Users$chemerisuk$git$better$dom$src$dom$emmet$$makeTerm(value) : value.join("");
 
                     if (str$0 === ">") {
-                        value = dom$emmet$$injectTerm(value, true);
+                        value = $Users$chemerisuk$git$better$dom$src$dom$emmet$$injectTerm(value, true);
                     } else {
                         node.push(value);
                     }
@@ -519,28 +461,99 @@
             stack.unshift(str$0);
         };$D$0 = $D$1 = void 0;
 
-        output = stack[0].join("");
-        // cache static string results
-        if (varMap) dom$emmet$$tagCache[template] = output;
+        if (output.length === 1) {
+            // handle single tag case
+            output = $Users$chemerisuk$git$better$dom$src$dom$emmet$$makeTerm(stack[0]);
+        } else {
+            output = stack[0].join("");
+        }
 
         return output;
     };
 
-    var util$index$$arrayProto = Array.prototype,
-        util$index$$currentScript = const$$DOCUMENT.scripts[0];
+    var $Users$chemerisuk$git$better$dom$src$dom$emmet$$default = $Users$chemerisuk$git$better$dom$src$dom$emmet$$tagCache;
 
-    var util$index$$default = {
+    var $Users$chemerisuk$git$better$dom$src$dom$create$$sandbox = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createElement("body"),
+        $Users$chemerisuk$git$better$dom$src$dom$create$$makeMethod = function(all)  {return function(value, varMap) {
+            var nodes, el;
+
+            if (value &amp;&amp; value in $Users$chemerisuk$git$better$dom$src$dom$emmet$$default) {
+                nodes = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createElement(value);
+
+                if (all) nodes = [ new $Users$chemerisuk$git$better$dom$src$types$$$Element(nodes) ];
+            } else {
+                value = value.trim();
+
+                if (value[0] === "&lt;" &amp;&amp; value[value.length - 1] === ">") {
+                    value = varMap ? $Users$chemerisuk$git$better$dom$src$types$$DOM.format(value, varMap) : value;
+                } else {
+                    value = $Users$chemerisuk$git$better$dom$src$types$$DOM.emmet(value, varMap);
+                }
+
+                $Users$chemerisuk$git$better$dom$src$dom$create$$sandbox.innerHTML = value; // parse input HTML string
+
+                for (nodes = all ? [] : null; el = $Users$chemerisuk$git$better$dom$src$dom$create$$sandbox.firstChild; ) {
+                    $Users$chemerisuk$git$better$dom$src$dom$create$$sandbox.removeChild(el); // detach element from the sandbox
+
+                    if (el.nodeType === 1) {
+                        if (all) {
+                            nodes.push(new $Users$chemerisuk$git$better$dom$src$types$$$Element(el));
+                        } else {
+                            nodes = el;
+
+                            break; // stop early, because need only the first element
+                        }
+                    }
+                }
+            }
+
+            return all ? nodes : $Users$chemerisuk$git$better$dom$src$types$$$Element(nodes);
+        }};
+
+    /**
+     * Create a new {@link $Element} from Emmet or HTML string
+     * @memberof DOM
+     * @alias DOM.create
+     * @param  {String}       value     Emmet or HTML string
+     * @param  {Object|Array} [varMap]  key/value map of variables
+     * @return {$Element} an element wrapper
+     * @function
+     * @example
+     * DOM.create("div");                  // => wrapper of &lt;div>
+     * DOM.create("span>`{0}`", ["foo"]);  // => wrapper of &lt;span>foo&lt;/span>
+     * DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner &lt;span>
+     */
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.create = $Users$chemerisuk$git$better$dom$src$dom$create$$makeMethod("");
+
+    /**
+     * Create a new array of {@link $Element}s from Emmet or HTML string
+     * @memberof DOM
+     * @alias DOM.createAll
+     * @param  {String}       value     Emmet or HTML string
+     * @param  {Object|Array} [varMap]  key/value map of variables
+     * @return {Array.&lt;$Element>} an array of element wrappers
+     * @function
+     * @example
+     * DOM.createAll("li*5");                 // => array with 5 &lt;li> $Elements
+     * DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements: &lt;span> and &lt;b>
+     */
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.createAll = $Users$chemerisuk$git$better$dom$src$dom$create$$makeMethod("All");
+
+    var $Users$chemerisuk$git$better$dom$src$util$index$$arrayProto = Array.prototype,
+        $Users$chemerisuk$git$better$dom$src$util$index$$currentScript = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.scripts[0];
+
+    var $Users$chemerisuk$git$better$dom$src$util$index$$default = {
         computeStyle: function(node)  {
-            return const$$WINDOW.getComputedStyle ? const$$WINDOW.getComputedStyle(node) : node.currentStyle;
+            return $Users$chemerisuk$git$better$dom$src$const$$WINDOW.getComputedStyle ? $Users$chemerisuk$git$better$dom$src$const$$WINDOW.getComputedStyle(node) : node.currentStyle;
         },
         injectElement: function(el)  {
-            return util$index$$currentScript.parentNode.insertBefore(el, util$index$$currentScript);
+            return $Users$chemerisuk$git$better$dom$src$util$index$$currentScript.parentNode.insertBefore(el, $Users$chemerisuk$git$better$dom$src$util$index$$currentScript);
         },
         // utilites
-        every: util$index$$arrayProto.every,
-        each: util$index$$arrayProto.forEach,
-        filter: util$index$$arrayProto.filter,
-        map: util$index$$arrayProto.map,
+        every: $Users$chemerisuk$git$better$dom$src$util$index$$arrayProto.every,
+        each: $Users$chemerisuk$git$better$dom$src$util$index$$arrayProto.forEach,
+        filter: $Users$chemerisuk$git$better$dom$src$util$index$$arrayProto.filter,
+        map: $Users$chemerisuk$git$better$dom$src$util$index$$arrayProto.map,
         isArray: Array.isArray,
         keys: Object.keys,
         assign: function(target, source)  {
@@ -554,7 +567,7 @@
             try {
                 fn.call(context, arg1, arg2);
             } catch (err) {
-                const$$WINDOW.setTimeout(function()  { throw err }, 1);
+                $Users$chemerisuk$git$better$dom$src$const$$WINDOW.setTimeout(function()  { throw err }, 1);
             }
         }
     };
@@ -562,34 +575,34 @@
     /*
      * Helper for accessing css properties
      */
-    var util$stylehooks$$hooks = {get: {}, set: {}},
-        util$stylehooks$$reDash = /\-./g,
-        util$stylehooks$$reCamel = /[A-Z]/g,
-        util$stylehooks$$directions = ["Top", "Right", "Bottom", "Left"],
-        util$stylehooks$$computed = util$index$$default.computeStyle(const$$HTML),
+    var $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks = {get: {}, set: {}},
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$reDash = /\-./g,
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$reCamel = /[A-Z]/g,
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$directions = ["Top", "Right", "Bottom", "Left"],
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$computed = $Users$chemerisuk$git$better$dom$src$util$index$$default.computeStyle($Users$chemerisuk$git$better$dom$src$const$$HTML),
         // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
-        util$stylehooks$$props = util$stylehooks$$computed.length ? Array.prototype.slice.call(util$stylehooks$$computed, 0) : util$index$$default.keys(util$stylehooks$$computed).map(function(key)  {
-            return key.replace(util$stylehooks$$reCamel, function(str)  {return "-" + str.toLowerCase()});
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$props = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$computed.length ? Array.prototype.slice.call($Users$chemerisuk$git$better$dom$src$util$stylehooks$$computed, 0) : $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$util$stylehooks$$computed).map(function(key)  {
+            return key.replace($Users$chemerisuk$git$better$dom$src$util$stylehooks$$reCamel, function(str)  {return "-" + str.toLowerCase()});
         }),
-        util$stylehooks$$shortCuts = {
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$shortCuts = {
             font: ["fontStyle", "fontSize", "/", "lineHeight", "fontFamily"],
-            padding: util$stylehooks$$directions.map(function(dir)  {return "padding" + dir}),
-            margin: util$stylehooks$$directions.map(function(dir)  {return "margin" + dir}),
-            "border-width": util$stylehooks$$directions.map(function(dir)  {return "border" + dir + "Width"}),
-            "border-style": util$stylehooks$$directions.map(function(dir)  {return "border" + dir + "Style"})
+            padding: $Users$chemerisuk$git$better$dom$src$util$stylehooks$$directions.map(function(dir)  {return "padding" + dir}),
+            margin: $Users$chemerisuk$git$better$dom$src$util$stylehooks$$directions.map(function(dir)  {return "margin" + dir}),
+            "border-width": $Users$chemerisuk$git$better$dom$src$util$stylehooks$$directions.map(function(dir)  {return "border" + dir + "Width"}),
+            "border-style": $Users$chemerisuk$git$better$dom$src$util$stylehooks$$directions.map(function(dir)  {return "border" + dir + "Style"})
         };
 
-    util$stylehooks$$props.forEach(function(propName)  {
+    $Users$chemerisuk$git$better$dom$src$util$stylehooks$$props.forEach(function(propName)  {
         var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
             unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
-            stylePropName = propName.replace(util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
+            stylePropName = propName.replace($Users$chemerisuk$git$better$dom$src$util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
         // most of browsers starts vendor specific props in lowercase
-        if (!(stylePropName in util$stylehooks$$computed)) {
+        if (!(stylePropName in $Users$chemerisuk$git$better$dom$src$util$stylehooks$$computed)) {
             stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
         }
 
-        util$stylehooks$$hooks.get[unprefixedName] = function(style)  {return style[stylePropName]};
-        util$stylehooks$$hooks.set[unprefixedName] = function(style, value)  {
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks.get[unprefixedName] = function(style)  {return style[stylePropName]};
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks.set[unprefixedName] = function(style, value)  {
             value = typeof value === "number" ? value + "px" : value.toString();
             // use cssText property to determine DOM.importStyles call
             style["cssText" in style ? stylePropName : propName] = value;
@@ -598,24 +611,24 @@
 
     // Exclude the following css properties from adding px
     " float fill-opacity font-weight line-height opacity orphans widows z-index zoom ".split(" ").forEach(function(propName)  {
-        var stylePropName = propName.replace(util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
+        var stylePropName = propName.replace($Users$chemerisuk$git$better$dom$src$util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
 
         if (propName === "float") {
-            stylePropName = "cssFloat" in util$stylehooks$$computed ? "cssFloat" : "styleFloat";
+            stylePropName = "cssFloat" in $Users$chemerisuk$git$better$dom$src$util$stylehooks$$computed ? "cssFloat" : "styleFloat";
             // normalize float css property
-            util$stylehooks$$hooks.get[propName] = function(style)  {return style[stylePropName]};
+            $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks.get[propName] = function(style)  {return style[stylePropName]};
         }
 
-        util$stylehooks$$hooks.set[propName] = function(style, value)  {
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks.set[propName] = function(style, value)  {
             style["cssText" in style ? stylePropName : propName] = value.toString();
         };
     });
 
     // normalize property shortcuts
-    util$index$$default.keys(util$stylehooks$$shortCuts).forEach(function(key)  {
-        var props = util$stylehooks$$shortCuts[key];
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$util$stylehooks$$shortCuts).forEach(function(key)  {
+        var props = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$shortCuts[key];
 
-        util$stylehooks$$hooks.get[key] = function(style)  {
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks.get[key] = function(style)  {
             var result = [],
                 hasEmptyStyleValue = function(prop, index)  {
                     result.push(prop === "/" ? prop : style[prop]);
@@ -626,8 +639,8 @@
             return props.some(hasEmptyStyleValue) ? "" : result.join(" ");
         };
 
-        util$stylehooks$$hooks.set[key] = function(style, value)  {
-            if (value && "cssText" in style) {
+        $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks.set[key] = function(style, value)  {
+            if (value &amp;&amp; "cssText" in style) {
                 // normalize setting complex property across browsers
                 style.cssText += ";" + key + ":" + value;
             } else {
@@ -636,11 +649,11 @@
         };
     });
 
-    var util$stylehooks$$default = util$stylehooks$$hooks;
+    var $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$hooks;
 
-    var dom$importstyles$$styleNode = util$index$$default.injectElement(const$$DOCUMENT.createElement("style")),
-        dom$importstyles$$styleSheet = dom$importstyles$$styleNode.sheet || dom$importstyles$$styleNode.styleSheet,
-        dom$importstyles$$styleRules = dom$importstyles$$styleSheet.cssRules || dom$importstyles$$styleSheet.rules;
+    var $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleNode = $Users$chemerisuk$git$better$dom$src$util$index$$default.injectElement($Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createElement("style")),
+        $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleSheet = $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleNode.sheet || $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleNode.styleSheet,
+        $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleRules = $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleSheet.cssRules || $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleSheet.rules;
 
     /**
      * Append global css styles
@@ -653,11 +666,11 @@
      * // you can use strings CSS too
      * DOM.importStyles(".bar", "background: white; color: gray");
      */
-    types$$DOM.importStyles = function(selector, cssText) {
-        if (cssText && typeof cssText === "object") {
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.importStyles = function(selector, cssText) {
+        if (cssText &amp;&amp; typeof cssText === "object") {
             // use styleObj to collect all style props for a new CSS rule
-            var styleObj = util$index$$default.keys(cssText).reduce(function(styleObj, prop)  {
-                var hook = util$stylehooks$$default.set[prop];
+            var styleObj = $Users$chemerisuk$git$better$dom$src$util$index$$default.keys(cssText).reduce(function(styleObj, prop)  {
+                var hook = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.set[prop];
 
                 if (hook) {
                     hook(styleObj, cssText[prop]);
@@ -668,39 +681,39 @@
                 return styleObj;
             }, {});
 
-            cssText = util$index$$default.keys(styleObj).map(function(key)  {return key + ":" + styleObj[key]}).join(";");
+            cssText = $Users$chemerisuk$git$better$dom$src$util$index$$default.keys(styleObj).map(function(key)  {return key + ":" + styleObj[key]}).join(";");
         }
 
         if (typeof selector !== "string" || typeof cssText !== "string") {
-            throw new errors$$StaticMethodError("importStyles");
+            throw new $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError("importStyles");
         }
 
-        if (dom$importstyles$$styleSheet.cssRules) {
-            dom$importstyles$$styleSheet.insertRule(selector + "{" + cssText + "}", dom$importstyles$$styleRules.length);
+        if ($Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleSheet.cssRules) {
+            $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleSheet.insertRule(selector + "{" + cssText + "}", $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleRules.length);
         } else {
             // ie doesn't support multiple selectors in addRule
-            selector.split(",").forEach(function(selector)  { dom$importstyles$$styleSheet.addRule(selector, cssText) });
+            selector.split(",").forEach(function(selector)  { $Users$chemerisuk$git$better$dom$src$dom$importstyles$$styleSheet.addRule(selector, cssText) });
         }
     };
 
-    var dom$importstyles$$default = types$$DOM.importStyles;
+    var $Users$chemerisuk$git$better$dom$src$dom$importstyles$$default = $Users$chemerisuk$git$better$dom$src$types$$DOM.importStyles;
 
     /*
      * Helper for css selectors
      */
 
     /*es6-transpiler has-iterators:false, has-generators: false*/
-    var util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
-        util$selectormatcher$$propName = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix)  {
+    var $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
+        $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$propName = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix)  {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || const$$HTML[propertyName] && propertyName;
+                return result || $Users$chemerisuk$git$better$dom$src$const$$HTML[propertyName] &amp;&amp; propertyName;
             }, null);
 
-    var util$selectormatcher$$default = function(selector, context) {
+    var $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$default = function(selector, context) {
         if (typeof selector !== "string") return null;
 
-        var quick = util$selectormatcher$$rquickIs.exec(selector);
+        var quick = $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$rquickIs.exec(selector);
 
         if (quick) {
             //   0  1    2   3          4
@@ -713,21 +726,21 @@
         return function(node) {var $D$3;var $D$4;
             var result, found;
 
-            if (!quick && !util$selectormatcher$$propName) {
+            if (!quick &amp;&amp; !$Users$chemerisuk$git$better$dom$src$util$selectormatcher$$propName) {
                 found = (context || document).querySelectorAll(selector);
             }
 
-            for (; node && node.nodeType === 1; node = node.parentNode) {
+            for (; node &amp;&amp; node.nodeType === 1; node = node.parentNode) {
                 if (quick) {
                     result = (
-                        (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &&
-                        (!quick[2] || node.id === quick[2]) &&
-                        (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &&
+                        (!quick[1] || node.nodeName.toLowerCase() === quick[1]) &amp;&amp;
+                        (!quick[2] || node.id === quick[2]) &amp;&amp;
+                        (!quick[3] || (quick[3][1] ? node.getAttribute(quick[3][0]) === quick[3][1] : node.hasAttribute(quick[3][0]))) &amp;&amp;
                         (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
                     );
                 } else {
-                    if (util$selectormatcher$$propName) {
-                        result = node[util$selectormatcher$$propName](selector);
+                    if ($Users$chemerisuk$git$better$dom$src$util$selectormatcher$$propName) {
+                        result = node[$Users$chemerisuk$git$better$dom$src$util$selectormatcher$$propName](selector);
                     } else {
                         $D$3 = 0;$D$4 = found.length;for (var n ;$D$3 &lt; $D$4;){n = (found[$D$3++]);
                             if (n === node) return n;
@@ -738,134 +751,134 @@
                 if (result || !context || node === context) break;
             }
 
-            return result && node;
+            return result &amp;&amp; node;
         };
     };
 
-    var util$extensionhandler$$reRemovableMethod = /^(on|do)[A-Z]/,
-        util$extensionhandler$$ANIMATION_ID = "DOM" + Date.now(),
-        util$extensionhandler$$stopExt = function(node, index)  {return function(e)  {
+    var $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$reRemovableMethod = /^(on|do)[A-Z]/,
+        $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ANIMATION_ID = "DOM" + Date.now(),
+        $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$stopExt = function(node, index)  {return function(e)  {
             var isEventValid;
 
-            e = e || const$$WINDOW.event;
+            e = e || $Users$chemerisuk$git$better$dom$src$const$$WINDOW.event;
 
-            if (const$$LEGACY_IE) {
-                isEventValid = e.srcUrn === const$$CUSTOM_EVENT_TYPE && e.srcElement === node;
+            if ($Users$chemerisuk$git$better$dom$src$const$$LEGACY_IE) {
+                isEventValid = e.srcUrn === $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE &amp;&amp; e.srcElement === node;
             } else {
-                isEventValid = e.animationName === util$extensionhandler$$ANIMATION_ID && e.target === node;
+                isEventValid = e.animationName === $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ANIMATION_ID &amp;&amp; e.target === node;
             }
             // mark extension as processed via e._skip bitmask
             if (isEventValid) (e._skip = e._skip || {})[index] = true;
         }},
-        util$extensionhandler$$ExtensionHandler = function(selector, condition, mixins, index)  {
-            var eventHandlers = util$index$$default.keys(mixins).filter(function(prop)  {return !!util$extensionhandler$$reRemovableMethod.exec(prop)}),
-                ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
+        $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler = function(selector, condition, mixins, index)  {
+            var eventHandlers = $Users$chemerisuk$git$better$dom$src$util$index$$default.keys(mixins).filter(function(prop)  {return !!$Users$chemerisuk$git$better$dom$src$util$extensionhandler$$reRemovableMethod.exec(prop)}),
+                ctr = mixins.hasOwnProperty("constructor") &amp;&amp; mixins.constructor,
                 ext = function(node, mock)  {
-                    var el = types$$$Element(node);
+                    var el = $Users$chemerisuk$git$better$dom$src$types$$$Element(node);
 
-                    if (const$$LEGACY_IE) {
-                        node.attachEvent("on" + util$extensionhandler$$ExtensionHandler.EVENT_TYPE, util$extensionhandler$$stopExt(node, index));
+                    if ($Users$chemerisuk$git$better$dom$src$const$$LEGACY_IE) {
+                        node.attachEvent("on" + $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler.EVENT_TYPE, $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$stopExt(node, index));
                     } else {
-                        node.addEventListener(util$extensionhandler$$ExtensionHandler.EVENT_TYPE, util$extensionhandler$$stopExt(node, index), false);
+                        node.addEventListener($Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler.EVENT_TYPE, $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$stopExt(node, index), false);
                     }
 
                     if (mock === true || condition(el) !== false) {
-                        util$index$$default.assign(el, mixins);
+                        $Users$chemerisuk$git$better$dom$src$util$index$$default.assign(el, mixins);
                         // invoke constructor if it exists
                         // make a safe call so live extensions can't break each other
-                        if (ctr) util$index$$default.safeInvoke(ctr, el);
+                        if (ctr) $Users$chemerisuk$git$better$dom$src$util$index$$default.safeInvoke(ctr, el);
                         // remove event handlers from element's interface
                         if (mock !== true) eventHandlers.forEach(function(prop)  { delete el[prop] });
                     }
                 };
 
-            ext.accept = util$selectormatcher$$default(selector);
+            ext.accept = $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$default(selector);
 
             return ext;
         };
 
-    if (const$$LEGACY_IE) {
-        util$extensionhandler$$ExtensionHandler.EVENT_TYPE = const$$CUSTOM_EVENT_TYPE;
+    if ($Users$chemerisuk$git$better$dom$src$const$$LEGACY_IE) {
+        $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler.EVENT_TYPE = $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE;
     } else {
-        util$extensionhandler$$ExtensionHandler.ANIMATION_ID = util$extensionhandler$$ANIMATION_ID;
-        util$extensionhandler$$ExtensionHandler.EVENT_TYPE = const$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
+        $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler.ANIMATION_ID = $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ANIMATION_ID;
+        $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler.EVENT_TYPE = $Users$chemerisuk$git$better$dom$src$const$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
     }
 
-    util$extensionhandler$$ExtensionHandler.traverse = function(node, skip)  {return function(ext, index)  {
+    $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler.traverse = function(node, skip)  {return function(ext, index)  {
         // skip previously excluded or mismatched elements
-        if (!skip[index] && ext.accept(node)) ext(node);
+        if (!skip[index] &amp;&amp; ext.accept(node)) ext(node);
     }};
 
-    var util$extensionhandler$$default = util$extensionhandler$$ExtensionHandler;
+    var $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default = $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$ExtensionHandler;
 
     // Inspired by trick discovered by Daniel Buchner:
     // https://github.com/csuwldcat/SelectorListener
 
-    var dom$extend$$extensions = [],
-        dom$extend$$returnTrue = function()  {return true},
-        dom$extend$$returnFalse = function()  {return false},
-        dom$extend$$readyCallback, dom$extend$$styles;
+    var $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions = [],
+        $Users$chemerisuk$git$better$dom$src$dom$extend$$returnTrue = function()  {return true},
+        $Users$chemerisuk$git$better$dom$src$dom$extend$$returnFalse = function()  {return false},
+        $Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback, $Users$chemerisuk$git$better$dom$src$dom$extend$$styles;
 
-    if (const$$LEGACY_IE) {
-        var dom$extend$$link = const$$DOCUMENT.querySelector("link[rel=htc]");
+    if ($Users$chemerisuk$git$better$dom$src$const$$LEGACY_IE) {
+        var $Users$chemerisuk$git$better$dom$src$dom$extend$$link = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.querySelector("link[rel=htc]");
 
-        if (dom$extend$$link) {
-            dom$extend$$link = dom$extend$$link.href;
+        if ($Users$chemerisuk$git$better$dom$src$dom$extend$$link) {
+            $Users$chemerisuk$git$better$dom$src$dom$extend$$link = $Users$chemerisuk$git$better$dom$src$dom$extend$$link.href;
         } else {
-            if ("console" in const$$WINDOW) {
-                const$$WINDOW.console.log("WARNING: In order to use live extensions in IE &lt; 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
+            if ("console" in $Users$chemerisuk$git$better$dom$src$const$$WINDOW) {
+                $Users$chemerisuk$git$better$dom$src$const$$WINDOW.console.log("WARNING: In order to use live extensions in IE &lt; 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
             }
 
-            var dom$extend$$scripts = const$$DOCUMENT.scripts;
+            var $Users$chemerisuk$git$better$dom$src$dom$extend$$scripts = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.scripts;
             // trying to guess HTC file location
-            dom$extend$$link = dom$extend$$scripts[dom$extend$$scripts.length - 1].src.split("/");
-            dom$extend$$link = "/" + dom$extend$$link.slice(3, dom$extend$$link.length - 1).concat("better-dom.htc").join("/");
+            $Users$chemerisuk$git$better$dom$src$dom$extend$$link = $Users$chemerisuk$git$better$dom$src$dom$extend$$scripts[$Users$chemerisuk$git$better$dom$src$dom$extend$$scripts.length - 1].src.split("/");
+            $Users$chemerisuk$git$better$dom$src$dom$extend$$link = "/" + $Users$chemerisuk$git$better$dom$src$dom$extend$$link.slice(3, $Users$chemerisuk$git$better$dom$src$dom$extend$$link.length - 1).concat("better-dom.htc").join("/");
         }
 
-        dom$extend$$styles = {behavior: "url(" + dom$extend$$link + ") !important"};
+        $Users$chemerisuk$git$better$dom$src$dom$extend$$styles = {behavior: "url(" + $Users$chemerisuk$git$better$dom$src$dom$extend$$link + ") !important"};
 
         // append behavior for HTML element to apply several legacy IE-specific fixes
-        dom$importstyles$$default("html", dom$extend$$styles);
+        $Users$chemerisuk$git$better$dom$src$dom$importstyles$$default("html", $Users$chemerisuk$git$better$dom$src$dom$extend$$styles);
 
-        const$$DOCUMENT.attachEvent("on" + util$extensionhandler$$default.EVENT_TYPE, function()  {
-            var e = const$$WINDOW.event;
+        $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.attachEvent("on" + $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.EVENT_TYPE, function()  {
+            var e = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.event;
 
-            if (e.srcUrn === const$$CUSTOM_EVENT_TYPE) {
-                dom$extend$$extensions.forEach(util$extensionhandler$$default.traverse(e.srcElement, e._skip || {}));
+            if (e.srcUrn === $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE) {
+                $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions.forEach($Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.traverse(e.srcElement, e._skip || {}));
             }
         });
     } else {
-        var dom$extend$$readyState = const$$DOCUMENT.readyState;
+        var $Users$chemerisuk$git$better$dom$src$dom$extend$$readyState = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.readyState;
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
-        if (const$$DOCUMENT.attachEvent ? dom$extend$$readyState !== "complete" : dom$extend$$readyState === "loading") {
-            dom$extend$$readyCallback = function()  {
+        if ($Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.attachEvent ? $Users$chemerisuk$git$better$dom$src$dom$extend$$readyState !== "complete" : $Users$chemerisuk$git$better$dom$src$dom$extend$$readyState === "loading") {
+            $Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback = function()  {
                 // MUST check for the readyCallback to avoid double
                 // initialization on window.onload event
-                if (dom$extend$$readyCallback) {
-                    dom$extend$$extensions.forEach(function(ext)  { ext.start() });
+                if ($Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback) {
+                    $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions.forEach(function(ext)  { ext.start() });
 
-                    dom$extend$$readyCallback = null;
+                    $Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback = null;
                 }
             };
 
             // use DOMContentLoaded to initialize any live extension
             // AFTER the document is completely parsed to avoid quirks
-            const$$DOCUMENT.addEventListener("DOMContentLoaded", dom$extend$$readyCallback, false);
+            $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.addEventListener("DOMContentLoaded", $Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback, false);
             // just in case the DOMContentLoaded event fails use onload
-            const$$WINDOW.addEventListener("load", dom$extend$$readyCallback, false);
+            $Users$chemerisuk$git$better$dom$src$const$$WINDOW.addEventListener("load", $Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback, false);
         }
 
-        dom$importstyles$$default("@" + const$$WEBKIT_PREFIX + "keyframes " + util$extensionhandler$$default.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
+        $Users$chemerisuk$git$better$dom$src$dom$importstyles$$default("@" + $Users$chemerisuk$git$better$dom$src$const$$WEBKIT_PREFIX + "keyframes " + $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
 
-        dom$extend$$styles = {
+        $Users$chemerisuk$git$better$dom$src$dom$extend$$styles = {
             "animation-duration": "1ms !important",
-            "animation-name": util$extensionhandler$$default.ANIMATION_ID + " !important"
+            "animation-name": $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.ANIMATION_ID + " !important"
         };
 
-        const$$DOCUMENT.addEventListener(util$extensionhandler$$default.EVENT_TYPE, function(e)  {
-            if (e.animationName === util$extensionhandler$$default.ANIMATION_ID) {
-                dom$extend$$extensions.forEach(util$extensionhandler$$default.traverse(e.target, e._skip || {}));
+        $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.addEventListener($Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.EVENT_TYPE, function(e)  {
+            if (e.animationName === $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.ANIMATION_ID) {
+                $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions.forEach($Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default.traverse(e.target, e._skip || {}));
             }
         }, false);
     }
@@ -888,59 +901,59 @@
      *     }
      * });
      */
-    types$$DOM.extend = function(selector, condition, mixins) {
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.extend = function(selector, condition, mixins) {
         if (arguments.length === 2) {
             mixins = condition;
             condition = true;
         }
 
-        if (typeof condition === "boolean") condition = condition ? dom$extend$$returnTrue : dom$extend$$returnFalse;
+        if (typeof condition === "boolean") condition = condition ? $Users$chemerisuk$git$better$dom$src$dom$extend$$returnTrue : $Users$chemerisuk$git$better$dom$src$dom$extend$$returnFalse;
         if (typeof mixins === "function") mixins = {constructor: mixins};
 
-        if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new errors$$StaticMethodError("extend");
+        if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError("extend");
 
         if (selector === "*") {
             // extending element prototype
-            util$index$$default.assign(types$$$Element.prototype, mixins);
+            $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, mixins);
         } else {
-            var ext = util$extensionhandler$$default(selector, condition, mixins, dom$extend$$extensions.length);
+            var ext = $Users$chemerisuk$git$better$dom$src$util$extensionhandler$$default(selector, condition, mixins, $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions.length);
 
             ext.start = function()  {
                 // initialize extension manually to make sure that all elements
                 // have appropriate methods before they are used in other DOM.extend.
                 // Also fixes legacy IEs when the HTC behavior is already attached
-                util$index$$default.each.call(const$$DOCUMENT.querySelectorAll(selector), ext);
+                $Users$chemerisuk$git$better$dom$src$util$index$$default.each.call($Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.querySelectorAll(selector), ext);
                 // MUST be after querySelectorAll because of legacy IEs quirks
-                types$$DOM.importStyles(selector, dom$extend$$styles);
+                $Users$chemerisuk$git$better$dom$src$types$$DOM.importStyles(selector, $Users$chemerisuk$git$better$dom$src$dom$extend$$styles);
             };
 
-            dom$extend$$extensions.push(ext);
+            $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions.push(ext);
 
-            if (!dom$extend$$readyCallback) ext.start();
+            if (!$Users$chemerisuk$git$better$dom$src$dom$extend$$readyCallback) ext.start();
         }
     };
 
-    var dom$extend$$default = dom$extend$$extensions;
+    var $Users$chemerisuk$git$better$dom$src$dom$extend$$default = $Users$chemerisuk$git$better$dom$src$dom$extend$$extensions;
 
-    var dom$format$$reVar = /\{([\w\-]+)\}/g;
+    var $Users$chemerisuk$git$better$dom$src$dom$format$$reVar = /\{([\w\-]+)\}/g;
 
     /**
      * Formats template using a variables map
      * @memberof DOM
      * @alias DOM.format
-     * @param  {String}  template  template string
-     * @param  {Object}  varMap    key/value map of variables
+     * @param  {String}  tmpl    template string
+     * @param  {Object}  varMap  key/value map of variables
      * @return {String}  a resulting string
      * @example
      * DOM.format("foo {name}", {name: "bar"}); // => "foo bar"
      * DOM.format("your {0}", ["title"]); // => "your title"
      */
-    types$$DOM.format = function(template, varMap) {
-        if (typeof template !== "string" || varMap && typeof varMap !== "object") {
-            throw new errors$$StaticMethodError("format");
-        }
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.format = function(tmpl, varMap) {
+        if (typeof tmpl !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError("format");
 
-        return template.replace(dom$format$$reVar, function(x, name)  {return name in varMap ? String(varMap[name]) : x});
+        if (!varMap || typeof varMap !== "object") varMap = {};
+
+        return tmpl.replace($Users$chemerisuk$git$better$dom$src$dom$format$$reVar, function(x, name)  {return name in varMap ? String(varMap[name]) : x});
     };
 
     /**
@@ -956,43 +969,43 @@
      * // loading several scripts sequentially
      * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
      */
-    types$$DOM.importScripts = function() {var urls = SLICE$0.call(arguments, 0);
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.importScripts = function() {var urls = SLICE$0.call(arguments, 0);
         var callback = function() {
             var arg = urls.shift(),
                 argType = typeof arg,
                 script;
 
             if (argType === "string") {
-                script = const$$DOCUMENT.createElement("script");
+                script = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createElement("script");
                 script.src = arg;
                 script.onload = callback;
                 script.async = true;
 
-                util$index$$default.injectElement(script);
+                $Users$chemerisuk$git$better$dom$src$util$index$$default.injectElement(script);
             } else if (argType === "function") {
                 arg();
             } else if (arg) {
-                throw new errors$$StaticMethodError("importScripts");
+                throw new $Users$chemerisuk$git$better$dom$src$errors$$StaticMethodError("importScripts");
             }
         };
 
         callback();
     };
 
-    var dom$mock$$applyExtensions = function(node)  {
-            dom$extend$$default.forEach(function(ext)  { if (ext.accept(node)) ext(node, true) });
+    var $Users$chemerisuk$git$better$dom$src$dom$mock$$applyExtensions = function(node)  {
+            $Users$chemerisuk$git$better$dom$src$dom$extend$$default.forEach(function(ext)  { if (ext.accept(node)) ext(node, true) });
 
-            util$index$$default.each.call(node.children, dom$mock$$applyExtensions);
+            $Users$chemerisuk$git$better$dom$src$util$index$$default.each.call(node.children, $Users$chemerisuk$git$better$dom$src$dom$mock$$applyExtensions);
         },
-        dom$mock$$makeMethod = function(all)  {return function(content, varMap) {
-            if (!content) return new types$$$Element();
+        $Users$chemerisuk$git$better$dom$src$dom$mock$$makeMethod = function(all)  {return function(content, varMap) {
+            if (!content) return new $Users$chemerisuk$git$better$dom$src$types$$$NullElement();
 
-            var result = types$$DOM["create" + all](content, varMap);
+            var result = $Users$chemerisuk$git$better$dom$src$types$$DOM["create" + all](content, varMap);
 
             if (all) {
-                result.forEach(function(el)  { dom$mock$$applyExtensions(el[0]) });
+                result.forEach(function(el)  { $Users$chemerisuk$git$better$dom$src$dom$mock$$applyExtensions(el[0]) });
             } else {
-                dom$mock$$applyExtensions(result[0]);
+                $Users$chemerisuk$git$better$dom$src$dom$mock$$applyExtensions(result[0]);
             }
 
             return result;
@@ -1010,7 +1023,7 @@
      * @function
      * @see DOM.create
      */
-    types$$DOM.mock = dom$mock$$makeMethod("");
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.mock = $Users$chemerisuk$git$better$dom$src$dom$mock$$makeMethod("");
 
     /**
      * Return Array of {@link $Element} initialized with all existing live extensions.
@@ -1024,38 +1037,36 @@
      * @function
      * @see DOM.createAll
      */
-    types$$DOM.mockAll = dom$mock$$makeMethod("All");
+    $Users$chemerisuk$git$better$dom$src$types$$DOM.mockAll = $Users$chemerisuk$git$better$dom$src$dom$mock$$makeMethod("All");
 
-    var element$children$$makeMethod = function(all)  {return function(selector) {
+    var $Users$chemerisuk$git$better$dom$src$element$children$$makeMethod = function(all)  {return function(selector) {
         if (all) {
-            if (selector && typeof selector !== "string") throw new errors$$MethodError("children");
+            if (selector &amp;&amp; typeof selector !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("children");
         } else {
-            if (selector && typeof selector !== "number") throw new errors$$MethodError("child");
+            if (selector &amp;&amp; typeof selector !== "number") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("child");
         }
 
         var node = this[0],
-            matcher = util$selectormatcher$$default(selector),
-            children = node ? node.children : null;
+            matcher = $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$default(selector),
+            children = node.children;
 
-        if (!node) return all ? [] : new types$$$Element();
-
-        if (!const$$DOM2_EVENTS) {
+        if (!$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
             // fix IE8 bug with children collection
-            children = util$index$$default.filter.call(children, function(node)  {return node.nodeType === 1});
+            children = $Users$chemerisuk$git$better$dom$src$util$index$$default.filter.call(children, function(node)  {return node.nodeType === 1});
         }
 
         if (all) {
-            if (matcher) children = util$index$$default.filter.call(children, matcher);
+            if (matcher) children = $Users$chemerisuk$git$better$dom$src$util$index$$default.filter.call(children, matcher);
 
-            return util$index$$default.map.call(children, types$$$Element);
+            return $Users$chemerisuk$git$better$dom$src$util$index$$default.map.call(children, $Users$chemerisuk$git$better$dom$src$types$$$Element);
         } else {
             if (selector &lt; 0) selector = children.length + selector;
 
-            return types$$$Element(children[selector]);
+            return $Users$chemerisuk$git$better$dom$src$types$$$Element(children[selector]);
         }
     }};
 
-    util$index$$default.assign(types$$$Element.prototype, {
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, {
         /**
          * Return child element by index filtered by optional selector
          * @memberof! $Element#
@@ -1068,7 +1079,7 @@
          * ul.child(2);  // => 3th child &lt;li>
          * ul.child(-1); // => last child &lt;li>
          */
-        child: element$children$$makeMethod(false),
+        child: $Users$chemerisuk$git$better$dom$src$element$children$$makeMethod(false),
 
         /**
          * Fetch children elements filtered by optional selector
@@ -1081,16 +1092,25 @@
          * ul.children();       // => array with all child &lt;li>
          * ul.children(".foo"); // => array with of child &lt;li> with class "foo"
          */
-        children: element$children$$makeMethod(true)
+        children: $Users$chemerisuk$git$better$dom$src$element$children$$makeMethod(true)
+    });
+
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype, {
+        child: function() {
+            return new $Users$chemerisuk$git$better$dom$src$types$$$NullElement();
+        },
+        children: function() {
+            return [];
+        }
     });
 
     /* es6-transpiler has-iterators:false, has-generators: false */
 
-    var element$classes$$reSpace = /[\n\t\r]/g,
-        element$classes$$makeMethod = function(nativeMethodName, strategy)  {
+    var $Users$chemerisuk$git$better$dom$src$element$classes$$reSpace = /[\n\t\r]/g,
+        $Users$chemerisuk$git$better$dom$src$element$classes$$makeMethod = function(nativeMethodName, strategy)  {
             var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
 
-            if (const$$HTML.classList) {
+            if ($Users$chemerisuk$git$better$dom$src$const$$HTML.classList) {
                 // use native classList property if possible
                 strategy = function(el, token) {
                     return el[0].classList[nativeMethodName](token);
@@ -1099,103 +1119,110 @@
 
             if (methodName === "hasClass" || methodName === "toggleClass") {
                 return function(token, force) {
-                    if (this[0]) {
-                        if (typeof force === "boolean" && methodName === "toggleClass") {
-                            this[force ? "addClass" : "removeClass"](token);
+                    if (typeof force === "boolean" &amp;&amp; methodName === "toggleClass") {
+                        this[force ? "addClass" : "removeClass"](token);
 
-                            return force;
-                        }
-
-                        if (typeof token !== "string") throw new errors$$MethodError(methodName);
-
-                        return strategy(this, token);
+                        return force;
                     }
+
+                    if (typeof token !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(methodName);
+
+                    return strategy(this, token);
                 };
             } else {
                 return function() {var $D$5;var $D$6;
                     var tokens = arguments;
 
-                    if (this[0]) {
-                        $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 &lt; $D$6;){token = (tokens[$D$5++]);
-                            if (typeof token !== "string") throw new errors$$MethodError(methodName);
+                    $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 &lt; $D$6;){token = (tokens[$D$5++]);
+                        if (typeof token !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(methodName);
 
-                            strategy(this, token);
-                        };$D$5 = $D$6 = void 0;
-                    }
+                        strategy(this, token);
+                    };$D$5 = $D$6 = void 0;
 
                     return this;
                 };
             }
+        },
+        $Users$chemerisuk$git$better$dom$src$element$classes$$methods = {
+            /**
+             * Check if element contains class name
+             * @memberof! $Element#
+             * @alias $Element#hasClass
+             * @param  {String}   token class name
+             * @return {Boolean}  returns &lt;code>true&lt;/code> if the element contains the class
+             * @function
+             * @example
+             * link.hasClass("foo");
+             */
+            hasClass: $Users$chemerisuk$git$better$dom$src$element$classes$$makeMethod("contains", function(el, token)  {
+                return (" " + el[0].className + " ")
+                    .replace($Users$chemerisuk$git$better$dom$src$element$classes$$reSpace, " ").indexOf(" " + token + " ") >= 0;
+            }),
+
+            /**
+             * Add class(es) to element
+             * @memberof! $Element#
+             * @alias $Element#addClass
+             * @param  {...String} tokens class name(s)
+             * @return {$Element}
+             * @function
+             * @example
+             * link.addClass("foo", "bar");
+             */
+            addClass: $Users$chemerisuk$git$better$dom$src$element$classes$$makeMethod("add", function(el, token)  {
+                if (!el.hasClass(token)) el[0].className += " " + token;
+            }),
+
+            /**
+             * Remove class(es) from element
+             * @memberof! $Element#
+             * @alias $Element#removeClass
+             * @param  {...String} tokens class name(s)
+             * @return {$Element}
+             * @function
+             * @example
+             * link.removeClass("foo", "bar");
+             */
+            removeClass: $Users$chemerisuk$git$better$dom$src$element$classes$$makeMethod("remove", function(el, token)  {
+                el[0].className = (" " + el[0].className + " ")
+                    .replace($Users$chemerisuk$git$better$dom$src$element$classes$$reSpace, " ").replace(" " + token + " ", " ").trim();
+            }),
+
+            /**
+             * Toggle a class on element
+             * @memberof! $Element#
+             * @alias $Element#toggleClass
+             * @param  {String}  token class name
+             * @param  {Boolean} [force] if &lt;code>true&lt;/code> then adds the className; if &lt;code>false&lt;/code> - removes it
+             * @return {Boolean} returns &lt;code>true&lt;/code> if the className is now present, and &lt;code>false&lt;/code> otherwise.
+             * @function
+             * @example
+             * link.toggleClass("foo");
+             * link.toggleClass("bar", true);
+             */
+            toggleClass: $Users$chemerisuk$git$better$dom$src$element$classes$$makeMethod("toggle", function(el, token)  {
+                var hasClass = el.hasClass(token);
+
+                if (hasClass) {
+                    el.removeClass(token);
+                } else {
+                    el[0].className += " " + token;
+                }
+
+                return !hasClass;
+            })
         };
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        /**
-         * Check if element contains class name
-         * @memberof! $Element#
-         * @alias $Element#hasClass
-         * @param  {String}   token class name
-         * @return {Boolean}  returns &lt;code>true&lt;/code> if the element contains the class
-         * @function
-         * @example
-         * link.hasClass("foo");
-         */
-        hasClass: element$classes$$makeMethod("contains", function(el, token)  {
-            return (" " + el[0].className + " ")
-                .replace(element$classes$$reSpace, " ").indexOf(" " + token + " ") >= 0;
-        }),
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, $Users$chemerisuk$git$better$dom$src$element$classes$$methods);
 
-        /**
-         * Add class(es) to element
-         * @memberof! $Element#
-         * @alias $Element#addClass
-         * @param  {...String} tokens class name(s)
-         * @return {$Element}
-         * @function
-         * @example
-         * link.addClass("foo", "bar");
-         */
-        addClass: element$classes$$makeMethod("add", function(el, token)  {
-            if (!el.hasClass(token)) el[0].className += " " + token;
-        }),
-
-        /**
-         * Remove class(es) from element
-         * @memberof! $Element#
-         * @alias $Element#removeClass
-         * @param  {...String} tokens class name(s)
-         * @return {$Element}
-         * @function
-         * @example
-         * link.removeClass("foo", "bar");
-         */
-        removeClass: element$classes$$makeMethod("remove", function(el, token)  {
-            el[0].className = (" " + el[0].className + " ")
-                .replace(element$classes$$reSpace, " ").replace(" " + token + " ", " ").trim();
-        }),
-
-        /**
-         * Toggle a class on element
-         * @memberof! $Element#
-         * @alias $Element#toggleClass
-         * @param  {String}  token class name
-         * @param  {Boolean} [force] if &lt;code>true&lt;/code> then adds the className; if &lt;code>false&lt;/code> - removes it
-         * @return {Boolean} returns &lt;code>true&lt;/code> if the className is now present, and &lt;code>false&lt;/code> otherwise.
-         * @function
-         * @example
-         * link.toggleClass("foo");
-         * link.toggleClass("bar", true);
-         */
-        toggleClass: element$classes$$makeMethod("toggle", function(el, token)  {
-            var hasClass = el.hasClass(token);
-
-            if (hasClass) {
-                el.removeClass(token);
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$element$classes$$methods).forEach(function(methodName)  {
+        $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype[methodName] = function() {
+            if (methodName === "hasClass" || methodName === "toggleClass") {
+                return false;
             } else {
-                el[0].className += " " + token;
+                return this;
             }
-
-            return !hasClass;
-        })
+        };
     });
 
     /**
@@ -1208,24 +1235,24 @@
      * ul.clone();      // => clone of &lt;ul> with all it's children
      * ul.clone(false); // => clone of &lt;ul> element ONLY
      */
-    types$$$Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 0)deep = true;
-        if (typeof deep !== "boolean") throw new errors$$MethodError("clone");
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 0)deep = true;
+        if (typeof deep !== "boolean") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("clone");
 
         var node = this[0], result;
 
-        if (node) {
-            if (const$$DOM2_EVENTS) {
-                result = new types$$$Element(node.cloneNode(deep));
-            } else {
-                result = types$$DOM.create(node.outerHTML);
-
-                if (!deep) result.set("innerHTML", "");
-            }
+        if ($Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
+            result = new $Users$chemerisuk$git$better$dom$src$types$$$Element(node.cloneNode(deep));
         } else {
-            result = new types$$$Element();
+            result = $Users$chemerisuk$git$better$dom$src$types$$DOM.create(node.outerHTML);
+
+            if (!deep) result.set("innerHTML", "");
         }
 
         return result;
+    };
+
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.clone = function() {
+        return new $Users$chemerisuk$git$better$dom$src$types$$$NullElement();
     };
 
     /**
@@ -1238,12 +1265,10 @@
      * DOM.contains(DOM.find("body")); // => true
      * DOM.find("body").contains(DOM); // => false
      */
-    types$$$Element.prototype.contains = function(element) {
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.contains = function(element) {
         var node = this[0];
 
-        if (!node) return false;
-
-        if (element instanceof types$$$Element) {
+        if (element instanceof $Users$chemerisuk$git$better$dom$src$types$$$Element) {
             var otherNode = element[0];
 
             if (otherNode === node) return true;
@@ -1251,19 +1276,16 @@
             if (node.contains) {
                 return node.contains(otherNode);
             } else {
-                return node.compareDocumentPosition(otherNode) & 16;
+                return node.compareDocumentPosition(otherNode) &amp; 16;
             }
         }
 
-        throw new errors$$MethodError("contains");
+        throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("contains");
     };
 
-    /**
-     * Callback function for changing a property/attribute
-     * @callback cssCallback
-     * @param  {String} currentValue current value of style property
-     * @return {String|Number} a new value for style property
-     */
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.contains = function() {
+        return false;
+    };
 
     /**
      * CSS properties accessor for an element
@@ -1278,80 +1300,78 @@
      * link.css("color", "red");          // update element color
      * link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix needed)
      */
-    types$$$Element.prototype.css = function(name, value) {var this$0 = this;
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.css = function(name, value) {var this$0 = this;
         var len = arguments.length,
             node = this[0],
+            style = node.style,
             nameType = typeof name,
-            style, hook, computed, appendCssText;
+            hook, computed, appendCssText;
 
-        if (len === 1 && (nameType === "string" || util$index$$default.isArray(name))) {
-            if (node) {
-                style = node.style;
+        if (len === 1 &amp;&amp; (nameType === "string" || $Users$chemerisuk$git$better$dom$src$util$index$$default.isArray(name))) {
+            value = (nameType === "string" ? [name] : name).reduce(function(memo, name)  {
+                hook = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.get[name];
+                value = hook ? hook(style) : style[name];
 
-                value = (nameType === "string" ? [name] : name).reduce(function(memo, name)  {
-                    hook = util$stylehooks$$default.get[name];
+                if (!computed &amp;&amp; !value) {
+                    style = $Users$chemerisuk$git$better$dom$src$util$index$$default.computeStyle(node);
                     value = hook ? hook(style) : style[name];
 
-                    if (!computed && !value) {
-                        style = util$index$$default.computeStyle(node);
-                        value = hook ? hook(style) : style[name];
+                    computed = true;
+                }
 
-                        computed = true;
-                    }
+                memo[name] = value;
 
-                    memo[name] = value;
+                return memo;
+            }, {});
 
-                    return memo;
-                }, {});
-            }
-
-            return node && nameType === "string" ? value[name] : value;
+            return nameType === "string" ? value[name] : value;
         }
 
-        if (node) {
-            style = node.style;
-            appendCssText = function(key, value)  {
-                var hook = util$stylehooks$$default.set[key];
+        appendCssText = function(key, value)  {
+            var hook = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.set[key];
 
-                if (typeof value === "function") {
-                    value = value.call(this$0, this$0.css(key));
-                }
-
-                if (value == null) value = "";
-
-                if (hook) {
-                    hook(style, value);
-                } else {
-                    style[key] = typeof value === "number" ? value + "px" : value.toString();
-                }
-            };
-
-            if (len === 1 && name && nameType === "object") {
-                util$index$$default.keys(name).forEach(function(key)  { appendCssText(key, name[key]) });
-            } else if (len === 2 && nameType === "string") {
-                appendCssText(name, value);
-            } else {
-                throw new errors$$MethodError("css");
+            if (typeof value === "function") {
+                value = value.call(this$0, this$0.css(key));
             }
+
+            if (value == null) value = "";
+
+            if (hook) {
+                hook(style, value);
+            } else {
+                style[key] = typeof value === "number" ? value + "px" : value.toString();
+            }
+        };
+
+        if (len === 1 &amp;&amp; name &amp;&amp; nameType === "object") {
+            $Users$chemerisuk$git$better$dom$src$util$index$$default.keys(name).forEach(function(key)  { appendCssText(key, name[key]) });
+        } else if (len === 2 &amp;&amp; nameType === "string") {
+            appendCssText(name, value);
+        } else {
+            throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("css");
         }
 
         return this;
     };
 
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.css = function(name) {
+        if (arguments.length !== 1 || typeof name !== "string" &amp;&amp; !$Users$chemerisuk$git$better$dom$src$util$index$$default.isArray(name)) {
+            return this;
+        }
+    };
+
     // big part of code inspired by Sizzle:
     // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-    var element$find$$rquick = const$$DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
-        element$find$$rescape = /'|\\/g,
-        element$find$$tmpId = "DOM" + Date.now(),
-        element$find$$makeMethod = function(all)  {return function(selector) {
-            if (typeof selector !== "string") throw new errors$$MethodError("find" + all);
+    var $Users$chemerisuk$git$better$dom$src$element$find$$rquick = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+        $Users$chemerisuk$git$better$dom$src$element$find$$rescape = /'|\\/g,
+        $Users$chemerisuk$git$better$dom$src$element$find$$tmpId = "DOM" + Date.now(),
+        $Users$chemerisuk$git$better$dom$src$element$find$$makeMethod = function(all)  {return function(selector) {
+            if (typeof selector !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("find" + all);
 
             var node = this[0],
-                quickMatch = element$find$$rquick.exec(selector),
+                quickMatch = $Users$chemerisuk$git$better$dom$src$element$find$$rquick.exec(selector),
                 result, old, nid, context;
-
-            if (!node) return all ? [] : new types$$$Element();
 
             if (quickMatch) {
                 if (quickMatch[1]) {
@@ -1362,18 +1382,18 @@
                     result = node.getElementsByClassName(quickMatch[2]);
                 }
 
-                if (result && !all) result = result[0];
+                if (result &amp;&amp; !all) result = result[0];
             } else {
                 old = true;
-                nid = element$find$$tmpId;
+                nid = $Users$chemerisuk$git$better$dom$src$element$find$$tmpId;
                 context = node;
 
-                if (this !== types$$DOM) {
+                if (this !== $Users$chemerisuk$git$better$dom$src$types$$DOM) {
                     // qSA works strangely on Element-rooted queries
                     // We can work around this by specifying an extra ID on the root
                     // and working up from there (Thanks to Andrew Dupont for the technique)
                     if ( (old = node.getAttribute("id")) ) {
-                        nid = old.replace(element$find$$rescape, "\\$&");
+                        nid = old.replace($Users$chemerisuk$git$better$dom$src$element$find$$rescape, "\\$&amp;");
                     } else {
                         node.setAttribute("id", nid);
                     }
@@ -1389,10 +1409,10 @@
                 }
             }
 
-            return all ? util$index$$default.map.call(result, types$$$Element) : types$$$Element(result);
+            return all ? $Users$chemerisuk$git$better$dom$src$util$index$$default.map.call(result, $Users$chemerisuk$git$better$dom$src$types$$$Element) : $Users$chemerisuk$git$better$dom$src$types$$$Element(result);
         }};
 
-    util$index$$default.assign(types$$$Element.prototype, {
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, {
         /**
          * Find the first matched element by css selector
          * @memberof! $Element#
@@ -1405,7 +1425,7 @@
          * var foo  = body.find(".foo"); // => the first element with class "foo"
          * foo.find(".bar>span");        // => the first element that matches ".bar>span"
          */
-        find: element$find$$makeMethod(""),
+        find: $Users$chemerisuk$git$better$dom$src$element$find$$makeMethod(""),
 
         /**
          * Find all matched elements by css selector
@@ -1418,48 +1438,57 @@
          * DOM.findAll("a");         // => all links in the document
          * context.findAll("ol>li"); // => all &lt;li> inside of &lt;ol>
          */
-        findAll: element$find$$makeMethod("All")
+        findAll: $Users$chemerisuk$git$better$dom$src$element$find$$makeMethod("All")
     });
 
-    var util$eventhooks$$hooks = {};
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype, {
+        find: function() {
+            return new $Users$chemerisuk$git$better$dom$src$types$$$NullElement();
+        },
+        findAll: function() {
+            return [];
+        }
+    });
 
-    if ("onfocusin" in const$$HTML) {
-        util$eventhooks$$hooks.focus = function(handler)  { handler._type = "focusin" };
-        util$eventhooks$$hooks.blur = function(handler)  { handler._type = "focusout" };
+    var $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks = {};
+
+    if ("onfocusin" in $Users$chemerisuk$git$better$dom$src$const$$HTML) {
+        $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks.focus = function(handler)  { handler._type = "focusin" };
+        $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks.blur = function(handler)  { handler._type = "focusout" };
     } else {
         // firefox doesn't support focusin/focusout events
-        util$eventhooks$$hooks.focus = util$eventhooks$$hooks.blur = function(handler)  { handler.capturing = true };
+        $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks.focus = $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks.blur = function(handler)  { handler.capturing = true };
     }
 
-    if (const$$DOCUMENT.createElement("input").validity) {
-        util$eventhooks$$hooks.invalid = function(handler)  { handler.capturing = true };
+    if ($Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createElement("input").validity) {
+        $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks.invalid = function(handler)  { handler.capturing = true };
     }
 
-    if (!const$$DOM2_EVENTS) {
+    if (!$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
         // fix non-bubbling form events for IE8
         ["submit", "change", "reset"].forEach(function(name)  {
-            util$eventhooks$$hooks[name] = function(handler)  { handler._type = const$$CUSTOM_EVENT_TYPE };
+            $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks[name] = function(handler)  { handler._type = $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE };
         });
     }
 
-    var util$eventhooks$$default = util$eventhooks$$hooks;
+    var $Users$chemerisuk$git$better$dom$src$util$eventhooks$$default = $Users$chemerisuk$git$better$dom$src$util$eventhooks$$hooks;
 
     /*
      * Helper type to create an event handler
      */
 
-    var util$eventhandler$$EventHandler = function(type, selector, callback, props, el, once)  {
+    var $Users$chemerisuk$git$better$dom$src$util$eventhandler$$EventHandler = function(type, selector, callback, props, el, once)  {
             var node = el[0],
-                hook = util$eventhooks$$default[type],
-                matcher = util$selectormatcher$$default(selector, node),
+                hook = $Users$chemerisuk$git$better$dom$src$util$eventhooks$$default[type],
+                matcher = $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$default(selector, node),
                 handler = function(e)  {
-                    e = e || const$$WINDOW.event;
+                    e = e || $Users$chemerisuk$git$better$dom$src$const$$WINDOW.event;
                     // early stop in case of default action
-                    if (util$eventhandler$$EventHandler.skip === type) return;
+                    if ($Users$chemerisuk$git$better$dom$src$util$eventhandler$$EventHandler.skip === type) return;
                     // handle custom events in legacy IE
-                    if (handler._type === const$$CUSTOM_EVENT_TYPE && e.srcUrn !== type) return;
+                    if (handler._type === $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE &amp;&amp; e.srcUrn !== type) return;
                     // srcElement can be null in legacy IE when target is document
-                    var target = e.target || e.srcElement || const$$DOCUMENT,
+                    var target = e.target || e.srcElement || $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT,
                         currentTarget = matcher ? matcher(target) : node,
                         eventArgs = e._args || [],
                         args = props;
@@ -1473,18 +1502,18 @@
                     args = !args ? eventArgs : args.map(function(name)  {
                         if (typeof name === "number") return eventArgs[name - 1];
 
-                        if (!const$$DOM2_EVENTS) {
+                        if (!$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
                             switch (name) {
                             case "which":
                                 return e.keyCode;
                             case "button":
                                 var button = e.button;
                                 // click: 1 === left; 2 === middle; 3 === right
-                                return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+                                return button &amp; 1 ? 1 : ( button &amp; 2 ? 3 : ( button &amp; 4 ? 2 : 0 ) );
                             case "pageX":
-                                return e.clientX + const$$HTML.scrollLeft - const$$HTML.clientLeft;
+                                return e.clientX + $Users$chemerisuk$git$better$dom$src$const$$HTML.scrollLeft - $Users$chemerisuk$git$better$dom$src$const$$HTML.clientLeft;
                             case "pageY":
-                                return e.clientY + const$$HTML.scrollTop - const$$HTML.clientTop;
+                                return e.clientY + $Users$chemerisuk$git$better$dom$src$const$$HTML.scrollTop - $Users$chemerisuk$git$better$dom$src$const$$HTML.clientTop;
                             }
                         }
 
@@ -1495,11 +1524,11 @@
                             // IE8 and Android 2.3 use returnValue instead of defaultPrevented
                             return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
                         case "target":
-                            return types$$$Element(target);
+                            return $Users$chemerisuk$git$better$dom$src$types$$$Element(target);
                         case "currentTarget":
-                            return types$$$Element(currentTarget);
+                            return $Users$chemerisuk$git$better$dom$src$types$$$Element(currentTarget);
                         case "relatedTarget":
-                            return types$$$Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
+                            return $Users$chemerisuk$git$better$dom$src$types$$$Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
                         }
 
                         return e[name];
@@ -1508,7 +1537,7 @@
                     // if props is not specified then prepend extra arguments
                     if (callback.apply(el, args) === false) {
                         // prevent default if handler returns false
-                        if (const$$DOM2_EVENTS) {
+                        if ($Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
                             e.preventDefault();
                         } else {
                             e.returnValue = false;
@@ -1516,12 +1545,10 @@
                     }
                 };
 
-            if (!node) return null;
-
             if (hook) handler = hook(handler, type) || handler;
             // handle custom events for IE8
-            if (!const$$DOM2_EVENTS && !("on" + (handler._type || type) in node)) {
-                handler._type = const$$CUSTOM_EVENT_TYPE;
+            if (!$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS &amp;&amp; !("on" + (handler._type || type) in node)) {
+                handler._type = $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE;
             }
 
             handler.type = selector ? type + " " + selector : type;
@@ -1530,7 +1557,7 @@
             return handler;
         };
 
-    var util$eventhandler$$default = util$eventhandler$$EventHandler;
+    var $Users$chemerisuk$git$better$dom$src$util$eventhandler$$default = $Users$chemerisuk$git$better$dom$src$util$eventhandler$$EventHandler;
 
     /**
      * Triggers an event of specific type with optional extra arguments
@@ -1543,35 +1570,35 @@
      * link.fire("click");                   // fire click event
      * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments
      */
-    types$$$Element.prototype.fire = function(type) {var args = SLICE$0.call(arguments, 1);
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.fire = function(type) {var args = SLICE$0.call(arguments, 1);
         var node = this[0],
             eventType = typeof type,
             handler = {},
             hook, e, canContinue;
 
-        if (!node) return false;
-
         if (eventType === "string") {
-            if (hook = util$eventhooks$$default[type]) handler = hook(handler) || handler;
+            if (hook = $Users$chemerisuk$git$better$dom$src$util$eventhooks$$default[type]) {
+                handler = hook(handler) || handler;
+            }
 
             eventType = handler._type || type;
         } else {
-            throw new errors$$MethodError("fire");
+            throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("fire");
         }
 
-        if (const$$DOM2_EVENTS) {
-            e = const$$DOCUMENT.createEvent("HTMLEvents");
+        if ($Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
+            e = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createEvent("HTMLEvents");
             e.initEvent(eventType, true, true);
             e._args = args;
 
             canContinue = node.dispatchEvent(e);
         } else {
-            e = const$$DOCUMENT.createEventObject();
+            e = $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createEventObject();
             e._args = args;
             // handle custom events for legacy IE
-            if (!("on" + eventType in node)) eventType = const$$CUSTOM_EVENT_TYPE;
+            if (!("on" + eventType in node)) eventType = $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE;
             // store original event type
-            if (eventType === const$$CUSTOM_EVENT_TYPE) e.srcUrn = type;
+            if (eventType === $Users$chemerisuk$git$better$dom$src$const$$CUSTOM_EVENT_TYPE) e.srcUrn = type;
 
             node.fireEvent("on" + eventType, e);
 
@@ -1579,34 +1606,38 @@
         }
 
         // Call native method. IE&lt;9 dies on focus/blur to hidden element
-        if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
+        if (canContinue &amp;&amp; node[type] &amp;&amp; (type !== "focus" &amp;&amp; type !== "blur" || node.offsetWidth)) {
             // Prevent re-triggering of the same event
-            util$eventhandler$$default.skip = type;
+            $Users$chemerisuk$git$better$dom$src$util$eventhandler$$default.skip = type;
 
             node[type]();
 
-            util$eventhandler$$default.skip = null;
+            $Users$chemerisuk$git$better$dom$src$util$eventhandler$$default.skip = null;
         }
 
         return canContinue;
     };
 
-    var util$accessorhooks$$hooks = {get: {}, set: {}};
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.fire = function() {
+        return false;
+    };
+
+    var $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks = {get: {}, set: {}};
 
     // fix camel cased attributes
     "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach(function(key)  {
-        util$accessorhooks$$hooks.get[ key.toLowerCase() ] = function(node)  {return node[key]};
+        $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.get[ key.toLowerCase() ] = function(node)  {return node[key]};
     });
 
     // style hook
-    util$accessorhooks$$hooks.get.style = function(node)  {return node.style.cssText};
-    util$accessorhooks$$hooks.set.style = function(node, value)  { node.style.cssText = value };
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.get.style = function(node)  {return node.style.cssText};
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.set.style = function(node, value)  { node.style.cssText = value };
 
     // title hook for DOM
-    util$accessorhooks$$hooks.get.title = function(node)  {return node === const$$HTML ? const$$DOCUMENT.title : node.title};
-    util$accessorhooks$$hooks.set.title = function(node, value)  { (node === const$$HTML ? const$$DOCUMENT : node).title = value; };
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.get.title = function(node)  {return node === $Users$chemerisuk$git$better$dom$src$const$$HTML ? $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.title : node.title};
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.set.title = function(node, value)  { (node === $Users$chemerisuk$git$better$dom$src$const$$HTML ? $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT : node).title = value; };
 
-    util$accessorhooks$$hooks.get.undefined = function(node)  {
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.get.undefined = function(node)  {
         var name;
 
         switch (node.tagName) {
@@ -1618,43 +1649,43 @@
             break;
 
         default:
-            name = node.type && "value" in node ? "value" : "innerHTML";
+            name = node.type &amp;&amp; "value" in node ? "value" : "innerHTML";
         }
 
         return node[name];
     };
 
-    util$accessorhooks$$hooks.set.value = function(node, value) {
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.set.value = function(node, value) {
         if (node.tagName === "SELECT") {
             // selectbox has special case
-            if (util$index$$default.every.call(node.options, function(o)  {return !(o.selected = o.value === value)})) {
+            if ($Users$chemerisuk$git$better$dom$src$util$index$$default.every.call(node.options, function(o)  {return !(o.selected = o.value === value)})) {
                 node.selectedIndex = -1;
             }
         } else {
             // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-            node[const$$DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
+            node[$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
         }
     };
 
     // some browsers don't recognize input[type=email] etc.
-    util$accessorhooks$$hooks.get.type = function(node)  {return node.getAttribute("type") || node.type};
+    $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.get.type = function(node)  {return node.getAttribute("type") || node.type};
 
     // IE8 has innerText but not textContent
-    if (!const$$DOM2_EVENTS) {
-        util$accessorhooks$$hooks.get.textContent = function(node)  {return node.innerText};
-        util$accessorhooks$$hooks.set.textContent = function(node, value)  { node.innerText = value };
+    if (!$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
+        $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.get.textContent = function(node)  {return node.innerText};
+        $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks.set.textContent = function(node, value)  { node.innerText = value };
     }
 
-    var util$accessorhooks$$default = util$accessorhooks$$hooks;
+    var $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$default = $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$hooks;
 
-    var element$get$$reDash = /[A-Z]/g,
-        element$get$$getPrivateProperty = function(node, key)  {
+    var $Users$chemerisuk$git$better$dom$src$element$get$$reDash = /[A-Z]/g,
+        $Users$chemerisuk$git$better$dom$src$element$get$$getPrivateProperty = function(node, key)  {
             // convert from camel case to dash-separated value
-            var value = node.getAttribute("data-" + key.replace(element$get$$reDash, function(l)  {return "-" + l.toLowerCase()}));
+            var value = node.getAttribute("data-" + key.replace($Users$chemerisuk$git$better$dom$src$element$get$$reDash, function(l)  {return "-" + l.toLowerCase()}));
 
             if (value != null) {
                 // try to recognize and parse  object notation syntax
-                if (value[0] === "{" && value[value.length - 1] === "}") {
+                if (value[0] === "{" &amp;&amp; value[value.length - 1] === "}") {
                     try {
                         value = JSON.parse(value);
                     } catch (err) { }
@@ -1669,18 +1700,16 @@
      * @memberof! $Element#
      * @alias $Element#get
      * @param  {String|Array} [name] property or attribute name or array of names
-     * @return {Object} a property or attribute value
+     * @return {String|Object} a value of property or attribute
      * @example
      * link.get("title");       // => property title
      * link.get("data-custom"); // => custom attribute data-custom
      * link.get();              // => link's innerHTML
      * link.get("_prop");       // => private property _prop
      */
-    types$$$Element.prototype.get = function(name) {var this$0 = this;
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.get = function(name) {var this$0 = this;
         var node = this[0],
-            hook = util$accessorhooks$$default.get[name];
-
-        if (!node) return;
+            hook = $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$default.get[name];
 
         if (hook) return hook(node, name);
 
@@ -1697,163 +1726,172 @@
                 if (key in data) {
                     value = data[key];
                 } else {
-                    value = data[key] = element$get$$getPrivateProperty(node, key);
+                    value = data[key] = $Users$chemerisuk$git$better$dom$src$element$get$$getPrivateProperty(node, key);
                 }
 
                 return value;
             }
-        } else if (util$index$$default.isArray(name)) {
+        } else if ($Users$chemerisuk$git$better$dom$src$util$index$$default.isArray(name)) {
             return name.reduce(function(r, key)  { return (r[key] = this$0.get(key), r) }, {});
         } else {
-            throw new errors$$MethodError("get");
+            throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("get");
         }
     };
 
-    var element$manipulation$$makeMethod = function(methodName, fasterMethodName, standalone, strategy)  {return function() {var content = arguments[0];if(content === void 0)content = "";
-        var node = this[0];
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.get = function() {};
 
-        if (!standalone && (!node.parentNode || content === types$$DOM)) return this;
+    var $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod = function(methodName, fasterMethodName, standalone, strategy)  {return function() {var content = arguments[0];if(content === void 0)content = "";
+            var node = this[0];
 
-        if (typeof content === "function") content = content.call(this);
+            if (!standalone &amp;&amp; (!node.parentNode || content === $Users$chemerisuk$git$better$dom$src$types$$DOM)) return this;
 
-        if (typeof content === "string") {
-            if (content) {
-                // parse HTML string for the replace method
-                if (fasterMethodName) {
-                    content = content.trim();
-                } else {
-                    content = types$$DOM.create(content)[0];
+            if (typeof content === "function") content = content.call(this);
+
+            if (typeof content === "string") {
+                if (content) {
+                    // parse HTML string for the replace method
+                    if (fasterMethodName) {
+                        content = content.trim();
+                    } else {
+                        content = $Users$chemerisuk$git$better$dom$src$types$$DOM.create(content)[0];
+                    }
                 }
+            } else if (content instanceof $Users$chemerisuk$git$better$dom$src$types$$$Element) {
+                content = content[0];
+            } else if ($Users$chemerisuk$git$better$dom$src$util$index$$default.isArray(content)) {
+                content = content.reduce(function(fragment, el)  {
+                    fragment.appendChild(el[0]);
+
+                    return fragment;
+                }, $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.createDocumentFragment());
+            } else {
+                throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(methodName);
             }
-        } else if (content instanceof types$$$Element) {
-            content = content[0];
-        } else if (util$index$$default.isArray(content)) {
-            content = content.reduce(function(fragment, el)  {
-                fragment.appendChild(el[0]);
 
-                return fragment;
-            }, const$$DOCUMENT.createDocumentFragment());
-        } else {
-            throw new errors$$MethodError(methodName);
-        }
+            if (content &amp;&amp; typeof content === "string") {
+                node.insertAdjacentHTML(fasterMethodName, content);
+            } else {
+                if (content || !fasterMethodName) strategy(node, content);
+            }
 
-        if (content && typeof content === "string") {
-            node.insertAdjacentHTML(fasterMethodName, content);
-        } else {
-            if (content || !fasterMethodName) strategy(node, content);
-        }
+            return this;
+        }},
+        $Users$chemerisuk$git$better$dom$src$element$manipulation$$methods = {
+            /**
+             * Insert HTMLString or {@link $Element} after the current element
+             * @memberof! $Element#
+             * @alias $Element#after
+             * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
+             * @return {$Element}
+             * @function
+             * @example
+             * var link = DOM.create("a");  // &lt;a>&lt;/a>
+             * link.after(DOM.create("b")); // &lt;a>&lt;/a>&lt;b>&lt;/b>
+             */
+            after: $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod("after", "afterend", false, function(node, relatedNode)  {
+                node.parentNode.insertBefore(relatedNode, node.nextSibling);
+            }),
 
-        return this;
-    }};
+            /**
+             * Insert HTMLString or {@link $Element} before the current element
+             * @memberof! $Element#
+             * @alias $Element#before
+             * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
+             * @return {$Element}
+             * @function
+             * @example
+             * var link = DOM.create("a");   // &lt;a>&lt;/a>
+             * link.before(DOM.create("b")); // &lt;b>&lt;/b>&lt;a>&lt;/a>
+             */
+            before: $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod("before", "beforebegin", false, function(node, relatedNode)  {
+                node.parentNode.insertBefore(relatedNode, node);
+            }),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        /**
-         * Insert HTMLString or {@link $Element} after the current element
-         * @memberof! $Element#
-         * @alias $Element#after
-         * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
-         * @return {$Element}
-         * @function
-         * @example
-         * var link = DOM.create("a");  // &lt;a>&lt;/a>
-         * link.after(DOM.create("b")); // &lt;a>&lt;/a>&lt;b>&lt;/b>
-         */
-        after: element$manipulation$$makeMethod("after", "afterend", false, function(node, relatedNode)  {
-            node.parentNode.insertBefore(relatedNode, node.nextSibling);
-        }),
+            /**
+             * Prepend HTMLString or {@link $Element} to the current element
+             * @memberof! $Element#
+             * @alias $Element#prepend
+             * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
+             * @return {$Element}
+             * @function
+             * @example
+             * var link = DOM.create("a>`foo`"); // &lt;a>foo&lt;/a>
+             * link.prepend(DOM.create("b"));    // &lt;a>&lt;b>&lt;/b>foo&lt;/a>
+             */
+            prepend: $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod("prepend", "afterbegin", true, function(node, relatedNode)  {
+                node.insertBefore(relatedNode, node.firstChild);
+            }),
 
-        /**
-         * Insert HTMLString or {@link $Element} before the current element
-         * @memberof! $Element#
-         * @alias $Element#before
-         * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
-         * @return {$Element}
-         * @function
-         * @example
-         * var link = DOM.create("a");   // &lt;a>&lt;/a>
-         * link.before(DOM.create("b")); // &lt;b>&lt;/b>&lt;a>&lt;/a>
-         */
-        before: element$manipulation$$makeMethod("before", "beforebegin", false, function(node, relatedNode)  {
-            node.parentNode.insertBefore(relatedNode, node);
-        }),
+            /**
+             * Append HTMLString or {@link $Element} to the current element
+             * @memberof! $Element#
+             * @alias $Element#append
+             * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
+             * @return {$Element}
+             * @function
+             * @example
+             * var link = DOM.create("a>`foo`"); // &lt;a>foo&lt;/a>
+             * link.append(DOM.create("b"));     // &lt;a>foo&lt;b>&lt;/b>&lt;/a>
+             */
+            append: $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod("append", "beforeend", true, function(node, relatedNode)  {
+                node.appendChild(relatedNode);
+            }),
 
-        /**
-         * Prepend HTMLString or {@link $Element} to the current element
-         * @memberof! $Element#
-         * @alias $Element#prepend
-         * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
-         * @return {$Element}
-         * @function
-         * @example
-         * var link = DOM.create("a>`foo`"); // &lt;a>foo&lt;/a>
-         * link.prepend(DOM.create("b"));    // &lt;a>&lt;b>&lt;/b>foo&lt;/a>
-         */
-        prepend: element$manipulation$$makeMethod("prepend", "afterbegin", true, function(node, relatedNode)  {
-            node.insertBefore(relatedNode, node.firstChild);
-        }),
+            /**
+             * Replace current element with HTMLString or {@link $Element}
+             * @memberof! $Element#
+             * @alias $Element#replace
+             * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
+             * @return {$Element}
+             * @function
+             * @example
+             * var div = DOM.create("div>span>`foo`");      // &lt;div>&lt;span>foo&lt;/span>&lt;/div>
+             * div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div>
+             */
+            replace: $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod("replace", "", false, function(node, relatedNode)  {
+                node.parentNode.replaceChild(relatedNode, node);
+            }),
 
-        /**
-         * Append HTMLString or {@link $Element} to the current element
-         * @memberof! $Element#
-         * @alias $Element#append
-         * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
-         * @return {$Element}
-         * @function
-         * @example
-         * var link = DOM.create("a>`foo`"); // &lt;a>foo&lt;/a>
-         * link.append(DOM.create("b"));     // &lt;a>foo&lt;b>&lt;/b>&lt;/a>
-         */
-        append: element$manipulation$$makeMethod("append", "beforeend", true, function(node, relatedNode)  {
-            node.appendChild(relatedNode);
-        }),
+            /**
+             * Remove current element from the DOM
+             * @memberof! $Element#
+             * @alias $Element#remove
+             * @return {$Element}
+             * @function
+             * @example
+             * var foo = DOM.find(".foo");
+             * foo.remove();
+             * DOM.contains(foo); // => false
+             */
+            remove: $Users$chemerisuk$git$better$dom$src$element$manipulation$$makeMethod("remove", "", false, function(node)  {
+                node.parentNode.removeChild(node);
+            })
+        };
 
-        /**
-         * Replace current element with HTMLString or {@link $Element}
-         * @memberof! $Element#
-         * @alias $Element#replace
-         * @param {Mixed} content HTMLString, {@link $Element}, Array.&lt;{@link $Element}> or function
-         * @return {$Element}
-         * @function
-         * @example
-         * var div = DOM.create("div>span>`foo`");      // &lt;div>&lt;span>foo&lt;/span>&lt;/div>
-         * div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div>
-         */
-        replace: element$manipulation$$makeMethod("replace", "", false, function(node, relatedNode)  {
-            node.parentNode.replaceChild(relatedNode, node);
-        }),
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, $Users$chemerisuk$git$better$dom$src$element$manipulation$$methods);
 
-        /**
-         * Remove current element from the DOM
-         * @memberof! $Element#
-         * @alias $Element#remove
-         * @return {$Element}
-         * @function
-         * @example
-         * var foo = DOM.find(".foo");
-         * foo.remove();
-         * DOM.contains(foo); // => false
-         */
-        remove: element$manipulation$$makeMethod("remove", "", false, function(node)  {
-            node.parentNode.removeChild(node);
-        })
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$element$manipulation$$methods).forEach(function(methodName)  {
+        $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
     });
 
-    var util$selectorhooks$$hooks = {};
+    var $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$hooks = {};
 
-    util$selectorhooks$$hooks[":focus"] = function(node)  {return node === const$$DOCUMENT.activeElement};
+    $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$hooks[":focus"] = function(node)  {return node === $Users$chemerisuk$git$better$dom$src$const$$DOCUMENT.activeElement};
 
-    util$selectorhooks$$hooks[":hidden"] = function(node)  {
+    $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$hooks[":hidden"] = function(node)  {
         if (node.getAttribute("aria-hidden") === "true") return true;
 
-        var computed = util$index$$default.computeStyle(node);
+        var computed = $Users$chemerisuk$git$better$dom$src$util$index$$default.computeStyle(node);
 
         return computed.visibility === "hidden" ||
-            computed.display === "none" || !const$$HTML.contains(node);
+            computed.display === "none" || !$Users$chemerisuk$git$better$dom$src$const$$HTML.contains(node);
     };
 
-    util$selectorhooks$$hooks[":visible"] = function(node)  {return !util$selectorhooks$$hooks[":hidden"](node)};
+    $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$hooks[":visible"] = function(node)  {return !$Users$chemerisuk$git$better$dom$src$util$selectorhooks$$hooks[":hidden"](node)};
 
-    var util$selectorhooks$$default = util$selectorhooks$$hooks;
+    var $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$default = $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$hooks;
 
     /**
      * Check if the element matches selector
@@ -1865,13 +1903,16 @@
      * DOM.find("body").matches("html>body"); // => true
      * DOM.find("body").matches("body>html"); // => false
      */
-    types$$$Element.prototype.matches = function(selector) {
-        if (!selector || typeof selector !== "string") throw new errors$$MethodError("matches");
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.matches = function(selector) {
+        if (!selector || typeof selector !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("matches");
 
-        var checker = util$selectorhooks$$default[selector] || util$selectormatcher$$default(selector),
-            node = this[0];
+        var checker = $Users$chemerisuk$git$better$dom$src$util$selectorhooks$$default[selector] || $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$default(selector);
 
-        return node && !!checker(node, this);
+        return !!checker(this[0], this);
+    };
+
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.matches = function() {
+        return false;
     };
 
     /**
@@ -1881,25 +1922,27 @@
      * @param  {Function|String} [callback] event handler
      * @return {$Element}
      */
-    types$$$Element.prototype.off = function(type, callback) {
-        if (typeof type !== "string") throw new errors$$MethodError("off");
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.off = function(type, callback) {
+        if (typeof type !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("off");
 
         var node = this[0];
 
-        if (node) {
-            this._._handlers = this._._handlers.filter(function(handler)  {
-                if (type !== handler.type || callback && callback !== handler.callback) return true;
+        this._._handlers = this._._handlers.filter(function(handler)  {
+            if (type !== handler.type || callback &amp;&amp; callback !== handler.callback) return true;
 
-                type = handler._type || handler.type;
+            type = handler._type || handler.type;
 
-                if (const$$DOM2_EVENTS) {
-                    node.removeEventListener(type, handler, !!handler.capturing);
-                } else {
-                    node.detachEvent("on" + type, handler);
-                }
-            });
-        }
+            if ($Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
+                node.removeEventListener(type, handler, !!handler.capturing);
+            } else {
+                node.detachEvent("on" + type, handler);
+            }
+        });
 
+        return this;
+    };
+
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.off = function() {
         return this;
     };
 
@@ -1911,128 +1954,128 @@
      * @example
      * el.offset(); // => {left: 1, top: 2, right: 3, bottom: 4, width: 2, height: 2}
      */
-    types$$$Element.prototype.offset = function() {
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.offset = function() {
         var node = this[0],
-            clientTop = const$$HTML.clientTop,
-            clientLeft = const$$HTML.clientLeft,
-            scrollTop = const$$WINDOW.pageYOffset || const$$HTML.scrollTop,
-            scrollLeft = const$$WINDOW.pageXOffset || const$$HTML.scrollLeft,
-            boundingRect;
-
-        if (node) {
+            clientTop = $Users$chemerisuk$git$better$dom$src$const$$HTML.clientTop,
+            clientLeft = $Users$chemerisuk$git$better$dom$src$const$$HTML.clientLeft,
+            scrollTop = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.pageYOffset || $Users$chemerisuk$git$better$dom$src$const$$HTML.scrollTop,
+            scrollLeft = $Users$chemerisuk$git$better$dom$src$const$$WINDOW.pageXOffset || $Users$chemerisuk$git$better$dom$src$const$$HTML.scrollLeft,
             boundingRect = node.getBoundingClientRect();
 
-            return {
-                top: boundingRect.top + scrollTop - clientTop,
-                left: boundingRect.left + scrollLeft - clientLeft,
-                right: boundingRect.right + scrollLeft - clientLeft,
-                bottom: boundingRect.bottom + scrollTop - clientTop,
-                width: boundingRect.right - boundingRect.left,
-                height: boundingRect.bottom - boundingRect.top
-            };
-        }
+        return {
+            top: boundingRect.top + scrollTop - clientTop,
+            left: boundingRect.left + scrollLeft - clientLeft,
+            right: boundingRect.right + scrollLeft - clientLeft,
+            bottom: boundingRect.bottom + scrollTop - clientTop,
+            width: boundingRect.right - boundingRect.left,
+            height: boundingRect.bottom - boundingRect.top
+        };
     };
 
-    var element$on$$makeMethod = function(method)  {return function(type, selector, props, callback) {var this$0 = this;
-        if (typeof type === "string") {
-            if (typeof props === "function") {
-                callback = props;
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.offset = function() {
+        return { top : 0, left : 0, right : 0, bottom : 0, width : 0, height : 0 };
+    };
 
-                if (typeof selector === "string") {
-                    props = null;
-                } else {
-                    props = selector;
+    var $Users$chemerisuk$git$better$dom$src$element$on$$makeMethod = function(method)  {return function(type, selector, props, callback) {var this$0 = this;
+            if (typeof type === "string") {
+                if (typeof props === "function") {
+                    callback = props;
+
+                    if (typeof selector === "string") {
+                        props = null;
+                    } else {
+                        props = selector;
+                        selector = null;
+                    }
+                }
+
+                if (typeof selector === "function") {
+                    callback = selector;
                     selector = null;
+                    props = null;
                 }
-            }
 
-            if (typeof selector === "function") {
-                callback = selector;
-                selector = null;
-                props = null;
-            }
+                if (typeof callback !== "function") {
+                    throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(method);
+                }
 
-            if (typeof callback !== "function") {
-                throw new errors$$MethodError(method);
-            }
+                var node = this[0],
+                    handler = $Users$chemerisuk$git$better$dom$src$util$eventhandler$$default(type, selector, callback, props, this, method === "once");
 
-            var node = this[0],
-                handler = util$eventhandler$$default(type, selector, callback, props, this, method === "once");
-
-            if (handler) {
-                if (const$$DOM2_EVENTS) {
-                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                if (handler) {
+                    if ($Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS) {
+                        node.addEventListener(handler._type || type, handler, !!handler.capturing);
+                    } else {
+                        node.attachEvent("on" + (handler._type || type), handler);
+                    }
+                    // store event entry
+                    this._._handlers.push(handler);
+                }
+            } else if (typeof type === "object") {
+                if ($Users$chemerisuk$git$better$dom$src$util$index$$default.isArray(type)) {
+                    type.forEach(function(name)  { this$0[method](name, selector, props, callback) });
                 } else {
-                    node.attachEvent("on" + (handler._type || type), handler);
+                    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys(type).forEach(function(name)  { this$0[method](name, type[name]) });
                 }
-                // store event entry
-                this._._handlers.push(handler);
-            }
-        } else if (typeof type === "object") {
-            if (util$index$$default.isArray(type)) {
-                type.forEach(function(name)  { this$0[method](name, selector, props, callback) });
             } else {
-                util$index$$default.keys(type).forEach(function(name)  { this$0[method](name, type[name]) });
+                throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(method);
             }
-        } else {
-            throw new errors$$MethodError(method);
-        }
 
-        return this;
-    }};
+            return this;
+        }},
+        $Users$chemerisuk$git$better$dom$src$element$on$$methods = {
+            /**
+             * Bind a DOM event
+             * @memberof! $Element#
+             * @alias $Element#on
+             * @param  {String|Array}  type        event type(s) with optional selector
+             * @param  {String}        [selector]  event selector filter
+             * @param  {Array}         [props]     array of event properties to pass into the callback
+             * @param  {Function}      callback    event callback or property name (for late binding)
+             * @return {$Element}
+             * @function
+             * @example
+             * link.on("focus", function() {
+             *     // do something on focus
+             * });
+             *
+             * link.on("click", "i", function() {
+             *     // do something on internal &lt;i> click
+             * });
+             *
+             * link.on("click", "span", ["currentTarget"], function(span) {
+             *     // &lt;span> is the element was clicked
+             * });
+             *
+             * link.on(["focus", "blur"], function() {
+             *     // you can pass several event types
+             * });
+             */
+            on: $Users$chemerisuk$git$better$dom$src$element$on$$makeMethod("on"),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        /**
-         * Bind a DOM event
-         * @memberof! $Element#
-         * @alias $Element#on
-         * @param  {String|Array}  type        event type(s) with optional selector
-         * @param  {String}        [selector]  event selector filter
-         * @param  {Array}         [props]     array of event properties to pass into the callback
-         * @param  {Function}      callback    event callback or property name (for late binding)
-         * @return {$Element}
-         * @function
-         * @example
-         * link.on("focus", function() {
-         *     // do something on focus
-         * });
-         *
-         * link.on("click", "i", function() {
-         *     // do something on internal &lt;i> click
-         * });
-         *
-         * link.on("click", "span", ["currentTarget"], function(span) {
-         *     // &lt;span> is the element was clicked
-         * });
-         *
-         * link.on(["focus", "blur"], function() {
-         *     // you can pass several event types
-         * });
-         */
-        on: element$on$$makeMethod("on"),
+            /**
+             * Bind a DOM event but fire once before being removed. Same as
+             * {@link $Element#on}, but removes the handler after a first event
+             * @memberof! $Element#
+             * @alias $Element#once
+             * @param  {String|Array}  type        event type(s) with optional selector
+             * @param  {String}        [selector]  event selector filter
+             * @param  {Array}         [props]     array of event properties to pass into the callback
+             * @param  {Function}      callback    event callback or property name (for late binding)
+             * @return {$Element}
+             * @function
+             * @see $Element#on
+             */
+            once: $Users$chemerisuk$git$better$dom$src$element$on$$makeMethod("once")
+        };
 
-        /**
-         * Bind a DOM event but fire once before being removed. Same as
-         * {@link $Element#on}, but removes the handler after a fist event
-         * @memberof! $Element#
-         * @alias $Element#once
-         * @param  {String|Array}  type        event type(s) with optional selector
-         * @param  {String}        [selector]  event selector filter
-         * @param  {Array}         [props]     array of event properties to pass into the callback
-         * @param  {Function}      callback    event callback or property name (for late binding)
-         * @return {$Element}
-         * @function
-         * @see $Element#on
-         */
-        once: element$on$$makeMethod("once")
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, $Users$chemerisuk$git$better$dom$src$element$on$$methods);
+
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$element$on$$methods).forEach(function(methodName)  {
+        $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
     });
-
-    /**
-     * Callback function for changing a property/attribute
-     * @callback setterCallback
-     * @param {Object} currentValue current value of property/attribute
-     * @return {Object} a new value for property/attribute
-     */
 
     /**
      * Set property/attribute value by name
@@ -2047,23 +2090,29 @@
      * link.set("inner html");       // set link's innerHTML
      * link.set("_prop", {a: "b"});  // update private property _prop
      */
-    types$$$Element.prototype.set = function(name, value) {var this$0 = this;
+    $Users$chemerisuk$git$better$dom$src$types$$$Element.prototype.set = function(name, value) {var this$0 = this;
         var node = this[0];
 
-        if (!node) return this;
-
         // handle the value shortcut
-        if (arguments.length === 1 && typeof name !== "object") {
+        if (arguments.length === 1) {
             if (typeof name === "function") {
                 value = name;
             } else {
                 value = name == null ? "" : String(name);
             }
 
-            name = "value" in node ? "value" : "innerHTML";
+            if (value !== "[object Object]") {
+                var tag = node.tagName;
+
+                if (tag === "INPUT" || tag === "TEXTAREA" ||  tag === "SELECT" || tag === "OPTION") {
+                    name = "value";
+                } else {
+                    name = "innerHTML";
+                }
+            }
         }
 
-        var hook = util$accessorhooks$$default.set[name],
+        var hook = $Users$chemerisuk$git$better$dom$src$util$accessorhooks$$default.set[name],
             watchers = this._._watchers[name],
             oldValue;
 
@@ -2090,152 +2139,167 @@
                 }
 
                 // always trigger reflow manually for IE8 and legacy Android
-                if (!const$$DOM2_EVENTS || const$$LEGACY_ANDROID) node.className = node.className;
+                if (!$Users$chemerisuk$git$better$dom$src$const$$DOM2_EVENTS || $Users$chemerisuk$git$better$dom$src$const$$LEGACY_ANDROID) node.className = node.className;
             }
-        } else if (util$index$$default.isArray(name)) {
+        } else if ($Users$chemerisuk$git$better$dom$src$util$index$$default.isArray(name)) {
             name.forEach(function(key)  { this$0.set(key, value) });
         } else if (typeof name === "object") {
-            util$index$$default.keys(name).forEach(function(key)  { this$0.set(key, name[key]) });
+            $Users$chemerisuk$git$better$dom$src$util$index$$default.keys(name).forEach(function(key)  { this$0.set(key, name[key]) });
         } else {
-            throw new errors$$MethodError("set");
+            throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError("set");
         }
 
-        if (watchers && oldValue !== value) {
+        if (watchers &amp;&amp; oldValue !== value) {
             watchers.forEach(function(w)  {
-                util$index$$default.safeInvoke(w, this$0, value, oldValue);
+                $Users$chemerisuk$git$better$dom$src$util$index$$default.safeInvoke(w, this$0, value, oldValue);
             });
         }
 
         return this;
     };
 
-    var element$traversing$$makeMethod = function(methodName, propertyName, all)  {return function(selector) {
-            if (selector && typeof selector !== "string") throw new errors$$MethodError(methodName);
+    $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype.set = function() {
+        return this;
+    };
 
-            var matcher = util$selectormatcher$$default(selector),
+    var $Users$chemerisuk$git$better$dom$src$element$traversing$$makeMethod = function(methodName, propertyName, all)  {return function(selector) {
+            if (selector &amp;&amp; typeof selector !== "string") throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(methodName);
+
+            var matcher = $Users$chemerisuk$git$better$dom$src$util$selectormatcher$$default(selector),
                 nodes = all ? [] : null,
                 it = this[0];
 
-            if (it && methodName !== "closest") it = it[propertyName];
+            if (it &amp;&amp; methodName !== "closest") it = it[propertyName];
 
             for (; it; it = it[propertyName]) {
-                if (it.nodeType === 1 && (!matcher || matcher(it))) {
+                if (it.nodeType === 1 &amp;&amp; (!matcher || matcher(it))) {
                     if (!all) break;
 
                     nodes.push(it);
                 }
             }
 
-            return all ? util$index$$default.map.call(nodes, types$$$Element) : types$$$Element(it);
-        }};
+            return all ? $Users$chemerisuk$git$better$dom$src$util$index$$default.map.call(nodes, $Users$chemerisuk$git$better$dom$src$types$$$Element) : $Users$chemerisuk$git$better$dom$src$types$$$Element(it);
+        }},
+        $Users$chemerisuk$git$better$dom$src$element$traversing$$methods = {
+            /**
+             * Find next sibling element filtered by optional selector
+             * @memberof! $Element#
+             * @alias $Element#next
+             * @param {String} [selector] css selector
+             * @return {$Element} matched element wrapper
+             * @function
+             * @example
+             * var div = DOM.create("div>a+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
+             * var link = div.child(0);           // &lt;a>
+             * link.next();                       // &lt;b>
+             * link.next("i");                    // &lt;i>
+             */
+            next: $Users$chemerisuk$git$better$dom$src$element$traversing$$makeMethod("next", "nextSibling"),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        /**
-         * Find next sibling element filtered by optional selector
-         * @memberof! $Element#
-         * @alias $Element#next
-         * @param {String} [selector] css selector
-         * @return {$Element} matched element wrapper
-         * @function
-         * @example
-         * var div = DOM.create("div>a+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
-         * var link = div.child(0);           // &lt;a>
-         * link.next();                       // &lt;b>
-         * link.next("i");                    // &lt;i>
-         */
-        next: element$traversing$$makeMethod("next", "nextSibling"),
+            /**
+             * Find previous sibling element filtered by optional selector
+             * @memberof! $Element#
+             * @alias $Element#prev
+             * @param {String} [selector] css selector
+             * @return {$Element} matched element wrapper
+             * @function
+             * @example
+             * var div = DOM.create("div>b+i+a"); // &lt;div>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
+             * var link = div.child(-1);          // &lt;a>
+             * link.prev();                       // &lt;i>
+             * link.prev("b");                    // &lt;b>
+             */
+            prev: $Users$chemerisuk$git$better$dom$src$element$traversing$$makeMethod("prev", "previousSibling"),
 
-        /**
-         * Find previous sibling element filtered by optional selector
-         * @memberof! $Element#
-         * @alias $Element#prev
-         * @param {String} [selector] css selector
-         * @return {$Element} matched element wrapper
-         * @function
-         * @example
-         * var div = DOM.create("div>b+i+a"); // &lt;div>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
-         * var link = div.child(-1);          // &lt;a>
-         * link.prev();                       // &lt;i>
-         * link.prev("b");                    // &lt;b>
-         */
-        prev: element$traversing$$makeMethod("prev", "previousSibling"),
+            /**
+             * Find all next sibling elements filtered by optional selector
+             * @memberof! $Element#
+             * @alias $Element#nextAll
+             * @param {String} [selector] css selector
+             * @return {Array.&lt;$Element>} an array of all matched element wrappers
+             * @function
+             * @example
+             * var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
+             * var link = DOM.child(0);             // &lt;a>
+             * link.nextAll();                      // [&lt;i>, &lt;b>, &lt;i>]
+             * link.nextAll("i");                   // [&lt;i>, &lt;i>]
+             */
+            nextAll: $Users$chemerisuk$git$better$dom$src$element$traversing$$makeMethod("nextAll", "nextSibling", true),
 
-        /**
-         * Find all next sibling elements filtered by optional selector
-         * @memberof! $Element#
-         * @alias $Element#nextAll
-         * @param {String} [selector] css selector
-         * @return {Array.&lt;$Element>} an array of all matched element wrappers
-         * @function
-         * @example
-         * var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
-         * var link = DOM.child(0);             // &lt;a>
-         * link.nextAll();                      // [&lt;i>, &lt;b>, &lt;i>]
-         * link.nextAll("i");                   // [&lt;i>, &lt;i>]
-         */
-        nextAll: element$traversing$$makeMethod("nextAll", "nextSibling", true),
+            /**
+             * Find all previous sibling elements filtered by optional selector
+             * @memberof! $Element#
+             * @alias $Element#prevAll
+             * @param {String} [selector] css selector
+             * @return {Array.&lt;$Element>} an array of all matched element wrappers
+             * @function
+             * @example
+             * var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
+             * var link = DOM.child(-1);            // &lt;a>
+             * link.prevAll();                      // [&lt;i>, &lt;b>, &lt;i>]
+             * link.prevAll("b");                   // [&lt;b>]
+             */
+            prevAll: $Users$chemerisuk$git$better$dom$src$element$traversing$$makeMethod("prevAll", "previousSibling", true),
 
-        /**
-         * Find all previous sibling elements filtered by optional selector
-         * @memberof! $Element#
-         * @alias $Element#prevAll
-         * @param {String} [selector] css selector
-         * @return {Array.&lt;$Element>} an array of all matched element wrappers
-         * @function
-         * @example
-         * var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
-         * var link = DOM.child(-1);            // &lt;a>
-         * link.prevAll();                      // [&lt;i>, &lt;b>, &lt;i>]
-         * link.prevAll("b");                   // [&lt;b>]
-         */
-        prevAll: element$traversing$$makeMethod("prevAll", "previousSibling", true),
+            /**
+             * Find the closest ancestor of the current element (or the current element itself) which matches selector
+             * @memberof! $Element#
+             * @alias $Element#closest
+             * @param {String} [selector] css selector
+             * @return {$Element} matched element wrapper
+             * @function
+             * @example
+             * var div = DOM.create("div.foo>div.bar>a"); // &lt;div class="foo">&lt;div class="bar">&lt;a>&lt;/a>&lt;/div>&lt;/div>
+             * var link = div.find("a");                  // => &lt;a>
+             * link.closest("a");                         // => itself
+             * link.closest(".bar");                      // => &lt;div class="bar">
+             * link.closest(".foo");                      // => &lt;div class="foo">
+             */
+            closest: $Users$chemerisuk$git$better$dom$src$element$traversing$$makeMethod("closest", "parentNode")
+        };
 
-        /**
-         * Find the closest ancestor of the current element (or the current element itself) which matches selector
-         * @memberof! $Element#
-         * @alias $Element#closest
-         * @param {String} [selector] css selector
-         * @return {$Element} matched element wrapper
-         * @function
-         * @example
-         * var div = DOM.create("div.foo>div.bar>a"); // &lt;div class="foo">&lt;div class="bar">&lt;a>&lt;/a>&lt;/div>&lt;/div>
-         * var link = div.find("a");                  // => &lt;a>
-         * link.closest("a");                         // => itself
-         * link.closest(".bar");                      // => &lt;div class="bar">
-         * link.closest(".foo");                      // => &lt;div class="foo">
-         */
-        closest: element$traversing$$makeMethod("closest", "parentNode")
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, $Users$chemerisuk$git$better$dom$src$element$traversing$$methods);
+
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$element$traversing$$methods).forEach(function(methodName)  {
+        $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype[methodName] = function() {
+            if (methodName.slice(-3) === "All") {
+                return [];
+            } else {
+                return new $Users$chemerisuk$git$better$dom$src$types$$$NullElement();
+            }
+        };
     });
 
     // Legacy Android is too slow and has a lot of bugs in the CSS animations
     // implementation, so skip any animations for it
-    var element$visibility$$ANIMATIONS_ENABLED = !const$$LEGACY_ANDROID && !const$$LEGACY_IE,
-        element$visibility$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
-        element$visibility$$TRANSITION_EVENT_TYPE = const$$WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-        element$visibility$$ANIMATION_EVENT_TYPE = const$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
-        element$visibility$$parseTimeValue = function(value)  {
+    var $Users$chemerisuk$git$better$dom$src$element$visibility$$ANIMATIONS_ENABLED = !$Users$chemerisuk$git$better$dom$src$const$$LEGACY_ANDROID &amp;&amp; !$Users$chemerisuk$git$better$dom$src$const$$LEGACY_IE,
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$TRANSITION_EVENT_TYPE = $Users$chemerisuk$git$better$dom$src$const$$WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$ANIMATION_EVENT_TYPE = $Users$chemerisuk$git$better$dom$src$const$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
             // if duration is in seconds, then multiple result value by 1000
             return !result || value.slice(-2) === "ms" ? result : result * 1000;
         },
-        element$visibility$$calcTransitionDuration = function(style)  {
-            var delay = util$stylehooks$$default.get["transition-delay"](style).split(","),
-                duration = util$stylehooks$$default.get["transition-duration"](style).split(",");
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$calcTransitionDuration = function(style)  {
+            var delay = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.get["transition-delay"](style).split(","),
+                duration = $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.get["transition-duration"](style).split(",");
 
             return Math.max.apply(Math, duration.map(function(value, index)  {
-                return element$visibility$$parseTimeValue(value) + (element$visibility$$parseTimeValue(delay[index]) || 0);
+                return $Users$chemerisuk$git$better$dom$src$element$visibility$$parseTimeValue(value) + ($Users$chemerisuk$git$better$dom$src$element$visibility$$parseTimeValue(delay[index]) || 0);
             }));
         },
-        element$visibility$$scheduleTransition = function(node, style, computed, hiding, done)  {
-            var duration = element$visibility$$calcTransitionDuration(computed);
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$scheduleTransition = function(node, style, computed, hiding, done)  {
+            var duration = $Users$chemerisuk$git$better$dom$src$element$visibility$$calcTransitionDuration(computed);
 
             if (!duration) return false; // skip transitions with zero duration
 
             var visibilityTransitionIndex, transitionValues;
 
-            transitionValues = element$visibility$$TRANSITION_PROPS.map(function(prop, index)  {
+            transitionValues = $Users$chemerisuk$git$better$dom$src$element$visibility$$TRANSITION_PROPS.map(function(prop, index)  {
                 // have to use regexp to split transition-timing-function value
-                return util$stylehooks$$default.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+                return $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.get[prop](computed).split(index ? ", " : /, (?!\d)/);
             });
 
             // try to find existing or use 0s length or make a new visibility transition
@@ -2250,14 +2314,14 @@
 
             // now set target duration and delay
             transitionValues.forEach(function(value, index)  {
-                util$stylehooks$$default.set[element$visibility$$TRANSITION_PROPS[index]](style, value.join(", "));
+                $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.set[$Users$chemerisuk$git$better$dom$src$element$visibility$$TRANSITION_PROPS[index]](style, value.join(", "));
             });
 
-            node.addEventListener(element$visibility$$TRANSITION_EVENT_TYPE, function completeTransition(e) {
+            node.addEventListener($Users$chemerisuk$git$better$dom$src$element$visibility$$TRANSITION_EVENT_TYPE, function completeTransition(e) {
                 if (e.propertyName === "visibility") {
                     e.stopPropagation(); // this is an internal transition
 
-                    node.removeEventListener(element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, true);
+                    node.removeEventListener($Users$chemerisuk$git$better$dom$src$element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, true);
 
                     style.willChange = ""; // remove temporary properties
 
@@ -2274,45 +2338,42 @@
 
             return true;
         },
-        element$visibility$$scheduleAnimation = function(node, style, computed, animationName, hiding, done)  {
-            var duration = element$visibility$$parseTimeValue(util$stylehooks$$default.get["animation-duration"](computed));
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$scheduleAnimation = function(node, style, computed, animationName, hiding, done)  {
+            var duration = $Users$chemerisuk$git$better$dom$src$element$visibility$$parseTimeValue($Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.get["animation-duration"](computed));
 
             if (!duration) return false; // skip animations with zero duration
 
-            node.addEventListener(element$visibility$$ANIMATION_EVENT_TYPE, function completeAnimation(e) {
+            node.addEventListener($Users$chemerisuk$git$better$dom$src$element$visibility$$ANIMATION_EVENT_TYPE, function completeAnimation(e) {
                 if (e.animationName === animationName) {
                     e.stopPropagation(); // this is an internal animation
 
-                    node.removeEventListener(element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, true);
+                    node.removeEventListener($Users$chemerisuk$git$better$dom$src$element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, true);
 
-                    util$stylehooks$$default.set["animation-name"](style, ""); // remove temporary animation
+                    $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.set["animation-name"](style, ""); // remove temporary animation
 
                     done();
                 }
             }, true);
 
             // trigger animation start
-            util$stylehooks$$default.set["animation-direction"](style, hiding ? "normal" : "reverse");
-            util$stylehooks$$default.set["animation-name"](style, animationName);
+            $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.set["animation-direction"](style, hiding ? "normal" : "reverse");
+            $Users$chemerisuk$git$better$dom$src$util$stylehooks$$default.set["animation-name"](style, animationName);
 
             return true;
         },
-        element$visibility$$makeMethod = function(name, condition)  {return function(animationName, callback) {var this$0 = this;
-            var node = this[0];
-
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$makeMethod = function(name, condition)  {return function(animationName, callback) {var this$0 = this;
             if (typeof animationName !== "string") {
                 callback = animationName;
                 animationName = null;
             }
 
-            if (callback && typeof callback !== "function") {
-                throw new errors$$MethodError(name);
+            if (callback &amp;&amp; typeof callback !== "function") {
+                throw new $Users$chemerisuk$git$better$dom$src$errors$$MethodError(name);
             }
 
-            if (!node) return this;
-
-            var style = node.style,
-                computed = util$index$$default.computeStyle(node),
+            var node = this[0],
+                style = node.style,
+                computed = $Users$chemerisuk$git$better$dom$src$util$index$$default.computeStyle(node),
                 visibility = computed.visibility,
                 displayValue = computed.display,
                 hiding = condition,
@@ -2322,7 +2383,7 @@
                     // state. Don't need to proceed in such situation
                     if (String(hiding) === node.getAttribute("aria-hidden")) {
                         // remove element from the flow when animation is done
-                        if (hiding && animationName) {
+                        if (hiding &amp;&amp; animationName) {
                             if (animatable) {
                                 style.visibility = "hidden";
                             } else {
@@ -2336,11 +2397,11 @@
                 animatable;
 
             if (typeof hiding !== "boolean") {
-                hiding = displayValue !== "none" && visibility !== "hidden" &&
+                hiding = displayValue !== "none" &amp;&amp; visibility !== "hidden" &amp;&amp;
                     node.getAttribute("aria-hidden") !== "true";
             }
 
-            if (element$visibility$$ANIMATIONS_ENABLED) {
+            if ($Users$chemerisuk$git$better$dom$src$element$visibility$$ANIMATIONS_ENABLED) {
                 // Use offsetWidth to trigger reflow of the element.
                 // Fixes animation of an element inserted into the DOM
                 //
@@ -2353,20 +2414,20 @@
                 if (!hiding) visibility = node.offsetWidth;
 
                 if (animationName) {
-                    animatable = element$visibility$$scheduleAnimation(node, style, computed, animationName, hiding, done);
+                    animatable = $Users$chemerisuk$git$better$dom$src$element$visibility$$scheduleAnimation(node, style, computed, animationName, hiding, done);
                 } else {
-                    animatable = element$visibility$$scheduleTransition(node, style, computed, hiding, done);
+                    animatable = $Users$chemerisuk$git$better$dom$src$element$visibility$$scheduleTransition(node, style, computed, hiding, done);
                 }
             }
 
             // handle old browsers or cases when there no animation
             if (hiding) {
-                if (displayValue !== "none" && !animatable) {
+                if (displayValue !== "none" &amp;&amp; !animatable) {
                     this._._display = displayValue;
                     // we'll hide element later in the done call
                 }
             } else {
-                if (displayValue === "none" && !animatable) {
+                if (displayValue === "none" &amp;&amp; !animatable) {
                     // restore display property value
                     style.display = this._._display || "inherit";
                 }
@@ -2375,78 +2436,85 @@
             // update element visibility value
             // for CSS3 animation element should always be visible
             // use value "inherit" to respect parent container visibility
-            style.visibility = hiding && !animationName ? "hidden" : "inherit";
+            style.visibility = hiding &amp;&amp; !animationName ? "hidden" : "inherit";
             // trigger CSS3 transition if it exists
             this.set("aria-hidden", String(hiding));
             // must be AFTER changing the aria-hidden attribute
             if (!animatable) done();
 
             return this;
-        }};
+        }},
+        $Users$chemerisuk$git$better$dom$src$element$visibility$$methods = {
+            /**
+             * Show an element using CSS3 transition or animation
+             * @memberof! $Element#
+             * @alias $Element#show
+             * @param {String}   [animationName]  CSS animation to apply during transition
+             * @param {Function} [callback]       function that executes when animation is done
+             * @return {$Element}
+             * @function
+             * @example
+             * link.show(); // displays element
+             *
+             * foo.show(function() {
+             *   // do something when transition is completed
+             * });
+             *
+             * bar.show("fade", function() {
+             *   // do something when "fade" animation is completed
+             * });
+             */
+            show: $Users$chemerisuk$git$better$dom$src$element$visibility$$makeMethod("show", false),
 
-    util$index$$default.assign(types$$$Element.prototype, {
-        /**
-         * Show an element using CSS3 transition or animation
-         * @memberof! $Element#
-         * @alias $Element#show
-         * @param {String}   [animationName]  CSS animation to apply during transition
-         * @param {Function} [callback]       function that executes when animation is done
-         * @return {$Element}
-         * @function
-         * @example
-         * link.show(); // displays element
-         *
-         * foo.show(function() {
-         *   // do something when transition is completed
-         * });
-         *
-         * bar.show("fade", function() {
-         *   // do something when "fade" animation is completed
-         * });
-         */
-        show: element$visibility$$makeMethod("show", false),
+            /**
+             * Hide an element using CSS3 transition or animation
+             * @memberof! $Element#
+             * @alias $Element#hide
+             * @param {String}   [animationName]  CSS animation to apply during transition
+             * @param {Function} [callback]       function that executes when animation is done
+             * @return {$Element}
+             * @function
+             * @example
+             * link.hide(); // hides element
+             *
+             * foo.hide(function() {
+             *   // do something when transition is completed
+             * });
+             *
+             * bar.hide("fade", function() {
+             *   // do something when "fade" animation is completed
+             * });
+             */
+            hide: $Users$chemerisuk$git$better$dom$src$element$visibility$$makeMethod("hide", true),
 
-        /**
-         * Hide an element using CSS3 transition or animation
-         * @memberof! $Element#
-         * @alias $Element#hide
-         * @param {String}   [animationName]  CSS animation to apply during transition
-         * @param {Function} [callback]       function that executes when animation is done
-         * @return {$Element}
-         * @function
-         * @example
-         * link.hide(); // hides element
-         *
-         * foo.hide(function() {
-         *   // do something when transition is completed
-         * });
-         *
-         * bar.hide("fade", function() {
-         *   // do something when "fade" animation is completed
-         * });
-         */
-        hide: element$visibility$$makeMethod("hide", true),
+            /**
+             * Toggle an element using CSS3 transition or animation
+             * @memberof! $Element#
+             * @alias $Element#toggle
+             * @param {String}   [animationName]  CSS animation to apply during transition
+             * @param {Function} [callback]       function that executes when animation is done
+             * @return {$Element}
+             * @function
+             * @example
+             * link.toggle(); // toggles element visibility
+             *
+             * foo.toggle(function() {
+             *   // do something when transition is completed
+             * });
+             *
+             * bar.toggle("fade", function() {
+             *   // do something when "fade" animation is completed
+             * });
+             */
+            toggle: $Users$chemerisuk$git$better$dom$src$element$visibility$$makeMethod("toggle")
+        };
 
-        /**
-         * Toggle an element using CSS3 transition or animation
-         * @memberof! $Element#
-         * @alias $Element#toggle
-         * @param {String}   [animationName]  CSS animation to apply during transition
-         * @param {Function} [callback]       function that executes when animation is done
-         * @return {$Element}
-         * @function
-         * @example
-         * link.toggle(); // toggles element visibility
-         *
-         * foo.toggle(function() {
-         *   // do something when transition is completed
-         * });
-         *
-         * bar.toggle("fade", function() {
-         *   // do something when "fade" animation is completed
-         * });
-         */
-        toggle: element$visibility$$makeMethod("toggle")
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, $Users$chemerisuk$git$better$dom$src$element$visibility$$methods);
+
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$element$visibility$$methods).forEach(function(methodName)  {
+        $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
     });
 
     /**
@@ -2456,46 +2524,56 @@
      * @param {Object} oldValue a previous value
      */
 
-    /**
-     * Watch for changes of a particular property/attribute
-     * @memberof! $Element#
-     * @alias $Element#watch
-     * @param  {String}        name     property/attribute name
-     * @param  {watchCallback} callback function for watching changes of the property/attribute
-     * @return {$Element}
-     * @example
-     * targetInput.watch("value", function(value, oldValue) {
-     *     // do what you want AFTER the value of targetInput was changed
-     * });
-     */
-    types$$$Element.prototype.watch = function(name, callback) {
-        var watchers = this._._watchers;
+    var $Users$chemerisuk$git$better$dom$src$element$watch$$methods = {
+            /**
+             * Watch for changes of a particular property/attribute
+             * @memberof! $Element#
+             * @alias $Element#watch
+             * @param  {String}        name     property/attribute name
+             * @param  {watchCallback} callback function for watching changes of the property/attribute
+             * @return {$Element}
+             * @example
+             * targetInput.watch("value", function(value, oldValue) {
+             *     // do what you want AFTER the value of targetInput was changed
+             * });
+             */
+            watch: function(name, callback) {
+                var watchers = this._._watchers;
 
-        if (!watchers[name]) watchers[name] = [];
+                if (!watchers[name]) watchers[name] = [];
 
-        watchers[name].push(callback);
+                watchers[name].push(callback);
 
-        return this;
-    };
+                return this;
+            },
 
-    /**
-     * Disable watching of a particular property/attribute
-     * @memberof! $Element#
-     * @alias $Element#unwatch
-     * @param  {String}        name     property/attribute name
-     * @param  {watchCallback} callback function for watching changes of the property/attribute
-     * @return {$Element}
-     * @see $Element#watch
-     */
-    types$$$Element.prototype.unwatch = function(name, callback) {
-        var watchers = this._._watchers;
+            /**
+             * Disable watching of a particular property/attribute
+             * @memberof! $Element#
+             * @alias $Element#unwatch
+             * @param  {String}        name     property/attribute name
+             * @param  {watchCallback} callback function for watching changes of the property/attribute
+             * @return {$Element}
+             * @see $Element#watch
+             */
+            unwatch: function(name, callback) {
+                var watchers = this._._watchers;
 
-        if (watchers[name]) {
-            watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
-        }
+                if (watchers[name]) {
+                    watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
+                }
 
-        return this;
-    };
+                return this;
+            }
+        };
+
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.assign($Users$chemerisuk$git$better$dom$src$types$$$Element.prototype, $Users$chemerisuk$git$better$dom$src$element$watch$$methods);
+
+    $Users$chemerisuk$git$better$dom$src$util$index$$default.keys($Users$chemerisuk$git$better$dom$src$element$watch$$methods).forEach(function(methodName)  {
+        $Users$chemerisuk$git$better$dom$src$types$$$NullElement.prototype[methodName] = function() {
+            return this;
+        };
+    });
 })();</code></pre>
         </article>
     </section>
@@ -2514,7 +2592,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Sat Sep 27 2014 16:31:52 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Thu Oct 02 2014 17:15:27 GMT+0300 (FET)
         </footer>
     </div>
 </div>
