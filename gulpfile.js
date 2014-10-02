@@ -9,6 +9,10 @@ var symlink = require("gulp-symlink");
 var argv = require("yargs").argv;
 var jsdoc = require("gulp-jsdoc");
 var clean = require("gulp-clean");
+var uglify = require("gulp-uglifyjs");
+var bump = require("gulp-bump");
+var deploy = require("gulp-gh-pages");
+var replace = require("gulp-replace");
 
 // make a version number string, e.g. "1.20.3" -> "1020300"
 var VERSION = pkg.version.replace(/\.(\d+)/g, function(_, n) {
@@ -80,11 +84,11 @@ gulp.task("travis", ["compile", "symlink", "lint"], function(done) {
 });
 
 gulp.task("sauce", function() {
-    // should always return 0 for this task
+    // always return success result for this task
     karma.start({configFile: require.resolve("./conf/karma.conf-ci.js")});
 });
 
-gulp.task("clean-jsdoc", function () {
+gulp.task("clean-jsdoc", function() {
     return gulp.src("jsdoc", {read: false}).pipe(clean());
 });
 
@@ -93,4 +97,27 @@ gulp.task("docs", ["clean-jsdoc", "compile"], function() {
 
     return gulp.src(["build/*.js", "README.md"])
         .pipe(jsdoc("jsdoc", config));
+});
+
+gulp.task("deploy", ["docs"], function() {
+    var lib = require.resolve("./build/better-dom");
+
+    return gulp.src("./jsdoc/**/*")
+        .pipe(replace(lib, "better-dom.js"))
+        .pipe(deploy());
+});
+
+gulp.task("compress", function() {
+    gulp.src("build/*.js")
+        .pipe(uglify("better-dom.min.js", {
+            output: {comments: /^!|@preserve|@license|@cc_on/i}
+        }))
+        .pipe(gulp.dest("build/"));
+});
+
+gulp.task("bump", function() {
+    // major, minor, patch, prerelease
+    gulp.src(["./package.json", "./bower.json"])
+        .pipe(bump({type: argv.type}))
+        .pipe(gulp.dest("./"));
 });

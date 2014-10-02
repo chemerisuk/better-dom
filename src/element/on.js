@@ -83,7 +83,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
 
         /**
          * Bind a DOM event but fire once before being removed. Same as
-         * {@link $Element#on}, but removes the handler after a fist event
+         * {@link $Element#on}, but removes the handler after a first event
          * @memberof! $Element#
          * @alias $Element#once
          * @param  {String|Array}  type        event type(s) with optional selector
