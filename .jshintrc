@@ -23,6 +23,7 @@
 
     "globals": {
         "DOM": true,
+        "process": true,
 
         "beforeEach": true,
         "afterEach": true,

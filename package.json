@@ -20,6 +20,7 @@
     "gulp-filter": "^1.0.2",
     "gulp-gh-pages": "^0.3.4",
     "gulp-git": "^0.5.1",
+    "gulp-if": "^1.2.5",
     "gulp-jsdoc": "^0.1.4",
     "gulp-jshint": "^1.8.5",
     "gulp-replace": "^0.4.0",

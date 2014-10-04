@@ -6,7 +6,7 @@ before_install:
   - npm install -g bower
   - bower install
 script:
-  - gulp travis
+  - gulp test
   - gulp sauce
 env:
   global:

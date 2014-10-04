@@ -1,4 +1,5 @@
 var gulp = require("gulp");
+var gulpif = require("gulp-if");
 var gutil = require("gulp-util");
 var pkg = require("./package.json");
 var karma = require("karma").server;
@@ -46,7 +47,7 @@ gulp.task("lint", function() {
     return gulp.src(["src/*.js", "src/**/*.js", "test/spec/**/*.js", "*.js"])
         .pipe(jshint(".jshintrc"))
         .pipe(jshint.reporter("jshint-stylish"))
-        .pipe(jshint.reporter("fail"));
+        .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
 });
 
 gulp.task("symlink", function() {
@@ -55,20 +56,30 @@ gulp.task("symlink", function() {
 });
 
 gulp.task("test", ["compile", "symlink", "lint"], function(done) {
-    var browsers = ["PhantomJS"];
+    var config = {};
 
-    if (argv.all) {
-        browsers = ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"];
-    } else if (argv.ie8) {
-        browsers = ["IE8 - WinXP"];
-    } else if (argv.ie9 || argv.ie10 || argv.ie11) {
-        browsers = ["IE" + (argv.ie9 ? "9" : (argv.ie10 ? "10" : "11")) + " - Win7"];
+    if (process.env.TRAVIS_JOB_NUMBER) {
+        config = {
+            preprocessors: { "build/better-dom.js": "coverage" },
+            reporters: ["coverage", "dots", "coveralls"],
+            coverageReporter: {
+                type: "lcovonly",
+                dir: "coverage/"
+            }
+        };
+    } else {
+        if (argv.all) {
+            config.browsers = ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"];
+        } else if (argv.ie8) {
+            config.browsers = ["IE8 - WinXP"];
+        } else if (argv.ie9 || argv.ie10 || argv.ie11) {
+            config.browsers = ["IE" + (argv.ie9 ? "9" : (argv.ie10 ? "10" : "11")) + " - Win7"];
+        }
     }
 
-    karma.start({
-        browsers: browsers,
-        configFile: require.resolve("./conf/karma.conf")
-    }, done);
+    config.configFile = require.resolve("./conf/karma.conf");
+
+    karma.start(config, done);
 });
 
 gulp.task("dev", ["compile", "symlink", "lint"], function() {
@@ -84,21 +95,13 @@ gulp.task("dev", ["compile", "symlink", "lint"], function() {
     });
 });
 
-gulp.task("travis", ["compile", "symlink", "lint"], function(done) {
-    karma.start({
-        configFile: require.resolve("./conf/karma.conf"),
-        preprocessors: { "build/better-dom.js": "coverage" },
-        reporters: ["coverage", "dots", "coveralls"],
-        coverageReporter: {
-            type: "lcovonly",
-            dir: "coverage/"
-        }
-    }, done);
-});
-
 gulp.task("sauce", function() {
-    // always return success result for this task
-    karma.start({configFile: require.resolve("./conf/karma.conf-ci.js")});
+    karma.start({
+        configFile: require.resolve("./conf/karma.conf-ci.js")
+    }, function() {
+        // always return success result for this task
+        process.exit(0);
+    });
 });
 
 gulp.task("clean-jsdoc", function() {
