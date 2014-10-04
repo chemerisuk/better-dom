@@ -38,7 +38,7 @@ DOM.importStyles = function(selector, cssText) {
     }
 
     if (typeof selector !== "string" || typeof cssText !== "string") {
-        throw new StaticMethodError("importStyles");
+        throw new StaticMethodError("importStyles", arguments);
     }
 
     if (styleSheet.cssRules) {

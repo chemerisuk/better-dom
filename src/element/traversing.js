@@ -4,7 +4,7 @@ import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
 var makeMethod = (methodName, propertyName, all) => function(selector) {
-        if (selector && typeof selector !== "string") throw new MethodError(methodName);
+        if (selector && typeof selector !== "string") throw new MethodError(methodName, arguments);
 
         var matcher = SelectorMatcher(selector),
             nodes = all ? [] : null,

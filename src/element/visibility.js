@@ -101,7 +101,7 @@ var ANIMATIONS_ENABLED = !LEGACY_ANDROID && !LEGACY_IE,
         }
 
         if (callback && typeof callback !== "function") {
-            throw new MethodError(name);
+            throw new MethodError(name, arguments);
         }
 
         var node = this[0],

@@ -1,15 +1,20 @@
+import _ from "./util/index";
+
 // customized errors
 
-function MethodError(methodName, type = "$Element") {
-    var url = "<%= pkg.docs %>/" + type + ".html#" + methodName;
+function MethodError(methodName, args, type = "$Element") {
+    var url = "<%= pkg.docs %>/" + type + ".html#" + methodName,
+        line = type + (type === "DOM" ? "." : "#") + methodName + "(";
 
-    this.message = type + "#" + methodName + " was called with illegal arguments. Check " + url + " to verify the method call";
+    line += _.map.call(args, (arg) => JSON.stringify(arg)).join(", ") + ");";
+
+    this.message = line + " Check " + url + " to verify the function call";
 }
 
 MethodError.prototype = new TypeError();
 
-function StaticMethodError(methodName) {
-    MethodError.call(this, methodName, "DOM");
+function StaticMethodError(methodName, args) {
+    MethodError.call(this, methodName, args, "DOM");
 }
 
 StaticMethodError.prototype = new TypeError();

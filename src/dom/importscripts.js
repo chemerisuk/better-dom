@@ -32,7 +32,7 @@ DOM.importScripts = function(...urls) {
         } else if (argType === "function") {
             arg();
         } else if (arg) {
-            throw new StaticMethodError("importScripts");
+            throw new StaticMethodError("importScripts", arguments);
         }
     };
 

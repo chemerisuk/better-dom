@@ -14,7 +14,7 @@ import HOOK from "../util/selectorhooks";
  * DOM.find("body").matches("body>html"); // => false
  */
 $Element.prototype.matches = function(selector) {
-    if (!selector || typeof selector !== "string") throw new MethodError("matches");
+    if (!selector || typeof selector !== "string") throw new MethodError("matches", arguments);
 
     var checker = HOOK[selector] || SelectorMatcher(selector);
 

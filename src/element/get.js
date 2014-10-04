@@ -59,7 +59,7 @@ $Element.prototype.get = function(name) {
     } else if (_.isArray(name)) {
         return name.reduce((r, key) => { return r[key] = this.get(key), r }, {});
     } else {
-        throw new MethodError("get");
+        throw new MethodError("get", arguments);
     }
 };
 

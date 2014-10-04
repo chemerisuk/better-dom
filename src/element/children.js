@@ -6,9 +6,9 @@ import SelectorMatcher from "../util/selectormatcher";
 
 var makeMethod = (all) => function(selector) {
     if (all) {
-        if (selector && typeof selector !== "string") throw new MethodError("children");
+        if (selector && typeof selector !== "string") throw new MethodError("children", arguments);
     } else {
-        if (selector && typeof selector !== "number") throw new MethodError("child");
+        if (selector && typeof selector !== "number") throw new MethodError("child", arguments);
     }
 
     var node = this[0],

@@ -28,7 +28,7 @@ var makeMethod = (methodName, fasterMethodName, standalone, strategy) => functio
                 return fragment;
             }, DOCUMENT.createDocumentFragment());
         } else {
-            throw new MethodError(methodName);
+            throw new MethodError(methodName, arguments);
         }
 
         if (content && typeof content === "string") {

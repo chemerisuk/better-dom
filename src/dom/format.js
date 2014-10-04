@@ -15,7 +15,7 @@ var reVar = /\{([\w\-]+)\}/g;
  * DOM.format("your {0}", ["title"]); // => "your title"
  */
 DOM.format = function(tmpl, varMap) {
-    if (typeof tmpl !== "string") throw new StaticMethodError("format");
+    if (typeof tmpl !== "string") throw new StaticMethodError("format", arguments);
 
     if (!varMap || typeof varMap !== "object") varMap = {};
 

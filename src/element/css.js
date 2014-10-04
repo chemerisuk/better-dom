@@ -64,7 +64,7 @@ $Element.prototype.css = function(name, value) {
     } else if (len === 2 && nameType === "string") {
         appendCssText(name, value);
     } else {
-        throw new MethodError("css");
+        throw new MethodError("css", arguments);
     }
 
     return this;

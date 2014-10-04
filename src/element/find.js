@@ -10,7 +10,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
     rescape = /'|\\/g,
     tmpId = "DOM" + Date.now(),
     makeMethod = (all) => function(selector) {
-        if (typeof selector !== "string") throw new MethodError("find" + all);
+        if (typeof selector !== "string") throw new MethodError("find" + all, arguments);
 
         var node = this[0],
             quickMatch = rquick.exec(selector),

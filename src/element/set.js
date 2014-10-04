@@ -73,7 +73,7 @@ $Element.prototype.set = function(name, value) {
     } else if (typeof name === "object") {
         _.keys(name).forEach((key) => { this.set(key, name[key]) });
     } else {
-        throw new MethodError("set");
+        throw new MethodError("set", arguments);
     }
 
     if (watchers && oldValue !== value) {

@@ -24,7 +24,7 @@ var reSpace = /[\n\t\r]/g,
                     return force;
                 }
 
-                if (typeof token !== "string") throw new MethodError(methodName);
+                if (typeof token !== "string") throw new MethodError(methodName, arguments);
 
                 return strategy(this, token);
             };
@@ -33,7 +33,7 @@ var reSpace = /[\n\t\r]/g,
                 var tokens = arguments;
 
                 for (var token of tokens) {
-                    if (typeof token !== "string") throw new MethodError(methodName);
+                    if (typeof token !== "string") throw new MethodError(methodName, arguments);
 
                     strategy(this, token);
                 }

@@ -10,7 +10,7 @@ import { $Element, $NullElement } from "../types";
  * @return {$Element}
  */
 $Element.prototype.off = function(type, callback) {
-    if (typeof type !== "string") throw new MethodError("off");
+    if (typeof type !== "string") throw new MethodError("off", arguments);
 
     var node = this[0];
 

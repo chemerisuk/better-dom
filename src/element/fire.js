@@ -28,7 +28,7 @@ $Element.prototype.fire = function(type, ...args) {
 
         eventType = handler._type || type;
     } else {
-        throw new MethodError("fire");
+        throw new MethodError("fire", arguments);
     }
 
     if (DOM2_EVENTS) {

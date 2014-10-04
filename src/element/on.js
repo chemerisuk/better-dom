@@ -24,7 +24,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
             }
 
             if (typeof callback !== "function") {
-                throw new MethodError(method);
+                throw new MethodError(method, arguments);
             }
 
             var node = this[0],
@@ -46,7 +46,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
                 _.keys(type).forEach((name) => { this[method](name, type[name]) });
             }
         } else {
-            throw new MethodError(method);
+            throw new MethodError(method, arguments);
         }
 
         return this;

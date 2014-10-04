@@ -13,7 +13,7 @@ import { $Element, $NullElement, DOM } from "../types";
  * ul.clone(false); // => clone of <ul> element ONLY
  */
 $Element.prototype.clone = function(deep = true) {
-    if (typeof deep !== "boolean") throw new MethodError("clone");
+    if (typeof deep !== "boolean") throw new MethodError("clone", arguments);
 
     var node = this[0], result;
 

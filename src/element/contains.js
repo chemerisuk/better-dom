@@ -26,7 +26,7 @@ $Element.prototype.contains = function(element) {
         }
     }
 
-    throw new MethodError("contains");
+    throw new MethodError("contains", arguments);
 };
 
 $NullElement.prototype.contains = function() {

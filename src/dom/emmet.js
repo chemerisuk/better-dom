@@ -70,7 +70,7 @@ var // operator type / priority object
  * DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "<i class="foo"><span id="bar"></span></i>"
  */
 DOM.emmet = function(template, varMap) {
-    if (typeof template !== "string") throw new StaticMethodError("emmet");
+    if (typeof template !== "string") throw new StaticMethodError("emmet", arguments);
 
     if (varMap) template = DOM.format(template, varMap);
 
