@@ -121,7 +121,7 @@ gulp.task("gh-pages", ["docs"], function() {
         .pipe(deploy());
 });
 
-gulp.task("compress", ["compile"], function() {
+gulp.task("compress", ["test"], function() {
     var dest = argv.tag ? "dist/" : "build/";
 
     return gulp.src(dest + "better-dom.js")

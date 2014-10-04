@@ -64,5 +64,5 @@ $Element.prototype.fire = function(type, ...args) {
 };
 
 $NullElement.prototype.fire = function() {
-    return false;
+    return true;
 };

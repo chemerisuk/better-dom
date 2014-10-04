@@ -11,8 +11,8 @@ function $Element(node) {
         if (node) {
             this[0] = node;
             this._ = { _handlers: [], _watchers: {} };
-            // use a generated on compile time property to store
-            // a reference to the wrapper for circular binding
+            // use a generated property to store a reference
+            // to the wrapper for circular object binding
             node["__<%= VERSION_NUMBER %>__"] = this;
         }
     } else if (node) {
