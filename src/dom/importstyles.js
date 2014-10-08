@@ -6,7 +6,8 @@ import HOOK from "../util/stylehooks";
 
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
-    styleRules = styleSheet.cssRules || styleSheet.rules;
+    styleRules = styleSheet.cssRules || styleSheet.rules,
+    insertRule = styleSheet.insertRule || styleSheet.addRule;
 
 /**
  * Append global css styles
@@ -41,12 +42,19 @@ DOM.importStyles = function(selector, cssText) {
         throw new StaticMethodError("importStyles", arguments);
     }
 
-    if (styleSheet.cssRules) {
-        styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
-    } else {
-        // ie doesn't support multiple selectors in addRule
-        selector.split(",").forEach((selector) => { styleSheet.addRule(selector, cssText) });
-    }
+    // insert rules one by one because of several reasons:
+    // 1. IE8 does not support comma in a selector string
+    // 2. if one selector fails it doesn't break others
+    selector.split(",").forEach((selector) => {
+        var secondArg = cssText;
+
+        if (styleSheet.cssRules) {
+            selector = selector + "{" + cssText + "}";
+            secondArg = styleRules.length;
+        }
+
+        _.safeInvoke(insertRule, styleSheet, selector, secondArg);
+    });
 };
 
 export default DOM.importStyles;
