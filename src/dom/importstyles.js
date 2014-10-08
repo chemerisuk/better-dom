@@ -7,7 +7,17 @@ import HOOK from "../util/stylehooks";
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules,
-    insertRule = styleSheet.insertRule || styleSheet.addRule;
+    appendCSS = (cssText) => (selector) => {
+        try {
+            if (styleSheet.cssRules) {
+                styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
+            } else {
+                styleSheet.addRule(selector, cssText);
+            }
+        } catch(err) {
+            // silently ignore the rule
+        }
+    };
 
 /**
  * Append global css styles
@@ -45,16 +55,7 @@ DOM.importStyles = function(selector, cssText) {
     // insert rules one by one because of several reasons:
     // 1. IE8 does not support comma in a selector string
     // 2. if one selector fails it doesn't break others
-    selector.split(",").forEach((selector) => {
-        var secondArg = cssText;
-
-        if (styleSheet.cssRules) {
-            selector = selector + "{" + cssText + "}";
-            secondArg = styleRules.length;
-        }
-
-        _.safeInvoke(styleSheet, insertRule, selector, secondArg);
-    });
+    selector.split(",").forEach(appendCSS(cssText));
 };
 
 export default DOM.importStyles;

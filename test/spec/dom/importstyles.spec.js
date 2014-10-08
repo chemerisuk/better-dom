@@ -33,13 +33,9 @@ describe("DOM.importStyles", function() {
     });
 
     it("skips invalid selectors", function() {
-        jasmine.clock().install();
-
         expect(function() {
             DOM.importStyles("summary::-webkit-details-marker", "display:none");
         }).not.toThrow();
-
-        jasmine.clock().uninstall();
     });
 
     it("should throw error if arguments are invalid", function() {
