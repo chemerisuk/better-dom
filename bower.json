@@ -11,9 +11,8 @@
     "src",
     "conf",
     "task",
-    "Gruntfile.js",
-    "package.json",
-    "bower.json"
+    "gulpfile.js",
+    "package.json"
   ],
   "devDependencies": {
     "jquery": "latest",

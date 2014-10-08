@@ -20,7 +20,7 @@ This library is about __ideas__. After some time of using jQuery I found that it
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
 
-    bower install better-dom
+    bower install better-dom --save
 
 This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include the script below on your web page:
 
