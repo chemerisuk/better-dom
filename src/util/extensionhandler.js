@@ -3,7 +3,7 @@ import { $Element } from "../types";
 import { WINDOW, LEGACY_IE, WEBKIT_PREFIX, CUSTOM_EVENT_TYPE } from "../const";
 import SelectorMatcher from "../util/selectormatcher";
 
-var reRemovableMethod = /^(on|do)[A-Z]/,
+var reRemovableMethod = /^(?:(?:on|do)[A-Z])|constructor/,
     ANIMATION_ID = "DOM" + Date.now(),
     stopExt = (node, index) => (e) => {
         var isEventValid;
@@ -18,25 +18,27 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
         // mark extension as processed via e._skip bitmask
         if (isEventValid) (e._skip = e._skip || {})[index] = true;
     },
-    ExtensionHandler = (selector, condition, mixins, index) => {
+    ExtensionHandler = (selector, mixins, index) => {
         var eventHandlers = _.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             ext = (node, mock) => {
-                var el = $Element(node);
+                var el = $Element(node), defaultPrevented;
 
                 if (LEGACY_IE) {
                     node.attachEvent("on" + ExtensionHandler.EVENT_TYPE, stopExt(node, index));
                 } else {
                     node.addEventListener(ExtensionHandler.EVENT_TYPE, stopExt(node, index), false);
                 }
-
-                if (mock === true || condition(el) !== false) {
-                    _.assign(el, mixins);
-                    // invoke constructor if it exists
-                    // make a safe call so live extensions can't break each other
-                    if (ctr) _.safeInvoke(el, ctr);
-                    // remove event handlers from element's interface
-                    if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
+                // apply all private/public members to the interface
+                _.assign(el, mixins);
+                // invoke constructor if it exists
+                // make a safe call so live extensions can't break each other
+                if (ctr) defaultPrevented = _.safeInvoke(el, ctr);
+                // remove event handlers from element's interface
+                if (mock !== true) {
+                    (defaultPrevented === false ? Object.keys(mixins) : eventHandlers).forEach((prop) => {
+                        delete el[prop];
+                    });
                 }
             };
 
