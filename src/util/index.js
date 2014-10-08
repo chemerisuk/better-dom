@@ -1,14 +1,14 @@
 import { WINDOW, DOCUMENT } from "../const";
 
 var arrayProto = Array.prototype,
-    currentScript = DOCUMENT.scripts[0];
+    head = DOCUMENT.getElementsByTagName("head")[0];
 
 export default {
     computeStyle: (node) => {
         return WINDOW.getComputedStyle ? WINDOW.getComputedStyle(node) : node.currentStyle;
     },
     injectElement: (el) => {
-        return currentScript.parentNode.insertBefore(el, currentScript);
+        return head.appendChild(el);
     },
     // utilites
     every: arrayProto.every,

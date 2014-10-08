@@ -9,6 +9,8 @@ import ExtensionHandler from "../util/extensionhandler";
 // https://github.com/csuwldcat/SelectorListener
 
 var extensions = [],
+    returnTrue = () => true,
+    returnFalse = () => false,
     readyCallback, styles;
 
 if (LEGACY_IE) {
@@ -80,6 +82,7 @@ if (LEGACY_IE) {
  * @memberof DOM
  * @alias DOM.extend
  * @param  {String}           selector         css selector of which elements to capture
+ * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
  * @param  {Object}           mixins           extension declatation
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  * @example
@@ -92,16 +95,22 @@ if (LEGACY_IE) {
  *     }
  * });
  */
-DOM.extend = function(selector, mixins) {
+DOM.extend = function(selector, condition, mixins) {
+    if (arguments.length === 2) {
+        mixins = condition;
+        condition = true;
+    }
+
+    if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
     if (typeof mixins === "function") mixins = {constructor: mixins};
 
-    if (!mixins || typeof mixins !== "object") throw new StaticMethodError("extend", arguments);
+    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
     if (selector === "*") {
         // extending element prototype
         _.assign($Element.prototype, mixins);
     } else {
-        var ext = ExtensionHandler(selector, mixins, extensions.length);
+        var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
 
         ext.start = () => {
             // initialize extension manually to make sure that all elements

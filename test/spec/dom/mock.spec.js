@@ -54,9 +54,17 @@ describe("DOM.mock", function() {
     it("should ignore extension condition", function() {
         var el;
 
-        DOM.extend(".mock3", { a: 7, constructor: function() { return false } });
+        DOM.extend(".mock3", false, { a: 7 });
         el = DOM.mock("<div class=\"mock3\"></div>");
         expect(el.a).toBe(7);
+
+        DOM.extend(".mock4", function() { return false }, { b: 8 });
+        el = DOM.mock("<div class=\"mock4\"></div>");
+        expect(el.b).toBe(8);
+
+        DOM.extend(".mock5", function() { return true }, { c: 9 });
+        el = DOM.mock("<div class=\"mock5\"></div>");
+        expect(el.c).toBe(9);
     });
 
     describe("mockAll", function() {
