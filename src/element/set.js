@@ -78,7 +78,7 @@ $Element.prototype.set = function(name, value) {
 
     if (watchers && oldValue !== value) {
         watchers.forEach((w) => {
-            _.safeInvoke(w, this, value, oldValue);
+            _.safeInvoke(this, w, value, oldValue);
         });
     }
 

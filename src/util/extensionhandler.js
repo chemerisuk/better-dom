@@ -34,7 +34,7 @@ var reRemovableMethod = /^(on|do)[A-Z]/,
                     _.assign(el, mixins);
                     // invoke constructor if it exists
                     // make a safe call so live extensions can't break each other
-                    if (ctr) _.safeInvoke(ctr, el);
+                    if (ctr) _.safeInvoke(el, ctr);
                     // remove event handlers from element's interface
                     if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
                 }

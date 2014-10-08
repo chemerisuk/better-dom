@@ -24,11 +24,15 @@ export default {
 
         return target;
     },
-    safeInvoke: (fn, context, arg1, arg2) => {
+    safeInvoke: (context, fn, arg1, arg2) => {
+        if (typeof fn === "string") fn = context[fn];
+
         try {
-            fn.call(context, arg1, arg2);
+            return fn.call(context, arg1, arg2);
         } catch (err) {
             WINDOW.setTimeout(() => { throw err }, 1);
+
+            return false;
         }
     }
 };

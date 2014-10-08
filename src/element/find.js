@@ -45,11 +45,9 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
                 selector = nid + selector.split(",").join("," + nid);
             }
 
-            try {
-                result = context["querySelector" + all](selector);
-            } finally {
-                if (!old) node.removeAttribute("id");
-            }
+            result = _.safeInvoke(context, "querySelector" + all, selector);
+
+            if (!old) node.removeAttribute("id");
         }
 
         return all ? _.map.call(result, $Element) : $Element(result);

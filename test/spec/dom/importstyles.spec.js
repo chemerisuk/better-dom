@@ -32,6 +32,16 @@ describe("DOM.importStyles", function() {
         expect(link.css("opacity")).toBe("0");
     });
 
+    it("skips invalid selectors", function() {
+        jasmine.clock().install();
+
+        expect(function() {
+            DOM.importStyles("summary::-webkit-details-marker", "display:none");
+        }).not.toThrow();
+
+        jasmine.clock().uninstall();
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStyles(1); }).toThrow();
         expect(function() { DOM.importStyles("a"); }).toThrow();

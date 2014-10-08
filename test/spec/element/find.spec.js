@@ -67,8 +67,17 @@ describe("find", function() {
         expect(function() { DOM.find(1); }).toThrow();
     });
 
-    it("should throw error if selector is not valid", function() {
-        expect(function() { DOM.find("$test"); }).toThrow();
+    it("should not throw error if selector is not valid", function() {
+        jasmine.clock().install();
+
+        expect(function() { DOM.find("$test"); }).not.toThrow();
+
+        jasmine.clock().uninstall();
+    });
+
+    it("might return empty results", function() {
+        expect(DOM.findAll("details")).toEqual([]);
+        expect(DOM.find("details")[0]).toBeUndefined();
     });
 
 });

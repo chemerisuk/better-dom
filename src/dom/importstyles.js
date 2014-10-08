@@ -53,7 +53,7 @@ DOM.importStyles = function(selector, cssText) {
             secondArg = styleRules.length;
         }
 
-        _.safeInvoke(insertRule, styleSheet, selector, secondArg);
+        _.safeInvoke(styleSheet, insertRule, selector, secondArg);
     });
 };
 
