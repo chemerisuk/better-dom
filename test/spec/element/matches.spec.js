@@ -30,6 +30,11 @@ describe("matches", function() {
         expect(link.matches("div a")).toBe(true);
     });
 
+    it("returns false for empty nodes", function() {
+        expect(DOM.mock().matches("a")).toBe(false);
+        expect(DOM.mock().matches("*")).toBe(false);
+    });
+
     it("should throw error if the argument is ommited or not a string", function() {
         expect(function() { link.matches(); }).toThrow();
         expect(function() { link.matches(1); }).toThrow();

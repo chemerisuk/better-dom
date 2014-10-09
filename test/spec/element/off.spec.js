@@ -51,6 +51,9 @@ describe("off", function() {
 
     it("should return reference to 'this'", function() {
         expect(input.off("click")).toEqual(input);
+
+        var empty = DOM.mock();
+        expect(empty.off("click")).toBe(empty);
     });
 
     it("should throw error if agruments are invalid", function() {

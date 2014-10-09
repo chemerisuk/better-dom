@@ -21,6 +21,12 @@ describe("manipulation", function() {
             expect(div.remove().remove()).toBe(div);
         });
 
+        it("does nothing for empty nodes", function() {
+            var empty = DOM.mock();
+
+            expect(empty.remove()).toBe(empty);
+        });
+
         // it("should throw error if argument is invalid", function() {
         //     expect(function() { div.remove(1); }).toThrow();
         // });

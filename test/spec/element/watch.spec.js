@@ -98,4 +98,14 @@ describe("watch", function() {
         link.watch("innerHTML", spy);
         link.set("test1");
     });
+
+    it("does nothing for empty nodes", function() {
+        var spy = jasmine.createSpy("watcher");
+        var empty = DOM.mock();
+
+        expect(empty.watch("title", spy)).toBe(empty);
+        empty.set("title", "abc");
+        expect(spy).not.toHaveBeenCalled();
+        expect(empty.unwatch("title", spy)).toBe(empty);
+    });
 });
