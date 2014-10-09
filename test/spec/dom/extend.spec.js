@@ -87,23 +87,6 @@ describe("extend", function() {
         DOM.extend("b", {constructor: spy.and.callFake(complete)});
     });
 
-    // it("should accept different selectors for the same element before ready", function(done) {
-    //     var el = DOM.create("div.watch11.watch12");
-
-    //     DOM.ready(function() {
-    //         beforeSpy2.and.callFake(function() {
-    //             expect(beforeSpy1).toHaveBeenCalled();
-
-    //             beforeSpy1 = null;
-    //             beforeSpy2 = null;
-
-    //             done();
-    //         });
-
-    //         jasmine.sandbox.set(el);
-    //     });
-    // });
-
     it("should not match parent elements", function(done) {
         var spy1 = jasmine.createSpy("spy1"),
             spy2 = jasmine.createSpy("spy2"),
@@ -165,10 +148,15 @@ describe("extend", function() {
         expect(DOM.create("a").test).toBe(555);
     });
 
-    it("should not expose removable methods", function(done) {
-        var spy = jasmine.createSpy("callback2"),
-            complete = function() {
+    describe("private functions", function() {
+        it("exist only in constructor", function(done) {
+            var spy = jasmine.createSpy("callback2");
+
+            spy.and.callFake(function() {
                 var link = this;
+
+                expect(typeof link.onClick).toBe("function");
+                expect(typeof link.doSmth).toBe("function");
 
                 setTimeout(function() {
                     expect(typeof link.onClick).toBe("undefined");
@@ -176,14 +164,15 @@ describe("extend", function() {
 
                     done();
                 }, 0);
-            };
+            });
 
-        jasmine.sandbox.set("<a class=" + randomClass + "></a>");
+            jasmine.sandbox.set("<a class=" + randomClass + "></a>");
 
-        DOM.extend("." + randomClass, {
-            constructor: spy.and.callFake(complete),
-            onClick: function() {},
-            doSmth: function() {}
+            DOM.extend("." + randomClass, {
+                constructor: spy,
+                onClick: function() {},
+                doSmth: function() {}
+            });
         });
     });
 

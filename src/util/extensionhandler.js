@@ -3,7 +3,7 @@ import { $Element } from "../types";
 import { WINDOW, LEGACY_IE, WEBKIT_PREFIX, CUSTOM_EVENT_TYPE } from "../const";
 import SelectorMatcher from "../util/selectormatcher";
 
-var reRemovableMethod = /^(?:(?:on|do)[A-Z])|constructor/,
+var rePrivateFunction = /^(?:on|do)[A-Z]/,
     ANIMATION_ID = "DOM" + Date.now(),
     stopExt = (node, index) => (e) => {
         var isEventValid;
@@ -19,7 +19,7 @@ var reRemovableMethod = /^(?:(?:on|do)[A-Z])|constructor/,
         if (isEventValid) (e._skip = e._skip || {})[index] = true;
     },
     ExtensionHandler = (selector, condition, mixins, index) => {
-        var eventHandlers = _.keys(mixins).filter((prop) => !!reRemovableMethod.exec(prop)),
+        var privateFunctions = _.keys(mixins).filter((prop) => !!rePrivateFunction.exec(prop)),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
             ext = (node, mock) => {
                 var el = $Element(node);
@@ -37,7 +37,7 @@ var reRemovableMethod = /^(?:(?:on|do)[A-Z])|constructor/,
                     // make a safe call so live extensions can't break each other
                     if (ctr) _.safeInvoke(el, ctr);
                     // remove event handlers from element's interface
-                    if (mock !== true) eventHandlers.forEach((prop) => { delete el[prop] });
+                    if (mock !== true) privateFunctions.forEach((prop) => { delete el[prop] });
                 }
             };
 

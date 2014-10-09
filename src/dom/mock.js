@@ -23,7 +23,7 @@ var applyExtensions = (node) => {
 
 /**
  * Return {@link $Element} initialized with all existing live extensions.
- * Also exposes private event handler functions that aren't usually presented
+ * Also exposes private functions that do not usually exist
  * Accept same arguments as {@link DOM.create}
  * @memberof DOM
  * @alias DOM.mock
@@ -37,7 +37,7 @@ DOM.mock = makeMethod("");
 
 /**
  * Return Array of {@link $Element} initialized with all existing live extensions.
- * Also exposes private event handler functions that aren't usually presented
+ * Also exposes private functions that do not usually exist
  * Accept same arguments as {@link DOM.createAll}
  * @memberof DOM
  * @alias DOM.mockAll
