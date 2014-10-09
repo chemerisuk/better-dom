@@ -33,15 +33,25 @@ var rePrivateFunction = /^(?:on|do)[A-Z]/,
                 if (mock === true || condition(el) !== false) {
                     // apply all private/public members to the interface
                     _.assign(el, mixins);
+                    // preserve this for private functions
+                    privateFunctions.forEach((prop) => {
+                        var fn = el[prop];
+
+                        el[prop] = () => fn.apply(el, arguments);
+                    });
                     // invoke constructor if it exists
                     // make a safe call so live extensions can't break each other
                     if (ctr) _.safeInvoke(el, ctr);
                     // remove event handlers from element's interface
-                    if (mock !== true) privateFunctions.forEach((prop) => { delete el[prop] });
+                    privateFunctions.forEach((prop) => {
+                        if (mock !== true) delete el[prop]
+                    });
                 }
             };
 
         ext.accept = SelectorMatcher(selector);
+
+        if (ctr) delete mixins.constructor;
 
         return ext;
     };

@@ -174,6 +174,37 @@ describe("extend", function() {
                 doSmth: function() {}
             });
         });
+
+        it("preserve this as the current element", function(done) {
+            var spy = jasmine.createSpy("callback2"),
+                link;
+
+            spy.and.callFake(function() {
+                var i = this.find("i").on("click", this.onClick);
+
+                link = this;
+
+                this.doSmth();
+
+                setTimeout(function() {
+                    i.fire("click");
+                }, 0);
+            });
+
+            jasmine.sandbox.set("<a class=" + randomClass + "><i></i></a>");
+
+            DOM.extend("." + randomClass, {
+                constructor: spy,
+                onClick: function() {
+                    expect(this).toBe(link);
+
+                    done();
+                },
+                doSmth: function() {
+                    expect(this).toBe(link);
+                }
+            });
+        });
     });
 
     it("should catch nested elements", function(done) {
