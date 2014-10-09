@@ -76,28 +76,46 @@ describe("on", function() {
         expect(location.hash).not.toBe("#test");
     });
 
-    it("should allow to pass extra args into callback", function() {
-        spy.and.callFake(function(target, currentTarget, relatedTarget) {
-            expect(target).toBe(input);
-            expect(currentTarget).toBe(input);
-            expect(relatedTarget).not.toBeFalsy();
-            expect(relatedTarget).toBeEmpty();
+    describe("handler arguments", function() {
+        it("handle strings as the event object property names", function() {
+            spy.and.callFake(function(target, currentTarget, relatedTarget) {
+                expect(target).toBe(input);
+                expect(currentTarget).toBe(input);
+                expect(relatedTarget).not.toBeFalsy();
+                expect(relatedTarget).toBeEmpty();
+            });
+
+            input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
+            expect(spy).toHaveBeenCalled();
+
+            spy.and.callFake(function(type, defaultPrevented, shiftKey) {
+                expect(type).toBe("focus");
+                expect(defaultPrevented).toBe(false);
+                expect(shiftKey).toBeFalsy();
+            });
+
+            input.on("focus", ["type", "defaultPrevented", "shiftKey"], spy).fire("focus");
+            expect(spy).toHaveBeenCalled();
         });
 
-        input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");
-        expect(spy).toHaveBeenCalled();
+        it("handle numbers as event argument index", function() {
+            input.on("my:test", [1, 3, "target"], spy);
+            input.fire("my:test", 123, 555, "testing");
 
-        spy.and.callFake(function(type, defaultPrevented, shiftKey) {
-            expect(type).toBe("focus");
-            expect(defaultPrevented).toBe(false);
-            expect(shiftKey).toBeFalsy();
+            expect(spy).toHaveBeenCalledWith(123, "testing", input);
         });
 
-        input.on("focus", ["type", "defaultPrevented", "shiftKey"], spy).fire("focus");
-        expect(spy).toHaveBeenCalled();
+        it("pass objects through", function() {
+            var obj = {}, fn = function() {};
+
+            input.on("my:test", [obj, 1, "target", fn], spy);
+            input.fire("my:test", 123, 555, "testing");
+
+            expect(spy).toHaveBeenCalledWith(obj, 123, input, fn);
+        });
     });
 
-    it("should not have default event properties", function() {
+    it("pass event arguments by default", function() {
         var detail = {a: 1};
 
         spy.and.callFake(function(detail, target, currentTarget, defaultPrevented) {

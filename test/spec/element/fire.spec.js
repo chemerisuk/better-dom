@@ -64,15 +64,6 @@ describe("fire", function() {
 
             expect(spy).toHaveBeenCalledWith(input);
         });
-
-        it("should support numeric props", function() {
-            var spy = jasmine.createSpy("on");
-
-            input.on("my:test", [1, 3, "target"], spy);
-            input.fire("my:test", 123, 555, "testing");
-
-            expect(spy).toHaveBeenCalledWith(123, "testing", input);
-        });
     });
 
     it("should return false if default action was prevented", function() {

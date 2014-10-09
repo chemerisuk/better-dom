@@ -31,6 +31,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
 
                 args = !args ? eventArgs : args.map((name) => {
                     if (typeof name === "number") return eventArgs[name - 1];
+                    if (typeof name !== "string") return name;
 
                     if (!DOM2_EVENTS) {
                         switch (name) {

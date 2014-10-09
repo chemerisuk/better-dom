@@ -4,15 +4,15 @@ import { DOM2_EVENTS } from "../const";
 import { $Element, $NullElement } from "../types";
 import EventHandler from "../util/eventhandler";
 
-var makeMethod = (method) => function(type, selector, props, callback) {
+var makeMethod = (method) => function(type, selector, args, callback) {
         if (typeof type === "string") {
-            if (typeof props === "function") {
-                callback = props;
+            if (typeof args === "function") {
+                callback = args;
 
                 if (typeof selector === "string") {
-                    props = null;
+                    args = null;
                 } else {
-                    props = selector;
+                    args = selector;
                     selector = null;
                 }
             }
@@ -20,7 +20,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
             if (typeof selector === "function") {
                 callback = selector;
                 selector = null;
-                props = null;
+                args = null;
             }
 
             if (typeof callback !== "function") {
@@ -28,7 +28,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
             }
 
             var node = this[0],
-                handler = EventHandler(type, selector, callback, props, this, method === "once");
+                handler = EventHandler(type, selector, callback, args, this, method === "once");
 
             if (handler) {
                 if (DOM2_EVENTS) {
@@ -41,7 +41,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
             }
         } else if (typeof type === "object") {
             if (_.isArray(type)) {
-                type.forEach((name) => { this[method](name, selector, props, callback) });
+                type.forEach((name) => { this[method](name, selector, args, callback) });
             } else {
                 _.keys(type).forEach((name) => { this[method](name, type[name]) });
             }
@@ -58,7 +58,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
          * @alias $Element#on
          * @param  {String|Array}  type        event type(s) with optional selector
          * @param  {String}        [selector]  event selector filter
-         * @param  {Array}         [props]     array of event properties to pass into the callback
+         * @param  {Array}         [args]      array of handler arguments to pass into the callback
          * @param  {Function}      callback    event callback or property name (for late binding)
          * @return {$Element}
          * @function
@@ -88,7 +88,7 @@ var makeMethod = (method) => function(type, selector, props, callback) {
          * @alias $Element#once
          * @param  {String|Array}  type        event type(s) with optional selector
          * @param  {String}        [selector]  event selector filter
-         * @param  {Array}         [props]     array of event properties to pass into the callback
+         * @param  {Array}         [args]      array of handler arguments to pass into the callback
          * @param  {Function}      callback    event callback or property name (for late binding)
          * @return {$Element}
          * @function
