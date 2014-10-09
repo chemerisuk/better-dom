@@ -28,8 +28,13 @@ describe("traversing", function() {
     });
 
     describe("closest", function() {
-        it("should search for the first matching element if selector exists", function() {
+        it("searches for the first matching element if selector exists", function() {
             expect(link.closest("body")).toHaveTag("body");
+        });
+
+        it("returns direct parent when no selector specified", function() {
+            expect(DOM.find("body").closest()).toBe(DOM);
+            expect(DOM.closest()[0]).toBeUndefined();
         });
     });
 

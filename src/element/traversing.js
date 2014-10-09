@@ -10,7 +10,11 @@ var makeMethod = (methodName, propertyName, all) => function(selector) {
             nodes = all ? [] : null,
             it = this[0];
 
-        if (it && methodName !== "closest") it = it[propertyName];
+        if (methodName !== "closest" || !matcher) {
+            // method closest starts traversing from the element itself
+            // except no selector was specified
+            it = it[propertyName];
+        }
 
         for (; it; it = it[propertyName]) {
             if (it.nodeType === 1 && (!matcher || matcher(it))) {
@@ -93,6 +97,7 @@ var makeMethod = (methodName, propertyName, all) => function(selector) {
          * @example
          * var div = DOM.create("div.foo>div.bar>a"); // <div class="foo"><div class="bar"><a></a></div></div>
          * var link = div.find("a");                  // => <a>
+         * link.closest();                            // => <div class="bar">
          * link.closest("a");                         // => itself
          * link.closest(".bar");                      // => <div class="bar">
          * link.closest(".foo");                      // => <div class="foo">
