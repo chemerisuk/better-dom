@@ -44,7 +44,7 @@ var rePrivateFunction = /^(?:on|do)[A-Z]/,
                     if (ctr) _.safeInvoke(el, ctr);
                     // remove event handlers from element's interface
                     privateFunctions.forEach((prop) => {
-                        if (mock !== true) delete el[prop]
+                        if (mock !== true) delete el[prop];
                     });
                 }
             };

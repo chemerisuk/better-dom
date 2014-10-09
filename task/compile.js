@@ -57,7 +57,7 @@ module.exports = function(dest, options) {
 
             code = banner + "\n" + code;
             // fix for browserify
-            code = code.replace("}).call(this)", "})()\n");
+            code = code.replace("}).call(this);", "})();\n");
 
             firstFile = firstFile.clone({contents: false});
             firstFile.path = path.join(firstFile.base, dest);

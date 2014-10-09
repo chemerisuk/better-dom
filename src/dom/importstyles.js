@@ -23,7 +23,7 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
  * Append global css styles
  * @memberof DOM
  * @alias DOM.importStyles
- * @param {String}         selector  css selector
+ * @param {String|Object}  selector  css selector or key-value map of rules
  * @param {String|Object}  cssText   css rules
  * @example
  * DOM.importStyles(".foo", {color: "red", padding: 5});
@@ -48,14 +48,16 @@ DOM.importStyles = function(selector, cssText) {
         cssText = _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
     }
 
-    if (typeof selector !== "string" || typeof cssText !== "string") {
+    if (typeof selector === "string" && typeof cssText === "string") {
+        // insert rules one by one because of several reasons:
+        // 1. IE8 does not support comma in a selector string
+        // 2. if one selector fails it doesn't break others
+        selector.split(",").forEach(appendCSS(cssText));
+    } else if (selector && typeof selector === "object") {
+        _.keys(selector).forEach((key) => { DOM.importStyles(key, selector[key]) });
+    } else {
         throw new StaticMethodError("importStyles", arguments);
     }
-
-    // insert rules one by one because of several reasons:
-    // 1. IE8 does not support comma in a selector string
-    // 2. if one selector fails it doesn't break others
-    selector.split(",").forEach(appendCSS(cssText));
 };
 
 export default DOM.importStyles;
