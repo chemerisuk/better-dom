@@ -105,6 +105,13 @@ describe("on", function() {
             expect(spy).toHaveBeenCalledWith(123, "testing", input);
         });
 
+        it("can use zero to access event type",  function() {
+            input.on("focus", [0, "target"], spy);
+            input.fire("focus");
+
+            expect(spy).toHaveBeenCalledWith("focus", input);
+        });
+
         it("pass objects through", function() {
             var obj = {}, fn = function() {};
 

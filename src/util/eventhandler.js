@@ -30,7 +30,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 if (once) el.off(type, callback);
 
                 args = !args ? eventArgs : args.map((name) => {
-                    if (typeof name === "number") return eventArgs[name - 1];
+                    if (typeof name === "number") return name ? eventArgs[name - 1] : type;
                     if (typeof name !== "string") return name;
 
                     if (!DOM2_EVENTS) {
