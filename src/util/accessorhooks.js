@@ -2,6 +2,7 @@ import _ from "../util/index";
 import { DOM2_EVENTS, HTML, DOCUMENT } from "../const";
 
 var hooks = {get: {}, set: {}};
+var body = document.createElement("body");
 
 // fix camel cased attributes
 "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {
@@ -53,6 +54,20 @@ hooks.get.type = (node) => node.getAttribute("type") || node.type;
 if (!DOM2_EVENTS) {
     hooks.get.textContent = (node) => node.innerText;
     hooks.set.textContent = (node, value) => { node.innerText = value };
+
+    // IE8 sometimes breaks on innerHTML
+    hooks.set.innerHTML = function(node, value) {
+        try {
+            node.innerHTML = value;
+        } catch (err) {
+            node.innerText = "";
+            body.innerHTML = value;
+
+            for (var it; it = body.firstChild; ) {
+                node.appendChild(it);
+            }
+        }
+    };
 }
 
 export default hooks;

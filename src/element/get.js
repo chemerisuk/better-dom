@@ -3,7 +3,26 @@ import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 import PROP from "../util/accessorhooks";
 
-var reUpper = /[A-Z]/g;
+var reUpper = /[A-Z]/g,
+    readPrivateProperty = (node, key) => {
+        // convert from camel case to dash-separated value
+        key = key.replace(reUpper, (l) => "-" + l.toLowerCase());
+
+        var value = node.getAttribute("data-" + key);
+
+        if (value != null) {
+            // try to recognize and parse  object notation syntax
+            if (value[0] === "{" && value[value.length - 1] === "}") {
+                try {
+                    value = JSON.parse(value);
+                } catch (err) {
+                    // just return the value itself
+                }
+            }
+        }
+
+        return value;
+    };
 
 /**
  * Get property or attribute value by name
@@ -39,36 +58,12 @@ $Element.prototype.get = function(name) {
             return data[key];
         }
     } else if (_.isArray(name)) {
-        return name.reduce(toValueMap(this), {});
+        return name.reduce((memo, key) => {
+            return memo[key] = this.get(key), memo;
+        }, {});
     } else {
         throw new MethodError("get", arguments);
     }
 };
-
-function readPrivateProperty(node, key) {
-    // convert from camel case to dash-separated value
-    key = key.replace(reUpper, (l) => "-" + l.toLowerCase());
-
-    var value = node.getAttribute("data-" + key);
-
-    if (value != null) {
-        // try to recognize and parse  object notation syntax
-        if (value[0] === "{" && value[value.length - 1] === "}") {
-            try {
-                value = JSON.parse(value);
-            } catch (err) {
-                // just return the value itself
-            }
-        }
-    }
-
-    return value;
-};
-
-function toValueMap(el) {
-    return (memo, key) => {
-        return memo[key] = el.get(key), memo;
-    };
-}
 
 $NullElement.prototype.get = function() {};

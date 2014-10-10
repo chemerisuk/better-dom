@@ -6,7 +6,36 @@ import HOOK from "../util/stylehooks";
 
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
-    styleRules = styleSheet.cssRules || styleSheet.rules;
+    styleRules = styleSheet.cssRules || styleSheet.rules,
+    toString = (cssText) => {
+        // use styleObj to collect all style props for a new CSS rule
+        var styleObj = _.keys(cssText).reduce((styleObj, prop) => {
+            var hook = HOOK.set[prop];
+
+            if (hook) {
+                hook(styleObj, cssText[prop]);
+            } else {
+                styleObj[prop] = cssText[prop];
+            }
+
+            return styleObj;
+        }, {});
+
+        return _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
+    },
+    appendCSS = (cssText, cssMap) => (selector) => {
+        var props = cssText || cssMap[selector];
+
+        try {
+            if (styleSheet.cssRules) {
+                styleSheet.insertRule(selector + "{" + props + "}", styleRules.length);
+            } else {
+                styleSheet.addRule(selector, props);
+            }
+        } catch(err) {
+            // silently ignore invalid rules
+        }
+    };
 
 /**
  * Append global css styles
@@ -35,38 +64,5 @@ DOM.importStyles = function(selector, cssText) {
         throw new StaticMethodError("importStyles", arguments);
     }
 };
-
-function toString(cssText) {
-    // use styleObj to collect all style props for a new CSS rule
-    var styleObj = _.keys(cssText).reduce((styleObj, prop) => {
-        var hook = HOOK.set[prop];
-
-        if (hook) {
-            hook(styleObj, cssText[prop]);
-        } else {
-            styleObj[prop] = cssText[prop];
-        }
-
-        return styleObj;
-    }, {});
-
-    return _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
-}
-
-function appendCSS(cssText, cssMap) {
-    return (selector) => {
-        var props = cssText || cssMap[selector];
-
-        try {
-            if (styleSheet.cssRules) {
-                styleSheet.insertRule(selector + "{" + props + "}", styleRules.length);
-            } else {
-                styleSheet.addRule(selector, props);
-            }
-        } catch(err) {
-            // silently ignore the invalid rules
-        }
-    };
-}
 
 export default DOM.importStyles;
