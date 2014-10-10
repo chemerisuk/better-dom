@@ -3,22 +3,7 @@ import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 import PROP from "../util/accessorhooks";
 
-var reDash = /[A-Z]/g,
-    getPrivateProperty = (node, key) => {
-        // convert from camel case to dash-separated value
-        var value = node.getAttribute("data-" + key.replace(reDash, (l) => "-" + l.toLowerCase()));
-
-        if (value != null) {
-            // try to recognize and parse  object notation syntax
-            if (value[0] === "{" && value[value.length - 1] === "}") {
-                try {
-                    value = JSON.parse(value);
-                } catch (err) { }
-            }
-        }
-
-        return value;
-    };
+var reUpper = /[A-Z]/g;
 
 /**
  * Get property or attribute value by name
@@ -45,22 +30,45 @@ $Element.prototype.get = function(name) {
             return node.getAttribute(name);
         } else {
             let key = name.substr(1),
-                data = this._,
-                value;
+                data = this._;
 
-            if (key in data) {
-                value = data[key];
-            } else {
-                value = data[key] = getPrivateProperty(node, key);
+            if (!(key in data)) {
+                data[key] = readPrivateProperty(node, key);
             }
 
-            return value;
+            return data[key];
         }
     } else if (_.isArray(name)) {
-        return name.reduce((r, key) => { return r[key] = this.get(key), r }, {});
+        return name.reduce(toValueMap(this), {});
     } else {
         throw new MethodError("get", arguments);
     }
 };
+
+function readPrivateProperty(node, key) {
+    // convert from camel case to dash-separated value
+    key = key.replace(reUpper, (l) => "-" + l.toLowerCase());
+
+    var value = node.getAttribute("data-" + key);
+
+    if (value != null) {
+        // try to recognize and parse  object notation syntax
+        if (value[0] === "{" && value[value.length - 1] === "}") {
+            try {
+                value = JSON.parse(value);
+            } catch (err) {
+                // just return the value itself
+            }
+        }
+    }
+
+    return value;
+};
+
+function toValueMap(el) {
+    return (memo, key) => {
+        return memo[key] = el.get(key), memo;
+    };
+}
 
 $NullElement.prototype.get = function() {};
