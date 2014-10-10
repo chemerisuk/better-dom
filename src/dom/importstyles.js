@@ -6,18 +6,7 @@ import HOOK from "../util/stylehooks";
 
 var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
-    styleRules = styleSheet.cssRules || styleSheet.rules,
-    appendCSS = (cssText) => (selector) => {
-        try {
-            if (styleSheet.cssRules) {
-                styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
-            } else {
-                styleSheet.addRule(selector, cssText);
-            }
-        } catch(err) {
-            // silently ignore the rule
-        }
-    };
+    styleRules = styleSheet.cssRules || styleSheet.rules;
 
 /**
  * Append global css styles
@@ -32,20 +21,7 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
  */
 DOM.importStyles = function(selector, cssText) {
     if (cssText && typeof cssText === "object") {
-        // use styleObj to collect all style props for a new CSS rule
-        var styleObj = _.keys(cssText).reduce((styleObj, prop) => {
-            var hook = HOOK.set[prop];
-
-            if (hook) {
-                hook(styleObj, cssText[prop]);
-            } else {
-                styleObj[prop] = cssText[prop];
-            }
-
-            return styleObj;
-        }, {});
-
-        cssText = _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
+        cssText = toString(cssText);
     }
 
     if (typeof selector === "string" && typeof cssText === "string") {
@@ -54,10 +30,43 @@ DOM.importStyles = function(selector, cssText) {
         // 2. if one selector fails it doesn't break others
         selector.split(",").forEach(appendCSS(cssText));
     } else if (selector && typeof selector === "object") {
-        _.keys(selector).forEach((key) => { DOM.importStyles(key, selector[key]) });
+        _.keys(selector).forEach(appendCSS(null, selector));
     } else {
         throw new StaticMethodError("importStyles", arguments);
     }
 };
+
+function toString(cssText) {
+    // use styleObj to collect all style props for a new CSS rule
+    var styleObj = _.keys(cssText).reduce((styleObj, prop) => {
+        var hook = HOOK.set[prop];
+
+        if (hook) {
+            hook(styleObj, cssText[prop]);
+        } else {
+            styleObj[prop] = cssText[prop];
+        }
+
+        return styleObj;
+    }, {});
+
+    return _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
+}
+
+function appendCSS(cssText, cssMap) {
+    return (selector) => {
+        var props = cssText || cssMap[selector];
+
+        try {
+            if (styleSheet.cssRules) {
+                styleSheet.insertRule(selector + "{" + props + "}", styleRules.length);
+            } else {
+                styleSheet.addRule(selector, props);
+            }
+        } catch(err) {
+            // silently ignore the invalid rules
+        }
+    };
+}
 
 export default DOM.importStyles;
