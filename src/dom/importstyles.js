@@ -23,14 +23,12 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
 
         return _.keys(styleObj).map((key) => key + ":" + styleObj[key]).join(";");
     },
-    appendCSS = (cssText, cssMap) => (selector) => {
-        var props = cssText || cssMap[selector];
-
+    appendCSS = (cssText) => (selector) => {
         try {
             if (styleSheet.cssRules) {
-                styleSheet.insertRule(selector + "{" + props + "}", styleRules.length);
+                styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
             } else {
-                styleSheet.addRule(selector, props);
+                styleSheet.addRule(selector, cssText);
             }
         } catch(err) {
             // silently ignore invalid rules
@@ -41,11 +39,11 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
  * Append global css styles
  * @memberof DOM
  * @alias DOM.importStyles
- * @param {String|Object}  selector  css selector or key-value map of rules
+ * @param {String}         selector  css selector
  * @param {String|Object}  cssText   css rules
  * @example
  * DOM.importStyles(".foo", {color: "red", padding: 5});
- * // you can use strings CSS too
+ * // you can use CSS strings too
  * DOM.importStyles(".bar", "background: white; color: gray");
  */
 DOM.importStyles = function(selector, cssText) {
@@ -58,8 +56,6 @@ DOM.importStyles = function(selector, cssText) {
         // 1. IE8 does not support comma in a selector string
         // 2. if one selector fails it doesn't break others
         selector.split(",").forEach(appendCSS(cssText));
-    } else if (selector && typeof selector === "object") {
-        _.keys(selector).forEach(appendCSS(null, selector));
     } else {
         throw new StaticMethodError("importStyles", arguments);
     }
