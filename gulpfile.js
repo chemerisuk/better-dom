@@ -18,6 +18,7 @@ var replace = require("gulp-replace");
 var git = require("gulp-git");
 var filter = require("gulp-filter");
 var tag_version = require("gulp-tag-version");
+var concat = require("gulp-concat");
 
 
 gulp.task("compile", function() {
@@ -36,10 +37,24 @@ gulp.task("compile", function() {
         return ("000" + n).slice(-3);
     });
 
-    return gulp.src(["*.js", "**/*.js"], {buffer: false, cwd: "./src"})
+    return gulp.src(["*.js", "dom/*.js", "element/*.js", "util/*.js"], {buffer: false, cwd: "./src"})
         .pipe(compile("better-dom.js", {jsdoc: jsdoc}))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())
+        .pipe(gulp.dest(dest));
+});
+
+gulp.task("compile-legacy", function() {
+    var version = argv.tag;
+    var dest = version ? "dist/" : "build/";
+    var files = [
+        "bower_components/html5shiv/dist/html5shiv.js",
+        "bower_components/es5-shim/es5-shim.js",
+        "src/legacy/*.js"
+    ];
+
+    return gulp.src(files)
+        .pipe(concat("better-dom-legacy.js"))
         .pipe(gulp.dest(dest));
 });
 
@@ -50,9 +65,9 @@ gulp.task("lint", function() {
         .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
 });
 
-gulp.task("symlink", function() {
-    return gulp.src("dist/better-dom.htc")
-        .pipe(symlink("build/better-dom.htc"));
+gulp.task("symlink", ["compile-legacy"], function() {
+    return gulp.src("dist/better-dom-legacy.htc")
+        .pipe(symlink("build/better-dom-legacy.htc"));
 });
 
 gulp.task("test", ["compile", "symlink", "lint"], function(done) {
@@ -83,7 +98,8 @@ gulp.task("test", ["compile", "symlink", "lint"], function(done) {
 });
 
 gulp.task("dev", ["compile", "symlink", "lint"], function() {
-    gulp.watch(["src/*.js", "src/**/*.js"], ["compile"]);
+    gulp.watch(["*.js", "dom/*.js", "element/*.js", "util/*.js"], ["compile"]);
+    gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
 
     karma.start({
         // browsers: ["IE8 - WinXP"],

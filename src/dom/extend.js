@@ -14,25 +14,13 @@ var extensions = [],
     readyCallback, styles;
 
 if (LEGACY_IE) {
-    let link = DOCUMENT.querySelector("link[rel=htc]");
+    let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
 
-    if (link) {
-        link = link.href;
-    } else {
-        if ("console" in WINDOW) {
-            WINDOW.console.log("WARNING: In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
-        }
-
-        let scripts = DOCUMENT.scripts;
-        // trying to guess HTC file location
-        link = scripts[scripts.length - 1].src.split("/");
-        link = "/" + link.slice(3, link.length - 1).concat("better-dom.htc").join("/");
+    if (legacyScripts.length < 1) {
+        throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
     }
 
-    styles = {behavior: "url(" + link + ") !important"};
-
-    // append behavior for HTML element to apply several legacy IE-specific fixes
-    importStyles("html", styles);
+    styles = {behavior: "url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important"};
 
     DOCUMENT.attachEvent("on" + ExtensionHandler.EVENT_TYPE, () => {
         var e = WINDOW.event;
