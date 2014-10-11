@@ -21,7 +21,14 @@ var tag_version = require("gulp-tag-version");
 var concat = require("gulp-concat");
 
 
-gulp.task("compile", function() {
+gulp.task("lint", function() {
+    return gulp.src(["src/*.js", "src/**/*.js", "test/spec/**/*.js", "*.js"])
+        .pipe(jshint(".jshintrc"))
+        .pipe(jshint.reporter("jshint-stylish"))
+        .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
+});
+
+gulp.task("compile", ["lint"], function() {
     var version = argv.tag;
     var jsdoc = !version;
     var dest = version ? "dist/" : "build/";
@@ -60,19 +67,12 @@ gulp.task("compile-legacy", function() {
         .pipe(gulp.dest(dest));
 });
 
-gulp.task("lint", function() {
-    return gulp.src(["src/*.js", "src/**/*.js", "test/spec/**/*.js", "*.js"])
-        .pipe(jshint(".jshintrc"))
-        .pipe(jshint.reporter("jshint-stylish"))
-        .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
-});
-
 gulp.task("symlink", ["compile-legacy"], function() {
     return gulp.src("dist/better-dom-legacy.htc")
         .pipe(symlink("build/better-dom-legacy.htc"));
 });
 
-gulp.task("test", ["compile", "symlink", "lint"], function(done) {
+gulp.task("test", ["compile", "symlink"], function(done) {
     var config = {};
 
     if (process.env.TRAVIS_JOB_NUMBER) {
@@ -99,9 +99,9 @@ gulp.task("test", ["compile", "symlink", "lint"], function(done) {
     karma.start(config, done);
 });
 
-gulp.task("dev", ["compile", "symlink", "lint"], function() {
+gulp.task("dev", ["compile", "symlink"], function() {
     gulp.watch(["src/*.js", "src/dom/*.js", "src/element/*.js", "src/util/*.js"], ["compile"]);
-    gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
+    gulp.watch(["src/legacy/*.js"], ["compile-legacy", "lint"]);
 
     karma.start({
         // browsers: ["IE8 - WinXP"],

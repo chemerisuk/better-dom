@@ -3,7 +3,7 @@ import { $NullElement, DOM } from "../types";
 import extensions from "./extend";
 
 var applyExtensions = (node) => {
-        extensions.forEach((ext) => { if (ext.accept(node)) ext(node, true) });
+        extensions.forEach((ext, index) => { if (ext.accept(node, index)) ext(node, true) });
 
         _.each.call(node.children, applyExtensions);
     },

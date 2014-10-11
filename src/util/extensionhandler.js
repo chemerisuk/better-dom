@@ -1,34 +1,16 @@
 import _ from "../util/index";
 import { $Element } from "../types";
-import { WINDOW, LEGACY_IE, WEBKIT_PREFIX, CUSTOM_EVENT_TYPE } from "../const";
 import SelectorMatcher from "../util/selectormatcher";
 
 var rePrivateFunction = /^(?:on|do)[A-Z]/,
-    ANIMATION_ID = "DOM" + Date.now(),
-    stopExt = (node, index) => (e) => {
-        var isEventValid;
-
-        e = e || WINDOW.event;
-
-        if (LEGACY_IE) {
-            isEventValid = e.srcUrn === CUSTOM_EVENT_TYPE && e.srcElement === node;
-        } else {
-            isEventValid = e.animationName === ANIMATION_ID && e.target === node;
-        }
-        // mark extension as processed via e._skip bitmask
-        if (isEventValid) (e._skip = e._skip || {})[index] = true;
-    },
     ExtensionHandler = (selector, condition, mixins, index) => {
         var privateFunctions = _.keys(mixins).filter((prop) => !!rePrivateFunction.exec(prop)),
             ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
+            matcher = SelectorMatcher(selector),
             ext = (node, mock) => {
                 var el = $Element(node);
-
-                if (LEGACY_IE) {
-                    node.attachEvent("on" + ExtensionHandler.EVENT_TYPE, stopExt(node, index));
-                } else {
-                    node.addEventListener(ExtensionHandler.EVENT_TYPE, stopExt(node, index), false);
-                }
+                // mark extension as completed
+                el._._extensions.push(index);
 
                 if (mock === true || condition(el) !== false) {
                     // apply all private/public members to the interface
@@ -49,23 +31,20 @@ var rePrivateFunction = /^(?:on|do)[A-Z]/,
                 }
             };
 
-        ext.accept = SelectorMatcher(selector);
+        ext.accept = (node, index) => {
+            var el = $Element(node);
+
+            return el._._extensions.indexOf(index) < 0 && matcher(node);
+        };
 
         if (ctr) delete mixins.constructor;
 
         return ext;
     };
 
-if (LEGACY_IE) {
-    ExtensionHandler.EVENT_TYPE = CUSTOM_EVENT_TYPE;
-} else {
-    ExtensionHandler.ANIMATION_ID = ANIMATION_ID;
-    ExtensionHandler.EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
-}
-
-ExtensionHandler.traverse = (node, skip) => (ext, index) => {
+ExtensionHandler.traverse = (node) => (ext, index) => {
     // skip previously excluded or mismatched elements
-    if (!skip[index] && ext.accept(node)) ext(node);
+    if (ext.accept(node, index)) ext(node);
 };
 
 export default ExtensionHandler;

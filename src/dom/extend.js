@@ -11,6 +11,8 @@ import ExtensionHandler from "../util/extensionhandler";
 var extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
+    ANIMATION_ID = "DOM" + Date.now(),
+    EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
     readyCallback, styles;
 
 if (LEGACY_IE) {
@@ -22,7 +24,7 @@ if (LEGACY_IE) {
 
     styles = {behavior: "url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important"};
 
-    DOCUMENT.attachEvent("on" + ExtensionHandler.EVENT_TYPE, () => {
+    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
@@ -51,15 +53,15 @@ if (LEGACY_IE) {
         WINDOW.addEventListener("load", readyCallback, false);
     }
 
-    importStyles("@" + WEBKIT_PREFIX + "keyframes " + ExtensionHandler.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
+    importStyles("@" + WEBKIT_PREFIX + "keyframes " + ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
 
     styles = {
         "animation-duration": "1ms !important",
-        "animation-name": ExtensionHandler.ANIMATION_ID + " !important"
+        "animation-name": ANIMATION_ID + " !important"
     };
 
-    DOCUMENT.addEventListener(ExtensionHandler.EVENT_TYPE, (e) => {
-        if (e.animationName === ExtensionHandler.ANIMATION_ID) {
+    DOCUMENT.addEventListener(EVENT_TYPE, (e) => {
+        if (e.animationName === ANIMATION_ID) {
             extensions.forEach(ExtensionHandler.traverse(e.target, e._skip || {}));
         }
     }, false);
