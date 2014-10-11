@@ -1,5 +1,5 @@
 /**
-* @preserve Form events bubbling fix for IE8
+* @preserve Form events bubbling fixes for IE8
 * @copyright 2013-2014 <%= pkg.author %>
 */
 (function() {

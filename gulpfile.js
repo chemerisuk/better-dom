@@ -163,6 +163,7 @@ gulp.task("release", ["bump", "compress"], function() {
 
     gulp.src(["./*.json", "./dist/*.js"])
         .pipe(git.commit("version " + version))
+        .pipe(git.push())
         .pipe(filter("package.json"))
         .pipe(tag_version());
 });

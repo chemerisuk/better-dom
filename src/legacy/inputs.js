@@ -1,5 +1,5 @@
 /**
-* @preserve Input event polyfill/fix for IE8-9
+* @preserve Form elements fixes for IE8-9
 * @copyright 2013-2014 <%= pkg.author %>
 */
 (function() {
