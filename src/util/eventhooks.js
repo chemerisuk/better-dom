@@ -9,7 +9,7 @@ if ("onfocusin" in HTML) {
     // firefox doesn't support focusin/focusout events
     hooks.focus = hooks.blur = (handler) => { handler.capturing = true };
 }
-
+/* istanbul ignore else */
 if (DOCUMENT.createElement("input").validity) {
     hooks.invalid = (handler) => { handler.capturing = true };
 }

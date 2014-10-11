@@ -8,7 +8,7 @@ import { $Element, $NullElement } from "../types";
 var reSpace = /[\n\t\r]/g,
     makeMethod = (nativeMethodName, strategy) => {
         var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
-
+        /* istanbul ignore else  */
         if (HTML.classList) {
             // use native classList property if possible
             strategy = function(el, token) {
@@ -42,6 +42,9 @@ var reSpace = /[\n\t\r]/g,
             };
         }
     },
+    methods;
+
+(() => { /* istanbul ignore next */
     methods = {
         /**
          * Check if element contains class name
@@ -111,6 +114,7 @@ var reSpace = /[\n\t\r]/g,
             return !hasClass;
         })
     };
+})();
 
 _.assign($Element.prototype, methods);
 

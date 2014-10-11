@@ -84,7 +84,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
             };
 
         if (hook) handler = hook(handler, type) || handler;
-        /* istanbul ignore if */
+        /* istanbul ignore next */
         if (JSCRIPT_VERSION < 9 && !("on" + (handler._type || type) in node)) {
             // handle custom events for IE8
             handler._type = CUSTOM_EVENT_TYPE;

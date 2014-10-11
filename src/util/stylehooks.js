@@ -11,6 +11,7 @@ var hooks = {get: {}, set: {}},
     computed = _.computeStyle(HTML),
     // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
     props = computed.length ? _.slice.call(computed, 0) : _.keys(computed).map((key) => {
+        /* istanbul ignore next */
         return key.replace(reCamel, (str) => "-" + str.toLowerCase());
     }),
     shortCuts = {
