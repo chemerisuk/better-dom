@@ -28,7 +28,7 @@ if (LEGACY_IE) {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach(ExtensionHandler.traverse(e.srcElement, e._skip || {}));
+            extensions.forEach(ExtensionHandler.traverse(e.srcElement));
         }
     });
 } else {
@@ -62,9 +62,11 @@ if (LEGACY_IE) {
 
     DOCUMENT.addEventListener(EVENT_TYPE, (e) => {
         if (e.animationName === ANIMATION_ID) {
-            extensions.forEach(ExtensionHandler.traverse(e.target, e._skip || {}));
+            extensions.forEach(ExtensionHandler.traverse(e.target));
+            // this is an internal event - stop it immediately
+            e.stopImmediatePropagation();
         }
-    }, false);
+    }, true);
 }
 
 /**
