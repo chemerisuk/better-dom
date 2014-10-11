@@ -1,13 +1,13 @@
 /**
  * @file better-dom.js
  * @overview better-dom: Live extension playground
- * @version 2.0.0-rc.7 Thu, 02 Oct 2014 17:33:57 GMT
+ * @version 2.0.0-rc.8 Sat, 11 Oct 2014 15:10:59 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
 (function() {
-    "use strict";var SLICE$0 = Array.prototype.slice;
+    "use strict";
     var const$$WINDOW = window;
     var const$$DOCUMENT = const$$WINDOW.document;
     var const$$HTML = const$$DOCUMENT.documentElement;
@@ -20,16 +20,58 @@
     var const$$WEBKIT_PREFIX = const$$WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
     var const$$CUSTOM_EVENT_TYPE = "dataavailable";
 
-    function errors$$MethodError(methodName) {var type = arguments[1];if(type === void 0)type = "$Element";
-        var url = "http://chemerisuk.github.io/better-dom/" + type + ".html#" + methodName;
+    var util$index$$arrayProto = Array.prototype,
+        util$index$$head = const$$DOCUMENT.getElementsByTagName("head")[0];
 
-        this.message = type + "#" + methodName + " was called with illegal arguments. Check " + url + " to verify the method call";
+    var util$index$$default = {
+        computeStyle: function(node)  {
+            return const$$WINDOW.getComputedStyle ? const$$WINDOW.getComputedStyle(node) : node.currentStyle;
+        },
+        injectElement: function(el)  {
+            return util$index$$head.appendChild(el);
+        },
+        // utilites
+        every: util$index$$arrayProto.every,
+        each: util$index$$arrayProto.forEach,
+        filter: util$index$$arrayProto.filter,
+        map: util$index$$arrayProto.map,
+        isArray: Array.isArray,
+        keys: Object.keys,
+        assign: function(target, source)  {
+            Object.keys(source).forEach(function(key)  {
+                target[key] = source[key];
+            });
+
+            return target;
+        },
+        safeInvoke: function(context, fn, arg1, arg2)  {
+            if (typeof fn === "string") fn = context[fn];
+
+            try {
+                return fn.call(context, arg1, arg2);
+            } catch (err) {
+                const$$WINDOW.setTimeout(function()  { throw err }, 1);
+
+                return false;
+            }
+        }
+    };
+
+    // customized errors
+
+    function errors$$MethodError(methodName, args) {var type = arguments[2];if(type === void 0)type = "$Element";
+        var url = "http://chemerisuk.github.io/better-dom/" + type + ".html#" + methodName,
+            line = type + (type === "DOM" ? "." : "#") + methodName + "(";
+
+        line += util$index$$default.map.call(args, function(arg)  {return JSON.stringify(arg)}).join(", ") + ");";
+
+        this.message = line + " Check " + url + " to verify the function call";
     }
 
     errors$$MethodError.prototype = new TypeError();
 
-    function errors$$StaticMethodError(methodName) {
-        errors$$MethodError.call(this, methodName, "DOM");
+    function errors$$StaticMethodError(methodName, args) {
+        errors$$MethodError.call(this, methodName, args, "DOM");
     }
 
     errors$$StaticMethodError.prototype = new TypeError();
@@ -40,13 +82,14 @@
         if (this instanceof types$$$Element) {
             if (node) {
                 this[0] = node;
-                this._ = { _handlers: [], _watchers: {} };
-                // use a generated on compile time property to store
-                // a reference to the wrapper for circular binding
-                node["__2000000-rc007__"] = this;
+                // use a generated property to store a reference
+                // to the wrapper for circular object binding
+                node["__2000000-rc008__"] = this;
             }
+
+            this._ = { _handlers: [], _watchers: {}, _extensions: [] };
         } else if (node) {
-            var cached = node["__2000000-rc007__"];
+            var cached = node["__2000000-rc008__"];
             // create a wrapper only once for each native element
             return cached ? cached : new types$$$Element(node);
         } else {
@@ -64,9 +107,7 @@
 
             return node ? node.tagName.toLowerCase() : "";
         },
-        valueOf: function() {
-            return "2000000-rc007";
-        }
+        VERSION: "2.0.0-rc.8"
     };
 
     types$$$NullElement.prototype = new types$$$Element();
@@ -138,7 +179,7 @@
     });
 
     types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
-        if (typeof template !== "string") throw new errors$$StaticMethodError("emmet");
+        if (typeof template !== "string") throw new errors$$StaticMethodError("emmet", arguments);
 
         if (varMap) template = types$$DOM.format(template, varMap);
 
@@ -291,39 +332,6 @@
 
     types$$DOM.createAll = dom$create$$makeMethod("All");
 
-    var util$index$$arrayProto = Array.prototype,
-        util$index$$currentScript = const$$DOCUMENT.scripts[0];
-
-    var util$index$$default = {
-        computeStyle: function(node)  {
-            return const$$WINDOW.getComputedStyle ? const$$WINDOW.getComputedStyle(node) : node.currentStyle;
-        },
-        injectElement: function(el)  {
-            return util$index$$currentScript.parentNode.insertBefore(el, util$index$$currentScript);
-        },
-        // utilites
-        every: util$index$$arrayProto.every,
-        each: util$index$$arrayProto.forEach,
-        filter: util$index$$arrayProto.filter,
-        map: util$index$$arrayProto.map,
-        isArray: Array.isArray,
-        keys: Object.keys,
-        assign: function(target, source)  {
-            Object.keys(source).forEach(function(key)  {
-                target[key] = source[key];
-            });
-
-            return target;
-        },
-        safeInvoke: function(fn, context, arg1, arg2)  {
-            try {
-                fn.call(context, arg1, arg2);
-            } catch (err) {
-                const$$WINDOW.setTimeout(function()  { throw err }, 1);
-            }
-        }
-    };
-
     /*
      * Helper for accessing css properties
      */
@@ -405,10 +413,8 @@
 
     var dom$importstyles$$styleNode = util$index$$default.injectElement(const$$DOCUMENT.createElement("style")),
         dom$importstyles$$styleSheet = dom$importstyles$$styleNode.sheet || dom$importstyles$$styleNode.styleSheet,
-        dom$importstyles$$styleRules = dom$importstyles$$styleSheet.cssRules || dom$importstyles$$styleSheet.rules;
-
-    types$$DOM.importStyles = function(selector, cssText) {
-        if (cssText && typeof cssText === "object") {
+        dom$importstyles$$styleRules = dom$importstyles$$styleSheet.cssRules || dom$importstyles$$styleSheet.rules,
+        dom$importstyles$$toString = function(cssText)  {
             // use styleObj to collect all style props for a new CSS rule
             var styleObj = util$index$$default.keys(cssText).reduce(function(styleObj, prop)  {
                 var hook = util$stylehooks$$default.set[prop];
@@ -422,18 +428,32 @@
                 return styleObj;
             }, {});
 
-            cssText = util$index$$default.keys(styleObj).map(function(key)  {return key + ":" + styleObj[key]}).join(";");
+            return util$index$$default.keys(styleObj).map(function(key)  {return key + ":" + styleObj[key]}).join(";");
+        },
+        dom$importstyles$$appendCSS = function(cssText)  {return function(selector)  {
+            try {
+                if (dom$importstyles$$styleSheet.cssRules) {
+                    dom$importstyles$$styleSheet.insertRule(selector + "{" + cssText + "}", dom$importstyles$$styleRules.length);
+                } else {
+                    dom$importstyles$$styleSheet.addRule(selector, cssText);
+                }
+            } catch(err) {
+                // silently ignore invalid rules
+            }
+        }};
+
+    types$$DOM.importStyles = function(selector, cssText) {
+        if (cssText && typeof cssText === "object") {
+            cssText = dom$importstyles$$toString(cssText);
         }
 
-        if (typeof selector !== "string" || typeof cssText !== "string") {
-            throw new errors$$StaticMethodError("importStyles");
-        }
-
-        if (dom$importstyles$$styleSheet.cssRules) {
-            dom$importstyles$$styleSheet.insertRule(selector + "{" + cssText + "}", dom$importstyles$$styleRules.length);
+        if (typeof selector === "string" && typeof cssText === "string") {
+            // insert rules one by one because of several reasons:
+            // 1. IE8 does not support comma in a selector string
+            // 2. if one selector fails it doesn't break others
+            selector.split(",").forEach(dom$importstyles$$appendCSS(cssText));
         } else {
-            // ie doesn't support multiple selectors in addRule
-            selector.split(",").forEach(function(selector)  { dom$importstyles$$styleSheet.addRule(selector, cssText) });
+            throw new errors$$StaticMethodError("importStyles", arguments);
         }
     };
 
@@ -496,58 +516,49 @@
         };
     };
 
-    var util$extensionhandler$$reRemovableMethod = /^(on|do)[A-Z]/,
-        util$extensionhandler$$ANIMATION_ID = "DOM" + Date.now(),
-        util$extensionhandler$$stopExt = function(node, index)  {return function(e)  {
-            var isEventValid;
-
-            e = e || const$$WINDOW.event;
-
-            if (const$$LEGACY_IE) {
-                isEventValid = e.srcUrn === const$$CUSTOM_EVENT_TYPE && e.srcElement === node;
-            } else {
-                isEventValid = e.animationName === util$extensionhandler$$ANIMATION_ID && e.target === node;
-            }
-            // mark extension as processed via e._skip bitmask
-            if (isEventValid) (e._skip = e._skip || {})[index] = true;
-        }},
+    var util$extensionhandler$$rePrivateFunction = /^(?:on|do)[A-Z]/,
         util$extensionhandler$$ExtensionHandler = function(selector, condition, mixins, index)  {
-            var eventHandlers = util$index$$default.keys(mixins).filter(function(prop)  {return !!util$extensionhandler$$reRemovableMethod.exec(prop)}),
+            var privateFunctions = util$index$$default.keys(mixins).filter(function(prop)  {return !!util$extensionhandler$$rePrivateFunction.exec(prop)}),
                 ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
+                matcher = util$selectormatcher$$default(selector),
                 ext = function(node, mock)  {
                     var el = types$$$Element(node);
-
-                    if (const$$LEGACY_IE) {
-                        node.attachEvent("on" + util$extensionhandler$$ExtensionHandler.EVENT_TYPE, util$extensionhandler$$stopExt(node, index));
-                    } else {
-                        node.addEventListener(util$extensionhandler$$ExtensionHandler.EVENT_TYPE, util$extensionhandler$$stopExt(node, index), false);
-                    }
+                    // mark extension as completed
+                    el._._extensions.push(index);
 
                     if (mock === true || condition(el) !== false) {
+                        // apply all private/public members to the interface
                         util$index$$default.assign(el, mixins);
+                        // preserve this for private functions
+                        privateFunctions.forEach(function(prop)  {
+                            var fn = el[prop];
+
+                            el[prop] = function()  {return fn.apply(el, arguments)};
+                        });
                         // invoke constructor if it exists
                         // make a safe call so live extensions can't break each other
-                        if (ctr) util$index$$default.safeInvoke(ctr, el);
+                        if (ctr) util$index$$default.safeInvoke(el, ctr);
                         // remove event handlers from element's interface
-                        if (mock !== true) eventHandlers.forEach(function(prop)  { delete el[prop] });
+                        privateFunctions.forEach(function(prop)  {
+                            if (mock !== true) delete el[prop];
+                        });
                     }
                 };
 
-            ext.accept = util$selectormatcher$$default(selector);
+            ext.accept = function(node, index)  {
+                var el = types$$$Element(node);
+
+                return el._._extensions.indexOf(index) < 0 && matcher(node);
+            };
+
+            if (ctr) delete mixins.constructor;
 
             return ext;
         };
 
-    if (const$$LEGACY_IE) {
-        util$extensionhandler$$ExtensionHandler.EVENT_TYPE = const$$CUSTOM_EVENT_TYPE;
-    } else {
-        util$extensionhandler$$ExtensionHandler.ANIMATION_ID = util$extensionhandler$$ANIMATION_ID;
-        util$extensionhandler$$ExtensionHandler.EVENT_TYPE = const$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
-    }
-
-    util$extensionhandler$$ExtensionHandler.traverse = function(node, skip)  {return function(ext, index)  {
+    util$extensionhandler$$ExtensionHandler.traverse = function(node)  {return function(ext, index)  {
         // skip previously excluded or mismatched elements
-        if (!skip[index] && ext.accept(node)) ext(node);
+        if (ext.accept(node, index)) ext(node);
     }};
 
     var util$extensionhandler$$default = util$extensionhandler$$ExtensionHandler;
@@ -561,34 +572,23 @@
         dom$extend$$readyCallback, dom$extend$$styles;
 
     if (const$$LEGACY_IE) {
-        var dom$extend$$link = const$$DOCUMENT.querySelector("link[rel=htc]");
+        var dom$extend$$legacyScripts = util$index$$default.filter.call(const$$DOCUMENT.scripts, function(script)  {return script.src.indexOf("better-dom-legacy.js") >= 0});
 
-        if (dom$extend$$link) {
-            dom$extend$$link = dom$extend$$link.href;
-        } else {
-            if ("console" in const$$WINDOW) {
-                const$$WINDOW.console.log("WARNING: In order to use live extensions in IE < 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
-            }
-
-            var dom$extend$$scripts = const$$DOCUMENT.scripts;
-            // trying to guess HTC file location
-            dom$extend$$link = dom$extend$$scripts[dom$extend$$scripts.length - 1].src.split("/");
-            dom$extend$$link = "/" + dom$extend$$link.slice(3, dom$extend$$link.length - 1).concat("better-dom.htc").join("/");
+        if (dom$extend$$legacyScripts.length < 1) {
+            throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
         }
 
-        dom$extend$$styles = {behavior: "url(" + dom$extend$$link + ") !important"};
+        dom$extend$$styles = {behavior: "url(" + dom$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important"};
 
-        // append behavior for HTML element to apply several legacy IE-specific fixes
-        dom$importstyles$$default("html", dom$extend$$styles);
-
-        const$$DOCUMENT.attachEvent("on" + util$extensionhandler$$default.EVENT_TYPE, function()  {
+        const$$DOCUMENT.attachEvent("on" + const$$CUSTOM_EVENT_TYPE, function()  {
             var e = const$$WINDOW.event;
 
             if (e.srcUrn === const$$CUSTOM_EVENT_TYPE) {
-                dom$extend$$extensions.forEach(util$extensionhandler$$default.traverse(e.srcElement, e._skip || {}));
+                dom$extend$$extensions.forEach(util$extensionhandler$$default.traverse(e.srcElement));
             }
         });
     } else {
+        var dom$extend$$ANIMATION_ID = "DOM" + Date.now();
         var dom$extend$$readyState = const$$DOCUMENT.readyState;
         // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
         // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
@@ -610,18 +610,20 @@
             const$$WINDOW.addEventListener("load", dom$extend$$readyCallback, false);
         }
 
-        dom$importstyles$$default("@" + const$$WEBKIT_PREFIX + "keyframes " + util$extensionhandler$$default.ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
+        dom$importstyles$$default("@" + const$$WEBKIT_PREFIX + "keyframes " + dom$extend$$ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
 
         dom$extend$$styles = {
             "animation-duration": "1ms !important",
-            "animation-name": util$extensionhandler$$default.ANIMATION_ID + " !important"
+            "animation-name": dom$extend$$ANIMATION_ID + " !important"
         };
 
-        const$$DOCUMENT.addEventListener(util$extensionhandler$$default.EVENT_TYPE, function(e)  {
-            if (e.animationName === util$extensionhandler$$default.ANIMATION_ID) {
-                dom$extend$$extensions.forEach(util$extensionhandler$$default.traverse(e.target, e._skip || {}));
+        const$$DOCUMENT.addEventListener(const$$WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
+            if (e.animationName === dom$extend$$ANIMATION_ID) {
+                dom$extend$$extensions.forEach(util$extensionhandler$$default.traverse(e.target));
+                // this is an internal event - stop it immediately
+                e.stopImmediatePropagation();
             }
-        }, false);
+        }, true);
     }
 
     types$$DOM.extend = function(selector, condition, mixins) {
@@ -633,7 +635,7 @@
         if (typeof condition === "boolean") condition = condition ? dom$extend$$returnTrue : dom$extend$$returnFalse;
         if (typeof mixins === "function") mixins = {constructor: mixins};
 
-        if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new errors$$StaticMethodError("extend");
+        if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new errors$$StaticMethodError("extend", arguments);
 
         if (selector === "*") {
             // extending element prototype
@@ -661,14 +663,14 @@
     var dom$format$$reVar = /\{([\w\-]+)\}/g;
 
     types$$DOM.format = function(tmpl, varMap) {
-        if (typeof tmpl !== "string") throw new errors$$StaticMethodError("format");
+        if (typeof tmpl !== "string") throw new errors$$StaticMethodError("format", arguments);
 
         if (!varMap || typeof varMap !== "object") varMap = {};
 
         return tmpl.replace(dom$format$$reVar, function(x, name)  {return name in varMap ? String(varMap[name]) : x});
     };
 
-    types$$DOM.importScripts = function() {var urls = SLICE$0.call(arguments, 0);
+    types$$DOM.importScripts = function() {var SLICE$0 = Array.prototype.slice;var urls = SLICE$0.call(arguments, 0);
         var callback = function() {
             var arg = urls.shift(),
                 argType = typeof arg,
@@ -684,7 +686,7 @@
             } else if (argType === "function") {
                 arg();
             } else if (arg) {
-                throw new errors$$StaticMethodError("importScripts");
+                throw new errors$$StaticMethodError("importScripts", arguments);
             }
         };
 
@@ -692,7 +694,7 @@
     };
 
     var dom$mock$$applyExtensions = function(node)  {
-            dom$extend$$default.forEach(function(ext)  { if (ext.accept(node)) ext(node, true) });
+            dom$extend$$default.forEach(function(ext, index)  { if (ext.accept(node, index)) ext(node, true) });
 
             util$index$$default.each.call(node.children, dom$mock$$applyExtensions);
         },
@@ -716,9 +718,9 @@
 
     var element$children$$makeMethod = function(all)  {return function(selector) {
         if (all) {
-            if (selector && typeof selector !== "string") throw new errors$$MethodError("children");
+            if (selector && typeof selector !== "string") throw new errors$$MethodError("children", arguments);
         } else {
-            if (selector && typeof selector !== "number") throw new errors$$MethodError("child");
+            if (selector && typeof selector !== "number") throw new errors$$MethodError("child", arguments);
         }
 
         var node = this[0],
@@ -777,7 +779,7 @@
                         return force;
                     }
 
-                    if (typeof token !== "string") throw new errors$$MethodError(methodName);
+                    if (typeof token !== "string") throw new errors$$MethodError(methodName, arguments);
 
                     return strategy(this, token);
                 };
@@ -786,7 +788,7 @@
                     var tokens = arguments;
 
                     $D$5 = 0;$D$6 = tokens.length;for (var token ;$D$5 < $D$6;){token = (tokens[$D$5++]);
-                        if (typeof token !== "string") throw new errors$$MethodError(methodName);
+                        if (typeof token !== "string") throw new errors$$MethodError(methodName, arguments);
 
                         strategy(this, token);
                     };$D$5 = $D$6 = void 0;
@@ -836,7 +838,7 @@
     });
 
     types$$$Element.prototype.clone = function() {var deep = arguments[0];if(deep === void 0)deep = true;
-        if (typeof deep !== "boolean") throw new errors$$MethodError("clone");
+        if (typeof deep !== "boolean") throw new errors$$MethodError("clone", arguments);
 
         var node = this[0], result;
 
@@ -870,7 +872,7 @@
             }
         }
 
-        throw new errors$$MethodError("contains");
+        throw new errors$$MethodError("contains", arguments);
     };
 
     types$$$NullElement.prototype.contains = function() {
@@ -925,7 +927,7 @@
         } else if (len === 2 && nameType === "string") {
             appendCssText(name, value);
         } else {
-            throw new errors$$MethodError("css");
+            throw new errors$$MethodError("css", arguments);
         }
 
         return this;
@@ -944,7 +946,7 @@
         element$find$$rescape = /'|\\/g,
         element$find$$tmpId = "DOM" + Date.now(),
         element$find$$makeMethod = function(all)  {return function(selector) {
-            if (typeof selector !== "string") throw new errors$$MethodError("find" + all);
+            if (typeof selector !== "string") throw new errors$$MethodError("find" + all, arguments);
 
             var node = this[0],
                 quickMatch = element$find$$rquick.exec(selector),
@@ -979,11 +981,9 @@
                     selector = nid + selector.split(",").join("," + nid);
                 }
 
-                try {
-                    result = context["querySelector" + all](selector);
-                } finally {
-                    if (!old) node.removeAttribute("id");
-                }
+                result = util$index$$default.safeInvoke(context, "querySelector" + all, selector);
+
+                if (!old) node.removeAttribute("id");
             }
 
             return all ? util$index$$default.map.call(result, types$$$Element) : types$$$Element(result);
@@ -1044,8 +1044,7 @@
                     // srcElement can be null in legacy IE when target is document
                     var target = e.target || e.srcElement || const$$DOCUMENT,
                         currentTarget = matcher ? matcher(target) : node,
-                        eventArgs = e._args || [],
-                        args = props;
+                        args = props || [];
 
                     // early stop for late binding or when target doesn't match selector
                     if (!currentTarget) return;
@@ -1053,40 +1052,45 @@
                     // off callback even if it throws an exception later
                     if (once) el.off(type, callback);
 
-                    args = !args ? eventArgs : args.map(function(name)  {
-                        if (typeof name === "number") return eventArgs[name - 1];
+                    if (!args.length) {
+                        args = e[0] ? Array.prototype.slice.call(e[0], 1) : [];
+                    } else {
+                        args = args.map(function(name)  {
+                            if (typeof name === "number") return e[0] ? e[0][name] : void 0;
+                            if (typeof name !== "string") return name;
 
-                        if (!const$$DOM2_EVENTS) {
-                            switch (name) {
-                            case "which":
-                                return e.keyCode;
-                            case "button":
-                                var button = e.button;
-                                // click: 1 === left; 2 === middle; 3 === right
-                                return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
-                            case "pageX":
-                                return e.clientX + const$$HTML.scrollLeft - const$$HTML.clientLeft;
-                            case "pageY":
-                                return e.clientY + const$$HTML.scrollTop - const$$HTML.clientTop;
+                            if (!const$$DOM2_EVENTS) {
+                                switch (name) {
+                                case "which":
+                                    return e.keyCode;
+                                case "button":
+                                    var button = e.button;
+                                    // click: 1 === left; 2 === middle; 3 === right
+                                    return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+                                case "pageX":
+                                    return e.clientX + const$$HTML.scrollLeft - const$$HTML.clientLeft;
+                                case "pageY":
+                                    return e.clientY + const$$HTML.scrollTop - const$$HTML.clientTop;
+                                }
                             }
-                        }
 
-                        switch (name) {
-                        case "type":
-                            return type;
-                        case "defaultPrevented":
-                            // IE8 and Android 2.3 use returnValue instead of defaultPrevented
-                            return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
-                        case "target":
-                            return types$$$Element(target);
-                        case "currentTarget":
-                            return types$$$Element(currentTarget);
-                        case "relatedTarget":
-                            return types$$$Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
-                        }
+                            switch (name) {
+                            case "type":
+                                return type;
+                            case "defaultPrevented":
+                                // IE8 and Android 2.3 use returnValue instead of defaultPrevented
+                                return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
+                            case "target":
+                                return types$$$Element(target);
+                            case "currentTarget":
+                                return types$$$Element(currentTarget);
+                            case "relatedTarget":
+                                return types$$$Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
+                            }
 
-                        return e[name];
-                    });
+                            return e[name];
+                        });
+                    }
 
                     // if props is not specified then prepend extra arguments
                     if (callback.apply(el, args) === false) {
@@ -1113,7 +1117,7 @@
 
     var util$eventhandler$$default = util$eventhandler$$EventHandler;
 
-    types$$$Element.prototype.fire = function(type) {var args = SLICE$0.call(arguments, 1);
+    types$$$Element.prototype.fire = function(type) {
         var node = this[0],
             eventType = typeof type,
             handler = {},
@@ -1126,18 +1130,17 @@
 
             eventType = handler._type || type;
         } else {
-            throw new errors$$MethodError("fire");
+            throw new errors$$MethodError("fire", arguments);
         }
 
         if (const$$DOM2_EVENTS) {
             e = const$$DOCUMENT.createEvent("HTMLEvents");
+            e[0] = arguments;
             e.initEvent(eventType, true, true);
-            e._args = args;
-
             canContinue = node.dispatchEvent(e);
         } else {
             e = const$$DOCUMENT.createEventObject();
-            e._args = args;
+            e[0] = arguments;
             // handle custom events for legacy IE
             if (!("on" + eventType in node)) eventType = const$$CUSTOM_EVENT_TYPE;
             // store original event type
@@ -1162,10 +1165,11 @@
     };
 
     types$$$NullElement.prototype.fire = function() {
-        return false;
+        return true;
     };
 
     var util$accessorhooks$$hooks = {get: {}, set: {}};
+    var util$accessorhooks$$body = document.createElement("body");
 
     // fix camel cased attributes
     "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach(function(key)  {
@@ -1217,21 +1221,39 @@
     if (!const$$DOM2_EVENTS) {
         util$accessorhooks$$hooks.get.textContent = function(node)  {return node.innerText};
         util$accessorhooks$$hooks.set.textContent = function(node, value)  { node.innerText = value };
+
+        // IE8 sometimes breaks on innerHTML
+        util$accessorhooks$$hooks.set.innerHTML = function(node, value) {
+            try {
+                node.innerHTML = value;
+            } catch (err) {
+                node.innerText = "";
+                util$accessorhooks$$body.innerHTML = value;
+
+                for (var it; it = util$accessorhooks$$body.firstChild; ) {
+                    node.appendChild(it);
+                }
+            }
+        };
     }
 
     var util$accessorhooks$$default = util$accessorhooks$$hooks;
 
-    var element$get$$reDash = /[A-Z]/g,
-        element$get$$getPrivateProperty = function(node, key)  {
+    var element$get$$reUpper = /[A-Z]/g,
+        element$get$$readPrivateProperty = function(node, key)  {
             // convert from camel case to dash-separated value
-            var value = node.getAttribute("data-" + key.replace(element$get$$reDash, function(l)  {return "-" + l.toLowerCase()}));
+            key = key.replace(element$get$$reUpper, function(l)  {return "-" + l.toLowerCase()});
+
+            var value = node.getAttribute("data-" + key);
 
             if (value != null) {
                 // try to recognize and parse  object notation syntax
                 if (value[0] === "{" && value[value.length - 1] === "}") {
                     try {
                         value = JSON.parse(value);
-                    } catch (err) { }
+                    } catch (err) {
+                        // just return the value itself
+                    }
                 }
             }
 
@@ -1251,21 +1273,20 @@
                 return node.getAttribute(name);
             } else {
                 var key = name.substr(1),
-                    data = this._,
-                    value;
+                    data = this._;
 
-                if (key in data) {
-                    value = data[key];
-                } else {
-                    value = data[key] = element$get$$getPrivateProperty(node, key);
+                if (!(key in data)) {
+                    data[key] = element$get$$readPrivateProperty(node, key);
                 }
 
-                return value;
+                return data[key];
             }
         } else if (util$index$$default.isArray(name)) {
-            return name.reduce(function(r, key)  { return (r[key] = this$0.get(key), r) }, {});
+            return name.reduce(function(memo, key)  {
+                return (memo[key] = this$0.get(key), memo);
+            }, {});
         } else {
-            throw new errors$$MethodError("get");
+            throw new errors$$MethodError("get", arguments);
         }
     };
 
@@ -1296,7 +1317,7 @@
                     return fragment;
                 }, const$$DOCUMENT.createDocumentFragment());
             } else {
-                throw new errors$$MethodError(methodName);
+                throw new errors$$MethodError(methodName, arguments);
             }
 
             if (content && typeof content === "string") {
@@ -1359,7 +1380,7 @@
     var util$selectorhooks$$default = util$selectorhooks$$hooks;
 
     types$$$Element.prototype.matches = function(selector) {
-        if (!selector || typeof selector !== "string") throw new errors$$MethodError("matches");
+        if (!selector || typeof selector !== "string") throw new errors$$MethodError("matches", arguments);
 
         var checker = util$selectorhooks$$default[selector] || util$selectormatcher$$default(selector);
 
@@ -1371,7 +1392,7 @@
     };
 
     types$$$Element.prototype.off = function(type, callback) {
-        if (typeof type !== "string") throw new errors$$MethodError("off");
+        if (typeof type !== "string") throw new errors$$MethodError("off", arguments);
 
         var node = this[0];
 
@@ -1416,15 +1437,15 @@
         return { top : 0, left : 0, right : 0, bottom : 0, width : 0, height : 0 };
     };
 
-    var element$on$$makeMethod = function(method)  {return function(type, selector, props, callback) {var this$0 = this;
+    var element$on$$makeMethod = function(method)  {return function(type, selector, args, callback) {var this$0 = this;
             if (typeof type === "string") {
-                if (typeof props === "function") {
-                    callback = props;
+                if (typeof args === "function") {
+                    callback = args;
 
                     if (typeof selector === "string") {
-                        props = null;
+                        args = null;
                     } else {
-                        props = selector;
+                        args = selector;
                         selector = null;
                     }
                 }
@@ -1432,15 +1453,15 @@
                 if (typeof selector === "function") {
                     callback = selector;
                     selector = null;
-                    props = null;
+                    args = null;
                 }
 
                 if (typeof callback !== "function") {
-                    throw new errors$$MethodError(method);
+                    throw new errors$$MethodError(method, arguments);
                 }
 
                 var node = this[0],
-                    handler = util$eventhandler$$default(type, selector, callback, props, this, method === "once");
+                    handler = util$eventhandler$$default(type, selector, callback, args, this, method === "once");
 
                 if (handler) {
                     if (const$$DOM2_EVENTS) {
@@ -1453,12 +1474,12 @@
                 }
             } else if (typeof type === "object") {
                 if (util$index$$default.isArray(type)) {
-                    type.forEach(function(name)  { this$0[method](name, selector, props, callback) });
+                    type.forEach(function(name)  { this$0[method](name, selector, args, callback) });
                 } else {
                     util$index$$default.keys(type).forEach(function(name)  { this$0[method](name, type[name]) });
                 }
             } else {
-                throw new errors$$MethodError(method);
+                throw new errors$$MethodError(method, arguments);
             }
 
             return this;
@@ -1533,12 +1554,12 @@
         } else if (typeof name === "object") {
             util$index$$default.keys(name).forEach(function(key)  { this$0.set(key, name[key]) });
         } else {
-            throw new errors$$MethodError("set");
+            throw new errors$$MethodError("set", arguments);
         }
 
         if (watchers && oldValue !== value) {
             watchers.forEach(function(w)  {
-                util$index$$default.safeInvoke(w, this$0, value, oldValue);
+                util$index$$default.safeInvoke(this$0, w, value, oldValue);
             });
         }
 
@@ -1550,13 +1571,17 @@
     };
 
     var element$traversing$$makeMethod = function(methodName, propertyName, all)  {return function(selector) {
-            if (selector && typeof selector !== "string") throw new errors$$MethodError(methodName);
+            if (selector && typeof selector !== "string") throw new errors$$MethodError(methodName, arguments);
 
             var matcher = util$selectormatcher$$default(selector),
                 nodes = all ? [] : null,
                 it = this[0];
 
-            if (it && methodName !== "closest") it = it[propertyName];
+            if (methodName !== "closest" || !matcher) {
+                // method closest starts traversing from the element itself
+                // except no selector was specified
+                it = it[propertyName];
+            }
 
             for (; it; it = it[propertyName]) {
                 if (it.nodeType === 1 && (!matcher || matcher(it))) {
@@ -1689,7 +1714,7 @@
             }
 
             if (callback && typeof callback !== "function") {
-                throw new errors$$MethodError(name);
+                throw new errors$$MethodError(name, arguments);
             }
 
             var node = this[0],
