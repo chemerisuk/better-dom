@@ -30,7 +30,7 @@ $Element.prototype.fire = function(type) {
     } else {
         throw new MethodError("fire", arguments);
     }
-
+    /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         e = DOCUMENT.createEventObject();
         e[0] = arguments;

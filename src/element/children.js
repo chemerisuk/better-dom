@@ -14,7 +14,7 @@ var makeMethod = (all) => function(selector) {
     var node = this[0],
         matcher = SelectorMatcher(selector),
         children = node.children;
-
+    /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         // fix IE8 bug with children collection
         children = _.filter.call(children, (node) => node.nodeType === 1);

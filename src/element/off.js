@@ -18,7 +18,7 @@ $Element.prototype.off = function(type, callback) {
         if (type !== handler.type || callback && callback !== handler.callback) return true;
 
         type = handler._type || handler.type;
-
+        /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
             node.detachEvent("on" + type, handler);
         } else {

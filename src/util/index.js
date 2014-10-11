@@ -15,6 +15,7 @@ export default {
     each: arrayProto.forEach,
     filter: arrayProto.filter,
     map: arrayProto.map,
+    slice: arrayProto.slice,
     isArray: Array.isArray,
     keys: Object.keys,
     assign: (target, source) => {
@@ -30,6 +31,7 @@ export default {
         try {
             return fn.call(context, arg1, arg2);
         } catch (err) {
+            /* istanbul ignore next */
             WINDOW.setTimeout(() => { throw err }, 1);
 
             return false;

@@ -49,9 +49,9 @@ hooks.set.value = function(node, value) {
 
 // some browsers don't recognize input[type=email] etc.
 hooks.get.type = (node) => node.getAttribute("type") || node.type;
-
-// IE8 has innerText but not textContent
+/* istanbul ignore if */
 if (JSCRIPT_VERSION < 9) {
+    // IE8 has innerText but not textContent
     hooks.get.textContent = (node) => node.innerText;
     hooks.set.textContent = (node, value) => { node.innerText = value };
 

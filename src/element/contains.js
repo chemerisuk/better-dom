@@ -18,7 +18,7 @@ $Element.prototype.contains = function(element) {
         var otherNode = element[0];
 
         if (otherNode === node) return true;
-
+        /* istanbul ignore else */
         if (node.contains) {
             return node.contains(otherNode);
         } else {

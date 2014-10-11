@@ -31,6 +31,7 @@ var makeMethod = (method) => function(type, selector, args, callback) {
                 handler = EventHandler(type, selector, callback, args, this, method === "once");
 
             if (handler) {
+                /* istanbul ignore if */
                 if (JSCRIPT_VERSION < 9) {
                     node.attachEvent("on" + (handler._type || type), handler);
                 } else {

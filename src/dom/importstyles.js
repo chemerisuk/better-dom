@@ -25,6 +25,7 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
     },
     appendCSS = (cssText) => (selector) => {
         try {
+            /* istanbul ignore else */
             if (styleSheet.cssRules) {
                 styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
             } else {

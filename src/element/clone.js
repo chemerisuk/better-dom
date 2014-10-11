@@ -16,7 +16,7 @@ $Element.prototype.clone = function(deep = true) {
     if (typeof deep !== "boolean") throw new MethodError("clone", arguments);
 
     var node = this[0], result;
-
+    /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         result = DOM.create(node.outerHTML);
 

@@ -6,6 +6,7 @@ module.exports = function(config) {
         singleRun: true,
         frameworks: ["jasmine"],
         browsers: ["PhantomJS"],
+        preprocessors: { "build/better-dom.js": "coverage" },
         coverageReporter: {
             type: "html",
             dir: "coverage/"

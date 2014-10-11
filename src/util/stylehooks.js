@@ -10,7 +10,7 @@ var hooks = {get: {}, set: {}},
     directions = ["Top", "Right", "Bottom", "Left"],
     computed = _.computeStyle(HTML),
     // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
-    props = computed.length ? Array.prototype.slice.call(computed, 0) : _.keys(computed).map((key) => {
+    props = computed.length ? _.slice.call(computed, 0) : _.keys(computed).map((key) => {
         return key.replace(reCamel, (str) => "-" + str.toLowerCase());
     }),
     shortCuts = {
@@ -25,8 +25,9 @@ props.forEach((propName) => {
     var prefix = propName[0] === "-" ? propName.substr(1, propName.indexOf("-", 1) - 1) : null,
         unprefixedName = prefix ? propName.substr(prefix.length + 2) : propName,
         stylePropName = propName.replace(reDash, (str) => str[1].toUpperCase());
-    // most of browsers starts vendor specific props in lowercase
+    /* istanbul ignore if */
     if (!(stylePropName in computed)) {
+        // most of browsers starts vendor specific props in lowercase
         stylePropName = stylePropName[0].toLowerCase() + stylePropName.substr(1);
     }
 

@@ -64,9 +64,11 @@ $Element.prototype.set = function(name, value) {
             } else {
                 node.setAttribute(name, value);
             }
-
-            // always trigger reflow manually for IE8 and legacy Android
-            if (JSCRIPT_VERSION < 9 || LEGACY_ANDROID) node.className = node.className;
+            /* istanbul ignore if */
+            if (JSCRIPT_VERSION < 9 || LEGACY_ANDROID) {
+                // always trigger reflow manually for IE8 and legacy Android
+                node.className = node.className;
+            }
         }
     } else if (_.isArray(name)) {
         name.forEach((key) => { this.set(key, value) });

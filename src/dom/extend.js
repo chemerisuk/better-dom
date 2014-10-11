@@ -13,6 +13,7 @@ var extensions = [],
     returnFalse = () => false,
     readyCallback, styles;
 
+/* istanbul ignore if */
 if (JSCRIPT_VERSION < 10) {
     let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
 

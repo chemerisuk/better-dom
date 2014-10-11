@@ -27,7 +27,7 @@ export default function(selector, context) {
 
     return function(node) {
         var result, found;
-
+        /* istanbul ignore if */
         if (!quick && !propName) {
             found = (context || document).querySelectorAll(selector);
         }
@@ -41,6 +41,7 @@ export default function(selector, context) {
                     (!quick[4] || (" " + node.className + " ").indexOf(quick[4]) >= 0)
                 );
             } else {
+                /* istanbul ignore else */
                 if (propName) {
                     result = node[propName](selector);
                 } else {

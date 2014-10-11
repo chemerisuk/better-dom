@@ -2,7 +2,6 @@ var gulp = require("gulp");
 var gulpif = require("gulp-if");
 var gutil = require("gulp-util");
 var pkg = require("./package.json");
-var karma = require("karma").server;
 var compile = require("./task/compile");
 var es6transpiler = require("gulp-es6-transpiler");
 var template = require("gulp-template");
@@ -19,6 +18,9 @@ var git = require("gulp-git");
 var filter = require("gulp-filter");
 var tag_version = require("gulp-tag-version");
 var concat = require("gulp-concat");
+
+var karma = require("karma").server;
+var karmaConfig = require.resolve("./conf/karma.conf");
 
 
 gulp.task("lint", function() {
@@ -73,11 +75,10 @@ gulp.task("symlink", ["compile-legacy"], function() {
 });
 
 gulp.task("test", ["compile", "symlink"], function(done) {
-    var config = {};
+    var config = {preprocessors: []};
 
     if (process.env.TRAVIS_JOB_NUMBER) {
         config = {
-            preprocessors: { "build/better-dom.js": "coverage" },
             reporters: ["coverage", "dots", "coveralls"],
             coverageReporter: {
                 type: "lcovonly",
@@ -94,7 +95,7 @@ gulp.task("test", ["compile", "symlink"], function(done) {
         }
     }
 
-    config.configFile = require.resolve("./conf/karma.conf");
+    config.configFile = karmaConfig;
 
     karma.start(config, done);
 });
@@ -105,8 +106,7 @@ gulp.task("dev", ["compile", "symlink"], function() {
 
     karma.start({
         // browsers: ["IE8 - WinXP"],
-        configFile: require.resolve("./conf/karma.conf"),
-        preprocessors: { "build/better-dom.js": "coverage" },
+        configFile: karmaConfig,
         reporters: ["coverage", "progress"],
         background: true,
         singleRun: false
