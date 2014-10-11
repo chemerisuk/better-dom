@@ -5,7 +5,7 @@
 (function() {
     var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/0;
 
-    if (JSCRIPT_VERSION > 8) return;
+    if (!JSCRIPT_VERSION || JSCRIPT_VERSION > 8) return;
 
     document.attachEvent("onkeydown", function() {
         var e = window.event,

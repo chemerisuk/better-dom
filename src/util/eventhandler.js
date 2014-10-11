@@ -20,8 +20,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 // srcElement can be null in legacy IE when target is document
                 var target = e.target || e.srcElement || DOCUMENT,
                     currentTarget = matcher ? matcher(target) : node,
-                    eventArgs = e._args || [],
-                    args = props;
+                    args = props || [];
 
                 // early stop for late binding or when target doesn't match selector
                 if (!currentTarget) return;
@@ -29,41 +28,45 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 // off callback even if it throws an exception later
                 if (once) el.off(type, callback);
 
-                args = !args ? eventArgs : args.map((name) => {
-                    if (typeof name === "number") return name ? eventArgs[name - 1] : type;
-                    if (typeof name !== "string") return name;
+                if (!args.length) {
+                    args = e[0] ? Array.prototype.slice.call(e[0], 1) : [];
+                } else {
+                    args = args.map((name) => {
+                        if (typeof name === "number") return e[0] ? e[0][name] : void 0;
+                        if (typeof name !== "string") return name;
 
-                    if (!DOM2_EVENTS) {
-                        switch (name) {
-                        case "which":
-                            return e.keyCode;
-                        case "button":
-                            var button = e.button;
-                            // click: 1 === left; 2 === middle; 3 === right
-                            return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
-                        case "pageX":
-                            return e.clientX + HTML.scrollLeft - HTML.clientLeft;
-                        case "pageY":
-                            return e.clientY + HTML.scrollTop - HTML.clientTop;
+                        if (!DOM2_EVENTS) {
+                            switch (name) {
+                            case "which":
+                                return e.keyCode;
+                            case "button":
+                                var button = e.button;
+                                // click: 1 === left; 2 === middle; 3 === right
+                                return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
+                            case "pageX":
+                                return e.clientX + HTML.scrollLeft - HTML.clientLeft;
+                            case "pageY":
+                                return e.clientY + HTML.scrollTop - HTML.clientTop;
+                            }
                         }
-                    }
 
-                    switch (name) {
-                    case "type":
-                        return type;
-                    case "defaultPrevented":
-                        // IE8 and Android 2.3 use returnValue instead of defaultPrevented
-                        return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
-                    case "target":
-                        return $Element(target);
-                    case "currentTarget":
-                        return $Element(currentTarget);
-                    case "relatedTarget":
-                        return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
-                    }
+                        switch (name) {
+                        case "type":
+                            return type;
+                        case "defaultPrevented":
+                            // IE8 and Android 2.3 use returnValue instead of defaultPrevented
+                            return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
+                        case "target":
+                            return $Element(target);
+                        case "currentTarget":
+                            return $Element(currentTarget);
+                        case "relatedTarget":
+                            return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
+                        }
 
-                    return e[name];
-                });
+                        return e[name];
+                    });
+                }
 
                 // if props is not specified then prepend extra arguments
                 if (callback.apply(el, args) === false) {

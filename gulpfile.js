@@ -100,7 +100,7 @@ gulp.task("test", ["compile", "symlink", "lint"], function(done) {
 });
 
 gulp.task("dev", ["compile", "symlink", "lint"], function() {
-    gulp.watch(["*.js", "dom/*.js", "element/*.js", "util/*.js"], ["compile"]);
+    gulp.watch(["src/*.js", "src/dom/*.js", "src/element/*.js", "src/util/*.js"], ["compile"]);
     gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
 
     karma.start({

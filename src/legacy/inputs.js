@@ -5,7 +5,7 @@
 (function() {
     var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/0;
 
-    if (JSCRIPT_VERSION > 9) return;
+    if (!JSCRIPT_VERSION || JSCRIPT_VERSION > 9) return;
 
     var inputEventHandler = function() {
             if (capturedNode && capturedNode.value !== capturedNodeValue) {

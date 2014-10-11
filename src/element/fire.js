@@ -8,14 +8,14 @@ import HOOK from "../util/eventhooks";
  * Triggers an event of specific type with optional extra arguments
  * @memberof! $Element#
  * @alias $Element#fire
- * @param  {String}  type  type of event
- * @param  {...Object}     [args]  extra arguments to pass into each event handler
+ * @param  {String}     type    type of event
+ * @param  {...Object}  [args]  extra arguments to pass into each event handler
  * @return {Boolean} returns <code>true</code> if default action wasn't prevented
  * @example
  * link.fire("click");                   // fire click event
  * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments
  */
-$Element.prototype.fire = function(type, ...args) {
+$Element.prototype.fire = function(type) {
     var node = this[0],
         eventType = typeof type,
         handler = {},
@@ -33,13 +33,12 @@ $Element.prototype.fire = function(type, ...args) {
 
     if (DOM2_EVENTS) {
         e = DOCUMENT.createEvent("HTMLEvents");
+        e[0] = arguments;
         e.initEvent(eventType, true, true);
-        e._args = args;
-
         canContinue = node.dispatchEvent(e);
     } else {
         e = DOCUMENT.createEventObject();
-        e._args = args;
+        e[0] = arguments;
         // handle custom events for legacy IE
         if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
         // store original event type
