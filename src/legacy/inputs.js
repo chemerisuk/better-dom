@@ -3,7 +3,7 @@
 * @copyright 2013-2014 <%= pkg.author %>
 */
 (function() {
-    var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/0;
+    var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/void 0;
 
     if (!JSCRIPT_VERSION || JSCRIPT_VERSION > 9) return;
 

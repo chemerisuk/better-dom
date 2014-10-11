@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM2_EVENTS } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 import EventHandler from "../util/eventhandler";
 
@@ -31,10 +31,10 @@ var makeMethod = (method) => function(type, selector, args, callback) {
                 handler = EventHandler(type, selector, callback, args, this, method === "once");
 
             if (handler) {
-                if (DOM2_EVENTS) {
-                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
-                } else {
+                if (JSCRIPT_VERSION < 9) {
                     node.attachEvent("on" + (handler._type || type), handler);
+                } else {
+                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 }
                 // store event entry
                 this._._handlers.push(handler);

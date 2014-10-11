@@ -1,5 +1,5 @@
 import { MethodError } from "../errors";
-import { DOM2_EVENTS } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 
 /**
@@ -19,10 +19,10 @@ $Element.prototype.off = function(type, callback) {
 
         type = handler._type || handler.type;
 
-        if (DOM2_EVENTS) {
-            node.removeEventListener(type, handler, !!handler.capturing);
-        } else {
+        if (JSCRIPT_VERSION < 9) {
             node.detachEvent("on" + type, handler);
+        } else {
+            node.removeEventListener(type, handler, !!handler.capturing);
         }
     });
 

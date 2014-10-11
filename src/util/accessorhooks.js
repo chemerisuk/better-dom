@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM2_EVENTS, HTML, DOCUMENT } from "../const";
+import { JSCRIPT_VERSION, HTML, DOCUMENT } from "../const";
 
 var hooks = {get: {}, set: {}};
 var body = document.createElement("body");
@@ -43,7 +43,7 @@ hooks.set.value = function(node, value) {
         }
     } else {
         // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        node[DOM2_EVENTS || node.type !== "textarea" ? "value" : "innerText"] = value;
+        node[JSCRIPT_VERSION < 9 && node.type === "textarea" ? "innerText" : "value"] = value;
     }
 };
 
@@ -51,7 +51,7 @@ hooks.set.value = function(node, value) {
 hooks.get.type = (node) => node.getAttribute("type") || node.type;
 
 // IE8 has innerText but not textContent
-if (!DOM2_EVENTS) {
+if (JSCRIPT_VERSION < 9) {
     hooks.get.textContent = (node) => node.innerText;
     hooks.set.textContent = (node, value) => { node.innerText = value };
 

@@ -1,4 +1,4 @@
-import { DOM2_EVENTS, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
@@ -35,7 +35,7 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                         if (typeof name === "number") return e[0] ? e[0][name] : void 0;
                         if (typeof name !== "string") return name;
 
-                        if (!DOM2_EVENTS) {
+                        if (JSCRIPT_VERSION < 9) {
                             switch (name) {
                             case "which":
                                 return e.keyCode;
@@ -71,17 +71,17 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                 // if props is not specified then prepend extra arguments
                 if (callback.apply(el, args) === false) {
                     // prevent default if handler returns false
-                    if (DOM2_EVENTS) {
-                        e.preventDefault();
-                    } else {
+                    if (JSCRIPT_VERSION < 9) {
                         e.returnValue = false;
+                    } else {
+                        e.preventDefault();
                     }
                 }
             };
 
         if (hook) handler = hook(handler, type) || handler;
         // handle custom events for IE8
-        if (!DOM2_EVENTS && !("on" + (handler._type || type) in node)) {
+        if (JSCRIPT_VERSION < 9 && !("on" + (handler._type || type) in node)) {
             handler._type = CUSTOM_EVENT_TYPE;
         }
 

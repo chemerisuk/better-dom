@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM2_EVENTS } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
@@ -15,7 +15,7 @@ var makeMethod = (all) => function(selector) {
         matcher = SelectorMatcher(selector),
         children = node.children;
 
-    if (!DOM2_EVENTS) {
+    if (JSCRIPT_VERSION < 9) {
         // fix IE8 bug with children collection
         children = _.filter.call(children, (node) => node.nodeType === 1);
     }

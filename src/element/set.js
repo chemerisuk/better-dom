@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM2_EVENTS, LEGACY_ANDROID } from "../const";
+import { JSCRIPT_VERSION, LEGACY_ANDROID } from "../const";
 import { $Element, $NullElement } from "../types";
 import PROP from "../util/accessorhooks";
 
@@ -66,7 +66,7 @@ $Element.prototype.set = function(name, value) {
             }
 
             // always trigger reflow manually for IE8 and legacy Android
-            if (!DOM2_EVENTS || LEGACY_ANDROID) node.className = node.className;
+            if (JSCRIPT_VERSION < 9 || LEGACY_ANDROID) node.className = node.className;
         }
     } else if (_.isArray(name)) {
         name.forEach((key) => { this.set(key, value) });

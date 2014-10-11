@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { LEGACY_IE, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
 import importStyles from "./importstyles";
@@ -13,7 +13,7 @@ var extensions = [],
     returnFalse = () => false,
     readyCallback, styles;
 
-if (LEGACY_IE) {
+if (JSCRIPT_VERSION < 10) {
     let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
 
     if (legacyScripts.length < 1) {

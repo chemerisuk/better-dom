@@ -1,5 +1,5 @@
 import { MethodError } from "../errors";
-import { DOM2_EVENTS } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement, DOM } from "../types";
 
 /**
@@ -17,12 +17,12 @@ $Element.prototype.clone = function(deep = true) {
 
     var node = this[0], result;
 
-    if (DOM2_EVENTS) {
-        result = new $Element(node.cloneNode(deep));
-    } else {
+    if (JSCRIPT_VERSION < 9) {
         result = DOM.create(node.outerHTML);
 
         if (!deep) result.set("innerHTML", "");
+    } else {
+        result = new $Element(node.cloneNode(deep));
     }
 
     return result;

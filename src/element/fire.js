@@ -1,5 +1,5 @@
 import { MethodError } from "../errors";
-import { DOM2_EVENTS, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element, $NullElement } from "../types";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
@@ -31,12 +31,7 @@ $Element.prototype.fire = function(type) {
         throw new MethodError("fire", arguments);
     }
 
-    if (DOM2_EVENTS) {
-        e = DOCUMENT.createEvent("HTMLEvents");
-        e[0] = arguments;
-        e.initEvent(eventType, true, true);
-        canContinue = node.dispatchEvent(e);
-    } else {
+    if (JSCRIPT_VERSION < 9) {
         e = DOCUMENT.createEventObject();
         e[0] = arguments;
         // handle custom events for legacy IE
@@ -47,6 +42,11 @@ $Element.prototype.fire = function(type) {
         node.fireEvent("on" + eventType, e);
 
         canContinue = e.returnValue !== false;
+    } else {
+        e = DOCUMENT.createEvent("HTMLEvents");
+        e[0] = arguments;
+        e.initEvent(eventType, true, true);
+        canContinue = node.dispatchEvent(e);
     }
 
     // Call native method. IE<9 dies on focus/blur to hidden element
