@@ -11,8 +11,6 @@ import ExtensionHandler from "../util/extensionhandler";
 var extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
-    ANIMATION_ID = "DOM" + Date.now(),
-    EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
     readyCallback, styles;
 
 if (LEGACY_IE) {
@@ -32,6 +30,7 @@ if (LEGACY_IE) {
         }
     });
 } else {
+    let ANIMATION_ID = "DOM" + Date.now();
     let readyState = DOCUMENT.readyState;
     // IE10 and lower don't handle "interactive" properly... use a weak inference to detect it
     // discovered by ChrisS here: http://bugs.jquery.com/ticket/12282#comment:15
@@ -60,7 +59,7 @@ if (LEGACY_IE) {
         "animation-name": ANIMATION_ID + " !important"
     };
 
-    DOCUMENT.addEventListener(EVENT_TYPE, (e) => {
+    DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
         if (e.animationName === ANIMATION_ID) {
             extensions.forEach(ExtensionHandler.traverse(e.target));
             // this is an internal event - stop it immediately
