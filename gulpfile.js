@@ -54,7 +54,9 @@ gulp.task("compile-legacy", function() {
     ];
 
     return gulp.src(files)
+        .pipe(template({ pkg: pkg }))
         .pipe(concat("better-dom-legacy.js"))
+        .pipe(uglify({ output: {comments: /^!|@preserve|@license|@cc_on/i} }))
         .pipe(gulp.dest(dest));
 });
 
@@ -144,9 +146,7 @@ gulp.task("compress", ["test"], function() {
     var dest = argv.tag ? "dist/" : "build/";
 
     return gulp.src(dest + "better-dom.js")
-        .pipe(uglify("better-dom.min.js", {
-            output: {comments: /^!|@preserve|@license|@cc_on/i}
-        }))
+        .pipe(uglify("better-dom.min.js", {output: {comments: /^!|@preserve|@license|@cc_on/i}}))
         .pipe(gulp.dest(dest));
 });
 

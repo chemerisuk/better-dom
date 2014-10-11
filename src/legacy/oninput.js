@@ -1,5 +1,12 @@
+/**
+* @preserve Input event polyfill/fix for IE8-9
+* @copyright 2013-2014 <%= pkg.author %>
+*/
 (function() {
-    var DOM2_EVENTS = !!document.addEventListener;
+    var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/0;
+
+    if (JSCRIPT_VERSION > 9) return;
+
     var inputEventHandler = function() {
             if (capturedNode && capturedNode.value !== capturedNodeValue) {
                 capturedNodeValue = capturedNode.value;
@@ -19,7 +26,7 @@
         },
         capturedNode, capturedNodeValue;
 
-    if (DOM2_EVENTS) {
+    if (JSCRIPT_VERSION === 9) {
         // IE9 doesn't fire oninput when text is deleted, so use
         // legacy onselectionchange event to detect such cases
         // http://benalpert.com/2013/06/18/a-near-perfect-oninput-shim-for-ie-8-and-9.html
@@ -28,7 +35,7 @@
 
     // input event fix via propertychange
     document.attachEvent("onfocusin", function() {
-        if (capturedNode && !DOM2_EVENTS) {
+        if (capturedNode && JSCRIPT_VERSION < 9) {
             capturedNode.detachEvent("onclick", clickEventHandler);
             capturedNode.detachEvent("onchange", changeEventHandler);
             capturedNode.detachEvent("onpropertychange", inputEventHandler);
@@ -37,18 +44,18 @@
         capturedNode = window.event.srcElement;
         capturedNodeValue = capturedNode.value;
 
-        if (DOM2_EVENTS) return;
+        if (JSCRIPT_VERSION < 9) {
+            var type = capturedNode.type;
 
-        var type = capturedNode.type;
+            if (type === "checkbox" || type === "radio") {
+                capturedNode.attachEvent("onclick", clickEventHandler);
+                capturedNodeValue = capturedNode.checked;
+            } else if (capturedNode.nodeType === 1) {
+                capturedNode.attachEvent("onchange", changeEventHandler);
 
-        if (type === "checkbox" || type === "radio") {
-            capturedNode.attachEvent("onclick", clickEventHandler);
-            capturedNodeValue = capturedNode.checked;
-        } else if (capturedNode.nodeType === 1) {
-            capturedNode.attachEvent("onchange", changeEventHandler);
-
-            if (type === "text" || type === "password" || type === "textarea") {
-                capturedNode.attachEvent("onpropertychange", inputEventHandler);
+                if (type === "text" || type === "password" || type === "textarea") {
+                    capturedNode.attachEvent("onpropertychange", inputEventHandler);
+                }
             }
         }
     });

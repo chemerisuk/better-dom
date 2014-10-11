@@ -17,9 +17,6 @@
   ],
   "devDependencies": {
     "jquery": "latest",
-    "jasmine": "~2.0.0"
-  },
-  "dependencies": {
     "html5shiv": "latest",
     "es5-shim": "latest"
   }

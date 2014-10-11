@@ -1,4 +1,12 @@
-if (!document.addEventListener) {
+/**
+* @preserve Form events bubbling fix for IE8
+* @copyright 2013-2014 <%= pkg.author %>
+*/
+(function() {
+    var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/0;
+
+    if (JSCRIPT_VERSION > 8) return;
+
     document.attachEvent("onkeydown", function() {
         var e = window.event,
             target = e.srcElement,
@@ -22,4 +30,4 @@ if (!document.addEventListener) {
             return DOM.constructor(form).fire(type);
         }
     });
-}
+}());
