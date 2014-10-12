@@ -2,7 +2,6 @@ import _ from "../util/index";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import { $Element, DOM } from "../types";
-import importStyles from "./importstyles";
 import ExtensionHandler from "../util/extensionhandler";
 
 // Inspired by trick discovered by Daniel Buchner:
@@ -11,43 +10,7 @@ import ExtensionHandler from "../util/extensionhandler";
 var extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
-    styles;
-
-/* istanbul ignore if */
-if (JSCRIPT_VERSION < 10) {
-    let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
-
-    if (legacyScripts.length < 1) {
-        throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
-    }
-
-    styles = {behavior: "url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important"};
-
-    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
-        var e = WINDOW.event;
-
-        if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach(ExtensionHandler.traverse(e.srcElement));
-        }
-    });
-} else {
-    let ANIMATION_ID = "DOM" + Date.now();
-
-    importStyles("@" + WEBKIT_PREFIX + "keyframes " + ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
-
-    styles = {
-        "animation-duration": "1ms !important",
-        "animation-name": ANIMATION_ID + " !important"
-    };
-
-    DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
-        if (e.animationName === ANIMATION_ID) {
-            extensions.forEach(ExtensionHandler.traverse(e.target));
-            // this is an internal event - stop it immediately
-            e.stopImmediatePropagation();
-        }
-    }, true);
-}
+    cssText;
 
 /**
  * Declare a live extension
@@ -90,8 +53,47 @@ DOM.extend = function(selector, condition, mixins) {
         // Also fixes legacy IEs when the HTC behavior is already attached
         _.each.call(DOCUMENT.querySelectorAll(selector), ext);
         // MUST be after querySelectorAll because of legacy IEs quirks
-        DOM.importStyles(selector, styles);
+        DOM.importStyles(selector, cssText);
     }
 };
+
+/* istanbul ignore if */
+if (JSCRIPT_VERSION < 10) {
+    let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
+
+    if (legacyScripts.length < 1) {
+        throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
+    }
+
+    cssText = "-ms-behavior:url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important";
+
+    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
+        var e = WINDOW.event;
+
+        if (e.srcUrn === CUSTOM_EVENT_TYPE) {
+            extensions.forEach(ExtensionHandler.traverse(e.srcElement));
+        }
+    });
+} else {
+    let ANIMATION_ID = "DOM<%= VERSION_NUMBER %>";
+    let _extend = DOM.extend;
+
+    DOM.extend = () => {
+        // declare the fake animation on the first DOM.extend method call
+        DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + ANIMATION_ID, "from {opacity:.99} to {opacity:1}");
+        // restore original method and invoke it
+        (DOM.extend = _extend).apply(DOM, arguments);
+    };
+
+    cssText = WEBKIT_PREFIX + "animation:" + ANIMATION_ID + " 1ms !important";
+
+    DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
+        if (e.animationName === ANIMATION_ID) {
+            extensions.forEach(ExtensionHandler.traverse(e.target));
+            // this is an internal event - stop it immediately
+            e.stopImmediatePropagation();
+        }
+    }, true);
+}
 
 export default extensions;

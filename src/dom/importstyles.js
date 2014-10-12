@@ -61,5 +61,3 @@ DOM.importStyles = function(selector, cssText) {
         throw new StaticMethodError("importStyles", arguments);
     }
 };
-
-export default DOM.importStyles;
