@@ -46,7 +46,7 @@ $Element.prototype = {
 
         return node ? node.tagName.toLowerCase() : "";
     },
-    VERSION: "<%= pkg.version %>"
+    version: "<%= pkg.version %>"
 };
 
 $NullElement.prototype = new $Element();

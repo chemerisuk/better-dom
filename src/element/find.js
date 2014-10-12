@@ -8,7 +8,6 @@ import { $Element, $NullElement, DOM } from "../types";
 
 var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rescape = /'|\\/g,
-    tmpId = "DOM" + Date.now(),
     makeMethod = (all) => function(selector) {
         if (typeof selector !== "string") throw new MethodError("find" + all, arguments);
 
@@ -28,7 +27,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
             if (result && !all) result = result[0];
         } else {
             old = true;
-            nid = tmpId;
+            nid = "DOM<%= VERSION_NUMBER %>";
             context = node;
 
             if (this !== DOM) {
