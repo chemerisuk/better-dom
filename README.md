@@ -8,17 +8,16 @@ This library is about __ideas__. After some time of using jQuery I found that it
 
 ## Features
 * lightweight: ~5 kB gzipped
-* clear, minimalistic and standards-based (where possible) APIs
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
+* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
 * [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
-* [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
 
-    $ bower install better-dom --save
+    $ bower install better-dom
 
 This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include the script below on your web page:
 
@@ -42,13 +41,6 @@ The project uses set of ES6 transpilers to compile a file that works in current 
     $ npm start
 
 Of course any pull request should pass all tests. Code style guide is not formalized yet, but I'll look at it manully.
-
-## Performance
-* [DOM.create vs jquery](http://jsperf.com/dom-create-vs-jquery/26)
-* [DOM.find[All] vs jQuery.find](http://jsperf.com/dom-find-all-vs-jquery-find/10)
-* [DOM getter/setter vs jQuery.attr/prop](http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/5)
-* [better-dom vs jquery: classes manipulation](http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6)
-* [better-dom vs jquery: array methods](http://jsperf.com/better-dom-vs-jquery-array-methods/4)
 
 ## Notes about old IEs
 For IE8-9 support you have to incude an extra file via the conditional comment below into `<head>` on your page:

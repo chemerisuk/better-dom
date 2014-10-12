@@ -32,7 +32,6 @@ gulp.task("lint", function() {
 
 gulp.task("compile", ["lint"], function() {
     var version = argv.tag;
-    var jsdoc = !version;
     var dest = version ? "dist/" : "build/";
 
     if (version) {
@@ -47,7 +46,7 @@ gulp.task("compile", ["lint"], function() {
     });
 
     return gulp.src(["*.js", "dom/*.js", "element/*.js", "util/*.js"], {buffer: false, cwd: "./src"})
-        .pipe(compile("better-dom.js", {jsdoc: jsdoc}))
+        .pipe(compile("better-dom.js", {compress: dest === "dist/"}))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())
         .pipe(gulp.dest(dest));
