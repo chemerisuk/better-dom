@@ -1,7 +1,7 @@
 import _ from "../util/index";
+import { DOM } from "../types";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
-import { $Element, DOM } from "../types";
 import ExtensionHandler from "../util/extensionhandler";
 
 // Inspired by trick discovered by Daniel Buchner:

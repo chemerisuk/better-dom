@@ -19,7 +19,14 @@ describe("DOM.importStyles", function() {
         expect(link.css("display")).not.toBe("none");
         DOM.importStyles("#importStyles2", {"display": "none", "some-prop": "test"});
         expect(link.css("display")).toBe("none");
-        expect(link.css("some-prop")).toBeUndefined();
+
+        var unknownProp = link.css("some-prop");
+        // different browsers handle unknown properties differently
+        if (unknownProp) {
+            expect(unknownProp).toBe("test");
+        } else {
+            expect(unknownProp).toBeUndefined();
+        }
     });
 
     it("should handle vendor prefixed properties", function() {

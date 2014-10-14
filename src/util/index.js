@@ -18,13 +18,6 @@ export default {
     slice: arrayProto.slice,
     isArray: Array.isArray,
     keys: Object.keys,
-    assign: (target, source) => {
-        Object.keys(source).forEach((key) => {
-            target[key] = source[key];
-        });
-
-        return target;
-    },
     safeInvoke: (context, fn, arg1, arg2) => {
         if (typeof fn === "string") fn = context[fn];
 
