@@ -17,8 +17,9 @@ describe("DOM.importStyles", function() {
         var link = DOM.find("#importStyles2");
 
         expect(link.css("display")).not.toBe("none");
-        DOM.importStyles("#importStyles2", {"display": "none"});
+        DOM.importStyles("#importStyles2", {"display": "none", "some-prop": "test"});
         expect(link.css("display")).toBe("none");
+        expect(link.css("some-prop")).toBeUndefined();
     });
 
     it("should handle vendor prefixed properties", function() {

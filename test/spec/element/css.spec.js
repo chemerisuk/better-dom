@@ -126,6 +126,12 @@ describe("css", function() {
             expect(link.css("float", undefined).css("float")).toBe("none");
         });
 
+        it("read/writes non-existent properties", function() {
+            expect(link.css("some-prop")).toBeUndefined();
+            expect(link.css("some-prop", "test")).toBe(link);
+            expect(link.css("some-prop")).toBe("test");
+        });
+
         it("should throw error if arguments are invalid", function() {
             expect(function() { link.css(1); }).toThrow();
             expect(function() { link.css("color", "red", "yellow"); }).toThrow();

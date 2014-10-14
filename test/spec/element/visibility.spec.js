@@ -52,6 +52,12 @@ describe("visibility", function() {
             });
         });
 
+        it("by default updates display property", function() {
+            expect(link.css("display")).not.toBe("none");
+            link.hide();
+            expect(link.css("display")).toBe("none");
+        });
+
         // it("should work for several transitions", function(done) {
         //     var start = Date.now();
 

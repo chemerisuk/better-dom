@@ -115,12 +115,22 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                 // cases when an animation was toggled in the intermediate
                 // state. Don't need to proceed in such situation
                 if (String(hiding) === node.getAttribute("aria-hidden")) {
-                    // remove element from the flow when animation is done
-                    if (hiding && animationName) {
-                        if (animatable) {
+                    if (animatable) {
+                        if (hiding && animationName) {
                             style.visibility = "hidden";
-                        } else {
+                        }
+                    } else {
+                        // no animation was applied
+                        if (hiding) {
+                            if (displayValue !== "none") {
+                                // internally store original display value
+                                this._._display = displayValue;
+                            }
+
                             style.display = "none";
+                        } else {
+                            // restore previously store display value
+                            style.display = this._._display || "inherit";
                         }
                     }
 
@@ -153,20 +163,7 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
             }
         }
 
-        // handle old browsers or cases when there no animation
-        if (hiding) {
-            if (displayValue !== "none" && !animatable) {
-                this._._display = displayValue;
-                // we'll hide element later in the done call
-            }
-        } else {
-            if (displayValue === "none" && !animatable) {
-                // restore display property value
-                style.display = this._._display || "inherit";
-            }
-        }
-
-        // update element visibility value
+        // always update element visibility property
         // for CSS3 animation element should always be visible
         // use value "inherit" to respect parent container visibility
         style.visibility = hiding && !animationName ? "hidden" : "inherit";
