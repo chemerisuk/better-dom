@@ -10,7 +10,7 @@ This library is about __ideas__. After some time of using jQuery I found that it
 * lightweight: ~5 kB gzipped
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
-* [animations via CSS3](http://jsfiddle.net/C3WeM/5/)
+* [animations via CSS3](https://github.com/chemerisuk/better-dom/wiki/CSS-driven-animations)
 * [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 
@@ -43,7 +43,7 @@ The project uses set of ES6 transpilers to compile a file that works in current 
 Of course any pull request should pass all tests. Code style guide is not formalized yet, but I'll look at it manully.
 
 ## Notes about old IEs
-For IE8-9 support you have to incude an extra file via the conditional comment below into `<head>` on your page:
+For IE8-9 support you have to incude an extra file via the conditional comment below __into `<head>`__ on your page:
 
 ```
 <!--[if IE]>
@@ -51,17 +51,22 @@ For IE8-9 support you have to incude an extra file via the conditional comment b
 <![endif]-->
 ```
 
-The **better-dom-legacy.htc** file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. This fact applies several important limitations that you must know in case when legacy browser support is required:
+This file bundles several important addons for IE8-9:
 
-1) HTC behaviors have to serve up with a `content-type` header of `“text/x-component”`, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct `content-type`, but others are not:
+1. [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
+2. [html5shiv](https://github.com/aFarkas/html5shiv) solves issue with HTML5 tags in IE8
+3. polyfill/fix for `oninput` event for IE8-9
+4. `change` event fix for checkboxes and radio buttons in IE8
+5. fix for bubbling of `submit` and `reset` events in IE8
+
+### `better-dom-legacy.htc`
+Later the library downloads `better-dom-legacy.htc` file. This file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. And that fact applies several important limitations which you must be aware of in case when legacy browser support is needed:
+
+1) [HTC behaviors](http://msdn.microsoft.com/en-us/library/ms531079(v=vs.85).aspx) have to serve up with a `content-type` header of `“text/x-component”`, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct `content-type`, but others are not:
 
     AddType text/x-component .htc
 
 2) IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.
-
-[html5shiv](https://github.com/aFarkas/html5shiv) provides a fix for HTML5 tags in IE8.
-
-[es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
 
 ## Browser support
 #### Desktop
