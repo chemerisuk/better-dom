@@ -94,12 +94,12 @@ describe("matches", function() {
             expect(link.matches(":hidden")).toBe(false);
         });
 
-        it("should respect availability in DOM", function() {
-            expect(link.matches(":hidden")).toBe(false);
+        // it("should respect availability in DOM", function() {
+        //     expect(link.matches(":hidden")).toBe(false);
 
-            link.remove();
-            expect(link.matches(":hidden")).toBe(true);
-        });
+        //     link.remove();
+        //     expect(link.matches(":hidden")).toBe(true);
+        // });
 
         it("should support block elements as well", function(done) {
             link.css("display", "block");

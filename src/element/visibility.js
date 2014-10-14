@@ -3,6 +3,7 @@ import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
 import CSS from "../util/stylehooks";
+import HOOK from "../util/selectorhooks";
 
 // Legacy Android is too slow and has a lot of bugs in the CSS animations
 // implementation, so skip any animations for it
@@ -107,8 +108,6 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         var node = this[0],
             style = node.style,
             computed = _.computeStyle(node),
-            visibility = computed.visibility,
-            displayValue = computed.display,
             hiding = condition,
             done = () => {
                 // Check equality of the flag and aria-hidden to recognize
@@ -122,6 +121,8 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                     } else {
                         // no animation was applied
                         if (hiding) {
+                            let displayValue = computed.display;
+
                             if (displayValue !== "none") {
                                 // internally store original display value
                                 this._._display = displayValue;
@@ -137,25 +138,17 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                     if (callback) callback.call(this);
                 }
             },
-            animatable;
+            // Determine of we need animation by checking if an
+            // element has non-zero offsetWidth. It also fixes
+            // animation of an element inserted into the DOM in Webkit
+            // browsers pluse Opera 12 issue with CSS3 animations
+            animatable = ANIMATIONS_ENABLED && node.offsetWidth;
 
         if (typeof hiding !== "boolean") {
-            hiding = displayValue !== "none" && visibility !== "hidden" &&
-                node.getAttribute("aria-hidden") !== "true";
+            hiding = !HOOK[":hidden"](node);
         }
 
-        if (ANIMATIONS_ENABLED) {
-            // Use offsetWidth to trigger reflow of the element.
-            // Fixes animation of an element inserted into the DOM
-            //
-            // Opera 12 has an issue with animations as well,
-            // so need to trigger reflow manually for it
-            //
-            // Thanks for the idea from Jonathan Snook's plugin:
-            // https://github.com/snookca/prepareTransition
-
-            if (!hiding) visibility = node.offsetWidth;
-
+        if (animatable) {
             if (animationName) {
                 animatable = scheduleAnimation(node, style, computed, animationName, hiding, done);
             } else {

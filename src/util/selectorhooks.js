@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { HTML, DOCUMENT } from "../const";
+import { DOCUMENT } from "../const";
 
 var hooks = {};
 
@@ -10,8 +10,7 @@ hooks[":hidden"] = (node) => {
 
     var computed = _.computeStyle(node);
 
-    return computed.visibility === "hidden" ||
-        computed.display === "none" || !HTML.contains(node);
+    return computed.visibility === "hidden" || computed.display === "none";
 };
 
 hooks[":visible"] = (node) => !hooks[":hidden"](node);
