@@ -18,6 +18,7 @@ var git = require("gulp-git");
 var filter = require("gulp-filter");
 var tag_version = require("gulp-tag-version");
 var concat = require("gulp-concat");
+var plumber = require("gulp-plumber");
 
 var karma = require("karma").server;
 var karmaConfig = require.resolve("./conf/karma.conf");
@@ -46,6 +47,7 @@ gulp.task("compile", ["lint"], function() {
     });
 
     return gulp.src(["*.js", "dom/*.js", "element/*.js", "util/*.js"], {buffer: false, cwd: "./src"})
+        .pipe(plumber())
         .pipe(compile("better-dom.js", {compress: dest === "dist/"}))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())

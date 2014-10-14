@@ -24,6 +24,7 @@
     "gulp-if": "^1.2.5",
     "gulp-jsdoc": "^0.1.4",
     "gulp-jshint": "^1.8.5",
+    "gulp-plumber": "^0.6.6",
     "gulp-replace": "^0.4.0",
     "gulp-symlink": "^1.1.0",
     "gulp-tag-version": "^1.1.0",

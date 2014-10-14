@@ -1,7 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION } from "../const";
-import { $Element, $NullElement } from "../types";
 import EventHandler from "../util/eventhandler";
 
 var makeMethod = (method) => function(type, selector, args, callback) {
@@ -51,57 +50,50 @@ var makeMethod = (method) => function(type, selector, args, callback) {
         }
 
         return this;
-    },
-    methods = {
-        /**
-         * Bind a DOM event
-         * @memberof! $Element#
-         * @alias $Element#on
-         * @param  {String|Array}  type        event type(s) with optional selector
-         * @param  {String}        [selector]  event selector filter
-         * @param  {Array}         [args]      array of handler arguments to pass into the callback
-         * @param  {Function}      callback    event callback or property name (for late binding)
-         * @return {$Element}
-         * @function
-         * @example
-         * link.on("focus", function() {
-         *     // do something on focus
-         * });
-         *
-         * link.on("click", "i", function() {
-         *     // do something on internal <i> click
-         * });
-         *
-         * link.on("click", "span", ["currentTarget"], function(span) {
-         *     // <span> is the element was clicked
-         * });
-         *
-         * link.on(["focus", "blur"], function() {
-         *     // you can pass several event types
-         * });
-         */
-        on: makeMethod("on"),
-
-        /**
-         * Bind a DOM event but fire once before being removed. Same as
-         * {@link $Element#on}, but removes the handler after a first event
-         * @memberof! $Element#
-         * @alias $Element#once
-         * @param  {String|Array}  type        event type(s) with optional selector
-         * @param  {String}        [selector]  event selector filter
-         * @param  {Array}         [args]      array of handler arguments to pass into the callback
-         * @param  {Function}      callback    event callback or property name (for late binding)
-         * @return {$Element}
-         * @function
-         * @see $Element#on
-         */
-        once: makeMethod("once")
     };
 
-_.assign($Element.prototype, methods);
+_.register({
+    /**
+     * Bind a DOM event
+     * @memberof! $Element#
+     * @alias $Element#on
+     * @param  {String|Array}  type        event type(s) with optional selector
+     * @param  {String}        [selector]  event selector filter
+     * @param  {Array}         [args]      array of handler arguments to pass into the callback
+     * @param  {Function}      callback    event callback or property name (for late binding)
+     * @return {$Element}
+     * @function
+     * @example
+     * link.on("focus", function() {
+     *     // do something on focus
+     * });
+     *
+     * link.on("click", "i", function() {
+     *     // do something on internal <i> click
+     * });
+     *
+     * link.on("click", "span", ["currentTarget"], function(span) {
+     *     // <span> is the element was clicked
+     * });
+     *
+     * link.on(["focus", "blur"], function() {
+     *     // you can pass several event types
+     * });
+     */
+    on: makeMethod("on"),
 
-_.keys(methods).forEach((methodName) => {
-    $NullElement.prototype[methodName] = function() {
-        return this;
-    };
+    /**
+     * Bind a DOM event but fire once before being removed. Same as
+     * {@link $Element#on}, but removes the handler after a first event
+     * @memberof! $Element#
+     * @alias $Element#once
+     * @param  {String|Array}  type        event type(s) with optional selector
+     * @param  {String}        [selector]  event selector filter
+     * @param  {Array}         [args]      array of handler arguments to pass into the callback
+     * @param  {Function}      callback    event callback or property name (for late binding)
+     * @return {$Element}
+     * @function
+     * @see $Element#on
+     */
+    once: makeMethod("once")
 });

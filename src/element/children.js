@@ -31,7 +31,7 @@ var makeMethod = (all) => function(selector) {
     }
 };
 
-_.assign($Element.prototype, {
+_.register({
     /**
      * Return child element by index filtered by optional selector
      * @memberof! $Element#
@@ -58,13 +58,6 @@ _.assign($Element.prototype, {
      * ul.children(".foo"); // => array with of child <li> with class "foo"
      */
     children: makeMethod(true)
-});
-
-_.assign($NullElement.prototype, {
-    child: function() {
-        return new $NullElement();
-    },
-    children: function() {
-        return [];
-    }
+}, (methodName) => {
+    return methodName === "child" ? () => new $NullElement() : () => [];
 });

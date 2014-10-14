@@ -52,7 +52,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
         return all ? _.map.call(result, $Element) : $Element(result);
     };
 
-_.assign($Element.prototype, {
+_.register({
     /**
      * Find the first matched element by css selector
      * @memberof! $Element#
@@ -79,13 +79,6 @@ _.assign($Element.prototype, {
      * context.findAll("ol>li"); // => all <li> inside of <ol>
      */
     findAll: makeMethod("All")
-});
-
-_.assign($NullElement.prototype, {
-    find: function() {
-        return new $NullElement();
-    },
-    findAll: function() {
-        return [];
-    }
+}, (methodName) => {
+    return methodName === "find" ? () => new $NullElement() : () => [];
 });

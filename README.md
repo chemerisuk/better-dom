@@ -55,14 +55,13 @@ This file bundles several important addons for IE8-9:
 
 1. [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
 2. [html5shiv](https://github.com/aFarkas/html5shiv) solves issue with HTML5 tags in IE8
-3. polyfill/fix for `oninput` event for IE8-9
-4. `change` event fix for checkboxes and radio buttons in IE8
-5. fix for bubbling of `submit` and `reset` events in IE8
+3. polyfill/fix for the [`input` event](https://developer.mozilla.org/en-US/docs/Web/Events/input) in IE8-9
+4. [`change` event](https://developer.mozilla.org/en-US/docs/Web/Events/change) fix for checkboxes and radio buttons in IE8
+5. fix for bubbling of the `submit` and `reset` events in IE8
 
-### `better-dom-legacy.htc`
-Later the library downloads `better-dom-legacy.htc` file. This file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. And that fact applies several important limitations which you must be aware of in case when legacy browser support is needed:
+Later the library downloads `better-dom-legacy.htc` file. This file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. And that fact applies several important limitations which you should be aware of in case when legacy browser support is needed:
 
-1) [HTC behaviors](http://msdn.microsoft.com/en-us/library/ms531079(v=vs.85).aspx) have to serve up with a `content-type` header of `“text/x-component”`, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct `content-type`, but others are not:
+1) [HTC behaviors](http://msdn.microsoft.com/en-us/library/ms531079(v=vs.85).aspx) have to serve up with a `content-type` header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct `content-type`, but others are not:
 
     AddType text/x-component .htc
 
