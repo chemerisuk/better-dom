@@ -66,7 +66,7 @@ if (JSCRIPT_VERSION < 10) {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach(ExtensionHandler.traverse(e.srcElement));
+            extensions.forEach((ext) => { ext(e.srcElement) });
         }
     });
 } else {
@@ -86,7 +86,7 @@ if (JSCRIPT_VERSION < 10) {
     // use capturing to suppress internal animationstart events
     DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
         if (e.animationName === ANIMATION_NAME) {
-            extensions.forEach(ExtensionHandler.traverse(e.target));
+            extensions.forEach((ext) => { ext(e.target) });
             // this is an internal event - stop it immediately
             e.stopImmediatePropagation();
         }

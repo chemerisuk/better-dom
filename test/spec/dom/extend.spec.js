@@ -201,24 +201,24 @@ describe("extend", function() {
         });
     });
 
-    it("should catch nested elements", function(done) {
+    it("handles nested elements", function(done) {
         var spy = jasmine.createSpy("ctr");
 
         DOM.extend("." + randomClass, {constructor: spy, test: function() {}});
 
         spy.and.callFake(function() {
-            var child = this.find("." + randomClass);
+            if (spy.calls.count() === 1) {
+                // expect(this).toHaveProp("id", "two");
+                expect(this.test).toBeDefined();
+            } else {
+                // expect(this).toHaveProp("id", "one");
+                expect(this.test).toBeDefined();
 
-            if (child[0]) {
-                expect(this.test).not.toBeUndefined();
+                done();
             }
-
-            expect(this.test).not.toBeUndefined();
-
-            if (spy.calls.count() === 2) done();
         });
 
-        jasmine.sandbox.set("<div class='" + randomClass + "'><div class='" + randomClass + "'></div></div>");
+        jasmine.sandbox.set("<div class='" + randomClass + "' id=two><div class='" + randomClass + "' id=one></div></div>");
     });
 
     it("should not apply extension if condition returns false", function(done) {
