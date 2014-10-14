@@ -1,10 +1,10 @@
-import _ from "../util/index";
+import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 
-_.register({
+DOM.register({
     /**
      * Triggers an event of specific type with optional extra arguments
      * @memberof! $Element#

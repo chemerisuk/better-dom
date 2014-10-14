@@ -1,8 +1,8 @@
-import _ from "../util/index";
+import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION } from "../const";
 
-_.register({
+DOM.register({
     /**
      * Unbind an event from the element
      * @memberOf module:events

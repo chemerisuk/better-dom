@@ -58,4 +58,15 @@ $NullElement.prototype = new $Element();
  */
 var DOM = new $Element(HTML);
 
+DOM.register = (mixins, defaultBehavior) => {
+    defaultBehavior = defaultBehavior || function() {};
+
+    Object.keys(mixins).forEach((key) => {
+        var defaults = defaultBehavior(key) || function() { return this };
+
+        $Element.prototype[key] = mixins[key];
+        $NullElement.prototype[key] = defaults;
+    });
+};
+
 export { $Element, $NullElement, DOM };

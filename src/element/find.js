@@ -52,7 +52,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
         return all ? _.map.call(result, $Element) : $Element(result);
     };
 
-_.register({
+DOM.register({
     /**
      * Find the first matched element by css selector
      * @memberof! $Element#

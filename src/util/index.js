@@ -1,5 +1,4 @@
 import { WINDOW, DOCUMENT } from "../const";
-import { $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype,
     head = DOCUMENT.getElementsByTagName("head")[0];
@@ -25,16 +24,6 @@ export default {
         });
 
         return target;
-    },
-    register: (mixins, defaultBehavior) => {
-        defaultBehavior = defaultBehavior || function() {};
-
-        Object.keys(mixins).forEach((key) => {
-            var defaults = defaultBehavior(key) || function() { return this };
-
-            $Element.prototype[key] = mixins[key];
-            $NullElement.prototype[key] = defaults;
-        });
     },
     safeInvoke: (context, fn, arg1, arg2) => {
         if (typeof fn === "string") fn = context[fn];

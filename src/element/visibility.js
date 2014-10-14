@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
 import CSS from "../util/stylehooks";
@@ -177,7 +178,7 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         return this;
     };
 
-_.register({
+DOM.register({
     /**
      * Show an element using CSS3 transition or animation
      * @memberof! $Element#
