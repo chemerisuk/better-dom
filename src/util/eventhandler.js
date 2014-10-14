@@ -51,6 +51,10 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                                 return e.clientX + HTML.scrollLeft - HTML.clientLeft;
                             case "pageY":
                                 return e.clientY + HTML.scrollTop - HTML.clientTop;
+                            case "preventDefault":
+                                return () => e.returnValue = false;
+                            case "stopPropagation":
+                                return () => e.cancelBubble = true;
                             }
                         }
 
@@ -68,7 +72,13 @@ var EventHandler = (type, selector, callback, props, el, once) => {
                             return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
                         }
 
-                        return e[name];
+                        var value = e[name];
+
+                        if (typeof value === "function") {
+                            return () => value.apply(e, arguments);
+                        }
+
+                        return value;
                     });
                 }
 

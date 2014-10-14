@@ -120,6 +120,33 @@ describe("on", function() {
 
             expect(spy).toHaveBeenCalledWith(obj, 123, input, fn);
         });
+
+        it("may return preventDefault functor", function() {
+            spy.and.callFake(function(cancel) {
+                expect(typeof cancel).toBe("function");
+
+                cancel();
+            });
+
+            link.on("click", ["preventDefault"], spy).fire("click");
+            expect(spy).toHaveBeenCalled();
+            expect(location.hash).not.toBe("#test");
+        });
+
+        it("may return stopPropagation functor", function() {
+            var parentSpy = jasmine.createSpy("parent");
+
+            spy.and.callFake(function(stop) {
+                expect(typeof stop).toBe("function");
+
+                stop();
+            });
+
+            link.closest().on("click", parentSpy);
+            link.on("click", ["stopPropagation"], spy).fire("click");
+            expect(spy).toHaveBeenCalled();
+            expect(parentSpy).not.toHaveBeenCalled();
+        });
     });
 
     it("pass event arguments by default", function() {
