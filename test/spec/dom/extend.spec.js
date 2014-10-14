@@ -142,12 +142,6 @@ describe("extend", function() {
         DOM.extend("." + randomClass, {constructor: callback});
     });
 
-    it("should allow extending the element prototype", function() {
-        DOM.extend("*", { test: 555 });
-
-        expect(DOM.create("a").test).toBe(555);
-    });
-
     describe("private functions", function() {
         it("exist only in constructor", function(done) {
             var spy = jasmine.createSpy("callback2");

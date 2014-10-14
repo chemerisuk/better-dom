@@ -41,20 +41,15 @@ DOM.extend = function(selector, condition, mixins) {
 
     if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
-    if (selector === "*") {
-        // extending element prototype
-        _.assign($Element.prototype, mixins);
-    } else {
-        var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
+    var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
 
-        extensions.push(ext);
-        // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.extend.
-        // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(DOCUMENT.querySelectorAll(selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs quirks
-        DOM.importStyles(selector, cssText);
-    }
+    extensions.push(ext);
+    // initialize extension manually to make sure that all elements
+    // have appropriate methods before they are used in other DOM.extend.
+    // Also fixes legacy IEs when the HTC behavior is already attached
+    _.each.call(DOCUMENT.querySelectorAll(selector), ext);
+    // MUST be after querySelectorAll because of legacy IEs quirks
+    DOM.importStyles(selector, cssText);
 };
 
 /* istanbul ignore if */

@@ -11,9 +11,9 @@ describe("Node", function() {
             spans = DOM.createAll("i+b"),
             empty = DOM.mock();
 
-        expect(link.toString()).toBe("a");
-        expect(input.toString()).toBe("input");
-        expect(spans.toString()).toBe("i,b");
+        expect(link.toString()).toBe("<a>");
+        expect(input.toString()).toBe("<input>");
+        expect(spans.toString()).toBe("<i>,<b>");
         expect(empty.toString()).toBe("");
     });
 });
