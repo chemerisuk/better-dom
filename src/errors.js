@@ -4,11 +4,11 @@ import _ from "./util/index";
 
 function MethodError(methodName, args, type = "$Element") {
     var url = "<%= pkg.docs %>/" + type + ".html#" + methodName,
-        line = type + (type === "DOM" ? "." : "#") + methodName + "(";
+        line = "invalid call `" + type + (type === "DOM" ? "." : "#") + methodName + "(";
 
-    line += _.map.call(args, (arg) => JSON.stringify(arg)).join(", ") + ");";
+    line += _.map.call(args, (arg) => String(arg)).join(", ") + ")`;";
 
-    this.message = line + " Check " + url + " to verify the function call";
+    this.message = line + " check " + url + " to verify the function arguments";
 }
 
 MethodError.prototype = new TypeError();
