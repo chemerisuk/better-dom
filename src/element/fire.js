@@ -1,3 +1,4 @@
+import _ from "../util/index";
 import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
@@ -18,14 +19,13 @@ DOM.register({
      */
     fire(type) {
         var node = this[0],
-            eventType = typeof type,
-            handler = {},
-            hook, e, canContinue;
+            e, eventType, canContinue;
 
-        if (eventType === "string") {
-            if (hook = HOOK[type]) {
-                handler = hook(handler) || handler;
-            }
+        if (typeof type === "string") {
+            let hook = HOOK[type],
+                handler = {};
+
+            if (hook) handler = hook(handler) || handler;
 
             eventType = handler._type || type;
         } else {
@@ -50,12 +50,12 @@ DOM.register({
             canContinue = node.dispatchEvent(e);
         }
 
-        // Call native method. IE<9 dies on focus/blur to hidden element
-        if (canContinue && node[type] && (type !== "focus" && type !== "blur" || node.offsetWidth)) {
-            // Prevent re-triggering of the same event
+        // call native function to trigger default behavior
+        if (canContinue && node[type]) {
+            // prevent re-triggering of the current event
             EventHandler.skip = type;
 
-            node[type]();
+            _.safeInvoke(node, type);
 
             EventHandler.skip = null;
         }
