@@ -78,8 +78,6 @@
             
                 <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
             
-                <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
-            
             </ul>
             <ul class="events itemMembers">
             
@@ -121,6 +119,10 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
+                <li data-name="$Element#defineAttribute"><a href="$Element.html#defineAttribute">defineAttribute</a></li>
+            
+                <li data-name="$Element#defineProperty"><a href="$Element.html#defineProperty">defineProperty</a></li>
+            
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
                 <li data-name="$Element#findAll"><a href="$Element.html#findAll">findAll</a></li>
@@ -138,6 +140,8 @@
                 <li data-name="$Element#next"><a href="$Element.html#next">next</a></li>
             
                 <li data-name="$Element#nextAll"><a href="$Element.html#nextAll">nextAll</a></li>
+            
+                <li data-name="$Element#off"><a href="$Element.html#off">off</a></li>
             
                 <li data-name="$Element#offset"><a href="$Element.html#offset">offset</a></li>
             
@@ -201,23 +205,21 @@
 
     <section>
         <article class="readme"><h1 id="-better-dom-https-github-com-chemerisuk-better-dom-live-extension-playground-br-build-status-travis-image-travis-url-coverage-status-coveralls-image-coveralls-url-bower-version-fury-image-fury-url-"><a href="https://github.com/chemerisuk/better-dom">better-dom</a>: Live extension playground<br><a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a> <a href="http://badge.fury.io/bo/better-dom"><img src="https://badge.fury.io/bo/better-dom.svg" alt="Bower version"></a></h1>
-<p><em><strong>NOTE:</strong> documentation is currently updating to reflect changes in version 2. If you need the 1st version please use <a href="https://github.com/chemerisuk/better-dom/tree/v1.7.7">v1.7.7 tag</a>.</em></p>
-<p>This library is about <strong>ideas</strong>. After some time of using jQuery I found that it&#39;s just too big, has lack of <a href="#features">features</a> I need and some desicions of the API design is debatable. In particular <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> was one of the main ideas that encoraged me to build a new library from scratch.</p>
+<p>This library is about <strong>ideas</strong>. After some time of using jQuery I found that it&#39;s just too big, has lack of <a href="#features">features</a> I need and some desicions of the API design is debatable. In particular <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> was one of the main ideas that encouraged me to build a new library from scratch.</p>
 <p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
 <p><a href="https://saucelabs.com/u/chemerisuk"><img src="https://saucelabs.com/browser-matrix/chemerisuk.svg" alt="Sauce Test Status"></a></p>
 <h2 id="features">Features</h2>
 <ul>
-<li>lightweight: ~22 kB minified and ~5 kB gzipped version</li>
-<li>clear, minimalistic and standards-based (where possible) APIs</li>
+<li>lightweight: ~5 kB gzipped</li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></li>
-<li><a href="http://jsfiddle.net/C3WeM/5/">animations via CSS3</a></li>
+<li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
+<li><a href="https://github.com/chemerisuk/better-dom/wiki/CSS-driven-animations">animations via CSS3</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">microtemplating using the Emmet syntax</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Event-handling">improved event handling</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
 </ul>
 <h2 id="installation">Installation</h2>
 <p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
-<pre><code>bower install better-dom
+<pre><code>$ bower install better-dom
 </code></pre><p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include the script below on your web page:</p>
 <pre><code class="lang-html">&lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
 </code></pre>
@@ -230,31 +232,27 @@
 </ul>
 <h2 id="contributing">Contributing</h2>
 <p>In order to modify the source and submit a patch or improvement, you have to have <a href="http://gulpjs.com">gulp</a> installed globally:</p>
-<pre><code>npm install -g gulp
-</code></pre><p>The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are making, recompiles <code>build/better-dom.js</code> and runs unit tests after it: </p>
-<pre><code>npm start
-</code></pre><p>Of course any pull request should pass all tests. Code style guide is not formalized yet, but I&#39;ll look at it manully.</p>
-<h2 id="performance">Performance</h2>
-<ul>
-<li><a href="http://jsperf.com/dom-create-vs-jquery/26">DOM.create vs jquery</a></li>
-<li><a href="http://jsperf.com/dom-find-all-vs-jquery-find/10">DOM.find[All] vs jQuery.find</a></li>
-<li><a href="http://jsperf.com/dom-getter-setter-vs-jquery-attr-prop/5">DOM getter/setter vs jQuery.attr/prop</a></li>
-<li><a href="http://jsperf.com/better-dom-vs-jquery-classes-manipulation/6">better-dom vs jquery: classes manipulation</a></li>
-<li><a href="http://jsperf.com/better-dom-vs-jquery-array-methods/4">better-dom vs jquery: array methods</a></li>
-</ul>
+<pre><code>$ npm install -g gulp
+</code></pre><p>The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are doing, recompiles <code>build/better-dom.js</code> file and runs unit tests after that: </p>
+<pre><code>$ npm start
+</code></pre><p>Of course any pull request should pass all tests.</p>
 <h2 id="notes-about-old-ies">Notes about old IEs</h2>
-<p>For IE8-9 support you have to incude extra files via the conditional comment below into <code>&lt;head&gt;</code> on your page:</p>
+<p>For IE8-9 support you have to incude an extra file via the conditional comment below <strong>into <code>&lt;head&gt;</code></strong> on your page:</p>
 <pre><code>&lt;!--[if IE]&gt;
-    &lt;link href=&quot;bower_components/better-dom/dist/better-dom.htc&quot; rel=&quot;htc&quot;/&gt;
-    &lt;script src=&quot;bower_components/es5-shim/es5-shim.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;bower_components/html5shiv/dist/html5shiv.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;bower_components/better-dom/dist/better-dom-legacy.js&quot;&gt;&lt;/script&gt;
 &lt;![endif]--&gt;
-</code></pre><p>The <strong>better-dom.htc</strong> file helps to implement <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> support. This fact applies several important limitations that you must know in case when legacy browser support is required:</p>
-<p>1) HTC behaviors have to serve up with a <code>content-type</code> header of <code>“text/x-component”</code>, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct <code>content-type</code>, but others are not:</p>
+</code></pre><p>This file bundles several important addons for IE8-9:</p>
+<ol>
+<li><a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill/fix missed standards-based functions for <code>Array</code>, <code>Object</code>, <code>Function</code>, <code>Date</code> classes.</li>
+<li><a href="https://github.com/aFarkas/html5shiv">html5shiv</a> solves issue with HTML5 tags in IE8</li>
+<li>polyfill/fix for the <code>input</code> event in IE8-9</li>
+<li><code>change</code> event fix for checkboxes and radio buttons in IE8</li>
+<li>fix for bubbling of the <code>submit</code> and <code>reset</code> events in IE8</li>
+</ol>
+<p>Later the library downloads <code>better-dom-legacy.htc</code> file. This file helps to implement <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> support. And that fact applies several important limitations which you should be aware of in case when legacy browser support is needed:</p>
+<p>1) <a href="http://msdn.microsoft.com/en-us/library/ms531079(v=vs.85">HTC behaviors</a>.aspx) have to serve up with a <code>content-type</code> header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct <code>content-type</code>, but others are not:</p>
 <pre><code>AddType text/x-component .htc
 </code></pre><p>2) IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.</p>
-<p><a href="https://github.com/aFarkas/html5shiv">html5shiv</a> provides a fix for HTML5 tags in IE8.</p>
-<p><a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill/fix missed standards-based functions for <code>Array</code>, <code>Object</code>, <code>Function</code>, <code>Date</code> classes.</p>
 <h2 id="browser-support">Browser support</h2>
 <h4 id="desktop">Desktop</h4>
 <ul>
@@ -304,7 +302,97 @@
         
     
     <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.0.0-rc.7 Thu, 02 Oct 2014 17:41:09 GMT</li></ul></dd>
+    <dd class="tag-version"><ul class="dummy"><li>2.0.1 Fri, 17 Oct 2014 13:28:51 GMT</li></ul></dd>
+    
+    
+    
+
+    
+    
+    
+    
+    
+    <dt class="tag-copyright">Copyright:</dt>
+    <dd class="tag-copyright"><ul class="dummy"><li>2013-2014 Maksim Chemerisuk</li></ul></dd>
+    
+    
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="https://github.com/chemerisuk/better-dom">https://github.com/chemerisuk/better-dom</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+
+
+<section>
+    
+<header>
+    <h2>
+    better-dom.min.js
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">better-dom: Live extension playground</div>
+        
+        
+        
+<dl class="details">
+    
+        
+    
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>2.0.0-rc.8 Sat, 11 Oct 2014 15:28:25 GMT</li></ul></dd>
     
     
     
@@ -378,7 +466,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Thu Oct 02 2014 20:41:11 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Fri Oct 17 2014 16:28:55 GMT+0300 (FET)
         </footer>
     </div>
 </div>

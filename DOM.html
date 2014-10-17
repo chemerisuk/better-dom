@@ -78,8 +78,6 @@
             
                 <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
             
-                <li data-name="DOM.mockAll"><a href="DOM.html#mockAll">mockAll</a></li>
-            
             </ul>
             <ul class="events itemMembers">
             
@@ -121,6 +119,10 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
+                <li data-name="$Element#defineAttribute"><a href="$Element.html#defineAttribute">defineAttribute</a></li>
+            
+                <li data-name="$Element#defineProperty"><a href="$Element.html#defineProperty">defineProperty</a></li>
+            
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
                 <li data-name="$Element#findAll"><a href="$Element.html#findAll">findAll</a></li>
@@ -138,6 +140,8 @@
                 <li data-name="$Element#next"><a href="$Element.html#next">next</a></li>
             
                 <li data-name="$Element#nextAll"><a href="$Element.html#nextAll">nextAll</a></li>
+            
+                <li data-name="$Element#off"><a href="$Element.html#off">off</a></li>
             
                 <li data-name="$Element#offset"><a href="$Element.html#offset">offset</a></li>
             
@@ -263,7 +267,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line73">line 73</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line59">line 59</a>
         </div>
         
     </div>
@@ -405,7 +409,7 @@ bodyEl.hide();</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line339">line 339</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line391">line 391</a>
         </div>
         
     </div>
@@ -578,7 +582,7 @@ DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line353">line 353</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line405">line 405</a>
         </div>
         
     </div>
@@ -750,7 +754,7 @@ DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements:
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line176">line 176</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line228">line 228</a>
         </div>
         
     </div>
@@ -934,7 +938,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line717">line 717</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line533">line 533</a>
         </div>
         
     </div>
@@ -1154,7 +1158,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line764">line 764</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line621">line 621</a>
         </div>
         
     </div>
@@ -1311,7 +1315,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line785">line 785</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line642">line 642</a>
         </div>
         
     </div>
@@ -1476,7 +1480,7 @@ DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line482">line 482</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line789">line 789</a>
         </div>
         
     </div>
@@ -1610,7 +1614,7 @@ DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre
 
     
     <pre class="prettyprint"><code>DOM.importStyles(".foo", {color: "red", padding: 5});
-// you can use strings CSS too
+// you can use CSS strings too
 DOM.importStyles(".bar", "background: white; color: gray");</code></pre>
     
 
@@ -1628,7 +1632,7 @@ DOM.importStyles(".bar", "background: white; color: gray");</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line839">line 839</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line821">line 821</a>
         </div>
         
     </div>
@@ -1640,8 +1644,8 @@ DOM.importStyles(".bar", "background: white; color: gray");</code></pre>
     
     <div class="description">
         Return <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented
-Accept same arguments as <a href="DOM.html#create"><code>DOM.create</code></a>
+Also exposes private functions that do not usually exist. Accepts the
+same arguments as <a href="DOM.html#create"><code>DOM.create</code></a>
     </div>
     
 
@@ -1789,178 +1793,6 @@ mocked instance
     
 </dd>
 
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="mockAll">
-            
-            <span class="type-signature static">static</span>DOM.mockAll<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line853">line 853</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Return Array of <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
-Also exposes private event handler functions that aren't usually presented
-Accept same arguments as <a href="DOM.html#createAll"><code>DOM.createAll</code></a>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                EmmetString or HTMLString</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>varMap</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-|
-
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                key/value map of variables</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="DOM.html#createAll">DOM.createAll</a></li>
-        </ul>
-    </dd>
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-array of mocked element wrappers
-<br />
-
-    
-    
-    
-</dd>
-
         </dl>
     
     
@@ -1984,7 +1816,7 @@ array of mocked element wrappers
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Thu Oct 02 2014 20:41:11 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Fri Oct 17 2014 16:28:55 GMT+0300 (FET)
         </footer>
     </div>
 </div>
