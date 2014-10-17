@@ -9,7 +9,9 @@ export default {
         return WINDOW.getComputedStyle ? WINDOW.getComputedStyle(node) : node.currentStyle;
     },
     injectElement: (el) => {
-        return head.appendChild(el);
+        if (el && el.nodeType === 1) {
+            return head.appendChild(el);
+        }
     },
     // utilites
     every: arrayProto.every,

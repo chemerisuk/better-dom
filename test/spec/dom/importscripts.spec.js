@@ -1,28 +1,29 @@
 describe("DOM.importScripts", function() {
     "use strict";
 
-    // var head = document.getElementsByTagName("head")[0],
-    //     headSpy;
+    var scripts;
 
-    // beforeEach(function() {
-    //     headSpy = spyOn(head, "appendChild");
-    // });
+    beforeEach(function() {
+        scripts = [];
 
-    // it("should append script element to body", function() {
-    //     var spy = jasmine.createSpy("callback");
+        spyOn(document, "createElement").and.callFake(function() {
+            var script = {};
 
-    //     headSpy.and.callFake(function(el) {
-    //         expect(el.tagName.toLowerCase()).toBe("script");
-    //         expect(el.src).toBe("http://test/url");
-    //         expect(typeof el.onload).toBe("function");
-    //         // trigger fake onload
-    //         el.onload();
-    //     });
+            scripts.push(script);
 
-    //     DOM.importScripts("http://test/url", spy);
-    //     expect(headSpy).toHaveBeenCalled();
-    //     expect(spy).toHaveBeenCalled();
-    // });
+            return script;
+        });
+    });
+
+    it("executes callback when script is loaded", function(done) {
+        DOM.importScripts("foo", done);
+
+        var script = scripts[0];
+
+        expect(script.src).toBe("foo");
+
+        script.onload();
+    });
 
     // it("should append scripts one by one", function() {
     //     var spy = jasmine.createSpy("callback"),
