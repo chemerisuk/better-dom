@@ -6,7 +6,11 @@ var arrayProto = Array.prototype,
 
 export default {
     computeStyle: (node) => {
-        return WINDOW.getComputedStyle ? WINDOW.getComputedStyle(node) : node.currentStyle;
+        if (WINDOW.getComputedStyle) {
+            return WINDOW.getComputedStyle(node);
+        } else {
+            return node.currentStyle;
+        }
     },
     injectElement: (el) => {
         if (el && el.nodeType === 1) {

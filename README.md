@@ -1,6 +1,6 @@
 # [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][fury-image]][fury-url]
 
-This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main ideas that encoraged me to build a new library from scratch.
+This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main ideas that encouraged me to build a new library from scratch.
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
@@ -36,11 +36,11 @@ In order to modify the source and submit a patch or improvement, you have to hav
 
     $ npm install -g gulp
 
-The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are making, recompiles `build/better-dom.js` and runs unit tests after it: 
+The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are doing, recompiles `build/better-dom.js` file and runs unit tests after that: 
 
     $ npm start
 
-Of course any pull request should pass all tests. Code style guide is not formalized yet, but I'll look at it manully.
+Of course any pull request should pass all tests.
 
 ## Notes about old IEs
 For IE8-9 support you have to incude an extra file via the conditional comment below __into `<head>`__ on your page:
@@ -55,8 +55,8 @@ This file bundles several important addons for IE8-9:
 
 1. [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
 2. [html5shiv](https://github.com/aFarkas/html5shiv) solves issue with HTML5 tags in IE8
-3. polyfill/fix for the [`input` event](https://developer.mozilla.org/en-US/docs/Web/Events/input) in IE8-9
-4. [`change` event](https://developer.mozilla.org/en-US/docs/Web/Events/change) fix for checkboxes and radio buttons in IE8
+3. polyfill/fix for the `input` event in IE8-9
+4. `change` event fix for checkboxes and radio buttons in IE8
 5. fix for bubbling of the `submit` and `reset` events in IE8
 
 Later the library downloads `better-dom-legacy.htc` file. This file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. And that fact applies several important limitations which you should be aware of in case when legacy browser support is needed:
