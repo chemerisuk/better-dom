@@ -22,15 +22,14 @@ _.register({
      * });
      */
     defineProperty: function(name, accessors) {
-        var node = this[0];
         var getter = accessors.get;
         var setter = accessors.set;
 
         if (typeof name !== "string" || typeof getter !== "function" || typeof setter !== "function") {
-            throw new MethodError("defineAttribute", arguments);
+            throw new MethodError("defineProperty", arguments);
         }
 
-        Object.defineProperty(node, name, {
+        Object.defineProperty(this[0], name, {
             get: () => getter.call(this),
             set: (value) => { setter.call(this, value) }
         });

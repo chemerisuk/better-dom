@@ -171,6 +171,16 @@ describe("extend", function() {
 
         it("preserve this as the current element", function(done) {
             var spy = jasmine.createSpy("callback2"),
+                onClick = function() {
+                    expect(this).toBe(link);
+                    expect(this.onClick).toBeUndefined();
+
+                    done();
+                },
+                doSmth = function() {
+                    expect(this).toBe(link);
+                    expect(this.doSmth[0]).toBe(doSmth);
+                },
                 link;
 
             spy.and.callFake(function() {
@@ -179,6 +189,8 @@ describe("extend", function() {
                 link = this;
 
                 this.doSmth();
+
+                expect(this.onClick[0]).toBe(onClick);
 
                 setTimeout(function() {
                     i.fire("click");
@@ -189,14 +201,8 @@ describe("extend", function() {
 
             DOM.extend("." + randomClass, {
                 constructor: spy,
-                onClick: function() {
-                    expect(this).toBe(link);
-
-                    done();
-                },
-                doSmth: function() {
-                    expect(this).toBe(link);
-                }
+                onClick: onClick,
+                doSmth: doSmth
             });
         });
     });
