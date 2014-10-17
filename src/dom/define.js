@@ -88,15 +88,10 @@ _.register({
                 } else {
                     _setAttribute.call(node, attrName, attrValue, 1);
                 }
-                /* istanbul ignore next */
-                if (JSCRIPT_VERSION < 9) {
-                    // fix refresh issue in IE8
-                    node.className = node.className;
-                }
             }
         });
 
-        // override methods to catch changes from them too
+        // override methods to catch changes from attributes too
         node.setAttribute = (attrName, attrValue, flags) => {
             if (name === attrName) {
                 node[name] = getter.call(this, attrValue);
