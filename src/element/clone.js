@@ -1,8 +1,9 @@
+import _ from "../util/index";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement, DOM } from "../types";
 
-DOM.register({
+_.register({
     /**
      * Clone element
      * @memberof! $Element#

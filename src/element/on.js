@@ -1,5 +1,4 @@
 import _ from "../util/index";
-import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION } from "../const";
 import EventHandler from "../util/eventhandler";
@@ -53,7 +52,7 @@ var makeMethod = (method) => function(type, selector, args, callback) {
         return this;
     };
 
-DOM.register({
+_.register({
     /**
      * Bind a DOM event
      * @memberof! $Element#

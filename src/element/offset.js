@@ -1,7 +1,7 @@
-import { DOM } from "../types";
+import _ from "../util/index";
 import { HTML, WINDOW } from "../const";
 
-DOM.register({
+_.register({
     /**
      * Calculates offset of the current element
      * @memberof! $Element#

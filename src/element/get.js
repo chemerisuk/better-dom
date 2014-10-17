@@ -1,5 +1,4 @@
 import _ from "../util/index";
-import { DOM } from "../types";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
 
@@ -24,7 +23,7 @@ var reUpper = /[A-Z]/g,
         return value;
     };
 
-DOM.register({
+_.register({
     /**
      * Get property or attribute value by name
      * @memberof! $Element#

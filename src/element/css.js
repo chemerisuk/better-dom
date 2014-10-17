@@ -1,9 +1,8 @@
 import _ from "../util/index";
-import { DOM } from "../types";
 import { MethodError } from "../errors";
 import HOOK from "../util/stylehooks";
 
-DOM.register({
+_.register({
     /**
      * CSS properties accessor for an element
      * @memberof! $Element#

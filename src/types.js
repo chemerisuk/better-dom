@@ -59,25 +59,6 @@ $NullElement.prototype = new $Element();
 var DOM = new $Element(HTML);
 
 /**
- * Register mixins for every {@link $Element} instance
- * @memberof DOM
- * @alias DOM.register
- * @param {Object}           mixins key-value  map of methods
- * @param {registerCallback} [defaultBehavior] implementation for empty nodes
- * @function
- */
-DOM.register = (mixins, defaultBehavior) => {
-    defaultBehavior = defaultBehavior || function() {};
-
-    Object.keys(mixins).forEach((key) => {
-        var defaults = defaultBehavior(key) || function() { return this };
-
-        $Element.prototype[key] = mixins[key];
-        $NullElement.prototype[key] = defaults;
-    });
-};
-
-/**
  * A factory for default implementation for empty nodes
  * @callback registerCallback
  * @param  {String} methodName name of the method to implement

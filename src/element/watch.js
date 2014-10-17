@@ -1,6 +1,6 @@
-import { DOM } from "../types";
+import _ from "../util/index";
 
-DOM.register({
+_.register({
     /**
      * Watch for changes of a particular property/attribute
      * @memberof! $Element#

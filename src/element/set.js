@@ -1,10 +1,9 @@
 import _ from "../util/index";
-import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION, LEGACY_ANDROID } from "../const";
 import PROP from "../util/accessorhooks";
 
-DOM.register({
+_.register({
     /**
      * Set property/attribute value by name
      * @memberof! $Element#

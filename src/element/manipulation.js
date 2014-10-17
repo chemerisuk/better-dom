@@ -40,7 +40,7 @@ var makeMethod = (methodName, fasterMethodName, standalone, strategy) => functio
         return this;
     };
 
-DOM.register({
+_.register({
     /**
      * Insert HTMLString or {@link $Element} after the current element
      * @memberof! $Element#

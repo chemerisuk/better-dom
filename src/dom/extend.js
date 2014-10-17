@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM } from "../types";
+import { DOM, $Element } from "../types";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
@@ -41,15 +41,21 @@ DOM.extend = function(selector, condition, mixins) {
 
     if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
-    var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
+    if (selector === "*") {
+        _.keys(mixins).forEach((methodName) => {
+            $Element.prototype[methodName] = mixins[methodName];
+        });
+    } else {
+        var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
 
-    extensions.push(ext);
-    // initialize extension manually to make sure that all elements
-    // have appropriate methods before they are used in other DOM.extend.
-    // Also fixes legacy IEs when the HTC behavior is already attached
-    _.each.call(DOCUMENT.querySelectorAll(selector), ext);
-    // MUST be after querySelectorAll because of legacy IEs quirks
-    DOM.importStyles(selector, cssText);
+        extensions.push(ext);
+        // initialize extension manually to make sure that all elements
+        // have appropriate methods before they are used in other DOM.extend.
+        // Also fixes legacy IEs when the HTC behavior is already attached
+        _.each.call(DOCUMENT.querySelectorAll(selector), ext);
+        // MUST be after querySelectorAll because of legacy IEs quirks
+        DOM.importStyles(selector, cssText);
+    }
 };
 
 /* istanbul ignore if */
