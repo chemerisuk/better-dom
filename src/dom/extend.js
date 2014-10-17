@@ -49,12 +49,16 @@ DOM.extend = function(selector, condition, mixins) {
         var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
 
         extensions.push(ext);
-        // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.extend.
-        // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(DOCUMENT.querySelectorAll(selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs quirks
-        DOM.importStyles(selector, cssText);
+
+        // live extensions are always async
+        WINDOW.setTimeout(() => {
+            // initialize extension manually to make sure that all elements
+            // have appropriate methods before they are used in other DOM.extend.
+            // Also fixes legacy IEs when the HTC behavior is already attached
+            _.each.call(DOCUMENT.querySelectorAll(selector), ext);
+            // MUST be after querySelectorAll because of legacy IEs quirks
+            DOM.importStyles(selector, cssText);
+        }, 1);
     }
 };
 
