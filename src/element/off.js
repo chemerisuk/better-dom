@@ -5,10 +5,15 @@ import { JSCRIPT_VERSION } from "../const";
 _.register({
     /**
      * Unbind an event from the element
-     * @memberOf module:events
+     * @memberof! $Element#
+     * @alias $Element#off
      * @param  {String}          type type of event
      * @param  {Function|String} [callback] event handler
      * @return {$Element}
+     * @example
+     * link.off("focus", focusHandler);
+     * // removes ALL click handlers
+     * link.off("click");
      */
     off(type, callback) {
         if (typeof type !== "string") throw new MethodError("off", arguments);

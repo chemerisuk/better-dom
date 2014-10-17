@@ -67,23 +67,14 @@ describe("DOM.mock", function() {
         expect(el.c).toBe(9);
     });
 
-    describe("mockAll", function() {
-        it("should return arrays", function() {
-            var links = DOM.mockAll("a");
+    it("should accept Emmet variables", function() {
+        var el;
 
-            expect(Array.isArray(links)).toBeTruthy();
-            expect(links[0]).toHaveTag("a");
-        });
+        DOM.extend(".mock6", function() { return true }, { d: 2 });
+        el = DOM.mock("a.mock6[title={title}]", {title: "c"});
+        expect(el.d).toBe(2);
+        expect(el.get("title")).toBe("c");
     });
-
-    // it("should accept Emmet variables", function() {
-    //     var el;
-
-    //     DOM.extend(".mock6", function() { return true }, { d: 2 });
-    //     el = DOM.mock("a.mock6[title={title}]", {title: "c"});
-    //     expect(el.d).toBe(2);
-    //     expect(el.get("title")).toBe("c");
-    // });
 
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.mock(1); }).toThrow();

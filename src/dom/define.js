@@ -3,6 +3,24 @@ import { MethodError } from "../errors";
 import { JSCRIPT_VERSION } from "../const";
 
 _.register({
+    /**
+     * Define a new property for the current element
+     * @memberof! $Element#
+     * @alias $Element#defineProperty
+     * @param  {String} name      property name
+     * @param  {Object} accessors getter and setter definition
+     * @example
+     * var foo;
+     *
+     * DOM.find("body").defineProperty("foo", {
+     *   get: function() {
+     *     return foo;
+     *   },
+     *   set: function(propValue) {
+     *     foo = propValue;
+     *   }
+     * });
+     */
     defineProperty: function(name, accessors) {
         var node = this[0];
         var getter = accessors.get;
@@ -19,6 +37,26 @@ _.register({
 
         return this;
     },
+    /**
+     * Define a new attribute for the current element
+     * @memberof! $Element#
+     * @alias $Element#defineAttribute
+     * @param  {String} name      attribute name
+     * @param  {Object} accessors getter and setter definition
+     * @example
+     * DOM.find("body").defineAttribute("foo", {
+     *   get: function(attrValue) {
+     *     // getter returns property value
+     *     return String(attrValue).toLowerCase();
+     *   },
+     *   set: function(propValue) {
+     *     if (propValue != null) {
+     *       // setter returns attribute value
+     *       return String(propValue).toUpperCase();
+     *     }
+     *   }
+     * });
+     */
     defineAttribute: function(name, accessors) {
         var node = this[0];
         var getter = accessors.get;
