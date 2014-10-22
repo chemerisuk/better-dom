@@ -56,7 +56,11 @@ module.exports = function(dest, options) {
                 // remove istanbul comments from output
                 code = code.replace(/\/\* istanbul[^\/]+\/\s*/g, "");
             }
-
+            // improve internal type names
+            code = code.replace(/types\$\$(\$?\w+)/g, "$1");
+            // remove generated prefix from constants
+            code = code.replace(/const\$\$/g, "");
+            // append banner
             code = banner + "\n" + code;
             // fix for browserify
             code = code.replace("}).call(this);", "})();\n");

@@ -69,7 +69,7 @@ _.register({
         // because IE8 will try to read wrong attribute value
         var initialValue = node.getAttribute(name);
         // trick to fix infinite recursion in IE8
-        var attrName = JSCRIPT_VERSION < 9 ? name.toUpperCase() : name;
+        var attrName = JSCRIPT_VERSION < 9 ? name.toUpperCase() : name.toLowerCase();
         var _setAttribute = node.setAttribute;
         var _removeAttribute = node.removeAttribute;
 

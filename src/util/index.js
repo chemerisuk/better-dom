@@ -6,6 +6,7 @@ var arrayProto = Array.prototype,
 
 export default {
     computeStyle: (node) => {
+        /* istanbul ignore else */
         if (WINDOW.getComputedStyle) {
             return WINDOW.getComputedStyle(node);
         } else {
