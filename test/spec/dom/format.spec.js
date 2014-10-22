@@ -13,8 +13,15 @@ describe("DOM.format", function() {
         expect(function() { DOM.format("test {0}", "090") }).not.toThrow();
     });
 
-    it("should throw error when arguments are invalid", function() {
-        expect(function() { DOM.format(undefined) }).toThrow();
-        expect(function() { DOM.format(null) }).toThrow();
+    it("accepts any argument type", function() {
+        expect(DOM.format(undefined)).toBe("undefined");
+        expect(DOM.format(null)).toBe("null");
+        expect(DOM.format(111)).toBe("111");
+
+        function Foo() {}
+
+        Foo.prototype.toString = function() { return "bar" };
+
+        expect(DOM.format(new Foo())).toBe("bar");
     });
 });

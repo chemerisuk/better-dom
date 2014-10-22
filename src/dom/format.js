@@ -1,4 +1,3 @@
-import { StaticMethodError } from "../errors";
 import { DOM } from "../types";
 
 var reVar = /\{([\w\-]+)\}/g;
@@ -15,7 +14,7 @@ var reVar = /\{([\w\-]+)\}/g;
  * DOM.format("your {0}", ["title"]); // => "your title"
  */
 DOM.format = function(tmpl, varMap) {
-    if (typeof tmpl !== "string") throw new StaticMethodError("format", arguments);
+    if (typeof tmpl !== "string") tmpl = String(tmpl);
 
     if (!varMap || typeof varMap !== "object") varMap = {};
 
