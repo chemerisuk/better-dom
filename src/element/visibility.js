@@ -44,44 +44,42 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
         transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
 
-        var cssToSet = cssText;
-        // use willChange to improve performance in modern browsers:
-        // http://dev.opera.com/articles/css-will-change-property/
-        cssToSet += "; will-change: " + transitionValues[1].join(", ");
-        // append target visibility value to trigger transition
-        cssToSet += "; visibility: " + (hiding ? "hidden" : "inherit");
+        cssText = [cssText];
+        cssText.push(
+            // append target visibility value to trigger transition
+            "visibility:" + (hiding ? "hidden" : "inherit"),
+            // use willChange to improve performance in modern browsers:
+            // http://dev.opera.com/articles/css-will-change-property/
+            "will-change:" + transitionValues[1].join(", ")
+        );
 
         transitionValues.forEach((prop, index) => {
-            cssToSet += "; " + WEBKIT_PREFIX + TRANSITION_PROPS[index] + ": " + prop.join(", ");
+            cssText.push(WEBKIT_PREFIX + TRANSITION_PROPS[index] + ":" + prop.join(", "));
         });
 
-        node.addEventListener(TRANSITION_EVENT_TYPE, function completeTransition(e) {
+        return [cssText.join(";"), TRANSITION_EVENT_TYPE, (e) => {
             if (e.propertyName === "visibility") {
-                done(e, completeTransition);
+                done(e);
             }
-        }, true);
-
-        return [cssToSet, cssText];
+        }];
     },
     scheduleAnimation = (node, computed, animationName, hiding, cssText, done) => {
         var duration = parseTimeValue(CSS.get["animation-duration"](computed));
 
         if (!duration) return; // skip animations with zero duration
 
-        var cssToSet = cssText;
+        cssText = [cssText];
+        cssText.push(
+            WEBKIT_PREFIX + "animation-direction:" + (hiding ? "normal" : "reverse"),
+            WEBKIT_PREFIX + "animation-name:" + animationName,
+            "visibility:inherit"
+        );
 
-        node.addEventListener(ANIMATION_EVENT_TYPE, function completeAnimation(e) {
+        return [cssText.join(";"), ANIMATION_EVENT_TYPE, (e) => {
             if (e.animationName === animationName) {
-                done(e, completeAnimation);
+                done(e);
             }
-        }, true);
-
-        cssToSet += "; " + WEBKIT_PREFIX + "animation-direction: ";
-        cssToSet += hiding ? "normal" : "reverse";
-        cssToSet += "; " + WEBKIT_PREFIX + "animation-name: " + animationName;
-        cssToSet += "; visibility: inherit";
-
-        return [cssToSet, cssText];
+        }];
     },
     makeMethod = (name, condition) => function(animationName, callback) {
         if (typeof animationName !== "string") {
@@ -97,19 +95,19 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
             style = node.style,
             computed = _.computeStyle(node),
             hiding = condition,
-            done = (e, eventHandler) => {
+            done = (e) => {
                 // Check equality of the flag and aria-hidden to recognize
                 // cases when an animation was toggled in the intermediate
                 // state. Don't need to proceed in such situation
                 if (String(hiding) === node.getAttribute("aria-hidden")) {
-                    if (cssText) {
+                    if (animationHandler) {
                         e.stopPropagation(); // this is an internal event
 
-                        node.removeEventListener(e.type, eventHandler, true);
+                        node.removeEventListener(animationHandler[1], animationHandler[2], true);
                         // need to set correct visibility when animation is completed
-                        cssText[1] += "; visibility: " + (hiding ? "hidden" : "inherit");
+                        cssText += ";visibility:" + (hiding ? "hidden" : "inherit");
 
-                        style.cssText = cssText[1]; // remove temporary properties
+                        style.cssText = cssText; // restore state
                     } else {
                         // always update element visibility property
                         // for CSS3 animation element should always be visible
@@ -138,22 +136,29 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
             // element has non-zero offsetWidth. It also fixes
             // animation of an element inserted into the DOM in Webkit
             // browsers pluse Opera 12 issue with CSS3 animations
-            cssText = ANIMATIONS_ENABLED && node.offsetWidth ? style.cssText : null;
+            animationHandler = ANIMATIONS_ENABLED && node.offsetWidth,
+            cssText = animationHandler ? style.cssText : "";
 
         if (typeof hiding !== "boolean") {
             hiding = !HOOK[":hidden"](node);
         }
 
-        if (cssText) {
+        if (animationHandler) {
             if (animationName) {
-                cssText = scheduleAnimation(node, computed, animationName, hiding, cssText, done);
+                animationHandler = scheduleAnimation(node, computed, animationName, hiding, cssText, done);
             } else {
-                cssText = scheduleTransition(node, computed, hiding, cssText, done);
+                animationHandler = scheduleTransition(node, computed, hiding, cssText, done);
             }
         }
 
-        if (cssText) {
-            style.cssText = cssText[0];
+        if (animationHandler) {
+            // animationHandler:
+            // [0] - cssText to set
+            // [1] - event type
+            // [2] - event handler
+            node.addEventListener(animationHandler[1], animationHandler[2], true);
+            // trigger animation(s)
+            style.cssText = animationHandler[0];
         } else {
             // done callback is always async
             setTimeout(done, 0);
