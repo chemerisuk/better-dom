@@ -159,12 +159,11 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                 animatable = scheduleTransition(node, style, computed, hiding, done);
             }
         }
-        // trigger CSS3 transition if it exists
-        this.set("aria-hidden", String(hiding));
+        // done callback is always async
         // must be AFTER changing the aria-hidden attribute
-        if (!animatable) done();
-
-        return this;
+        if (!animatable) setTimeout(done, 0);
+        // trigger CSS3 transition if it exists
+        return this.set("aria-hidden", String(hiding));
     };
 
 _.register({

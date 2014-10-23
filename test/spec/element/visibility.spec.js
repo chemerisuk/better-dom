@@ -54,8 +54,9 @@ describe("visibility", function() {
 
         it("by default updates display property", function() {
             expect(link.css("display")).not.toBe("none");
-            link.hide();
-            expect(link.css("display")).toBe("none");
+            link.hide(function() {
+                expect(link.css("display")).toBe("none");
+            });
         });
 
         // it("should work for several transitions", function(done) {
@@ -96,18 +97,22 @@ describe("visibility", function() {
 
         it("should handle initially hidden element", function() {
             link.addClass("hidden");
-            link.show();
+
+            link.show(function() {
+                expect(link.css("display")).not.toBe("none");
+            });
 
             expect(link).toHaveAttr("aria-hidden", "false");
-            expect(link.css("display")).not.toBe("none");
         });
 
         it("should handle initially invisible element", function() {
             link.addClass("invisible");
-            link.show();
+
+            link.show(function() {
+                expect(link.css("visibility")).not.toBe("hidden");
+            });
 
             expect(link).toHaveAttr("aria-hidden", "false");
-            expect(link.css("visibility")).toBe("inherit");
         });
     });
 
