@@ -15,40 +15,44 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         // if duration is in seconds, then multiple result value by 1000
         return !result || value.slice(-2) === "ms" ? result : result * 1000;
     },
-    calcTransitionDuration = (style) => {
-        var delay = CSS.get["transition-delay"](style).split(","),
-            duration = CSS.get["transition-duration"](style).split(",");
+    calcTransitionDuration = (transitionValues) => {
+        var delays = transitionValues[3],
+            durations = transitionValues[2];
 
-        return Math.max.apply(Math, duration.map((value, index) => {
-            return parseTimeValue(value) + (parseTimeValue(delay[index]) || 0);
+        return Math.max.apply(Math, durations.map((value, index) => {
+            return parseTimeValue(value) + (parseTimeValue(delays[index]) || 0);
         }));
     },
     scheduleTransition = (node, style, computed, hiding, done) => {
-        var duration = calcTransitionDuration(computed);
+        var transitionValues = TRANSITION_PROPS.map((prop, index) => {
+                // have to use regexp to split transition-timing-function value
+                return CSS.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+            }),
+            duration = calcTransitionDuration(transitionValues);
 
         if (!duration) return false; // skip transitions with zero duration
 
-        var visibilityTransitionIndex, transitionValues;
-
-        transitionValues = TRANSITION_PROPS.map((prop, index) => {
-            // have to use regexp to split transition-timing-function value
-            return CSS.get[prop](computed).split(index ? ", " : /, (?!\d)/);
-        });
+        var visibilityTransitionIndex, cssText = style.cssText;
 
         // try to find existing or use 0s length or make a new visibility transition
         visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
         if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
-        if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[0].length;
+        if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[1].length;
 
         transitionValues[0][visibilityTransitionIndex] = "linear";
         transitionValues[1][visibilityTransitionIndex] = "visibility";
         transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
         transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
 
-        // now set target duration and delay
-        transitionValues.forEach((value, index) => {
-            CSS.set[TRANSITION_PROPS[index]](style, value.join(", "));
+        // use willChange to improve performance in modern browsers:
+        // http://dev.opera.com/articles/css-will-change-property/
+        var appendString = "; will-change: " + transitionValues[1].join(", ");
+
+        transitionValues.forEach((prop, index) => {
+            appendString += "; " + WEBKIT_PREFIX + TRANSITION_PROPS[index] + ": " + prop.join(", ");
         });
+        // append target visibility value to trigger transition
+        cssText += "; visibility: " + (hiding ? "hidden" : "inherit");
 
         node.addEventListener(TRANSITION_EVENT_TYPE, function completeTransition(e) {
             if (e.propertyName === "visibility") {
@@ -56,18 +60,14 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
 
                 node.removeEventListener(TRANSITION_EVENT_TYPE, completeTransition, true);
 
-                style.willChange = ""; // remove temporary properties
+                style.cssText = cssText; // remove temporary properties
 
                 done();
             }
         }, true);
 
-        // make sure that the visibility property will be changed
-        // so reset it to appropriate value with zero
-        style.visibility = hiding ? "inherit" : "hidden";
-        // use willChange to improve performance in modern browsers:
-        // http://dev.opera.com/articles/css-will-change-property/
-        style.willChange = transitionValues[1].join(", ");
+        // now set updated transition
+        style.cssText = cssText + appendString;
 
         return true;
     },
@@ -83,6 +83,9 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                 node.removeEventListener(ANIMATION_EVENT_TYPE, completeAnimation, true);
 
                 CSS.set["animation-name"](style, ""); // remove temporary animation
+                CSS.set["animation-direction"](style, "");
+
+                if (hiding) style.visibility = "hidden";
 
                 done();
             }
@@ -91,6 +94,8 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         // trigger animation start
         CSS.set["animation-direction"](style, hiding ? "normal" : "reverse");
         CSS.set["animation-name"](style, animationName);
+
+        if (!hiding) style.visibility = "inherit";
 
         return true;
     },
@@ -113,11 +118,11 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                 // cases when an animation was toggled in the intermediate
                 // state. Don't need to proceed in such situation
                 if (String(hiding) === node.getAttribute("aria-hidden")) {
-                    if (animatable) {
-                        if (hiding && animationName) {
-                            style.visibility = "hidden";
-                        }
-                    } else {
+                    if (!animatable) {
+                        // always update element visibility property
+                        // for CSS3 animation element should always be visible
+                        // use value "inherit" to respect parent container visibility
+                        style.visibility = hiding && !animationName ? "hidden" : "inherit";
                         // no animation was applied
                         if (hiding) {
                             let displayValue = computed.display;
@@ -154,11 +159,6 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                 animatable = scheduleTransition(node, style, computed, hiding, done);
             }
         }
-
-        // always update element visibility property
-        // for CSS3 animation element should always be visible
-        // use value "inherit" to respect parent container visibility
-        style.visibility = hiding && !animationName ? "hidden" : "inherit";
         // trigger CSS3 transition if it exists
         this.set("aria-hidden", String(hiding));
         // must be AFTER changing the aria-hidden attribute

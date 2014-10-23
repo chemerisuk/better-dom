@@ -6,13 +6,13 @@ var customLaunchers = {
         base: "SauceLabs",
         browserName: "chrome",
         platform: "Windows 7",
-        version: "37"
+        version: ""
     },
     sl_firefox: {
         base: "SauceLabs",
         browserName: "firefox",
         platform: "Windows 7",
-        version: "31"
+        version: "33"
     },
     el_opera_12: {
         base: "SauceLabs",
@@ -51,11 +51,11 @@ var customLaunchers = {
     //     platform: "Windows 7",
     //     version: "9"
     // },
-    sl_ios_safari_7: {
+    sl_ios_safari_8: {
         base: "SauceLabs",
         browserName: "iphone",
         platform: "OS X 10.9",
-        version: "7.1"
+        version: "8.0"
     },
     sl_android_4_4: {
         base: "SauceLabs",

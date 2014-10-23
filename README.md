@@ -32,15 +32,15 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 * Walk through the sorce code of existing [projects that use better-dom](http://bower.io/search/?q=better-dom).
 
 ## Contributing
-In order to modify the source and submit a patch or improvement, you have to have [gulp](http://gulpjs.com) installed globally:
+In order to modify the source code you have to have [gulp](http://gulpjs.com) installed globally:
 
     $ npm install -g gulp
 
-The project uses set of ES6 transpilers to compile a file that works in current browsers. The command below starts watching for changes you are doing, recompiles `build/better-dom.js` file and runs unit tests after that: 
+The project uses set of ES6 transpilers to compile an output file that works in current browsers. You can use the commend below to start development: 
 
     $ npm start
 
-Of course any pull request should pass all tests.
+After any change it recompiles `build/better-dom.js` and runs it through the unit tests.
 
 ## Notes about old IEs
 For IE8-9 support you have to incude an extra file via the conditional comment below __into `<head>`__ on your page:
