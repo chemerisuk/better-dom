@@ -1,4 +1,4 @@
-# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][fury-image]][fury-url]
+# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][bower-image]][bower-url]
 
 This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main ideas that encouraged me to build a new library from scratch.
 
@@ -88,6 +88,6 @@ Opera Mini is out of the scope because of lack of support for CSS3 Animations.
 [coveralls-url]: https://coveralls.io/r/chemerisuk/better-dom
 [coveralls-image]: http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg
 
-[fury-url]: http://badge.fury.io/bo/better-dom
-[fury-image]: https://badge.fury.io/bo/better-dom.svg
+[bower-url]: https://github.com/chemerisuk/better-dom
+[bower-image]: http://img.shields.io/bower/v/better-dom.svg
 
