@@ -60,8 +60,13 @@ export default (node, computed, animationName, hiding, done) => {
             transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
         }
 
-        rules = transitionValues.map((prop, index) => {
-            return WEBKIT_PREFIX + TRANSITION_PROPS[index] + ":" + prop.join(", ");
+        rules = transitionValues.map((props, index) => {
+            // fill holes in a trasition property value
+            for (var i = 0, n = props.length; i < n; ++i) {
+                props[i] = props[i] || props[i - 1] || "initial";
+            }
+
+            return WEBKIT_PREFIX + TRANSITION_PROPS[index] + ":" + props.join(", ");
         });
 
         rules.push(

@@ -54,6 +54,7 @@ describe("visibility", function() {
 
         it("by default updates display property", function() {
             expect(link.css("display")).not.toBe("none");
+
             link.hide(function() {
                 expect(link.css("display")).toBe("none");
             });
@@ -62,14 +63,14 @@ describe("visibility", function() {
         // it("should work for several transitions", function(done) {
         //     var start = Date.now();
 
-        //     link = DOM.create("<a class=\"fade\" style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 50ms, -webkit-transform 100ms'>abc</a>");
+        //     var link = DOM.create("<a class=\"fade\" style='transition:opacity 50ms, transform 100ms;-webkit-transition:opacity 50ms, -webkit-transform 100ms'>abc</a>");
 
         //     jasmine.sandbox.set(link);
 
         //     link.hide(function() {
-        //         if (hasAnimationSupport) {
-        //             expect(Date.now() - start).toBeGreaterThan(75);
-        //         }
+        //         var delta = Date.now() - start;
+
+        //         expect(delta < 50 || delta > 75).toBe(true);
 
         //         done();
         //     });
