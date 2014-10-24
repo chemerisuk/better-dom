@@ -1,9 +1,9 @@
 /**
 * @preserve Form elements fixes for IE8-9
-* @copyright 2013-2014 <%= pkg.author %>
+* @copyright 2013-2014 Maksim Chemerisuk
 */
 (function() {
-    var JSCRIPT_VERSION=/*@cc_on @_jscript_version+@*/void 0;
+    var JSCRIPT_VERSION=/*@cc_on @_jscript_version|@*/void 0;
 
     if (!JSCRIPT_VERSION || JSCRIPT_VERSION > 9) return;
 

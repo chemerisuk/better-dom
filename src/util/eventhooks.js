@@ -1,4 +1,4 @@
-import { JSCRIPT_VERSION, HTML, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, HTML } from "../const";
 
 var hooks = {};
 /* istanbul ignore if */
@@ -9,15 +9,12 @@ if ("onfocusin" in HTML) {
     // firefox doesn't support focusin/focusout events
     hooks.focus = hooks.blur = (handler) => { handler.capturing = true };
 }
-/* istanbul ignore else */
-if (DOCUMENT.createElement("input").validity) {
-    hooks.invalid = (handler) => { handler.capturing = true };
-}
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 9) {
-    // fix non-bubbling form events for IE8
+    // fix non-bubbling form events for IE8 therefore
+    // use custom event type instead of original one
     ["submit", "change", "reset"].forEach((name) => {
-        hooks[name] = (handler) => { handler._type = CUSTOM_EVENT_TYPE };
+        hooks[name] = (handler) => { handler._type = "_" };
     });
 }
 
