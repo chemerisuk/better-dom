@@ -24,7 +24,7 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
             computed = _.computeStyle(node),
             hiding = condition,
             eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE,
-            cssText, animationHandler,
+            initialCssText, animationHandler,
             done = () => {
                 // Check equality of the flag and aria-hidden to recognize
                 // cases when an animation was toggled in the intermediate
@@ -33,7 +33,7 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                     if (animationHandler) {
                         node.removeEventListener(eventType, animationHandler, true);
                         // restore initial state
-                        style.cssText = cssText;
+                        style.cssText = initialCssText;
                     } else {
                         // no animation was applied
                         if (hiding) {
@@ -51,7 +51,6 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                         }
                     }
                     // always update element visibility property
-                    // for CSS3 animation element should always be visible
                     // use value "inherit" to respect parent container visibility
                     style.visibility = hiding ? "hidden" : "inherit";
 
@@ -66,7 +65,7 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         // Determine of we need animation by checking if an
         // element has non-zero offsetWidth. It also fixes
         // animation of an element inserted into the DOM in Webkit
-        // browsers pluse Opera 12 issue with CSS3 animations
+        // browsers plus Opera 12 issue with CSS3 animations
         if (ANIMATIONS_ENABLED && node.offsetWidth) {
             animationHandler = AnimationHandler(computed, animationName, hiding, done);
         }
@@ -74,9 +73,9 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
         if (animationHandler) {
             node.addEventListener(eventType, animationHandler, true);
             // remember initial cssText to restore later
-            cssText = style.cssText;
+            initialCssText = style.cssText;
             // trigger animation(s)
-            style.cssText = cssText + animationHandler.rules.join(";");
+            style.cssText = initialCssText + animationHandler.rules.join(";");
         } else {
             // done callback is always async
             setTimeout(done, 0);

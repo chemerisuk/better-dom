@@ -1,7 +1,7 @@
 import { WEBKIT_PREFIX } from "../const";
 import CSS from "./stylehooks";
 
-var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
+var TRANSITION_PROPS = ["property", "duration", "timing-function", "delay"].map((p) => "transition-" + p),
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
@@ -9,7 +9,7 @@ var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(
     },
     calcTransitionDuration = (transitionValues) => {
         var delays = transitionValues[3],
-            durations = transitionValues[2];
+            durations = transitionValues[1];
 
         return Math.max.apply(Math, durations.map((value, index) => {
             return parseTimeValue(value) + (parseTimeValue(delays[index]) || 0);
@@ -27,27 +27,31 @@ export default (computed, animationName, hiding, done) => {
         rules = [
             WEBKIT_PREFIX + "animation-direction:" + (hiding ? "normal" : "reverse"),
             WEBKIT_PREFIX + "animation-name:" + animationName,
+            // for CSS3 animation element should always be visible
             "visibility:inherit"
         ];
     } else {
         var transitionValues = TRANSITION_PROPS.map((prop, index) => {
                 // have to use regexp to split transition-timing-function value
-                return CSS.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+                return CSS.get[prop](computed).split(index === 2 ? /, (?!\d)/ : ", ");
             });
 
         duration = calcTransitionDuration(transitionValues);
 
         if (!duration) return; // skip transitions with zero duration
 
-        // try to find existing or use 0s length or make a new visibility transition
-        var visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
-        if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
-        if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[1].length;
+        if (transitionValues[0].indexOf("all") < 0) {
+            // try to find existing or use 0s length or make a new visibility transition
+            var visibilityIndex = transitionValues[0].indexOf("visibility");
 
-        transitionValues[0][visibilityTransitionIndex] = "linear";
-        transitionValues[1][visibilityTransitionIndex] = "visibility";
-        transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
-        transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+            if (visibilityIndex < 0) visibilityIndex = transitionValues[1].indexOf("0s");
+            if (visibilityIndex < 0) visibilityIndex = transitionValues[0].length;
+
+            transitionValues[0][visibilityIndex] = "visibility";
+            transitionValues[2][visibilityIndex] = "linear";
+            transitionValues[hiding ? 1 : 3][visibilityIndex] = "0s";
+            transitionValues[hiding ? 3 : 1][visibilityIndex] = duration + "ms";
+        }
 
         rules = transitionValues.map((prop, index) => {
             return WEBKIT_PREFIX + TRANSITION_PROPS[index] + ":" + prop.join(", ");
