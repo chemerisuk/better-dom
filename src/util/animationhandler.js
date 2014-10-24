@@ -1,7 +1,7 @@
-import { WEBKIT_PREFIX } from "../const";
 import CSS from "./stylehooks";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
 
-var TRANSITION_PROPS = ["property", "duration", "timing-function", "delay"].map((p) => "transition-" + p),
+var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
@@ -16,8 +16,16 @@ var TRANSITION_PROPS = ["property", "duration", "timing-function", "delay"].map(
         }));
     };
 
-export default (computed, animationName, hiding, done) => {
+export default (node, computed, animationName, hiding, done) => {
     var rules, duration;
+
+    // Legacy Android is usually slow and has lots of bugs in the
+    // CSS animations implementation, so skip any animations for it
+
+    // Determine of we need animation by checking if an element
+    // has non-zero width. It also fixes animation of new elements
+    // inserted into the DOM in Webkit and Opera 12 browsers
+    if (LEGACY_ANDROID || JSCRIPT_VERSION < 10 || !computed.width) return null;
 
     if (animationName) {
         duration = parseTimeValue(CSS.get["animation-duration"](computed));
@@ -40,17 +48,16 @@ export default (computed, animationName, hiding, done) => {
 
         if (!duration) return; // skip transitions with zero duration
 
-        if (transitionValues[0].indexOf("all") < 0) {
+        if (transitionValues[1].indexOf("all") < 0) {
             // try to find existing or use 0s length or make a new visibility transition
-            var visibilityIndex = transitionValues[0].indexOf("visibility");
+            var visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
+            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
+            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[1].length;
 
-            if (visibilityIndex < 0) visibilityIndex = transitionValues[1].indexOf("0s");
-            if (visibilityIndex < 0) visibilityIndex = transitionValues[0].length;
-
-            transitionValues[0][visibilityIndex] = "visibility";
-            transitionValues[2][visibilityIndex] = "linear";
-            transitionValues[hiding ? 1 : 3][visibilityIndex] = "0s";
-            transitionValues[hiding ? 3 : 1][visibilityIndex] = duration + "ms";
+            transitionValues[0][visibilityTransitionIndex] = "linear";
+            transitionValues[1][visibilityTransitionIndex] = "visibility";
+            transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
+            transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
         }
 
         rules = transitionValues.map((prop, index) => {
@@ -67,18 +74,21 @@ export default (computed, animationName, hiding, done) => {
     }
 
     return {
-        rules: rules,
+        cssText: rules.join(";"),
+        initialCssText: node.style.cssText,
         // this function used to trigger callback
         handleEvent: (e) => {
-            if (animationName) {
-                if (e.animationName !== animationName) return;
-            } else {
-                if (e.propertyName !== "visibility") return;
+            if (e.target === node) {
+                if (animationName) {
+                    if (e.animationName !== animationName) return;
+                } else {
+                    if (e.propertyName !== "visibility") return;
+                }
+
+                e.stopPropagation(); // this is an internal event
+
+                done();
             }
-
-            e.stopPropagation(); // this is an internal event
-
-            done();
         }
     };
 };

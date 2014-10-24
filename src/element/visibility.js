@@ -1,13 +1,10 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
+import { WEBKIT_PREFIX } from "../const";
 import HOOK from "../util/selectorhooks";
 import AnimationHandler from "../util/animationhandler";
 
-// Legacy Android is too slow and has a lot of bugs in the CSS animations
-// implementation, so skip any animations for it
-var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
-    TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
     ANIMATION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
     makeMethod = (name, condition) => function(animationName, callback) {
         if (typeof animationName !== "string") {
@@ -23,8 +20,6 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
             style = node.style,
             computed = _.computeStyle(node),
             hiding = condition,
-            eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE,
-            initialCssText, animationHandler,
             done = () => {
                 // Check equality of the flag and aria-hidden to recognize
                 // cases when an animation was toggled in the intermediate
@@ -33,7 +28,7 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
                     if (animationHandler) {
                         node.removeEventListener(eventType, animationHandler, true);
                         // restore initial state
-                        style.cssText = initialCssText;
+                        style.cssText = animationHandler.initialCssText;
                     } else {
                         // no animation was applied
                         if (hiding) {
@@ -56,26 +51,18 @@ var ANIMATIONS_ENABLED = !(LEGACY_ANDROID || JSCRIPT_VERSION < 10),
 
                     if (callback) callback.call(this);
                 }
-            };
+            },
+            animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
+            eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
 
         if (typeof hiding !== "boolean") {
             hiding = !HOOK[":hidden"](node);
         }
 
-        // Determine of we need animation by checking if an
-        // element has non-zero offsetWidth. It also fixes
-        // animation of an element inserted into the DOM in Webkit
-        // browsers plus Opera 12 issue with CSS3 animations
-        if (ANIMATIONS_ENABLED && node.offsetWidth) {
-            animationHandler = AnimationHandler(computed, animationName, hiding, done);
-        }
-
         if (animationHandler) {
             node.addEventListener(eventType, animationHandler, true);
-            // remember initial cssText to restore later
-            initialCssText = style.cssText;
             // trigger animation(s)
-            style.cssText = initialCssText + animationHandler.rules.join(";");
+            style.cssText = animationHandler.initialCssText + animationHandler.cssText;
         } else {
             // done callback is always async
             setTimeout(done, 0);
