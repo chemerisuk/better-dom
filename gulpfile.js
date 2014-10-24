@@ -157,14 +157,18 @@ gulp.task("bump", function() {
         .pipe(gulp.dest("./"));
 });
 
-gulp.task("release", ["bump", "compress"], function() {
+gulp.task("release", ["bump", "compress"], function(done) {
     var version = argv.tag;
 
     if (!version) throw new gutil.PluginError("release", "You need to specify --tag parameter");
 
     gulp.src(["./*.json", "./dist/*.js"])
         .pipe(git.commit("version " + version))
-        .pipe(git.push())
         .pipe(filter("package.json"))
-        .pipe(tag_version());
+        .pipe(tag_version())
+        .on("end", function() {
+            git.push("origin", "master", {}, function() {
+                git.push("origin", "master", {args: "--tags"}, done);
+            });
+        });
 });

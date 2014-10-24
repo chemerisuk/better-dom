@@ -19,7 +19,7 @@ _.register({
 
         var checker = HOOK[selector] || SelectorMatcher(selector);
 
-        return !!checker(this[0], this);
+        return !!checker(this[0]);
     }
 }, () => {
     return () => false;

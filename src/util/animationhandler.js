@@ -9,7 +9,7 @@ var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(
     },
     calcTransitionDuration = (transitionValues) => {
         var delays = transitionValues[3],
-            durations = transitionValues[1];
+            durations = transitionValues[2];
 
         return Math.max.apply(Math, durations.map((value, index) => {
             return parseTimeValue(value) + (parseTimeValue(delays[index]) || 0);
@@ -41,7 +41,7 @@ export default (node, computed, animationName, hiding, done) => {
     } else {
         var transitionValues = TRANSITION_PROPS.map((prop, index) => {
                 // have to use regexp to split transition-timing-function value
-                return CSS.get[prop](computed).split(index === 2 ? /, (?!\d)/ : ", ");
+                return CSS.get[prop](computed).split(index ? ", " : /, (?!\d)/);
             });
 
         duration = calcTransitionDuration(transitionValues);
@@ -50,14 +50,15 @@ export default (node, computed, animationName, hiding, done) => {
 
         if (transitionValues[1].indexOf("all") < 0) {
             // try to find existing or use 0s length or make a new visibility transition
-            var visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
-            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
-            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[1].length;
+            var visibilityIndex = transitionValues[1].indexOf("visibility");
 
-            transitionValues[0][visibilityTransitionIndex] = "linear";
-            transitionValues[1][visibilityTransitionIndex] = "visibility";
-            transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
-            transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+            if (visibilityIndex < 0) visibilityIndex = transitionValues[2].indexOf("0s");
+            if (visibilityIndex < 0) visibilityIndex = transitionValues[1].length;
+
+            transitionValues[0][visibilityIndex] = "linear";
+            transitionValues[1][visibilityIndex] = "visibility";
+            transitionValues[hiding ? 2 : 3][visibilityIndex] = "0s";
+            transitionValues[hiding ? 3 : 2][visibilityIndex] = duration + "ms";
         }
 
         rules = transitionValues.map((props, index) => {

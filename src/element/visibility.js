@@ -56,7 +56,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
 
         if (typeof hiding !== "boolean") {
-            hiding = !HOOK[":hidden"](node);
+            hiding = !HOOK[":hidden"](node, computed);
         }
 
         if (animationHandler) {
