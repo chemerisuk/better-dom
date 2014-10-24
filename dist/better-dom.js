@@ -1,69 +1,69 @@
 /**
  * @file better-dom.js
  * @overview better-dom: Live extension playground
- * @version 2.0.1 Fri, 17 Oct 2014 13:22:35 GMT
+ * @version 2.0.2 Fri, 24 Oct 2014 17:13:57 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
  */
 (function() {
     "use strict";
-    var const$$WINDOW = window;
-    var const$$DOCUMENT = const$$WINDOW.document;
-    var const$$HTML = const$$DOCUMENT.documentElement;
+    var WINDOW = window;
+    var DOCUMENT = WINDOW.document;
+    var HTML = DOCUMENT.documentElement;
 
-    var const$$userAgent = const$$WINDOW.navigator.userAgent;
+    var userAgent = WINDOW.navigator.userAgent;
 
-    var const$$JSCRIPT_VERSION=/*@cc_on @_jscript_version|@*/void 0;
-    var const$$LEGACY_ANDROID = ~const$$userAgent.indexOf("Android") && const$$userAgent.indexOf("Chrome") < 0;
-    var const$$WEBKIT_PREFIX = const$$WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
-    var const$$CUSTOM_EVENT_TYPE = "dataavailable";
+    var JSCRIPT_VERSION=/*@cc_on @_jscript_version|@*/void 0;
+    var LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
+    var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
+    var CUSTOM_EVENT_TYPE = "dataavailable";
 
-    function types$$$NullElement() {}
+    function $NullElement() {}
 
-    function types$$$Element(node) {
-        if (this instanceof types$$$Element) {
+    function $Element(node) {
+        if (this instanceof $Element) {
             if (node) {
                 this[0] = node;
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__2000001__"] = this;
+                node["__2000002__"] = this;
             }
 
             this._ = { _handlers: [], _watchers: {}, _extensions: [] };
         } else if (node) {
-            var cached = node["__2000001__"];
+            var cached = node["__2000002__"];
             // create a wrapper only once for each native element
-            return cached ? cached : new types$$$Element(node);
+            return cached ? cached : new $Element(node);
         } else {
-            return new types$$$NullElement();
+            return new $NullElement();
         }
     }
 
-    types$$$Element.prototype = {
+    $Element.prototype = {
         constructor: function(node) {
             // filter non elements like text nodes, comments etc.
-            return types$$$Element(node && node.nodeType === 1 ? node : null);
+            return $Element(node && node.nodeType === 1 ? node : null);
         },
         toString: function() {
             var node = this[0];
 
             return node ? "<" + node.tagName.toLowerCase() + ">" : "";
         },
-        version: "2.0.1"
+        version: "2.0.2"
     };
 
-    types$$$NullElement.prototype = new types$$$Element();
+    $NullElement.prototype = new $Element();
 
-    var types$$DOM = new types$$$Element(const$$HTML);
+    var DOM = new $Element(HTML);
 
     var util$index$$arrayProto = Array.prototype,
-        util$index$$head = const$$DOCUMENT.getElementsByTagName("head")[0];
+        util$index$$head = DOCUMENT.getElementsByTagName("head")[0];
 
     var util$index$$default = {
         computeStyle: function(node)  {
-            if (const$$WINDOW.getComputedStyle) {
-                return const$$WINDOW.getComputedStyle(node);
+            if (WINDOW.getComputedStyle) {
+                return WINDOW.getComputedStyle(node);
             } else {
                 return node.currentStyle;
             }
@@ -87,7 +87,7 @@
             try {
                 return fn.call(context, arg1, arg2);
             } catch (err) {
-                const$$WINDOW.setTimeout(function()  { throw err }, 1);
+                WINDOW.setTimeout(function()  { throw err }, 1);
 
                 return false;
             }
@@ -98,8 +98,8 @@
             Object.keys(mixins).forEach(function(key)  {
                 var defaults = defaultBehavior(key) || function() { return this };
 
-                types$$$Element.prototype[key] = mixins[key];
-                types$$$NullElement.prototype[key] = defaults;
+                $Element.prototype[key] = mixins[key];
+                $NullElement.prototype[key] = defaults;
             });
         }
     };
@@ -123,17 +123,17 @@
 
     errors$$StaticMethodError.prototype = new TypeError();
 
-    var exports$$_DOM = const$$WINDOW.DOM;
+    var exports$$_DOM = WINDOW.DOM;
 
-    types$$DOM.noConflict = function() {
-        if (const$$WINDOW.DOM === types$$DOM) {
-            const$$WINDOW.DOM = exports$$_DOM;
+    DOM.noConflict = function() {
+        if (WINDOW.DOM === DOM) {
+            WINDOW.DOM = exports$$_DOM;
         }
 
-        return types$$DOM;
+        return DOM;
     };
 
-    const$$WINDOW.DOM = types$$DOM;
+    WINDOW.DOM = DOM;
 
     /* es6-transpiler has-iterators:false, has-generators: false */
 
@@ -187,10 +187,10 @@
         dom$emmet$$tagCache[tag] = "<" + tag + ">";
     });
 
-    types$$DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
+    DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
         if (typeof template !== "string") throw new errors$$StaticMethodError("emmet", arguments);
 
-        if (varMap) template = types$$DOM.format(template, varMap);
+        if (varMap) template = DOM.format(template, varMap);
 
         if (template in dom$emmet$$tagCache) {return dom$emmet$$tagCache[template];}
 
@@ -300,21 +300,21 @@
 
     var dom$emmet$$default = dom$emmet$$tagCache;
 
-    var dom$create$$sandbox = const$$DOCUMENT.createElement("body"),
+    var dom$create$$sandbox = DOCUMENT.createElement("body"),
         dom$create$$makeMethod = function(all)  {return function(value, varMap) {
             var nodes, el;
 
             if (value && value in dom$emmet$$default) {
-                nodes = const$$DOCUMENT.createElement(value);
+                nodes = DOCUMENT.createElement(value);
 
-                if (all) nodes = [ new types$$$Element(nodes) ];
+                if (all) nodes = [ new $Element(nodes) ];
             } else {
                 value = value.trim();
 
                 if (value[0] === "<" && value[value.length - 1] === ">") {
-                    value = varMap ? types$$DOM.format(value, varMap) : value;
+                    value = varMap ? DOM.format(value, varMap) : value;
                 } else {
-                    value = types$$DOM.emmet(value, varMap);
+                    value = DOM.emmet(value, varMap);
                 }
 
                 dom$create$$sandbox.innerHTML = value; // parse input HTML string
@@ -324,7 +324,7 @@
 
                     if (el.nodeType === 1) {
                         if (all) {
-                            nodes.push(new types$$$Element(el));
+                            nodes.push(new $Element(el));
                         } else {
                             nodes = el;
 
@@ -334,12 +334,12 @@
                 }
             }
 
-            return all ? nodes : types$$$Element(nodes);
+            return all ? nodes : $Element(nodes);
         }};
 
-    types$$DOM.create = dom$create$$makeMethod("");
+    DOM.create = dom$create$$makeMethod("");
 
-    types$$DOM.createAll = dom$create$$makeMethod("All");
+    DOM.createAll = dom$create$$makeMethod("All");
 
     /*
      * Helper for css selectors
@@ -350,7 +350,7 @@
         util$selectormatcher$$propName = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix)  {
                 var propertyName = prefix + "atchesSelector";
 
-                return result || const$$HTML[propertyName] && propertyName;
+                return result || HTML[propertyName] && propertyName;
             }, null);
 
     var util$selectormatcher$$default = function(selector, context) {
@@ -404,7 +404,7 @@
             matcher = util$selectormatcher$$default(selector);
 
         return function(node, mock)  {
-            var el = types$$$Element(node);
+            var el = $Element(node);
             // skip previously invoked or mismatched elements
             if (~el._._extensions.indexOf(index) || !matcher(node)) return;
             // mark extension as invoked
@@ -447,7 +447,7 @@
         dom$extend$$returnFalse = function()  {return false},
         dom$extend$$cssText;
 
-    types$$DOM.extend = function(selector, condition, mixins) {
+    DOM.extend = function(selector, condition, mixins) {
         if (arguments.length === 2) {
             mixins = condition;
             condition = true;
@@ -460,7 +460,7 @@
 
         if (selector === "*") {
             util$index$$default.keys(mixins).forEach(function(methodName)  {
-                types$$$Element.prototype[methodName] = mixins[methodName];
+                $Element.prototype[methodName] = mixins[methodName];
             });
         } else {
             var ext = util$extensionhandler$$default(selector, condition, mixins, dom$extend$$extensions.length);
@@ -468,19 +468,19 @@
             dom$extend$$extensions.push(ext);
 
             // live extensions are always async
-            const$$WINDOW.setTimeout(function()  {
+            WINDOW.setTimeout(function()  {
                 // initialize extension manually to make sure that all elements
                 // have appropriate methods before they are used in other DOM.extend.
                 // Also fixes legacy IEs when the HTC behavior is already attached
-                util$index$$default.each.call(const$$DOCUMENT.querySelectorAll(selector), ext);
+                util$index$$default.each.call(DOCUMENT.querySelectorAll(selector), ext);
                 // MUST be after querySelectorAll because of legacy IEs quirks
-                types$$DOM.importStyles(selector, dom$extend$$cssText);
+                DOM.importStyles(selector, dom$extend$$cssText);
             }, 1);
         }
     };
 
-    if (const$$JSCRIPT_VERSION < 10) {
-        var dom$extend$$legacyScripts = util$index$$default.filter.call(const$$DOCUMENT.scripts, function(script)  {return script.src.indexOf("better-dom-legacy.js") >= 0});
+    if (JSCRIPT_VERSION < 10) {
+        var dom$extend$$legacyScripts = util$index$$default.filter.call(DOCUMENT.scripts, function(script)  {return script.src.indexOf("better-dom-legacy.js") >= 0});
 
         if (dom$extend$$legacyScripts.length < 1) {
             throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
@@ -488,29 +488,29 @@
 
         dom$extend$$cssText = "-ms-behavior:url(" + dom$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important";
 
-        const$$DOCUMENT.attachEvent("on" + const$$CUSTOM_EVENT_TYPE, function()  {
-            var e = const$$WINDOW.event;
+        DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, function()  {
+            var e = WINDOW.event;
 
-            if (e.srcUrn === const$$CUSTOM_EVENT_TYPE) {
+            if (e.srcUrn === CUSTOM_EVENT_TYPE) {
                 dom$extend$$extensions.forEach(function(ext)  { ext(e.srcElement) });
             }
         });
     } else {
-        var dom$extend$$ANIMATION_NAME = "DOM2000001";
-        var dom$extend$$_extend = types$$DOM.extend;
+        var dom$extend$$ANIMATION_NAME = "DOM2000002";
+        var dom$extend$$_extend = DOM.extend;
 
-        dom$extend$$cssText = const$$WEBKIT_PREFIX + "animation-name:" + dom$extend$$ANIMATION_NAME + " !important;";
-        dom$extend$$cssText += const$$WEBKIT_PREFIX + "animation-duration:1ms !important";
+        dom$extend$$cssText = WEBKIT_PREFIX + "animation-name:" + dom$extend$$ANIMATION_NAME + " !important;";
+        dom$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
 
-        types$$DOM.extend = function()  {
+        DOM.extend = function()  {
             // declare the fake animation on the first DOM.extend method call
-            types$$DOM.importStyles("@" + const$$WEBKIT_PREFIX + "keyframes " + dom$extend$$ANIMATION_NAME, "from {opacity:.99} to {opacity:1}");
+            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + dom$extend$$ANIMATION_NAME, "from {opacity:.99} to {opacity:1}");
             // restore original method and invoke it
-            (types$$DOM.extend = dom$extend$$_extend).apply(types$$DOM, arguments);
+            (DOM.extend = dom$extend$$_extend).apply(DOM, arguments);
         };
 
         // use capturing to suppress internal animationstart events
-        const$$DOCUMENT.addEventListener(const$$WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
+        DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
             if (e.animationName === dom$extend$$ANIMATION_NAME) {
                 dom$extend$$extensions.forEach(function(ext)  { ext(e.target) });
                 // this is an internal event - stop it immediately
@@ -523,22 +523,22 @@
 
     var dom$format$$reVar = /\{([\w\-]+)\}/g;
 
-    types$$DOM.format = function(tmpl, varMap) {
-        if (typeof tmpl !== "string") throw new errors$$StaticMethodError("format", arguments);
+    DOM.format = function(tmpl, varMap) {
+        if (typeof tmpl !== "string") tmpl = String(tmpl);
 
         if (!varMap || typeof varMap !== "object") varMap = {};
 
         return tmpl.replace(dom$format$$reVar, function(x, name)  {return name in varMap ? String(varMap[name]) : x});
     };
 
-    types$$DOM.importScripts = function() {var SLICE$0 = Array.prototype.slice;var urls = SLICE$0.call(arguments, 0);
+    DOM.importScripts = function() {var SLICE$0 = Array.prototype.slice;var urls = SLICE$0.call(arguments, 0);
         var callback = function() {
             var arg = urls.shift(),
                 argType = typeof arg,
                 script;
 
             if (argType === "string") {
-                script = const$$DOCUMENT.createElement("script");
+                script = DOCUMENT.createElement("script");
                 script.src = arg;
                 script.onload = callback;
                 script.async = true;
@@ -561,7 +561,7 @@
         util$stylehooks$$reDash = /\-./g,
         util$stylehooks$$reCamel = /[A-Z]/g,
         util$stylehooks$$directions = ["Top", "Right", "Bottom", "Left"],
-        util$stylehooks$$computed = util$index$$default.computeStyle(const$$HTML),
+        util$stylehooks$$computed = util$index$$default.computeStyle(HTML),
         // In Opera CSSStyleDeclaration objects returned by _.computeStyle have length 0
         util$stylehooks$$props = util$stylehooks$$computed.length ? util$index$$default.slice.call(util$stylehooks$$computed, 0) : util$index$$default.keys(util$stylehooks$$computed).map(function(key)  {
             return key.replace(util$stylehooks$$reCamel, function(str)  {return "-" + str.toLowerCase()});
@@ -633,7 +633,7 @@
 
     var util$stylehooks$$default = util$stylehooks$$hooks;
 
-    var dom$importstyles$$styleNode = util$index$$default.injectElement(const$$DOCUMENT.createElement("style")),
+    var dom$importstyles$$styleNode = util$index$$default.injectElement(DOCUMENT.createElement("style")),
         dom$importstyles$$styleSheet = dom$importstyles$$styleNode.sheet || dom$importstyles$$styleNode.styleSheet,
         dom$importstyles$$styleRules = dom$importstyles$$styleSheet.cssRules || dom$importstyles$$styleSheet.rules,
         dom$importstyles$$toString = function(cssText)  {
@@ -664,7 +664,7 @@
             }
         }};
 
-    types$$DOM.importStyles = function(selector, cssText) {
+    DOM.importStyles = function(selector, cssText) {
         if (cssText && typeof cssText === "object") {
             cssText = dom$importstyles$$toString(cssText);
         }
@@ -685,10 +685,10 @@
         util$index$$default.each.call(node.children, dom$mock$$applyExtensions);
     }
 
-    types$$DOM.mock = function(content, varMap) {
-        if (!content) return new types$$$NullElement();
+    DOM.mock = function(content, varMap) {
+        if (!content) return new $NullElement();
 
-        var result = types$$DOM.create(content, varMap);
+        var result = DOM.create(content, varMap);
 
         dom$mock$$applyExtensions(result[0]);
 
@@ -705,7 +705,7 @@
         var node = this[0],
             matcher = util$selectormatcher$$default(selector),
             children = node.children;
-        if (const$$JSCRIPT_VERSION < 9) {
+        if (JSCRIPT_VERSION < 9) {
             // fix IE8 bug with children collection
             children = util$index$$default.filter.call(children, function(node)  {return node.nodeType === 1});
         }
@@ -713,11 +713,11 @@
         if (all) {
             if (matcher) children = util$index$$default.filter.call(children, matcher);
 
-            return util$index$$default.map.call(children, types$$$Element);
+            return util$index$$default.map.call(children, $Element);
         } else {
             if (selector < 0) selector = children.length + selector;
 
-            return types$$$Element(children[selector]);
+            return $Element(children[selector]);
         }
     }};
 
@@ -726,7 +726,7 @@
 
         children: element$children$$makeMethod(true)
     }, function(methodName)  {
-        return methodName === "child" ? function()  {return new types$$$NullElement()} : function()  {return []};
+        return methodName === "child" ? function()  {return new $NullElement()} : function()  {return []};
     });
 
     /* es6-transpiler has-iterators:false, has-generators: false */
@@ -734,7 +734,7 @@
     var element$classes$$reSpace = /[\n\t\r]/g,
         element$classes$$makeMethod = function(nativeMethodName, strategy)  {
             var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
-            if (const$$HTML.classList) {
+            if (HTML.classList) {
                 // use native classList property if possible
                 strategy = function(el, token) {
                     return el[0].classList[nativeMethodName](token);
@@ -805,25 +805,25 @@
             if (typeof deep !== "boolean") throw new errors$$MethodError("clone", arguments);
 
             var node = this[0], result;
-            if (const$$JSCRIPT_VERSION < 9) {
-                result = types$$DOM.create(node.outerHTML);
+            if (JSCRIPT_VERSION < 9) {
+                result = DOM.create(node.outerHTML);
 
                 if (!deep) result.set("innerHTML", "");
             } else {
-                result = new types$$$Element(node.cloneNode(deep));
+                result = new $Element(node.cloneNode(deep));
             }
 
             return result;
         }
     }, function()  {
-        return function()  {return new types$$$NullElement()};
+        return function()  {return new $NullElement()};
     });
 
     util$index$$default.register({
         contains: function(element) {
             var node = this[0];
 
-            if (element instanceof types$$$Element) {
+            if (element instanceof $Element) {
                 var otherNode = element[0];
 
                 if (otherNode === node) return true;
@@ -931,7 +931,7 @@
             // because IE8 will try to read wrong attribute value
             var initialValue = node.getAttribute(name);
             // trick to fix infinite recursion in IE8
-            var attrName = const$$JSCRIPT_VERSION < 9 ? name.toUpperCase() : name;
+            var attrName = JSCRIPT_VERSION < 9 ? name.toUpperCase() : name.toLowerCase();
             var _setAttribute = node.setAttribute;
             var _removeAttribute = node.removeAttribute;
 
@@ -979,7 +979,7 @@
     // big part of code inspired by Sizzle:
     // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-    var element$find$$rquick = const$$DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+    var element$find$$rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
         element$find$$rescape = /'|\\/g,
         element$find$$makeMethod = function(all)  {return function(selector) {
             if (typeof selector !== "string") throw new errors$$MethodError("find" + all, arguments);
@@ -1000,10 +1000,10 @@
                 if (result && !all) result = result[0];
             } else {
                 old = true;
-                nid = "DOM2000001";
+                nid = "DOM2000002";
                 context = node;
 
-                if (this !== types$$DOM) {
+                if (this !== DOM) {
                     // qSA works strangely on Element-rooted queries
                     // We can work around this by specifying an extra ID on the root
                     // and working up from there (Thanks to Andrew Dupont for the technique)
@@ -1022,7 +1022,7 @@
                 if (!old) node.removeAttribute("id");
             }
 
-            return all ? util$index$$default.map.call(result, types$$$Element) : types$$$Element(result);
+            return all ? util$index$$default.map.call(result, $Element) : $Element(result);
         }};
 
     util$index$$default.register({
@@ -1030,24 +1030,22 @@
 
         findAll: element$find$$makeMethod("All")
     }, function(methodName)  {
-        return methodName === "find" ? function()  {return new types$$$NullElement()} : function()  {return []};
+        return methodName === "find" ? function()  {return new $NullElement()} : function()  {return []};
     });
 
     var util$eventhooks$$hooks = {};
-    if ("onfocusin" in const$$HTML) {
+    if ("onfocusin" in HTML) {
         util$eventhooks$$hooks.focus = function(handler)  { handler._type = "focusin" };
         util$eventhooks$$hooks.blur = function(handler)  { handler._type = "focusout" };
     } else {
         // firefox doesn't support focusin/focusout events
         util$eventhooks$$hooks.focus = util$eventhooks$$hooks.blur = function(handler)  { handler.capturing = true };
     }
-    if (const$$DOCUMENT.createElement("input").validity) {
-        util$eventhooks$$hooks.invalid = function(handler)  { handler.capturing = true };
-    }
-    if (const$$JSCRIPT_VERSION < 9) {
-        // fix non-bubbling form events for IE8
+    if (JSCRIPT_VERSION < 9) {
+        // fix non-bubbling form events for IE8 therefore
+        // use custom event type instead of original one
         ["submit", "change", "reset"].forEach(function(name)  {
-            util$eventhooks$$hooks[name] = function(handler)  { handler._type = const$$CUSTOM_EVENT_TYPE };
+            util$eventhooks$$hooks[name] = function(handler)  { handler._type = "_" };
         });
     }
 
@@ -1059,7 +1057,7 @@
         }
 
         if (typeof name !== "string") return name;
-        if (const$$JSCRIPT_VERSION < 9) {
+        if (JSCRIPT_VERSION < 9) {
             switch (name) {
             case "which":
                 return e.keyCode;
@@ -1068,9 +1066,9 @@
                 // click: 1 === left; 2 === middle; 3 === right
                 return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
             case "pageX":
-                return e.clientX + const$$HTML.scrollLeft - const$$HTML.clientLeft;
+                return e.clientX + HTML.scrollLeft - HTML.clientLeft;
             case "pageY":
-                return e.clientY + const$$HTML.scrollTop - const$$HTML.clientTop;
+                return e.clientY + HTML.scrollTop - HTML.clientTop;
             case "preventDefault":
                 return function()  {return e.returnValue = false};
             case "stopPropagation":
@@ -1085,11 +1083,11 @@
             // IE8 and Android 2.3 use returnValue instead of defaultPrevented
             return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
         case "target":
-            return types$$$Element(target);
+            return $Element(target);
         case "currentTarget":
-            return types$$$Element(currentTarget);
+            return $Element(currentTarget);
         case "relatedTarget":
-            return types$$$Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
+            return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
         }
 
         var value = e[name];
@@ -1106,14 +1104,14 @@
             hook = util$eventhooks$$default[type],
             matcher = util$selectormatcher$$default(selector, node),
             handler = function(e)  {
-                e = e || const$$WINDOW.event;
+                e = e || WINDOW.event;
                 // early stop in case of default action
                 if (util$eventhandler$$EventHandler.skip === type) return;
-                if (handler._type === const$$CUSTOM_EVENT_TYPE && e.srcUrn !== type) {
+                if (handler._type === CUSTOM_EVENT_TYPE && e.srcUrn !== type) {
                     return; // handle custom events in legacy IE
                 }
                 // srcElement can be null in legacy IE when target is document
-                var target = e.target || e.srcElement || const$$DOCUMENT,
+                var target = e.target || e.srcElement || DOCUMENT,
                     currentTarget = matcher ? matcher(target) : node,
                     args;
 
@@ -1132,7 +1130,7 @@
 
                 // prevent default if handler returns false
                 if (callback.apply(el, args) === false) {
-                    if (const$$JSCRIPT_VERSION < 9) {
+                    if (JSCRIPT_VERSION < 9) {
                         e.returnValue = false;
                     } else {
                         e.preventDefault();
@@ -1141,9 +1139,9 @@
             };
 
         if (hook) handler = hook(handler, type) || handler;
-        if (const$$JSCRIPT_VERSION < 9 && !("on" + (handler._type || type) in node)) {
+        if (JSCRIPT_VERSION < 9 && !("on" + (handler._type || type) in node)) {
             // handle custom events for IE8
-            handler._type = const$$CUSTOM_EVENT_TYPE;
+            handler._type = CUSTOM_EVENT_TYPE;
         }
 
         handler.type = selector ? type + " " + selector : type;
@@ -1169,19 +1167,19 @@
             } else {
                 throw new errors$$MethodError("fire", arguments);
             }
-            if (const$$JSCRIPT_VERSION < 9) {
-                e = const$$DOCUMENT.createEventObject();
+            if (JSCRIPT_VERSION < 9) {
+                e = DOCUMENT.createEventObject();
                 e.detail = arguments;
                 // handle custom events for legacy IE
-                if (!("on" + eventType in node)) eventType = const$$CUSTOM_EVENT_TYPE;
+                if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
-                if (eventType === const$$CUSTOM_EVENT_TYPE) e.srcUrn = type;
+                if (eventType === CUSTOM_EVENT_TYPE) e.srcUrn = type;
 
                 node.fireEvent("on" + eventType, e);
 
                 canContinue = e.returnValue !== false;
             } else {
-                e = const$$DOCUMENT.createEvent("HTMLEvents");
+                e = DOCUMENT.createEvent("HTMLEvents");
                 e.detail = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
@@ -1216,8 +1214,8 @@
     util$accessorhooks$$hooks.set.style = function(node, value)  { node.style.cssText = value };
 
     // title hook for DOM
-    util$accessorhooks$$hooks.get.title = function(node)  {return node === const$$HTML ? const$$DOCUMENT.title : node.title};
-    util$accessorhooks$$hooks.set.title = function(node, value)  { (node === const$$HTML ? const$$DOCUMENT : node).title = value; };
+    util$accessorhooks$$hooks.get.title = function(node)  {return node === HTML ? DOCUMENT.title : node.title};
+    util$accessorhooks$$hooks.set.title = function(node, value)  { (node === HTML ? DOCUMENT : node).title = value; };
 
     util$accessorhooks$$hooks.get.undefined = function(node)  {
         var name;
@@ -1245,13 +1243,13 @@
             }
         } else {
             // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-            node[const$$JSCRIPT_VERSION < 9 && node.type === "textarea" ? "innerText" : "value"] = value;
+            node[JSCRIPT_VERSION < 9 && node.type === "textarea" ? "innerText" : "value"] = value;
         }
     };
 
     // some browsers don't recognize input[type=email] etc.
     util$accessorhooks$$hooks.get.type = function(node)  {return node.getAttribute("type") || node.type};
-    if (const$$JSCRIPT_VERSION < 9) {
+    if (JSCRIPT_VERSION < 9) {
         // IE8 has innerText but not textContent
         util$accessorhooks$$hooks.get.textContent = function(node)  {return node.innerText};
         util$accessorhooks$$hooks.set.textContent = function(node, value)  { node.innerText = value };
@@ -1331,7 +1329,7 @@
     var element$manipulation$$makeMethod = function(methodName, fasterMethodName, standalone, strategy)  {return function() {var content = arguments[0];if(content === void 0)content = "";
             var node = this[0];
 
-            if (!standalone && (!node.parentNode || content === types$$DOM)) return this;
+            if (!standalone && (!node.parentNode || content === DOM)) return this;
 
             if (typeof content === "function") content = content.call(this);
 
@@ -1341,17 +1339,17 @@
                     if (fasterMethodName) {
                         content = content.trim();
                     } else {
-                        content = types$$DOM.create(content)[0];
+                        content = DOM.create(content)[0];
                     }
                 }
-            } else if (content instanceof types$$$Element) {
+            } else if (content instanceof $Element) {
                 content = content[0];
             } else if (util$index$$default.isArray(content)) {
                 content = content.reduce(function(fragment, el)  {
                     fragment.appendChild(el[0]);
 
                     return fragment;
-                }, const$$DOCUMENT.createDocumentFragment());
+                }, DOCUMENT.createDocumentFragment());
             } else {
                 throw new errors$$MethodError(methodName, arguments);
             }
@@ -1393,17 +1391,17 @@
 
     var util$selectorhooks$$hooks = {};
 
-    util$selectorhooks$$hooks[":focus"] = function(node)  {return node === const$$DOCUMENT.activeElement};
+    util$selectorhooks$$hooks[":focus"] = function(node)  {return node === DOCUMENT.activeElement};
 
-    util$selectorhooks$$hooks[":hidden"] = function(node)  {
+    util$selectorhooks$$hooks[":hidden"] = function(node, computed)  {
         if (node.getAttribute("aria-hidden") === "true") return true;
 
-        var computed = util$index$$default.computeStyle(node);
+        computed = computed || util$index$$default.computeStyle(node);
 
         return computed.visibility === "hidden" || computed.display === "none";
     };
 
-    util$selectorhooks$$hooks[":visible"] = function(node)  {return !util$selectorhooks$$hooks[":hidden"](node)};
+    util$selectorhooks$$hooks[":visible"] = function(node, computed)  {return !util$selectorhooks$$hooks[":hidden"](node, computed)};
 
     var util$selectorhooks$$default = util$selectorhooks$$hooks;
 
@@ -1413,7 +1411,7 @@
 
             var checker = util$selectorhooks$$default[selector] || util$selectormatcher$$default(selector);
 
-            return !!checker(this[0], this);
+            return !!checker(this[0]);
         }
     }, function()  {
         return function()  {return false};
@@ -1429,7 +1427,7 @@
                 if (type !== handler.type || callback && callback !== handler.callback) return true;
 
                 type = handler._type || handler.type;
-                if (const$$JSCRIPT_VERSION < 9) {
+                if (JSCRIPT_VERSION < 9) {
                     node.detachEvent("on" + type, handler);
                 } else {
                     node.removeEventListener(type, handler, !!handler.capturing);
@@ -1443,10 +1441,10 @@
     util$index$$default.register({
         offset: function() {
             var node = this[0],
-                clientTop = const$$HTML.clientTop,
-                clientLeft = const$$HTML.clientLeft,
-                scrollTop = const$$WINDOW.pageYOffset || const$$HTML.scrollTop,
-                scrollLeft = const$$WINDOW.pageXOffset || const$$HTML.scrollLeft,
+                clientTop = HTML.clientTop,
+                clientLeft = HTML.clientLeft,
+                scrollTop = WINDOW.pageYOffset || HTML.scrollTop,
+                scrollLeft = WINDOW.pageXOffset || HTML.scrollLeft,
                 boundingRect = node.getBoundingClientRect();
 
             return {
@@ -1491,7 +1489,7 @@
                     handler = util$eventhandler$$default(type, selector, callback, args, this, method === "once");
 
                 if (handler) {
-                    if (const$$JSCRIPT_VERSION < 9) {
+                    if (JSCRIPT_VERSION < 9) {
                         node.attachEvent("on" + (handler._type || type), handler);
                     } else {
                         node.addEventListener(handler._type || type, handler, !!handler.capturing);
@@ -1566,7 +1564,7 @@
                     } else {
                         node.setAttribute(name, value);
                     }
-                    if (const$$JSCRIPT_VERSION < 9 || const$$LEGACY_ANDROID) {
+                    if (JSCRIPT_VERSION < 9 || LEGACY_ANDROID) {
                         // always trigger reflow manually for IE8 and legacy Android
                         node.className = node.className;
                     }
@@ -1610,7 +1608,7 @@
                 }
             }
 
-            return all ? util$index$$default.map.call(nodes, types$$$Element) : types$$$Element(it);
+            return all ? util$index$$default.map.call(nodes, $Element) : $Element(it);
         }};
 
     util$index$$default.register({
@@ -1627,100 +1625,110 @@
         if (methodName.slice(-3) === "All") {
             return function()  {return []};
         } else {
-            return function()  {return new types$$$NullElement()};
+            return function()  {return new $NullElement()};
         }
     });
 
-    // Legacy Android is too slow and has a lot of bugs in the CSS animations
-    // implementation, so skip any animations for it
-    var element$visibility$$ANIMATIONS_ENABLED = !(const$$LEGACY_ANDROID || const$$JSCRIPT_VERSION < 10),
-        element$visibility$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
-        element$visibility$$TRANSITION_EVENT_TYPE = const$$WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-        element$visibility$$ANIMATION_EVENT_TYPE = const$$WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
-        element$visibility$$parseTimeValue = function(value)  {
+    var util$animationhandler$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(p)  {return "transition-" + p}),
+        util$animationhandler$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
             // if duration is in seconds, then multiple result value by 1000
             return !result || value.slice(-2) === "ms" ? result : result * 1000;
         },
-        element$visibility$$calcTransitionDuration = function(style)  {
-            var delay = util$stylehooks$$default.get["transition-delay"](style).split(","),
-                duration = util$stylehooks$$default.get["transition-duration"](style).split(",");
+        util$animationhandler$$calcTransitionDuration = function(transitionValues)  {
+            var delays = transitionValues[3],
+                durations = transitionValues[2];
 
-            return Math.max.apply(Math, duration.map(function(value, index)  {
-                return element$visibility$$parseTimeValue(value) + (element$visibility$$parseTimeValue(delay[index]) || 0);
+            return Math.max.apply(Math, durations.map(function(value, index)  {
+                return util$animationhandler$$parseTimeValue(value) + (util$animationhandler$$parseTimeValue(delays[index]) || 0);
             }));
-        },
-        element$visibility$$scheduleTransition = function(node, style, computed, hiding, done)  {
-            var duration = element$visibility$$calcTransitionDuration(computed);
+        };
 
-            if (!duration) return false; // skip transitions with zero duration
+    var util$animationhandler$$default = function(node, computed, animationName, hiding, done)  {
+        var rules, duration;
 
-            var visibilityTransitionIndex, transitionValues;
+        // Legacy Android is usually slow and has lots of bugs in the
+        // CSS animations implementation, so skip any animations for it
 
-            transitionValues = element$visibility$$TRANSITION_PROPS.map(function(prop, index)  {
-                // have to use regexp to split transition-timing-function value
-                return util$stylehooks$$default.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+        // Determine of we need animation by checking if an element
+        // has non-zero width. It also fixes animation of new elements
+        // inserted into the DOM in Webkit and Opera 12 browsers
+        if (LEGACY_ANDROID || JSCRIPT_VERSION < 10 || !computed.width) return null;
+
+        if (animationName) {
+            duration = util$animationhandler$$parseTimeValue(util$stylehooks$$default.get["animation-duration"](computed));
+
+            if (!duration) return; // skip animations with zero duration
+
+            rules = [
+                WEBKIT_PREFIX + "animation-direction:" + (hiding ? "normal" : "reverse"),
+                WEBKIT_PREFIX + "animation-name:" + animationName,
+                // for CSS3 animation element should always be visible
+                "visibility:inherit"
+            ];
+        } else {
+            var transitionValues = util$animationhandler$$TRANSITION_PROPS.map(function(prop, index)  {
+                    // have to use regexp to split transition-timing-function value
+                    return util$stylehooks$$default.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+                });
+
+            duration = util$animationhandler$$calcTransitionDuration(transitionValues);
+
+            if (!duration) return; // skip transitions with zero duration
+
+            if (transitionValues[1].indexOf("all") < 0) {
+                // try to find existing or use 0s length or make a new visibility transition
+                var visibilityIndex = transitionValues[1].indexOf("visibility");
+
+                if (visibilityIndex < 0) visibilityIndex = transitionValues[2].indexOf("0s");
+                if (visibilityIndex < 0) visibilityIndex = transitionValues[1].length;
+
+                transitionValues[0][visibilityIndex] = "linear";
+                transitionValues[1][visibilityIndex] = "visibility";
+                transitionValues[hiding ? 2 : 3][visibilityIndex] = "0s";
+                transitionValues[hiding ? 3 : 2][visibilityIndex] = duration + "ms";
+            }
+
+            rules = transitionValues.map(function(props, index)  {
+                // fill holes in a trasition property value
+                for (var i = 0, n = props.length; i < n; ++i) {
+                    props[i] = props[i] || props[i - 1] || "initial";
+                }
+
+                return WEBKIT_PREFIX + util$animationhandler$$TRANSITION_PROPS[index] + ":" + props.join(", ");
             });
 
-            // try to find existing or use 0s length or make a new visibility transition
-            visibilityTransitionIndex = transitionValues[1].indexOf("visibility");
-            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[2].indexOf("0s");
-            if (visibilityTransitionIndex < 0) visibilityTransitionIndex = transitionValues[0].length;
+            rules.push(
+                // append target visibility value to trigger transition
+                "visibility:" + (hiding ? "hidden" : "inherit"),
+                // use willChange to improve performance in modern browsers:
+                // http://dev.opera.com/articles/css-will-change-property/
+                "will-change:" + transitionValues[1].join(", ")
+            );
+        }
 
-            transitionValues[0][visibilityTransitionIndex] = "linear";
-            transitionValues[1][visibilityTransitionIndex] = "visibility";
-            transitionValues[hiding ? 2 : 3][visibilityTransitionIndex] = "0s";
-            transitionValues[hiding ? 3 : 2][visibilityTransitionIndex] = duration + "ms";
+        return {
+            cssText: rules.join(";"),
+            initialCssText: node.style.cssText,
+            // this function used to trigger callback
+            handleEvent: function(e)  {
+                if (e.target === node) {
+                    if (animationName) {
+                        if (e.animationName !== animationName) return;
+                    } else {
+                        if (e.propertyName !== "visibility") return;
+                    }
 
-            // now set target duration and delay
-            transitionValues.forEach(function(value, index)  {
-                util$stylehooks$$default.set[element$visibility$$TRANSITION_PROPS[index]](style, value.join(", "));
-            });
-
-            node.addEventListener(element$visibility$$TRANSITION_EVENT_TYPE, function completeTransition(e) {
-                if (e.propertyName === "visibility") {
-                    e.stopPropagation(); // this is an internal transition
-
-                    node.removeEventListener(element$visibility$$TRANSITION_EVENT_TYPE, completeTransition, true);
-
-                    style.willChange = ""; // remove temporary properties
+                    e.stopPropagation(); // this is an internal event
 
                     done();
                 }
-            }, true);
+            }
+        };
+    };
 
-            // make sure that the visibility property will be changed
-            // so reset it to appropriate value with zero
-            style.visibility = hiding ? "inherit" : "hidden";
-            // use willChange to improve performance in modern browsers:
-            // http://dev.opera.com/articles/css-will-change-property/
-            style.willChange = transitionValues[1].join(", ");
-
-            return true;
-        },
-        element$visibility$$scheduleAnimation = function(node, style, computed, animationName, hiding, done)  {
-            var duration = element$visibility$$parseTimeValue(util$stylehooks$$default.get["animation-duration"](computed));
-
-            if (!duration) return false; // skip animations with zero duration
-
-            node.addEventListener(element$visibility$$ANIMATION_EVENT_TYPE, function completeAnimation(e) {
-                if (e.animationName === animationName) {
-                    e.stopPropagation(); // this is an internal animation
-
-                    node.removeEventListener(element$visibility$$ANIMATION_EVENT_TYPE, completeAnimation, true);
-
-                    util$stylehooks$$default.set["animation-name"](style, ""); // remove temporary animation
-
-                    done();
-                }
-            }, true);
-
-            // trigger animation start
-            util$stylehooks$$default.set["animation-direction"](style, hiding ? "normal" : "reverse");
-            util$stylehooks$$default.set["animation-name"](style, animationName);
-
-            return true;
-        },
+    var element$visibility$$TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
+        element$visibility$$ANIMATION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend",
         element$visibility$$makeMethod = function(name, condition)  {return function(animationName, callback) {var this$0 = this;
             if (typeof animationName !== "string") {
                 callback = animationName;
@@ -1740,10 +1748,10 @@
                     // cases when an animation was toggled in the intermediate
                     // state. Don't need to proceed in such situation
                     if (String(hiding) === node.getAttribute("aria-hidden")) {
-                        if (animatable) {
-                            if (hiding && animationName) {
-                                style.visibility = "hidden";
-                            }
+                        if (animationHandler) {
+                            node.removeEventListener(eventType, animationHandler, true);
+                            // restore initial state
+                            style.cssText = animationHandler.initialCssText;
                         } else {
                             // no animation was applied
                             if (hiding) {
@@ -1760,38 +1768,30 @@
                                 style.display = this$0._._display || "inherit";
                             }
                         }
+                        // always update element visibility property
+                        // use value "inherit" to respect parent container visibility
+                        style.visibility = hiding ? "hidden" : "inherit";
 
                         if (callback) callback.call(this$0);
                     }
                 },
-                // Determine of we need animation by checking if an
-                // element has non-zero offsetWidth. It also fixes
-                // animation of an element inserted into the DOM in Webkit
-                // browsers pluse Opera 12 issue with CSS3 animations
-                animatable = element$visibility$$ANIMATIONS_ENABLED && node.offsetWidth;
+                animationHandler = util$animationhandler$$default(node, computed, animationName, hiding, done),
+                eventType = animationName ? element$visibility$$ANIMATION_EVENT_TYPE : element$visibility$$TRANSITION_EVENT_TYPE;
 
             if (typeof hiding !== "boolean") {
-                hiding = !util$selectorhooks$$default[":hidden"](node);
+                hiding = !util$selectorhooks$$default[":hidden"](node, computed);
             }
 
-            if (animatable) {
-                if (animationName) {
-                    animatable = element$visibility$$scheduleAnimation(node, style, computed, animationName, hiding, done);
-                } else {
-                    animatable = element$visibility$$scheduleTransition(node, style, computed, hiding, done);
-                }
+            if (animationHandler) {
+                node.addEventListener(eventType, animationHandler, true);
+                // trigger animation(s)
+                style.cssText = animationHandler.initialCssText + animationHandler.cssText;
+            } else {
+                // done callback is always async
+                setTimeout(done, 0);
             }
-
-            // always update element visibility property
-            // for CSS3 animation element should always be visible
-            // use value "inherit" to respect parent container visibility
-            style.visibility = hiding && !animationName ? "hidden" : "inherit";
             // trigger CSS3 transition if it exists
-            this.set("aria-hidden", String(hiding));
-            // must be AFTER changing the aria-hidden attribute
-            if (!animatable) done();
-
-            return this;
+            return this.set("aria-hidden", String(hiding));
         }};
 
     util$index$$default.register({
