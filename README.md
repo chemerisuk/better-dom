@@ -43,23 +43,32 @@ The project uses set of ES6 transpilers to compile an output file that works in 
 After any change it recompiles `build/better-dom.js` and runs it through the unit tests.
 
 ## Notes about old IEs
-For IE8-9 support you have to incude an extra file via the conditional comment below __into `<head>`__ on your page:
+For IE8-9 support you have to incude an extra file via the conditional comment below __before end of the `<head>`__ on your page:
 
-```
+```html
+<html>
+<head>
+...
 <!--[if IE]>
     <script src="bower_components/better-dom/dist/better-dom-legacy.js"></script>
 <![endif]-->
+</head>
+<body>
+    ...
+    <script src="bower_components/better-dom/dist/better-dom.js"></script>
+</body>
+</html>
 ```
 
-This file bundles several important addons for IE8-9:
+This file contains several important addons for IE8-9:
 
-1. [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions for `Array`, `Object`, `Function`, `Date` classes.
+1. [es5-shim](https://github.com/kriskowal/es5-shim) is used to polyfill/fix missed standards-based functions
 2. [html5shiv](https://github.com/aFarkas/html5shiv) solves issue with HTML5 tags in IE8
 3. polyfill/fix for the `input` event in IE8-9
 4. `change` event fix for checkboxes and radio buttons in IE8
 5. fix for bubbling of the `submit` and `reset` events in IE8
 
-Later the library downloads `better-dom-legacy.htc` file. This file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support. And that fact applies several important limitations which you should be aware of in case when legacy browser support is needed:
+Later the library downloads `better-dom-legacy.htc` file. This file helps to implement [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) support and should be in the same folder with `better-dom-legacy.js`. And that fact applies several important limitations which you should be aware of in case when IE8-9 support is needed:
 
 1) [HTC behaviors](http://msdn.microsoft.com/en-us/library/ms531079(v=vs.85).aspx) have to serve up with a `content-type` header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct `content-type`, but others are not:
 

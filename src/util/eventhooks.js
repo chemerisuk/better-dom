@@ -1,4 +1,4 @@
-import { JSCRIPT_VERSION, HTML } from "../const";
+import { JSCRIPT_VERSION, HTML, DOCUMENT } from "../const";
 
 var hooks = {};
 /* istanbul ignore if */
@@ -8,6 +8,10 @@ if ("onfocusin" in HTML) {
 } else {
     // firefox doesn't support focusin/focusout events
     hooks.focus = hooks.blur = (handler) => { handler.capturing = true };
+}
+/* istanbul ignore else */
+if (DOCUMENT.createElement("input").validity) {
+    hooks.invalid = (handler) => { handler.capturing = true };
 }
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 9) {
