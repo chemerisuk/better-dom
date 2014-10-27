@@ -23,9 +23,6 @@ export default (selector, condition, mixins, index) => {
                 if (rePrivateFunction.exec(prop)) {
                     // preserve context for private functions
                     el[prop] = () => method.apply(el, arguments);
-                    // store original method internally to reduce
-                    // function calls in some cases
-                    el[prop][0] = method;
 
                     return !mock;
                 }

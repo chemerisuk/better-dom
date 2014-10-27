@@ -179,7 +179,6 @@ describe("extend", function() {
                 },
                 doSmth = function() {
                     expect(this).toBe(link);
-                    expect(this.doSmth[0]).toBe(doSmth);
                 },
                 link;
 
@@ -190,11 +189,7 @@ describe("extend", function() {
 
                 this.doSmth();
 
-                expect(this.onClick[0]).toBe(onClick);
-
-                setTimeout(function() {
-                    i.fire("click");
-                }, 0);
+                setTimeout(function() { i.fire("click") }, 0);
             });
 
             jasmine.sandbox.set("<a class=" + randomClass + "><i></i></a>");
