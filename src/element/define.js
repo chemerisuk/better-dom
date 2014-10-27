@@ -68,8 +68,9 @@ _.register({
         // initial value reading must be before defineProperty
         // because IE8 will try to read wrong attribute value
         var initialValue = node.getAttribute(name);
+        var letterCase = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
         // trick to fix infinite recursion in IE8
-        var attrName = JSCRIPT_VERSION < 9 ? name.toUpperCase() : name.toLowerCase();
+        var attrName = name[letterCase]();
         var _setAttribute = node.setAttribute;
         var _removeAttribute = node.removeAttribute;
 
@@ -92,7 +93,7 @@ _.register({
 
         // override methods to catch changes from attributes too
         node.setAttribute = (attrName, attrValue, flags) => {
-            if (name === attrName) {
+            if (name === attrName[letterCase]()) {
                 node[name] = getter.call(this, attrValue);
             } else {
                 _setAttribute.call(node, attrName, attrValue, flags);
@@ -100,7 +101,7 @@ _.register({
         };
 
         node.removeAttribute = (attrName, flags) => {
-            if (name === attrName) {
+            if (name === attrName[letterCase]()) {
                 node[name] = getter.call(this, null);
             } else {
                 _removeAttribute.call(node, attrName, flags);
