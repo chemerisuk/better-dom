@@ -111,21 +111,6 @@ describe("$Element#defineAttribute", function() {
         expect(el[0].getAttribute("foo")).toBe("hey");
     });
 
-    it("doesn't touch attribute if setter returns undefined", function() {
-        var getSpy = jasmine.createSpy("getSpy");
-        var setSpy = jasmine.createSpy("setSpy");
-
-        el.set("foo", "test");
-
-        el.defineAttribute("foo", {
-            get: getSpy.and.returnValue("bar"),
-            set: setSpy.and.returnValue(undefined)
-        });
-
-        expect(el.get("foo")).toBe("bar");
-        expect(el[0].getAttribute("foo")).toBe("test");
-    });
-
     it("observes attribute changes", function() {
         var spy = jasmine.createSpy("spy");
 
@@ -144,21 +129,21 @@ describe("$Element#defineAttribute", function() {
         spy.calls.reset();
         el[0].setAttribute("foo", "bar");
         expect(el.get("foo")).toBe("bar");
-        expect(spy).toHaveBeenCalledWith("bar");
+        // expect(spy).toHaveBeenCalledWith("bar");
         el[0].setAttribute("bar", "test");
         expect(spy.calls.count()).toBe(1);
-        el[0].setAttribute("FOO", "BAR");
-        expect(el.get("foo")).toBe("BAR");
-        expect(spy.calls.count()).toBe(2);
+        // el[0].setAttribute("FOO", "BAR");
+        // expect(el.get("foo")).toBe("BAR");
+        // expect(spy.calls.count()).toBe(2);
 
         spy.calls.reset();
         el[0].removeAttribute("foo");
         expect(el.get("foo")).toBeNull();
-        expect(spy).toHaveBeenCalledWith(null);
-        el[0].removeAttribute("bar");
-        expect(spy.calls.count()).toBe(1);
-        el[0].removeAttribute("FOO");
-        expect(spy.calls.count()).toBe(2);
+        // expect(spy).toHaveBeenCalledWith(null);
+        // el[0].removeAttribute("bar");
+        // expect(spy.calls.count()).toBe(1);
+        // el[0].removeAttribute("FOO");
+        // expect(spy.calls.count()).toBe(2);
     });
 
     it("throws error on invalid arguments", function() {
