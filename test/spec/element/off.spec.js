@@ -19,8 +19,18 @@ describe("off", function() {
         input.on("click", spy).off("click", spy).fire("click");
         expect(spy).not.toHaveBeenCalled();
 
-        input.on("click a", spy).off("click a", spy).fire("click");
+        input.on("click", "a", spy).off("click", "a", spy).fire("click");
         expect(spy).not.toHaveBeenCalled();
+    });
+
+    it("supports selector argument", function() {
+        link.on("click", spy).on("click", "input", spy);
+        input.fire("click");
+        expect(spy.calls.count()).toBe(2);
+
+        link.off("click", "input", spy);
+        input.fire("click");
+        expect(spy.calls.count()).toBe(3);
     });
 
     // it("should remove event callback with context", function() {

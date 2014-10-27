@@ -101,8 +101,9 @@ function EventHandler(type, selector, callback, props, el, once) {
         handler._type = CUSTOM_EVENT_TYPE;
     }
 
-    handler.type = selector ? type + " " + selector : type;
+    handler.type = type;
     handler.callback = callback;
+    handler.selector = selector;
 
     return handler;
 }

@@ -85,7 +85,7 @@ _.register({
 
                 if (attrValue === null) {
                     _removeAttribute.call(node, attrName, 1);
-                } else if (attrValue !== undefined) {
+                } else if (attrValue !== void 0) {
                     _setAttribute.call(node, attrName, attrValue, 1);
                 }
             }
