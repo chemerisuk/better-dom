@@ -82,9 +82,9 @@ _.register({
             set: (propValue) => {
                 var attrValue = setter.call(this, propValue);
 
-                if (attrValue == null) {
+                if (attrValue === null) {
                     _removeAttribute.call(node, attrName, 1);
-                } else {
+                } else if (attrValue !== undefined) {
                     _setAttribute.call(node, attrName, attrValue, 1);
                 }
             }

@@ -111,6 +111,21 @@ describe("$Element#defineAttribute", function() {
         expect(el[0].getAttribute("foo")).toBe("hey");
     });
 
+    it("doesn't touch attribute if setter returns undefined", function() {
+        var getSpy = jasmine.createSpy("getSpy");
+        var setSpy = jasmine.createSpy("setSpy");
+
+        el.set("foo", "test");
+
+        el.defineAttribute("foo", {
+            get: getSpy.and.returnValue("bar"),
+            set: setSpy.and.returnValue(undefined)
+        });
+
+        expect(el.get("foo")).toBe("bar");
+        expect(el[0].getAttribute("foo")).toBe("test");
+    });
+
     it("observes attribute changes", function() {
         var spy = jasmine.createSpy("spy");
 
