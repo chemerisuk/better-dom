@@ -1,7 +1,7 @@
 /**
  * @file better-dom.js
  * @overview better-dom: Live extension playground
- * @version 2.0.2 Fri, 24 Oct 2014 17:13:57 GMT
+ * @version 2.0.3 Tue, 28 Oct 2014 07:19:04 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -27,12 +27,12 @@
                 this[0] = node;
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__2000002__"] = this;
+                node["__2000003__"] = this;
             }
 
             this._ = { _handlers: [], _watchers: {}, _extensions: [] };
         } else if (node) {
-            var cached = node["__2000002__"];
+            var cached = node["__2000003__"];
             // create a wrapper only once for each native element
             return cached ? cached : new $Element(node);
         } else {
@@ -50,7 +50,7 @@
 
             return node ? "<" + node.tagName.toLowerCase() + ">" : "";
         },
-        version: "2.0.2"
+        version: "2.0.3"
     };
 
     $NullElement.prototype = new $Element();
@@ -418,9 +418,6 @@
                     if (util$extensionhandler$$rePrivateFunction.exec(prop)) {
                         // preserve context for private functions
                         el[prop] = function()  {return method.apply(el, arguments)};
-                        // store original method internally to reduce
-                        // function calls in some cases
-                        el[prop][0] = method;
 
                         return !mock;
                     }
@@ -496,7 +493,7 @@
             }
         });
     } else {
-        var dom$extend$$ANIMATION_NAME = "DOM2000002";
+        var dom$extend$$ANIMATION_NAME = "DOM2000003";
         var dom$extend$$_extend = DOM.extend;
 
         dom$extend$$cssText = WEBKIT_PREFIX + "animation-name:" + dom$extend$$ANIMATION_NAME + " !important;";
@@ -930,8 +927,9 @@
             // initial value reading must be before defineProperty
             // because IE8 will try to read wrong attribute value
             var initialValue = node.getAttribute(name);
+            var letterCase = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
             // trick to fix infinite recursion in IE8
-            var attrName = JSCRIPT_VERSION < 9 ? name.toUpperCase() : name.toLowerCase();
+            var attrName = name[letterCase]();
             var _setAttribute = node.setAttribute;
             var _removeAttribute = node.removeAttribute;
 
@@ -954,7 +952,7 @@
 
             // override methods to catch changes from attributes too
             node.setAttribute = function(attrName, attrValue, flags)  {
-                if (name === attrName) {
+                if (name === attrName[letterCase]()) {
                     node[name] = getter.call(this$0, attrValue);
                 } else {
                     _setAttribute.call(node, attrName, attrValue, flags);
@@ -962,7 +960,7 @@
             };
 
             node.removeAttribute = function(attrName, flags)  {
-                if (name === attrName) {
+                if (name === attrName[letterCase]()) {
                     node[name] = getter.call(this$0, null);
                 } else {
                     _removeAttribute.call(node, attrName, flags);
@@ -1000,7 +998,7 @@
                 if (result && !all) result = result[0];
             } else {
                 old = true;
-                nid = "DOM2000002";
+                nid = "DOM2000003";
                 context = node;
 
                 if (this !== DOM) {
@@ -1040,6 +1038,9 @@
     } else {
         // firefox doesn't support focusin/focusout events
         util$eventhooks$$hooks.focus = util$eventhooks$$hooks.blur = function(handler)  { handler.capturing = true };
+    }
+    if (DOCUMENT.createElement("input").validity) {
+        util$eventhooks$$hooks.invalid = function(handler)  { handler.capturing = true };
     }
     if (JSCRIPT_VERSION < 9) {
         // fix non-bubbling form events for IE8 therefore
@@ -1144,8 +1145,9 @@
             handler._type = CUSTOM_EVENT_TYPE;
         }
 
-        handler.type = selector ? type + " " + selector : type;
+        handler.type = type;
         handler.callback = callback;
+        handler.selector = selector;
 
         return handler;
     }
@@ -1418,13 +1420,23 @@
     });
 
     util$index$$default.register({
-        off: function(type, callback) {
+        off: function(type, selector, callback) {
             if (typeof type !== "string") throw new errors$$MethodError("off", arguments);
+
+            if (callback === void 0) {
+                callback = selector;
+                selector = void 0;
+            }
 
             var node = this[0];
 
             this._._handlers = this._._handlers.filter(function(handler)  {
-                if (type !== handler.type || callback && callback !== handler.callback) return true;
+                var skip = type !== handler.type;
+
+                skip = skip || selector && selector !== handler.selector;
+                skip = skip || callback && callback !== handler.callback;
+
+                if (skip) return true;
 
                 type = handler._type || handler.type;
                 if (JSCRIPT_VERSION < 9) {
