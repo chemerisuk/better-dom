@@ -1,4 +1,3 @@
-import _ from "./index";
 import { JSCRIPT_VERSION, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
@@ -68,7 +67,7 @@ function EventHandler(type, selector, callback, props, el, once) {
             // srcElement can be null in legacy IE when target is document
             var target = e.target || e.srcElement || DOCUMENT,
                 currentTarget = matcher ? matcher(target) : node,
-                args;
+                args = props || [];
 
             // early stop for late binding or when target doesn't match selector
             if (!currentTarget) return;
@@ -76,12 +75,8 @@ function EventHandler(type, selector, callback, props, el, once) {
             // off callback even if it throws an exception later
             if (once) el.off(type, callback);
 
-            if (props && props.length) {
-                args = props.map((name) => getEventProperty(name, e, type, node, target, currentTarget));
-            } else {
-                // if props is not specified then prepend extra arguments
-                args = e.detail ? _.slice.call(e.detail, 1) : [];
-            }
+            args = args.map((name) => getEventProperty(
+                name, e, type, node, target, currentTarget));
 
             // prevent default if handler returns false
             if (callback.apply(el, args) === false) {

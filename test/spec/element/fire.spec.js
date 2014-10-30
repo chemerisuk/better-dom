@@ -47,13 +47,17 @@ describe("fire", function() {
         it("should prepend extra arguments if they exist", function() {
             var data1 = {x: 1, y: 2}, data2 = function() {};
 
+            callback.and.callFake(function() {
+                expect(arguments.length).toBe(0);
+            });
+
             input.on("my:click", callback);
             input.fire("my:click", data1);
-            expect(callback).toHaveBeenCalledWith(data1);
+            expect(callback.calls.count()).toBe(1);
 
             input.on("click", callback);
             input.fire("click", data1, data2);
-            expect(callback).toHaveBeenCalledWith(data1, data2);
+            expect(callback.calls.count()).toBe(2);
         });
 
         it("should ignore event fire arguments when event props is specified", function() {

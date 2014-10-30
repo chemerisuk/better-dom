@@ -149,26 +149,6 @@ describe("on", function() {
         });
     });
 
-    it("pass event arguments by default", function() {
-        var detail = {a: 1};
-
-        spy.and.callFake(function(detail, target, currentTarget, defaultPrevented) {
-            expect(detail).toBe(detail);
-            expect(target).not.toBeDefined();
-            expect(currentTarget).not.toBeDefined();
-            expect(defaultPrevented).not.toBeDefined();
-        });
-
-        input.on("focus", spy);
-        input.fire("focus", detail);
-        expect(spy).toHaveBeenCalled();
-
-        detail = 0;
-
-        input.fire("focus", detail);
-        expect(spy).toHaveBeenCalled();
-    });
-
     // FIXME: find a way to test without exception in browser
     // it("should not stop to call handlers if any of them throws an error inside", function() {
     //     window.onerror = function() {

@@ -17,7 +17,9 @@ This library is about __ideas__. After some time of using jQuery I found that it
 ## Installation
 The simplest way is to use [bower](http://bower.io/):
 
-    $ bower install better-dom
+```sh
+$ bower install better-dom
+```
 
 This will clone the latest version of the __better-dom__ with dependencies into the `bower_components` directory at the root of your project. Then just include the script below on your web page:
 
@@ -34,11 +36,15 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 ## Contributing
 In order to modify the source code you have to have [gulp](http://gulpjs.com) installed globally:
 
-    $ npm install -g gulp
+```sh
+$ npm install -g gulp
+```
 
 The project uses set of ES6 transpilers to compile an output file that works in current browsers. You can use the commend below to start development: 
 
-    $ npm start
+```sh
+$ npm start
+```
 
 After any change it recompiles `build/better-dom.js` and runs it through the unit tests.
 
