@@ -9,8 +9,8 @@ describe("clone", function() {
         link = DOM.find("#link");
     });
 
-    it("should clone clildren by default", function() {
-        var clone = link.clone(),
+    it("allows to clone all clildren", function() {
+        var clone = link.clone(true),
             child = clone.child(0);
 
         jasmine.sandbox.set(clone);

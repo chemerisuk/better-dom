@@ -2,7 +2,7 @@ import _ from "../util/index";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-var rePrivateFunction = /^(?:(?:on|do)[A-Z])|_/;
+var rePrivateFunction = /^(?:on|do)[A-Z]/;
 
 export default (selector, condition, mixins, index) => {
     var ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
@@ -33,6 +33,8 @@ export default (selector, condition, mixins, index) => {
 
                 if (prop !== "constructor") {
                     el[prop] = value;
+
+                    return !mock && prop[0] === "_";
                 }
             });
 
