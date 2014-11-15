@@ -200,6 +200,32 @@ describe("extend", function() {
                 doSmth: doSmth
             });
         });
+
+        it("can start with underscore", function(done) {
+            var spy = jasmine.createSpy("spy");
+
+            spy.and.callFake(function() {
+                var link = this;
+
+                expect(link._foo).toBe(765);
+                expect(typeof link._bar).toBe("function");
+
+                setTimeout(function() {
+                    expect(typeof link._foo).toBe("undefined");
+                    expect(typeof link._bar).toBe("undefined");
+
+                    done();
+                }, 0);
+            });
+
+            jasmine.sandbox.set("<a class=" + randomClass + "></a>");
+
+            DOM.extend("." + randomClass, {
+                constructor: spy,
+                _foo: 765,
+                _bar: function() {}
+            });
+        });
     });
 
     it("handles nested elements", function(done) {

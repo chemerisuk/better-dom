@@ -2,7 +2,7 @@ import _ from "../util/index";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-var rePrivateFunction = /^(?:on|do)[A-Z]/;
+var rePrivateFunction = /^(?:(?:on|do)[A-Z])|_/;
 
 export default (selector, condition, mixins, index) => {
     var ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
@@ -18,17 +18,21 @@ export default (selector, condition, mixins, index) => {
         if (mock === true || condition(el) !== false) {
             // apply all private/public members to the element's interface
             var privateFunctions = Object.keys(mixins).filter((prop) => {
-                var method = mixins[prop];
+                var value = mixins[prop];
 
                 if (rePrivateFunction.exec(prop)) {
-                    // preserve context for private functions
-                    el[prop] = () => method.apply(el, arguments);
+                    if (typeof value === "function") {
+                        // preserve context for private functions
+                        el[prop] = () => value.apply(el, arguments);
+                    } else {
+                        el[prop] = value;
+                    }
 
                     return !mock;
                 }
 
                 if (prop !== "constructor") {
-                    el[prop] = method;
+                    el[prop] = value;
                 }
             });
 

@@ -6,7 +6,7 @@ export var DOCUMENT = WINDOW.document;
 export var HTML = DOCUMENT.documentElement;
 
 var userAgent = WINDOW.navigator.userAgent;
-var jscriptVersion = window.ScriptEngineMajorVersion;
+var jscriptVersion = WINDOW.ScriptEngineMajorVersion;
 
 // feature checks
 export var JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
