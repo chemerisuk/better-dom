@@ -5,7 +5,7 @@ import HOOK from "./eventhooks";
 
 function getEventProperty(name, e, type, node, target, currentTarget) {
     if (typeof name === "number") {
-        return e.detail ? e.detail[name] : void 0;
+        return e._ ? e._[name] : void 0;
     }
 
     if (typeof name !== "string") return name;
