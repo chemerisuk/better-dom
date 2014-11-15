@@ -46,7 +46,14 @@ var // operator type / priority object
         }
 
         return result;
-    };
+    },
+    // http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+    escapeHtml = (unsafe) => unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 // populate empty tag names with result
 "area base br col hr img input link meta param command keygen source".split(" ").forEach((tag) => {
@@ -151,7 +158,7 @@ DOM.emmet = function(template, varMap) {
 
             case "`":
                 stack.unshift(node);
-                node = [ value ];
+                node = [ escapeHtml(value) ];
                 break;
 
             default: /* ">", "+", "^" */
