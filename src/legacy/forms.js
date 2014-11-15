@@ -3,7 +3,9 @@
 * @copyright 2013-2014 Maksim Chemerisuk
 */
 (function() {
-    var JSCRIPT_VERSION=/*@cc_on @_jscript_version|@*/void 0;
+    var JSCRIPT_VERSION = window.ScriptEngineMajorVersion;
+
+    JSCRIPT_VERSION = JSCRIPT_VERSION && JSCRIPT_VERSION();
 
     if (!JSCRIPT_VERSION || JSCRIPT_VERSION > 8) return;
 

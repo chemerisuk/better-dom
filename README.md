@@ -10,7 +10,7 @@ This library is about __ideas__. After some time of using jQuery I found that it
 * lightweight: ~5 kB gzipped
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
-* [animations via CSS3](https://github.com/chemerisuk/better-dom/wiki/CSS-driven-animations)
+* [declarative animations](https://github.com/chemerisuk/better-dom/wiki/Declarative-animations)
 * [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 
