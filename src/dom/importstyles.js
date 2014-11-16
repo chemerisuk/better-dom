@@ -15,6 +15,8 @@ var styleNode = _.injectElement(DOCUMENT.createElement("style")),
  * @param {String}  cssText   css rules
  * @example
  * DOM.importStyles(".foo, .bar", "background: white; color: gray");
+ * // more complex selectors
+ * DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");
  */
 DOM.importStyles = function(selector, cssText) {
     if (typeof selector !== "string" || typeof cssText !== "string") {
