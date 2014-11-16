@@ -7,7 +7,7 @@ var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => functio
 
         if (requiresParent && !node.parentNode) return this;
 
-        // the idea is of the algorithm is to construct HTML string
+        // the idea of the algorithm is to construct HTML string
         // when possible or use document fragment as a fallback to
         // invoke manipulation using a single method call
         var fragment = fastStrategy ? "" : DOCUMENT.createDocumentFragment();
@@ -53,12 +53,13 @@ _.register({
      * Insert HTMLString or {@link $Element} after the current element
      * @memberof! $Element#
      * @alias $Element#after
-     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
-     * var link = DOM.create("a");  // <a></a>
-     * link.after(DOM.create("b")); // <a></a><b></b>
+     * var link = DOM.create("a");                   // <a></a>
+     * link.after(DOM.create("b"));                  // <a></a><b></b>
+     * link.after(DOM.create("i"), DOM.create("u")); // <a></a><b></b><i></i><u></u>
      */
     after: makeMethod("after", "afterend", true, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node.nextSibling);
@@ -68,12 +69,13 @@ _.register({
      * Insert HTMLString or {@link $Element} before the current element
      * @memberof! $Element#
      * @alias $Element#before
-     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
-     * var link = DOM.create("a");   // <a></a>
-     * link.before(DOM.create("b")); // <b></b><a></a>
+     * var link = DOM.create("a");                    // <a></a>
+     * link.before(DOM.create("b"));                  // <b></b><a></a>
+     * link.before(DOM.create("i"), DOM.create("u")); // <i></i><u></u><b></b><a></a>
      */
     before: makeMethod("before", "beforebegin", true, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node);
@@ -83,12 +85,13 @@ _.register({
      * Prepend HTMLString or {@link $Element} to the current element
      * @memberof! $Element#
      * @alias $Element#prepend
-     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
-     * var link = DOM.create("a>`foo`"); // <a>foo</a>
-     * link.prepend(DOM.create("b"));    // <a><b></b>foo</a>
+     * var link = DOM.create("a>`foo`");               // <a>foo</a>
+     * link.prepend(DOM.create("b"));                  // <a><b></b>foo</a>
+     * link.prepend(DOM.create("i"), DOM.create("u")); // <a><i></i><u></u><b></b>foo</a>
      */
     prepend: makeMethod("prepend", "afterbegin", false, (node, relatedNode) => {
         node.insertBefore(relatedNode, node.firstChild);
@@ -98,12 +101,13 @@ _.register({
      * Append HTMLString or {@link $Element} to the current element
      * @memberof! $Element#
      * @alias $Element#append
-     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
-     * var link = DOM.create("a>`foo`"); // <a>foo</a>
-     * link.append(DOM.create("b"));     // <a>foo<b></b></a>
+     * var link = DOM.create("a>`foo`");              // <a>foo</a>
+     * link.append(DOM.create("b"));                  // <a>foo<b></b></a>
+     * link.append(DOM.create("i"), DOM.create("u")); // <a>foo<b></b><i></i><u></u></a>
      */
     append: makeMethod("append", "beforeend", false, (node, relatedNode) => {
         node.appendChild(relatedNode);
