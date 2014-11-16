@@ -69,12 +69,14 @@ _.register({
 
         return this;
     }
-}, () => {
-    return function(name) {
-        if (arguments.length !== 1 || typeof name !== "string" && !_.isArray(name)) {
-            return this;
-        }
-    };
+}, () => function(name) {
+    if (arguments.length === 1 && _.isArray(name)) {
+        return {};
+    }
+
+    if (arguments.length !== 1 || typeof name !== "string") {
+        return this;
+    }
 });
 
 /**

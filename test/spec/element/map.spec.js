@@ -33,5 +33,5 @@ describe("$Element#map", function() {
     it("throws error if the first argument is not a function", function() {
         expect(function() { el.map(1) }).toThrow();
         expect(function() { el.map({}) }).toThrow();
-    })
+    });
 });

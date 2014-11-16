@@ -43,6 +43,7 @@ describe("css", function() {
 
         it("should support array", function() {
             expect(link.css(["float","line-height"])).toEqual({"float": "left", "line-height": "2"});
+            expect(DOM.mock().css(["float","line-height"])).toEqual({});
         });
     });
 
