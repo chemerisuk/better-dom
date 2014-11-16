@@ -2,9 +2,9 @@
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
-This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and some desicions of the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main ideas that encouraged me to build a new library from scratch.
+This library is about __ideas__. After some time of using jQuery I found that it's just too big, has lack of [features](#features) I need and the API design is debatable. In particular [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions) was one of the main ideas that encouraged me to build a new library from scratch.
 
-But my complains is not about jQuery only. Vanilla DOM has a lot of bad parts, that I'm trying to fix by providing a JavaScript wrapper for each DOM element you use. This extra layer allows to add new methods on __the top of particular elements__ without touching vanilla DOM interfaces (so it's very different from jQuery object model).
+Vanilla DOM also has a lot of bad parts, that I'm trying to fix by providing a JavaScript wrapper for each DOM element you use in code. This extra layer allows to abstract from legacy interfaces and to add new methods on __the top of particular elements__ without touching vanilla DOM prototypes. So the object model used is very different from what jQuery does.
 
 Note, that the better-dom project is only about the DOM. It does not contain AJAX helpers (but I have a [separate project](https://github.com/chemerisuk/better-xhr) for that).
 
