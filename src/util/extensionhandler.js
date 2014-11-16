@@ -19,7 +19,7 @@ export default (selector, condition, mixins, index) => {
             // apply all private/public members to the element's interface
             var privateFunctions = Object.keys(mixins).filter((prop) => {
                 var value = mixins[prop];
-
+                // TODO: private functions are deprecated
                 if (rePrivateFunction.exec(prop)) {
                     if (typeof value === "function") {
                         // preserve context for private functions
@@ -29,6 +29,14 @@ export default (selector, condition, mixins, index) => {
                     }
 
                     return !mock;
+                }
+
+                if (typeof value === "object") {
+                    if (value instanceof $Element) {
+                        value = value.clone(true);
+                    } else {
+                        value = JSON.parse(JSON.stringify(value));
+                    }
                 }
 
                 if (prop !== "constructor") {

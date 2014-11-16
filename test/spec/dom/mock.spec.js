@@ -10,7 +10,7 @@ describe("DOM.mock", function() {
 
     it("should populate instance with extension methods", function() {
         var method = function() {},
-            field = new Date(),
+            field = {a: "b"},
             el;
 
         DOM.extend(".mock", { method: method, field: field });
@@ -18,12 +18,12 @@ describe("DOM.mock", function() {
         el = DOM.mock("<div class=\"mock\"></div>");
 
         expect(el.method).toBe(method);
-        expect(el.field).toBe(field);
+        expect(el.field).toEqual(field);
     });
 
     it("should populate complex trees", function() {
         var method = function() {},
-            field = new Date(),
+            field = {a: "b"},
             el;
 
         DOM.extend(".mock1", { method: method });
@@ -32,7 +32,7 @@ describe("DOM.mock", function() {
         el = DOM.mock("<div class=\"mock1\"><span class=\"mock2\"></span></div>");
 
         expect(el.method).toBe(method);
-        expect(el.child(0).field).toBe(field);
+        expect(el.child(0).field).toEqual(field);
     });
 
     it("should expose event handlers", function() {

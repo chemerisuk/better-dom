@@ -226,6 +226,33 @@ describe("extend", function() {
                 _bar: function() {}
             });
         });
+
+
+    });
+
+    it("returns copy of each definition field", function(done) {
+        var fn = function() {}, obj = {a: 123}, el = DOM.create("div");
+
+        jasmine.sandbox.set("<a class=" + randomClass + "></a>");
+
+        DOM.extend("." + randomClass, {
+            constructor: function() {
+                expect(this._foo).toBe(123);
+                expect(this._bar).toBe(fn);
+
+                expect(this._obj).not.toBe(obj);
+                expect(this._obj).toEqual(obj);
+
+                expect(this._el).toHaveTag("div");
+                expect(this._el).not.toBe(el);
+
+                done();
+            },
+            _foo: 123,
+            _bar: fn,
+            _obj: obj,
+            _el: el
+        });
     });
 
     it("handles nested elements", function(done) {

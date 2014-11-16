@@ -18,7 +18,7 @@ var extensions = [],
  * @alias DOM.extend
  * @param  {String}           selector         css selector of which elements to capture
  * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
- * @param  {Object}           mixins           extension declatation
+ * @param  {Object}           definition       live extension definition
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
  * @example
  * DOM.extend("selector", {
@@ -30,23 +30,23 @@ var extensions = [],
  *     }
  * });
  */
-DOM.extend = function(selector, condition, mixins) {
+DOM.extend = function(selector, condition, definition) {
     if (arguments.length === 2) {
-        mixins = condition;
+        definition = condition;
         condition = true;
     }
 
     if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
-    if (typeof mixins === "function") mixins = {constructor: mixins};
+    if (typeof definition === "function") definition = {constructor: definition};
 
-    if (!mixins || typeof mixins !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
+    if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
     if (selector === "*") {
-        _.keys(mixins).forEach((methodName) => {
-            $Element.prototype[methodName] = mixins[methodName];
+        _.keys(definition).forEach((methodName) => {
+            $Element.prototype[methodName] = definition[methodName];
         });
     } else {
-        var ext = ExtensionHandler(selector, condition, mixins, extensions.length);
+        var ext = ExtensionHandler(selector, condition, definition, extensions.length);
 
         extensions.push(ext);
 
