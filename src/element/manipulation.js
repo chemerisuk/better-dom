@@ -1,40 +1,48 @@
 import _ from "../util/index";
-import { MethodError } from "../errors";
 import { DOCUMENT } from "../const";
 import { $Element, DOM } from "../types";
 
-var makeMethod = (methodName, fasterMethodName, standalone, strategy) => function(content = "") {
+var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => function(...contents) {
         var node = this[0];
 
-        if (!standalone && (!node.parentNode || content === DOM)) return this;
+        if (requiresParent && !node.parentNode) return this;
 
-        if (typeof content === "function") content = content.call(this);
+        // the idea is of the algorithm is to construct HTML string
+        // when possible or use document fragment as a fallback to
+        // invoke manipulation using a single method call
+        var fragment = fastStrategy ? "" : DOCUMENT.createDocumentFragment();
 
-        if (typeof content === "string") {
-            if (content) {
-                // parse HTML string for the replace method
-                if (fasterMethodName) {
-                    content = content.trim();
+        contents.forEach((content) => {
+            if (typeof content === "function") content = content.call(this);
+
+            if (typeof content === "string") {
+                if (typeof fragment === "string") {
+                    fragment += content.trim();
                 } else {
-                    content = DOM.create(content)[0];
+                    content = DOM.createAll(content);
                 }
+            } else if (content instanceof $Element) {
+                content = [ content ];
             }
-        } else if (content instanceof $Element) {
-            content = content[0];
-        } else if (_.isArray(content)) {
-            content = content.reduce((fragment, el) => {
-                fragment.appendChild(el[0]);
 
-                return fragment;
-            }, DOCUMENT.createDocumentFragment());
-        } else {
-            throw new MethodError(methodName, arguments);
-        }
+            if (_.isArray(content)) {
+                if (typeof fragment === "string") {
+                    // append existing string to fragment
+                    content = DOM.createAll(fragment).concat(content);
+                    // fallback to document fragment strategy
+                    fragment = DOCUMENT.createDocumentFragment();
+                }
 
-        if (content && typeof content === "string") {
-            node.insertAdjacentHTML(fasterMethodName, content);
+                content.forEach((el) => {
+                    fragment.appendChild(el[0]);
+                });
+            }
+        });
+
+        if (typeof fragment === "string") {
+            node.insertAdjacentHTML(fastStrategy, fragment);
         } else {
-            if (content || !fasterMethodName) strategy(node, content);
+            strategy(node, fragment);
         }
 
         return this;
@@ -45,14 +53,14 @@ _.register({
      * Insert HTMLString or {@link $Element} after the current element
      * @memberof! $Element#
      * @alias $Element#after
-     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
      * var link = DOM.create("a");  // <a></a>
      * link.after(DOM.create("b")); // <a></a><b></b>
      */
-    after: makeMethod("after", "afterend", false, (node, relatedNode) => {
+    after: makeMethod("after", "afterend", true, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node.nextSibling);
     }),
 
@@ -60,14 +68,14 @@ _.register({
      * Insert HTMLString or {@link $Element} before the current element
      * @memberof! $Element#
      * @alias $Element#before
-     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
      * var link = DOM.create("a");   // <a></a>
      * link.before(DOM.create("b")); // <b></b><a></a>
      */
-    before: makeMethod("before", "beforebegin", false, (node, relatedNode) => {
+    before: makeMethod("before", "beforebegin", true, (node, relatedNode) => {
         node.parentNode.insertBefore(relatedNode, node);
     }),
 
@@ -75,14 +83,14 @@ _.register({
      * Prepend HTMLString or {@link $Element} to the current element
      * @memberof! $Element#
      * @alias $Element#prepend
-     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
      * var link = DOM.create("a>`foo`"); // <a>foo</a>
      * link.prepend(DOM.create("b"));    // <a><b></b>foo</a>
      */
-    prepend: makeMethod("prepend", "afterbegin", true, (node, relatedNode) => {
+    prepend: makeMethod("prepend", "afterbegin", false, (node, relatedNode) => {
         node.insertBefore(relatedNode, node.firstChild);
     }),
 
@@ -90,14 +98,14 @@ _.register({
      * Append HTMLString or {@link $Element} to the current element
      * @memberof! $Element#
      * @alias $Element#append
-     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
      * @return {$Element}
      * @function
      * @example
      * var link = DOM.create("a>`foo`"); // <a>foo</a>
      * link.append(DOM.create("b"));     // <a>foo<b></b></a>
      */
-    append: makeMethod("append", "beforeend", true, (node, relatedNode) => {
+    append: makeMethod("append", "beforeend", false, (node, relatedNode) => {
         node.appendChild(relatedNode);
     }),
 
@@ -112,7 +120,7 @@ _.register({
      * var div = DOM.create("div>span>`foo`");      // <div><span>foo</span></div>
      * div.child(0).replace(DOM.create("b>`bar`")); // <div><b>bar</b></div>
      */
-    replace: makeMethod("replace", "", false, (node, relatedNode) => {
+    replace: makeMethod("replace", "", true, (node, relatedNode) => {
         node.parentNode.replaceChild(relatedNode, node);
     }),
 
@@ -127,7 +135,7 @@ _.register({
      * foo.remove();
      * DOM.contains(foo); // => false
      */
-    remove: makeMethod("remove", "", false, (node) => {
+    remove: makeMethod("remove", "", true, (node) => {
         node.parentNode.removeChild(node);
     })
 });

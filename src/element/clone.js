@@ -22,7 +22,7 @@ _.register({
         if (JSCRIPT_VERSION < 9) {
             result = DOM.create(node.outerHTML);
 
-            if (!deep) result.set("innerHTML", "");
+            if (!deep) result.set("");
         } else {
             result = new $Element(node.cloneNode(deep));
         }
