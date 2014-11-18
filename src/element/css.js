@@ -20,27 +20,31 @@ _.register({
         var len = arguments.length,
             node = this[0],
             style = node.style,
-            nameType = typeof name,
             computed;
 
-        if (len === 1 && (nameType === "string" || _.isArray(name))) {
-            value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
+        if (len === 1 && (typeof name === "string" || _.isArray(name))) {
+            let strategy = (name) => {
                 var getter = HOOK.get[name] || HOOK.find(name, style),
                     value = typeof getter === "function" ? getter(style) : style[getter];
 
-                if (!computed && !value) {
-                    style = _.computeStyle(node);
-                    value = typeof getter === "function" ? getter(style) : style[getter];
+                if (!value) {
+                    if (!computed) computed = _.computeStyle(node);
 
-                    computed = true;
+                    value = typeof getter === "function" ? getter(computed) : computed[getter];
                 }
 
-                memo[name] = value;
+                return value;
+            };
 
-                return memo;
-            }, {});
+            if (typeof name === "string") {
+                return strategy(name);
+            } else {
+                return name.map(strategy).reduce((memo, value, index) => {
+                    memo[name[index]] = value;
 
-            return nameType === "string" ? value[name] : value;
+                    return memo;
+                }, {});
+            }
         }
 
         if (len === 2 && typeof name === "string") {
@@ -57,7 +61,7 @@ _.register({
             } else {
                 style[setter] = typeof value === "number" ? value + "px" : value.toString();
             }
-        } else if (len === 1 && name && nameType === "object") {
+        } else if (len === 1 && name && typeof name === "object") {
             _.keys(name).forEach((key) => { this.css(key, name[key]) });
         } else {
             throw new MethodError("css", arguments);

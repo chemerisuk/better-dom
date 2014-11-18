@@ -35,7 +35,7 @@ var reDash = /\-./g,
         hooks.get[propName] = hooks.set[propName] = stylePropName;
     } else {
         hooks.get[propName] = stylePropName;
-        hooks.set[propName] = (style, value) => {
+        hooks.set[propName] = (value, style) => {
             style[stylePropName] = value.toString();
         };
     }
