@@ -21,16 +21,16 @@ _.register({
             node = this[0],
             style = node.style,
             nameType = typeof name,
-            hook, computed, appendCssText;
+            computed;
 
         if (len === 1 && (nameType === "string" || _.isArray(name))) {
             value = (nameType === "string" ? [name] : name).reduce((memo, name) => {
-                hook = HOOK.get[name];
-                value = hook ? hook(style) : style[name];
+                var getter = HOOK.get[name] || HOOK.find(name, style),
+                    value = typeof getter === "function" ? getter(style) : style[getter];
 
                 if (!computed && !value) {
                     style = _.computeStyle(node);
-                    value = hook ? hook(style) : style[name];
+                    value = typeof getter === "function" ? getter(style) : style[getter];
 
                     computed = true;
                 }
@@ -43,26 +43,22 @@ _.register({
             return nameType === "string" ? value[name] : value;
         }
 
-        appendCssText = (key, value) => {
-            var hook = HOOK.set[key];
+        if (len === 2 && typeof name === "string") {
+            var setter = HOOK.set[name] || HOOK.find(name, style);
 
             if (typeof value === "function") {
-                value = value.call(this, this.css(key));
+                value = value.call(this, this.css(name));
             }
 
             if (value == null) value = "";
 
-            if (hook) {
-                hook(style, value);
+            if (typeof setter === "function") {
+                setter(value, style);
             } else {
-                style[key] = typeof value === "number" ? value + "px" : value.toString();
+                style[setter] = typeof value === "number" ? value + "px" : value.toString();
             }
-        };
-
-        if (len === 1 && name && nameType === "object") {
-            _.keys(name).forEach((key) => { appendCssText(key, name[key]) });
-        } else if (len === 2 && nameType === "string") {
-            appendCssText(name, value);
+        } else if (len === 1 && name && nameType === "object") {
+            _.keys(name).forEach((key) => { this.css(key, name[key]) });
         } else {
             throw new MethodError("css", arguments);
         }

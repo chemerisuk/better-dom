@@ -1,7 +1,13 @@
 import CSS from "./stylehooks";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID, HTML } from "../const";
 
-var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((p) => "transition-" + p),
+var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => {
+        prop = "transition-" + prop;
+
+        CSS.find(prop, HTML.style); // initialize hook for this property
+
+        return prop;
+    }),
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
@@ -28,7 +34,7 @@ export default (node, computed, animationName, hiding, done) => {
     if (LEGACY_ANDROID || JSCRIPT_VERSION < 10 || !computed.width) return null;
 
     if (animationName) {
-        duration = parseTimeValue(CSS.get["animation-duration"](computed));
+        duration = parseTimeValue(computed[CSS.get["animation-duration"]]);
 
         if (!duration) return; // skip animations with zero duration
 
@@ -41,7 +47,7 @@ export default (node, computed, animationName, hiding, done) => {
     } else {
         var transitionValues = TRANSITION_PROPS.map((prop, index) => {
                 // have to use regexp to split transition-timing-function value
-                return CSS.get[prop](computed).split(index ? ", " : /, (?!\d)/);
+                return computed[CSS.get[prop]].split(index ? ", " : /, (?!\d)/);
             });
 
         duration = calcTransitionDuration(transitionValues);
