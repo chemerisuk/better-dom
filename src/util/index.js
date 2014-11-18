@@ -2,7 +2,18 @@ import { WINDOW, DOCUMENT } from "../const";
 import { $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype,
-    head = DOCUMENT.getElementsByTagName("head")[0];
+    head = DOCUMENT.getElementsByTagName("head")[0],
+    raf = WINDOW.requestAnimationFrame,
+    craf = WINDOW.cancelAnimationFrame;
+
+if (!(raf && craf)) {
+    ["ms", "moz", "webkit", "o"].some((prefix) => {
+        raf = WINDOW[prefix + "RequestAnimationFrame"];
+        craf = WINDOW[prefix + "CancelAnimationFrame"];
+
+        return !!raf;
+    });
+}
 
 export default {
     computeStyle: (node) => {
@@ -38,7 +49,7 @@ export default {
             return false;
         }
     },
-    register: (mixins, defaultBehavior) => {
+    register(mixins, defaultBehavior) {
         defaultBehavior = defaultBehavior || function() {};
 
         Object.keys(mixins).forEach((key) => {
@@ -47,5 +58,19 @@ export default {
             $Element.prototype[key] = mixins[key];
             $NullElement.prototype[key] = defaults;
         });
+    },
+    requestFrame(callback) {
+        if (raf) {
+            return raf.call(WINDOW, callback);
+        } else {
+            return WINDOW.setTimeout(callback, 0);
+        }
+    },
+    cancelFrame(frameId) {
+        if (craf) {
+            craf.call(WINDOW, frameId);
+        } else {
+            WINDOW.clearTimeout(frameId);
+        }
     }
 };

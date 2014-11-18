@@ -21,36 +21,20 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             computed = _.computeStyle(node),
             hiding = condition,
             done = () => {
-                // Check equality of the flag and aria-hidden to recognize
-                // cases when an animation was toggled in the intermediate
-                // state. Don't need to proceed in such situation
-                if (String(hiding) === node.getAttribute("aria-hidden")) {
-                    if (animationHandler) {
-                        node.removeEventListener(eventType, animationHandler, true);
-                        // restore initial state
-                        style.cssText = animationHandler.initialCssText;
-                    } else {
-                        // no animation was applied
-                        if (hiding) {
-                            let displayValue = computed.display;
-
-                            if (displayValue !== "none") {
-                                // internally store original display value
-                                this._._display = displayValue;
-                            }
-
-                            style.display = "none";
-                        } else {
-                            // restore previously store display value
-                            style.display = this._._display || "inherit";
-                        }
-                    }
-                    // always update element visibility property
-                    // use value "inherit" to respect parent container visibility
-                    style.visibility = hiding ? "hidden" : "inherit";
-
-                    if (callback) callback.call(this);
+                if (animationHandler) {
+                    node.removeEventListener(eventType, animationHandler, true);
+                    // restore initial state
+                    style.cssText = animationHandler.initialCssText;
+                } else {
+                    this.set("aria-hidden", String(hiding));
                 }
+                // always update element visibility property
+                // use value "inherit" to respect parent container visibility
+                style.visibility = hiding ? "hidden" : "inherit";
+
+                this._._frameId = null;
+
+                if (callback) callback.call(this);
             },
             animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
             eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
@@ -59,16 +43,47 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             hiding = !HOOK[":hidden"](node, computed);
         }
 
+        var frameId = this._._frameId;
+        // cancel previous frame if it exists
+        if (frameId) _.cancelFrame(frameId);
+
         if (animationHandler) {
-            node.addEventListener(eventType, animationHandler, true);
-            // trigger animation(s)
-            style.cssText = animationHandler.initialCssText + animationHandler.cssText;
+            // use requestAnimationFrame to avoid animation quirks
+            // for element inserted into the DOM
+            // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
+            frameId = _.requestFrame(() => {
+                // for a some reason the second raf callback performs
+                // much better (especially on mobile devices)
+                this._._frameId = _.requestFrame(() => {
+                    node.addEventListener(eventType, animationHandler, true);
+                    // update modified style rules
+                    style.cssText = animationHandler.initialCssText + animationHandler.cssText;
+                    // trigger CSS3 transition / animation
+                    this.set("aria-hidden", String(hiding));
+                });
+            });
         } else {
+            // no animation case - apply display property sync
+            if (hiding) {
+                let displayValue = computed.display;
+
+                if (displayValue !== "none") {
+                    // internally store original display value
+                    this._._display = displayValue;
+                }
+
+                style.display = "none";
+            } else {
+                // restore previously store display value
+                style.display = this._._display || "inherit";
+            }
             // done callback is always async
-            setTimeout(done, 0);
+            frameId = _.requestFrame(done);
         }
-        // trigger CSS3 transition if it exists
-        return this.set("aria-hidden", String(hiding));
+
+        this._._frameId = frameId;
+
+        return this;
     };
 
 _.register({
