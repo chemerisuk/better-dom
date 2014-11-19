@@ -47,13 +47,9 @@ var // operator type / priority object
 
         return result;
     },
+    reUnsafe = /[&<>"']/g,
     // http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
-    escapeHtml = (unsafe) => unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    safeSymbol = {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"};
 
 // populate empty tag names with result
 "area base br col hr img input link meta param command keygen source".split(" ").forEach((tag) => {
@@ -70,11 +66,11 @@ var // operator type / priority object
  * @see https://github.com/chemerisuk/better-dom/wiki/Microtemplating
  * @see http://docs.emmet.io/cheat-sheet/
  * @example
- * DOM.emmet("a");                                    // => "<a></a>"
- * DOM.emmet("ul>li*2");                              // => "<ul><li></li><li></li></ul>"
- * DOM.emmet("b>`hello {user}`", {user: "world"});    // => "<b>hello world</b>
- * DOM.emmet("i.{0}+span", ["icon"]);                 // => "<i class="icon"></i&gt<span></span>"
- * DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "<i class="foo"><span id="bar"></span></i>"
+ * DOM.emmet("a");                                    // => '<a></a>'
+ * DOM.emmet("ul>li*2");                              // => '<ul><li></li><li></li></ul>'
+ * DOM.emmet("b>`hello {user}`", {user: "world"});    // => '<b>hello world</b>'
+ * DOM.emmet("i.{0}+span", ["icon"]);                 // => '<i class="icon"></i><span></span>'
+ * DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => '<i class="foo"><span id="bar"></span></i>'
  */
 DOM.emmet = function(template, varMap) {
     if (typeof template !== "string") throw new StaticMethodError("emmet", arguments);
@@ -158,7 +154,8 @@ DOM.emmet = function(template, varMap) {
 
             case "`":
                 stack.unshift(node);
-                node = [ escapeHtml(value) ];
+                // escape unsafe HTML symbols
+                node = [ value.replace(reUnsafe, (ch) => safeSymbol[ch]) ];
                 break;
 
             default: /* ">", "+", "^" */
