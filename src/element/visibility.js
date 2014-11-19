@@ -23,13 +23,14 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             done = () => {
                 if (animationHandler) {
                     node.removeEventListener(eventType, animationHandler, true);
-                    // restore initial state
+                    // clear inline style adjustments were made previously
                     style.cssText = animationHandler.initialCssText;
                 } else {
                     this.set("aria-hidden", String(hiding));
                 }
-                // always update element visibility property
-                // use value "inherit" to respect parent container visibility
+                // always update element visibility property: use value "inherit"
+                // to respect parent container visibility. Should be a separate
+                // from setting cssText because of Opera 12 quirks
                 style.visibility = hiding ? "hidden" : "inherit";
 
                 this._._frameId = null;
@@ -48,40 +49,41 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
         if (frameId) _.cancelFrame(frameId);
 
         if (animationHandler) {
-            // use requestAnimationFrame to avoid animation quirks
-            // for element inserted into the DOM
-            // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-            frameId = _.requestFrame(() => {
-                // for a some reason the second raf callback performs
-                // much better (especially on mobile devices)
-                this._._frameId = _.requestFrame(() => {
+            done = () => {
+                // for a some reason the second raf callback has less quirks
+                // and performs much better (especially on mobile devices)
+                this._._frameId = _.nextFrame(() => {
                     node.addEventListener(eventType, animationHandler, true);
                     // update modified style rules
                     style.cssText = animationHandler.initialCssText + animationHandler.cssText;
                     // trigger CSS3 transition / animation
                     this.set("aria-hidden", String(hiding));
                 });
-            });
+            };
         } else {
+            let displayValue;
             // no animation case - apply display property sync
             if (hiding) {
-                let displayValue = computed.display;
+                displayValue = computed.display;
 
                 if (displayValue !== "none") {
                     // internally store original display value
                     this._._display = displayValue;
-                }
 
-                style.display = "none";
+                    displayValue = "none";
+                }
             } else {
                 // restore previously store display value
-                style.display = this._._display || "inherit";
+                displayValue = this._._display || "inherit";
             }
-            // done callback is always async
-            frameId = _.requestFrame(done);
+
+            style.display = displayValue;
         }
 
-        this._._frameId = frameId;
+        // use requestAnimationFrame to avoid animation quirks
+        // for element inserted into the DOM
+        // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
+        this._._frameId = _.nextFrame(done);
 
         return this;
     };

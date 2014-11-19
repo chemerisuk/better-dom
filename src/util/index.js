@@ -59,7 +59,7 @@ export default {
             $NullElement.prototype[key] = defaults;
         });
     },
-    requestFrame(callback) {
+    nextFrame(callback) {
         if (raf) {
             return raf.call(WINDOW, callback);
         } else {
