@@ -29,7 +29,7 @@ var // operator type / priority object
         // find index of where to inject the term
         var index = end ? html.lastIndexOf("<") : html.indexOf(">");
         // inject the term into the HTML string
-        return html.substr(0, index) + term + html.substr(index);
+        return html.slice(0, index) + term + html.slice(index);
     },
     makeTerm = (tag) => {
         return tagCache[tag] || (tagCache[tag] = "<" + tag + "></" + tag + ">");
@@ -114,7 +114,7 @@ DOM.emmet = function(template, varMap) {
                 }
                 // handle multiple classes, e.g. a.one.two
                 if (op === ".") {
-                    output.push(str.substr(1).replace(reDot, " "));
+                    output.push(str.slice(1).replace(reDot, " "));
                 }
 
                 stack.unshift(op);

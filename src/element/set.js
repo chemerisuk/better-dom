@@ -49,7 +49,7 @@ _.register({
 
         if (typeof name === "string") {
             if (name[0] === "_") {
-                this._[name.substr(1)] = value;
+                this._[name.slice(1)] = value;
             } else {
                 if (typeof value === "function") {
                     value = value.call(this, oldValue);

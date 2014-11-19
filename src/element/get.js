@@ -48,7 +48,7 @@ _.register({
             } else if (name[0] !== "_") {
                 return node.getAttribute(name);
             } else {
-                let key = name.substr(1),
+                let key = name.slice(1),
                     data = this._;
 
                 if (!(key in data)) {

@@ -10,7 +10,7 @@ describe("extend", function() {
 
     beforeEach(function() {
         callback = jasmine.createSpy("callback");
-        randomClass = "ext" + Math.random().toString(32).substr(2);
+        randomClass = "ext" + Math.random().toString(32).slice(2);
     });
 
     it("should execute contructor for each element", function(done) {
