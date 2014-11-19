@@ -6,8 +6,6 @@ var hooks = {};
 hooks[":focus"] = (node) => node === DOCUMENT.activeElement;
 
 hooks[":hidden"] = (node, computed) => {
-    if (node.getAttribute("aria-hidden") === "true") return true;
-
     computed = computed || _.computeStyle(node);
 
     return computed.visibility === "hidden" || computed.display === "none";

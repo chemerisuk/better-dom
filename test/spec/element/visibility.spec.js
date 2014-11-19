@@ -52,11 +52,13 @@ describe("visibility", function() {
             });
         });
 
-        it("by default updates display property", function() {
+        it("by default updates display property", function(done) {
             expect(link.css("display")).not.toBe("none");
 
             link.hide(function() {
                 expect(link.css("display")).toBe("none");
+
+                done();
             });
         });
 
@@ -96,24 +98,26 @@ describe("visibility", function() {
             expect(function() { link.show(true) }).toThrow();
         });
 
-        it("should handle initially hidden element", function() {
+        it("should handle initially hidden element", function(done) {
             link.addClass("hidden");
 
             link.show(function() {
                 expect(link.css("display")).not.toBe("none");
-            });
+                expect(link).toHaveAttr("aria-hidden", "false");
 
-            expect(link).toHaveAttr("aria-hidden", "false");
+                done();
+            });
         });
 
-        it("should handle initially invisible element", function() {
+        it("should handle initially invisible element", function(done) {
             link.addClass("invisible");
 
             link.show(function() {
                 expect(link.css("visibility")).not.toBe("hidden");
-            });
+                expect(link).toHaveAttr("aria-hidden", "false");
 
-            expect(link).toHaveAttr("aria-hidden", "false");
+                done();
+            });
         });
     });
 

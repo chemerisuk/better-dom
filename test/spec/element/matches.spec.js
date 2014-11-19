@@ -58,18 +58,18 @@ describe("matches", function() {
             });
         });
 
-        it("should respect aria-hidden attribute", function() {
-            expect(link.matches(":hidden")).toBe(false);
+        // it("should respect aria-hidden attribute", function() {
+        //     expect(link.matches(":hidden")).toBe(false);
 
-            link.set("aria-hidden", "true");
-            expect(link.matches(":hidden")).toBe(true);
+        //     link.set("aria-hidden", "true");
+        //     expect(link.matches(":hidden")).toBe(true);
 
-            link.set("aria-hidden", "false");
-            expect(link.matches(":hidden")).toBe(false);
+        //     link.set("aria-hidden", "false");
+        //     expect(link.matches(":hidden")).toBe(false);
 
-            link.set("aria-hidden", null);
-            expect(link.matches(":hidden")).toBe(false);
-        });
+        //     link.set("aria-hidden", null);
+        //     expect(link.matches(":hidden")).toBe(false);
+        // });
 
         it("should respect CSS property visibility", function() {
             expect(link.matches(":hidden")).toBe(false);
