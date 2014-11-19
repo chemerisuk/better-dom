@@ -1,13 +1,7 @@
 import CSS from "./stylehooks";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID, HTML } from "../const";
 
-var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => {
-        prop = "transition-" + prop;
-
-        CSS.find(prop, HTML.style); // initialize hook for this property
-
-        return prop;
-    }),
+var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => "transition-" + prop),
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
@@ -21,6 +15,9 @@ var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(
             return parseTimeValue(value) + (parseTimeValue(delays[index]) || 0);
         }));
     };
+
+// initialize hooks for properties used below
+TRANSITION_PROPS.concat("animation-duration").forEach((prop) => { CSS.find(prop, HTML.style) });
 
 export default (node, computed, animationName, hiding, done) => {
     var rules, duration;
