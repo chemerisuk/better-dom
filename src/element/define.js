@@ -4,46 +4,13 @@ import { JSCRIPT_VERSION } from "../const";
 
 _.register({
     /**
-     * Define a new property for the current element
-     * @memberof! $Element#
-     * @alias $Element#defineProperty
-     * @param  {String} name      property name
-     * @param  {Object} accessors getter and setter definition
-     * @example
-     * var foo;
-     *
-     * DOM.find("body").defineProperty("foo", {
-     *   get: function() {
-     *     return foo;
-     *   },
-     *   set: function(propValue) {
-     *     foo = propValue;
-     *   }
-     * });
-     */
-    defineProperty: function(name, accessors) {
-        var getter = accessors.get;
-        var setter = accessors.set;
-
-        if (typeof name !== "string" || typeof getter !== "function" || typeof setter !== "function") {
-            throw new MethodError("defineProperty", arguments);
-        }
-
-        Object.defineProperty(this[0], name, {
-            get: () => getter.call(this),
-            set: (value) => { setter.call(this, value) }
-        });
-
-        return this;
-    },
-    /**
      * Define a new attribute for the current element
      * @memberof! $Element#
-     * @alias $Element#defineAttribute
+     * @alias $Element#define
      * @param  {String} name      attribute name
      * @param  {Object} accessors getter and setter definition
      * @example
-     * DOM.find("body").defineAttribute("foo", {
+     * DOM.find("body").define("foo", {
      *   get: function(attrValue) {
      *     // getter returns property value
      *     return String(attrValue).toLowerCase();
@@ -56,13 +23,13 @@ _.register({
      *   }
      * });
      */
-    defineAttribute: function(name, accessors) {
+    define: function(name, accessors) {
         var node = this[0];
         var getter = accessors.get;
         var setter = accessors.set;
 
         if (typeof name !== "string" || typeof getter !== "function" || typeof setter !== "function") {
-            throw new MethodError("defineAttribute", arguments);
+            throw new MethodError("define", arguments);
         }
 
         // initial value reading must be before defineProperty

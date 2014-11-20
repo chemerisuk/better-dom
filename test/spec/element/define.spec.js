@@ -1,48 +1,48 @@
-describe("$Element#defineProperty", function() {
-    var el;
+// describe("$Element#defineProperty", function() {
+//     var el;
 
-    beforeEach(function() {
-        el = DOM.mock("div");
-    });
+//     beforeEach(function() {
+//         el = DOM.mock("div");
+//     });
 
-    it("should be a function", function() {
-        expect(typeof el.defineProperty).toBe("function");
-        expect(el.defineProperty("test", {
-            get: function() {},
-            set: function() {}
-        })).toBe(el);
-    });
+//     it("should be a function", function() {
+//         expect(typeof el.defineProperty).toBe("function");
+//         expect(el.defineProperty("test", {
+//             get: function() {},
+//             set: function() {}
+//         })).toBe(el);
+//     });
 
-    it("declares a property on native element", function() {
-        var placeholder = "initial";
+//     it("declares a property on native element", function() {
+//         var placeholder = "initial";
 
-        el.defineProperty("placeholder", {
-            get: function() {
-                expect(this).toBe(el);
+//         el.defineProperty("placeholder", {
+//             get: function() {
+//                 expect(this).toBe(el);
 
-                return placeholder;
-            },
-            set: function(value) {
-                expect(this).toBe(el);
+//                 return placeholder;
+//             },
+//             set: function(value) {
+//                 expect(this).toBe(el);
 
-                placeholder = value;
-            }
-        });
+//                 placeholder = value;
+//             }
+//         });
 
-        expect(el[0].placeholder).toBe("initial");
-        el[0].placeholder = "modified";
-        expect(el[0].placeholder).toBe("modified");
-    });
+//         expect(el[0].placeholder).toBe("initial");
+//         el[0].placeholder = "modified";
+//         expect(el[0].placeholder).toBe("modified");
+//     });
 
-    it("throws error on invalid arguments", function() {
-        expect(function() { el.defineProperty(1) }).toThrow();
-        expect(function() { el.defineProperty("n") }).toThrow();
-        expect(function() { el.defineProperty("n", {}) }).toThrow();
-        expect(function() { el.defineProperty("n", {get: 1, set: 2}) }).toThrow();
-    });
-});
+//     it("throws error on invalid arguments", function() {
+//         expect(function() { el.defineProperty(1) }).toThrow();
+//         expect(function() { el.defineProperty("n") }).toThrow();
+//         expect(function() { el.defineProperty("n", {}) }).toThrow();
+//         expect(function() { el.defineProperty("n", {get: 1, set: 2}) }).toThrow();
+//     });
+// });
 
-describe("$Element#defineAttribute", function() {
+describe("$Element#define", function() {
     var el;
 
     beforeEach(function() {
@@ -52,7 +52,7 @@ describe("$Element#defineAttribute", function() {
     it("updates attribute if setter returns a value", function() {
         var placeholder = "initial";
 
-        el.defineAttribute("placeholder", {
+        el.define("placeholder", {
             get: function() {
                 return placeholder;
             },
@@ -75,7 +75,7 @@ describe("$Element#defineAttribute", function() {
     it("passes attribute value into getter", function() {
         var placeholder = "initial";
 
-        el.defineAttribute("placeholder", {
+        el.define("placeholder", {
             get: function(value) {
                 if (value) {
                     expect(value).toBe("ok");
@@ -101,7 +101,7 @@ describe("$Element#defineAttribute", function() {
 
         el.set("foo", "test");
 
-        el.defineAttribute("foo", {
+        el.define("foo", {
             get: getSpy.and.returnValue("bar"),
             set: setSpy.and.returnValue("hey")
         });
@@ -118,7 +118,7 @@ describe("$Element#defineAttribute", function() {
             return value;
         });
 
-        el.defineAttribute("foo", {
+        el.define("foo", {
             get: function(value) { return value },
             set: spy
         });
@@ -147,9 +147,9 @@ describe("$Element#defineAttribute", function() {
     });
 
     it("throws error on invalid arguments", function() {
-        expect(function() { el.defineAttribute(1) }).toThrow();
-        expect(function() { el.defineAttribute("n") }).toThrow();
-        expect(function() { el.defineAttribute("n", {}) }).toThrow();
-        expect(function() { el.defineAttribute("n", {get: 1, set: 2}) }).toThrow();
+        expect(function() { el.define(1) }).toThrow();
+        expect(function() { el.define("n") }).toThrow();
+        expect(function() { el.define("n", {}) }).toThrow();
+        expect(function() { el.define("n", {get: 1, set: 2}) }).toThrow();
     });
 });
