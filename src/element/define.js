@@ -10,23 +10,18 @@ _.register({
      * @param  {String} name      attribute name
      * @param  {Object} accessors getter and setter definition
      * @example
-     * DOM.find("body").define("foo", {
-     *   get: function(attrValue) {
-     *     // getter returns property value
-     *     return String(attrValue).toLowerCase();
-     *   },
-     *   set: function(propValue) {
-     *     if (propValue != null) {
-     *       // setter returns attribute value
-     *       return String(propValue).toUpperCase();
-     *     }
+     * DOM.find("body").define("foo", function(attrValue) {
+     *   // getter returns property value
+     *   return String(attrValue).toLowerCase();
+     * }, function(propValue) {
+     *   if (propValue != null) {
+     *     // setter returns attribute value
+     *     return String(propValue).toUpperCase();
      *   }
      * });
      */
-    define: function(name, accessors) {
+    define: function(name, getter, setter) {
         var node = this[0];
-        var getter = accessors.get;
-        var setter = accessors.set;
 
         if (typeof name !== "string" || typeof getter !== "function" || typeof setter !== "function") {
             throw new MethodError("define", arguments);

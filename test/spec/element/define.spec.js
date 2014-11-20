@@ -52,15 +52,12 @@ describe("$Element#define", function() {
     it("updates attribute if setter returns a value", function() {
         var placeholder = "initial";
 
-        el.define("placeholder", {
-            get: function() {
-                return placeholder;
-            },
-            set: function(value) {
-                placeholder = value;
+        el.define("placeholder", function() {
+            return placeholder;
+        }, function(value) {
+            placeholder = value;
 
-                return value;
-            }
+            return value;
         });
 
         el[0].placeholder = "modified";
@@ -75,19 +72,16 @@ describe("$Element#define", function() {
     it("passes attribute value into getter", function() {
         var placeholder = "initial";
 
-        el.define("placeholder", {
-            get: function(value) {
-                if (value) {
-                    expect(value).toBe("ok");
-                }
-
-                return placeholder;
-            },
-            set: function(value) {
-                placeholder = value;
-
-                return "ok";
+        el.define("placeholder", function(value) {
+            if (value) {
+                expect(value).toBe("ok");
             }
+
+            return placeholder;
+        }, function(value) {
+            placeholder = value;
+
+            return "ok";
         });
 
         el[0].placeholder = "modified";
@@ -101,10 +95,7 @@ describe("$Element#define", function() {
 
         el.set("foo", "test");
 
-        el.define("foo", {
-            get: getSpy.and.returnValue("bar"),
-            set: setSpy.and.returnValue("hey")
-        });
+        el.define("foo", getSpy.and.returnValue("bar"), setSpy.and.returnValue("hey"));
 
         expect(getSpy).toHaveBeenCalledWith("test");
         expect(setSpy).toHaveBeenCalledWith("bar");
@@ -118,10 +109,7 @@ describe("$Element#define", function() {
             return value;
         });
 
-        el.define("foo", {
-            get: function(value) { return value },
-            set: spy
-        });
+        el.define("foo", function(value) { return value }, spy);
 
         expect(spy).toHaveBeenCalledWith(null);
         expect(el.get("foo")).toBeNull();
