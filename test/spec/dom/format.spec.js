@@ -24,4 +24,14 @@ describe("DOM.format", function() {
 
         expect(DOM.format(new Foo())).toBe("bar");
     });
+
+    it("can accept functions in arg map", function() {
+        var functor = function(index) {
+                expect(index).toBe(4);
+
+                return "test";
+            };
+
+        expect(DOM.format("foo {bar}", { bar: functor })).toBe("foo test");
+    });
 });

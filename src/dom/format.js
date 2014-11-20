@@ -18,5 +18,13 @@ DOM.format = function(tmpl, varMap) {
 
     if (!varMap || typeof varMap !== "object") varMap = {};
 
-    return tmpl.replace(reVar, (x, name) => name in varMap ? String(varMap[name]) : x);
+    return tmpl.replace(reVar, (x, name, index) => {
+        if (name in varMap) {
+            x = varMap[name];
+
+            if (typeof x === "function") x = x(index);
+        }
+
+        return x;
+    });
 };
