@@ -5,7 +5,9 @@ import HOOK from "./eventhooks";
 
 function getEventProperty(name, e, type, node, target, currentTarget) {
     if (typeof name === "number") {
-        return e._ ? e._[name] : void 0;
+        var args = e["__<%= VERSION_NUMBER %>__"];
+
+        return args ? args[name] : void 0;
     }
 
     if (typeof name !== "string") return name;
