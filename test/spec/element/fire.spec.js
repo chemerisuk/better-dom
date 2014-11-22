@@ -44,11 +44,17 @@ describe("fire", function() {
             expect(callback).toHaveBeenCalled();
         });
 
-        it("should prepend extra arguments if they exist", function() {
+        it("prepend extra arguments if they exist", function() {
             var data1 = {x: 1, y: 2}, data2 = function() {};
 
-            callback.and.callFake(function() {
-                expect(arguments.length).toBe(0);
+            callback.and.callFake(function(a, b) {
+                expect(a).toBe(data1);
+
+                if (callback.calls.count() === 1) {
+                    expect(b).toBeUndefined();
+                } else {
+                    expect(b).toBe(data2);
+                }
             });
 
             input.on("my:click", callback);
@@ -60,7 +66,7 @@ describe("fire", function() {
             expect(callback.calls.count()).toBe(2);
         });
 
-        it("should ignore event fire arguments when event props is specified", function() {
+        it("ignore event fire arguments when event props are specified", function() {
             var spy = jasmine.createSpy("on");
 
             input.on("my:test", ["target"], spy);

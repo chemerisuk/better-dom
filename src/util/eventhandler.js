@@ -1,3 +1,4 @@
+import _ from "../util/index";
 import { JSCRIPT_VERSION, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
@@ -77,8 +78,12 @@ function EventHandler(type, selector, callback, props, el, once) {
             // off callback even if it throws an exception later
             if (once) el.off(type, callback);
 
-            args = args.map((name) => getEventProperty(
-                name, e, type, node, target, currentTarget));
+            if (props) {
+                args = args.map((name) => getEventProperty(
+                    name, e, type, node, target, currentTarget));
+            } else {
+                args = _.slice.call(e["__<%= VERSION_NUMBER %>__"] || [0], 1);
+            }
 
             // prevent default if handler returns false
             if (callback.apply(el, args) === false) {
