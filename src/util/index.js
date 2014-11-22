@@ -63,7 +63,7 @@ export default {
         if (raf) {
             return raf.call(WINDOW, callback);
         } else {
-            return WINDOW.setTimeout(callback, 0);
+            return WINDOW.setTimeout(callback, 1000 / 60);
         }
     },
     cancelFrame(frameId) {

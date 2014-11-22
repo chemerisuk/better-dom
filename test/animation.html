@@ -25,13 +25,13 @@
         -webkit-transition: -webkit-transform 0.5s linear;
         transition: transform 0.5s linear;
 
-        -webkit-transform: translateX(0px);
-        transform: translateX(0px);
+        -webkit-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
     }
 
     .bar-item[aria-hidden=true] {
-        -webkit-transform: translateX(-100%);
-        transform: translateX(-100%);
+        -webkit-transform: translate3d(-100%,0,0);
+        transform: translate3d(-100%,0,0);
     }
 
     .bar-item + .bar-item {
@@ -43,13 +43,16 @@
     }
 
     .bar-item + .bar-item[aria-hidden=true] {
-        -webkit-transform: translateX(100%);
-        transform: translateX(100%);
+        -webkit-transform: translate3d(100%,0,0);
+        transform: translate3d(100%,0,0);
     }
 
     .animatable-bar-item {
         -webkit-animation: none 0.5s linear;
         animation: none 0.5s linear;
+
+        -webkit-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
     }
 
     @-webkit-keyframes fade {
@@ -93,7 +96,7 @@
         bars = bar.findAll(".bar-item"),
         lastBars = bar.next(".bar").findAll(".bar-item"),
         animatableBar = DOM.find(".animatable-bar-item"),
-        andRemove = function() { this.remove() },
+        andRemove = function() { this.remove().show()[0].cssText = "" },
         it = 1;
 
     bars[1].remove();
@@ -102,12 +105,12 @@
         ++it;
 
         if (it % 2) {
-            bars[0] = bars[0].clone(true);
+            bars[0] = bars[0].clone(false).hide();
             bar.prepend(bars[0]);
             bars[0].show();
             bars[1].hide(andRemove);
         } else {
-            bars[1] = bars[1].clone(true);
+            bars[1] = bars[1].clone(false).hide();
             bar.append(bars[1]);
             bars[1].show();
             bars[0].hide(andRemove);
