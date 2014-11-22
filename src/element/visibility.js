@@ -53,42 +53,20 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             var animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
                 eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
 
-            if (animationHandler) {
-                done = () => {
-                    // for a some reason the second raf callback has less quirks
-                    // and performs much better (especially on mobile devices)
-                    this._._frameId = _.nextFrame(() => {
-                        node.addEventListener(eventType, animationHandler, true);
-                        // update modified style rules
-                        style.cssText = animationHandler.initialCssText + animationHandler.cssText;
-                        // trigger CSS3 transition / animation
-                        this.set("aria-hidden", String(hiding));
-                    });
-                };
-            } else {
-                let displayValue;
-                // no animation case - apply display property sync
-                if (hiding) {
-                    displayValue = computed.display;
-
-                    if (displayValue !== "none") {
-                        // internally store original display value
-                        this._._display = displayValue;
-
-                        displayValue = "none";
-                    }
-                } else {
-                    // restore previously store display value
-                    displayValue = this._._display || "inherit";
-                }
-
-                style.display = displayValue;
-            }
-
             // use requestAnimationFrame to avoid animation quirks for
             // elements inserted into the DOM
             // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-            this._._frameId = _.nextFrame(done);
+            this._._frameId = _.nextFrame(!animationHandler ? done : () => {
+                // for a some reason the second raf callback has less quirks
+                // and performs much better (especially on mobile devices)
+                this._._frameId = _.nextFrame(() => {
+                    node.addEventListener(eventType, animationHandler, true);
+                    // update modified style rules
+                    style.cssText = animationHandler.initialCssText + animationHandler.cssText;
+                    // trigger CSS3 transition / animation
+                    this.set("aria-hidden", String(hiding));
+                });
+            });
         }
 
         return this;

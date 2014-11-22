@@ -52,15 +52,15 @@ describe("visibility", function() {
             });
         });
 
-        it("by default updates display property", function(done) {
-            expect(link.css("display")).not.toBe("none");
+        // it("by default updates display property", function(done) {
+        //     expect(link.css("display")).not.toBe("none");
 
-            link.hide(function() {
-                expect(link.css("display")).toBe("none");
+        //     link.hide(function() {
+        //         expect(link.css("display")).toBe("none");
 
-                done();
-            });
-        });
+        //         done();
+        //     });
+        // });
 
         // it("should work for several transitions", function(done) {
         //     var start = Date.now();
@@ -98,16 +98,16 @@ describe("visibility", function() {
             expect(function() { link.show(true) }).toThrow();
         });
 
-        it("should handle initially hidden element", function(done) {
-            link.addClass("hidden");
+        // it("should handle initially hidden element", function(done) {
+        //     link.addClass("hidden");
 
-            link.show(function() {
-                expect(link.css("display")).not.toBe("none");
-                expect(link).toHaveAttr("aria-hidden", "false");
+        //     link.show(function() {
+        //         expect(link.css("display")).not.toBe("none");
+        //         expect(link).toHaveAttr("aria-hidden", "false");
 
-                done();
-            });
-        });
+        //         done();
+        //     });
+        // });
 
         it("should handle initially invisible element", function(done) {
             link.addClass("invisible");
