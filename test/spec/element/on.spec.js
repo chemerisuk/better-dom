@@ -112,15 +112,6 @@ describe("on", function() {
             expect(spy).toHaveBeenCalledWith("focus", input);
         });
 
-        it("pass objects through", function() {
-            var obj = {}, fn = function() {};
-
-            input.on("my:test", [obj, 1, "target", fn], spy);
-            input.fire("my:test", 123, 555, "testing");
-
-            expect(spy).toHaveBeenCalledWith(obj, 123, input, fn);
-        });
-
         it("may return preventDefault functor", function() {
             spy.and.callFake(function(cancel) {
                 expect(typeof cancel).toBe("function");

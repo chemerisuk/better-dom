@@ -10,8 +10,6 @@ function getEventProperty(name, e, type, node, target, currentTarget) {
 
         return args ? args[name] : void 0;
     }
-
-    if (typeof name !== "string") return name;
     /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         switch (name) {
