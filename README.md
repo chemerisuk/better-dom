@@ -31,6 +31,8 @@ This will clone the latest version of the __better-dom__ with dependencies into 
 <script src="bower_components/better-dom/dist/better-dom.js"></script>
 ```
 
+If you need to support IE8-9 please read [the section below](#notes-about-old-ies).
+
 ## Documentation
 * Read the [FAQ](https://github.com/chemerisuk/better-dom/wiki/FAQ)
 * Take a look at the [better-dom wiki](https://github.com/chemerisuk/better-dom/wiki)
