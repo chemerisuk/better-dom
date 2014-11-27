@@ -43,7 +43,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
         }
 
         // cancel previous frame if it exists
-        if (frameId) _.cancelFrame(frameId);
+        if (frameId) DOM.cancelFrame(frameId);
 
         if (!HTML.contains(node)) {
             // apply attribute/visibility syncronously for detached DOM elements
@@ -52,20 +52,15 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
         } else {
             var animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
                 eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
-
             // use requestAnimationFrame to avoid animation quirks for
-            // elements inserted into the DOM
+            // new elements inserted into the DOM
             // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-            this._._frameId = _.nextFrame(!animationHandler ? done : () => {
-                // for a some reason the second raf callback has less quirks
-                // and performs much better (especially on mobile devices)
-                this._._frameId = _.nextFrame(() => {
-                    node.addEventListener(eventType, animationHandler, true);
-                    // update modified style rules
-                    style.cssText = animationHandler.initialCssText + animationHandler.cssText;
-                    // trigger CSS3 transition / animation
-                    this.set("aria-hidden", String(hiding));
-                });
+            this._._frameId = DOM.nextFrame(!animationHandler ? done : () => {
+                node.addEventListener(eventType, animationHandler, true);
+                // update modified style rules
+                style.cssText = animationHandler.initialCssText + animationHandler.cssText;
+                // trigger CSS3 transition / animation
+                this.set("aria-hidden", String(hiding));
             });
         }
 
