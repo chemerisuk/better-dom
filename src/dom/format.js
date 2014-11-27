@@ -23,6 +23,8 @@ DOM.format = function(tmpl, varMap) {
             x = varMap[name];
 
             if (typeof x === "function") x = x(index);
+
+            x = String(x);
         }
 
         return x;
