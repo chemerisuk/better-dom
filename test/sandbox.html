@@ -9,13 +9,18 @@
         color: red;
         background: #EEE;
     }
+
+    .test {
+        width: 350px;
+        height: 100px;
+    }
     </style>
     <!--[if IE]>
         <script src="../build/better-dom-legacy.js"></script>
     <![endif]-->
 </head>
 <body>
-    <span>Text has red color for the main page</span>
+    <span>Main page text has base red color</span>
     <p>
         <input type="text" value="start">
     </p>
@@ -24,15 +29,12 @@
     </p>
     <script src="../build/better-dom.js"></script>
     <script>
-    var sandbox = DOM.find("p+p").sandbox(350, 100, function(api) {
-        api.find("body").append(
-            DOM.emmet("p[style=margin:0]>`For another context text has default color`^input[value=`input1`]+input[value=`input2`]"));
+    var sandbox = DOM.find("p+p").sandbox(function(api) {
+            api.find("body").append(
+                DOM.emmet("div>`Sandbox text`^input[value=`input$`]*2"));
+        });
 
-        // api.find("input").on("focus", function() { console.log("yo") })
-
-        // api.find("body").append(
-        //     DOM.create("p>`For another context text has default color`"));
-    });
+    sandbox.addClass("test");
     </script>
 </body>
 </html>

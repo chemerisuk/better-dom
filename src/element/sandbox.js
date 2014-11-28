@@ -10,30 +10,24 @@ if (JSCRIPT_VERSION < 9) {
     SANDBOX_URL = legacyScripts[0].src.slice(0, -2) + "html";
 }
 
-_.register({
-    sandbox(width, height, callback) {
-        // NOTE: Chrome/Safari have issue with focusing on the <object>:
-        // https://code.google.com/p/chromium/issues/detail?id=255150
+// NOTE: Chrome/Safari have issue with focusing on the <object>:
+// https://code.google.com/p/chromium/issues/detail?id=255150
 
+_.register({
+    sandbox(callback) {
         var node = this[0];
         var wrapper = DOCUMENT.createElement("div");
         var object;
-        var ready = function() {
-            var body = object.contentDocument.body;
+        var ready = function(htmlEl) {
+            var doc = object.contentDocument;
             // remove default margin that exists in any browser
-            body.style.margin = 0;
+            doc.body.style.margin = 0;
 
             if (typeof callback === "function") {
                 // TODO: should create $Document instance here
-                callback(new $Element(object.contentDocument.documentElement));
+                callback(new $Element(htmlEl || doc.documentElement));
             }
         };
-
-        if (typeof width === "number") width += "px";
-        if (typeof height === "number") height += "px";
-
-        wrapper.style.width = width;
-        wrapper.style.height = height;
 
         if (JSCRIPT_VERSION < 9) {
             // IE8 is buggy, use innerHTML and better-dom-legacy.html
@@ -41,34 +35,46 @@ _.register({
 
             object = wrapper.firstChild;
             // get rid of the frame border
-            object.width = parseFloat(width) + 4;
-            object.height = parseFloat(height) + 4;
-            object.style.cssText = "position:absolute;left:-2px;top:-2px";
-
-            wrapper.style.position = "relative";
-            wrapper.style.overflow = "hidden";
+            object.style.cssText = "left:-2px;top:-2px";
             // IE8 does not support onload - use timeout instead
             DOM.nextFrame(function repeat() {
+                var htmlEl;
                 // TODO: tbd if try/catch check is required
                 try {
-                    object.contentDocument.body.doScroll();
+                    htmlEl = object.contentDocument.documentElement;
                 } catch (err) {
                     return DOM.nextFrame(repeat);
                 }
+                // use the trick below to hide frame border in IE8
+                htmlEl.onresize = function resizing() {
+                    htmlEl.onresize = null; // block recursive updates
 
-                ready();
+                    object.width = htmlEl.offsetWidth + 4;
+                    object.height = htmlEl.offsetHeight + 4;
+
+                    DOM.nextFrame(() => {
+                        htmlEl.onresize = resizing;
+                    });
+                };
+
+                ready(htmlEl);
             });
         } else {
             object = DOCUMENT.createElement("object");
-            // TODO: width and height are optional
             object.type = "text/html";
             object.data = SANDBOX_URL;
-            object.onload = ready;
-            object.width = "100%";
-            object.height = "100%";
+            object.onload = () => { ready(null) };
 
             wrapper.appendChild(object);
         }
+
+        wrapper.style.position = "relative";
+        wrapper.style.overflow = "hidden";
+
+        object.style.position = "absolute";
+        object.width = "100%";
+        object.height = "100%";
+
         // TODO: check if parent is not null
         node.parentNode.insertBefore(wrapper, node);
 
