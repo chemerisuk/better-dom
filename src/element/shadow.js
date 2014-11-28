@@ -2,32 +2,50 @@ import _ from "../util/index";
 import { JSCRIPT_VERSION, DOCUMENT } from "../const";
 import { $Element } from "../types";
 
+var sandboxUrl = "about:blank";
+
+if (JSCRIPT_VERSION < 9) {
+    let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
+    // IE8 fails with about:blank
+    sandboxUrl = legacyScripts[0].src.slice(0, -2) + "html";
+}
+
 // Inspired by the article written by Daniel Buchner:
 // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
 
 _.register({
     shadow(width, height, callback) {
         var node = this[0];
-        var obj = DOCUMENT.createElement("object");
+        var sandbox;
 
-        // TODO: width and height are optional
-        obj.type = "text/html";
-        obj.width = width || "300px";
-        obj.height = height || "100px";
-        obj.onload = () => {
-            if (typeof callback === "function") {
-                var api = new $Element(obj.contentDocument.documentElement);
+        if (JSCRIPT_VERSION < 9) {
+            // IE8 is buggy, use insertAdjacentHTML for it
+            node.insertAdjacentHTML("beforebegin", DOM.emmet(
+                "object[data=`{0}` width=`{1}` height=`{2}` type=`text/html`]",
+                [sandboxUrl, width, height])
+            );
 
-                callback(api);
-            }
-        };
+            sandbox = node.previousSibling;
+        } else {
+            DOCUMENT.createElement("object");
 
-        if (!JSCRIPT_VERSION) obj.data = "about:blank";
-        // TODO: check if parent is not null
-        node.parentNode.insertBefore(obj, node);
-        // must add data source after insertion, because IE is a goon
-        if (JSCRIPT_VERSION) obj.data = "about:blank";
+            // TODO: width and height are optional
+            sandbox.type = "text/html";
+            sandbox.width = width;
+            sandbox.height = height;
+            sandbox.data = "about:blank";
+            sandbox.onload = () => {
+                if (typeof callback === "function") {
+                    var api = new $Element(sandbox.contentDocument.documentElement);
 
-        return this;
+                    callback(api);
+                }
+            };
+
+            // TODO: check if parent is not null
+            node.parentNode.insertBefore(sandbox, node);
+        }
+
+        return new $Element(sandbox);
     }
 });

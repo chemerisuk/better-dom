@@ -17,8 +17,8 @@
     <div>Text has red color for the main context</div>
     <script src="../build/better-dom.js"></script>
     <script>
-    DOM.find("div").shadow("", "", function(root) {
-        root.find("body").append("For another context text has default color");
+    DOM.find("div").shadow("300", "100", function(root) {
+        root.find("body").append(DOM.create("p>`For another context text has default color`"));
 
         // root.importStyles("body", "border: 2px solid green; padding: 0");
     });
