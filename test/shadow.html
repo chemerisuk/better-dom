@@ -17,11 +17,13 @@
     <div>Text has red color for the main context</div>
     <script src="../build/better-dom.js"></script>
     <script>
-    DOM.find("div").shadow("300", "100", function(root) {
-        root.find("body").append(DOM.create("p>`For another context text has default color`"));
-
-        // root.importStyles("body", "border: 2px solid green; padding: 0");
+    var sandbox = DOM.find("div").sandbox(function(api) {
+        api.find("body").append(
+            DOM.emmet("p>`For another context text has default color`"));
     });
+
+    sandbox.set("width", 300);
+    sandbox.set("height", 100);
     </script>
 </body>
 </html>
