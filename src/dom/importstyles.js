@@ -31,8 +31,11 @@ DOM.importStyles = function(selector, cssText) {
             /* istanbul ignore else */
             if (styleSheet.cssRules) {
                 styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
-            } else {
+            } else if (selector[0] !== "@") {
                 styleSheet.addRule(selector, cssText);
+            } else {
+                // addRule doesn't support at-rules, use cssText instead
+                styleSheet.cssText += selector + "{" + cssText + "}";
             }
         } catch(err) {
             // silently ignore invalid rules

@@ -48,6 +48,16 @@ describe("DOM.importStyles", function() {
         }).not.toThrow();
     });
 
+    it("supports at-rules", function() {
+        jasmine.sandbox.set("<a id='importStyles4'></a>");
+
+        var link = DOM.find("#importStyles4");
+
+        expect(link.css("display")).not.toBe("none");
+        DOM.importStyles("@media all", "#importStyles4 {display: none}");
+        expect(link.css("display")).toBe("none");
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStyles(1); }).toThrow();
         expect(function() { DOM.importStyles("a"); }).toThrow();
