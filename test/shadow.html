@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="UTF-8">
+    <title>shadow() method</title>
+    <style>
+    body {
+        color: red;
+    }
+    </style>
+    <!--[if IE]>
+        <script src="../build/better-dom-legacy.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div>Text has red color for the main context</div>
+    <script src="../build/better-dom.js"></script>
+    <script>
+    DOM.find("div").shadow("", "", function(root) {
+        root.find("body").append("For another context text has default color");
+
+        // root.importStyles("body", "border: 2px solid green; padding: 0");
+    });
+    </script>
+</body>
+</html>
