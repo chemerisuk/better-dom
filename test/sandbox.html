@@ -15,26 +15,24 @@
     <![endif]-->
 </head>
 <body>
+    <span>Text has red color for the main page</span>
     <p>
         <input type="text" value="start">
     </p>
-    <span>Text has red color for the main context</span>
     <p>
         <input type="text" value="end">
     </p>
     <script src="../build/better-dom.js"></script>
     <script>
-    var sandbox = DOM.find("span").sandbox(300, 100, function(api) {
+    var sandbox = DOM.find("p+p").sandbox(350, 100, function(api) {
         api.find("body").append(
-            DOM.emmet("p[style=margin:0]>`For another context text has default color`^input[value=`input`]"));
+            DOM.emmet("p[style=margin:0]>`For another context text has default color`^input[value=`input1`]+input[value=`input2`]"));
+
+        // api.find("input").on("focus", function() { console.log("yo") })
 
         // api.find("body").append(
         //     DOM.create("p>`For another context text has default color`"));
     });
-
-    // sandbox.set("width", 300);
-    // sandbox.set("height", 100);
-    // sandbox.set("tabindex", -1);
     </script>
 </body>
 </html>
