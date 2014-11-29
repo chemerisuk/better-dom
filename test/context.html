@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="UTF-8">
+    <title>sandbox() method test page</title>
+    <style>
+    body {
+        color: red;
+        background: #EEE;
+    }
+
+    .test {
+        width: 80%;
+        height: 100px;
+    }
+    </style>
+    <!--[if IE]>
+        <script src="../build/better-dom-legacy.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <span>Main page text has base red color</span>
+    <p>
+        <input type="text" value="start">
+    </p>
+    <p>
+        <input type="text" value="end">
+    </p>
+    <script src="../build/better-dom.js"></script>
+    <script>
+    DOM.find("p+p").context("test", function(root) {
+        root.find("body").append(
+            DOM.emmet("div>`Sandbox text`^input[value=`input$`]*2"));
+    });
+    </script>
+</body>
+</html>

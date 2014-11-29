@@ -71,8 +71,8 @@ gulp.task("compile-legacy", function() {
 });
 
 gulp.task("symlink", ["compile-legacy"], function() {
-    return gulp.src("dist/better-dom-legacy.htc")
-        .pipe(symlink("build/better-dom-legacy.htc"));
+    return gulp.src(["dist/better-dom-legacy.ht*"])
+        .pipe(symlink("build/"));
 });
 
 gulp.task("test", ["compile", "symlink"], function(done) {
