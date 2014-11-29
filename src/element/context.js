@@ -26,10 +26,14 @@ _.register({
         var wrapper = DOCUMENT.createElement("div");
         var object;
         var ready = () => {
+            var doc = object.contentDocument;
+            // remove default margin because it's useless
+            doc.body.style.margin = 0;
+            // apply user-defined styles for the context
             wrapper.className = name;
 
             if (typeof callback === "function") {
-                callback(new $Element(object.contentDocument.documentElement));
+                callback(new $Element(doc.documentElement));
             }
         };
         /* istanbul ignore if */
