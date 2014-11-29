@@ -14,18 +14,15 @@ if (JSCRIPT_VERSION < 9) {
 // https://code.google.com/p/chromium/issues/detail?id=255150
 
 _.register({
-    sandbox(callback) {
+    context(name, callback) {
         var node = this[0];
         var wrapper = DOCUMENT.createElement("div");
         var object;
-        var ready = function(htmlEl) {
-            var doc = object.contentDocument;
-            // remove default margin that exists in any browser
-            doc.body.style.margin = 0;
+        var ready = () => {
+            wrapper.className = name;
 
             if (typeof callback === "function") {
-                // TODO: should create $Document instance here
-                callback(new $Element(htmlEl || doc.documentElement));
+                callback(new $Element(object.contentDocument.documentElement));
             }
         };
 
@@ -57,13 +54,13 @@ _.register({
                     });
                 };
 
-                ready(htmlEl);
+                ready();
             });
         } else {
             object = DOCUMENT.createElement("object");
             object.type = "text/html";
             object.data = SANDBOX_URL;
-            object.onload = () => { ready(null) };
+            object.onload = ready;
 
             wrapper.appendChild(object);
         }

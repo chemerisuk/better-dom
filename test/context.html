@@ -11,7 +11,7 @@
     }
 
     .test {
-        width: 350px;
+        width: 80%;
         height: 100px;
     }
     </style>
@@ -29,12 +29,10 @@
     </p>
     <script src="../build/better-dom.js"></script>
     <script>
-    var sandbox = DOM.find("p+p").sandbox(function(api) {
-            api.find("body").append(
-                DOM.emmet("div>`Sandbox text`^input[value=`input$`]*2"));
-        });
-
-    sandbox.addClass("test");
+    DOM.find("p+p").context("test", function(root) {
+        root.find("body").append(
+            DOM.emmet("div>`Sandbox text`^input[value=`input$`]*2"));
+    });
     </script>
 </body>
 </html>
