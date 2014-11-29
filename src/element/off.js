@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION } from "../const";
+import { JSCRIPT_VERSION, HANDLERS_DATA } from "../const";
 
 _.register({
     /**
@@ -28,7 +28,7 @@ _.register({
 
         var node = this[0];
 
-        this._._handlers = this._._handlers.filter((handler) => {
+        this._[HANDLERS_DATA] = this._[HANDLERS_DATA].filter((handler) => {
             var skip = type !== handler.type;
 
             skip = skip || selector && selector !== handler.selector;

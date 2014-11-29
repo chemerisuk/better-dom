@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { WATCHERS_DATA } from "../const";
 
 _.register({
     /**
@@ -14,7 +15,7 @@ _.register({
      * });
      */
     watch(name, callback) {
-        var watchers = this._._watchers;
+        var watchers = this._[WATCHERS_DATA];
 
         if (!watchers[name]) watchers[name] = [];
 
@@ -33,7 +34,7 @@ _.register({
      * @see $Element#watch
      */
     unwatch(name, callback) {
-        var watchers = this._._watchers;
+        var watchers = this._[WATCHERS_DATA];
 
         if (watchers[name]) {
             watchers[name] = watchers[name].filter((w) => w !== callback);

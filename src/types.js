@@ -1,4 +1,4 @@
-import { HTML } from "./const";
+import { HTML, NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA } from "./const";
 
 function $NullElement() {}
 
@@ -12,12 +12,15 @@ function $Element(node) {
             this[0] = node;
             // use a generated property to store a reference
             // to the wrapper for circular object binding
-            node["__<%= VERSION_NUMBER %>__"] = this;
+            node[NODE_DATA] = this;
         }
 
-        this._ = { _handlers: [], _watchers: {}, _extensions: [] };
+        this._ = {};
+        this._[HANDLERS_DATA] = [];
+        this._[WATCHERS_DATA] = {};
+        this._[EXTENSIONS_DATA] = [];
     } else if (node) {
-        var cached = node["__<%= VERSION_NUMBER %>__"];
+        var cached = node[NODE_DATA];
         // create a wrapper only once for each native element
         return cached ? cached : new $Element(node);
     } else {

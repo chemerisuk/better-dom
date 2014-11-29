@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, LEGACY_ANDROID } from "../const";
+import { JSCRIPT_VERSION, LEGACY_ANDROID, WATCHERS_DATA } from "../const";
 import PROP from "../util/accessorhooks";
 
 _.register({
@@ -40,7 +40,7 @@ _.register({
         }
 
         var hook = PROP.set[name],
-            watchers = this._._watchers[name],
+            watchers = this._[WATCHERS_DATA][name],
             oldValue;
 
         if (watchers || typeof value === "function") {

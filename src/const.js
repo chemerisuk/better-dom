@@ -1,15 +1,22 @@
 /* jshint unused: false */
 
 // globals
-export var WINDOW = window;
-export var DOCUMENT = WINDOW.document;
-export var HTML = DOCUMENT.documentElement;
+export const WINDOW = window;
+export const DOCUMENT = WINDOW.document;
+export const HTML = DOCUMENT.documentElement;
 
-var userAgent = WINDOW.navigator.userAgent;
-var jscriptVersion = WINDOW.ScriptEngineMajorVersion;
+const userAgent = WINDOW.navigator.userAgent;
+const jscriptVersion = WINDOW.ScriptEngineMajorVersion;
 
 // feature checks
-export var JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
-export var LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
-export var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
-export var CUSTOM_EVENT_TYPE = "dataavailable";
+export const JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
+export const LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
+export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
+export const CUSTOM_EVENT_TYPE = "dataavailable";
+
+// internal props
+export const NODE_DATA = "__<%= VERSION_NUMBER %>__";
+export const HANDLERS_DATA = "handlers<%= VERSION_NUMBER %>";
+export const WATCHERS_DATA = "watchers<%= VERSION_NUMBER %>";
+export const EXTENSIONS_DATA = "extensions<%= VERSION_NUMBER %>";
+export const FRAME_DATA = "frame<%= VERSION_NUMBER %>";
