@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { JSCRIPT_VERSION, CONTEXT_DATA } from "../const";
-import { $Element, DOM } from "../types";
+import { $Element, $Document, DOM } from "../types";
 
 // Inspired by the article written by Daniel Buchner:
 // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
@@ -34,7 +34,7 @@ _.register({
             wrapper.className = name;
 
             if (typeof callback === "function") {
-                callback(new $Element(doc.documentElement));
+                callback(new $Document(doc));
             }
         };
         /* istanbul ignore if */
@@ -54,14 +54,14 @@ _.register({
                     return DOM.nextFrame(repeat);
                 }
                 // use the trick below to hide frame border in IE8
-                htmlEl.onresize = function resizing() {
-                    htmlEl.onresize = null; // block recursive updates
+                wrapper.onresize = function resizing() {
+                    wrapper.onresize = null;
 
-                    object.width = htmlEl.offsetWidth + 4;
-                    object.height = htmlEl.offsetHeight + 4;
+                    object.width = wrapper.offsetWidth + 4;
+                    object.height = wrapper.offsetHeight + 4;
 
                     DOM.nextFrame(() => {
-                        htmlEl.onresize = resizing;
+                        wrapper.onresize = resizing;
                     });
                 };
 

@@ -1,5 +1,5 @@
 import { $Element, $Document, DOM } from "../types";
-import tagCache from "../dom/emmet";
+import tagCache from "../global/emmet";
 
 var makeMethod = (all) => function(value, varMap) {
         var doc = this[0].ownerDocument,

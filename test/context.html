@@ -9,6 +9,10 @@
         color: red;
     }
 
+    div {
+        background: green;
+    }
+
     .test-context {
         width: 80%;
         height: 100px;
@@ -32,16 +36,10 @@
     DOM.find("p+p").context("test-context", function(root) {
         var body = root.find("body");
 
-        body.css({background: "#EEE"}).append(
-            DOM.emmet("div>`Test context text has default text color`^input[value=`input$`]*2"));
+        body.css({background: "#F00"}).append(DOM.emmet(
+            "div>`Test context text has default text color`^input[value=`input$`]*2"));
 
-        var span = root.get("ownerDocument").createElement("span");
-
-        span.innerHTML = "dynamic span";
-
-        body.append(DOM.constructor(span));
-
-        // body.append(DOM.create("span>`dynamic span`"));
+        body.append(root.create("span>`dynamic span`"));
     });
     </script>
 </body>
