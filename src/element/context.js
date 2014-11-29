@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION, DOCUMENT, CONTEXT_DATA } from "../const";
+import { JSCRIPT_VERSION, CONTEXT_DATA } from "../const";
 import { $Element, DOM } from "../types";
 
 // Inspired by the article written by Daniel Buchner:
@@ -8,7 +8,7 @@ import { $Element, DOM } from "../types";
 var SANDBOX_URL = "about:blank";
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 9) {
-    let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
+    let legacyScripts = _.filter.call(document.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
     // IE8 fails with about:blank, use better-dom-legacy.html instead
     SANDBOX_URL = legacyScripts[0].src.slice(0, -2) + "html";
 }
@@ -19,11 +19,12 @@ if (JSCRIPT_VERSION < 9) {
 _.register({
     context(name, callback) {
         var node = this[0],
+            doc = node.ownerDocument,
             contexts = this._[CONTEXT_DATA];
 
         if (name in contexts) return contexts[name];
 
-        var wrapper = DOCUMENT.createElement("div");
+        var wrapper = doc.createElement("div");
         var object;
         var ready = () => {
             var doc = object.contentDocument;
@@ -67,7 +68,7 @@ _.register({
                 ready();
             });
         } else {
-            object = DOCUMENT.createElement("object");
+            object = doc.createElement("object");
             object.type = "text/html";
             object.data = SANDBOX_URL;
             object.onload = ready;

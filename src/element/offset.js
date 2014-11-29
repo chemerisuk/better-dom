@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { HTML, WINDOW } from "../const";
+import { WINDOW } from "../const";
 
 _.register({
     /**
@@ -12,10 +12,11 @@ _.register({
      */
     offset() {
         var node = this[0],
-            clientTop = HTML.clientTop,
-            clientLeft = HTML.clientLeft,
-            scrollTop = WINDOW.pageYOffset || HTML.scrollTop,
-            scrollLeft = WINDOW.pageXOffset || HTML.scrollLeft,
+            docEl = node.ownerDocument.documentElement,
+            clientTop = docEl.clientTop,
+            clientLeft = docEl.clientLeft,
+            scrollTop = WINDOW.pageYOffset || docEl.scrollTop,
+            scrollLeft = WINDOW.pageXOffset || docEl.scrollLeft,
             boundingRect = node.getBoundingClientRect();
 
         return {

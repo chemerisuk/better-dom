@@ -33,13 +33,13 @@
         root.find("body").css({background: "#EEE"}).append(
             DOM.emmet("div>`Test context text has default text color`^input[value=`input$`]*2"));
 
-        // var span = root.get("ownerDocument").createElement("span");
+        var span = root.get("ownerDocument").createElement("span");
 
-        // span.innerHTML = "dynamic span";
+        span.innerHTML = "dynamic span";
 
         // root.find("body")[0].appendChild(span);
 
-        // root.find("body").append(DOM.create("span>`dynamic span`"));
+        root.find("body").append(DOM.constructor(span));
     });
     </script>
 </body>

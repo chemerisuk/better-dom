@@ -1,9 +1,8 @@
 import _ from "../util/index";
 import { StaticMethodError } from "../errors";
-import { DOCUMENT } from "../const";
 import { DOM } from "../types";
 
-var styleNode = _.injectElement(DOCUMENT.createElement("style")),
+var styleNode = _.injectElement(document.createElement("style")),
     styleSheet = styleNode.sheet || styleNode.styleSheet,
     styleRules = styleSheet.cssRules || styleSheet.rules;
 

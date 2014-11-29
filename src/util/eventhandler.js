@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION, HTML, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, WINDOW, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
@@ -12,6 +12,8 @@ function getEventProperty(name, e, type, node, target, currentTarget) {
     }
     /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
+        var docEl = node.ownerDocument.documentElement;
+
         switch (name) {
         case "which":
             return e.keyCode;
@@ -20,9 +22,9 @@ function getEventProperty(name, e, type, node, target, currentTarget) {
             // click: 1 === left; 2 === middle; 3 === right
             return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
         case "pageX":
-            return e.clientX + HTML.scrollLeft - HTML.clientLeft;
+            return e.clientX + docEl.scrollLeft - docEl.clientLeft;
         case "pageY":
-            return e.clientY + HTML.scrollTop - HTML.clientTop;
+            return e.clientY + docEl.scrollTop - docEl.clientTop;
         case "preventDefault":
             return () => e.returnValue = false;
         case "stopPropagation":
@@ -66,7 +68,7 @@ function EventHandler(type, selector, callback, props, el, once) {
                 return; // handle custom events in legacy IE
             }
             // srcElement can be null in legacy IE when target is document
-            var target = e.target || e.srcElement || DOCUMENT,
+            var target = e.target || e.srcElement || node.ownerDocument,
                 currentTarget = matcher ? matcher(target) : node,
                 args = props || [];
 

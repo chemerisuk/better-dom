@@ -1,6 +1,5 @@
 import _ from "../util/index";
 import { StaticMethodError } from "../errors";
-import { DOCUMENT } from "../const";
 import { DOM } from "../types";
 
 /**
@@ -17,13 +16,15 @@ import { DOM } from "../types";
  * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
  */
 DOM.importScripts = function(...urls) {
-    var callback = function() {
+    var doc = this[0].ownerDocument;
+
+    var callback = () => {
         var arg = urls.shift(),
             argType = typeof arg,
             script;
 
         if (argType === "string") {
-            script = DOCUMENT.createElement("script");
+            script = doc.createElement("script");
             script.src = arg;
             script.onload = callback;
             script.async = true;

@@ -1,13 +1,12 @@
-import { DOCUMENT } from "../const";
 import { $Element, DOM } from "../types";
 import tagCache from "./emmet";
 
-var sandbox = DOCUMENT.createElement("body"),
+var sandbox = document.createElement("body"),
     makeMethod = (all) => function(value, varMap) {
         var nodes, el;
 
         if (value && value in tagCache) {
-            nodes = DOCUMENT.createElement(value);
+            nodes = this[0].ownerDocument.createElement(value);
 
             if (all) nodes = [ new $Element(nodes) ];
         } else {

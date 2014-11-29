@@ -1,8 +1,7 @@
-import { WINDOW, DOCUMENT } from "../const";
+import { WINDOW } from "../const";
 import { $Element, $NullElement } from "../types";
 
-var arrayProto = Array.prototype,
-    head = DOCUMENT.getElementsByTagName("head")[0];
+var arrayProto = Array.prototype;
 
 export default {
     computeStyle: (node) => {
@@ -15,7 +14,7 @@ export default {
     },
     injectElement: (el) => {
         if (el && el.nodeType === 1) {
-            return head.appendChild(el);
+            return el.ownerDocument.getElementsByTagName("head")[0].appendChild(el);
         }
     },
     // utilites

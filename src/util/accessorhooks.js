@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION, HTML, DOCUMENT } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 
 var hooks = {get: {}, set: {}};
 var body = document.createElement("body");
@@ -14,8 +14,17 @@ hooks.get.style = (node) => node.style.cssText;
 hooks.set.style = (node, value) => { node.style.cssText = value };
 
 // title hook for DOM
-hooks.get.title = (node) => node === HTML ? DOCUMENT.title : node.title;
-hooks.set.title = (node, value) => { (node === HTML ? DOCUMENT : node).title = value; };
+hooks.get.title = (node) => {
+    var doc = node.ownerDocument;
+
+    return node === doc.documentElement ? doc.title : node.title;
+};
+
+hooks.set.title = (node, value) => {
+    var doc = node.ownerDocument;
+
+    (node === doc.documentElement ? doc : node).title = value;
+};
 
 hooks.get.undefined = (node) => {
     var name;

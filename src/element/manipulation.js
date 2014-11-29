@@ -1,5 +1,4 @@
 import _ from "../util/index";
-import { DOCUMENT } from "../const";
 import { $Element, DOM } from "../types";
 
 var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => function(...contents) {
@@ -10,7 +9,7 @@ var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => functio
         // the idea of the algorithm is to construct HTML string
         // when possible or use document fragment as a fallback to
         // invoke manipulation using a single method call
-        var fragment = fastStrategy ? "" : DOCUMENT.createDocumentFragment();
+        var fragment = fastStrategy ? "" : node.ownerDocument.createDocumentFragment();
 
         contents.forEach((content) => {
             if (typeof content === "function") content = content.call(this);
@@ -30,7 +29,7 @@ var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => functio
                     // append existing string to fragment
                     content = DOM.createAll(fragment).concat(content);
                     // fallback to document fragment strategy
-                    fragment = DOCUMENT.createDocumentFragment();
+                    fragment = node.ownerDocument.createDocumentFragment();
                 }
 
                 content.forEach((el) => {

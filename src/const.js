@@ -2,8 +2,6 @@
 
 // globals
 export const WINDOW = window;
-export const DOCUMENT = WINDOW.document;
-export const HTML = DOCUMENT.documentElement;
 
 const userAgent = WINDOW.navigator.userAgent;
 const jscriptVersion = WINDOW.ScriptEngineMajorVersion;

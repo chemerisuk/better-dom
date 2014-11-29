@@ -1,4 +1,4 @@
-import { HTML, NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA, CONTEXT_DATA } from "./const";
+import { NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA, CONTEXT_DATA } from "./const";
 
 function $NullElement() {}
 
@@ -60,7 +60,7 @@ $NullElement.prototype = new $Element();
  * @namespace DOM
  * @extends $Element
  */
-var DOM = new $Element(HTML);
+var DOM = new $Element(document.documentElement);
 
 /**
  * A factory for default implementation for empty nodes

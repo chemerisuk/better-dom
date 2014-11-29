@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { WEBKIT_PREFIX, HTML, FRAME_DATA } from "../const";
+import { WEBKIT_PREFIX, FRAME_DATA } from "../const";
 import AnimationHandler from "../util/animationhandler";
 
 var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
@@ -45,7 +45,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
         // cancel previous frame if it exists
         if (frameId) DOM.cancelFrame(frameId);
 
-        if (!HTML.contains(node)) {
+        if (!node.ownerDocument.documentElement.contains(node)) {
             // apply attribute/visibility syncronously for detached DOM elements
             // because browser returns zero animation/transition duration for them
             done();

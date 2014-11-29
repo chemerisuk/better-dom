@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { DOM, $Element } from "../types";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 
@@ -53,7 +53,7 @@ DOM.extend = function(selector, condition, definition) {
         // initialize extension manually to make sure that all elements
         // have appropriate methods before they are used in other DOM.extend.
         // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(DOCUMENT.querySelectorAll(selector), ext);
+        _.each.call(this[0].ownerDocument.querySelectorAll(selector), ext);
         // MUST be after querySelectorAll because of legacy IEs quirks
         DOM.importStyles(selector, cssText);
     }
@@ -61,7 +61,7 @@ DOM.extend = function(selector, condition, definition) {
 
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 10) {
-    let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
+    let legacyScripts = _.filter.call(document.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
 
     if (legacyScripts.length < 1) {
         throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
@@ -69,7 +69,7 @@ if (JSCRIPT_VERSION < 10) {
 
     cssText = "-ms-behavior:url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important";
 
-    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
+    document.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
@@ -91,7 +91,7 @@ if (JSCRIPT_VERSION < 10) {
     };
 
     // use capturing to suppress internal animationstart events
-    DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
+    document.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
         if (e.animationName === ANIMATION_NAME) {
             extensions.forEach((ext) => { ext(e.target) });
             // this is an internal event - stop it immediately

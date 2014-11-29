@@ -1,5 +1,4 @@
 import _ from "../util/index";
-import { DOCUMENT } from "../const";
 
 var isHidden = (node) => {
     var computed = _.computeStyle(node);
@@ -8,7 +7,7 @@ var isHidden = (node) => {
 };
 
 export default {
-    ":focus": (node) => node === DOCUMENT.activeElement,
+    ":focus": (node) => node === node.ownerDocument.activeElement,
 
     ":visible": (node) => !isHidden(node),
 

@@ -1,12 +1,11 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOCUMENT } from "../const";
-import { $Element, $NullElement, DOM } from "../types";
+import { $Element, $NullElement } from "../types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+var rquick = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rescape = /'|\\/g,
     makeMethod = (all) => function(selector) {
         if (typeof selector !== "string") throw new MethodError("find" + all, arguments);
@@ -30,7 +29,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
             nid = "DOM<%= VERSION_NUMBER %>";
             context = node;
 
-            if (this !== DOM) {
+            if (node !== node.ownerDocument.documentElement) {
                 // qSA works strangely on Element-rooted queries
                 // We can work around this by specifying an extra ID on the root
                 // and working up from there (Thanks to Andrew Dupont for the technique)

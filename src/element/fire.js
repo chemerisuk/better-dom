@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, CUSTOM_EVENT_TYPE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 
@@ -32,7 +32,7 @@ _.register({
         }
         /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
-            e = DOCUMENT.createEventObject();
+            e = node.ownerDocument.createEventObject();
             e["__<%= VERSION_NUMBER %>__"] = arguments;
             // handle custom events for legacy IE
             if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
@@ -43,7 +43,7 @@ _.register({
 
             canContinue = e.returnValue !== false;
         } else {
-            e = DOCUMENT.createEvent("HTMLEvents");
+            e = node.ownerDocument.createEvent("HTMLEvents");
             e["__<%= VERSION_NUMBER %>__"] = arguments;
             e.initEvent(eventType, true, true);
             canContinue = node.dispatchEvent(e);
