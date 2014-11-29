@@ -5,13 +5,8 @@ import { $Element, $Document, DOM } from "../types";
 // Inspired by the article written by Daniel Buchner:
 // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
 
-var SANDBOX_URL = "about:blank";
-/* istanbul ignore if */
-if (JSCRIPT_VERSION < 9) {
-    let legacyScripts = _.filter.call(document.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
-    // IE8 fails with about:blank, use better-dom-legacy.html instead
-    SANDBOX_URL = legacyScripts[0].src.slice(0, -2) + "html";
-}
+// IE8 fails with about:blank, use better-dom-legacy.html instead
+var SANDBOX_URL = JSCRIPT_VERSION < 9 ? _.getLegacyFile("html") : "about:blank";
 
 // NOTE: Chrome/Safari have issue with focusing on the <object>:
 // https://code.google.com/p/chromium/issues/detail?id=255150
