@@ -1,4 +1,4 @@
-import { HTML, NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA } from "./const";
+import { HTML, NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA, CONTEXT_DATA } from "./const";
 
 function $NullElement() {}
 
@@ -19,6 +19,7 @@ function $Element(node) {
         this._[HANDLERS_DATA] = [];
         this._[WATCHERS_DATA] = {};
         this._[EXTENSIONS_DATA] = [];
+        this._[CONTEXT_DATA] = {};
     } else if (node) {
         var cached = node[NODE_DATA];
         // create a wrapper only once for each native element

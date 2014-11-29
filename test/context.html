@@ -10,9 +10,10 @@
         background: #EEE;
     }
 
-    .test {
+    .test-context {
         width: 80%;
         height: 100px;
+        position: relative;
     }
     </style>
     <!--[if IE]>
@@ -29,8 +30,8 @@
     </p>
     <script src="../build/better-dom.js"></script>
     <script>
-    DOM.find("p+p").context("test", function(root) {
-        root.find("body").append(
+    DOM.find("p+p").context("test-context", function(root) {
+        root.find("body").css("background", "#FFF").append(
             DOM.emmet("div>`Sandbox text`^input[value=`input$`]*2"));
     });
     </script>

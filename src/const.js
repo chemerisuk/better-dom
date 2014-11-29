@@ -20,3 +20,4 @@ export const HANDLERS_DATA = "handlers<%= VERSION_NUMBER %>";
 export const WATCHERS_DATA = "watchers<%= VERSION_NUMBER %>";
 export const EXTENSIONS_DATA = "extensions<%= VERSION_NUMBER %>";
 export const FRAME_DATA = "frame<%= VERSION_NUMBER %>";
+export const CONTEXT_DATA = "context<%= VERSION_NUMBER %>";

@@ -1,9 +1,12 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION, DOCUMENT } from "../const";
+import { JSCRIPT_VERSION, DOCUMENT, CONTEXT_DATA } from "../const";
 import { $Element, DOM } from "../types";
 
-var SANDBOX_URL = "about:blank";
+// Inspired by the article written by Daniel Buchner:
+// http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
 
+var SANDBOX_URL = "about:blank";
+/* istanbul ignore if */
 if (JSCRIPT_VERSION < 9) {
     let legacyScripts = _.filter.call(DOCUMENT.scripts, (script) => script.src.indexOf("better-dom-legacy.js") >= 0);
     // IE8 fails with about:blank, use better-dom-legacy.html instead
@@ -15,7 +18,11 @@ if (JSCRIPT_VERSION < 9) {
 
 _.register({
     context(name, callback) {
-        var node = this[0];
+        var node = this[0],
+            contexts = this._[CONTEXT_DATA];
+
+        if (name in contexts) return contexts[name];
+
         var wrapper = DOCUMENT.createElement("div");
         var object;
         var ready = () => {
@@ -25,14 +32,13 @@ _.register({
                 callback(new $Element(object.contentDocument.documentElement));
             }
         };
-
+        /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
             // IE8 is buggy, use innerHTML and better-dom-legacy.html
-            wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html`]", [SANDBOX_URL]);
+            // use overflow and extra size to get rid of the frame
+            wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html` style=`left:-2px;top:-2px`]", [SANDBOX_URL]);
 
             object = wrapper.firstChild;
-            // get rid of the frame border
-            object.style.cssText = "left:-2px;top:-2px";
             // IE8 does not support onload - use timeout instead
             DOM.nextFrame(function repeat() {
                 var htmlEl;
@@ -65,7 +71,6 @@ _.register({
             wrapper.appendChild(object);
         }
 
-        wrapper.style.position = "relative";
         wrapper.style.overflow = "hidden";
 
         object.style.position = "absolute";
@@ -75,6 +80,6 @@ _.register({
         // TODO: check if parent is not null
         node.parentNode.insertBefore(wrapper, node);
 
-        return new $Element(wrapper);
+        return contexts[name] = new $Element(wrapper);
     }
 });
