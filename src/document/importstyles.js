@@ -1,11 +1,11 @@
 import _ from "../util/index";
 import { StaticMethodError } from "../errors";
-import { DOM } from "../types";
+import { $Document } from "../types";
 
 /**
  * Append global css styles
- * @memberof DOM
- * @alias DOM.importStyles
+ * @memberof! $Document#
+ * @alias $Document#importStyles
  * @param {String}  selector  css selector
  * @param {String}  cssText   css rules
  * @example
@@ -13,7 +13,7 @@ import { DOM } from "../types";
  * // more complex selectors
  * DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");
  */
-DOM.importStyles = function(selector, cssText) {
+$Document.prototype.importStyles = function(selector, cssText) {
     var doc = this[0].ownerDocument,
         styleNode = _.injectElement(doc.createElement("style")),
         styleSheet = styleNode.sheet || styleNode.styleSheet,

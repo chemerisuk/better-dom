@@ -46,7 +46,7 @@ gulp.task("compile", ["lint"], function() {
         return ("000" + n).slice(-3);
     });
 
-    return gulp.src(["*.js", "dom/*.js", "element/*.js", "util/*.js"], {buffer: false, cwd: "./src"})
+    return gulp.src(["**", "!legacy/"], {buffer: false, cwd: "./src"})
         .pipe(plumber())
         .pipe(compile("better-dom.js", {compress: dest === "dist/"}))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
@@ -102,7 +102,7 @@ gulp.task("test", ["compile", "symlink"], function(done) {
 });
 
 gulp.task("dev", ["compile", "symlink"], function() {
-    gulp.watch(["src/*.js", "src/dom/*.js", "src/element/*.js", "src/util/*.js"], ["compile"]);
+    gulp.watch(["src/**", "!src/legacy/"], ["compile"]);
     gulp.watch(["src/legacy/*.js"], ["compile-legacy", "lint"]);
 
     karma.start({

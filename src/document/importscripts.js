@@ -1,11 +1,11 @@
 import _ from "../util/index";
 import { StaticMethodError } from "../errors";
-import { DOM } from "../types";
+import { $Document } from "../types";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done
- * @memberof DOM
- * @alias DOM.importScripts
+ * @memberof! $Document#
+ * @alias $Document#importScripts
  * @param {...String} urls       script file urls
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  * @example
@@ -15,7 +15,7 @@ import { DOM } from "../types";
  * // loading several scripts sequentially
  * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
  */
-DOM.importScripts = function(...urls) {
+$Document.prototype.importScripts = function(...urls) {
     var doc = this[0].ownerDocument;
 
     var callback = () => {
