@@ -30,16 +30,18 @@
     <script src="../build/better-dom.js"></script>
     <script>
     DOM.find("p+p").context("test-context", function(root) {
-        root.find("body").css({background: "#EEE"}).append(
+        var body = root.find("body");
+
+        body.css({background: "#EEE"}).append(
             DOM.emmet("div>`Test context text has default text color`^input[value=`input$`]*2"));
 
         var span = root.get("ownerDocument").createElement("span");
 
         span.innerHTML = "dynamic span";
 
-        // root.find("body")[0].appendChild(span);
+        body.append(DOM.constructor(span));
 
-        root.find("body").append(DOM.constructor(span));
+        // body.append(DOM.create("span>`dynamic span`"));
     });
     </script>
 </body>
