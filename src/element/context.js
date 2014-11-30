@@ -40,13 +40,13 @@ _.register({
 
             object = wrapper.firstChild;
             // IE8 does not support onload - use timeout instead
-            DOM.nextFrame(function repeat() {
+            DOM.requestFrame(function repeat() {
                 var htmlEl;
                 // TODO: tbd if try/catch check is required
                 try {
                     htmlEl = object.contentDocument.documentElement;
                 } catch (err) {
-                    return DOM.nextFrame(repeat);
+                    return DOM.requestFrame(repeat);
                 }
                 // use the trick below to hide frame border in IE8
                 wrapper.onresize = function resizing() {
@@ -55,7 +55,7 @@ _.register({
                     object.width = wrapper.offsetWidth + 4;
                     object.height = wrapper.offsetHeight + 4;
 
-                    DOM.nextFrame(() => {
+                    DOM.requestFrame(() => {
                         wrapper.onresize = resizing;
                     });
                 };

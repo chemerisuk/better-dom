@@ -55,7 +55,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             // use requestAnimationFrame to avoid animation quirks for
             // new elements inserted into the DOM
             // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-            this._[FRAME_DATA] = DOM.nextFrame(!animationHandler ? done : () => {
+            this._[FRAME_DATA] = DOM.requestFrame(!animationHandler ? done : () => {
                 node.addEventListener(eventType, animationHandler, true);
                 // update modified style rules
                 style.cssText = animationHandler.initialCssText + animationHandler.cssText;
