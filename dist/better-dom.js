@@ -1,7 +1,7 @@
 /**
  * @file better-dom.js
  * @overview better-dom: Live extension playground
- * @version 2.1.0-beta.1 Thu, 27 Nov 2014 08:44:32 GMT
+ * @version 2.1.0-beta.2 Sun, 30 Nov 2014 12:47:27 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -9,7 +9,7 @@
 (function() {
     "use strict";var SLICE$0 = Array.prototype.slice;
     var WINDOW = window;
-    var DOCUMENT = WINDOW.document;
+    var DOCUMENT = document;
     var HTML = DOCUMENT.documentElement;
 
     var userAgent = WINDOW.navigator.userAgent;
@@ -20,6 +20,13 @@
     var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
     var CUSTOM_EVENT_TYPE = "dataavailable";
 
+    var NODE_DATA = "__2001000-beta002__";
+    var HANDLERS_DATA = "handlers2001000-beta002";
+    var WATCHERS_DATA = "watchers2001000-beta002";
+    var EXTENSIONS_DATA = "extensions2001000-beta002";
+    var FRAME_DATA = "frame2001000-beta002";
+    var CONTEXT_DATA = "context2001000-beta002";
+
     function $NullElement() {}
 
     function $Element(node) {
@@ -28,12 +35,18 @@
                 this[0] = node;
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__2001000-beta001__"] = this;
+                node[NODE_DATA] = this;
+
+                this._ = {};
+                this._[HANDLERS_DATA] = [];
+                this._[WATCHERS_DATA] = {};
+                this._[EXTENSIONS_DATA] = [];
+                this._[CONTEXT_DATA] = {};
             }
 
-            this._ = { _handlers: [], _watchers: {}, _extensions: [] };
+
         } else if (node) {
-            var cached = node["__2001000-beta001__"];
+            var cached = node[NODE_DATA];
             // create a wrapper only once for each native element
             return cached ? cached : new $Element(node);
         } else {
@@ -51,27 +64,36 @@
 
             return node ? "<" + node.tagName.toLowerCase() + ">" : "";
         },
-        version: "2.1.0-beta.1"
+        version: "2.1.0-beta.2"
     };
 
     $NullElement.prototype = new $Element();
 
-    var DOM = new $Element(HTML);
+    function $Document(node) {
+        if (node && node.nodeType === 9) {
+            node = node.documentElement;
+        }
 
-    var util$index$$arrayProto = Array.prototype,
-        util$index$$head = DOCUMENT.getElementsByTagName("head")[0];
+        $Element.call(this, node);
+    }
+
+    $Document.prototype = new $Element();
+
+    var DOM = new $Document(DOCUMENT);
+
+    var util$index$$arrayProto = Array.prototype;
 
     var util$index$$default = {
-        computeStyle: function(node)  {
-            if (WINDOW.getComputedStyle) {
-                return WINDOW.getComputedStyle(node);
-            } else {
+        computeStyle: function(node) {
+            if (JSCRIPT_VERSION < 9) {
                 return node.currentStyle;
+            } else {
+                return WINDOW.getComputedStyle(node);
             }
         },
-        injectElement: function(el)  {
+        injectElement: function(el) {
             if (el && el.nodeType === 1) {
-                return util$index$$head.appendChild(el);
+                return el.ownerDocument.getElementsByTagName("head")[0].appendChild(el);
             }
         },
         // utilites
@@ -82,7 +104,7 @@
         slice: util$index$$arrayProto.slice,
         isArray: Array.isArray,
         keys: Object.keys,
-        safeInvoke: function(context, fn, arg1, arg2)  {
+        safeInvoke: function(context, fn, arg1, arg2) {
             if (typeof fn === "string") fn = context[fn];
 
             try {
@@ -102,6 +124,17 @@
                 $Element.prototype[key] = mixins[key];
                 $NullElement.prototype[key] = defaults;
             });
+        },
+        getLegacyFile: function(type) {
+            if (JSCRIPT_VERSION < 10) {
+                var legacyScripts = util$index$$arrayProto.filter.call(DOCUMENT.scripts, function(el)  {return el.src.indexOf("better-dom-legacy.js") >= 0});
+
+                if (legacyScripts.length < 1) {
+                    throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
+                }
+
+                return legacyScripts[0].src.replace(".js", "." + type);
+            }
         }
     };
 
@@ -124,29 +157,17 @@
 
     errors$$StaticMethodError.prototype = new TypeError();
 
-    var exports$$_DOM = WINDOW.DOM;
-
-    DOM.noConflict = function() {
-        if (WINDOW.DOM === DOM) {
-            WINDOW.DOM = exports$$_DOM;
-        }
-
-        return DOM;
-    };
-
-    WINDOW.DOM = DOM;
-
     /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
-        dom$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
-        dom$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
-        dom$emmet$$reAttr = /\s*([\w\-]+)(?:=((?:`([^`]*)`)|[^\s]*))?/g,
-        dom$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
-        dom$emmet$$reDot = /\./g,
-        dom$emmet$$reDollar = /\$/g,
-        dom$emmet$$tagCache = {"": ""},
-        dom$emmet$$normalizeAttrs = function(_, name, value, rawValue)  {
+        global$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
+        global$emmet$$reParse = /`[^`]*`|\[[^\]]*\]|\.[^()>^+*`[#]+|[^()>^+*`[#.]+|\^+|./g,
+        global$emmet$$reAttr = /\s*([\w\-]+)(?:=((?:`([^`]*)`)|[^\s]*))?/g,
+        global$emmet$$reIndex = /(\$+)(?:@(-)?(\d+)?)?/g,
+        global$emmet$$reDot = /\./g,
+        global$emmet$$reDollar = /\$/g,
+        global$emmet$$tagCache = {"": ""},
+        global$emmet$$normalizeAttrs = function(_, name, value, rawValue)  {
             // try to detemnie which kind of quotes to use
             var quote = value && value.indexOf("\"") >= 0 ? "'" : "\"";
 
@@ -160,35 +181,35 @@
             // always wrap attribute values with quotes even they don't exist
             return " " + name + "=" + quote + value + quote;
         },
-        dom$emmet$$injectTerm = function(term, end)  {return function(html)  {
+        global$emmet$$injectTerm = function(term, end)  {return function(html)  {
             // find index of where to inject the term
             var index = end ? html.lastIndexOf("<") : html.indexOf(">");
             // inject the term into the HTML string
             return html.slice(0, index) + term + html.slice(index);
         }},
-        dom$emmet$$makeTerm = function(tag)  {
-            return dom$emmet$$tagCache[tag] || (dom$emmet$$tagCache[tag] = "<" + tag + "></" + tag + ">");
+        global$emmet$$makeTerm = function(tag)  {
+            return global$emmet$$tagCache[tag] || (global$emmet$$tagCache[tag] = "<" + tag + "></" + tag + ">");
         },
-        dom$emmet$$makeIndexedTerm = function(n, term)  {
+        global$emmet$$makeIndexedTerm = function(n, term)  {
             var result = Array(n), i;
 
             for (i = 0; i < n; ++i) {
-                result[i] = term.replace(dom$emmet$$reIndex, function(expr, fmt, sign, base)  {
+                result[i] = term.replace(global$emmet$$reIndex, function(expr, fmt, sign, base)  {
                     var index = (sign ? n - i - 1 : i) + (base ? +base : 1);
                     // handle zero-padded index values, like $$$ etc.
-                    return (fmt + index).slice(-fmt.length).replace(dom$emmet$$reDollar, "0");
+                    return (fmt + index).slice(-fmt.length).replace(global$emmet$$reDollar, "0");
                 });
             }
 
             return result;
         },
-        dom$emmet$$reUnsafe = /[&<>"']/g,
+        global$emmet$$reUnsafe = /[&<>"']/g,
         // http://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
-        dom$emmet$$safeSymbol = {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"};
+        global$emmet$$safeSymbol = {"&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#039;"};
 
     // populate empty tag names with result
     "area base br col hr img input link meta param command keygen source".split(" ").forEach(function(tag)  {
-        dom$emmet$$tagCache[tag] = "<" + tag + ">";
+        global$emmet$$tagCache[tag] = "<" + tag + ">";
     });
 
     DOM.emmet = function(template, varMap) {var $D$0;var $D$1;var $D$2;
@@ -196,21 +217,21 @@
 
         if (varMap) template = DOM.format(template, varMap);
 
-        if (template in dom$emmet$$tagCache) {return dom$emmet$$tagCache[template];}
+        if (template in global$emmet$$tagCache) {return global$emmet$$tagCache[template];}
 
         // transform template string into RPN
 
         var stack = [], output = [];
 
-        $D$2 = (template.match(dom$emmet$$reParse));$D$0 = 0;$D$1 = $D$2.length;for (var str ;$D$0 < $D$1;){str = ($D$2[$D$0++]);
+        $D$2 = (template.match(global$emmet$$reParse));$D$0 = 0;$D$1 = $D$2.length;for (var str ;$D$0 < $D$1;){str = ($D$2[$D$0++]);
             var op = str[0];
-            var priority = dom$emmet$$operators[op];
+            var priority = global$emmet$$operators[op];
 
             if (priority) {
                 if (str !== "(") {
                     // for ^ operator need to skip > str.length times
                     for (var i = 0, n = (op === "^" ? str.length : 1); i < n; ++i) {
-                        while (stack[0] !== op && dom$emmet$$operators[stack[0]] >= priority) {
+                        while (stack[0] !== op && global$emmet$$operators[stack[0]] >= priority) {
                             var head = stack.shift();
 
                             output.push(head);
@@ -229,7 +250,7 @@
                     }
                     // handle multiple classes, e.g. a.one.two
                     if (op === ".") {
-                        output.push(str.slice(1).replace(dom$emmet$$reDot, " "));
+                        output.push(str.slice(1).replace(global$emmet$$reDot, " "));
                     }
 
                     stack.unshift(op);
@@ -246,42 +267,42 @@
         stack = [];
 
         $D$0 = 0;$D$1 = output.length;for (var str$0 ;$D$0 < $D$1;){str$0 = (output[$D$0++]);
-            if (str$0 in dom$emmet$$operators) {
+            if (str$0 in global$emmet$$operators) {
                 var value = stack.shift();
                 var node = stack.shift();
 
                 if (typeof node === "string") {
-                    node = [ dom$emmet$$makeTerm(node) ];
+                    node = [ global$emmet$$makeTerm(node) ];
                 }
 
                 switch(str$0) {
                 case ".":
-                    value = dom$emmet$$injectTerm(" class=\"" + value + "\"");
+                    value = global$emmet$$injectTerm(" class=\"" + value + "\"");
                     break;
 
                 case "#":
-                    value = dom$emmet$$injectTerm(" id=\"" + value + "\"");
+                    value = global$emmet$$injectTerm(" id=\"" + value + "\"");
                     break;
 
                 case "[":
-                    value = dom$emmet$$injectTerm(value.replace(dom$emmet$$reAttr, dom$emmet$$normalizeAttrs));
+                    value = global$emmet$$injectTerm(value.replace(global$emmet$$reAttr, global$emmet$$normalizeAttrs));
                     break;
 
                 case "*":
-                    node = dom$emmet$$makeIndexedTerm(+value, node.join(""));
+                    node = global$emmet$$makeIndexedTerm(+value, node.join(""));
                     break;
 
                 case "`":
                     stack.unshift(node);
                     // escape unsafe HTML symbols
-                    node = [ value.replace(dom$emmet$$reUnsafe, function(ch)  {return dom$emmet$$safeSymbol[ch]}) ];
+                    node = [ value.replace(global$emmet$$reUnsafe, function(ch)  {return global$emmet$$safeSymbol[ch]}) ];
                     break;
 
                 default: /* ">", "+", "^" */
-                    value = typeof value === "string" ? dom$emmet$$makeTerm(value) : value.join("");
+                    value = typeof value === "string" ? global$emmet$$makeTerm(value) : value.join("");
 
                     if (str$0 === ">") {
-                        value = dom$emmet$$injectTerm(value, true);
+                        value = global$emmet$$injectTerm(value, true);
                     } else {
                         node.push(value);
                     }
@@ -295,7 +316,7 @@
 
         if (output.length === 1) {
             // handle single tag case
-            output = dom$emmet$$makeTerm(stack[0]);
+            output = global$emmet$$makeTerm(stack[0]);
         } else {
             output = stack[0].join("");
         }
@@ -303,52 +324,115 @@
         return output;
     };
 
-    var dom$emmet$$default = dom$emmet$$tagCache;
+    var global$emmet$$default = global$emmet$$tagCache;
 
-    var dom$create$$sandbox = DOCUMENT.createElement("body"),
-        dom$create$$makeMethod = function(all)  {return function(value, varMap) {
-            var nodes, el;
+    var document$create$$makeMethod = function(all)  {return function(value, varMap) {
+            var doc = this[0].ownerDocument,
+                sandbox = doc.createElement("div");
 
-            if (value && value in dom$emmet$$default) {
-                nodes = DOCUMENT.createElement(value);
+            this["create" + all] = function(value, varMap)  {
+                var nodes, el;
 
-                if (all) nodes = [ new $Element(nodes) ];
-            } else {
-                value = value.trim();
+                if (value && value in global$emmet$$default) {
+                    nodes = doc.createElement(value);
 
-                if (value[0] === "<" && value[value.length - 1] === ">") {
-                    value = varMap ? DOM.format(value, varMap) : value;
+                    if (all) nodes = [ new $Element(nodes) ];
                 } else {
-                    value = DOM.emmet(value, varMap);
-                }
+                    value = value.trim();
 
-                dom$create$$sandbox.innerHTML = value; // parse input HTML string
+                    if (value[0] === "<" && value[value.length - 1] === ">") {
+                        value = varMap ? DOM.format(value, varMap) : value;
+                    } else {
+                        value = DOM.emmet(value, varMap);
+                    }
 
-                for (nodes = all ? [] : null; el = dom$create$$sandbox.firstChild; ) {
-                    dom$create$$sandbox.removeChild(el); // detach element from the sandbox
+                    sandbox.innerHTML = value; // parse input HTML string
 
-                    if (el.nodeType === 1) {
-                        if (all) {
-                            nodes.push(new $Element(el));
-                        } else {
-                            nodes = el;
+                    for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
+                        sandbox.removeChild(el); // detach element from the sandbox
 
-                            break; // stop early, because need only the first element
+                        if (el.nodeType === 1) {
+                            if (all) {
+                                nodes.push(new $Element(el));
+                            } else {
+                                nodes = el;
+
+                                break; // stop early, because need only the first element
+                            }
                         }
                     }
                 }
-            }
 
-            return all ? nodes : $Element(nodes);
+                return all ? nodes : $Element(nodes);
+            };
+
+            return this["create" + all](value, varMap);
         }};
 
-    DOM.create = dom$create$$makeMethod("");
+    $Document.prototype.create = document$create$$makeMethod("");
 
-    DOM.createAll = dom$create$$makeMethod("All");
+    $Document.prototype.createAll = document$create$$makeMethod("All");
 
-    /*
-     * Helper for css selectors
-     */
+    $Document.prototype.importScripts = function() {var urls = SLICE$0.call(arguments, 0);
+        var doc = this[0].ownerDocument;
+
+        var callback = function()  {
+            var arg = urls.shift(),
+                argType = typeof arg,
+                script;
+
+            if (argType === "string") {
+                script = doc.createElement("script");
+                script.src = arg;
+                script.onload = callback;
+                script.async = true;
+
+                util$index$$default.injectElement(script);
+            } else if (argType === "function") {
+                arg();
+            } else if (arg) {
+                throw new errors$$StaticMethodError("importScripts", arguments);
+            }
+        };
+
+        callback();
+    };
+
+    $Document.prototype.importStyles = function(selector, cssText) {
+        var doc = this[0].ownerDocument,
+            styleNode = util$index$$default.injectElement(doc.createElement("style")),
+            styleSheet = styleNode.sheet || styleNode.styleSheet,
+            styleRules = styleSheet.cssRules || styleSheet.rules;
+
+        // override prototype method with actual implementation
+        this.importStyles = function(selector, cssText)  {
+            if (typeof selector !== "string" || typeof cssText !== "string") {
+                throw new errors$$StaticMethodError("importStyles", arguments);
+            }
+
+            // insert rules one by one because of several reasons:
+            // 1. IE8 does not support comma in a selector string
+            // 2. if one selector fails it doesn't break others
+            selector.split(",").forEach(function(selector)  {
+                try {
+                    if (styleSheet.cssRules) {
+                        styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
+                    } else if (selector[0] !== "@") {
+                        styleSheet.addRule(selector, cssText);
+                    } else {
+                        // addRule doesn't support at-rules, use cssText instead
+                        styleSheet.cssText += selector + "{" + cssText + "}";
+                    }
+                } catch(err) {
+                    // silently ignore invalid rules
+                }
+            });
+        };
+
+        return this.importStyles(selector, cssText);
+    };
+
+    // Helper for css selectors
 
     /*es6-transpiler has-iterators:false, has-generators: false*/
     var util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
@@ -374,7 +458,7 @@
         return function(node) {var $D$3;var $D$4;
             var result, found;
             if (!quick && !util$selectormatcher$$propName) {
-                found = (context || document).querySelectorAll(selector);
+                found = (context || DOCUMENT).querySelectorAll(selector);
             }
 
             for (; node && node.nodeType === 1; node = node.parentNode) {
@@ -400,238 +484,6 @@
 
             return result && node;
         };
-    };
-
-    var util$extensionhandler$$rePrivateFunction = /^(?:on|do)[A-Z]/;
-
-    var util$extensionhandler$$default = function(selector, condition, mixins, index)  {
-        var ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
-            matcher = util$selectormatcher$$default(selector);
-
-        return function(node, mock)  {
-            var el = $Element(node);
-            // skip previously invoked or mismatched elements
-            if (~el._._extensions.indexOf(index) || !matcher(node)) return;
-            // mark extension as invoked
-            el._._extensions.push(index);
-
-            if (mock === true || condition(el) !== false) {
-                // apply all private/public members to the element's interface
-                var privateFunctions = Object.keys(mixins).filter(function(prop)  {
-                    var value = mixins[prop];
-                    // TODO: private functions are deprecated, remove this line later
-                    if (util$extensionhandler$$rePrivateFunction.exec(prop)) {
-                        // preserve context for private functions
-                        el[prop] = function()  {return value.apply(el, arguments)};
-
-                        return !mock;
-                    }
-
-                    if (prop !== "constructor") {
-                        el[prop] = value;
-
-                        return !mock && prop[0] === "_";
-                    }
-                });
-
-                // invoke constructor if it exists
-                // make a safe call so live extensions can't break each other
-                if (ctr) util$index$$default.safeInvoke(el, ctr);
-                // remove event handlers from element's interface
-                privateFunctions.forEach(function(prop)  { delete el[prop] });
-            }
-        };
-    };
-
-    // Inspired by trick discovered by Daniel Buchner:
-    // https://github.com/csuwldcat/SelectorListener
-
-    var dom$extend$$extensions = [],
-        dom$extend$$returnTrue = function()  {return true},
-        dom$extend$$returnFalse = function()  {return false},
-        dom$extend$$cssText;
-
-    DOM.extend = function(selector, condition, definition) {
-        if (arguments.length === 2) {
-            definition = condition;
-            condition = true;
-        }
-
-        if (typeof condition === "boolean") condition = condition ? dom$extend$$returnTrue : dom$extend$$returnFalse;
-        if (typeof definition === "function") definition = {constructor: definition};
-
-        if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new errors$$StaticMethodError("extend", arguments);
-
-        if (selector === "*") {
-            util$index$$default.keys(definition).forEach(function(methodName)  {
-                $Element.prototype[methodName] = definition[methodName];
-            });
-        } else {
-            var ext = util$extensionhandler$$default(selector, condition, definition, dom$extend$$extensions.length);
-
-            dom$extend$$extensions.push(ext);
-
-            // initialize extension manually to make sure that all elements
-            // have appropriate methods before they are used in other DOM.extend.
-            // Also fixes legacy IEs when the HTC behavior is already attached
-            util$index$$default.each.call(DOCUMENT.querySelectorAll(selector), ext);
-            // MUST be after querySelectorAll because of legacy IEs quirks
-            DOM.importStyles(selector, dom$extend$$cssText);
-        }
-    };
-
-    if (JSCRIPT_VERSION < 10) {
-        var dom$extend$$legacyScripts = util$index$$default.filter.call(DOCUMENT.scripts, function(script)  {return script.src.indexOf("better-dom-legacy.js") >= 0});
-
-        if (dom$extend$$legacyScripts.length < 1) {
-            throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See https://github.com/chemerisuk/better-dom#notes-about-old-ies for details.");
-        }
-
-        dom$extend$$cssText = "-ms-behavior:url(" + dom$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important";
-
-        DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, function()  {
-            var e = WINDOW.event;
-
-            if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-                dom$extend$$extensions.forEach(function(ext)  { ext(e.srcElement) });
-            }
-        });
-    } else {
-        var dom$extend$$ANIMATION_NAME = "DOM2001000-beta001";
-        var dom$extend$$_extend = DOM.extend;
-
-        dom$extend$$cssText = WEBKIT_PREFIX + "animation-name:" + dom$extend$$ANIMATION_NAME + " !important;";
-        dom$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
-
-        DOM.extend = function()  {
-            // declare the fake animation on the first DOM.extend method call
-            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + dom$extend$$ANIMATION_NAME, "from {opacity:.99} to {opacity:1}");
-            // restore original method and invoke it
-            (DOM.extend = dom$extend$$_extend).apply(DOM, arguments);
-        };
-
-        // use capturing to suppress internal animationstart events
-        DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
-            if (e.animationName === dom$extend$$ANIMATION_NAME) {
-                dom$extend$$extensions.forEach(function(ext)  { ext(e.target) });
-                // this is an internal event - stop it immediately
-                e.stopImmediatePropagation();
-            }
-        }, true);
-    }
-
-    var dom$extend$$default = dom$extend$$extensions;
-
-    var dom$format$$reVar = /\{([\w\-]+)\}/g;
-
-    DOM.format = function(tmpl, varMap) {
-        if (typeof tmpl !== "string") tmpl = String(tmpl);
-
-        if (!varMap || typeof varMap !== "object") varMap = {};
-
-        return tmpl.replace(dom$format$$reVar, function(x, name, index)  {
-            if (name in varMap) {
-                x = varMap[name];
-
-                if (typeof x === "function") x = x(index);
-
-                x = String(x);
-            }
-
-            return x;
-        });
-    };
-
-    var dom$frame$$raf = WINDOW.requestAnimationFrame,
-        dom$frame$$craf = WINDOW.cancelAnimationFrame;
-
-    if (!(dom$frame$$raf && dom$frame$$craf)) {
-        ["ms", "moz", "webkit", "o"].some(function(prefix)  {
-            dom$frame$$raf = WINDOW[prefix + "RequestAnimationFrame"];
-            dom$frame$$craf = WINDOW[prefix + "CancelAnimationFrame"];
-
-            return !!dom$frame$$raf;
-        });
-    }
-
-    DOM.nextFrame = function(callback)  {
-        if (dom$frame$$raf) {
-            return dom$frame$$raf.call(WINDOW, callback);
-        } else {
-            return WINDOW.setTimeout(callback, 1000 / 60);
-        }
-    };
-
-    DOM.cancelFrame = function(frameId)  {
-        if (dom$frame$$craf) {
-            dom$frame$$craf.call(WINDOW, frameId);
-        } else {
-            WINDOW.clearTimeout(frameId);
-        }
-    };
-
-    DOM.importScripts = function() {var urls = SLICE$0.call(arguments, 0);
-        var callback = function() {
-            var arg = urls.shift(),
-                argType = typeof arg,
-                script;
-
-            if (argType === "string") {
-                script = DOCUMENT.createElement("script");
-                script.src = arg;
-                script.onload = callback;
-                script.async = true;
-
-                util$index$$default.injectElement(script);
-            } else if (argType === "function") {
-                arg();
-            } else if (arg) {
-                throw new errors$$StaticMethodError("importScripts", arguments);
-            }
-        };
-
-        callback();
-    };
-
-    var dom$importstyles$$styleNode = util$index$$default.injectElement(DOCUMENT.createElement("style")),
-        dom$importstyles$$styleSheet = dom$importstyles$$styleNode.sheet || dom$importstyles$$styleNode.styleSheet,
-        dom$importstyles$$styleRules = dom$importstyles$$styleSheet.cssRules || dom$importstyles$$styleSheet.rules;
-
-    DOM.importStyles = function(selector, cssText) {
-        if (typeof selector !== "string" || typeof cssText !== "string") {
-            throw new errors$$StaticMethodError("importStyles", arguments);
-        }
-
-        // insert rules one by one because of several reasons:
-        // 1. IE8 does not support comma in a selector string
-        // 2. if one selector fails it doesn't break others
-        selector.split(",").forEach(function(selector)  {
-            try {
-                if (dom$importstyles$$styleSheet.cssRules) {
-                    dom$importstyles$$styleSheet.insertRule(selector + "{" + cssText + "}", dom$importstyles$$styleRules.length);
-                } else {
-                    dom$importstyles$$styleSheet.addRule(selector, cssText);
-                }
-            } catch(err) {
-                // silently ignore invalid rules
-            }
-        });
-    };
-
-    function dom$mock$$applyExtensions(node) {
-        dom$extend$$default.forEach(function(ext)  { ext(node, true) });
-
-        util$index$$default.each.call(node.children, dom$mock$$applyExtensions);
-    }
-
-    DOM.mock = function(content, varMap) {
-        if (!content) return new $NullElement();
-
-        var result = DOM.create(content, varMap);
-
-        dom$mock$$applyExtensions(result[0]);
-
-        return result;
     };
 
     var element$children$$makeMethod = function(all)  {return function(selector) {
@@ -777,6 +629,87 @@
         }
     }, function()  {
         return function()  {return false};
+    });
+
+    // Inspired by the article written by Daniel Buchner:
+    // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
+
+    // IE8 fails with about:blank, use better-dom-legacy.html instead
+    var element$context$$SANDBOX_URL = JSCRIPT_VERSION < 9 ? util$index$$default.getLegacyFile("html") : "about:blank";
+
+    // NOTE: Chrome/Safari have issue with focusing on the <object>:
+    // https://code.google.com/p/chromium/issues/detail?id=255150
+
+    util$index$$default.register({
+        context: function(name, callback) {
+            var node = this[0],
+                doc = node.ownerDocument,
+                contexts = this._[CONTEXT_DATA];
+
+            if (name in contexts) return contexts[name];
+
+            var wrapper = doc.createElement("div");
+            var object;
+            var ready = function()  {
+                var doc = object.contentDocument;
+                // remove default margin because it's useless
+                doc.body.style.margin = 0;
+                // apply user-defined styles for the context
+                wrapper.className = name;
+
+                if (typeof callback === "function") {
+                    callback(new $Document(doc));
+                }
+            };
+            if (JSCRIPT_VERSION < 9) {
+                // IE8 is buggy, use innerHTML and better-dom-legacy.html
+                // use overflow and extra size to get rid of the frame
+                wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html` style=`left:-2px;top:-2px`]", [element$context$$SANDBOX_URL]);
+
+                object = wrapper.firstChild;
+                // IE8 does not support onload - use timeout instead
+                DOM.requestFrame(function repeat() {
+                    var htmlEl;
+                    // TODO: tbd if try/catch check is required
+                    try {
+                        htmlEl = object.contentDocument.documentElement;
+                    } catch (err) {
+                        return DOM.requestFrame(repeat);
+                    }
+                    // use the trick below to hide frame border in IE8
+                    wrapper.onresize = function resizing() {
+                        wrapper.onresize = null;
+
+                        object.width = wrapper.offsetWidth + 4;
+                        object.height = wrapper.offsetHeight + 4;
+
+                        DOM.requestFrame(function()  {
+                            wrapper.onresize = resizing;
+                        });
+                    };
+
+                    ready();
+                });
+            } else {
+                object = doc.createElement("object");
+                object.type = "text/html";
+                object.data = element$context$$SANDBOX_URL;
+                object.onload = ready;
+
+                wrapper.appendChild(object);
+            }
+
+            wrapper.style.overflow = "hidden";
+
+            object.style.position = "absolute";
+            object.width = "100%";
+            object.height = "100%";
+
+            // TODO: check if parent is not null
+            node.parentNode.insertBefore(wrapper, node);
+
+            return contexts[name] = new $Element(wrapper);
+        }
     });
 
     // Helper for CSS properties access
@@ -992,10 +925,10 @@
                 if (result && !all) result = result[0];
             } else {
                 old = true;
-                nid = "DOM2001000-beta001";
+                nid = "DOM2001000-beta002";
                 context = node;
 
-                if (this !== DOM) {
+                if (node !== node.ownerDocument.documentElement) {
                     // qSA works strangely on Element-rooted queries
                     // We can work around this by specifying an extra ID on the root
                     // and working up from there (Thanks to Andrew Dupont for the technique)
@@ -1026,7 +959,7 @@
     });
 
     var util$eventhooks$$hooks = {};
-    if ("onfocusin" in HTML) {
+    if ("onfocusin" in DOCUMENT.documentElement) {
         util$eventhooks$$hooks.focus = function(handler)  { handler._type = "focusin" };
         util$eventhooks$$hooks.blur = function(handler)  { handler._type = "focusout" };
     } else {
@@ -1048,11 +981,13 @@
 
     function util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget) {
         if (typeof name === "number") {
-            var args = e["__2001000-beta001__"];
+            var args = e["__2001000-beta002__"];
 
             return args ? args[name] : void 0;
         }
         if (JSCRIPT_VERSION < 9) {
+            var docEl = node.ownerDocument.documentElement;
+
             switch (name) {
             case "which":
                 return e.keyCode;
@@ -1061,9 +996,9 @@
                 // click: 1 === left; 2 === middle; 3 === right
                 return button & 1 ? 1 : ( button & 2 ? 3 : ( button & 4 ? 2 : 0 ) );
             case "pageX":
-                return e.clientX + HTML.scrollLeft - HTML.clientLeft;
+                return e.clientX + docEl.scrollLeft - docEl.clientLeft;
             case "pageY":
-                return e.clientY + HTML.scrollTop - HTML.clientTop;
+                return e.clientY + docEl.scrollTop - docEl.clientTop;
             case "preventDefault":
                 return function()  {return e.returnValue = false};
             case "stopPropagation":
@@ -1106,7 +1041,7 @@
                     return; // handle custom events in legacy IE
                 }
                 // srcElement can be null in legacy IE when target is document
-                var target = e.target || e.srcElement || DOCUMENT,
+                var target = e.target || e.srcElement || node.ownerDocument,
                     currentTarget = matcher ? matcher(target) : node,
                     args = props || [];
 
@@ -1120,7 +1055,7 @@
                     args = args.map(function(name)  {return util$eventhandler$$getEventProperty(
                         name, e, type, node, target, currentTarget)});
                 } else {
-                    args = util$index$$default.slice.call(e["__2001000-beta001__"] || [0], 1);
+                    args = util$index$$default.slice.call(e["__2001000-beta002__"] || [0], 1);
                 }
 
                 // prevent default if handler returns false
@@ -1164,8 +1099,8 @@
                 throw new errors$$MethodError("fire", arguments);
             }
             if (JSCRIPT_VERSION < 9) {
-                e = DOCUMENT.createEventObject();
-                e["__2001000-beta001__"] = arguments;
+                e = node.ownerDocument.createEventObject();
+                e["__2001000-beta002__"] = arguments;
                 // handle custom events for legacy IE
                 if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
@@ -1175,8 +1110,8 @@
 
                 canContinue = e.returnValue !== false;
             } else {
-                e = DOCUMENT.createEvent("HTMLEvents");
-                e["__2001000-beta001__"] = arguments;
+                e = node.ownerDocument.createEvent("HTMLEvents");
+                e["__2001000-beta002__"] = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
             }
@@ -1198,7 +1133,7 @@
     });
 
     var util$accessorhooks$$hooks = {get: {}, set: {}};
-    var util$accessorhooks$$body = document.createElement("body");
+    var util$accessorhooks$$body = DOCUMENT.createElement("body");
 
     // fix camel cased attributes
     "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach(function(key)  {
@@ -1210,8 +1145,17 @@
     util$accessorhooks$$hooks.set.style = function(node, value)  { node.style.cssText = value };
 
     // title hook for DOM
-    util$accessorhooks$$hooks.get.title = function(node)  {return node === HTML ? DOCUMENT.title : node.title};
-    util$accessorhooks$$hooks.set.title = function(node, value)  { (node === HTML ? DOCUMENT : node).title = value; };
+    util$accessorhooks$$hooks.get.title = function(node)  {
+        var doc = node.ownerDocument;
+
+        return node === doc.documentElement ? doc.title : node.title;
+    };
+
+    util$accessorhooks$$hooks.set.title = function(node, value)  {
+        var doc = node.ownerDocument;
+
+        (node === doc.documentElement ? doc : node).title = value;
+    };
 
     util$accessorhooks$$hooks.get.undefined = function(node)  {
         var name;
@@ -1330,7 +1274,7 @@
             // the idea of the algorithm is to construct HTML string
             // when possible or use document fragment as a fallback to
             // invoke manipulation using a single method call
-            var fragment = fastStrategy ? "" : DOCUMENT.createDocumentFragment();
+            var fragment = fastStrategy ? "" : node.ownerDocument.createDocumentFragment();
 
             contents.forEach(function(content)  {
                 if (typeof content === "function") content = content.call(this$0);
@@ -1350,7 +1294,7 @@
                         // append existing string to fragment
                         content = DOM.createAll(fragment).concat(content);
                         // fallback to document fragment strategy
-                        fragment = DOCUMENT.createDocumentFragment();
+                        fragment = node.ownerDocument.createDocumentFragment();
                     }
 
                     content.forEach(function(el)  {
@@ -1413,7 +1357,7 @@
     };
 
     var util$selectorhooks$$default = {
-        ":focus": function(node)  {return node === DOCUMENT.activeElement},
+        ":focus": function(node)  {return node === node.ownerDocument.activeElement},
 
         ":visible": function(node)  {return !util$selectorhooks$$isHidden(node)},
 
@@ -1443,7 +1387,7 @@
 
             var node = this[0];
 
-            this._._handlers = this._._handlers.filter(function(handler)  {
+            this._[HANDLERS_DATA] = this._[HANDLERS_DATA].filter(function(handler)  {
                 var skip = type !== handler.type;
 
                 skip = skip || selector && selector !== handler.selector;
@@ -1466,10 +1410,11 @@
     util$index$$default.register({
         offset: function() {
             var node = this[0],
-                clientTop = HTML.clientTop,
-                clientLeft = HTML.clientLeft,
-                scrollTop = WINDOW.pageYOffset || HTML.scrollTop,
-                scrollLeft = WINDOW.pageXOffset || HTML.scrollLeft,
+                docEl = node.ownerDocument.documentElement,
+                clientTop = docEl.clientTop,
+                clientLeft = docEl.clientLeft,
+                scrollTop = WINDOW.pageYOffset || docEl.scrollTop,
+                scrollLeft = WINDOW.pageXOffset || docEl.scrollLeft,
                 boundingRect = node.getBoundingClientRect();
 
             return {
@@ -1520,7 +1465,7 @@
                         node.addEventListener(handler._type || type, handler, !!handler.capturing);
                     }
                     // store event entry
-                    this._._handlers.push(handler);
+                    this._[HANDLERS_DATA].push(handler);
                 }
             } else if (typeof type === "object") {
                 if (util$index$$default.isArray(type)) {
@@ -1565,7 +1510,7 @@
             }
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._._watchers[name],
+                watchers = this._[WATCHERS_DATA][name],
                 oldValue;
 
             if (watchers || typeof value === "function") {
@@ -1767,7 +1712,7 @@
                 style = node.style,
                 computed = util$index$$default.computeStyle(node),
                 hiding = condition,
-                frameId = this._._frameId,
+                frameId = this._[FRAME_DATA],
                 done = function()  {
                     if (animationHandler) {
                         node.removeEventListener(eventType, animationHandler, true);
@@ -1781,7 +1726,7 @@
                     // from setting cssText because of Opera 12 quirks
                     style.visibility = hiding ? "hidden" : "inherit";
 
-                    this$0._._frameId = null;
+                    this$0._[FRAME_DATA] = null;
 
                     if (callback) callback.call(this$0);
                 };
@@ -1793,7 +1738,7 @@
             // cancel previous frame if it exists
             if (frameId) DOM.cancelFrame(frameId);
 
-            if (!HTML.contains(node)) {
+            if (!node.ownerDocument.documentElement.contains(node)) {
                 // apply attribute/visibility syncronously for detached DOM elements
                 // because browser returns zero animation/transition duration for them
                 done();
@@ -1803,7 +1748,7 @@
                 // use requestAnimationFrame to avoid animation quirks for
                 // new elements inserted into the DOM
                 // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-                this._._frameId = DOM.nextFrame(!animationHandler ? done : function()  {
+                this._[FRAME_DATA] = DOM.requestFrame(!animationHandler ? done : function()  {
                     node.addEventListener(eventType, animationHandler, true);
                     // update modified style rules
                     style.cssText = animationHandler.initialCssText + animationHandler.cssText;
@@ -1825,7 +1770,7 @@
 
     util$index$$default.register({
         watch: function(name, callback) {
-            var watchers = this._._watchers;
+            var watchers = this._[WATCHERS_DATA];
 
             if (!watchers[name]) watchers[name] = [];
 
@@ -1835,7 +1780,7 @@
         },
 
         unwatch: function(name, callback) {
-            var watchers = this._._watchers;
+            var watchers = this._[WATCHERS_DATA];
 
             if (watchers[name]) {
                 watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
@@ -1844,4 +1789,200 @@
             return this;
         }
     });
+
+    var util$extensionhandler$$rePrivateFunction = /^(?:on|do)[A-Z]/;
+
+    var util$extensionhandler$$default = function(selector, condition, mixins, index)  {
+        var ctr = mixins.hasOwnProperty("constructor") && mixins.constructor,
+            matcher = util$selectormatcher$$default(selector);
+
+        return function(node, mock)  {
+            var el = $Element(node);
+            // skip previously invoked or mismatched elements
+            if (~el._[EXTENSIONS_DATA].indexOf(index) || !matcher(node)) return;
+            // mark extension as invoked
+            el._[EXTENSIONS_DATA].push(index);
+
+            if (mock === true || condition(el) !== false) {
+                // apply all private/public members to the element's interface
+                var privateFunctions = Object.keys(mixins).filter(function(prop)  {
+                    var value = mixins[prop];
+                    // TODO: private functions are deprecated, remove this line later
+                    if (util$extensionhandler$$rePrivateFunction.exec(prop)) {
+                        // preserve context for private functions
+                        el[prop] = function()  {return value.apply(el, arguments)};
+
+                        return !mock;
+                    }
+
+                    if (prop !== "constructor") {
+                        el[prop] = value;
+
+                        return !mock && prop[0] === "_";
+                    }
+                });
+
+                // invoke constructor if it exists
+                // make a safe call so live extensions can't break each other
+                if (ctr) util$index$$default.safeInvoke(el, ctr);
+                // remove event handlers from element's interface
+                privateFunctions.forEach(function(prop)  { delete el[prop] });
+            }
+        };
+    };
+
+    // Inspired by trick discovered by Daniel Buchner:
+    // https://github.com/csuwldcat/SelectorListener
+
+    var global$extend$$extensions = [],
+        global$extend$$returnTrue = function()  {return true},
+        global$extend$$returnFalse = function()  {return false},
+        global$extend$$cssText;
+
+    DOM.extend = function(selector, condition, definition) {
+        if (arguments.length === 2) {
+            definition = condition;
+            condition = true;
+        }
+
+        if (typeof condition === "boolean") condition = condition ? global$extend$$returnTrue : global$extend$$returnFalse;
+        if (typeof definition === "function") definition = {constructor: definition};
+
+        if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new errors$$StaticMethodError("extend", arguments);
+
+        if (selector === "*") {
+            util$index$$default.keys(definition).forEach(function(methodName)  {
+                $Element.prototype[methodName] = definition[methodName];
+            });
+        } else {
+            var ext = util$extensionhandler$$default(selector, condition, definition, global$extend$$extensions.length);
+
+            global$extend$$extensions.push(ext);
+
+            // initialize extension manually to make sure that all elements
+            // have appropriate methods before they are used in other DOM.extend.
+            // Also fixes legacy IEs when the HTC behavior is already attached
+            util$index$$default.each.call(DOCUMENT.querySelectorAll(selector), ext);
+            // MUST be after querySelectorAll because of legacy IEs quirks
+            DOM.importStyles(selector, global$extend$$cssText);
+        }
+    };
+
+    if (JSCRIPT_VERSION < 10) {
+        global$extend$$cssText = "-ms-behavior:url(" + util$index$$default.getLegacyFile("htc") + ") !important";
+
+        DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, function()  {
+            var e = WINDOW.event;
+
+            if (e.srcUrn === CUSTOM_EVENT_TYPE) {
+                global$extend$$extensions.forEach(function(ext)  { ext(e.srcElement) });
+            }
+        });
+    } else {
+        var global$extend$$ANIMATION_NAME = "DOM2001000-beta002";
+        var global$extend$$_extend = DOM.extend;
+
+        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:" + global$extend$$ANIMATION_NAME + " !important;";
+        global$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
+
+        DOM.extend = function()  {
+            // declare the fake animation on the first DOM.extend method call
+            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + global$extend$$ANIMATION_NAME, "from {opacity:.99} to {opacity:1}");
+            // restore original method and invoke it
+            (DOM.extend = global$extend$$_extend).apply(DOM, arguments);
+        };
+
+        // use capturing to suppress internal animationstart events
+        DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
+            if (e.animationName === global$extend$$ANIMATION_NAME) {
+                global$extend$$extensions.forEach(function(ext)  { ext(e.target) });
+                // this is an internal event - stop it immediately
+                e.stopImmediatePropagation();
+            }
+        }, true);
+    }
+
+    var global$extend$$default = global$extend$$extensions;
+
+    var global$format$$reVar = /\{([\w\-]+)\}/g;
+
+    DOM.format = function(tmpl, varMap) {
+        if (typeof tmpl !== "string") tmpl = String(tmpl);
+
+        if (!varMap || typeof varMap !== "object") varMap = {};
+
+        return tmpl.replace(global$format$$reVar, function(x, name, index)  {
+            if (name in varMap) {
+                x = varMap[name];
+
+                if (typeof x === "function") x = x(index);
+
+                x = String(x);
+            }
+
+            return x;
+        });
+    };
+
+    var global$frame$$raf = WINDOW.requestAnimationFrame,
+        global$frame$$craf = WINDOW.cancelAnimationFrame,
+        global$frame$$lastTime = 0;
+
+    if (!(global$frame$$raf && global$frame$$craf)) {
+        ["ms", "moz", "webkit", "o"].forEach(function(prefix)  {
+            global$frame$$raf = global$frame$$raf || WINDOW[prefix + "RequestAnimationFrame"];
+            global$frame$$craf = global$frame$$craf || WINDOW[prefix + "CancelAnimationFrame"];
+        });
+    }
+
+    DOM.requestFrame = function(callback)  {
+        if (global$frame$$raf) {
+            return global$frame$$raf.call(WINDOW, callback);
+        } else {
+            // use idea from Erik Möller's polyfill:
+            // http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+            var currTime = Date.now();
+            var timeToCall = Math.max(0, 16 - (currTime - global$frame$$lastTime));
+
+            global$frame$$lastTime = currTime + timeToCall;
+
+            return WINDOW.setTimeout(function()  { callback(currTime + timeToCall) }, timeToCall);
+        }
+    };
+
+    DOM.cancelFrame = function(frameId)  {
+        if (global$frame$$craf) {
+            global$frame$$craf.call(WINDOW, frameId);
+        } else {
+            WINDOW.clearTimeout(frameId);
+        }
+    };
+
+    function global$mock$$applyExtensions(node) {
+        global$extend$$default.forEach(function(ext)  { ext(node, true) });
+
+        util$index$$default.each.call(node.children, global$mock$$applyExtensions);
+    }
+
+    DOM.mock = function(content, varMap) {
+        if (!content) return new $NullElement();
+
+        var result = DOM.create(content, varMap);
+
+        global$mock$$applyExtensions(result[0]);
+
+        return result;
+    };
+
+    var exports$$_DOM = WINDOW.DOM;
+
+    DOM.noConflict = function() {
+        if (WINDOW.DOM === DOM) {
+            WINDOW.DOM = exports$$_DOM;
+        }
+
+        return DOM;
+    };
+
+    WINDOW.DOM = DOM;
 })();
