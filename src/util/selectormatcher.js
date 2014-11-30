@@ -1,4 +1,4 @@
-import { DOCUMENT } from "../const";
+import { DOCUMENT, HTML } from "../const";
 
 // Helper for css selectors
 
@@ -7,7 +7,7 @@ var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
     propName = "m oM msM mozM webkitM".split(" ").reduce((result, prefix) => {
             var propertyName = prefix + "atchesSelector";
 
-            return result || DOCUMENT.documentElement[propertyName] && propertyName;
+            return result || HTML[propertyName] && propertyName;
         }, null);
 // Quick matching inspired by jQuery
 export default function(selector, context) {

@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOCUMENT } from "../const";
+import { HTML } from "../const";
 
 // Helper for CSS properties access
 
@@ -30,7 +30,7 @@ var reDash = /\-./g,
     var stylePropName = propName.replace(reDash, (str) => str[1].toUpperCase());
 
     if (propName === "float") {
-        stylePropName = "cssFloat" in DOCUMENT.documentElement.style ? "cssFloat" : "styleFloat";
+        stylePropName = "cssFloat" in HTML.style ? "cssFloat" : "styleFloat";
         // normalize float css property
         hooks.get[propName] = hooks.set[propName] = stylePropName;
     } else {
