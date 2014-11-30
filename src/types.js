@@ -1,4 +1,4 @@
-import { NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA, CONTEXT_DATA } from "./const";
+import { DOCUMENT, NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA, CONTEXT_DATA } from "./const";
 
 function $NullElement() {}
 
@@ -77,7 +77,7 @@ $Document.prototype = new $Element();
  * @namespace DOM
  * @extends {$Document}
  */
-var DOM = new $Document(document);
+var DOM = new $Document(DOCUMENT);
 
 /**
  * A factory for default implementation for empty nodes

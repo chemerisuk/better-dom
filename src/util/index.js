@@ -1,4 +1,4 @@
-import { WINDOW, JSCRIPT_VERSION } from "../const";
+import { WINDOW, DOCUMENT, JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype;
@@ -50,7 +50,7 @@ export default {
     getLegacyFile(type) {
         /* istanbul ignore if */
         if (JSCRIPT_VERSION < 10) {
-            var legacyScripts = arrayProto.filter.call(document.scripts, (el) => el.src.indexOf("better-dom-legacy.js") >= 0);
+            var legacyScripts = arrayProto.filter.call(DOCUMENT.scripts, (el) => el.src.indexOf("better-dom-legacy.js") >= 0);
 
             if (legacyScripts.length < 1) {
                 throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");

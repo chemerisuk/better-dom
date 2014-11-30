@@ -1,7 +1,6 @@
 {
-    "esnext": true,
+    "browser": true,
 
-    "boss": true,
     "newcap": false,
     "eqnull": true,
 
@@ -20,8 +19,14 @@
     "lastsemic": true,
 
     "globals": {
-        "process": true,
-        "module": true,
-        "require": true
+        "DOM": true,
+
+        "beforeEach": true,
+        "afterEach": true,
+        "describe": true,
+        "it": true,
+        "expect": true,
+        "jasmine": true,
+        "spyOn": true
     }
 }

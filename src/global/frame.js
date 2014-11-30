@@ -1,3 +1,4 @@
+import { DOM } from "../types";
 import { WINDOW } from "../const";
 
 var raf = WINDOW.requestAnimationFrame,

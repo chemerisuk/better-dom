@@ -1,7 +1,9 @@
 /* jshint unused: false */
+/* globals window, document */
 
 // globals
 export const WINDOW = window;
+export const DOCUMENT = document;
 
 const userAgent = WINDOW.navigator.userAgent;
 const jscriptVersion = WINDOW.ScriptEngineMajorVersion;

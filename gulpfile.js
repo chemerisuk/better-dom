@@ -24,14 +24,21 @@ var karma = require("karma").server;
 var karmaConfig = require.resolve("./conf/karma.conf");
 
 
-gulp.task("lint", function() {
-    return gulp.src(["src/*.js", "src/**/*.js", "test/spec/**/*.js", "*.js"])
+gulp.task("lint-legacy", function() {
+    return gulp.src(["src/legacy/*.js"])
         .pipe(jshint(".jshintrc"))
         .pipe(jshint.reporter("jshint-stylish"))
         .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
 });
 
-gulp.task("compile", ["lint"], function() {
+gulp.task("lint-test", function() {
+    return gulp.src(["test/spec/**/*.js"])
+        .pipe(jshint(require("./conf/jshintrc-test")))
+        .pipe(jshint.reporter("jshint-stylish"))
+        .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
+});
+
+gulp.task("compile", function() {
     var version = argv.tag;
     var dest = version ? "dist/" : "build/";
 
@@ -46,27 +53,25 @@ gulp.task("compile", ["lint"], function() {
         return ("000" + n).slice(-3);
     });
 
-    return gulp.src(["document/*.js", "element/*.js", "global/*.js", "util/*.js", "*.js"], {buffer: false, cwd: "./src"})
-        .pipe(plumber())
-        .pipe(compile("better-dom.js", {compress: dest === "dist/"}))
+    return gulp.src(["document/*.js", "element/*.js", "global/*.js", "util/*.js", "*.js"], {cwd: "./src"})
+        .pipe(gulpif(!process.env.TRAVIS_JOB_NUMBER, plumber()))
+        .pipe(jshint(".jshintrc"))
+        .pipe(jshint.reporter("jshint-stylish"))
+        .pipe(jshint.reporter("fail"))
+        .pipe(compile("better-dom.js", {compact: dest === "dist/"}))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())
         .pipe(gulp.dest(dest));
 });
 
-gulp.task("compile-legacy", function() {
+gulp.task("compile-legacy", ["lint-legacy"], function() {
     var version = argv.tag;
     var dest = version ? "dist/" : "build/";
-    var files = [
-        "bower_components/html5shiv/dist/html5shiv.js",
-        "bower_components/es5-shim/es5-shim.js",
-        "src/legacy/*.js"
-    ];
 
-    return gulp.src(files)
+    return gulp.src(["bower_components/html5shiv/dist/html5shiv.js","bower_components/es5-shim/es5-shim.js","src/legacy/*.js"])
         .pipe(template({ pkg: pkg }))
         .pipe(concat("better-dom-legacy.js"))
-        .pipe(uglify({ output: {comments: /^!|@preserve|@license|@cc_on/i} }))
+        .pipe(gulpif(dest === "dist/", uglify({ output: {comments: /^!|@preserve|@license|@cc_on/i} })))
         .pipe(gulp.dest(dest));
 });
 
@@ -75,7 +80,7 @@ gulp.task("symlink", ["compile-legacy"], function() {
         .pipe(symlink("build/"));
 });
 
-gulp.task("test", ["compile", "symlink"], function(done) {
+gulp.task("test", ["compile", "symlink", "lint-test"], function(done) {
     var config = {preprocessors: []};
 
     if (process.env.TRAVIS_JOB_NUMBER) {
@@ -101,9 +106,10 @@ gulp.task("test", ["compile", "symlink"], function(done) {
     karma.start(config, done);
 });
 
-gulp.task("dev", ["compile", "symlink"], function() {
+gulp.task("dev", ["compile", "symlink", "lint-test"], function() {
     gulp.watch(["src/document/*.js", "src/element/*.js", "src/global/*.js", "src/util/*.js", "src/*.js"], ["compile"]);
-    gulp.watch(["src/legacy/*.js"], ["compile-legacy", "lint"]);
+    gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
+    gulp.watch(["test/spec/**/*.js"], ["lint-test"]);
 
     karma.start({
         // browsers: ["IE8 - WinXP"],

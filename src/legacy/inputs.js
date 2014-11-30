@@ -2,7 +2,7 @@
 * @preserve Form elements fixes for IE8-9
 * @copyright 2013-2014 Maksim Chemerisuk
 */
-(function() {
+(function() { /* globals window, document, DOM */
     var JSCRIPT_VERSION = window.ScriptEngineMajorVersion;
 
     JSCRIPT_VERSION = JSCRIPT_VERSION && JSCRIPT_VERSION();

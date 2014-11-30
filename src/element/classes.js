@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { DOCUMENT } from "../const";
 import { MethodError } from "../errors";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
@@ -7,7 +8,7 @@ var reSpace = /[\n\t\r]/g,
     makeMethod = (nativeMethodName, strategy) => {
         var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
         /* istanbul ignore else  */
-        if (document.documentElement.classList) {
+        if (DOCUMENT.documentElement.classList) {
             // use native classList property if possible
             strategy = function(el, token) {
                 return el[0].classList[nativeMethodName](token);

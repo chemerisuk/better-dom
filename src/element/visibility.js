@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { DOM } from "../types";
 import { MethodError } from "../errors";
 import { WEBKIT_PREFIX, FRAME_DATA } from "../const";
 import AnimationHandler from "../util/animationhandler";

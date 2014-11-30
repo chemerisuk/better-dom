@@ -1,8 +1,8 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION } from "../const";
+import { JSCRIPT_VERSION, DOCUMENT } from "../const";
 
 var hooks = {get: {}, set: {}};
-var body = document.createElement("body");
+var body = DOCUMENT.createElement("body");
 
 // fix camel cased attributes
 "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {

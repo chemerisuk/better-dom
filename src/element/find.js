@@ -1,11 +1,12 @@
 import _ from "../util/index";
+import { DOCUMENT } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-var rquick = document.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rescape = /'|\\/g,
     makeMethod = (all) => function(selector) {
         if (typeof selector !== "string") throw new MethodError("find" + all, arguments);

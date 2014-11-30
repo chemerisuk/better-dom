@@ -50,7 +50,7 @@ module.exports = function(dest, options) {
             var ast = container.convert();
             var code = recast.print(ast[0]).code;
 
-            if (options.compress) {
+            if (options.compact) {
                 // remove jsdoc comments from the output
                 code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
                 // remove istanbul comments from output

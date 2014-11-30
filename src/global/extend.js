@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { DOM, $Element } from "../types";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, CUSTOM_EVENT_TYPE } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 
@@ -53,7 +53,7 @@ DOM.extend = function(selector, condition, definition) {
         // initialize extension manually to make sure that all elements
         // have appropriate methods before they are used in other DOM.extend.
         // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(document.querySelectorAll(selector), ext);
+        _.each.call(DOCUMENT.querySelectorAll(selector), ext);
         // MUST be after querySelectorAll because of legacy IEs quirks
         DOM.importStyles(selector, cssText);
     }
@@ -63,7 +63,7 @@ DOM.extend = function(selector, condition, definition) {
 if (JSCRIPT_VERSION < 10) {
     cssText = "-ms-behavior:url(" + _.getLegacyFile("htc") + ") !important";
 
-    document.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
+    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
         var e = WINDOW.event;
 
         if (e.srcUrn === CUSTOM_EVENT_TYPE) {
@@ -85,7 +85,7 @@ if (JSCRIPT_VERSION < 10) {
     };
 
     // use capturing to suppress internal animationstart events
-    document.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
+    DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
         if (e.animationName === ANIMATION_NAME) {
             extensions.forEach((ext) => { ext(e.target) });
             // this is an internal event - stop it immediately

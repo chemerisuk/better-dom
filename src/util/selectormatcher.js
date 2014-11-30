@@ -1,3 +1,5 @@
+import { DOCUMENT } from "../const";
+
 // Helper for css selectors
 
 /*es6-transpiler has-iterators:false, has-generators: false*/
@@ -5,7 +7,7 @@ var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
     propName = "m oM msM mozM webkitM".split(" ").reduce((result, prefix) => {
             var propertyName = prefix + "atchesSelector";
 
-            return result || document.documentElement[propertyName] && propertyName;
+            return result || DOCUMENT.documentElement[propertyName] && propertyName;
         }, null);
 // Quick matching inspired by jQuery
 export default function(selector, context) {
@@ -25,7 +27,7 @@ export default function(selector, context) {
         var result, found;
         /* istanbul ignore if */
         if (!quick && !propName) {
-            found = (context || document).querySelectorAll(selector);
+            found = (context || DOCUMENT).querySelectorAll(selector);
         }
 
         for (; node && node.nodeType === 1; node = node.parentNode) {

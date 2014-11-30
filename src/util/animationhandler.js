@@ -1,5 +1,5 @@
 import CSS from "./stylehooks";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID, DOCUMENT } from "../const";
 
 var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => "transition-" + prop),
     parseTimeValue = (value) => {
@@ -18,7 +18,7 @@ var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(
 
 // initialize hooks for properties used below
 TRANSITION_PROPS.concat("animation-duration").forEach((prop) => {
-    CSS.find(prop, document.documentElement.style);
+    CSS.find(prop, DOCUMENT.documentElement.style);
 });
 
 export default (node, computed, animationName, hiding, done) => {
