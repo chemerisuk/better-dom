@@ -1,8 +1,9 @@
 import { DOCUMENT, HTML } from "../const";
 
+/* es6-transpiler has-iterators:false, has-generators: false */
+
 // Helper for css selectors
 
-/*es6-transpiler has-iterators:false, has-generators: false*/
 var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
     propName = "m oM msM mozM webkitM".split(" ").reduce((result, prefix) => {
             var propertyName = prefix + "atchesSelector";

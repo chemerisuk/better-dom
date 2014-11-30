@@ -58,9 +58,11 @@ gulp.task("compile", function() {
         .pipe(jshint(".jshintrc"))
         .pipe(jshint.reporter("jshint-stylish"))
         .pipe(jshint.reporter("fail"))
-        .pipe(compile("better-dom.js", {compact: dest === "dist/"}))
+        .pipe(compile("better-dom.js"))
         .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
         .pipe(es6transpiler())
+        // clienup multiline comments: jsdocs, directives etc.
+        .pipe(gulpif(dest === "dist/", replace(/\/\*([\s\S]*?)\*\/\s+/gm, "")))
         .pipe(gulp.dest(dest));
 });
 

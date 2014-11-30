@@ -21,10 +21,8 @@ var banner = [
     " */"
 ].join("\n");
 
-module.exports = function(dest, options) {
+module.exports = function(dest) {
     if (!dest) throw new PluginError("compile", "Missing file option for compile");
-
-    options = options || {};
 
     var firstFile = null;
     var container = null;
@@ -49,13 +47,6 @@ module.exports = function(dest, options) {
         try {
             var ast = container.convert();
             var code = recast.print(ast[0]).code;
-
-            if (options.compact) {
-                // remove jsdoc comments from the output
-                code = code.replace(/\/\*\*([\s\S]*?)\*\/\s+/gm, "");
-                // remove istanbul comments from output
-                code = code.replace(/\/\* istanbul[^\/]+\/\s*/g, "");
-            }
             // improve internal type names
             code = code.replace(/types\$\$(\$?\w+)/g, "$1");
             // remove generated prefix from constants
