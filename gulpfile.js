@@ -59,7 +59,16 @@ gulp.task("compile", function() {
         .pipe(jshint.reporter("jshint-stylish"))
         .pipe(jshint.reporter("fail"))
         .pipe(compile("better-dom.js"))
-        .pipe(template({ pkg: pkg, VERSION_NUMBER: version }))
+        .pipe(template({
+            pkg: pkg,
+            VERSION_NUMBER: version,
+            NODE: "__" + version + "__",
+            HANDLER: "handler" + version,
+            WATCHER: "watcher" + version,
+            EXTENSION: "extension" + version,
+            FRAME: "frame" + version,
+            CONTEXT: "context" + version
+        }))
         .pipe(es6transpiler())
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(gulpif(dest === "dist/", replace(/\/\*([\s\S]*?)\*\/\s+/gm, "")))

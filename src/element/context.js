@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION, CONTEXT_DATA } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element, $Document, DOM } from "../types";
 
 // Inspired by the article written by Daniel Buchner:
@@ -15,7 +15,7 @@ _.register({
     context(name, callback) {
         var node = this[0],
             doc = node.ownerDocument,
-            contexts = this._[CONTEXT_DATA];
+            contexts = this._["<%= CONTEXT %>"];
 
         if (name in contexts) return contexts[name];
 

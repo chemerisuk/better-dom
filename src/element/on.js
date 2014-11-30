@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, HANDLERS_DATA } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import EventHandler from "../util/eventhandler";
 
 var makeMethod = (method) => function(type, selector, args, callback) {
@@ -37,7 +37,7 @@ var makeMethod = (method) => function(type, selector, args, callback) {
                     node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 }
                 // store event entry
-                this._[HANDLERS_DATA].push(handler);
+                this._["<%= HANDLER %>"].push(handler);
             }
         } else if (typeof type === "object") {
             if (_.isArray(type)) {

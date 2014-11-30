@@ -1,4 +1,4 @@
-import { DOCUMENT, NODE_DATA, HANDLERS_DATA, WATCHERS_DATA, EXTENSIONS_DATA, CONTEXT_DATA } from "./const";
+import { DOCUMENT } from "./const";
 
 function $NullElement() {}
 
@@ -12,18 +12,16 @@ function $Element(node) {
             this[0] = node;
             // use a generated property to store a reference
             // to the wrapper for circular object binding
-            node[NODE_DATA] = this;
+            node["<%= NODE %>"] = this;
 
             this._ = {};
-            this._[HANDLERS_DATA] = [];
-            this._[WATCHERS_DATA] = {};
-            this._[EXTENSIONS_DATA] = [];
-            this._[CONTEXT_DATA] = {};
+            this._["<%= HANDLER %>"] = [];
+            this._["<%= EXTENSION %>"] = {};
+            this._["<%= EXTENSION %>"] = [];
+            this._["<%= CONTEXT %>"] = {};
         }
-
-
     } else if (node) {
-        var cached = node[NODE_DATA];
+        var cached = node["<%= NODE %>"];
         // create a wrapper only once for each native element
         return cached ? cached : new $Element(node);
     } else {
