@@ -71,22 +71,21 @@ if (JSCRIPT_VERSION < 10) {
         }
     });
 } else {
-    let ANIMATION_NAME = "DOM<%= VERSION_NUMBER %>";
     let _extend = DOM.extend;
 
-    cssText = WEBKIT_PREFIX + "animation-name:" + ANIMATION_NAME + " !important;";
+    cssText = WEBKIT_PREFIX + "animation-name:<%= prop('DOM') %> !important;";
     cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
 
     DOM.extend = () => {
         // declare the fake animation on the first DOM.extend method call
-        DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + ANIMATION_NAME, "from {opacity:.99} to {opacity:1}");
+        DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes <%= prop('DOM') %>", "from {opacity:.99} to {opacity:1}");
         // restore original method and invoke it
         (DOM.extend = _extend).apply(DOM, arguments);
     };
 
     // use capturing to suppress internal animationstart events
     DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
-        if (e.animationName === ANIMATION_NAME) {
+        if (e.animationName === "<%= prop('DOM') %>") {
             extensions.forEach((ext) => { ext(e.target) });
             // this is an internal event - stop it immediately
             e.stopImmediatePropagation();

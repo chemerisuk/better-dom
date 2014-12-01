@@ -61,7 +61,6 @@ gulp.task("compile", function() {
         .pipe(compile("better-dom.js"))
         .pipe(template({
             pkg: pkg,
-            VERSION_NUMBER: version,
             prop: function(name) {
                 return name ? name + version : "__" + version + "__";
             }

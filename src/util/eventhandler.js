@@ -6,7 +6,7 @@ import HOOK from "./eventhooks";
 
 function getEventProperty(name, e, type, node, target, currentTarget) {
     if (typeof name === "number") {
-        var args = e["__<%= VERSION_NUMBER %>__"];
+        var args = e["<%= prop() %>"];
 
         return args ? args[name] : void 0;
     }
@@ -82,7 +82,7 @@ function EventHandler(type, selector, callback, props, el, once) {
                 args = args.map((name) => getEventProperty(
                     name, e, type, node, target, currentTarget));
             } else {
-                args = _.slice.call(e["__<%= VERSION_NUMBER %>__"] || [0], 1);
+                args = _.slice.call(e["<%= prop() %>"] || [0], 1);
             }
 
             // prevent default if handler returns false

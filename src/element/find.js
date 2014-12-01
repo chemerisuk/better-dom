@@ -27,7 +27,6 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
             if (result && !all) result = result[0];
         } else {
             old = true;
-            nid = "DOM<%= VERSION_NUMBER %>";
             context = node;
 
             if (node !== node.ownerDocument.documentElement) {
@@ -37,6 +36,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
                 if ( (old = node.getAttribute("id")) ) {
                     nid = old.replace(rescape, "\\$&");
                 } else {
+                    nid = "<%= prop('DOM') %>";
                     node.setAttribute("id", nid);
                 }
 
