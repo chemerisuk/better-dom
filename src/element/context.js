@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { JSCRIPT_VERSION } from "../const";
-import { $Element, $Document, DOM } from "../types";
+import { $Document, DOM } from "../types";
 
 // Inspired by the article written by Daniel Buchner:
 // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
@@ -18,18 +18,16 @@ _.register({
             contexts = this._["<%= prop('context') %>"];
 
         if (name in contexts) return contexts[name];
-
-        var wrapper = doc.createElement("div");
+        // apply user-defined styles for the context
+        var ctx = DOM.create("div[style=overflow:hidden]", [name]);
+        var wrapper = ctx[0];
         var object;
         var ready = () => {
-            var doc = object.contentDocument;
-            // remove default margin because it's useless
-            doc.body.style.margin = 0;
-            // apply user-defined styles for the context
-            wrapper.className = name;
+            // need to add class in ready callback because of IE8
+            ctx.addClass(name);
 
             if (typeof callback === "function") {
-                callback(new $Document(doc));
+                callback(new $Document(object.contentDocument));
             }
         };
         /* istanbul ignore if */
@@ -71,15 +69,16 @@ _.register({
             wrapper.appendChild(object);
         }
 
-        wrapper.style.overflow = "hidden";
-
         object.style.position = "absolute";
         object.width = "100%";
         object.height = "100%";
 
-        // TODO: check if parent is not null
-        node.parentNode.insertBefore(wrapper, node);
+        this.before(ctx);
 
-        return contexts[name] = new $Element(wrapper);
+        if (ctx.css("position") === "static") {
+            ctx.css("position", "relative");
+        }
+
+        return contexts[name] = ctx;
     }
 });
