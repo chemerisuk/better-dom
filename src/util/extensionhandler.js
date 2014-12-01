@@ -11,9 +11,9 @@ export default (selector, condition, mixins, index) => {
     return (node, mock) => {
         var el = $Element(node);
         // skip previously invoked or mismatched elements
-        if (~el._["<%= EXTENSION %>"].indexOf(index) || !matcher(node)) return;
+        if (~el._["<%= prop('extension') %>"].indexOf(index) || !matcher(node)) return;
         // mark extension as invoked
-        el._["<%= EXTENSION %>"].push(index);
+        el._["<%= prop('extension') %>"].push(index);
 
         if (mock === true || condition(el) !== false) {
             // apply all private/public members to the element's interface

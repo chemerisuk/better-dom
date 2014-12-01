@@ -15,7 +15,7 @@ _.register({
     context(name, callback) {
         var node = this[0],
             doc = node.ownerDocument,
-            contexts = this._["<%= CONTEXT %>"];
+            contexts = this._["<%= prop('context') %>"];
 
         if (name in contexts) return contexts[name];
 

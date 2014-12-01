@@ -28,7 +28,7 @@ _.register({
 
         var node = this[0];
 
-        this._["<%= HANDLER %>"] = this._["<%= HANDLER %>"].filter((handler) => {
+        this._["<%= prop('handler') %>"] = this._["<%= prop('handler') %>"].filter((handler) => {
             var skip = type !== handler.type;
 
             skip = skip || selector && selector !== handler.selector;

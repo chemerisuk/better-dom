@@ -20,7 +20,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             style = node.style,
             computed = _.computeStyle(node),
             hiding = condition,
-            frameId = this._["<%= FRAME %>"],
+            frameId = this._["<%= prop('frame') %>"],
             done = () => {
                 if (animationHandler) {
                     node.removeEventListener(eventType, animationHandler, true);
@@ -34,7 +34,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
                 // from setting cssText because of Opera 12 quirks
                 style.visibility = hiding ? "hidden" : "inherit";
 
-                this._["<%= FRAME %>"] = null;
+                this._["<%= prop('frame') %>"] = null;
 
                 if (callback) callback.call(this);
             };
@@ -56,7 +56,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
             // use requestAnimationFrame to avoid animation quirks for
             // new elements inserted into the DOM
             // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-            this._["<%= FRAME %>"] = DOM.requestFrame(!animationHandler ? done : () => {
+            this._["<%= prop('frame') %>"] = DOM.requestFrame(!animationHandler ? done : () => {
                 node.addEventListener(eventType, animationHandler, true);
                 // update modified style rules
                 style.cssText = animationHandler.initialCssText + animationHandler.cssText;

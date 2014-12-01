@@ -40,7 +40,7 @@ _.register({
         }
 
         var hook = PROP.set[name],
-            watchers = this._["<%= EXTENSION %>"][name],
+            watchers = this._["<%= prop('watcher') %>"][name],
             oldValue;
 
         if (watchers || typeof value === "function") {

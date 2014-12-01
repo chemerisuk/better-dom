@@ -12,16 +12,16 @@ function $Element(node) {
             this[0] = node;
             // use a generated property to store a reference
             // to the wrapper for circular object binding
-            node["<%= NODE %>"] = this;
+            node["<%= prop() %>"] = this;
 
             this._ = {};
-            this._["<%= HANDLER %>"] = [];
-            this._["<%= EXTENSION %>"] = {};
-            this._["<%= EXTENSION %>"] = [];
-            this._["<%= CONTEXT %>"] = {};
+            this._["<%= prop('handler') %>"] = [];
+            this._["<%= prop('watcher') %>"] = {};
+            this._["<%= prop('extension') %>"] = [];
+            this._["<%= prop('context') %>"] = {};
         }
     } else if (node) {
-        var cached = node["<%= NODE %>"];
+        var cached = node["<%= prop() %>"];
         // create a wrapper only once for each native element
         return cached ? cached : new $Element(node);
     } else {

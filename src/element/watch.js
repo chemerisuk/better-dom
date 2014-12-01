@@ -14,7 +14,7 @@ _.register({
      * });
      */
     watch(name, callback) {
-        var watchers = this._["<%= EXTENSION %>"];
+        var watchers = this._["<%= prop('watcher') %>"];
 
         if (!watchers[name]) watchers[name] = [];
 
@@ -33,7 +33,7 @@ _.register({
      * @see $Element#watch
      */
     unwatch(name, callback) {
-        var watchers = this._["<%= EXTENSION %>"];
+        var watchers = this._["<%= prop('watcher') %>"];
 
         if (watchers[name]) {
             watchers[name] = watchers[name].filter((w) => w !== callback);

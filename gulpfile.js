@@ -62,12 +62,9 @@ gulp.task("compile", function() {
         .pipe(template({
             pkg: pkg,
             VERSION_NUMBER: version,
-            NODE: "__" + version + "__",
-            HANDLER: "handler" + version,
-            WATCHER: "watcher" + version,
-            EXTENSION: "extension" + version,
-            FRAME: "frame" + version,
-            CONTEXT: "context" + version
+            prop: function(name) {
+                return name ? name + version : "__" + version + "__";
+            }
         }))
         .pipe(es6transpiler())
         // clienup multiline comments: jsdocs, directives etc.

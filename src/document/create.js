@@ -3,45 +3,46 @@ import tagCache from "../global/emmet";
 
 var makeMethod = (all) => function(value, varMap) {
         var doc = this[0].ownerDocument,
+            sandbox = this._["<%= prop('sandbox') %>"];
+
+        if (!sandbox) {
             sandbox = doc.createElement("div");
+            this._["<%= prop('sandbox') %>"] = sandbox;
+        }
 
-        this["create" + all] = (value, varMap) => {
-            var nodes, el;
+        var nodes, el;
 
-            if (value && value in tagCache) {
-                nodes = doc.createElement(value);
+        if (value && value in tagCache) {
+            nodes = doc.createElement(value);
 
-                if (all) nodes = [ new $Element(nodes) ];
+            if (all) nodes = [ new $Element(nodes) ];
+        } else {
+            value = value.trim();
+
+            if (value[0] === "<" && value[value.length - 1] === ">") {
+                value = varMap ? DOM.format(value, varMap) : value;
             } else {
-                value = value.trim();
+                value = DOM.emmet(value, varMap);
+            }
 
-                if (value[0] === "<" && value[value.length - 1] === ">") {
-                    value = varMap ? DOM.format(value, varMap) : value;
-                } else {
-                    value = DOM.emmet(value, varMap);
-                }
+            sandbox.innerHTML = value; // parse input HTML string
 
-                sandbox.innerHTML = value; // parse input HTML string
+            for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
+                sandbox.removeChild(el); // detach element from the sandbox
 
-                for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
-                    sandbox.removeChild(el); // detach element from the sandbox
+                if (el.nodeType === 1) {
+                    if (all) {
+                        nodes.push(new $Element(el));
+                    } else {
+                        nodes = el;
 
-                    if (el.nodeType === 1) {
-                        if (all) {
-                            nodes.push(new $Element(el));
-                        } else {
-                            nodes = el;
-
-                            break; // stop early, because need only the first element
-                        }
+                        break; // stop early, because need only the first element
                     }
                 }
             }
+        }
 
-            return all ? nodes : $Element(nodes);
-        };
-
-        return this["create" + all](value, varMap);
+        return all ? nodes : $Element(nodes);
     };
 
 /**

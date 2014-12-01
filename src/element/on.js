@@ -37,7 +37,7 @@ var makeMethod = (method) => function(type, selector, args, callback) {
                     node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 }
                 // store event entry
-                this._["<%= HANDLER %>"].push(handler);
+                this._["<%= prop('handler') %>"].push(handler);
             }
         } else if (typeof type === "object") {
             if (_.isArray(type)) {

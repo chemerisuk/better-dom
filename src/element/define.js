@@ -2,6 +2,8 @@ import _ from "../util/index";
 import { MethodError } from "../errors";
 import { JSCRIPT_VERSION } from "../const";
 
+const ATTR_CASE = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
+
 _.register({
     /**
      * Define a new attribute for the current element
@@ -20,7 +22,7 @@ _.register({
      *   }
      * });
      */
-    define: function(name, getter, setter) {
+    define(name, getter, setter) {
         var node = this[0];
 
         if (typeof name !== "string" || typeof getter !== "function" || typeof setter !== "function") {
@@ -30,9 +32,8 @@ _.register({
         // initial value reading must be before defineProperty
         // because IE8 will try to read wrong attribute value
         var initialValue = node.getAttribute(name);
-        var letterCase = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
         // trick to fix infinite recursion in IE8
-        var attrName = name[letterCase]();
+        var attrName = name[ATTR_CASE]();
         var _setAttribute = node.setAttribute;
         var _removeAttribute = node.removeAttribute;
 
@@ -55,7 +56,7 @@ _.register({
 
         // override methods to catch changes from attributes too
         node.setAttribute = (attrName, attrValue, flags) => {
-            if (name === attrName[letterCase]()) {
+            if (name === attrName[ATTR_CASE]()) {
                 node[name] = getter.call(this, attrValue);
             } else {
                 _setAttribute.call(node, attrName, attrValue, flags);
@@ -63,7 +64,7 @@ _.register({
         };
 
         node.removeAttribute = (attrName, flags) => {
-            if (name === attrName[letterCase]()) {
+            if (name === attrName[ATTR_CASE]()) {
                 node[name] = getter.call(this, null);
             } else {
                 _removeAttribute.call(node, attrName, flags);
