@@ -22,11 +22,7 @@ _.register({
 
         // handle the value shortcut
         if (arguments.length === 1) {
-            if (typeof name === "function") {
-                value = name;
-            } else {
-                value = name == null ? "" : String(name);
-            }
+            value = name == null ? "" : String(name);
 
             if (value !== "[object Object]") {
                 let tag = node.tagName;
@@ -43,7 +39,7 @@ _.register({
             watchers = this._["<%= prop('watcher') %>"][name],
             oldValue;
 
-        if (watchers || typeof value === "function") {
+        if (watchers) {
             oldValue = this.get(name);
         }
 
@@ -51,10 +47,6 @@ _.register({
             if (name[0] === "_") {
                 this._[name.slice(1)] = value;
             } else {
-                if (typeof value === "function") {
-                    value = value.call(this, oldValue);
-                }
-
                 if (hook) {
                     hook(node, value);
                 } else if (value == null) {

@@ -40,14 +40,14 @@ describe("set", function() {
         expect(link.set(true)).toHaveHtml("true");
     });
 
-    it("should accept function", function() {
-        var spy = jasmine.createSpy("setter").and.returnValue("test_changed");
+    // it("should accept function", function() {
+    //     var spy = jasmine.createSpy("setter").and.returnValue("test_changed");
 
-        link.set("id", spy);
+    //     link.set("id", spy);
 
-        expect(spy).toHaveBeenCalledWith("test");
-        expect(link).toHaveAttr("id", "test_changed");
-    });
+    //     expect(spy).toHaveBeenCalledWith("test");
+    //     expect(link).toHaveAttr("id", "test_changed");
+    // });
 
     it("should accept object with key-value pairs", function() {
         link.set({"data-test1": "test1", "data-test2": "test2"});
@@ -146,17 +146,17 @@ describe("set", function() {
             expect(select.get()).toBe("");
         });
 
-        it("should accept function", function() {
-            var spy = jasmine.createSpy("set").and.returnValue("ok");
+        // it("should accept function", function() {
+        //     var spy = jasmine.createSpy("set").and.returnValue("ok");
 
-            link.set(spy);
-            input.set(spy);
+        //     link.set(spy);
+        //     input.set(spy);
 
-            expect(spy.calls.count()).toBe(2);
+        //     expect(spy.calls.count()).toBe(2);
 
-            expect(link).toHaveHtml("ok");
-            expect(input).toHaveProp("value", "ok");
-        });
+        //     expect(link).toHaveHtml("ok");
+        //     expect(input).toHaveProp("value", "ok");
+        // });
 
         it("accept object with overriden toString", function() {
             function Type() {

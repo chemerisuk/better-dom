@@ -50,10 +50,6 @@ _.register({
         if (len === 2 && typeof name === "string") {
             var setter = HOOK.set[name] || HOOK.find(name, style);
 
-            if (typeof value === "function") {
-                value = value.call(this, this.css(name));
-            }
-
             if (value == null) value = "";
 
             if (typeof setter === "function") {
