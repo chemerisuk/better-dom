@@ -36,7 +36,7 @@ export default (selector, condition, mixins, index) => {
 
             // invoke constructor if it exists
             // make a safe call so live extensions can't break each other
-            if (ctr) _.safeInvoke(el, ctr);
+            if (ctr) _.safeCall(el, ctr);
             // remove event handlers from element's interface
             privateFunctions.forEach((prop) => { delete el[prop] });
         }

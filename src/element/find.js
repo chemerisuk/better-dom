@@ -44,7 +44,7 @@ var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:
                 selector = nid + selector.split(",").join("," + nid);
             }
 
-            result = _.safeInvoke(context, "querySelector" + all, selector);
+            result = _.safeCall(context, "querySelector" + all, selector);
 
             if (!old) node.removeAttribute("id");
         }

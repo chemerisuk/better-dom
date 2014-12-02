@@ -54,7 +54,7 @@ _.register({
             // prevent re-triggering of the current event
             EventHandler.skip = type;
 
-            _.safeInvoke(node, type);
+            _.safeCall(node, type);
 
             EventHandler.skip = null;
         }

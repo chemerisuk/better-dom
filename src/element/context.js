@@ -21,7 +21,7 @@ _.register({
             let rec = contexts[name];
 
             if (typeof callback === "function") {
-                _.safeInvoke(this, callback, rec[1]);
+                _.safeCall(this, callback, rec[1]);
             }
 
             return rec[0];

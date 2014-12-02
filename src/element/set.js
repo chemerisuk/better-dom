@@ -72,7 +72,7 @@ _.register({
 
         if (watchers && oldValue !== value) {
             watchers.forEach((w) => {
-                _.safeInvoke(this, w, value, oldValue);
+                _.safeCall(this, w, value, oldValue);
             });
         }
 

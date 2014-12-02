@@ -25,7 +25,7 @@ export default {
     slice: arrayProto.slice,
     isArray: Array.isArray,
     keys: Object.keys,
-    safeInvoke(context, fn, arg1, arg2) {
+    safeCall(context, fn, arg1, arg2) {
         if (typeof fn === "string") fn = context[fn];
 
         try {
