@@ -17,17 +17,29 @@ _.register({
             doc = node.ownerDocument,
             contexts = this._["<%= prop('context') %>"];
 
-        if (name in contexts) return contexts[name];
-        // apply user-defined styles for the context
+        if (name in contexts) {
+            let rec = contexts[name];
+
+            if (typeof callback === "function") {
+                _.safeInvoke(this, callback, rec[1]);
+            }
+
+            return rec[0];
+        }
+
         var ctx = DOM.create("div[style=overflow:hidden]", [name]);
         var wrapper = ctx[0];
-        var object;
+        var record = [ctx];
+        var object, subtree;
         var ready = () => {
+            // apply user-defined styles for the context
             // need to add class in ready callback because of IE8
             ctx.addClass(name);
 
+            record[1] = new $Document(subtree || object.contentDocument);
+
             if (typeof callback === "function") {
-                callback(new $Document(object.contentDocument));
+                callback.call(this, record[1]);
             }
         };
         /* istanbul ignore if */
@@ -39,10 +51,8 @@ _.register({
             object = wrapper.firstChild;
             // IE8 does not support onload - use timeout instead
             DOM.requestFrame(function repeat() {
-                var htmlEl;
-                // TODO: tbd if try/catch check is required
                 try {
-                    htmlEl = object.contentDocument.documentElement;
+                    subtree = object.contentDocument;
                 } catch (err) {
                     return DOM.requestFrame(repeat);
                 }
@@ -79,6 +89,6 @@ _.register({
             ctx.css("position", "relative");
         }
 
-        return contexts[name] = ctx;
+        return contexts[name] = record;
     }
 });
