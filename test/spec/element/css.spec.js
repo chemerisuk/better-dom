@@ -104,16 +104,14 @@ describe("css", function() {
             }
         });
 
-        // it("should accept function", function() {
-        //     var spy = jasmine.createSpy("value").and.returnValue(7),
-        //         getSpy = spyOn(link, "css").and.callThrough();
+        it("should accept function", function() {
+            var spy = jasmine.createSpy("value").and.returnValue(7);
 
-        //     link.css("line-height", spy);
+            link.css("line-height", spy);
 
-        //     expect(getSpy.calls.count()).toBe(2);
-        //     expect(spy).toHaveBeenCalledWith("2");
-        //     expect(link.css("line-height")).toBe("7");
-        // });
+            expect(spy).toHaveBeenCalledWith(link);
+            expect(link.css("line-height")).toBe("7");
+        });
 
         // it("should be suported by collections", function() {
         //     links.css("float", "right").each(function(el) {

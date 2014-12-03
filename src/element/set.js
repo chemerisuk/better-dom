@@ -22,7 +22,11 @@ _.register({
 
         // handle the value shortcut
         if (arguments.length === 1) {
-            value = name == null ? "" : String(name);
+            if (typeof name === "function") {
+                value = name;
+            } else {
+                value = name == null ? "" : String(name);
+            }
 
             if (value !== "[object Object]") {
                 let tag = node.tagName;
@@ -47,6 +51,10 @@ _.register({
             if (name[0] === "_") {
                 this._[name.slice(1)] = value;
             } else {
+                if (typeof value === "function") {
+                    value = value(this);
+                }
+
                 if (hook) {
                     hook(node, value);
                 } else if (value == null) {
