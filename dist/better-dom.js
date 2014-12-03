@@ -1,11 +1,3 @@
-/**
- * @file better-dom.js
- * @overview better-dom: Live extension playground
- * @version 2.1.0-beta.2 Sun, 30 Nov 2014 12:47:27 GMT
- * @copyright 2013-2014 Maksim Chemerisuk
- * @license MIT
- * @see https://github.com/chemerisuk/better-dom
- */
 (function() {
     "use strict";var SLICE$0 = Array.prototype.slice;
     var WINDOW = window;
@@ -20,13 +12,6 @@
     var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
     var CUSTOM_EVENT_TYPE = "dataavailable";
 
-    var NODE_DATA = "__2001000-beta002__";
-    var HANDLERS_DATA = "handlers2001000-beta002";
-    var WATCHERS_DATA = "watchers2001000-beta002";
-    var EXTENSIONS_DATA = "extensions2001000-beta002";
-    var FRAME_DATA = "frame2001000-beta002";
-    var CONTEXT_DATA = "context2001000-beta002";
-
     function $NullElement() {}
 
     function $Element(node) {
@@ -35,18 +20,16 @@
                 this[0] = node;
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node[NODE_DATA] = this;
+                node["__2001000-rc001__"] = this;
 
                 this._ = {};
-                this._[HANDLERS_DATA] = [];
-                this._[WATCHERS_DATA] = {};
-                this._[EXTENSIONS_DATA] = [];
-                this._[CONTEXT_DATA] = {};
+                this._["handler2001000-rc001"] = [];
+                this._["watcher2001000-rc001"] = {};
+                this._["extension2001000-rc001"] = [];
+                this._["context2001000-rc001"] = {};
             }
-
-
         } else if (node) {
-            var cached = node[NODE_DATA];
+            var cached = node["__2001000-rc001__"];
             // create a wrapper only once for each native element
             return cached ? cached : new $Element(node);
         } else {
@@ -64,7 +47,7 @@
 
             return node ? "<" + node.tagName.toLowerCase() + ">" : "";
         },
-        version: "2.1.0-beta.2"
+        version: "2.1.0-rc.1"
     };
 
     $NullElement.prototype = new $Element();
@@ -104,7 +87,7 @@
         slice: util$index$$arrayProto.slice,
         isArray: Array.isArray,
         keys: Object.keys,
-        safeInvoke: function(context, fn, arg1, arg2) {
+        safeCall: function(context, fn, arg1, arg2) {
             if (typeof fn === "string") fn = context[fn];
 
             try {
@@ -156,8 +139,6 @@
     }
 
     errors$$StaticMethodError.prototype = new TypeError();
-
-    /* es6-transpiler has-iterators:false, has-generators: false */
 
     var // operator type / priority object
         global$emmet$$operators = {"(": 1,")": 2,"^": 3,">": 4,"+": 5,"*": 6,"`": 7,"[": 8,".": 8,"#": 8},
@@ -298,8 +279,7 @@
                     node = [ value.replace(global$emmet$$reUnsafe, function(ch)  {return global$emmet$$safeSymbol[ch]}) ];
                     break;
 
-                default: /* ">", "+", "^" */
-                    value = typeof value === "string" ? global$emmet$$makeTerm(value) : value.join("");
+                default: value = typeof value === "string" ? global$emmet$$makeTerm(value) : value.join("");
 
                     if (str$0 === ">") {
                         value = global$emmet$$injectTerm(value, true);
@@ -328,45 +308,46 @@
 
     var document$create$$makeMethod = function(all)  {return function(value, varMap) {
             var doc = this[0].ownerDocument,
+                sandbox = this._["sandbox2001000-rc001"];
+
+            if (!sandbox) {
                 sandbox = doc.createElement("div");
+                this._["sandbox2001000-rc001"] = sandbox;
+            }
 
-            this["create" + all] = function(value, varMap)  {
-                var nodes, el;
+            var nodes, el;
 
-                if (value && value in global$emmet$$default) {
-                    nodes = doc.createElement(value);
+            if (value && value in global$emmet$$default) {
+                nodes = doc.createElement(value);
 
-                    if (all) nodes = [ new $Element(nodes) ];
+                if (all) nodes = [ new $Element(nodes) ];
+            } else {
+                value = value.trim();
+
+                if (value[0] === "<" && value[value.length - 1] === ">") {
+                    value = varMap ? DOM.format(value, varMap) : value;
                 } else {
-                    value = value.trim();
+                    value = DOM.emmet(value, varMap);
+                }
 
-                    if (value[0] === "<" && value[value.length - 1] === ">") {
-                        value = varMap ? DOM.format(value, varMap) : value;
-                    } else {
-                        value = DOM.emmet(value, varMap);
-                    }
+                sandbox.innerHTML = value; // parse input HTML string
 
-                    sandbox.innerHTML = value; // parse input HTML string
+                for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
+                    sandbox.removeChild(el); // detach element from the sandbox
 
-                    for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
-                        sandbox.removeChild(el); // detach element from the sandbox
+                    if (el.nodeType === 1) {
+                        if (all) {
+                            nodes.push(new $Element(el));
+                        } else {
+                            nodes = el;
 
-                        if (el.nodeType === 1) {
-                            if (all) {
-                                nodes.push(new $Element(el));
-                            } else {
-                                nodes = el;
-
-                                break; // stop early, because need only the first element
-                            }
+                            break; // stop early, because need only the first element
                         }
                     }
                 }
+            }
 
-                return all ? nodes : $Element(nodes);
-            };
-
-            return this["create" + all](value, varMap);
+            return all ? nodes : $Element(nodes);
         }};
 
     $Document.prototype.create = document$create$$makeMethod("");
@@ -434,7 +415,6 @@
 
     // Helper for css selectors
 
-    /*es6-transpiler has-iterators:false, has-generators: false*/
     var util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
         util$selectormatcher$$propName = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix)  {
                 var propertyName = prefix + "atchesSelector";
@@ -519,8 +499,6 @@
     }, function(methodName)  {
         return methodName === "child" ? function()  {return new $NullElement()} : function()  {return []};
     });
-
-    /* es6-transpiler has-iterators:false, has-generators: false */
 
     var element$classes$$reSpace = /[\n\t\r]/g,
         element$classes$$makeMethod = function(nativeMethodName, strategy)  {
@@ -641,24 +619,34 @@
     // https://code.google.com/p/chromium/issues/detail?id=255150
 
     util$index$$default.register({
-        context: function(name, callback) {
+        context: function(name, callback) {var this$0 = this;
             var node = this[0],
                 doc = node.ownerDocument,
-                contexts = this._[CONTEXT_DATA];
+                contexts = this._["context2001000-rc001"];
 
-            if (name in contexts) return contexts[name];
-
-            var wrapper = doc.createElement("div");
-            var object;
-            var ready = function()  {
-                var doc = object.contentDocument;
-                // remove default margin because it's useless
-                doc.body.style.margin = 0;
-                // apply user-defined styles for the context
-                wrapper.className = name;
+            if (name in contexts) {
+                var rec = contexts[name];
 
                 if (typeof callback === "function") {
-                    callback(new $Document(doc));
+                    util$index$$default.safeCall(this, callback, rec[1]);
+                }
+
+                return rec[0];
+            }
+
+            var ctx = DOM.create("div[style=overflow:hidden]", [name]);
+            var wrapper = ctx[0];
+            var record = [ctx];
+            var object, subtree;
+            var ready = function()  {
+                // apply user-defined styles for the context
+                // need to add class in ready callback because of IE8
+                ctx.addClass(name);
+
+                record[1] = new $Document(subtree || object.contentDocument);
+
+                if (typeof callback === "function") {
+                    callback.call(this$0, record[1]);
                 }
             };
             if (JSCRIPT_VERSION < 9) {
@@ -669,10 +657,8 @@
                 object = wrapper.firstChild;
                 // IE8 does not support onload - use timeout instead
                 DOM.requestFrame(function repeat() {
-                    var htmlEl;
-                    // TODO: tbd if try/catch check is required
                     try {
-                        htmlEl = object.contentDocument.documentElement;
+                        subtree = object.contentDocument;
                     } catch (err) {
                         return DOM.requestFrame(repeat);
                     }
@@ -699,16 +685,17 @@
                 wrapper.appendChild(object);
             }
 
-            wrapper.style.overflow = "hidden";
-
             object.style.position = "absolute";
             object.width = "100%";
             object.height = "100%";
 
-            // TODO: check if parent is not null
-            node.parentNode.insertBefore(wrapper, node);
+            this.before(ctx);
 
-            return contexts[name] = new $Element(wrapper);
+            if (ctx.css("position") === "static") {
+                ctx.css("position", "relative");
+            }
+
+            return contexts[name] = record;
         }
     });
 
@@ -815,7 +802,7 @@
                 var setter = util$stylehooks$$default.set[name] || util$stylehooks$$default.find(name, style);
 
                 if (typeof value === "function") {
-                    value = value.call(this, this.css(name));
+                    value = value(this);
                 }
 
                 if (value == null) value = "";
@@ -843,6 +830,8 @@
         }
     }});
 
+    var element$define$$ATTR_CASE = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
+
     util$index$$default.register({
         define: function(name, getter, setter) {var this$0 = this;
             var node = this[0];
@@ -854,9 +843,8 @@
             // initial value reading must be before defineProperty
             // because IE8 will try to read wrong attribute value
             var initialValue = node.getAttribute(name);
-            var letterCase = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
             // trick to fix infinite recursion in IE8
-            var attrName = name[letterCase]();
+            var attrName = name[element$define$$ATTR_CASE]();
             var _setAttribute = node.setAttribute;
             var _removeAttribute = node.removeAttribute;
 
@@ -879,7 +867,7 @@
 
             // override methods to catch changes from attributes too
             node.setAttribute = function(attrName, attrValue, flags)  {
-                if (name === attrName[letterCase]()) {
+                if (name === attrName[element$define$$ATTR_CASE]()) {
                     node[name] = getter.call(this$0, attrValue);
                 } else {
                     _setAttribute.call(node, attrName, attrValue, flags);
@@ -887,7 +875,7 @@
             };
 
             node.removeAttribute = function(attrName, flags)  {
-                if (name === attrName[letterCase]()) {
+                if (name === attrName[element$define$$ATTR_CASE]()) {
                     node[name] = getter.call(this$0, null);
                 } else {
                     _removeAttribute.call(node, attrName, flags);
@@ -925,7 +913,6 @@
                 if (result && !all) result = result[0];
             } else {
                 old = true;
-                nid = "DOM2001000-beta002";
                 context = node;
 
                 if (node !== node.ownerDocument.documentElement) {
@@ -935,6 +922,7 @@
                     if ( (old = node.getAttribute("id")) ) {
                         nid = old.replace(element$find$$rescape, "\\$&");
                     } else {
+                        nid = "DOM2001000-rc001";
                         node.setAttribute("id", nid);
                     }
 
@@ -942,7 +930,7 @@
                     selector = nid + selector.split(",").join("," + nid);
                 }
 
-                result = util$index$$default.safeInvoke(context, "querySelector" + all, selector);
+                result = util$index$$default.safeCall(context, "querySelector" + all, selector);
 
                 if (!old) node.removeAttribute("id");
             }
@@ -981,7 +969,7 @@
 
     function util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget) {
         if (typeof name === "number") {
-            var args = e["__2001000-beta002__"];
+            var args = e["__2001000-rc001__"];
 
             return args ? args[name] : void 0;
         }
@@ -1055,7 +1043,7 @@
                     args = args.map(function(name)  {return util$eventhandler$$getEventProperty(
                         name, e, type, node, target, currentTarget)});
                 } else {
-                    args = util$index$$default.slice.call(e["__2001000-beta002__"] || [0], 1);
+                    args = util$index$$default.slice.call(e["__2001000-rc001__"] || [0], 1);
                 }
 
                 // prevent default if handler returns false
@@ -1100,7 +1088,7 @@
             }
             if (JSCRIPT_VERSION < 9) {
                 e = node.ownerDocument.createEventObject();
-                e["__2001000-beta002__"] = arguments;
+                e["__2001000-rc001__"] = arguments;
                 // handle custom events for legacy IE
                 if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
@@ -1111,7 +1099,7 @@
                 canContinue = e.returnValue !== false;
             } else {
                 e = node.ownerDocument.createEvent("HTMLEvents");
-                e["__2001000-beta002__"] = arguments;
+                e["__2001000-rc001__"] = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
             }
@@ -1121,7 +1109,7 @@
                 // prevent re-triggering of the current event
                 util$eventhandler$$default.skip = type;
 
-                util$index$$default.safeInvoke(node, type);
+                util$index$$default.safeCall(node, type);
 
                 util$eventhandler$$default.skip = null;
             }
@@ -1277,7 +1265,7 @@
             var fragment = fastStrategy ? "" : node.ownerDocument.createDocumentFragment();
 
             contents.forEach(function(content)  {
-                if (typeof content === "function") content = content.call(this$0);
+                if (typeof content === "function") content = content(this$0);
 
                 if (typeof content === "string") {
                     if (typeof fragment === "string") {
@@ -1387,7 +1375,7 @@
 
             var node = this[0];
 
-            this._[HANDLERS_DATA] = this._[HANDLERS_DATA].filter(function(handler)  {
+            this._["handler2001000-rc001"] = this._["handler2001000-rc001"].filter(function(handler)  {
                 var skip = type !== handler.type;
 
                 skip = skip || selector && selector !== handler.selector;
@@ -1465,7 +1453,7 @@
                         node.addEventListener(handler._type || type, handler, !!handler.capturing);
                     }
                     // store event entry
-                    this._[HANDLERS_DATA].push(handler);
+                    this._["handler2001000-rc001"].push(handler);
                 }
             } else if (typeof type === "object") {
                 if (util$index$$default.isArray(type)) {
@@ -1510,10 +1498,10 @@
             }
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._[WATCHERS_DATA][name],
+                watchers = this._["watcher2001000-rc001"][name],
                 oldValue;
 
-            if (watchers || typeof value === "function") {
+            if (watchers) {
                 oldValue = this.get(name);
             }
 
@@ -1522,7 +1510,7 @@
                     this._[name.slice(1)] = value;
                 } else {
                     if (typeof value === "function") {
-                        value = value.call(this, oldValue);
+                        value = value(this);
                     }
 
                     if (hook) {
@@ -1549,7 +1537,7 @@
 
             if (watchers && oldValue !== value) {
                 watchers.forEach(function(w)  {
-                    util$index$$default.safeInvoke(this$0, w, value, oldValue);
+                    util$index$$default.safeCall(this$0, w, value, oldValue);
                 });
             }
 
@@ -1712,7 +1700,7 @@
                 style = node.style,
                 computed = util$index$$default.computeStyle(node),
                 hiding = condition,
-                frameId = this._[FRAME_DATA],
+                frameId = this._["frame2001000-rc001"],
                 done = function()  {
                     if (animationHandler) {
                         node.removeEventListener(eventType, animationHandler, true);
@@ -1726,9 +1714,9 @@
                     // from setting cssText because of Opera 12 quirks
                     style.visibility = hiding ? "hidden" : "inherit";
 
-                    this$0._[FRAME_DATA] = null;
+                    this$0._["frame2001000-rc001"] = null;
 
-                    if (callback) callback.call(this$0);
+                    if (callback) callback(this$0);
                 };
 
             if (typeof hiding !== "boolean") {
@@ -1748,7 +1736,7 @@
                 // use requestAnimationFrame to avoid animation quirks for
                 // new elements inserted into the DOM
                 // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-                this._[FRAME_DATA] = DOM.requestFrame(!animationHandler ? done : function()  {
+                this._["frame2001000-rc001"] = DOM.requestFrame(!animationHandler ? done : function()  {
                     node.addEventListener(eventType, animationHandler, true);
                     // update modified style rules
                     style.cssText = animationHandler.initialCssText + animationHandler.cssText;
@@ -1770,7 +1758,7 @@
 
     util$index$$default.register({
         watch: function(name, callback) {
-            var watchers = this._[WATCHERS_DATA];
+            var watchers = this._["watcher2001000-rc001"];
 
             if (!watchers[name]) watchers[name] = [];
 
@@ -1780,7 +1768,7 @@
         },
 
         unwatch: function(name, callback) {
-            var watchers = this._[WATCHERS_DATA];
+            var watchers = this._["watcher2001000-rc001"];
 
             if (watchers[name]) {
                 watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
@@ -1799,9 +1787,9 @@
         return function(node, mock)  {
             var el = $Element(node);
             // skip previously invoked or mismatched elements
-            if (~el._[EXTENSIONS_DATA].indexOf(index) || !matcher(node)) return;
+            if (~el._["extension2001000-rc001"].indexOf(index) || !matcher(node)) return;
             // mark extension as invoked
-            el._[EXTENSIONS_DATA].push(index);
+            el._["extension2001000-rc001"].push(index);
 
             if (mock === true || condition(el) !== false) {
                 // apply all private/public members to the element's interface
@@ -1824,7 +1812,7 @@
 
                 // invoke constructor if it exists
                 // make a safe call so live extensions can't break each other
-                if (ctr) util$index$$default.safeInvoke(el, ctr);
+                if (ctr) util$index$$default.safeCall(el, ctr);
                 // remove event handlers from element's interface
                 privateFunctions.forEach(function(prop)  { delete el[prop] });
             }
@@ -1879,22 +1867,21 @@
             }
         });
     } else {
-        var global$extend$$ANIMATION_NAME = "DOM2001000-beta002";
         var global$extend$$_extend = DOM.extend;
 
-        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:" + global$extend$$ANIMATION_NAME + " !important;";
+        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001000-rc001 !important;";
         global$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
 
         DOM.extend = function()  {
             // declare the fake animation on the first DOM.extend method call
-            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes " + global$extend$$ANIMATION_NAME, "from {opacity:.99} to {opacity:1}");
+            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001000-rc001", "from {opacity:.99} to {opacity:1}");
             // restore original method and invoke it
             (DOM.extend = global$extend$$_extend).apply(DOM, arguments);
         };
 
         // use capturing to suppress internal animationstart events
         DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
-            if (e.animationName === global$extend$$ANIMATION_NAME) {
+            if (e.animationName === "DOM2001000-rc001") {
                 global$extend$$extensions.forEach(function(ext)  { ext(e.target) });
                 // this is an internal event - stop it immediately
                 e.stopImmediatePropagation();
