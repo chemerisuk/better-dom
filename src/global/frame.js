@@ -19,6 +19,11 @@ if (!(raf && craf)) {
  * @alias DOM.requestFrame
  * @param {Fuction} callback function to execute in the next frame
  * @return {Number} - id of the frame
+ * @example
+ * DOM.requestFrame(function() {
+ *   // postpone removing a div to the next frame
+ *   div.remove();
+ * });
  */
 DOM.requestFrame = (callback) => {
     /* istanbul ignore else */
@@ -41,6 +46,12 @@ DOM.requestFrame = (callback) => {
  * @memberof DOM
  * @alias DOM.cancelFrame
  * @param {Number} frameId id of the frame
+ * @example
+ * var frameId = DOM.requestFrame(function() {
+ *   div.remove();
+ * });
+ * // div won't be removed
+ * DOM.cancelFrame(frameId);
  */
 DOM.cancelFrame = (frameId) => {
     /* istanbul ignore else */

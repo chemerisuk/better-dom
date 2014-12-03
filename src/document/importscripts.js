@@ -4,8 +4,8 @@ import { $Document } from "../types";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done
- * @memberof! $Document#
- * @alias $Document#importScripts
+ * @memberof DOM
+ * @alias DOM.importScripts
  * @param {...String} urls       script file urls
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  * @example

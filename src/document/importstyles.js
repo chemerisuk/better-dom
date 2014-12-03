@@ -4,8 +4,8 @@ import { $Document } from "../types";
 
 /**
  * Append global css styles
- * @memberof! $Document#
- * @alias $Document#importStyles
+ * @memberof DOM
+ * @alias DOM.importStyles
  * @param {String}  selector  css selector
  * @param {String}  cssText   css rules
  * @example

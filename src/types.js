@@ -55,11 +55,6 @@ $Element.prototype = {
 
 $NullElement.prototype = new $Element();
 
-/**
- * Used to represent a document in better-dom
- * @class $Document
- * @extends {$Element}
- */
 function $Document(node) {
     if (node && node.nodeType === 9) {
         node = node.documentElement;
@@ -73,7 +68,7 @@ $Document.prototype = new $Element();
 /**
  * Global object to access the DOM
  * @namespace DOM
- * @extends {$Document}
+ * @extends {$Element}
  */
 var DOM = new $Document(DOCUMENT);
 

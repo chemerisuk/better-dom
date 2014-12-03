@@ -47,8 +47,8 @@ var makeMethod = (all) => function(value, varMap) {
 
 /**
  * Create a new {@link $Element} from Emmet or HTML string
- * @memberof! $Document#
- * @alias $Document#create
+ * @memberof DOM
+ * @alias DOM.create
  * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} an element wrapper
@@ -62,8 +62,8 @@ $Document.prototype.create = makeMethod("");
 
 /**
  * Create a new array of {@link $Element}s from Emmet or HTML string
- * @memberof! $Document#
- * @alias $Document#createAll
+ * @memberof DOM
+ * @alias DOM.createAll
  * @param  {String}       value     Emmet or HTML string
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {Array.<$Element>} an array of element wrappers
