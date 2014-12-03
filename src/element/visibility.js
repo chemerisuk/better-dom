@@ -36,7 +36,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
 
                 this._["<%= prop('frame') %>"] = null;
 
-                if (callback) callback.call(this);
+                if (callback) callback(this);
             };
 
         if (typeof hiding !== "boolean") {

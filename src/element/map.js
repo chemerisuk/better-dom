@@ -7,7 +7,7 @@ _.register({
      * @memberof! $Element#
      * @alias $Element#map
      * @param  {Function}  fn         function to invoke
-     * @param  {Object}    [context]  invokation context
+     * @param  {Object}    [context]  execution context
      * @return {Array} an empty array or array with returned value
      * @example
      * var sayHello = function() { alert("hello!") };

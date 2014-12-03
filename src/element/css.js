@@ -82,6 +82,6 @@ _.register({
 /**
  * Callback function for changing a property/attribute
  * @callback cssCallback
- * @param  {String} currentValue current value of style property
+ * @param  {$Element} el the current element
  * @return {String|Number} a new value for style property
  */

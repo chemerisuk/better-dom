@@ -60,7 +60,7 @@ _.register({
      * @param  {String|Array}  type        event type(s) with optional selector
      * @param  {String}        [selector]  event selector filter
      * @param  {Array}         [args]      array of handler arguments to pass into the callback
-     * @param  {Function}      callback    event callback or property name (for late binding)
+     * @param  {Function}      callback    event callback
      * @return {$Element}
      * @function
      * @example
@@ -90,7 +90,7 @@ _.register({
      * @param  {String|Array}  type        event type(s) with optional selector
      * @param  {String}        [selector]  event selector filter
      * @param  {Array}         [args]      array of handler arguments to pass into the callback
-     * @param  {Function}      callback    event callback or property name (for late binding)
+     * @param  {Function}      callback    event callback
      * @return {$Element}
      * @function
      * @see $Element#on

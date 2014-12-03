@@ -12,7 +12,7 @@ var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => functio
         var fragment = fastStrategy ? "" : node.ownerDocument.createDocumentFragment();
 
         contents.forEach((content) => {
-            if (typeof content === "function") content = content.call(this);
+            if (typeof content === "function") content = content(this);
 
             if (typeof content === "string") {
                 if (typeof fragment === "string") {

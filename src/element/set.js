@@ -91,6 +91,6 @@ _.register({
 /**
  * Callback function for changing a property/attribute
  * @callback setterCallback
- * @param {Object} currentValue current value of property/attribute
+ * @param {$Element} el the current element
  * @return {Object} a new value for property/attribute
  */
