@@ -8,7 +8,7 @@ import { $Document, DOM } from "../types";
 // IE8 fails with about:blank, use better-dom-legacy.html instead
 var SANDBOX_URL = JSCRIPT_VERSION < 9 ? _.getLegacyFile("html") : "about:blank";
 
-// NOTE: Chrome/Safari have issue with focusing on the <object>:
+// Chrome/Safari serious bug with focusing on the <object>:
 // https://code.google.com/p/chromium/issues/detail?id=255150
 
 _.register({
@@ -45,8 +45,7 @@ _.register({
         /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
             // IE8 is buggy, use innerHTML and better-dom-legacy.html
-            // use overflow and extra size to get rid of the frame
-            wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html` style=`left:-2px;top:-2px`]", [SANDBOX_URL]);
+            wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html`]", [SANDBOX_URL]);
 
             object = wrapper.firstChild;
             // IE8 does not support onload - use timeout instead
@@ -56,17 +55,16 @@ _.register({
                 } catch (err) {
                     return DOM.requestFrame(repeat);
                 }
-                // use the trick below to hide frame border in IE8
-                wrapper.onresize = function resizing() {
-                    wrapper.onresize = null;
+                var frameId;
+                // add extra sizes and cut the frame border
+                wrapper.attachEvent("onresize", () => {
+                    frameId = frameId || DOM.requestFrame(() => {
+                        object.width = wrapper.offsetWidth + 4;
+                        object.height = wrapper.offsetHeight + 4;
 
-                    object.width = wrapper.offsetWidth + 4;
-                    object.height = wrapper.offsetHeight + 4;
-
-                    DOM.requestFrame(() => {
-                        wrapper.onresize = resizing;
+                        frameId = null;
                     });
-                };
+                });
 
                 ready();
             });
@@ -88,12 +86,12 @@ _.register({
 
         this.before(ctx);
 
-        if (JSCRIPT_VERSION > 8) {
-            // IE needs doesn't work if set data attribute before
+        if (JSCRIPT_VERSION) {
+            // IE doesn't work if to set the data attribute before
             // appending element to the DOM
             object.data = SANDBOX_URL;
-            // use calc to add extra sizes to cut the black border
-            object.style.cssText += "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px";
+            // use calc to add extra sizes and cut the frame border
+            object.style.cssText = "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute";
         }
 
         if (ctx.css("position") === "static") {
