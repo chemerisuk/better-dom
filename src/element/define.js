@@ -10,7 +10,8 @@ _.register({
      * @memberof! $Element#
      * @alias $Element#define
      * @param  {String} name      attribute name
-     * @param  {Object} accessors getter and setter definition
+     * @param  {Function} getter  attribute to property convertor
+     * @param  {Function} setter  property to attribute convertor
      * @example
      * DOM.find("body").define("foo", function(attrValue) {
      *   // getter returns property value

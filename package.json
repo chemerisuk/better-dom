@@ -12,7 +12,6 @@
   "devDependencies": {
     "benchmark": "1.0.0",
     "es6-module-transpiler": "^0.6.0",
-    "es6-shim": "0.20.4",
     "gulp": "^3.8.8",
     "gulp-bump": "^0.1.11",
     "gulp-clean": "^0.3.1",
@@ -52,7 +51,6 @@
   },
   "scripts": {
     "test": "gulp test",
-    "start": "gulp dev",
-    "install": "rm -rf node_modules/gulp-es6-transpiler/node_modules/es6-transpiler/node_modules/es6-shim"
+    "start": "gulp dev"
   }
 }

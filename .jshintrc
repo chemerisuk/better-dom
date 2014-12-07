@@ -13,7 +13,7 @@
     "noempty": true,
     "trailing": true,
     "maxdepth": 6,
-    "unused": true,
+    "unused": false,
     "immed": true,
     "latedef": true,
     "nonew": true,
