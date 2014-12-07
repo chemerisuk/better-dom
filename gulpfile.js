@@ -19,9 +19,20 @@ var filter = require("gulp-filter");
 var tag_version = require("gulp-tag-version");
 var concat = require("gulp-concat");
 var plumber = require("gulp-plumber");
+var header = require("gulp-header");
 
 var karma = require("karma").server;
 var karmaConfig = require.resolve("./conf/karma.conf");
+
+var banner = [
+    "/**",
+    " * @overview <%= pkg.name %>: <%= pkg.description %>",
+    " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
+    " * @copyright 2013-2014 <%= pkg.author %>",
+    " * @license <%= pkg.license %>",
+    " * @see <%= pkg.repository.url %>",
+    " */"
+].join("\n");
 
 
 gulp.task("lint-legacy", function() {
@@ -68,6 +79,7 @@ gulp.task("compile", function() {
         .pipe(es6transpiler())
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(gulpif(dest === "dist/", replace(/\/\*([\s\S]*?)\*\/\s+/gm, "")))
+        .pipe(header(banner + "\n", { pkg: pkg }))
         .pipe(gulp.dest(dest));
 });
 

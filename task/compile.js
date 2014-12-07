@@ -10,17 +10,6 @@ var Container = es6modules.Container;
 var FileResolver = es6modules.FileResolver;
 var BundleFormatter = es6modules.formatters.bundle;
 
-var banner = [
-    "/**",
-    " * @file better-dom.js",
-    " * @overview <%= pkg.name %>: <%= pkg.description %>",
-    " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
-    " * @copyright 2013-2014 <%= pkg.author %>",
-    " * @license <%= pkg.license %>",
-    " * @see <%= pkg.repository.url %>",
-    " */"
-].join("\n");
-
 module.exports = function(dest) {
     if (!dest) throw new PluginError("compile", "Missing file option for compile");
 
@@ -51,8 +40,6 @@ module.exports = function(dest) {
             code = code.replace(/types\$\$(\$?\w+)/g, "$1");
             // remove generated prefix from constants
             code = code.replace(/const\$\$/g, "");
-            // append banner
-            code = banner + "\n" + code;
             // fix for browserify
             code = code.replace("}).call(this);", "})();\n");
 
