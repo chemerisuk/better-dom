@@ -9,12 +9,12 @@ export default {
         if (JSCRIPT_VERSION < 9) {
             return node.currentStyle;
         } else {
-            return WINDOW.getComputedStyle(node);
+            return node.ownerDocument.defaultView.getComputedStyle(node);
         }
     },
-    injectElement(el) {
-        if (el && el.nodeType === 1) {
-            return el.ownerDocument.getElementsByTagName("head")[0].appendChild(el);
+    injectElement(node) {
+        if (node && node.nodeType === 1) {
+            return node.ownerDocument.getElementsByTagName("head")[0].appendChild(node);
         }
     },
     // utilites

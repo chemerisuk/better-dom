@@ -87,7 +87,7 @@ gulp.task("symlink", ["compile-legacy"], function() {
         .pipe(symlink("build/"));
 });
 
-gulp.task("test", ["compile", "symlink", "lint-test"], function(done) {
+gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], function(done) {
     var config = {preprocessors: []};
 
     if (process.env.TRAVIS_JOB_NUMBER) {
@@ -113,7 +113,7 @@ gulp.task("test", ["compile", "symlink", "lint-test"], function(done) {
     karma.start(config, done);
 });
 
-gulp.task("dev", ["compile", "symlink", "lint-test"], function() {
+gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function() {
     gulp.watch(["src/document/*.js", "src/element/*.js", "src/global/*.js", "src/util/*.js", "src/*.js"], ["compile"]);
     gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
     gulp.watch(["test/spec/**/*.js"], ["lint-test"]);

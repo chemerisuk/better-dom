@@ -73,8 +73,11 @@ _.register({
         } else {
             object = doc.createElement("object");
             object.type = "text/html";
-            object.data = SANDBOX_URL;
             object.onload = ready;
+
+            if (!JSCRIPT_VERSION) {
+                object.data = SANDBOX_URL;
+            }
 
             wrapper.appendChild(object);
         }
@@ -84,6 +87,14 @@ _.register({
         object.height = "100%";
 
         this.before(ctx);
+
+        if (JSCRIPT_VERSION > 8) {
+            // IE needs doesn't work if set data attribute before
+            // appending element to the DOM
+            object.data = SANDBOX_URL;
+            // use calc to add extra sizes to cut the black border
+            object.style.cssText += "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px";
+        }
 
         if (ctx.css("position") === "static") {
             ctx.css("position", "relative");
