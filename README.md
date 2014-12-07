@@ -6,7 +6,7 @@ This library is about __ideas__. After some time of using jQuery I found that it
 
 Vanilla DOM also has a lot of bad parts, that I'm trying to fix by providing a JavaScript wrapper for each DOM element you use in code. This extra layer allows to abstract from legacy interfaces and to add new methods on __the top of particular elements__ without touching vanilla DOM prototypes. So the object model used is very different from what jQuery does.
 
-Note, that the better-dom project is only about the DOM. It does not contain AJAX helpers (but I have a [separate project](https://github.com/chemerisuk/better-xhr) for that).
+Note, that the better-dom project is only about the DOM. It does not contain any AJAX or BOM helper.
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/chemerisuk.svg)](https://saucelabs.com/u/chemerisuk)
 
