@@ -72,9 +72,6 @@ _.register({
             }
         };
 
-        // apply initial attribute value
-        node[name] = getter.call(this, initialValue);
-
         return this;
     }
 });

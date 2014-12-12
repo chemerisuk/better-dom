@@ -4,7 +4,7 @@ import { HTML } from "../const";
 // Helper for CSS properties access
 
 var reDash = /\-./g,
-    cssPrefixes = [ "Webkit", "O", "Moz", "ms" ],
+    cssPrefixes = ["Webkit", "O", "Moz", "ms"],
     hooks = {get: {}, set: {}, find(name, style) {
         var propName = name.replace(reDash, (str) => str[1].toUpperCase());
 

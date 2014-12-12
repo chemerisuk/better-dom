@@ -89,18 +89,18 @@ describe("$Element#define", function() {
         expect(el[0].getAttribute("placeholder")).toBe("ok");
     });
 
-    it("syncs initial attribute value", function() {
-        var getSpy = jasmine.createSpy("getSpy");
-        var setSpy = jasmine.createSpy("setSpy");
+    // it("syncs initial attribute value", function() {
+    //     var getSpy = jasmine.createSpy("getSpy");
+    //     var setSpy = jasmine.createSpy("setSpy");
 
-        el.set("foo", "test");
+    //     el.set("foo", "test");
 
-        el.define("foo", getSpy.and.returnValue("bar"), setSpy.and.returnValue("hey"));
+    //     el.define("foo", getSpy.and.returnValue("bar"), setSpy.and.returnValue("hey"));
 
-        expect(getSpy).toHaveBeenCalledWith("test");
-        expect(setSpy).toHaveBeenCalledWith("bar");
-        expect(el[0].getAttribute("foo")).toBe("hey");
-    });
+    //     expect(getSpy).toHaveBeenCalledWith("test");
+    //     expect(setSpy).toHaveBeenCalledWith("bar");
+    //     expect(el[0].getAttribute("foo")).toBe("hey");
+    // });
 
     it("observes attribute changes", function() {
         var spy = jasmine.createSpy("spy");
@@ -111,7 +111,7 @@ describe("$Element#define", function() {
 
         el.define("foo", function(value) { return value }, spy);
 
-        expect(spy).toHaveBeenCalledWith(null);
+        expect(spy).not.toHaveBeenCalled();
         expect(el.get("foo")).toBeNull();
 
         spy.calls.reset();

@@ -1,4 +1,4 @@
-import { DOCUMENT, HTML } from "../const";
+import { HTML } from "../const";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
 
@@ -10,13 +10,14 @@ var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
 
             return result || HTML[propertyName] && propertyName;
         }, null);
-// Quick matching inspired by jQuery
+
 export default function(selector, context) {
     if (typeof selector !== "string") return null;
 
     var quick = rquickIs.exec(selector);
 
     if (quick) {
+        // Quick matching is inspired by jQuery:
         //   0  1    2   3          4
         // [ _, tag, id, attribute, class ]
         if (quick[1]) quick[1] = quick[1].toLowerCase();
@@ -28,7 +29,7 @@ export default function(selector, context) {
         var result, found;
         /* istanbul ignore if */
         if (!quick && !propName) {
-            found = (context || DOCUMENT).querySelectorAll(selector);
+            found = (context || node.ownerDocument).querySelectorAll(selector);
         }
 
         for (; node && node.nodeType === 1; node = node.parentNode) {
