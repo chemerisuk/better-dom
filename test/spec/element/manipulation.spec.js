@@ -32,6 +32,41 @@ describe("manipulation", function() {
         // });
     });
 
+    describe("empty", function() {
+        var div;
+
+        beforeEach(function() {
+            div = DOM.create("div>a+a");
+        });
+
+        it("should remove child element(s) from DOM", function() {
+            expect(div[0].childNodes.length).toBe(2);
+            expect(div.empty()).toBe(div);
+            expect(div[0].childNodes.length).toBe(0);
+        });
+
+        it("does nothing for empty nodes", function() {
+            var empty = DOM.mock();
+            expect(empty.empty()).toBe(empty);
+        });
+    });
+
+    describe("content", function() {
+        var div;
+
+        beforeEach(function() {
+            div = DOM.create("div>a+a");
+        });
+
+        it("should replace child element(s) from node with content", function() {
+            expect(div[0].childNodes.length).toBe(2);
+            expect(div.content("b")).toBe(div);
+            expect(div[0].childNodes.length).toBe(1);
+            expect(div[0].childNodes[0].tagName).toBe("B");
+        });
+
+    });
+
     describe("append, prepend, after, before", function() {
         var checkStrategies = {
                 prepend: function(el) { return el.child(0); },

@@ -140,5 +140,38 @@ _.register({
      */
     remove: makeMethod("remove", "", true, (node) => {
         node.parentNode.removeChild(node);
+    }),
+
+    /**
+     * Remove child nodes of current element from the DOM
+     * @memberof! $Element#
+     * @alias $Element#empty
+     * @return {$Element}
+     * @function
+     * @example
+     * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>
+     * div.empty();                     // <div></div>
+     */
+    empty: makeMethod("empty", "", false, (node) => {
+        while (node.hasChildNodes()) {
+            node.removeChild(node.lastChild);
+        }
+    }),
+
+    /**
+     * Replace child nodes of current element
+     * @memberof! $Element#
+     * @alias $Element#content
+     * @return {$Element}
+     * @function
+     * @example
+     * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>
+     * div.content(DOM.create("i"));    // <div><i></i></div>
+     */
+    content: makeMethod("content", "", false, (node, relatedNode) => {
+        while (node.hasChildNodes()) {
+            node.removeChild(node.lastChild);
+        }
+        node.appendChild(relatedNode);
     })
 });
