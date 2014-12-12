@@ -68,7 +68,7 @@ function EventHandler(type, selector, callback, props, el, once) {
                 return; // handle custom events in legacy IE
             }
             // srcElement can be null in legacy IE when target is document
-            var target = e.target || e.srcElement || node.ownerDocument,
+            var target = e.target || e.srcElement || node.ownerDocument.documentElement,
                 currentTarget = matcher ? matcher(target) : node,
                 args = props || [];
 

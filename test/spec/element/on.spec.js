@@ -243,10 +243,13 @@ describe("on", function() {
         DOM.once("custom:event1", ["target", "defaultPrevented"], spy);
         DOM.fire("custom:event1");
 
-        expect(spy).toHaveBeenCalledWith(DOM, false);
+        var args = spy.calls.allArgs()[0];
+
+        expect(args[0]).toBe(DOM);
+        expect(args[1]).toBe(false);
 
         spy.calls.reset();
-        DOM.once("custom:event2 ul > li", spy);
+        DOM.once("custom:event2", "ul > li", spy);
         DOM.fire("custom:event2");
         expect(spy).not.toHaveBeenCalled();
     });

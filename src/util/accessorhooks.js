@@ -1,8 +1,8 @@
 import _ from "../util/index";
 import { JSCRIPT_VERSION, DOCUMENT } from "../const";
+import { DOM } from "../types";
 
 var hooks = {get: {}, set: {}};
-var body = DOCUMENT.createElement("body");
 
 // fix camel cased attributes
 "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach((key) => {
@@ -70,11 +70,10 @@ if (JSCRIPT_VERSION < 9) {
             node.innerHTML = value;
         } catch (err) {
             node.innerText = "";
-            body.innerHTML = value;
 
-            for (var it; it = body.firstChild; ) {
-                node.appendChild(it);
-            }
+            DOM.createAll(value).forEach((x) => {
+                node.appendChild(x);
+            });
         }
     };
 }
