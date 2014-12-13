@@ -60,6 +60,8 @@
             
             <span class="subtitle">Methods</span>
             
+                <li data-name="DOM.cancelFrame"><a href="DOM.html#cancelFrame">cancelFrame</a></li>
+            
                 <li data-name="DOM.constructor"><a href="DOM.html#constructor">constructor</a></li>
             
                 <li data-name="DOM.create"><a href="DOM.html#create">create</a></li>
@@ -77,6 +79,10 @@
                 <li data-name="DOM.importStyles"><a href="DOM.html#importStyles">importStyles</a></li>
             
                 <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
+            
+                <li data-name="DOM.noConflict"><a href="DOM.html#noConflict">noConflict</a></li>
+            
+                <li data-name="DOM.requestFrame"><a href="DOM.html#requestFrame">requestFrame</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -119,9 +125,7 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
-                <li data-name="$Element#defineAttribute"><a href="$Element.html#defineAttribute">defineAttribute</a></li>
-            
-                <li data-name="$Element#defineProperty"><a href="$Element.html#defineProperty">defineProperty</a></li>
+                <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
             
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
@@ -134,6 +138,8 @@
                 <li data-name="$Element#hasClass"><a href="$Element.html#hasClass">hasClass</a></li>
             
                 <li data-name="$Element#hide"><a href="$Element.html#hide">hide</a></li>
+            
+                <li data-name="$Element#map"><a href="$Element.html#map">map</a></li>
             
                 <li data-name="$Element#matches"><a href="$Element.html#matches">matches</a></li>
             
@@ -260,6 +266,134 @@
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id="cancelFrame">
+            
+            <span class="type-signature static">static</span>DOM.cancelFrame<span class="signature">(frameId)</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2603">line 2603</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Cancel a scheduled frame
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>frameId</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                id of the frame</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>var frameId = DOM.requestFrame(function() {
+  div.remove();
+});
+// div won't be removed
+DOM.cancelFrame(frameId);</code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id="constructor">
             
             <span class="type-signature static">static</span>DOM.constructor<span class="signature">(<span class="optional">node</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
@@ -267,7 +401,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line59">line 59</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line63">line 63</a>
         </div>
         
     </div>
@@ -409,7 +543,7 @@ bodyEl.hide();</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line391">line 391</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line415">line 415</a>
         </div>
         
     </div>
@@ -582,7 +716,7 @@ DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line405">line 405</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line429">line 429</a>
         </div>
         
     </div>
@@ -754,7 +888,7 @@ DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements:
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line228">line 228</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line244">line 244</a>
         </div>
         
     </div>
@@ -917,11 +1051,11 @@ resulting HTML string
         
 
     
-    <pre class="prettyprint"><code>DOM.emmet("a");                                    // => "&lt;a>&lt;/a>"
-DOM.emmet("ul>li*2");                              // => "&lt;ul>&lt;li>&lt;/li>&lt;li>&lt;/li>&lt;/ul>"
-DOM.emmet("b>`hello {user}`", {user: "world"});    // => "&lt;b>hello world&lt;/b>
-DOM.emmet("i.{0}+span", ["icon"]);                 // => "&lt;i class="icon">&lt;/i&amp;gt&lt;span>&lt;/span>"
-DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;span id="bar">&lt;/span>&lt;/i>"</code></pre>
+    <pre class="prettyprint"><code>DOM.emmet("a");                                    // => '&lt;a>&lt;/a>'
+DOM.emmet("ul>li*2");                              // => '&lt;ul>&lt;li>&lt;/li>&lt;li>&lt;/li>&lt;/ul>'
+DOM.emmet("b>`hello {user}`", {user: "world"});    // => '&lt;b>hello world&lt;/b>'
+DOM.emmet("i.{0}+span", ["icon"]);                 // => '&lt;i class="icon">&lt;/i>&lt;span>&lt;/span>'
+DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => '&lt;i class="foo">&lt;span id="bar">&lt;/span>&lt;/i>'</code></pre>
     
 
     
@@ -933,12 +1067,12 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
     <div class="nameContainer">
         <h4 class="name" id="extend">
             
-            <span class="type-signature static">static</span>DOM.extend<span class="signature">(selector, <span class="optional">condition</span>, mixins)</span>
+            <span class="type-signature static">static</span>DOM.extend<span class="signature">(selector, <span class="optional">condition</span>, definition)</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line530">line 530</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2455">line 2455</a>
         </div>
         
     </div>
@@ -1053,7 +1187,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
 	
         <tr>
             
-                <td class="name"><code>mixins</code></td>
+                <td class="name"><code>definition</code></td>
             
             
             <td class="type">
@@ -1078,7 +1212,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
                         
                     
                 
-                extension declatation</td>
+                live extension definition</td>
         </tr>
 	
 	
@@ -1158,7 +1292,7 @@ DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => "&lt;i class="foo">&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line618">line 618</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2533">line 2533</a>
         </div>
         
     </div>
@@ -1315,7 +1449,7 @@ DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line639">line 639</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line444">line 444</a>
         </div>
         
     </div>
@@ -1480,7 +1614,7 @@ DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line786">line 786</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line480">line 480</a>
         </div>
         
     </div>
@@ -1552,9 +1686,6 @@ DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre
             
                 
 <span class="param-type">String</span>
-|
-
-<span class="param-type">Object</span>
 
 
             
@@ -1613,9 +1744,9 @@ DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre
         
 
     
-    <pre class="prettyprint"><code>DOM.importStyles(".foo", {color: "red", padding: 5});
-// you can use CSS strings too
-DOM.importStyles(".bar", "background: white; color: gray");</code></pre>
+    <pre class="prettyprint"><code>DOM.importStyles(".foo, .bar", "background: white; color: gray");
+// more complex selectors
+DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");</code></pre>
     
 
     
@@ -1632,7 +1763,7 @@ DOM.importStyles(".bar", "background: white; color: gray");</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line818">line 818</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2629">line 2629</a>
         </div>
         
     </div>
@@ -1793,6 +1924,222 @@ mocked instance
     
 </dd>
 
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="noConflict">
+            
+            <span class="type-signature static">static</span>DOM.noConflict<span class="signature">()</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2647">line 2647</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Restores original DOM namespace
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+DOM namespace
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="requestFrame">
+            
+            <span class="type-signature static">static</span>DOM.requestFrame<span class="signature">(callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Number}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2575">line 2575</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Executes a callback in the next frame
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Fuction</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                function to execute in the next frame</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+id of the frame
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.requestFrame(function() {
+  // postpone removing a div to the next frame
+  div.remove();
+});</code></pre>
+    
+
+    
+</dd>
+
         </dl>
     
     
@@ -1816,7 +2163,7 @@ mocked instance
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Thu Oct 30 2014 23:46:10 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat Dec 13 2014 14:15:37 GMT+0300 (FET)
         </footer>
     </div>
 </div>

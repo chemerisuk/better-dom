@@ -60,6 +60,8 @@
             
             <span class="subtitle">Methods</span>
             
+                <li data-name="DOM.cancelFrame"><a href="DOM.html#cancelFrame">cancelFrame</a></li>
+            
                 <li data-name="DOM.constructor"><a href="DOM.html#constructor">constructor</a></li>
             
                 <li data-name="DOM.create"><a href="DOM.html#create">create</a></li>
@@ -77,6 +79,10 @@
                 <li data-name="DOM.importStyles"><a href="DOM.html#importStyles">importStyles</a></li>
             
                 <li data-name="DOM.mock"><a href="DOM.html#mock">mock</a></li>
+            
+                <li data-name="DOM.noConflict"><a href="DOM.html#noConflict">noConflict</a></li>
+            
+                <li data-name="DOM.requestFrame"><a href="DOM.html#requestFrame">requestFrame</a></li>
             
             </ul>
             <ul class="events itemMembers">
@@ -119,9 +125,7 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
-                <li data-name="$Element#defineAttribute"><a href="$Element.html#defineAttribute">defineAttribute</a></li>
-            
-                <li data-name="$Element#defineProperty"><a href="$Element.html#defineProperty">defineProperty</a></li>
+                <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
             
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
@@ -134,6 +138,8 @@
                 <li data-name="$Element#hasClass"><a href="$Element.html#hasClass">hasClass</a></li>
             
                 <li data-name="$Element#hide"><a href="$Element.html#hide">hide</a></li>
+            
+                <li data-name="$Element#map"><a href="$Element.html#map">map</a></li>
             
                 <li data-name="$Element#matches"><a href="$Element.html#matches">matches</a></li>
             
@@ -205,15 +211,17 @@
 
     <section>
         <article class="readme"><h1 id="-better-dom-https-github-com-chemerisuk-better-dom-live-extension-playground-br-build-status-travis-image-travis-url-coverage-status-coveralls-image-coveralls-url-bower-version-bower-image-bower-url-"><a href="https://github.com/chemerisuk/better-dom">better-dom</a>: Live extension playground<br><a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a> <a href="https://github.com/chemerisuk/better-dom"><img src="http://img.shields.io/bower/v/better-dom.svg" alt="Bower version"></a></h1>
-<p>This library is about <strong>ideas</strong>. After some time of using jQuery I found that it&#39;s just too big, has lack of <a href="#features">features</a> I need and some desicions of the API design is debatable. In particular <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> was one of the main ideas that encouraged me to build a new library from scratch.</p>
 <p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
+<p>This library is about <strong>ideas</strong>. After some time of using jQuery I found that it&#39;s just too big, has lack of <a href="#features">features</a> I need and the API design is debatable. In particular <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> was one of the main ideas that encouraged me to build a new library from scratch.</p>
+<p>Vanilla DOM also has a lot of bad parts, that I&#39;m trying to fix by providing a JavaScript wrapper for each DOM element you use in code. This extra layer allows to abstract from legacy interfaces and to add new methods on <strong>the top of particular elements</strong> without touching vanilla DOM prototypes. So the object model used is very different from what jQuery does.</p>
+<p>Note, that the better-dom project is only about the DOM. It does not contain any AJAX or BOM helper.</p>
 <p><a href="https://saucelabs.com/u/chemerisuk"><img src="https://saucelabs.com/browser-matrix/chemerisuk.svg" alt="Sauce Test Status"></a></p>
 <h2 id="features">Features</h2>
 <ul>
 <li>lightweight: ~5 kB gzipped</li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/CSS-driven-animations">animations via CSS3</a></li>
+<li><a href="https://github.com/chemerisuk/better-dom/wiki/Declarative-animations">declarative animations</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">microtemplating using the Emmet syntax</a></li>
 <li><a href="https://github.com/chemerisuk/better-dom/wiki/Event-handling">improved event handling</a></li>
 </ul>
@@ -224,6 +232,7 @@
 <p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include the script below on your web page:</p>
 <pre><code class="lang-html">&lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
 </code></pre>
+<p>If you need to support IE8-9 please read <a href="#notes-about-old-ies">the section below</a>.</p>
 <h2 id="documentation">Documentation</h2>
 <ul>
 <li>Read the <a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></li>
@@ -235,10 +244,10 @@
 <p>In order to modify the source code you have to have <a href="http://gulpjs.com">gulp</a> installed globally:</p>
 <pre><code class="lang-sh">$ npm install -g gulp
 </code></pre>
-<p>The project uses set of ES6 transpilers to compile an output file that works in current browsers. You can use the commend below to start development: </p>
+<p>The project uses set of ES6 transpilers to compile an output file. You can use the command below to start development: </p>
 <pre><code class="lang-sh">$ npm start
 </code></pre>
-<p>After any change it recompiles <code>build/better-dom.js</code> and runs it through the unit tests.</p>
+<p>After any change it recompiles <code>build/better-dom.js</code> and runs unit tests automatically.</p>
 <h2 id="notes-about-old-ies">Notes about old IEs</h2>
 <p>For IE8-9 support you have to incude an extra file via the conditional comment below <strong>before end of the <code>&lt;head&gt;</code></strong> on your page:</p>
 <pre><code class="lang-html">&lt;html&gt;
@@ -315,7 +324,7 @@
         
     
     <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.0.3 Thu, 30 Oct 2014 20:46:07 GMT</li></ul></dd>
+    <dd class="tag-version"><ul class="dummy"><li>2.1.0 Sat, 13 Dec 2014 11:15:35 GMT</li></ul></dd>
     
     
     
@@ -389,7 +398,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Thu Oct 30 2014 23:46:10 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat Dec 13 2014 14:15:37 GMT+0300 (FET)
         </footer>
     </div>
 </div>
