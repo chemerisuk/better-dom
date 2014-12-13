@@ -1,3 +1,10 @@
+/**
+ * @overview better-dom: Live extension playground
+ * @version 2.1.0 Sat, 13 Dec 2014 11:05:19 GMT
+ * @copyright 2013-2014 Maksim Chemerisuk
+ * @license MIT
+ * @see https://github.com/chemerisuk/better-dom
+ */
 (function() {
     "use strict";var SLICE$0 = Array.prototype.slice;
     var WINDOW = window;
@@ -20,16 +27,16 @@
                 this[0] = node;
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__2001000-rc001__"] = this;
+                node["__2001000__"] = this;
 
                 this._ = {};
-                this._["handler2001000-rc001"] = [];
-                this._["watcher2001000-rc001"] = {};
-                this._["extension2001000-rc001"] = [];
-                this._["context2001000-rc001"] = {};
+                this._["handler2001000"] = [];
+                this._["watcher2001000"] = {};
+                this._["extension2001000"] = [];
+                this._["context2001000"] = {};
             }
         } else if (node) {
-            var cached = node["__2001000-rc001__"];
+            var cached = node["__2001000__"];
             // create a wrapper only once for each native element
             return cached ? cached : new $Element(node);
         } else {
@@ -47,7 +54,7 @@
 
             return node ? "<" + node.tagName.toLowerCase() + ">" : "";
         },
-        version: "2.1.0-rc.1"
+        version: "2.1.0"
     };
 
     $NullElement.prototype = new $Element();
@@ -71,12 +78,12 @@
             if (JSCRIPT_VERSION < 9) {
                 return node.currentStyle;
             } else {
-                return WINDOW.getComputedStyle(node);
+                return node.ownerDocument.defaultView.getComputedStyle(node);
             }
         },
-        injectElement: function(el) {
-            if (el && el.nodeType === 1) {
-                return el.ownerDocument.getElementsByTagName("head")[0].appendChild(el);
+        injectElement: function(node) {
+            if (node && node.nodeType === 1) {
+                return node.ownerDocument.getElementsByTagName("head")[0].appendChild(node);
             }
         },
         // utilites
@@ -308,11 +315,11 @@
 
     var document$create$$makeMethod = function(all)  {return function(value, varMap) {
             var doc = this[0].ownerDocument,
-                sandbox = this._["sandbox2001000-rc001"];
+                sandbox = this._["sandbox2001000"];
 
             if (!sandbox) {
                 sandbox = doc.createElement("div");
-                this._["sandbox2001000-rc001"] = sandbox;
+                this._["sandbox2001000"] = sandbox;
             }
 
             var nodes, el;
@@ -380,37 +387,38 @@
     };
 
     $Document.prototype.importStyles = function(selector, cssText) {
-        var doc = this[0].ownerDocument,
-            styleNode = util$index$$default.injectElement(doc.createElement("style")),
-            styleSheet = styleNode.sheet || styleNode.styleSheet,
-            styleRules = styleSheet.cssRules || styleSheet.rules;
+        var styleSheet = this._["styles2001000"];
 
-        // override prototype method with actual implementation
-        this.importStyles = function(selector, cssText)  {
-            if (typeof selector !== "string" || typeof cssText !== "string") {
-                throw new errors$$StaticMethodError("importStyles", arguments);
-            }
+        if (!styleSheet) {
+            var doc = this[0].ownerDocument,
+                styleNode = util$index$$default.injectElement(doc.createElement("style"));
 
-            // insert rules one by one because of several reasons:
-            // 1. IE8 does not support comma in a selector string
-            // 2. if one selector fails it doesn't break others
-            selector.split(",").forEach(function(selector)  {
-                try {
-                    if (styleSheet.cssRules) {
-                        styleSheet.insertRule(selector + "{" + cssText + "}", styleRules.length);
-                    } else if (selector[0] !== "@") {
-                        styleSheet.addRule(selector, cssText);
-                    } else {
-                        // addRule doesn't support at-rules, use cssText instead
-                        styleSheet.cssText += selector + "{" + cssText + "}";
-                    }
-                } catch(err) {
-                    // silently ignore invalid rules
+            styleSheet = styleNode.sheet || styleNode.styleSheet;
+            // store object internally
+            this._["styles2001000"] = styleSheet;
+        }
+
+        if (typeof selector !== "string" || typeof cssText !== "string") {
+            throw new errors$$StaticMethodError("importStyles", arguments);
+        }
+
+        // insert rules one by one because of several reasons:
+        // 1. IE8 does not support comma in a selector string
+        // 2. if one selector fails it doesn't break others
+        selector.split(",").forEach(function(selector)  {
+            try {
+                if (styleSheet.cssRules) {
+                    styleSheet.insertRule(selector + "{" + cssText + "}", styleSheet.cssRules.length);
+                } else if (selector[0] !== "@") {
+                    styleSheet.addRule(selector, cssText);
+                } else {
+                    // addRule doesn't support at-rules, use cssText instead
+                    styleSheet.cssText += selector + "{" + cssText + "}";
                 }
-            });
-        };
-
-        return this.importStyles(selector, cssText);
+            } catch(err) {
+                // silently ignore invalid rules
+            }
+        });
     };
 
     // Helper for css selectors
@@ -428,6 +436,7 @@
         var quick = util$selectormatcher$$rquickIs.exec(selector);
 
         if (quick) {
+            // Quick matching is inspired by jQuery:
             //   0  1    2   3          4
             // [ _, tag, id, attribute, class ]
             if (quick[1]) quick[1] = quick[1].toLowerCase();
@@ -438,7 +447,7 @@
         return function(node) {var $D$3;var $D$4;
             var result, found;
             if (!quick && !util$selectormatcher$$propName) {
-                found = (context || DOCUMENT).querySelectorAll(selector);
+                found = (context || node.ownerDocument).querySelectorAll(selector);
             }
 
             for (; node && node.nodeType === 1; node = node.parentNode) {
@@ -615,14 +624,14 @@
     // IE8 fails with about:blank, use better-dom-legacy.html instead
     var element$context$$SANDBOX_URL = JSCRIPT_VERSION < 9 ? util$index$$default.getLegacyFile("html") : "about:blank";
 
-    // NOTE: Chrome/Safari have issue with focusing on the <object>:
+    // Chrome/Safari serious bug with focusing on the <object>:
     // https://code.google.com/p/chromium/issues/detail?id=255150
 
     util$index$$default.register({
         context: function(name, callback) {var this$0 = this;
             var node = this[0],
                 doc = node.ownerDocument,
-                contexts = this._["context2001000-rc001"];
+                contexts = this._["context2001000"];
 
             if (name in contexts) {
                 var rec = contexts[name];
@@ -651,8 +660,7 @@
             };
             if (JSCRIPT_VERSION < 9) {
                 // IE8 is buggy, use innerHTML and better-dom-legacy.html
-                // use overflow and extra size to get rid of the frame
-                wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html` style=`left:-2px;top:-2px`]", [element$context$$SANDBOX_URL]);
+                wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html`]", [element$context$$SANDBOX_URL]);
 
                 object = wrapper.firstChild;
                 // IE8 does not support onload - use timeout instead
@@ -662,25 +670,27 @@
                     } catch (err) {
                         return DOM.requestFrame(repeat);
                     }
-                    // use the trick below to hide frame border in IE8
-                    wrapper.onresize = function resizing() {
-                        wrapper.onresize = null;
+                    var frameId;
+                    // add extra sizes and cut the frame border
+                    wrapper.attachEvent("onresize", function()  {
+                        frameId = frameId || DOM.requestFrame(function()  {
+                            object.width = wrapper.offsetWidth + 4;
+                            object.height = wrapper.offsetHeight + 4;
 
-                        object.width = wrapper.offsetWidth + 4;
-                        object.height = wrapper.offsetHeight + 4;
-
-                        DOM.requestFrame(function()  {
-                            wrapper.onresize = resizing;
+                            frameId = null;
                         });
-                    };
+                    });
 
                     ready();
                 });
             } else {
                 object = doc.createElement("object");
                 object.type = "text/html";
-                object.data = element$context$$SANDBOX_URL;
                 object.onload = ready;
+
+                if (!JSCRIPT_VERSION) {
+                    object.data = element$context$$SANDBOX_URL;
+                }
 
                 wrapper.appendChild(object);
             }
@@ -690,6 +700,14 @@
             object.height = "100%";
 
             this.before(ctx);
+
+            if (JSCRIPT_VERSION) {
+                // IE doesn't work if to set the data attribute before
+                // appending element to the DOM
+                object.data = element$context$$SANDBOX_URL;
+                // use calc to add extra sizes and cut the frame border
+                object.style.cssText = "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute";
+            }
 
             if (ctx.css("position") === "static") {
                 ctx.css("position", "relative");
@@ -702,7 +720,7 @@
     // Helper for CSS properties access
 
     var util$stylehooks$$reDash = /\-./g,
-        util$stylehooks$$cssPrefixes = [ "Webkit", "O", "Moz", "ms" ],
+        util$stylehooks$$cssPrefixes = ["Webkit", "O", "Moz", "ms"],
         util$stylehooks$$hooks = {get: {}, set: {}, find: function(name, style) {
             var propName = name.replace(util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
 
@@ -882,9 +900,6 @@
                 }
             };
 
-            // apply initial attribute value
-            node[name] = getter.call(this, initialValue);
-
             return this;
         }
     });
@@ -922,7 +937,7 @@
                     if ( (old = node.getAttribute("id")) ) {
                         nid = old.replace(element$find$$rescape, "\\$&");
                     } else {
-                        nid = "DOM2001000-rc001";
+                        nid = "DOM2001000";
                         node.setAttribute("id", nid);
                     }
 
@@ -969,7 +984,7 @@
 
     function util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget) {
         if (typeof name === "number") {
-            var args = e["__2001000-rc001__"];
+            var args = e["__2001000__"];
 
             return args ? args[name] : void 0;
         }
@@ -1029,7 +1044,7 @@
                     return; // handle custom events in legacy IE
                 }
                 // srcElement can be null in legacy IE when target is document
-                var target = e.target || e.srcElement || node.ownerDocument,
+                var target = e.target || e.srcElement || node.ownerDocument.documentElement,
                     currentTarget = matcher ? matcher(target) : node,
                     args = props || [];
 
@@ -1043,7 +1058,7 @@
                     args = args.map(function(name)  {return util$eventhandler$$getEventProperty(
                         name, e, type, node, target, currentTarget)});
                 } else {
-                    args = util$index$$default.slice.call(e["__2001000-rc001__"] || [0], 1);
+                    args = util$index$$default.slice.call(e["__2001000__"] || [0], 1);
                 }
 
                 // prevent default if handler returns false
@@ -1088,7 +1103,7 @@
             }
             if (JSCRIPT_VERSION < 9) {
                 e = node.ownerDocument.createEventObject();
-                e["__2001000-rc001__"] = arguments;
+                e["__2001000__"] = arguments;
                 // handle custom events for legacy IE
                 if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
@@ -1099,7 +1114,7 @@
                 canContinue = e.returnValue !== false;
             } else {
                 e = node.ownerDocument.createEvent("HTMLEvents");
-                e["__2001000-rc001__"] = arguments;
+                e["__2001000__"] = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
             }
@@ -1121,7 +1136,6 @@
     });
 
     var util$accessorhooks$$hooks = {get: {}, set: {}};
-    var util$accessorhooks$$body = DOCUMENT.createElement("body");
 
     // fix camel cased attributes
     "tabIndex readOnly maxLength cellSpacing cellPadding rowSpan colSpan useMap frameBorder contentEditable".split(" ").forEach(function(key)  {
@@ -1188,11 +1202,10 @@
                 node.innerHTML = value;
             } catch (err) {
                 node.innerText = "";
-                util$accessorhooks$$body.innerHTML = value;
 
-                for (var it; it = util$accessorhooks$$body.firstChild; ) {
-                    node.appendChild(it);
-                }
+                DOM.createAll(value).forEach(function(x)  {
+                    node.appendChild(x);
+                });
             }
         };
     }
@@ -1265,7 +1278,9 @@
             var fragment = fastStrategy ? "" : node.ownerDocument.createDocumentFragment();
 
             contents.forEach(function(content)  {
-                if (typeof content === "function") content = content(this$0);
+                if (typeof content === "function") {
+                    content = content(this$0);
+                }
 
                 if (typeof content === "string") {
                     if (typeof fragment === "string") {
@@ -1375,7 +1390,7 @@
 
             var node = this[0];
 
-            this._["handler2001000-rc001"] = this._["handler2001000-rc001"].filter(function(handler)  {
+            this._["handler2001000"] = this._["handler2001000"].filter(function(handler)  {
                 var skip = type !== handler.type;
 
                 skip = skip || selector && selector !== handler.selector;
@@ -1453,7 +1468,7 @@
                         node.addEventListener(handler._type || type, handler, !!handler.capturing);
                     }
                     // store event entry
-                    this._["handler2001000-rc001"].push(handler);
+                    this._["handler2001000"].push(handler);
                 }
             } else if (typeof type === "object") {
                 if (util$index$$default.isArray(type)) {
@@ -1498,7 +1513,7 @@
             }
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._["watcher2001000-rc001"][name],
+                watchers = this._["watcher2001000"][name],
                 oldValue;
 
             if (watchers) {
@@ -1700,7 +1715,7 @@
                 style = node.style,
                 computed = util$index$$default.computeStyle(node),
                 hiding = condition,
-                frameId = this._["frame2001000-rc001"],
+                frameId = this._["frame2001000"],
                 done = function()  {
                     if (animationHandler) {
                         node.removeEventListener(eventType, animationHandler, true);
@@ -1714,7 +1729,7 @@
                     // from setting cssText because of Opera 12 quirks
                     style.visibility = hiding ? "hidden" : "inherit";
 
-                    this$0._["frame2001000-rc001"] = null;
+                    this$0._["frame2001000"] = null;
 
                     if (callback) callback(this$0);
                 };
@@ -1736,7 +1751,7 @@
                 // use requestAnimationFrame to avoid animation quirks for
                 // new elements inserted into the DOM
                 // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-                this._["frame2001000-rc001"] = DOM.requestFrame(!animationHandler ? done : function()  {
+                this._["frame2001000"] = DOM.requestFrame(!animationHandler ? done : function()  {
                     node.addEventListener(eventType, animationHandler, true);
                     // update modified style rules
                     style.cssText = animationHandler.initialCssText + animationHandler.cssText;
@@ -1758,7 +1773,7 @@
 
     util$index$$default.register({
         watch: function(name, callback) {
-            var watchers = this._["watcher2001000-rc001"];
+            var watchers = this._["watcher2001000"];
 
             if (!watchers[name]) watchers[name] = [];
 
@@ -1768,7 +1783,7 @@
         },
 
         unwatch: function(name, callback) {
-            var watchers = this._["watcher2001000-rc001"];
+            var watchers = this._["watcher2001000"];
 
             if (watchers[name]) {
                 watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
@@ -1787,9 +1802,9 @@
         return function(node, mock)  {
             var el = $Element(node);
             // skip previously invoked or mismatched elements
-            if (~el._["extension2001000-rc001"].indexOf(index) || !matcher(node)) return;
+            if (~el._["extension2001000"].indexOf(index) || !matcher(node)) return;
             // mark extension as invoked
-            el._["extension2001000-rc001"].push(index);
+            el._["extension2001000"].push(index);
 
             if (mock === true || condition(el) !== false) {
                 // apply all private/public members to the element's interface
@@ -1869,19 +1884,19 @@
     } else {
         var global$extend$$_extend = DOM.extend;
 
-        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001000-rc001 !important;";
+        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001000 !important;";
         global$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
 
         DOM.extend = function()  {
             // declare the fake animation on the first DOM.extend method call
-            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001000-rc001", "from {opacity:.99} to {opacity:1}");
+            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001000", "from {opacity:.99} to {opacity:1}");
             // restore original method and invoke it
             (DOM.extend = global$extend$$_extend).apply(DOM, arguments);
         };
 
         // use capturing to suppress internal animationstart events
         DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
-            if (e.animationName === "DOM2001000-rc001") {
+            if (e.animationName === "DOM2001000") {
                 global$extend$$extensions.forEach(function(ext)  { ext(e.target) });
                 // this is an internal event - stop it immediately
                 e.stopImmediatePropagation();
