@@ -72,11 +72,4 @@ $Document.prototype = new $Element();
  */
 var DOM = new $Document(DOCUMENT);
 
-/**
- * A factory for default implementation for empty nodes
- * @callback registerCallback
- * @param  {String} methodName name of the method to implement
- * @return {Function} a function with implementation
- */
-
 export { $Element, $NullElement, $Document, DOM };

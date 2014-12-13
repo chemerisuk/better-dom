@@ -5,8 +5,8 @@ _.register({
      * Watch for changes of a particular property/attribute
      * @memberof! $Element#
      * @alias $Element#watch
-     * @param  {String}        name     property/attribute name
-     * @param  {watchCallback} callback function for watching changes of the property/attribute
+     * @param  {String}    name      property/attribute name
+     * @param  {Function}  callback  function for watching changes of the property/attribute
      * @return {$Element}
      * @example
      * targetInput.watch("value", function(value, oldValue) {
@@ -27,8 +27,8 @@ _.register({
      * Disable watching of a particular property/attribute
      * @memberof! $Element#
      * @alias $Element#unwatch
-     * @param  {String}        name     property/attribute name
-     * @param  {watchCallback} callback function for watching changes of the property/attribute
+     * @param  {String}    name      property/attribute name
+     * @param  {Function}  callback  function for watching changes of the property/attribute
      * @return {$Element}
      * @see $Element#watch
      */
@@ -42,10 +42,3 @@ _.register({
         return this;
     }
 });
-
-/**
- * Callback function for watching changes of a property/attribute
- * @callback watchCallback
- * @param {Object} newValue a current value
- * @param {Object} oldValue a previous value
- */
