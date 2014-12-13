@@ -10,7 +10,8 @@ var symlink = require("gulp-symlink");
 var argv = require("yargs").argv;
 var jsdoc = require("gulp-jsdoc");
 var clean = require("gulp-clean");
-var uglify = require("gulp-uglifyjs");
+var uglify = require("gulp-uglify");
+var rename = require("gulp-rename");
 var bump = require("gulp-bump");
 var deploy = require("gulp-gh-pages");
 var replace = require("gulp-replace");
@@ -172,7 +173,8 @@ gulp.task("compress", ["test"], function() {
     var dest = argv.tag ? "dist/" : "build/";
 
     return gulp.src(dest + "better-dom.js")
-        .pipe(uglify("better-dom.min.js", {output: {comments: /^!|@preserve|@license|@cc_on/i}}))
+        .pipe(uglify({preserveComments: "some"}))
+        .pipe(rename("better-dom.min.js"))
         .pipe(gulp.dest(dest));
 });
 
