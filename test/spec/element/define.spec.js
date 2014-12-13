@@ -89,18 +89,18 @@ describe("$Element#define", function() {
         expect(el[0].getAttribute("placeholder")).toBe("ok");
     });
 
-    // it("syncs initial attribute value", function() {
-    //     var getSpy = jasmine.createSpy("getSpy");
-    //     var setSpy = jasmine.createSpy("setSpy");
+    it("syncs initial attribute value", function() {
+        var getSpy = jasmine.createSpy("getSpy");
+        var setSpy = jasmine.createSpy("setSpy");
 
-    //     el.set("foo", "test");
+        el.set("foo", "foo1");
 
-    //     el.define("foo", getSpy.and.returnValue("bar"), setSpy.and.returnValue("hey"));
+        el.define("foo", getSpy.and.returnValue("foo2"), setSpy.and.returnValue("foo3"));
+        el.define("bar", getSpy.and.returnValue("bar1"), setSpy.and.returnValue("bar2"));
 
-    //     expect(getSpy).toHaveBeenCalledWith("test");
-    //     expect(setSpy).toHaveBeenCalledWith("bar");
-    //     expect(el[0].getAttribute("foo")).toBe("hey");
-    // });
+        expect(el[0].getAttribute("foo")).toBe("foo1");
+        expect(el[0].getAttribute("bar")).toBeNull();
+    });
 
     it("observes attribute changes", function() {
         var spy = jasmine.createSpy("spy");

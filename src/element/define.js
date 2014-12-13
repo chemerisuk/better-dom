@@ -30,13 +30,20 @@ _.register({
             throw new MethodError("define", arguments);
         }
 
-        // initial value reading must be before defineProperty
-        // because IE8 will try to read wrong attribute value
-        var initialValue = node.getAttribute(name);
         // trick to fix infinite recursion in IE8
         var attrName = name[ATTR_CASE]();
         var _setAttribute = node.setAttribute;
         var _removeAttribute = node.removeAttribute;
+        /* istanbul ignore if */
+        if (JSCRIPT_VERSION < 9) {
+            // read attribute before the defineProperty call
+            // to set the correct initial state for IE8
+            let initialValue = node.getAttribute(name);
+
+            if (initialValue !== null) {
+                node[attrName] = initialValue;
+            }
+        }
 
         Object.defineProperty(node, name, {
             get: () => {
