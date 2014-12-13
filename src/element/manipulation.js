@@ -12,7 +12,9 @@ var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => functio
         var fragment = fastStrategy ? "" : node.ownerDocument.createDocumentFragment();
 
         contents.forEach((content) => {
-            if (typeof content === "function") content = content(this);
+            if (typeof content === "function") {
+                content = content(this);
+            }
 
             if (typeof content === "string") {
                 if (typeof fragment === "string") {
@@ -52,7 +54,7 @@ _.register({
      * Insert HTMLString or {@link $Element} after the current element
      * @memberof! $Element#
      * @alias $Element#after
-     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
      * @return {$Element}
      * @function
      * @example
@@ -68,7 +70,7 @@ _.register({
      * Insert HTMLString or {@link $Element} before the current element
      * @memberof! $Element#
      * @alias $Element#before
-     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
      * @return {$Element}
      * @function
      * @example
@@ -84,7 +86,7 @@ _.register({
      * Prepend HTMLString or {@link $Element} to the current element
      * @memberof! $Element#
      * @alias $Element#prepend
-     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
      * @return {$Element}
      * @function
      * @example
@@ -100,7 +102,7 @@ _.register({
      * Append HTMLString or {@link $Element} to the current element
      * @memberof! $Element#
      * @alias $Element#append
-     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
      * @return {$Element}
      * @function
      * @example
@@ -116,7 +118,7 @@ _.register({
      * Replace current element with HTMLString or {@link $Element}
      * @memberof! $Element#
      * @alias $Element#replace
-     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or function
+     * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
      * @return {$Element}
      * @function
      * @example

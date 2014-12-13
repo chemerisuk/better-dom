@@ -8,7 +8,7 @@ _.register({
      * @memberof! $Element#
      * @alias $Element#css
      * @param  {String|Object}      name    style property name or key/value object
-     * @param  {String|cssCallback} [value] style property value or {@link cssCallback}
+     * @param  {String|Function}    [value] style property value or functor
      * @return {String|$Element} a property value or reference to <code>this</code>
      * @example
      * link.css("color");                 // => element color property
@@ -78,10 +78,3 @@ _.register({
         return this;
     }
 });
-
-/**
- * Callback function for changing a property/attribute
- * @callback cssCallback
- * @param  {$Element} el the current element
- * @return {String|Number} a new value for style property
- */

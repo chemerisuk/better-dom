@@ -9,7 +9,7 @@ _.register({
      * @memberof! $Element#
      * @alias $Element#set
      * @param {String|Object|Array}   [name]  property/attribute name
-     * @param {String|setterCallback} value   property/attribute value or {@link setterCallback}
+     * @param {String|Function}       value   property/attribute value or functor
      * @return {$Element}
      * @example
      * link.set("title", "mytitle"); // set title property
@@ -87,10 +87,3 @@ _.register({
         return this;
     }
 });
-
-/**
- * Callback function for changing a property/attribute
- * @callback setterCallback
- * @param {$Element} el the current element
- * @return {Object} a new value for property/attribute
- */
