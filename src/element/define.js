@@ -30,7 +30,9 @@ _.register({
             throw new MethodError("define", arguments);
         }
 
-        // trick to fix infinite recursion in IE8
+        // Use trick to fix infinite recursion in IE8:
+        // http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/
+
         var attrName = name[ATTR_CASE]();
         var _setAttribute = node.setAttribute;
         var _removeAttribute = node.removeAttribute;
@@ -48,10 +50,11 @@ _.register({
         Object.defineProperty(node, name, {
             get: () => {
                 var attrValue = node.getAttribute(attrName, 1);
-
+                // attr value -> prop value
                 return getter.call(this, attrValue);
             },
             set: (propValue) => {
+                // prop value -> attr value
                 var attrValue = setter.call(this, propValue);
 
                 if (attrValue == null) {
@@ -63,19 +66,19 @@ _.register({
         });
 
         // override methods to catch changes from attributes too
-        node.setAttribute = (attrName, attrValue, flags) => {
-            if (name === attrName[ATTR_CASE]()) {
-                node[name] = getter.call(this, attrValue);
+        node.setAttribute = (name, value, flags) => {
+            if (attrName === name[ATTR_CASE]()) {
+                node[name] = getter.call(this, value);
             } else {
-                _setAttribute.call(node, attrName, attrValue, flags);
+                _setAttribute.call(node, name, value, flags);
             }
         };
 
-        node.removeAttribute = (attrName, flags) => {
-            if (name === attrName[ATTR_CASE]()) {
+        node.removeAttribute = (name, flags) => {
+            if (attrName === name[ATTR_CASE]()) {
                 node[name] = getter.call(this, null);
             } else {
-                _removeAttribute.call(node, attrName, flags);
+                _removeAttribute.call(node, name, flags);
             }
         };
 
