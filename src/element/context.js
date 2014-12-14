@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION } from "../const";
+import { JSCRIPT_VERSION, WINDOW } from "../const";
 import { $Document, DOM } from "../types";
 
 // Inspired by the article written by Daniel Buchner:
@@ -21,7 +21,8 @@ _.register({
             let rec = contexts[name];
 
             if (typeof callback === "function") {
-                _.safeCall(this, callback, rec[1]);
+                // callback is always async
+                WINDOW.setTimeout(() => { callback(rec[1]) }, 1);
             }
 
             return rec[0];
@@ -30,13 +31,15 @@ _.register({
         var ctx = DOM.create("div[style=overflow:hidden]", [name]);
         var wrapper = ctx[0];
         var record = [ctx];
-        var object, subtree;
+        var object;
         var ready = () => {
             // apply user-defined styles for the context
             // need to add class in ready callback because of IE8
-            ctx.addClass(name);
+            if (ctx.addClass(name).css("position") === "static") {
+                ctx.css("position", "relative");
+            }
 
-            record[1] = new $Document(subtree || object.contentDocument);
+            record[1] = new $Document(object.contentDocument);
 
             if (typeof callback === "function") {
                 callback.call(this, record[1]);
@@ -50,11 +53,10 @@ _.register({
             object = wrapper.firstChild;
             // IE8 does not support onload - use timeout instead
             DOM.requestFrame(function repeat() {
-                try {
-                    subtree = object.contentDocument;
-                } catch (err) {
+                if (!object.contentDocument) {
                     return DOM.requestFrame(repeat);
                 }
+
                 var frameId;
                 // add extra sizes and cut the frame border
                 wrapper.attachEvent("onresize", () => {
@@ -92,10 +94,6 @@ _.register({
             object.data = SANDBOX_URL;
             // use calc to add extra sizes and cut the frame border
             object.style.cssText = "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute";
-        }
-
-        if (ctx.css("position") === "static") {
-            ctx.css("position", "relative");
         }
 
         return contexts[name] = record;
