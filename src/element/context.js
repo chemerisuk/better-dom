@@ -5,17 +5,27 @@ import { $Document, DOM } from "../types";
 // Inspired by the article written by Daniel Buchner:
 // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
 
-// IE8 fails with about:blank, use better-dom-legacy.html instead
-var SANDBOX_URL = JSCRIPT_VERSION < 9 ? _.getLegacyFile("html") : "about:blank";
+var CONTEXT_TEMPLATE = "div[style=overflow:hidden]>object[data=`about:blank` type=text/html style=`position:absolute` width=100% height=100%]";
+/* istanbul ignore if */
+if (JSCRIPT_VERSION) {
+    // use calc to cut ugly frame border in IEs
+    CONTEXT_TEMPLATE = CONTEXT_TEMPLATE.replace("position:absolute", "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute");
 
-// Chrome/Safari serious bug with focusing on the <object>:
+    if (JSCRIPT_VERSION > 8) {
+        // for IE>8 have to set the data attribute AFTER adding element to the DOM
+        CONTEXT_TEMPLATE = CONTEXT_TEMPLATE.replace("data=`about:blank` ", "");
+    } else {
+        // IE8 fails with about:blank, use better-dom-legacy.html instead
+        CONTEXT_TEMPLATE = CONTEXT_TEMPLATE.replace("about:blank", _.getLegacyFile("html"));
+    }
+}
+
+// Chrome/Safari/Opera have serious bug with tabbing to the <object> tree:
 // https://code.google.com/p/chromium/issues/detail?id=255150
 
 _.register({
     context(name, callback) {
-        var node = this[0],
-            doc = node.ownerDocument,
-            contexts = this._["<%= prop('context') %>"];
+        var contexts = this._["<%= prop('context') %>"];
 
         if (name in contexts) {
             let rec = contexts[name];
@@ -27,12 +37,13 @@ _.register({
 
             return rec[0];
         }
-
-        var ctx = DOM.create("div[style=overflow:hidden]", [name]);
+        // use innerHTML instead of creating element manually because of IE8
+        var ctx = DOM.create(CONTEXT_TEMPLATE);
         var wrapper = ctx[0];
+        var object = wrapper.firstChild;
         var record = [ctx];
-        var object;
-        var ready = () => {
+        // set onload handler before adding element to the DOM
+        object.onload = () => {
             // apply user-defined styles for the context
             // need to add class in ready callback because of IE8
             if (ctx.addClass(name).css("position") === "static") {
@@ -45,55 +56,36 @@ _.register({
                 callback.call(this, record[1]);
             }
         };
-        /* istanbul ignore if */
-        if (JSCRIPT_VERSION < 9) {
-            // IE8 is buggy, use innerHTML and better-dom-legacy.html
-            wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html`]", [SANDBOX_URL]);
-
-            object = wrapper.firstChild;
-            // IE8 does not support onload - use timeout instead
-            DOM.requestFrame(function repeat() {
-                if (!object.contentDocument) {
-                    return DOM.requestFrame(repeat);
-                }
-
-                var frameId;
-                // add extra sizes and cut the frame border
-                wrapper.attachEvent("onresize", () => {
-                    frameId = frameId || DOM.requestFrame(() => {
-                        object.width = wrapper.offsetWidth + 4;
-                        object.height = wrapper.offsetHeight + 4;
-
-                        frameId = null;
-                    });
-                });
-
-                ready();
-            });
-        } else {
-            object = doc.createElement("object");
-            object.type = "text/html";
-            object.onload = ready;
-
-            if (!JSCRIPT_VERSION) {
-                object.data = SANDBOX_URL;
-            }
-
-            wrapper.appendChild(object);
-        }
-
-        object.style.position = "absolute";
-        object.width = "100%";
-        object.height = "100%";
 
         this.before(ctx);
-
+        /* istanbul ignore if */
         if (JSCRIPT_VERSION) {
-            // IE doesn't work if to set the data attribute before
-            // appending element to the DOM
-            object.data = SANDBOX_URL;
-            // use calc to add extra sizes and cut the frame border
-            object.style.cssText = "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute";
+            // IE doesn't work if to set the data attribute before adding
+            // the <object> element to the DOM. IE8 will ignore this change
+            // and won't start builing a new document for about:blank
+            object.data = "about:blank";
+
+            if (JSCRIPT_VERSION < 9) {
+                // IE8 does not support onload - use timeout instead
+                DOM.requestFrame(function repeat() {
+                    if (!object.contentDocument) {
+                        return DOM.requestFrame(repeat);
+                    }
+
+                    var frameId;
+                    // add extra sizes and cut the frame border
+                    wrapper.attachEvent("onresize", () => {
+                        frameId = frameId || DOM.requestFrame(() => {
+                            object.width = wrapper.offsetWidth + 4;
+                            object.height = wrapper.offsetHeight + 4;
+
+                            frameId = null;
+                        });
+                    });
+
+                    object.onload();
+                });
+            }
         }
 
         return contexts[name] = record;
