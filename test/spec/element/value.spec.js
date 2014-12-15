@@ -24,5 +24,11 @@ describe("value", function() {
     expect(input[0].value).toBe("bar");
   });
 
+  it("should set value of text input to string value of provided element", function () {
+    expect(input.value(DOM.create("div"))).toBe(input);
+    expect(input[0].value).toBe("<div>");
+    expect(input[0].childNodes.length).toBe(0);
+  });
+
 });
 
