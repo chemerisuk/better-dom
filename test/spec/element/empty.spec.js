@@ -23,4 +23,3 @@ describe("empty", function() {
         expect(empty.empty()).toBe(empty);
     });
 });
-
