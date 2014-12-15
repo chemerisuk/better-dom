@@ -14,6 +14,8 @@ _.register({
     value(val) {
         if (arguments.length === 0) {
             return this.get();
+        } else if (typeof val === "string") {
+            return this.set(val);
         } else {
             return this.set("").append(val);
         }
