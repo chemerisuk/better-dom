@@ -26,9 +26,9 @@ if (JSCRIPT_VERSION) {
 _.register({
     context(name, callback = () => {}) {
         var contexts = this._["<%= prop('context') %>"],
-            data = contexts[name];
+            data = contexts[name] || [];
 
-        if (data) {
+        if (data[0]) {
             // callback is always async
             WINDOW.setTimeout(() => { callback(data[1]) }, 1);
 

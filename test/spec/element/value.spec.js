@@ -16,7 +16,7 @@ describe("value", function() {
     });
 
     it("should return innerHTML string from node when called with no args", function() {
-        expect(div.value()).toBe("<a></a><a></a>");
+        expect(div.value().toLowerCase()).toBe("<a></a><a></a>");
     });
 
     it("should set value of text input to provided string value", function () {

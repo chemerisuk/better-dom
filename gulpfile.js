@@ -123,7 +123,9 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
 
     config.configFile = karmaConfig;
 
-    karma.start(config, done);
+    karma.start(config, function(resultCode) {
+        done(resultCode ? new gutil.PluginError("karma", "Specs were not passed") : null);
+    });
 });
 
 gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function() {
@@ -140,12 +142,12 @@ gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function
     });
 });
 
-gulp.task("sauce", function() {
+gulp.task("sauce", function(done) {
     karma.start({
         configFile: require.resolve("./conf/karma.conf-ci.js")
     }, function() {
         // always return success result for this task
-        process.exit(0);
+        done();
     });
 });
 

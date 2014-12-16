@@ -10,9 +10,9 @@ var makeMethod = (methodName, propertyName, all) => function(selector) {
             nodes = all ? [] : null,
             it = this[0];
 
-        if (methodName !== "closest" || !matcher) {
-            // method closest starts traversing from the element itself
-            // except no selector was specified
+        // method closest starts traversing from the element itself
+        // except no selector was specified where it returns parent
+        if (!matcher || methodName !== "closest") {
             it = it[propertyName];
         }
 
