@@ -13,25 +13,26 @@ var BundleFormatter = es6modules.formatters.bundle;
 module.exports = function(dest) {
     if (!dest) throw new PluginError("compile", "Missing file option for compile");
 
-    var firstFile = null;
     var container = null;
 
     function bufferContents(file) {
         if (file.isNull()) return; // ignore
 
-        if (!firstFile) {
-            firstFile = file;
+        if (!container) {
             container = new Container({
                 resolvers: [ new FileResolver([file.cwd]) ],
                 formatter: new BundleFormatter()
             });
+            // set variables to use later
+            container.cwd = file.cwd;
+            container.base = file.base;
         }
 
         container.getModule(path.relative(file.cwd, file.path));
     }
 
     function endStream() {
-        if (!firstFile || firstFile.isNull()) return;
+        if (!container) return;
 
         try {
             var ast = container.convert();
@@ -43,13 +44,14 @@ module.exports = function(dest) {
             // fix for browserify
             code = code.replace("}).call(this);", "})();\n");
 
-            firstFile = firstFile.clone({contents: false});
-            firstFile.path = path.join(firstFile.base, dest);
-            firstFile.contents = new Buffer(code);
-
-            this.emit("data", firstFile);
+            this.emit("data", new gutil.File({
+                cwd: container.cwd,
+                base: container.base,
+                path: path.join(container.base, dest),
+                contents: new Buffer(code)
+            }));
         } catch (err) {
-            this.emit("error", new PluginError("compile", err, {fileName: firstFile.path}));
+            this.emit("error", new PluginError("compile", err));
         }
 
         this.emit("end");
