@@ -9,7 +9,7 @@ describe("find", function() {
         expect(DOM.find("#test").find("#test1")).toHaveId("test1");
 
         jasmine.sandbox.set("<a id='test'>test</a><span id='test2'></span>");
-        expect(DOM.find("#test").find("#test2")).toBeEmpty();
+        expect(DOM.find("#test").find("#test2")).toBeMock();
     });
 
     it("should find by id event if node was detached", function() {
@@ -46,10 +46,10 @@ describe("find", function() {
     });
 
     it("should return at least empty element(s)", function() {
-        var xxx = DOM.find("xxx");
+        var foo = DOM.find("foo");
 
-        expect(xxx.find("a")).toBeEmpty();
-        expect(xxx.findAll("a")).toBeEmpty();
+        expect(foo.find("a")).toBeMock();
+        expect(foo.findAll("a").length).toBe(0);
     });
 
     it("should fix querySelectorAll on element with context", function() {

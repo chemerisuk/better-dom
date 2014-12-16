@@ -59,7 +59,7 @@ describe("manipulation", function() {
             var link = div.child(0);
 
             _forIn(checkStrategies, function(checkMethod, strategy) {
-                expect(checkMethod(link[strategy](""))).toBeEmpty();
+                expect(checkMethod(link[strategy](""))).toBeMock();
             });
         });
 
@@ -129,8 +129,8 @@ describe("manipulation", function() {
 
             expect(div.append(createDivHtml("append")).child(-1)).toHaveClass("append");
             expect(div.prepend(createDivHtml("prepend")).child(0)).toHaveClass("prepend");
-            expect(div.after(createDivHtml("after")).next()).toBeEmpty();
-            expect(div.before(createDivHtml("before")).prev()).toBeEmpty();
+            expect(div.after(createDivHtml("after")).next()).toBeMock();
+            expect(div.before(createDivHtml("before")).prev()).toBeMock();
         });
     });
 

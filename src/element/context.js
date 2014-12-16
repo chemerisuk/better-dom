@@ -8,7 +8,7 @@ import { $Document, DOM } from "../types";
 var CONTEXT_TEMPLATE = "div[style=overflow:hidden]>object[data=`about:blank` type=text/html style=`position:absolute` width=100% height=100%]";
 /* istanbul ignore if */
 if (JSCRIPT_VERSION) {
-    // use calc to cut ugly frame border in IEs
+    // use calc to cut ugly frame border in IE>8
     CONTEXT_TEMPLATE = CONTEXT_TEMPLATE.replace("position:absolute", "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute");
 
     if (JSCRIPT_VERSION > 8) {
@@ -28,14 +28,14 @@ _.register({
         var contexts = this._["<%= prop('context') %>"];
 
         if (name in contexts) {
-            let rec = contexts[name];
+            let data = contexts[name];
 
             if (typeof callback === "function") {
                 // callback is always async
-                WINDOW.setTimeout(() => { callback(rec[1]) }, 1);
+                WINDOW.setTimeout(() => { callback(data[1]) }, 1);
             }
 
-            return rec[0];
+            return data[0];
         }
         // use innerHTML instead of creating element manually because of IE8
         var ctx = DOM.create(CONTEXT_TEMPLATE);
@@ -50,10 +50,12 @@ _.register({
                 ctx.css("position", "relative");
             }
 
-            record[1] = new $Document(object.contentDocument);
+            var root = new $Document(object.contentDocument);
+            // store root internally
+            record[1] = root;
 
             if (typeof callback === "function") {
-                callback.call(this, record[1]);
+                callback(root);
             }
         };
 

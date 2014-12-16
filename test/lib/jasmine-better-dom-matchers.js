@@ -104,7 +104,24 @@
             compare: function(actual) {
                 var result = {};
 
-                result.pass = actual && !actual.length;
+                if (actual) {
+                    if ("value" in actual[0]) {
+                        result.pass = actual[0].value === "";
+                    } else {
+                        result.pass = actual[0].innerHTML === "";
+                    }
+                }
+
+                return result;
+            }
+        };
+    },
+    toBeMock: function() {
+        return {
+            compare: function(actual) {
+                var result = {};
+
+                result.pass = actual && !actual[0];
 
                 return result;
             }

@@ -82,7 +82,7 @@ describe("on", function() {
                 expect(target).toBe(input);
                 expect(currentTarget).toBe(input);
                 expect(relatedTarget).not.toBeFalsy();
-                expect(relatedTarget).toBeEmpty();
+                expect(relatedTarget).toBeMock();
             });
 
             input.on("click", ["target", "currentTarget", "relatedTarget"], spy).fire("click");

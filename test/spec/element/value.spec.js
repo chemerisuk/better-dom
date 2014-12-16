@@ -21,7 +21,7 @@ describe("value", function() {
 
     it("should set value of text input to provided string value", function () {
         expect(input.value("bar")).toBe(input);
-        expect(input[0].value).toBe("bar");
+        expect(input).toHaveProp("value", "bar");
     });
 
     // it("should set value of text input to string value of provided element", function () {
