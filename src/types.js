@@ -9,16 +9,17 @@ function $NullElement() {}
 function $Element(node) {
     if (this instanceof $Element) {
         if (node) {
-            this[0] = node;
             // use a generated property to store a reference
             // to the wrapper for circular object binding
             node["<%= prop() %>"] = this;
 
-            this._ = {};
-            this._["<%= prop('handler') %>"] = [];
-            this._["<%= prop('watcher') %>"] = {};
-            this._["<%= prop('extension') %>"] = [];
-            this._["<%= prop('context') %>"] = {};
+            this[0] = node;
+            this._ = {
+                "<%= prop('handler') %>": [],
+                "<%= prop('watcher') %>": {},
+                "<%= prop('extension') %>": [],
+                "<%= prop('context') %>": {}
+            };
         }
     } else if (node) {
         var cached = node["<%= prop() %>"];

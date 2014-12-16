@@ -24,24 +24,19 @@ if (JSCRIPT_VERSION) {
 // https://code.google.com/p/chromium/issues/detail?id=255150
 
 _.register({
-    context(name, callback) {
-        var contexts = this._["<%= prop('context') %>"];
+    context(name, callback = () => {}) {
+        var contexts = this._["<%= prop('context') %>"],
+            data = contexts[name];
 
-        if (name in contexts) {
-            let data = contexts[name];
-
-            if (typeof callback === "function") {
-                // callback is always async
-                WINDOW.setTimeout(() => { callback(data[1]) }, 1);
-            }
+        if (data) {
+            // callback is always async
+            WINDOW.setTimeout(() => { callback(data[1]) }, 1);
 
             return data[0];
         }
         // use innerHTML instead of creating element manually because of IE8
         var ctx = DOM.create(CONTEXT_TEMPLATE);
-        var wrapper = ctx[0];
-        var object = wrapper.firstChild;
-        var record = [ctx];
+        var object = ctx.get("firstChild");
         // set onload handler before adding element to the DOM
         object.onload = () => {
             // apply user-defined styles for the context
@@ -49,14 +44,8 @@ _.register({
             if (ctx.addClass(name).css("position") === "static") {
                 ctx.css("position", "relative");
             }
-
-            var root = new $Document(object.contentDocument);
-            // store root internally
-            record[1] = root;
-
-            if (typeof callback === "function") {
-                callback(root);
-            }
+            // store new context root internally and invoke callback
+            callback(data[1] = new $Document(object.contentDocument));
         };
 
         this.before(ctx);
@@ -76,10 +65,10 @@ _.register({
 
                     var frameId;
                     // add extra sizes and cut the frame border
-                    wrapper.attachEvent("onresize", () => {
+                    ctx[0].attachEvent("onresize", () => {
                         frameId = frameId || DOM.requestFrame(() => {
-                            object.width = wrapper.offsetWidth + 4;
-                            object.height = wrapper.offsetHeight + 4;
+                            object.width = ctx[0].offsetWidth + 4;
+                            object.height = ctx[0].offsetHeight + 4;
 
                             frameId = null;
                         });
@@ -89,7 +78,9 @@ _.register({
                 });
             }
         }
+        // store context data internally
+        contexts[name] = data;
 
-        return contexts[name] = record;
+        return data[0] = ctx;
     }
 });
