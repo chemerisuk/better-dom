@@ -10,10 +10,14 @@ var Container = es6modules.Container;
 var FileResolver = es6modules.FileResolver;
 var BundleFormatter = es6modules.formatters.bundle;
 
-module.exports = function(dest) {
-    if (!dest) throw new PluginError("compile", "Missing file option for compile");
+module.exports = function(dest, pkg) {
+    if (!dest) throw new PluginError("compile", "Missing dest option for compile");
 
     var container = null;
+    // make a version number string, e.g. "1.20.3" -> "1020300"
+    var version = pkg.version.replace(/\.(\d+)/g, function(_, n) {
+        return ("000" + n).slice(-3);
+    });
 
     function bufferContents(file) {
         if (file.isNull()) return; // ignore
@@ -41,8 +45,16 @@ module.exports = function(dest) {
             code = code.replace(/types\$\$(\$?\w+)/g, "$1");
             // remove generated prefix from constants
             code = code.replace(/const\$\$/g, "");
-            // fix for browserify
+            // fix for browserify that prohibits global this
             code = code.replace("}).call(this);", "})();\n");
+            // filter source code
+            code = gutil.template(code, {
+                pkg: pkg,
+                file: dest,
+                prop: function(name) {
+                    return name ? name + version : "__" + version + "__";
+                }
+            });
 
             this.emit("data", new gutil.File({
                 cwd: container.cwd,

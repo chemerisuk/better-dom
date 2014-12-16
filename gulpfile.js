@@ -60,23 +60,12 @@ gulp.task("compile", function() {
         version = pkg.version;
     }
 
-    // make a version number string, e.g. "1.20.3" -> "1020300"
-    version = version.replace(/\.(\d+)/g, function(_, n) {
-        return ("000" + n).slice(-3);
-    });
-
     return gulp.src(["document/*.js", "element/*.js", "global/*.js", "util/*.js", "*.js"], {cwd: "./src"})
         .pipe(gulpif(!process.env.TRAVIS_JOB_NUMBER, plumber()))
         .pipe(jshint(".jshintrc"))
         .pipe(jshint.reporter("jshint-stylish"))
         .pipe(jshint.reporter("fail"))
-        .pipe(compile("better-dom.js"))
-        .pipe(template({
-            pkg: pkg,
-            prop: function(name) {
-                return name ? name + version : "__" + version + "__";
-            }
-        }))
+        .pipe(compile("better-dom.js", pkg))
         .pipe(es6transpiler())
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(gulpif(dest === "dist/", replace(/\/\*([\s\S]*?)\*\/\s+/gm, "")))
@@ -124,7 +113,7 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
     config.configFile = karmaConfig;
 
     karma.start(config, function(resultCode) {
-        done(resultCode ? new gutil.PluginError("karma", "Specs were not passed") : null);
+        done(resultCode ? new gutil.PluginError("karma", "Tests failed") : null);
     });
 });
 
