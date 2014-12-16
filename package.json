@@ -52,6 +52,7 @@
   },
   "scripts": {
     "test": "gulp test",
-    "start": "gulp dev"
+    "start": "gulp dev",
+    "install": "bower install"
   }
 }

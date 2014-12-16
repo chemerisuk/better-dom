@@ -147,7 +147,8 @@ gulp.task("sauce", function(done) {
         configFile: require.resolve("./conf/karma.conf-ci.js")
     }, function() {
         // always return success result for this task
-        done();
+        // have to use process.exit to make travis to be happy
+        process.exit(0);
     });
 });
 
