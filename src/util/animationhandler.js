@@ -24,6 +24,7 @@ export default (node, computed, animationName, hiding, done) => {
 
     // Legacy Android is usually slow and has lots of bugs in the
     // CSS animations implementation, so skip any animations for it
+    /* istanbul ignore next */
     if (LEGACY_ANDROID || JSCRIPT_VERSION < 10) return null;
 
     if (animationName) {

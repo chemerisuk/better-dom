@@ -184,6 +184,20 @@ describe("visibility", function() {
             });
         });
 
+        it("cancel previous call if it was scheduled", function(done) {
+            var firstSpy = jasmine.createSpy("first"),
+                secondSpy = jasmine.createSpy("second");
+
+            secondSpy.and.callFake(function() {
+                expect(firstSpy).not.toHaveBeenCalled();
+
+                done();
+            });
+
+            link.toggle(firstSpy);
+            link.toggle(secondSpy);
+        });
+
         // it("should trigger callback only once", function(done) {
         //     var showSpy = jasmine.createSpy("show"),
         //         hideSpy = jasmine.createSpy("hide");

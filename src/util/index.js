@@ -48,7 +48,7 @@ export default {
         });
     },
     getLegacyFile(type) {
-        /* istanbul ignore if */
+        /* istanbul ignore next */
         if (JSCRIPT_VERSION < 10) {
             var legacyScripts = arrayProto.filter.call(DOCUMENT.scripts, (el) => el.src.indexOf("better-dom-legacy.js") >= 0);
 
