@@ -123,9 +123,13 @@
             
                 <li data-name="$Element#contains"><a href="$Element.html#contains">contains</a></li>
             
+                <li data-name="$Element#content"><a href="$Element.html#content">content</a></li>
+            
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
                 <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
+            
+                <li data-name="$Element#empty"><a href="$Element.html#empty">empty</a></li>
             
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
@@ -197,7 +201,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>/**
  * @overview better-dom: Live extension playground
- * @version 2.1.0 Sat, 13 Dec 2014 11:15:35 GMT
+ * @version 2.1.1 Wed, 17 Dec 2014 13:07:13 GMT
  * @copyright 2013-2014 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -225,19 +229,20 @@
     function $Element(node) {
         if (this instanceof $Element) {
             if (node) {
-                this[0] = node;
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__2001000__"] = this;
+                node["__2001001__"] = this;
 
-                this._ = {};
-                this._["handler2001000"] = [];
-                this._["watcher2001000"] = {};
-                this._["extension2001000"] = [];
-                this._["context2001000"] = {};
+                this[0] = node;
+                this._ = {
+                    "handler2001001": [],
+                    "watcher2001001": {},
+                    "extension2001001": [],
+                    "context2001001": {}
+                };
             }
         } else if (node) {
-            var cached = node["__2001000__"];
+            var cached = node["__2001001__"];
             // create a wrapper only once for each native element
             return cached ? cached : new $Element(node);
         } else {
@@ -266,7 +271,7 @@
 
             return node ? "&lt;" + node.tagName.toLowerCase() + ">" : "";
         },
-        version: "2.1.0"
+        version: "2.1.1"
     };
 
     $NullElement.prototype = new $Element();
@@ -335,7 +340,7 @@
             });
         },
         getLegacyFile: function(type) {
-            /* istanbul ignore if */
+            /* istanbul ignore next */
             if (JSCRIPT_VERSION &lt; 10) {
                 var legacyScripts = util$index$$arrayProto.filter.call(DOCUMENT.scripts, function(el)  {return el.src.indexOf("better-dom-legacy.js") >= 0});
 
@@ -554,11 +559,11 @@
 
     var document$create$$makeMethod = function(all)  {return function(value, varMap) {
             var doc = this[0].ownerDocument,
-                sandbox = this._["sandbox2001000"];
+                sandbox = this._["sandbox2001001"];
 
             if (!sandbox) {
                 sandbox = doc.createElement("div");
-                this._["sandbox2001000"] = sandbox;
+                this._["sandbox2001001"] = sandbox;
             }
 
             var nodes, el;
@@ -675,7 +680,7 @@
      * DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");
      */
     $Document.prototype.importStyles = function(selector, cssText) {
-        var styleSheet = this._["styles2001000"];
+        var styleSheet = this._["styles2001001"];
 
         if (!styleSheet) {
             var doc = this[0].ownerDocument,
@@ -683,7 +688,7 @@
 
             styleSheet = styleNode.sheet || styleNode.styleSheet;
             // store object internally
-            this._["styles2001000"] = styleSheet;
+            this._["styles2001001"] = styleSheet;
         }
 
         if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -1006,100 +1011,83 @@
     // Inspired by the article written by Daniel Buchner:
     // http://www.backalleycoder.com/2014/04/18/element-queries-from-the-feet-up/
 
-    // IE8 fails with about:blank, use better-dom-legacy.html instead
-    var element$context$$SANDBOX_URL = JSCRIPT_VERSION &lt; 9 ? util$index$$default.getLegacyFile("html") : "about:blank";
+    var element$context$$CONTEXT_TEMPLATE = "div[style=overflow:hidden]>object[data=`about:blank` type=text/html style=`position:absolute` width=100% height=100%]";
+    /* istanbul ignore if */
+    if (JSCRIPT_VERSION) {
+        // use calc to cut ugly frame border in IE>8
+        element$context$$CONTEXT_TEMPLATE = element$context$$CONTEXT_TEMPLATE.replace("position:absolute", "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute");
 
-    // Chrome/Safari serious bug with focusing on the &lt;object>:
+        if (JSCRIPT_VERSION > 8) {
+            // for IE>8 have to set the data attribute AFTER adding element to the DOM
+            element$context$$CONTEXT_TEMPLATE = element$context$$CONTEXT_TEMPLATE.replace("data=`about:blank` ", "");
+        } else {
+            // IE8 fails with about:blank, use better-dom-legacy.html instead
+            element$context$$CONTEXT_TEMPLATE = element$context$$CONTEXT_TEMPLATE.replace("about:blank", util$index$$default.getLegacyFile("html"));
+        }
+    }
+
+    // Chrome/Safari/Opera have serious bug with tabbing to the &lt;object> tree:
     // https://code.google.com/p/chromium/issues/detail?id=255150
 
     util$index$$default.register({
-        context: function(name, callback) {var this$0 = this;
-            var node = this[0],
-                doc = node.ownerDocument,
-                contexts = this._["context2001000"];
+        context: function(name) {var callback = arguments[1];if(callback === void 0)callback = function()  {};
+            var contexts = this._["context2001001"],
+                data = contexts[name] || [];
 
-            if (name in contexts) {
-                var rec = contexts[name];
+            if (data[0]) {
+                // callback is always async
+                WINDOW.setTimeout(function()  { callback(data[1]) }, 1);
 
-                if (typeof callback === "function") {
-                    util$index$$default.safeCall(this, callback, rec[1]);
-                }
-
-                return rec[0];
+                return data[0];
             }
-
-            var ctx = DOM.create("div[style=overflow:hidden]", [name]);
-            var wrapper = ctx[0];
-            var record = [ctx];
-            var object, subtree;
-            var ready = function()  {
+            // use innerHTML instead of creating element manually because of IE8
+            var ctx = DOM.create(element$context$$CONTEXT_TEMPLATE);
+            var object = ctx.get("firstChild");
+            // set onload handler before adding element to the DOM
+            object.onload = function()  {
                 // apply user-defined styles for the context
                 // need to add class in ready callback because of IE8
-                ctx.addClass(name);
-
-                record[1] = new $Document(subtree || object.contentDocument);
-
-                if (typeof callback === "function") {
-                    callback.call(this$0, record[1]);
+                if (ctx.addClass(name).css("position") === "static") {
+                    ctx.css("position", "relative");
                 }
+                // store new context root internally and invoke callback
+                callback(data[1] = new $Document(object.contentDocument));
             };
-            /* istanbul ignore if */
-            if (JSCRIPT_VERSION &lt; 9) {
-                // IE8 is buggy, use innerHTML and better-dom-legacy.html
-                wrapper.innerHTML = DOM.emmet("object[data=`{0}` type=`text/html`]", [element$context$$SANDBOX_URL]);
-
-                object = wrapper.firstChild;
-                // IE8 does not support onload - use timeout instead
-                DOM.requestFrame(function repeat() {
-                    try {
-                        subtree = object.contentDocument;
-                    } catch (err) {
-                        return DOM.requestFrame(repeat);
-                    }
-                    var frameId;
-                    // add extra sizes and cut the frame border
-                    wrapper.attachEvent("onresize", function()  {
-                        frameId = frameId || DOM.requestFrame(function()  {
-                            object.width = wrapper.offsetWidth + 4;
-                            object.height = wrapper.offsetHeight + 4;
-
-                            frameId = null;
-                        });
-                    });
-
-                    ready();
-                });
-            } else {
-                object = doc.createElement("object");
-                object.type = "text/html";
-                object.onload = ready;
-
-                if (!JSCRIPT_VERSION) {
-                    object.data = element$context$$SANDBOX_URL;
-                }
-
-                wrapper.appendChild(object);
-            }
-
-            object.style.position = "absolute";
-            object.width = "100%";
-            object.height = "100%";
 
             this.before(ctx);
-
+            /* istanbul ignore if */
             if (JSCRIPT_VERSION) {
-                // IE doesn't work if to set the data attribute before
-                // appending element to the DOM
-                object.data = element$context$$SANDBOX_URL;
-                // use calc to add extra sizes and cut the frame border
-                object.style.cssText = "width:calc(100% + 4px);height:calc(100% + 4px);left:-2px;top:-2px;position:absolute";
-            }
+                // IE doesn't work if to set the data attribute before adding
+                // the &lt;object> element to the DOM. IE8 will ignore this change
+                // and won't start builing a new document for about:blank
+                object.data = "about:blank";
 
-            if (ctx.css("position") === "static") {
-                ctx.css("position", "relative");
-            }
+                if (JSCRIPT_VERSION &lt; 9) {
+                    // IE8 does not support onload - use timeout instead
+                    DOM.requestFrame(function repeat() {
+                        if (!object.contentDocument) {
+                            return DOM.requestFrame(repeat);
+                        }
 
-            return contexts[name] = record;
+                        var frameId;
+                        // add extra sizes and cut the frame border
+                        ctx[0].attachEvent("onresize", function()  {
+                            frameId = frameId || DOM.requestFrame(function()  {
+                                object.width = ctx[0].offsetWidth + 4;
+                                object.height = ctx[0].offsetHeight + 4;
+
+                                frameId = null;
+                            });
+                        });
+
+                        object.onload();
+                    });
+                }
+            }
+            // store context data internally
+            contexts[name] = data;
+
+            return data[0] = ctx;
         }
     });
 
@@ -1275,21 +1263,31 @@
                 throw new errors$$MethodError("define", arguments);
             }
 
-            // initial value reading must be before defineProperty
-            // because IE8 will try to read wrong attribute value
-            var initialValue = node.getAttribute(name);
-            // trick to fix infinite recursion in IE8
+            // Use trick to fix infinite recursion in IE8:
+            // http://www.smashingmagazine.com/2014/11/28/complete-polyfill-html5-details-element/
+
             var attrName = name[element$define$$ATTR_CASE]();
             var _setAttribute = node.setAttribute;
             var _removeAttribute = node.removeAttribute;
+            /* istanbul ignore if */
+            if (JSCRIPT_VERSION &lt; 9) {
+                // read attribute before the defineProperty call
+                // to set the correct initial state for IE8
+                var initialValue = node.getAttribute(name);
+
+                if (initialValue !== null) {
+                    node[attrName] = initialValue;
+                }
+            }
 
             Object.defineProperty(node, name, {
                 get: function()  {
                     var attrValue = node.getAttribute(attrName, 1);
-
+                    // attr value -> prop value
                     return getter.call(this$0, attrValue);
                 },
                 set: function(propValue)  {
+                    // prop value -> attr value
                     var attrValue = setter.call(this$0, propValue);
 
                     if (attrValue == null) {
@@ -1301,24 +1299,42 @@
             });
 
             // override methods to catch changes from attributes too
-            node.setAttribute = function(attrName, attrValue, flags)  {
-                if (name === attrName[element$define$$ATTR_CASE]()) {
-                    node[name] = getter.call(this$0, attrValue);
+            node.setAttribute = function(name, value, flags)  {
+                if (attrName === name[element$define$$ATTR_CASE]()) {
+                    node[name] = getter.call(this$0, value);
                 } else {
-                    _setAttribute.call(node, attrName, attrValue, flags);
+                    _setAttribute.call(node, name, value, flags);
                 }
             };
 
-            node.removeAttribute = function(attrName, flags)  {
-                if (name === attrName[element$define$$ATTR_CASE]()) {
+            node.removeAttribute = function(name, flags)  {
+                if (attrName === name[element$define$$ATTR_CASE]()) {
                     node[name] = getter.call(this$0, null);
                 } else {
-                    _removeAttribute.call(node, attrName, flags);
+                    _removeAttribute.call(node, name, flags);
                 }
             };
 
             return this;
         }
+    });
+
+    util$index$$default.register({
+
+        /**
+         * Remove child nodes of current element from the DOM
+         * @memberof! $Element#
+         * @alias $Element#empty
+         * @return {$Element}
+         * @function
+         * @example
+         * var div = DOM.create("div>a+b"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;/div>
+         * div.empty();                     // &lt;div>&lt;/div>
+         */
+        empty: function() {
+            return this.set("");
+        }
+
     });
 
     // big part of code inspired by Sizzle:
@@ -1354,7 +1370,7 @@
                     if ( (old = node.getAttribute("id")) ) {
                         nid = old.replace(element$find$$rescape, "\\$&amp;");
                     } else {
-                        nid = "DOM2001000";
+                        nid = "DOM2001001";
                         node.setAttribute("id", nid);
                     }
 
@@ -1427,7 +1443,7 @@
 
     function util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget) {
         if (typeof name === "number") {
-            var args = e["__2001000__"];
+            var args = e["__2001001__"];
 
             return args ? args[name] : void 0;
         }
@@ -1503,7 +1519,7 @@
                     args = args.map(function(name)  {return util$eventhandler$$getEventProperty(
                         name, e, type, node, target, currentTarget)});
                 } else {
-                    args = util$index$$default.slice.call(e["__2001000__"] || [0], 1);
+                    args = util$index$$default.slice.call(e["__2001001__"] || [0], 1);
                 }
 
                 // prevent default if handler returns false
@@ -1562,7 +1578,7 @@
             /* istanbul ignore if */
             if (JSCRIPT_VERSION &lt; 9) {
                 e = node.ownerDocument.createEventObject();
-                e["__2001000__"] = arguments;
+                e["__2001001__"] = arguments;
                 // handle custom events for legacy IE
                 if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
@@ -1573,7 +1589,7 @@
                 canContinue = e.returnValue !== false;
             } else {
                 e = node.ownerDocument.createEvent("HTMLEvents");
-                e["__2001000__"] = arguments;
+                e["__2001001__"] = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
             }
@@ -1970,7 +1986,7 @@
 
             var node = this[0];
 
-            this._["handler2001000"] = this._["handler2001000"].filter(function(handler)  {
+            this._["handler2001001"] = this._["handler2001001"].filter(function(handler)  {
                 var skip = type !== handler.type;
 
                 skip = skip || selector &amp;&amp; selector !== handler.selector;
@@ -2050,16 +2066,14 @@
                 var node = this[0],
                     handler = util$eventhandler$$default(type, selector, callback, args, this, method === "once");
 
-                if (handler) {
-                    /* istanbul ignore if */
-                    if (JSCRIPT_VERSION &lt; 9) {
-                        node.attachEvent("on" + (handler._type || type), handler);
-                    } else {
-                        node.addEventListener(handler._type || type, handler, !!handler.capturing);
-                    }
-                    // store event entry
-                    this._["handler2001000"].push(handler);
+                /* istanbul ignore if */
+                if (JSCRIPT_VERSION &lt; 9) {
+                    node.attachEvent("on" + (handler._type || type), handler);
+                } else {
+                    node.addEventListener(handler._type || type, handler, !!handler.capturing);
                 }
+                // store event entry
+                this._["handler2001001"].push(handler);
             } else if (typeof type === "object") {
                 if (util$index$$default.isArray(type)) {
                     type.forEach(function(name)  { this$0[method](name, selector, args, callback) });
@@ -2156,7 +2170,7 @@
             }
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._["watcher2001000"][name],
+                watchers = this._["watcher2001001"][name],
                 oldValue;
 
             if (watchers) {
@@ -2211,9 +2225,9 @@
                 nodes = all ? [] : null,
                 it = this[0];
 
-            if (methodName !== "closest" || !matcher) {
-                // method closest starts traversing from the element itself
-                // except no selector was specified
+            // method closest starts traversing from the element itself
+            // except no selector was specified where it returns parent
+            if (!matcher || methodName !== "closest") {
                 it = it[propertyName];
             }
 
@@ -2313,6 +2327,28 @@
         }
     });
 
+    util$index$$default.register({
+        /**
+         * Replace child nodes of current element
+         * @memberof! $Element#
+         * @alias $Element#content
+         * @return {$Element}
+         * @function
+         * @example
+         * var div = DOM.create("div>a+b"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;/div>
+         * div.content(DOM.create("i"));    // &lt;div>&lt;i>&lt;/i>&lt;/div>
+         */
+        value: function(val) {
+            if (arguments.length === 0) {
+                return this.get();
+            } else if (typeof val === "string") {
+                return this.set(val);
+            } else {
+                return this.set("").append(val);
+            }
+        }
+    });
+
     var util$animationhandler$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(prop)  {return "transition-" + prop}),
         util$animationhandler$$parseTimeValue = function(value)  {
             var result = parseFloat(value) || 0;
@@ -2336,6 +2372,7 @@
 
         // Legacy Android is usually slow and has lots of bugs in the
         // CSS animations implementation, so skip any animations for it
+        /* istanbul ignore next */
         if (LEGACY_ANDROID || JSCRIPT_VERSION &lt; 10) return null;
 
         if (animationName) {
@@ -2426,7 +2463,7 @@
                 style = node.style,
                 computed = util$index$$default.computeStyle(node),
                 hiding = condition,
-                frameId = this._["frame2001000"],
+                frameId = this._["frame2001001"],
                 done = function()  {
                     if (animationHandler) {
                         node.removeEventListener(eventType, animationHandler, true);
@@ -2440,7 +2477,7 @@
                     // from setting cssText because of Opera 12 quirks
                     style.visibility = hiding ? "hidden" : "inherit";
 
-                    this$0._["frame2001000"] = null;
+                    this$0._["frame2001001"] = null;
 
                     if (callback) callback(this$0);
                 };
@@ -2462,7 +2499,7 @@
                 // use requestAnimationFrame to avoid animation quirks for
                 // new elements inserted into the DOM
                 // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-                this._["frame2001000"] = DOM.requestFrame(!animationHandler ? done : function()  {
+                this._["frame2001001"] = DOM.requestFrame(!animationHandler ? done : function()  {
                     node.addEventListener(eventType, animationHandler, true);
                     // update modified style rules
                     style.cssText = animationHandler.initialCssText + animationHandler.cssText;
@@ -2553,7 +2590,7 @@
          * });
          */
         watch: function(name, callback) {
-            var watchers = this._["watcher2001000"];
+            var watchers = this._["watcher2001001"];
 
             if (!watchers[name]) watchers[name] = [];
 
@@ -2572,7 +2609,7 @@
          * @see $Element#watch
          */
         unwatch: function(name, callback) {
-            var watchers = this._["watcher2001000"];
+            var watchers = this._["watcher2001001"];
 
             if (watchers[name]) {
                 watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
@@ -2591,9 +2628,9 @@
         return function(node, mock)  {
             var el = $Element(node);
             // skip previously invoked or mismatched elements
-            if (~el._["extension2001000"].indexOf(index) || !matcher(node)) return;
+            if (~el._["extension2001001"].indexOf(index) || !matcher(node)) return;
             // mark extension as invoked
-            el._["extension2001000"].push(index);
+            el._["extension2001001"].push(index);
 
             if (mock === true || condition(el) !== false) {
                 // apply all private/public members to the element's interface
@@ -2692,19 +2729,19 @@
     } else {
         var global$extend$$_extend = DOM.extend;
 
-        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001000 !important;";
+        global$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001001 !important;";
         global$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
 
         DOM.extend = function()  {
             // declare the fake animation on the first DOM.extend method call
-            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001000", "from {opacity:.99} to {opacity:1}");
+            DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001001", "from {opacity:.99} to {opacity:1}");
             // restore original method and invoke it
             (DOM.extend = global$extend$$_extend).apply(DOM, arguments);
         };
 
         // use capturing to suppress internal animationstart events
         DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
-            if (e.animationName === "DOM2001000") {
+            if (e.animationName === "DOM2001001") {
                 global$extend$$extensions.forEach(function(ext)  { ext(e.target) });
                 // this is an internal event - stop it immediately
                 e.stopImmediatePropagation();
@@ -2869,7 +2906,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat Dec 13 2014 14:15:37 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Wed Dec 17 2014 16:07:15 GMT+0300 (FET)
         </footer>
     </div>
 </div>

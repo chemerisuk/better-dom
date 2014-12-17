@@ -123,9 +123,13 @@
             
                 <li data-name="$Element#contains"><a href="$Element.html#contains">contains</a></li>
             
+                <li data-name="$Element#content"><a href="$Element.html#content">content</a></li>
+            
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
                 <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
+            
+                <li data-name="$Element#empty"><a href="$Element.html#empty">empty</a></li>
             
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
@@ -306,7 +310,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line699">line 699</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line700">line 700</a>
         </div>
         
     </div>
@@ -442,7 +446,7 @@
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1606">line 1606</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1618">line 1618</a>
         </div>
         
     </div>
@@ -580,7 +584,7 @@ link.after(DOM.create("i"), DOM.create("u")); // &lt;a>&lt;/a>&lt;b>&lt;/b>&lt;i
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1654">line 1654</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1666">line 1666</a>
         </div>
         
     </div>
@@ -718,7 +722,7 @@ link.append(DOM.create("i"), DOM.create("u")); // &lt;a>foo&lt;b>&lt;/b>&lt;i>&l
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1622">line 1622</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1634">line 1634</a>
         </div>
         
     </div>
@@ -856,7 +860,7 @@ link.before(DOM.create("i"), DOM.create("u")); // &lt;i>&lt;/i>&lt;u>&lt;/u>&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line614">line 614</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line615">line 615</a>
         </div>
         
     </div>
@@ -991,7 +995,7 @@ ul.child(-1); // => last child &lt;li></code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line627">line 627</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line628">line 628</a>
         </div>
         
     </div>
@@ -1132,7 +1136,7 @@ ul.children(".foo"); // => array with of child &lt;li> with class "foo"</code></
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line758">line 758</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line759">line 759</a>
         </div>
         
     </div>
@@ -1266,7 +1270,7 @@ ul.clone(false); // => clone of &lt;ul> element ONLY</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2110">line 2110</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2120">line 2120</a>
         </div>
         
     </div>
@@ -1411,7 +1415,7 @@ link.closest(".foo");                      // => &lt;div class="foo"></code></pr
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line788">line 788</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line789">line 789</a>
         </div>
         
     </div>
@@ -1538,6 +1542,91 @@ DOM.find("body").contains(DOM); // => false</code></pre>
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id="content">
+            
+            content<span class="signature">()</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2140">line 2140</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Replace child nodes of current element
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>var div = DOM.create("div>a+b"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;/div>
+div.content(DOM.create("i"));    // &lt;div>&lt;i>&lt;/i>&lt;/div></code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id="css">
             
             css<span class="signature">(name, <span class="optional">value</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{String|<a href="$Element.html">$Element</a>}</span>
@@ -1545,7 +1634,7 @@ DOM.find("body").contains(DOM); // => false</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line990">line 990</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line974">line 974</a>
         </div>
         
     </div>
@@ -1722,7 +1811,7 @@ link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix n
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1074">line 1074</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1058">line 1058</a>
         </div>
         
     </div>
@@ -1893,6 +1982,91 @@ link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix n
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id="empty">
+            
+            empty<span class="signature">()</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1133">line 1133</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Remove child nodes of current element from the DOM
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>var div = DOM.create("div>a+b"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;/div>
+div.empty();                     // &lt;div>&lt;/div></code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id="find">
             
             find<span class="signature">(selector)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
@@ -1900,7 +2074,7 @@ link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix n
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1189">line 1189</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1201">line 1201</a>
         </div>
         
     </div>
@@ -2035,7 +2209,7 @@ foo.find(".bar>span");        // => the first element that matches ".bar>span"</
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1202">line 1202</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1214">line 1214</a>
         </div>
         
     </div>
@@ -2169,7 +2343,7 @@ context.findAll("ol>li"); // => all &lt;li> inside of &lt;ol></code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1351">line 1351</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1363">line 1363</a>
         </div>
         
     </div>
@@ -2340,7 +2514,7 @@ link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments</code></
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1512">line 1512</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1524">line 1524</a>
         </div>
         
     </div>
@@ -2486,7 +2660,7 @@ link.get("_prop");       // => private property _prop</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line684">line 684</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line685">line 685</a>
         </div>
         
     </div>
@@ -2619,7 +2793,7 @@ link.get("_prop");       // => private property _prop</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2321">line 2321</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2354">line 2354</a>
         </div>
         
     </div>
@@ -2793,7 +2967,7 @@ bar.hide("fade", function() {
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1703">line 1703</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1715">line 1715</a>
         </div>
         
     </div>
@@ -2964,7 +3138,7 @@ DOM.mock().map(sayHello);       // no alert is displayed</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1739">line 1739</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1751">line 1751</a>
         </div>
         
     </div>
@@ -3098,7 +3272,7 @@ DOM.find("body").matches("body>html"); // => false</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2048">line 2048</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2058">line 2058</a>
         </div>
         
     </div>
@@ -3241,7 +3415,7 @@ link.next("i");                    // &lt;i></code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2078">line 2078</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2088">line 2088</a>
         </div>
         
     </div>
@@ -3384,7 +3558,7 @@ link.nextAll("i");                   // [&lt;i>, &lt;i>]</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1766">line 1766</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1778">line 1778</a>
         </div>
         
     </div>
@@ -3585,7 +3759,7 @@ link.off("click");</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1806">line 1806</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1818">line 1818</a>
         </div>
         
     </div>
@@ -3673,7 +3847,7 @@ with left, top, bottom, right, width and height properties
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1907">line 1907</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1917">line 1917</a>
         </div>
         
     </div>
@@ -3912,7 +4086,7 @@ link.on(["focus", "blur"], function() {
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1922">line 1922</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1932">line 1932</a>
         </div>
         
     </div>
@@ -4137,7 +4311,7 @@ link.on(["focus", "blur"], function() {
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1638">line 1638</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1650">line 1650</a>
         </div>
         
     </div>
@@ -4275,7 +4449,7 @@ link.prepend(DOM.create("i"), DOM.create("u")); // &lt;a>&lt;i>&lt;/i>&lt;u>&lt;
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2063">line 2063</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2073">line 2073</a>
         </div>
         
     </div>
@@ -4418,7 +4592,7 @@ link.prev("b");                    // &lt;b></code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2093">line 2093</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2103">line 2103</a>
         </div>
         
     </div>
@@ -4561,7 +4735,7 @@ link.prevAll("b");                   // [&lt;b>]</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1684">line 1684</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1696">line 1696</a>
         </div>
         
     </div>
@@ -4647,7 +4821,7 @@ DOM.contains(foo); // => false</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line713">line 713</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line714">line 714</a>
         </div>
         
     </div>
@@ -4783,7 +4957,7 @@ DOM.contains(foo); // => false</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1669">line 1669</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1681">line 1681</a>
         </div>
         
     </div>
@@ -4913,7 +5087,7 @@ div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1939">line 1939</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1949">line 1949</a>
         </div>
         
     </div>
@@ -5089,7 +5263,7 @@ link.set("_prop", {a: "b"});  // update private property _prop</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2300">line 2300</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2333">line 2333</a>
         </div>
         
     </div>
@@ -5263,7 +5437,7 @@ bar.show("fade", function() {
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2342">line 2342</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2375">line 2375</a>
         </div>
         
     </div>
@@ -5437,7 +5611,7 @@ bar.toggle("fade", function() {
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line730">line 730</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line731">line 731</a>
         </div>
         
     </div>
@@ -5606,7 +5780,7 @@ link.toggleClass("bar", true);</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2377">line 2377</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2410">line 2410</a>
         </div>
         
     </div>
@@ -5757,7 +5931,7 @@ link.toggleClass("bar", true);</code></pre>
     
         
         <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2358">line 2358</a>
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2391">line 2391</a>
         </div>
         
     </div>
@@ -5923,7 +6097,7 @@ link.toggleClass("bar", true);</code></pre>
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sat Dec 13 2014 14:15:37 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Wed Dec 17 2014 16:07:15 GMT+0300 (FET)
         </footer>
     </div>
 </div>
