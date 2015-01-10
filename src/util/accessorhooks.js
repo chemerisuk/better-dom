@@ -69,11 +69,15 @@ if (JSCRIPT_VERSION < 9) {
         try {
             node.innerHTML = value;
         } catch (err) {
-            node.innerText = "";
+            node.innerHTML = "";
 
-            DOM.createAll(value).forEach((x) => {
-                node.appendChild(x);
-            });
+            var sandbox = node.ownerDocument.createElement("div");
+
+            sandbox.innerHTML = value;
+
+            while (sandbox.firstChild) {
+                node.appendChild(sandbox.firstChild);
+            }
         }
     };
 }
