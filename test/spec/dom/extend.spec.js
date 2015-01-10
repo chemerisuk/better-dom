@@ -273,6 +273,14 @@ describe("extend", function() {
         expect(DOM.mock().test()).toBe(555);
     });
 
+    it("allows extending the $Document prototype", function() {
+        DOM.extend({
+            test: function() { return 555 }
+        });
+
+        expect(DOM.test()).toBe(555);
+    });
+
     // it("should not stop handle other listeners if any throws an error", function(done) {
     //     var otherCallback = jasmine.createSpy("otherCallback"),
     //         // DOM.extend uses setTimeout for safe logging of an error

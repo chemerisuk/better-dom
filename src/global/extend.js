@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM, $Element } from "../types";
+import { DOM, $Element, $Document } from "../types";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
@@ -34,6 +34,10 @@ DOM.extend = function(selector, condition, definition) {
     if (arguments.length === 2) {
         definition = condition;
         condition = true;
+    } else if (arguments.length === 1) {
+        definition = selector;
+        selector = null;
+        condition = true;
     }
 
     if (typeof condition === "boolean") condition = condition ? returnTrue : returnFalse;
@@ -41,9 +45,11 @@ DOM.extend = function(selector, condition, definition) {
 
     if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
-    if (selector === "*") {
+    if (selector === null || selector === "*") {
         _.keys(definition).forEach((methodName) => {
-            $Element.prototype[methodName] = definition[methodName];
+            var proto = (selector ? $Element : $Document).prototype;
+
+            proto[methodName] = definition[methodName];
         });
     } else {
         var ext = ExtensionHandler(selector, condition, definition, extensions.length);
