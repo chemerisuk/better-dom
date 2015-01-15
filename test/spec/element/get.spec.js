@@ -33,31 +33,6 @@ describe("get", function() {
         expect(input.get("form").nodeType).toBe(1);
     });
 
-    it("could absent any parameter", function() {
-        expect(link.get()).toBe("get-test");
-        expect(input.get()).toBe("test");
-        expect(textarea.get()).toBe("");
-        textarea.set("value", "123");
-        expect(textarea.get()).toBe("123");
-    });
-
-    it("should handle select value correctly", function() {
-        var select = DOM.create("<select><option>a2</option><option>a3</option></select>");
-        expect(select.get()).toBe("a2");
-
-        select = DOM.create("<select><option>a2</option><option selected>a3</option></select>");
-        expect(select.get()).toBe("a3");
-
-        select.set("selectedIndex", -1);
-        expect(select.get()).toBe("");
-    });
-
-    it("should handle option value correctly", function() {
-        var select = DOM.create("<select><option value='a1'>a2</option><option selected>a3</option></select>");
-        expect(select.child(0).get()).toBe("a1");
-        expect(select.child(1).get()).toBe("a3");
-    });
-
     it("should throw error if argument is invalid", function() {
         expect(function() { link.get(1); }).toThrow();
         expect(function() { link.get(true); }).toThrow();

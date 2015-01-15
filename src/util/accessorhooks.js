@@ -26,24 +26,6 @@ hooks.set.title = (node, value) => {
     (node === doc.documentElement ? doc : node).title = value;
 };
 
-hooks.get.undefined = (node) => {
-    var name;
-
-    switch (node.tagName) {
-    case "SELECT":
-        return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
-
-    case "OPTION":
-        name = node.hasAttribute("value") ? "value" : "text";
-        break;
-
-    default:
-        name = node.type && "value" in node ? "value" : "innerHTML";
-    }
-
-    return node[name];
-};
-
 hooks.set.value = function(node, value) {
     if (node.tagName === "SELECT") {
         // selectbox has special case

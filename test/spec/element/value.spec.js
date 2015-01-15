@@ -1,4 +1,4 @@
-describe("value", function() {
+describe("$Element#value", function() {
     "use strict";
 
     var div, input;
@@ -22,6 +22,38 @@ describe("value", function() {
     it("should set value of text input to provided string value", function () {
         expect(input.value("bar")).toBe(input);
         expect(input).toHaveProp("value", "bar");
+    });
+
+    it("handles different tags", function() {
+        var link = DOM.create("a>`test`");
+
+        expect(link.get()).toBe("test");
+        expect(input.get()).toBe("foo");
+    });
+
+    it("handles textarea", function() {
+        var textarea = DOM.create("textarea");
+
+        expect(textarea.get()).toBe("");
+        textarea.set("value", "123");
+        expect(textarea.get()).toBe("123");
+    });
+
+    it("handles select", function() {
+        var select = DOM.create("<select><option>a2</option><option>a3</option></select>");
+        expect(select.get()).toBe("a2");
+
+        select = DOM.create("<select><option>a2</option><option selected>a3</option></select>");
+        expect(select.get()).toBe("a3");
+
+        select.set("selectedIndex", -1);
+        expect(select.get()).toBe("");
+    });
+
+    it("handles option", function() {
+        var select = DOM.create("<select><option value='a1'>a2</option><option selected>a3</option></select>");
+        expect(select.child(0).get()).toBe("a1");
+        expect(select.child(1).get()).toBe("a3");
     });
 
     // it("should set value of text input to string value of provided element", function () {
