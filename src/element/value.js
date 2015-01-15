@@ -4,7 +4,8 @@ _.register({
     /**
      * Replace child nodes of current element
      * @memberof! $Element#
-     * @alias $Element#content
+     * @alias $Element#value
+     * @param  {Mixed}  [content]  optional value to set
      * @return {$Element}
      * @function
      * @example
@@ -12,8 +13,8 @@ _.register({
      * div.value(DOM.create("i"));      // <div><i></i></div>
      * div.value();                     // => "<i></i>"
      */
-    value(val) {
-        if (arguments.length === 0) {
+    value(content) {
+        if (content === void 0) {
             var node = this[0], name;
 
             switch (node.tagName) {
@@ -29,10 +30,10 @@ _.register({
             }
 
             return node[name];
-        } else if (typeof val === "string") {
-            return this.set(val);
+        } else if (typeof content === "string") {
+            return this.set(content);
         } else {
-            return this.set("").append(val);
+            return this.set("").append(content);
         }
     }
 });

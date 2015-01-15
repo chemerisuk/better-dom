@@ -28,12 +28,11 @@ _.register({
      * Get property or attribute value by name
      * @memberof! $Element#
      * @alias $Element#get
-     * @param  {String|Array} [name] property or attribute name or array of names
+     * @param  {String|Array}  name  property or attribute name or array of names
      * @return {String|Object} a value of property or attribute
      * @example
      * link.get("title");       // => property title
      * link.get("data-custom"); // => custom attribute data-custom
-     * link.get();              // => link's innerHTML
      * link.get("_prop");       // => private property _prop
      */
     get(name) {

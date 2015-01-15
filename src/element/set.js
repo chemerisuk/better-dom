@@ -12,10 +12,10 @@ _.register({
      * @param {String|Function}       value   property/attribute value or functor
      * @return {$Element}
      * @example
-     * link.set("title", "mytitle"); // set title property
-     * link.set("data-custom");      // set custom attribute data-custom
-     * link.set("inner html");       // set link's innerHTML
-     * link.set("_prop", {a: "b"});  // update private property _prop
+     * link.set("title", "mytitle");   // set title property
+     * link.set("data-custom", "foo"); // set custom attribute data-custom
+     * link.set("inner html");         // set link's innerHTML
+     * link.set("_prop", {a: "b"});    // update private property _prop
      */
     set(name, value) {
         var node = this[0];
