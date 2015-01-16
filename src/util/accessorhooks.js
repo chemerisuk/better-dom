@@ -26,18 +26,6 @@ hooks.set.title = (node, value) => {
     (node === doc.documentElement ? doc : node).title = value;
 };
 
-hooks.set.value = function(node, value) {
-    if (node.tagName === "SELECT") {
-        // selectbox has special case
-        if (_.every.call(node.options, (o) => !(o.selected = o.value === value))) {
-            node.selectedIndex = -1;
-        }
-    } else {
-        // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-        node[JSCRIPT_VERSION < 9 && node.type === "textarea" ? "innerText" : "value"] = value;
-    }
-};
-
 // some browsers don't recognize input[type=email] etc.
 hooks.get.type = (node) => node.getAttribute("type") || node.type;
 /* istanbul ignore if */

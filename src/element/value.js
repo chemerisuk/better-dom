@@ -1,8 +1,10 @@
 import _ from "../util/index";
+import { JSCRIPT_VERSION } from "../const";
+import { $Element } from "../types";
 
 _.register({
     /**
-     * Replace child nodes of current element
+     * Read or write inner content of the element
      * @memberof! $Element#
      * @alias $Element#value
      * @param  {Mixed}  [content]  optional value to set
@@ -14,9 +16,9 @@ _.register({
      * div.value();                     // => "<i></i>"
      */
     value(content) {
-        if (content === void 0) {
-            var node = this[0], name;
+        var node = this[0], name;
 
+        if (content === void 0) {
             switch (node.tagName) {
             case "SELECT":
                 return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
@@ -30,10 +32,39 @@ _.register({
             }
 
             return node[name];
-        } else if (typeof content === "string") {
-            return this.set(content);
-        } else {
+        } else if (content instanceof $Element) {
             return this.set("").append(content);
         }
+
+        if (typeof content === "function") {
+            content = content(this);
+        } else if (typeof content !== "string") {
+            content = content == null ? "" : String(content);
+        }
+
+        switch (node.tagName) {
+        case "INPUT":
+        case "OPTION":
+            name = "value";
+            break;
+
+        case "SELECT":
+            // selectbox has special case
+            if (_.every.call(node.options, (o) => !(o.selected = o.value === content))) {
+                node.selectedIndex = -1;
+            }
+
+            return this;
+
+        case "TEXTAREA":
+            // for IE use innerText for textareabecause it doesn't trigger onpropertychange
+            name = JSCRIPT_VERSION < 9 ? "innerText" : "value";
+            break;
+
+        default:
+            name = "innerHTML";
+        }
+
+        return this.set(name, content);
     }
 });

@@ -125,7 +125,7 @@ describe("set", function() {
         });
     });
 
-    describe("value shortcut", function() {
+    describe("setter", function() {
         it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
             var value = "set-test-changed";
 
@@ -158,19 +158,19 @@ describe("set", function() {
             expect(input).toHaveProp("value", "ok");
         });
 
-        it("accept object with overriden toString", function() {
-            function Type() {
-                this.name = "bar";
-            }
+        // it("accept object with overriden toString", function() {
+        //     function Type() {
+        //         this.name = "bar";
+        //     }
 
-            Type.prototype.toString = function() {
-                return "foo";
-            };
+        //     Type.prototype.toString = function() {
+        //         return "foo";
+        //     };
 
-            input.set(new Type());
-            expect(input.get()).toBe("foo");
-            expect(input).not.toHaveAttr("name", "bar");
-        });
+        //     input.set(new Type());
+        //     expect(input.get()).toBe("foo");
+        //     expect(input).not.toHaveAttr("name", "bar");
+        // });
     });
 
 });
