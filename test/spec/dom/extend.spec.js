@@ -270,7 +270,10 @@ describe("extend", function() {
         });
 
         expect(DOM.create("a").test()).toBe(555);
-        expect(DOM.mock().test()).toBe(555);
+
+        var mocked = DOM.mock();
+
+        expect(mocked.test()).toBe(mocked);
     });
 
     it("allows extending the $Document prototype", function() {

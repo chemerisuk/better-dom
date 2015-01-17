@@ -7,7 +7,8 @@ import ExtensionHandler from "../util/extensionhandler";
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
-var extensions = [],
+var _extend = DOM.extend,
+    extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
     cssText;
@@ -31,12 +32,13 @@ var extensions = [],
  * });
  */
 DOM.extend = function(selector, condition, definition) {
+    if (selector === "*" || typeof selector === "object") {
+        // handle prototype extensions
+        return _extend.apply(this, arguments);
+    }
+
     if (arguments.length === 2) {
         definition = condition;
-        condition = true;
-    } else if (arguments.length === 1) {
-        definition = selector;
-        selector = null;
         condition = true;
     }
 
@@ -45,24 +47,16 @@ DOM.extend = function(selector, condition, definition) {
 
     if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
-    if (selector === null || selector === "*") {
-        _.keys(definition).forEach((methodName) => {
-            var proto = (selector ? $Element : $Document).prototype;
+    var ext = ExtensionHandler(selector, condition, definition, extensions.length);
 
-            proto[methodName] = definition[methodName];
-        });
-    } else {
-        var ext = ExtensionHandler(selector, condition, definition, extensions.length);
+    extensions.push(ext);
 
-        extensions.push(ext);
-
-        // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.extend.
-        // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(DOCUMENT.querySelectorAll(selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs quirks
-        DOM.importStyles(selector, cssText);
-    }
+    // initialize extension manually to make sure that all elements
+    // have appropriate methods before they are used in other DOM.extend.
+    // Also fixes legacy IEs when the HTC behavior is already attached
+    _.each.call(DOCUMENT.querySelectorAll(selector), ext);
+    // MUST be after querySelectorAll because of legacy IEs quirks
+    DOM.importStyles(selector, cssText);
 };
 
 /* istanbul ignore if */

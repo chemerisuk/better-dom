@@ -73,4 +73,26 @@ $Document.prototype = new $Element();
  */
 var DOM = new $Document(DOCUMENT);
 
+DOM.extend = function(selector, mixins, defaultBehavior) {
+    var objProto = $Element.prototype,
+        nullProto = $NullElement.prototype;
+
+    if (selector !== "*") {
+        defaultBehavior = mixins;
+        mixins = selector;
+
+        objProto = $Document.prototype;
+        // nullProto = $NullDocument.prototype;
+    }
+
+    defaultBehavior = defaultBehavior || function() {};
+
+    Object.keys(mixins).forEach((key) => {
+        var defaults = defaultBehavior(key) || function() { return this };
+
+        objProto[key] = mixins[key];
+        nullProto[key] = defaults;
+    });
+};
+
 export { $Element, $NullElement, $Document, DOM };

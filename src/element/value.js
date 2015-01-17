@@ -38,7 +38,9 @@ _.register({
 
         if (typeof content === "function") {
             content = content(this);
-        } else if (typeof content !== "string") {
+        }
+
+        if (typeof content !== "string") {
             content = content == null ? "" : String(content);
         }
 
@@ -53,7 +55,7 @@ _.register({
             if (_.every.call(node.options, (o) => !(o.selected = o.value === content))) {
                 node.selectedIndex = -1;
             }
-
+            // return earlier
             return this;
 
         case "TEXTAREA":

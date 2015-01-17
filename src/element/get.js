@@ -1,6 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
+import { DOM } from "../types";
 
 var reUpper = /[A-Z]/g,
     readPrivateProperty = (node, key) => {
@@ -23,7 +24,7 @@ var reUpper = /[A-Z]/g,
         return value;
     };
 
-_.register({
+DOM.extend("*", {
     /**
      * Get property or attribute value by name
      * @memberof! $Element#
