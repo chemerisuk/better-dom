@@ -25,15 +25,15 @@ export const CUSTOM_EVENT_TYPE = "dataavailable";
 export const DOM = new $Document(DOCUMENT);
 
 DOM.extend = function(selector, mixins, defaultBehavior) {
-    var objProto = $Element.prototype,
-        nullProto = $NullElement.prototype;
+    var objProto = $Document.prototype,
+        nullProto;
 
-    if (selector !== "*") {
+    if (selector === "*") {
+        objProto = $Element.prototype;
+        nullProto = $NullElement.prototype;
+    } else {
         defaultBehavior = mixins;
         mixins = selector;
-
-        objProto = $Document.prototype;
-        // nullProto = $NullDocument.prototype;
     }
 
     defaultBehavior = defaultBehavior || function() {};
@@ -42,6 +42,7 @@ DOM.extend = function(selector, mixins, defaultBehavior) {
         var defaults = defaultBehavior(key) || function() { return this };
 
         objProto[key] = mixins[key];
-        nullProto[key] = defaults;
+
+        if (nullProto) nullProto[key] = defaults;
     });
 };
