@@ -1,8 +1,8 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION } from "../const";
 
-_.register({
+DOM.extend("*", {
     /**
      * Unbind an event from the element
      * @memberof! $Element#

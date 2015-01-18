@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { HTML } from "../const";
+import { DOM, HTML } from "../const";
 import { MethodError } from "../errors";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
@@ -43,7 +43,7 @@ var reSpace = /[\n\t\r]/g,
     };
 
 /* istanbul ignore next */
-_.register({
+DOM.extend("*", {
     /**
      * Check if element contains class name
      * @memberof! $Element#

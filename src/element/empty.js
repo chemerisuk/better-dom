@@ -1,7 +1,6 @@
-import _ from "../util/index";
+import { DOM } from "../const";
 
-_.register({
-
+DOM.extend("*", {
     /**
      * Remove child nodes of current element from the DOM
      * @memberof! $Element#
@@ -15,5 +14,4 @@ _.register({
     empty() {
         return this.set("");
     }
-
 });

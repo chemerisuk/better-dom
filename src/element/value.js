@@ -1,8 +1,8 @@
 import _ from "../util/index";
-import { JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element } from "../types";
 
-_.register({
+DOM.extend("*", {
     /**
      * Read or write inner content of the element
      * @memberof! $Element#

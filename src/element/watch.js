@@ -1,6 +1,6 @@
-import _ from "../util/index";
+import { DOM } from "../const";
 
-_.register({
+DOM.extend("*", {
     /**
      * Watch for changes of a particular property/attribute
      * @memberof! $Element#

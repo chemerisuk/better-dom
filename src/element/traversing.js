@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { DOM } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
@@ -27,7 +28,7 @@ var makeMethod = (methodName, propertyName, all) => function(selector) {
         return all ? _.map.call(nodes, $Element) : $Element(it);
     };
 
-_.register({
+DOM.extend("*", {
     /**
      * Find next sibling element filtered by optional selector
      * @memberof! $Element#

@@ -1,8 +1,9 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
+import { DOM } from "../const";
 
-_.register({
+DOM.extend("*", {
     /**
      * Check if element is inside of context
      * @memberof! $Element#

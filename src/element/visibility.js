@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { WEBKIT_PREFIX, DOM } from "../const";
+import { DOM, WEBKIT_PREFIX } from "../const";
 import AnimationHandler from "../util/animationhandler";
 
 var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
@@ -67,7 +67,7 @@ var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitione
         return this;
     };
 
-_.register({
+DOM.extend("*", {
     /**
      * Show an element using CSS3 transition or animation
      * @memberof! $Element#

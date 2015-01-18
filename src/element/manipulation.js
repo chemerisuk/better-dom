@@ -50,7 +50,7 @@ var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => functio
         return this;
     };
 
-_.register({
+DOM.extend("*", {
     /**
      * Insert HTMLString or {@link $Element} after the current element
      * @memberof! $Element#

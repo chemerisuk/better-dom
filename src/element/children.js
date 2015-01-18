@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
@@ -31,7 +31,7 @@ var makeMethod = (all) => function(selector) {
     }
 };
 
-_.register({
+DOM.extend("*", {
     /**
      * Return child element by index filtered by optional selector
      * @memberof! $Element#

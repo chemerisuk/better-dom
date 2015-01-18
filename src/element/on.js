@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION } from "../const";
 import EventHandler from "../util/eventhandler";
 
 var makeMethod = (method) => function(type, selector, args, callback) {
@@ -50,7 +50,7 @@ var makeMethod = (method) => function(type, selector, args, callback) {
         return this;
     };
 
-_.register({
+DOM.extend("*", {
     /**
      * Bind a DOM event
      * @memberof! $Element#

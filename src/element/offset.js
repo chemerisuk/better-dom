@@ -1,7 +1,7 @@
 import _ from "../util/index";
-import { WINDOW } from "../const";
+import { DOM, WINDOW } from "../const";
 
-_.register({
+DOM.extend("*", {
     /**
      * Calculates offset of the current element
      * @memberof! $Element#

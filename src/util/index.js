@@ -1,5 +1,4 @@
 import { WINDOW, DOCUMENT, JSCRIPT_VERSION } from "../const";
-import { $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype;
 
@@ -36,16 +35,6 @@ export default {
 
             return false;
         }
-    },
-    register(mixins, defaultBehavior) {
-        defaultBehavior = defaultBehavior || function() {};
-
-        Object.keys(mixins).forEach((key) => {
-            var defaults = defaultBehavior(key) || function() { return this };
-
-            $Element.prototype[key] = mixins[key];
-            $NullElement.prototype[key] = defaults;
-        });
     },
     getLegacyFile(type) {
         /* istanbul ignore next */

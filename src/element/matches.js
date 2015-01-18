@@ -1,9 +1,10 @@
 import _ from "../util/index";
+import { DOM } from "../const";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";
 
-_.register({
+DOM.extend("*", {
     /**
      * Check if the element matches selector
      * @memberof! $Element#
