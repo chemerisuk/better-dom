@@ -1,5 +1,6 @@
 import _ from "../util/index";
-import { $Element, DOM } from "../types";
+import { DOM } from "../const";
+import { $Element } from "../types";
 
 var makeMethod = (methodName, fastStrategy, requiresParent, strategy) => function(...contents) {
         var node = this[0];

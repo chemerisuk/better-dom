@@ -1,5 +1,4 @@
-import { DOM } from "../types";
-import { WINDOW } from "../const";
+import { DOM, WINDOW } from "../const";
 
 var raf = WINDOW.requestAnimationFrame,
     craf = WINDOW.cancelAnimationFrame,

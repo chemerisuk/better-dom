@@ -1,7 +1,6 @@
 import _ from "../util/index";
-import { DOM } from "../types";
 import { MethodError } from "../errors";
-import { WEBKIT_PREFIX } from "../const";
+import { WEBKIT_PREFIX, DOM } from "../const";
 import AnimationHandler from "../util/animationhandler";
 
 var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",

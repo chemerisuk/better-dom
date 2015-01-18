@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION } from "../const";
-import { $Element, $NullElement, DOM } from "../types";
+import { JSCRIPT_VERSION, DOM } from "../const";
+import { $Element, $NullElement } from "../types";
 
 _.register({
     /**

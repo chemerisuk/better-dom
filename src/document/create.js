@@ -1,4 +1,5 @@
-import { $Element, $Document, DOM } from "../types";
+import { DOM } from "../const";
+import { $Element, $Document } from "../types";
 import tagCache from "../global/emmet";
 
 var makeMethod = (all) => function(value, varMap) {

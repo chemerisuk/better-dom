@@ -66,33 +66,4 @@ function $Document(node) {
 
 $Document.prototype = new $Element();
 
-/**
- * Global object to access the DOM
- * @namespace DOM
- * @extends {$Element}
- */
-var DOM = new $Document(DOCUMENT);
-
-DOM.extend = function(selector, mixins, defaultBehavior) {
-    var objProto = $Element.prototype,
-        nullProto = $NullElement.prototype;
-
-    if (selector !== "*") {
-        defaultBehavior = mixins;
-        mixins = selector;
-
-        objProto = $Document.prototype;
-        // nullProto = $NullDocument.prototype;
-    }
-
-    defaultBehavior = defaultBehavior || function() {};
-
-    Object.keys(mixins).forEach((key) => {
-        var defaults = defaultBehavior(key) || function() { return this };
-
-        objProto[key] = mixins[key];
-        nullProto[key] = defaults;
-    });
-};
-
-export { $Element, $NullElement, $Document, DOM };
+export { $Element, $NullElement, $Document };

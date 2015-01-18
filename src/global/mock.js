@@ -1,5 +1,6 @@
 import _ from "../util/index";
-import { $NullElement, DOM } from "../types";
+import { $NullElement } from "../types";
+import { DOM } from "../const";
 import extensions from "./extend";
 
 function applyExtensions(node) {

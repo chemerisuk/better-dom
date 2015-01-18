@@ -1,4 +1,4 @@
-import { DOM } from "../types";
+import { DOM } from "../const";
 
 var reVar = /\{([\w\-]+)\}/g;
 

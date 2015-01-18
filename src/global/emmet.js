@@ -1,5 +1,5 @@
 import { StaticMethodError } from "../errors";
-import { DOM } from "../types";
+import { DOM } from "../const";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
 
