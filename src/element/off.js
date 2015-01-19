@@ -2,7 +2,7 @@ import _ from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION } from "../const";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Unbind an event from the element
      * @memberof! $Element#
@@ -47,4 +47,4 @@ DOM.extend("*", {
 
         return this;
     }
-});
+}, (methodName, strategy) => strategy, () => function() { return this });

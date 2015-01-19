@@ -4,7 +4,7 @@ import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Check if the element matches selector
      * @memberof! $Element#
@@ -22,6 +22,6 @@ DOM.extend("*", {
 
         return !!checker(this[0]);
     }
-}, () => {
+}, (methodName, strategy) => strategy, () => {
     return () => false;
 });

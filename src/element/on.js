@@ -3,54 +3,7 @@ import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION } from "../const";
 import EventHandler from "../util/eventhandler";
 
-var makeMethod = (method) => function(type, selector, args, callback) {
-        if (typeof type === "string") {
-            if (typeof args === "function") {
-                callback = args;
-
-                if (typeof selector === "string") {
-                    args = null;
-                } else {
-                    args = selector;
-                    selector = null;
-                }
-            }
-
-            if (typeof selector === "function") {
-                callback = selector;
-                selector = null;
-                args = null;
-            }
-
-            if (typeof callback !== "function") {
-                throw new MethodError(method, arguments);
-            }
-
-            var node = this[0],
-                handler = EventHandler(type, selector, callback, args, this, method === "once");
-
-            /* istanbul ignore if */
-            if (JSCRIPT_VERSION < 9) {
-                node.attachEvent("on" + (handler._type || type), handler);
-            } else {
-                node.addEventListener(handler._type || type, handler, !!handler.capturing);
-            }
-            // store event entry
-            this._["<%= prop('handler') %>"].push(handler);
-        } else if (typeof type === "object") {
-            if (_.isArray(type)) {
-                type.forEach((name) => { this[method](name, selector, args, callback) });
-            } else {
-                _.keys(type).forEach((name) => { this[method](name, type[name]) });
-            }
-        } else {
-            throw new MethodError(method, arguments);
-        }
-
-        return this;
-    };
-
-DOM.extend("*", {
+DOM.register({
     /**
      * Bind a DOM event
      * @memberof! $Element#
@@ -78,7 +31,7 @@ DOM.extend("*", {
      *     // you can pass several event types
      * });
      */
-    on: makeMethod("on"),
+    on: false,
 
     /**
      * Bind a DOM event but fire once before being removed. Same as
@@ -93,5 +46,51 @@ DOM.extend("*", {
      * @function
      * @see $Element#on
      */
-    once: makeMethod("once")
-});
+    once: true
+
+}, (method, single) => function(type, selector, args, callback) {
+    if (typeof type === "string") {
+        if (typeof args === "function") {
+            callback = args;
+
+            if (typeof selector === "string") {
+                args = null;
+            } else {
+                args = selector;
+                selector = null;
+            }
+        }
+
+        if (typeof selector === "function") {
+            callback = selector;
+            selector = null;
+            args = null;
+        }
+
+        if (typeof callback !== "function") {
+            throw new MethodError(method, arguments);
+        }
+
+        var node = this[0],
+            handler = EventHandler(type, selector, callback, args, this, single);
+
+        /* istanbul ignore if */
+        if (JSCRIPT_VERSION < 9) {
+            node.attachEvent("on" + (handler._type || type), handler);
+        } else {
+            node.addEventListener(handler._type || type, handler, !!handler.capturing);
+        }
+        // store event entry
+        this._["<%= prop('handler') %>"].push(handler);
+    } else if (typeof type === "object") {
+        if (_.isArray(type)) {
+            type.forEach((name) => { this[method](name, selector, args, callback) });
+        } else {
+            _.keys(type).forEach((name) => { this[method](name, type[name]) });
+        }
+    } else {
+        throw new MethodError(method, arguments);
+    }
+
+    return this;
+}, () => function() { return this });

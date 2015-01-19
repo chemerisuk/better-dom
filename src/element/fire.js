@@ -4,7 +4,7 @@ import { DOM, JSCRIPT_VERSION, CUSTOM_EVENT_TYPE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Triggers an event of specific type with optional extra arguments
      * @memberof! $Element#
@@ -61,6 +61,4 @@ DOM.extend("*", {
 
         return canContinue;
     }
-}, () => {
-    return () => true;
-});
+}, (methodName, strategy) => strategy, () => function() { return true });

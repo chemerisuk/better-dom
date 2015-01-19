@@ -4,46 +4,9 @@ import { MethodError } from "../errors";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
 
-var reSpace = /[\n\t\r]/g,
-    makeMethod = (nativeMethodName, strategy) => {
-        var methodName = nativeMethodName === "contains" ? "hasClass" : nativeMethodName + "Class";
-        /* istanbul ignore else  */
-        if (HTML.classList) {
-            // use native classList property if possible
-            strategy = function(el, token) {
-                return el[0].classList[nativeMethodName](token);
-            };
-        }
+var reSpace = /[\n\t\r]/g;
 
-        if (methodName === "hasClass" || methodName === "toggleClass") {
-            return function(token, force) {
-                if (typeof force === "boolean" && methodName === "toggleClass") {
-                    this[force ? "addClass" : "removeClass"](token);
-
-                    return force;
-                }
-
-                if (typeof token !== "string") throw new MethodError(methodName, arguments);
-
-                return strategy(this, token);
-            };
-        } else {
-            return function() {
-                var tokens = arguments;
-
-                for (var token of tokens) {
-                    if (typeof token !== "string") throw new MethodError(methodName, arguments);
-
-                    strategy(this, token);
-                }
-
-                return this;
-            };
-        }
-    };
-
-/* istanbul ignore next */
-DOM.extend("*", {
+DOM.register({
     /**
      * Check if element contains class name
      * @memberof! $Element#
@@ -54,10 +17,10 @@ DOM.extend("*", {
      * @example
      * link.hasClass("foo");
      */
-    hasClass: makeMethod("contains", (el, token) => {
+    hasClass: ["contains", (el, token) => {
         return (" " + el[0].className + " ")
             .replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
-    }),
+    }],
 
     /**
      * Add class(es) to element
@@ -69,9 +32,9 @@ DOM.extend("*", {
      * @example
      * link.addClass("foo", "bar");
      */
-    addClass: makeMethod("add", (el, token) => {
+    addClass: ["add", (el, token) => {
         if (!el.hasClass(token)) el[0].className += " " + token;
-    }),
+    }],
 
     /**
      * Remove class(es) from element
@@ -83,10 +46,10 @@ DOM.extend("*", {
      * @example
      * link.removeClass("foo", "bar");
      */
-    removeClass: makeMethod("remove", (el, token) => {
+    removeClass: ["remove", (el, token) => {
         el[0].className = (" " + el[0].className + " ")
             .replace(reSpace, " ").replace(" " + token + " ", " ").trim();
-    }),
+    }],
 
     /**
      * Toggle a class on element
@@ -100,7 +63,7 @@ DOM.extend("*", {
      * link.toggleClass("foo");
      * link.toggleClass("bar", true);
      */
-    toggleClass: makeMethod("toggle", (el, token) => {
+    toggleClass: ["toggle", (el, token) => {
         var hasClass = el.hasClass(token);
 
         if (hasClass) {
@@ -110,7 +73,41 @@ DOM.extend("*", {
         }
 
         return !hasClass;
-    })
+    }]
+}, (methodName, nativeMethodName, strategy) => {
+    /* istanbul ignore else  */
+    if (HTML.classList) {
+        // use native classList property if possible
+        strategy = function(el, token) {
+            return el[0].classList[nativeMethodName](token);
+        };
+    }
+
+    if (methodName === "hasClass" || methodName === "toggleClass") {
+        return function(token, force) {
+            if (typeof force === "boolean" && methodName === "toggleClass") {
+                this[force ? "addClass" : "removeClass"](token);
+
+                return force;
+            }
+
+            if (typeof token !== "string") throw new MethodError(methodName, arguments);
+
+            return strategy(this, token);
+        };
+    } else {
+        return function() {
+            var tokens = arguments;
+
+            for (var token of tokens) {
+                if (typeof token !== "string") throw new MethodError(methodName, arguments);
+
+                strategy(this, token);
+            }
+
+            return this;
+        };
+    }
 }, (methodName) => {
     if (methodName === "hasClass" || methodName === "toggleClass") {
         return () => false;

@@ -3,7 +3,7 @@ import { MethodError } from "../errors";
 import { $Element } from "../types";
 import { DOM } from "../const";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Check if element is inside of context
      * @memberof! $Element#
@@ -31,6 +31,4 @@ DOM.extend("*", {
 
         throw new MethodError("contains", arguments);
     }
-}, () => {
-    return () => false;
-});
+}, (methodName, strategy) => strategy, () => function() { return false });

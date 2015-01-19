@@ -3,7 +3,7 @@ import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, LEGACY_ANDROID } from "../const";
 import PROP from "../util/accessorhooks";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Set property/attribute value by name
      * @memberof! $Element#
@@ -71,4 +71,4 @@ DOM.extend("*", {
 
         return this;
     }
-});
+}, (methodName, strategy) => strategy, () => function() { return this });

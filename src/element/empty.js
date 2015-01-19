@@ -1,6 +1,6 @@
 import { DOM } from "../const";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Remove child nodes of current element from the DOM
      * @memberof! $Element#
@@ -14,4 +14,4 @@ DOM.extend("*", {
     empty() {
         return this.set("");
     }
-});
+}, (methodName, strategy) => strategy, () => function() { return this });

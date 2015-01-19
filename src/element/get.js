@@ -24,7 +24,7 @@ var reUpper = /[A-Z]/g,
         return value;
     };
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Get property or attribute value by name
      * @memberof! $Element#
@@ -68,6 +68,4 @@ DOM.extend("*", {
             throw new MethodError("get", arguments);
         }
     }
-}, () => {
-    return () => void 0;
-});
+}, (methodName, strategy) => strategy, () => () => void 0);

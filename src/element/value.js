@@ -2,7 +2,7 @@ import _ from "../util/index";
 import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element } from "../types";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Read or write inner content of the element
      * @memberof! $Element#
@@ -69,4 +69,4 @@ DOM.extend("*", {
 
         return this.set(name, content);
     }
-});
+}, (methodName, strategy) => strategy, () => function() { return this });

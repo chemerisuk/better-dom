@@ -4,31 +4,7 @@ import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-var makeMethod = (methodName, propertyName, all) => function(selector) {
-        if (selector && typeof selector !== "string") throw new MethodError(methodName, arguments);
-
-        var matcher = SelectorMatcher(selector),
-            nodes = all ? [] : null,
-            it = this[0];
-
-        // method closest starts traversing from the element itself
-        // except no selector was specified where it returns parent
-        if (!matcher || methodName !== "closest") {
-            it = it[propertyName];
-        }
-
-        for (; it; it = it[propertyName]) {
-            if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                if (!all) break;
-
-                nodes.push(it);
-            }
-        }
-
-        return all ? _.map.call(nodes, $Element) : $Element(it);
-    };
-
-DOM.extend("*", {
+DOM.register({
     /**
      * Find next sibling element filtered by optional selector
      * @memberof! $Element#
@@ -42,7 +18,7 @@ DOM.extend("*", {
      * link.next();                       // <b>
      * link.next("i");                    // <i>
      */
-    next: makeMethod("next", "nextSibling"),
+    next: "nextSibling",
 
     /**
      * Find previous sibling element filtered by optional selector
@@ -57,7 +33,7 @@ DOM.extend("*", {
      * link.prev();                       // <i>
      * link.prev("b");                    // <b>
      */
-    prev: makeMethod("prev", "previousSibling"),
+    prev: "previousSibling",
 
     /**
      * Find all next sibling elements filtered by optional selector
@@ -72,7 +48,7 @@ DOM.extend("*", {
      * link.nextAll();                      // [<i>, <b>, <i>]
      * link.nextAll("i");                   // [<i>, <i>]
      */
-    nextAll: makeMethod("nextAll", "nextSibling", true),
+    nextAll: "nextSibling",
 
     /**
      * Find all previous sibling elements filtered by optional selector
@@ -87,7 +63,7 @@ DOM.extend("*", {
      * link.prevAll();                      // [<i>, <b>, <i>]
      * link.prevAll("b");                   // [<b>]
      */
-    prevAll: makeMethod("prevAll", "previousSibling", true),
+    prevAll: "previousSibling",
 
     /**
      * Find the closest ancestor of the current element (or the current element itself) which matches selector
@@ -104,11 +80,29 @@ DOM.extend("*", {
      * link.closest(".bar");                      // => <div class="bar">
      * link.closest(".foo");                      // => <div class="foo">
      */
-    closest: makeMethod("closest", "parentNode")
-}, (methodName) => {
-    if (methodName.slice(-3) === "All") {
-        return () => [];
-    } else {
-        return () => new $NullElement();
+    closest: "parentNode"
+
+}, (methodName, propertyName) => function(selector) {
+    if (selector && typeof selector !== "string") throw new MethodError(methodName, arguments);
+
+    var all = methodName.slice(-3) === "All",
+        matcher = SelectorMatcher(selector),
+        nodes = all ? [] : null,
+        it = this[0];
+
+    // method closest starts traversing from the element itself
+    // except no selector was specified where it returns parent
+    if (!matcher || methodName !== "closest") {
+        it = it[propertyName];
     }
-});
+
+    for (; it; it = it[propertyName]) {
+        if (it.nodeType === 1 && (!matcher || matcher(it))) {
+            if (!all) break;
+
+            nodes.push(it);
+        }
+    }
+
+    return all ? _.map.call(nodes, $Element) : $Element(it);
+}, (methodName) => () => methodName.slice(-3) === "All" ? [] : new $NullElement());

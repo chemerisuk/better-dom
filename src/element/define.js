@@ -4,7 +4,7 @@ import { DOM, JSCRIPT_VERSION } from "../const";
 
 const ATTR_CASE = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Define a new attribute for the current element
      * @memberof! $Element#
@@ -84,4 +84,4 @@ DOM.extend("*", {
 
         return this;
     }
-});
+}, (methodName, strategy) => strategy, () => function() { return this });

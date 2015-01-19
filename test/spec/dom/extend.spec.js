@@ -264,25 +264,25 @@ describe("extend", function() {
         }, 50);
     });
 
-    it("allows extending the $Element prototype", function() {
-        DOM.extend("*", {
-            test: function() { return 555 }
-        });
+    // it("allows extending the $Element prototype", function() {
+    //     DOM.extend("*", {
+    //         test: function() { return 555 }
+    //     });
 
-        expect(DOM.create("a").test()).toBe(555);
+    //     expect(DOM.create("a").test()).toBe(555);
 
-        var mocked = DOM.mock();
+    //     var mocked = DOM.mock();
 
-        expect(mocked.test()).toBe(mocked);
-    });
+    //     expect(mocked.test()).toBe(mocked);
+    // });
 
-    it("allows extending the $Document prototype", function() {
-        DOM.extend({
-            test: function() { return 555 }
-        });
+    // it("allows extending the $Document prototype", function() {
+    //     DOM.extend({
+    //         test: function() { return 555 }
+    //     });
 
-        expect(DOM.test()).toBe(555);
-    });
+    //     expect(DOM.test()).toBe(555);
+    // });
 
     // it("should not stop handle other listeners if any throws an error", function(done) {
     //     var otherCallback = jasmine.createSpy("otherCallback"),

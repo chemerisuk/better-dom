@@ -3,7 +3,7 @@ import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Clone element
      * @memberof! $Element#
@@ -29,6 +29,4 @@ DOM.extend("*", {
 
         return result;
     }
-}, () => {
-    return () => new $NullElement();
-});
+}, (methodName, strategy) => strategy, () => function() { return new $NullElement() });

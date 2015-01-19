@@ -3,7 +3,7 @@ import { DOM } from "../const";
 import { MethodError } from "../errors";
 import HOOK from "../util/stylehooks";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * CSS properties accessor for an element
      * @memberof! $Element#
@@ -70,7 +70,7 @@ DOM.extend("*", {
 
         return this;
     }
-}, () => function(name) {
+}, (methodName, strategy) => strategy, () => function(name) {
     if (arguments.length === 1 && _.isArray(name)) {
         return {};
     }

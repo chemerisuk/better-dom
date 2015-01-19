@@ -7,8 +7,7 @@ import ExtensionHandler from "../util/extensionhandler";
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
-var _extend = DOM.extend,
-    returnTrue = () => true,
+var returnTrue = () => true,
     returnFalse = () => false,
     cssText;
 
@@ -31,11 +30,6 @@ var _extend = DOM.extend,
  * });
  */
 DOM.extend = function(selector, condition, definition) {
-    if (selector === "*" || typeof selector === "object") {
-        // handle prototype extensions
-        return _extend.apply(this, arguments);
-    }
-
     if (arguments.length === 2) {
         definition = condition;
         condition = true;

@@ -7,52 +7,9 @@ import { $Element, $NullElement } from "../types";
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
 var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
-    rescape = /'|\\/g,
-    makeMethod = (all) => function(selector) {
-        if (typeof selector !== "string") throw new MethodError("find" + all, arguments);
+    rescape = /'|\\/g;
 
-        var node = this[0],
-            quickMatch = rquick.exec(selector),
-            result, old, nid, context;
-
-        if (quickMatch) {
-            if (quickMatch[1]) {
-                // speed-up: "TAG"
-                result = node.getElementsByTagName(selector);
-            } else {
-                // speed-up: ".CLASS"
-                result = node.getElementsByClassName(quickMatch[2]);
-            }
-
-            if (result && !all) result = result[0];
-        } else {
-            old = true;
-            context = node;
-
-            if (node !== node.ownerDocument.documentElement) {
-                // qSA works strangely on Element-rooted queries
-                // We can work around this by specifying an extra ID on the root
-                // and working up from there (Thanks to Andrew Dupont for the technique)
-                if ( (old = node.getAttribute("id")) ) {
-                    nid = old.replace(rescape, "\\$&");
-                } else {
-                    nid = "<%= prop('DOM') %>";
-                    node.setAttribute("id", nid);
-                }
-
-                nid = "[id='" + nid + "'] ";
-                selector = nid + selector.split(",").join("," + nid);
-            }
-
-            result = _.safeCall(context, "querySelector" + all, selector);
-
-            if (!old) node.removeAttribute("id");
-        }
-
-        return all ? _.map.call(result, $Element) : $Element(result);
-    };
-
-DOM.extend("*", {
+DOM.register({
     /**
      * Find the first matched element by css selector
      * @memberof! $Element#
@@ -65,7 +22,7 @@ DOM.extend("*", {
      * var foo  = body.find(".foo"); // => the first element with class "foo"
      * foo.find(".bar>span");        // => the first element that matches ".bar>span"
      */
-    find: makeMethod(""),
+    find: "",
 
     /**
      * Find all matched elements by css selector
@@ -78,7 +35,50 @@ DOM.extend("*", {
      * DOM.findAll("a");         // => all links in the document
      * context.findAll("ol>li"); // => all <li> inside of <ol>
      */
-    findAll: makeMethod("All")
+    findAll: "All"
+
+}, (methodName, all) => function(selector) {
+    if (typeof selector !== "string") throw new MethodError(methodName, arguments);
+
+    var node = this[0],
+        quickMatch = rquick.exec(selector),
+        result, old, nid, context;
+
+    if (quickMatch) {
+        if (quickMatch[1]) {
+            // speed-up: "TAG"
+            result = node.getElementsByTagName(selector);
+        } else {
+            // speed-up: ".CLASS"
+            result = node.getElementsByClassName(quickMatch[2]);
+        }
+
+        if (result && !all) result = result[0];
+    } else {
+        old = true;
+        context = node;
+
+        if (node !== node.ownerDocument.documentElement) {
+            // qSA works strangely on Element-rooted queries
+            // We can work around this by specifying an extra ID on the root
+            // and working up from there (Thanks to Andrew Dupont for the technique)
+            if ( (old = node.getAttribute("id")) ) {
+                nid = old.replace(rescape, "\\$&");
+            } else {
+                nid = "<%= prop('DOM') %>";
+                node.setAttribute("id", nid);
+            }
+
+            nid = "[id='" + nid + "'] ";
+            selector = nid + selector.split(",").join("," + nid);
+        }
+
+        result = _.safeCall(context, "querySelector" + all, selector);
+
+        if (!old) node.removeAttribute("id");
+    }
+
+    return all ? _.map.call(result, $Element) : $Element(result);
 }, (methodName) => {
     return methodName === "find" ? () => new $NullElement() : () => [];
 });

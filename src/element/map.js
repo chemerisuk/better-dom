@@ -1,7 +1,7 @@
 import { DOM } from "../const";
 import { MethodError } from "../errors";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Invokes a function for element if it's not empty and return array of results
      * @memberof! $Element#
@@ -22,6 +22,6 @@ DOM.extend("*", {
 
         return [ fn.call(context, this) ];
     }
-}, () => {
+}, (methodName, strategy) => strategy, () => {
     return () => [];
 });

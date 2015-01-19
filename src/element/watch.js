@@ -1,6 +1,6 @@
 import { DOM } from "../const";
 
-DOM.extend("*", {
+DOM.register({
     /**
      * Watch for changes of a particular property/attribute
      * @memberof! $Element#
@@ -41,4 +41,4 @@ DOM.extend("*", {
 
         return this;
     }
-});
+}, (methodName, strategy) => strategy, () => function() { return this });

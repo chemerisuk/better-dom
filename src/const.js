@@ -25,28 +25,6 @@ export const DOM = new $Document(DOCUMENT);
  * @namespace DOM
  * @extends {$Element}
  */
-DOM.extend = function(selector, mixins, defaultBehavior) {
-    var objProto = $Document.prototype,
-        nullProto;
-
-    if (selector === "*") {
-        objProto = $Element.prototype;
-        nullProto = $NullElement.prototype;
-    } else {
-        defaultBehavior = mixins;
-        mixins = selector;
-    }
-
-    defaultBehavior = defaultBehavior || function() {};
-
-    _.keys(mixins).forEach((key) => {
-        var defaults = defaultBehavior(key) || function() { return this };
-
-        objProto[key] = mixins[key];
-
-        if (nullProto) nullProto[key] = defaults;
-    });
-};
 
 DOM.register = function(mixins, factory, defaultFactory) {
     var proto = defaultFactory ? $Element.prototype : $Document.prototype;
