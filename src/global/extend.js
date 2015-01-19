@@ -8,7 +8,6 @@ import ExtensionHandler from "../util/extensionhandler";
 // https://github.com/csuwldcat/SelectorListener
 
 var _extend = DOM.extend,
-    extensions = [],
     returnTrue = () => true,
     returnFalse = () => false,
     cssText;
@@ -47,9 +46,37 @@ DOM.extend = function(selector, condition, definition) {
 
     if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
 
-    var ext = ExtensionHandler(selector, condition, definition, extensions.length);
+    var mappings = this._["<%= prop('mappings') %>"];
 
-    extensions.push(ext);
+    if (!mappings) {
+        this._["<%= prop('mappings') %>"] = mappings = [];
+
+        /* istanbul ignore if */
+        if (JSCRIPT_VERSION < 10) {
+            this[0].attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
+                var e = WINDOW.event;
+
+                if (e.srcUrn === CUSTOM_EVENT_TYPE) {
+                    mappings.forEach((ext) => { ext(e.srcElement) });
+                }
+            });
+        } else {
+            // declare the fake animation on the first DOM.extend method call
+            this.importStyles("@" + WEBKIT_PREFIX + "keyframes <%= prop('DOM') %>", "from {opacity:.99} to {opacity:1}");
+            // use capturing to suppress internal animationstart events
+            this[0].addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
+                if (e.animationName === "<%= prop('DOM') %>") {
+                    mappings.forEach((ext) => { ext(e.target) });
+                    // this is an internal event - stop it immediately
+                    e.stopImmediatePropagation();
+                }
+            }, true);
+        }
+    }
+
+    var ext = ExtensionHandler(selector, condition, definition, mappings.length);
+
+    mappings.push(ext);
 
     // initialize extension manually to make sure that all elements
     // have appropriate methods before they are used in other DOM.extend.
@@ -62,35 +89,7 @@ DOM.extend = function(selector, condition, definition) {
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 10) {
     cssText = "-ms-behavior:url(" + _.getLegacyFile("htc") + ") !important";
-
-    DOCUMENT.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
-        var e = WINDOW.event;
-
-        if (e.srcUrn === CUSTOM_EVENT_TYPE) {
-            extensions.forEach((ext) => { ext(e.srcElement) });
-        }
-    });
 } else {
-    let _extend = DOM.extend;
-
     cssText = WEBKIT_PREFIX + "animation-name:<%= prop('DOM') %> !important;";
     cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
-
-    DOM.extend = () => {
-        // declare the fake animation on the first DOM.extend method call
-        DOM.importStyles("@" + WEBKIT_PREFIX + "keyframes <%= prop('DOM') %>", "from {opacity:.99} to {opacity:1}");
-        // restore original method and invoke it
-        (DOM.extend = _extend).apply(DOM, arguments);
-    };
-
-    // use capturing to suppress internal animationstart events
-    DOCUMENT.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
-        if (e.animationName === "<%= prop('DOM') %>") {
-            extensions.forEach((ext) => { ext(e.target) });
-            // this is an internal event - stop it immediately
-            e.stopImmediatePropagation();
-        }
-    }, true);
 }
-
-export default extensions;

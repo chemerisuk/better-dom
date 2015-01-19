@@ -1,13 +1,6 @@
 import _ from "../util/index";
 import { $NullElement } from "../types";
 import { DOM } from "../const";
-import extensions from "./extend";
-
-function applyExtensions(node) {
-    extensions.forEach((ext) => { ext(node, true) });
-
-    _.each.call(node.children, applyExtensions);
-}
 
 /**
  * Return {@link $Element} initialized with all existing live extensions.
@@ -23,7 +16,13 @@ function applyExtensions(node) {
 DOM.mock = function(content, varMap) {
     if (!content) return new $NullElement();
 
-    var result = DOM.create(content, varMap);
+    var result = DOM.create(content, varMap),
+        mappings = this._["<%= prop('mappings') %>"],
+        applyExtensions = (node) => {
+            mappings.forEach((ext) => { ext(node, true) });
+
+            _.each.call(node.children, applyExtensions);
+        };
 
     applyExtensions(result[0]);
 
