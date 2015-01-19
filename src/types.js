@@ -30,6 +30,16 @@ function $Element(node) {
     }
 }
 
+/**
+ * Used to represent a document in better-dom
+ * @class $Document
+ * @extends {$Element}
+ */
+function $Document(node) {
+    // use documentElement for a $Document wrapper
+    return $Element.call(this, node.documentElement);
+}
+
 $Element.prototype = {
     /**
      * Create a {@link $Element} for a native DOM element
@@ -43,8 +53,10 @@ $Element.prototype = {
      * bodyEl.hide();
      */
     constructor(node) {
+        var nodeType = node && node.nodeType,
+            ctr = nodeType === 9 ? $Document : $Element;
         // filter non elements like text nodes, comments etc.
-        return $Element(node && node.nodeType === 1 ? node : null);
+        return ctr(nodeType === 1 || nodeType === 9? node : null);
     },
     toString() {
         var node = this[0];
@@ -55,14 +67,6 @@ $Element.prototype = {
 };
 
 $NullElement.prototype = new $Element();
-
-function $Document(node) {
-    if (node && node.nodeType === 9) {
-        node = node.documentElement;
-    }
-
-    $Element.call(this, node);
-}
 
 $Document.prototype = new $Element();
 

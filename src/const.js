@@ -1,6 +1,7 @@
 /* jshint unused: false */
 /* globals window, document */
 
+import _ from "./util/index";
 import { $Document, $Element, $NullElement } from "./types";
 
 // globals
@@ -17,13 +18,13 @@ export const LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf
 export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
 export const CUSTOM_EVENT_TYPE = "dataavailable";
 
+export const DOM = new $Document(DOCUMENT);
+
 /**
  * Global namespace to access the document object tree
  * @namespace DOM
  * @extends {$Element}
  */
-export const DOM = new $Document(DOCUMENT);
-
 DOM.extend = function(selector, mixins, defaultBehavior) {
     var objProto = $Document.prototype,
         nullProto;
@@ -38,7 +39,7 @@ DOM.extend = function(selector, mixins, defaultBehavior) {
 
     defaultBehavior = defaultBehavior || function() {};
 
-    Object.keys(mixins).forEach((key) => {
+    _.keys(mixins).forEach((key) => {
         var defaults = defaultBehavior(key) || function() { return this };
 
         objProto[key] = mixins[key];

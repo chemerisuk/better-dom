@@ -1,6 +1,5 @@
 import _ from "../util/index";
 import { JSCRIPT_VERSION, DOCUMENT } from "../const";
-import { DOM } from "../types";
 
 var hooks = {get: {}, set: {}};
 
@@ -17,7 +16,7 @@ hooks.set.style = (node, value) => { node.style.cssText = value };
 hooks.get.title = (node) => {
     var doc = node.ownerDocument;
 
-    return node === doc.documentElement ? doc.title : node.title;
+    return (node === doc.documentElement ? doc : node).title;
 };
 
 hooks.set.title = (node, value) => {
