@@ -47,4 +47,4 @@ DOM.register({
 
         return this;
     }
-}, null, RETURN_THIS);
+}, null, () => RETURN_THIS);

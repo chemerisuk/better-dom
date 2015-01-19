@@ -14,4 +14,4 @@ DOM.register({
     empty() {
         return this.set("");
     }
-}, null, RETURN_THIS);
+}, null, () => RETURN_THIS);

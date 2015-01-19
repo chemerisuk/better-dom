@@ -17,7 +17,9 @@ export const JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
 export const LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
 export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
 export const CUSTOM_EVENT_TYPE = "dataavailable";
-export const RETURN_THIS = () => function() { return this };
+export const RETURN_THIS = function() { return this };
+export const RETURN_TRUE = () => true;
+export const RETURN_FALSE = () => false;
 
 export const DOM = new $Document(DOCUMENT);
 

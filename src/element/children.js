@@ -57,6 +57,4 @@ DOM.register({
 
         return $Element(children[selector]);
     }
-}, (methodName, all) => {
-    return () => all ? [] : new $NullElement();
-});
+}, (methodName, all) => () => all ? [] : new $NullElement());

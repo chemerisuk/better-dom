@@ -130,4 +130,4 @@ DOM.register({
     }
 
     return this;
-}, RETURN_THIS);
+}, () => RETURN_THIS);

@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM, HTML } from "../const";
+import { DOM, HTML, RETURN_FALSE } from "../const";
 import { MethodError } from "../errors";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
@@ -110,6 +110,6 @@ DOM.register({
     }
 }, (methodName) => {
     if (methodName === "hasClass" || methodName === "toggleClass") {
-        return () => false;
+        return RETURN_FALSE;
     }
 });

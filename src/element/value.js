@@ -69,4 +69,4 @@ DOM.register({
 
         return this.set(name, content);
     }
-}, null, RETURN_THIS);
+}, null, () => RETURN_THIS);

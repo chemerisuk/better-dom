@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM } from "../const";
+import { DOM, RETURN_FALSE } from "../const";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";
@@ -22,4 +22,4 @@ DOM.register({
 
         return !!checker(this[0]);
     }
-}, null, () => () => false);
+}, null, () => RETURN_FALSE);

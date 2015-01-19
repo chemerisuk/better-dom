@@ -1,7 +1,7 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
-import { DOM } from "../const";
+import { DOM, RETURN_FALSE } from "../const";
 
 DOM.register({
     /**
@@ -31,4 +31,4 @@ DOM.register({
 
         throw new MethodError("contains", arguments);
     }
-}, null, () => () => false);
+}, null, () => RETURN_FALSE);
