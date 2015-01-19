@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION, LEGACY_ANDROID } from "../const";
+import { DOM, JSCRIPT_VERSION, LEGACY_ANDROID, RETURN_THIS } from "../const";
 import PROP from "../util/accessorhooks";
 
 DOM.register({
@@ -71,4 +71,4 @@ DOM.register({
 
         return this;
     }
-}, null, () => function() { return this });
+}, null, RETURN_THIS);

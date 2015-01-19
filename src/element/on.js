@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import EventHandler from "../util/eventhandler";
 
 DOM.register({
@@ -93,4 +93,4 @@ DOM.register({
     }
 
     return this;
-}, () => function() { return this });
+}, RETURN_THIS);

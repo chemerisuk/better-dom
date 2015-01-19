@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, WEBKIT_PREFIX } from "../const";
+import { DOM, WEBKIT_PREFIX, RETURN_THIS } from "../const";
 import AnimationHandler from "../util/animationhandler";
 
 var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
@@ -69,6 +69,7 @@ DOM.register({
      * });
      */
     toggle: null
+
 }, (methodName, condition) => function(animationName, callback) {
     if (typeof animationName !== "string") {
         callback = animationName;
@@ -129,4 +130,4 @@ DOM.register({
     }
 
     return this;
-}, () => function() { return this });
+}, RETURN_THIS);

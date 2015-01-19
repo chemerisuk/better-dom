@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 
 const ATTR_CASE = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
 
@@ -84,4 +84,4 @@ DOM.register({
 
         return this;
     }
-}, null, () => function() { return this });
+}, null, RETURN_THIS);

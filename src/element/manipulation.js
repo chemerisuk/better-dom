@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM } from "../const";
+import { DOM, RETURN_THIS } from "../const";
 import { $Element } from "../types";
 
 DOM.register({
@@ -142,4 +142,4 @@ DOM.register({
     }
 
     return this;
-}, () => function() { return this });
+}, RETURN_THIS);

@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 
 DOM.register({
     /**
@@ -47,4 +47,4 @@ DOM.register({
 
         return this;
     }
-}, null, () => function() { return this });
+}, null, RETURN_THIS);

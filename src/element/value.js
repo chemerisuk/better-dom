@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM, JSCRIPT_VERSION } from "../const";
+import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import { $Element } from "../types";
 
 DOM.register({
@@ -69,4 +69,4 @@ DOM.register({
 
         return this.set(name, content);
     }
-}, null, () => function() { return this });
+}, null, RETURN_THIS);

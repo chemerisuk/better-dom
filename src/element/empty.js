@@ -1,4 +1,4 @@
-import { DOM } from "../const";
+import { DOM, RETURN_THIS } from "../const";
 
 DOM.register({
     /**
@@ -14,4 +14,4 @@ DOM.register({
     empty() {
         return this.set("");
     }
-}, null, () => function() { return this });
+}, null, RETURN_THIS);
