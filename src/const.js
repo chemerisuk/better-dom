@@ -47,3 +47,17 @@ DOM.extend = function(selector, mixins, defaultBehavior) {
         if (nullProto) nullProto[key] = defaults;
     });
 };
+
+DOM.register = function(mixins, factory, defaultFactory) {
+    var proto = defaultFactory ? $Element.prototype : $Document.prototype;
+
+    _.keys(mixins).forEach((methodName) => {
+        var args = [methodName].concat(mixins[methodName]);
+
+        proto[methodName] = factory.apply(null, args);
+
+        if (defaultFactory) {
+            $NullElement.prototype[methodName] = defaultFactory.apply(null, args);
+        }
+    });
+};

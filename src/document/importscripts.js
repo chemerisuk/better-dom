@@ -2,7 +2,7 @@ import _ from "../util/index";
 import { DOM } from "../const";
 import { StaticMethodError } from "../errors";
 
-DOM.extend({
+DOM.register({
     /**
      * Import external scripts on the page and call optional callback when it will be done
      * @memberof DOM
@@ -16,28 +16,29 @@ DOM.extend({
      * // loading several scripts sequentially
      * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
      */
-    importScripts(...urls) {
-        var doc = this[0].ownerDocument;
+    importScripts: true
 
-        var callback = () => {
-            var arg = urls.shift(),
-                argType = typeof arg,
-                script;
+}, (methodName) => function(...urls) {
+    var doc = this[0].ownerDocument;
 
-            if (argType === "string") {
-                script = doc.createElement("script");
-                script.src = arg;
-                script.onload = callback;
-                script.async = true;
+    var callback = () => {
+        var arg = urls.shift(),
+            argType = typeof arg,
+            script;
 
-                _.injectElement(script);
-            } else if (argType === "function") {
-                arg();
-            } else if (arg) {
-                throw new StaticMethodError("importScripts", arguments);
-            }
-        };
+        if (argType === "string") {
+            script = doc.createElement("script");
+            script.src = arg;
+            script.onload = callback;
+            script.async = true;
 
-        callback();
-    }
+            _.injectElement(script);
+        } else if (argType === "function") {
+            arg();
+        } else if (arg) {
+            throw new StaticMethodError(methodName, arguments);
+        }
+    };
+
+    callback();
 });
