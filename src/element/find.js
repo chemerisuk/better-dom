@@ -79,6 +79,4 @@ DOM.register({
     }
 
     return all ? _.map.call(result, $Element) : $Element(result);
-}, (methodName) => {
-    return methodName === "find" ? () => new $NullElement() : () => [];
-});
+}, (methodName) => () => methodName === "find" ? new $NullElement() : []);

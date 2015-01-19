@@ -22,6 +22,4 @@ DOM.register({
 
         return [ fn.call(context, this) ];
     }
-}, (methodName, strategy) => strategy, () => {
-    return () => [];
-});
+}, null, () => () => []);

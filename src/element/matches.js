@@ -22,6 +22,4 @@ DOM.register({
 
         return !!checker(this[0]);
     }
-}, (methodName, strategy) => strategy, () => {
-    return () => false;
-});
+}, null, () => () => false);

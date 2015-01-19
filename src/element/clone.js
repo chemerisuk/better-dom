@@ -29,4 +29,4 @@ DOM.register({
 
         return result;
     }
-}, (methodName, strategy) => strategy, () => function() { return new $NullElement() });
+}, null, () => () => new $NullElement());

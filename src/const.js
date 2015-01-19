@@ -29,6 +29,10 @@ export const DOM = new $Document(DOCUMENT);
 DOM.register = function(mixins, factory, defaultFactory) {
     var proto = defaultFactory ? $Element.prototype : $Document.prototype;
 
+    if (factory == null) {
+        factory = (methodName, strategy) => strategy;
+    }
+
     _.keys(mixins).forEach((methodName) => {
         var args = [methodName].concat(mixins[methodName]);
 

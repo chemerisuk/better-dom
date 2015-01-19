@@ -71,4 +71,4 @@ DOM.register({
 
         return this;
     }
-}, (methodName, strategy) => strategy, () => function() { return this });
+}, null, () => function() { return this });

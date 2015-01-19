@@ -31,4 +31,4 @@ DOM.register({
 
         throw new MethodError("contains", arguments);
     }
-}, (methodName, strategy) => strategy, () => function() { return false });
+}, null, () => () => false);

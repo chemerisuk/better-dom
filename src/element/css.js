@@ -70,7 +70,7 @@ DOM.register({
 
         return this;
     }
-}, (methodName, strategy) => strategy, () => function(name) {
+}, null, () => function(name) {
     if (arguments.length === 1 && _.isArray(name)) {
         return {};
     }

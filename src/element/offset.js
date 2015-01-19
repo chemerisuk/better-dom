@@ -28,4 +28,4 @@ DOM.register({
             height: boundingRect.bottom - boundingRect.top
         };
     }
-}, (methodName, strategy) => strategy, () => function() { return { top : 0, left : 0, right : 0, bottom : 0, width : 0, height : 0 } });
+}, null, () => function() { return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 } });

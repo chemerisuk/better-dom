@@ -61,4 +61,4 @@ DOM.register({
 
         return canContinue;
     }
-}, (methodName, strategy) => strategy, () => function() { return true });
+}, null, () => () => true);

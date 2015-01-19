@@ -14,4 +14,4 @@ DOM.register({
     empty() {
         return this.set("");
     }
-}, (methodName, strategy) => strategy, () => function() { return this });
+}, null, () => function() { return this });
