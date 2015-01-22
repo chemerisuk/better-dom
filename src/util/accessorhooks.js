@@ -38,14 +38,13 @@ if (JSCRIPT_VERSION < 9) {
         try {
             node.innerHTML = value;
         } catch (err) {
-            node.innerHTML = "";
+            var sandbox = node.ownerDocument.createElement("div"), it;
 
-            var sandbox = node.ownerDocument.createElement("div");
-
+            node.innerText = ""; // cleanup inner content
             sandbox.innerHTML = value;
 
-            while (sandbox.firstChild) {
-                node.appendChild(sandbox.firstChild);
+            while (it = sandbox.firstChild) {
+                node.appendChild(it);
             }
         }
     };

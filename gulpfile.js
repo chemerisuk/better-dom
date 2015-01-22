@@ -29,7 +29,7 @@ var banner = [
     "/**",
     " * @overview <%= pkg.name %>: <%= pkg.description %>",
     " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
-    " * @copyright 2013-2014 <%= pkg.author %>",
+    " * @copyright 2013-2015 <%= pkg.author %>",
     " * @license <%= pkg.license %>",
     " * @see <%= pkg.repository.url %>",
     " */"
