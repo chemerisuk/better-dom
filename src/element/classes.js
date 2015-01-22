@@ -1,5 +1,5 @@
 import _ from "../util/index";
-import { DOM, HTML, RETURN_FALSE } from "../const";
+import { DOM, HTML, RETURN_FALSE, RETURN_THIS } from "../const";
 import { MethodError } from "../errors";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
@@ -17,7 +17,7 @@ DOM.register({
      * @example
      * link.hasClass("foo");
      */
-    hasClass: ["contains", (el, token) => {
+    hasClass: [RETURN_FALSE, "contains", (el, token) => {
         return (" " + el[0].className + " ")
             .replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
     }],
@@ -32,7 +32,7 @@ DOM.register({
      * @example
      * link.addClass("foo", "bar");
      */
-    addClass: ["add", (el, token) => {
+    addClass: [RETURN_THIS, "add", (el, token) => {
         if (!el.hasClass(token)) el[0].className += " " + token;
     }],
 
@@ -46,7 +46,7 @@ DOM.register({
      * @example
      * link.removeClass("foo", "bar");
      */
-    removeClass: ["remove", (el, token) => {
+    removeClass: [RETURN_THIS, "remove", (el, token) => {
         el[0].className = (" " + el[0].className + " ")
             .replace(reSpace, " ").replace(" " + token + " ", " ").trim();
     }],
@@ -63,7 +63,7 @@ DOM.register({
      * link.toggleClass("foo");
      * link.toggleClass("bar", true);
      */
-    toggleClass: ["toggle", (el, token) => {
+    toggleClass: [RETURN_FALSE, "toggle", (el, token) => {
         var hasClass = el.hasClass(token);
 
         if (hasClass) {
@@ -74,7 +74,7 @@ DOM.register({
 
         return !hasClass;
     }]
-}, (methodName, nativeMethodName, strategy) => {
+}, (methodName, defaultStrategy, nativeMethodName, strategy) => {
     /* istanbul ignore else  */
     if (HTML.classList) {
         // use native classList property if possible
@@ -83,9 +83,9 @@ DOM.register({
         };
     }
 
-    if (methodName === "hasClass" || methodName === "toggleClass") {
+    if (defaultStrategy === RETURN_FALSE) {
         return function(token, force) {
-            if (typeof force === "boolean" && methodName === "toggleClass") {
+            if (typeof force === "boolean" && nativeMethodName === "toggle") {
                 this[force ? "addClass" : "removeClass"](token);
 
                 return force;
@@ -108,8 +108,4 @@ DOM.register({
             return this;
         };
     }
-}, (methodName) => {
-    if (methodName === "hasClass" || methodName === "toggleClass") {
-        return RETURN_FALSE;
-    }
-});
+}, (methodName, defaultStrategy) => defaultStrategy);

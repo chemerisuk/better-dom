@@ -16,29 +16,28 @@ DOM.register({
      * // loading several scripts sequentially
      * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
      */
-    importScripts: true
+    importScripts(...urls) {
+        var doc = this[0].ownerDocument;
 
-}, (methodName) => function(...urls) {
-    var doc = this[0].ownerDocument;
+        var callback = () => {
+            var arg = urls.shift(),
+                argType = typeof arg,
+                script;
 
-    var callback = () => {
-        var arg = urls.shift(),
-            argType = typeof arg,
-            script;
+            if (argType === "string") {
+                script = doc.createElement("script");
+                script.src = arg;
+                script.onload = callback;
+                script.async = true;
 
-        if (argType === "string") {
-            script = doc.createElement("script");
-            script.src = arg;
-            script.onload = callback;
-            script.async = true;
+                _.injectElement(script);
+            } else if (argType === "function") {
+                arg();
+            } else if (arg) {
+                throw new StaticMethodError("importScripts", arguments);
+            }
+        };
 
-            _.injectElement(script);
-        } else if (argType === "function") {
-            arg();
-        } else if (arg) {
-            throw new StaticMethodError(methodName, arguments);
-        }
-    };
-
-    callback();
+        callback();
+    }
 });

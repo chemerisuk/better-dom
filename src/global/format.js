@@ -3,7 +3,7 @@ import { DOM } from "../const";
 var reVar = /\{([\w\-]+)\}/g;
 
 /**
- * Formats template using a variables map
+ * Formats a template string using variables
  * @memberof DOM
  * @alias DOM.format
  * @param  {String}  tmpl    template string

@@ -68,4 +68,4 @@ DOM.register({
             throw new MethodError("get", arguments);
         }
     }
-}, null, () => () => void 0);
+}, null, () => function() {});

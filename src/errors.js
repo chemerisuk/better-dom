@@ -6,7 +6,7 @@ function MethodError(methodName, args, type = "$Element") {
     var url = "<%= pkg.docs %>/" + type + ".html#" + methodName,
         line = "invalid call `" + type + (type === "DOM" ? "." : "#") + methodName + "(";
 
-    line += _.map.call(args, (arg) => String(arg)).join(", ") + ")`;";
+    line += _.map.call(args, String).join(", ") + ")`;";
 
     this.message = line + " check " + url + " to verify the function arguments";
 }
