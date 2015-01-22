@@ -5,8 +5,8 @@ import { StaticMethodError } from "../errors";
 DOM.register({
     /**
      * Append global css styles
-     * @memberof DOM
-     * @alias DOM.importStyles
+     * @memberof $Document#
+     * @alias $Document#importStyles
      * @param {String}  selector  css selector
      * @param {String}  cssText   css rules
      * @example

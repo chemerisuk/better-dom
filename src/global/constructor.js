@@ -6,7 +6,7 @@ import { $Document, $Element } from "../types";
  * @memberof DOM
  * @alias DOM.constructor
  * @param {Object}  [node]  native element
- * @return {$Element} a wrapper object
+ * @return {$Element|$Document} a wrapper object
  * @example
  * var bodyEl = DOM.constructor(document.body);
  * // bodyEl is an instance of $Element

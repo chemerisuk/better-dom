@@ -20,8 +20,8 @@ if (JSCRIPT_VERSION < 10) {
 DOM.register({
     /**
      * Declare a live extension
-     * @memberof DOM
-     * @alias DOM.extend
+     * @memberof $Document#
+     * @alias $Document#extend
      * @param  {String}           selector         css selector of which elements to capture
      * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
      * @param  {Object}           definition       live extension definition

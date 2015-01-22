@@ -7,12 +7,12 @@ DOM.register({
      * Return {@link $Element} initialized with all existing live extensions.
      * Also exposes private functions that do not usually exist. Accepts the
      * same arguments as {@link DOM.create}
-     * @memberof DOM
-     * @alias DOM.mock
+     * @memberof $Document#
+     * @alias $Document#mock
      * @param  {String}       value     EmmetString or HTMLString
      * @param  {Object|Array} [varMap]  key/value map of variables
      * @return {$Element} a mocked instance
-     * @see DOM.create
+     * @see $Document#create
      */
     mock(content, varMap) {
         if (!content) return new $NullElement();

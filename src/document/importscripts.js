@@ -5,8 +5,8 @@ import { StaticMethodError } from "../errors";
 DOM.register({
     /**
      * Import external scripts on the page and call optional callback when it will be done
-     * @memberof DOM
-     * @alias DOM.importScripts
+     * @memberof $Document#
+     * @alias $Document#importScripts
      * @param {...String} urls       script file urls
      * @param {Function}  [callback] callback that is triggered when all scripts are loaded
      * @example

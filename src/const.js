@@ -26,7 +26,7 @@ export const DOM = new $Document(DOCUMENT);
 /**
  * Global namespace to access the document object tree
  * @namespace DOM
- * @extends {$Element}
+ * @extends {$Document}
  */
 
 DOM.register = function(mixins, factory, defaultFactory) {
