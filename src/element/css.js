@@ -1,9 +1,8 @@
-import { keys, isArray, computeStyle } from "../util/index";
-import { DOM } from "../const";
+import { register, keys, isArray, computeStyle } from "../util/index";
 import { MethodError } from "../errors";
 import HOOK from "../util/stylehooks";
 
-DOM.register({
+register({
     /**
      * CSS properties accessor for an element
      * @memberof! $Element#

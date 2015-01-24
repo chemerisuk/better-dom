@@ -1,10 +1,10 @@
-import { isArray, keys } from "../util/index";
+import { register, isArray, keys } from "../util/index";
 import { safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, LEGACY_ANDROID, RETURN_THIS } from "../const";
 import PROP from "../util/accessorhooks";
 
-DOM.register({
+register({
     /**
      * Set property/attribute value by name
      * @memberof! $Element#

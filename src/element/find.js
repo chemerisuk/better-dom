@@ -1,5 +1,5 @@
-import { map, safeCall } from "../util/index";
-import { DOM, DOCUMENT } from "../const";
+import { register, map, safeCall } from "../util/index";
+import { DOCUMENT } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 
@@ -9,7 +9,7 @@ import { $Element, $NullElement } from "../types";
 var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
     rescape = /'|\\/g;
 
-DOM.register({
+register({
     /**
      * Find the first matched element by css selector
      * @memberof! $Element#

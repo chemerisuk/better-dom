@@ -1,7 +1,7 @@
-import { DOM } from "../const";
+import { register } from "../util/index";
 import { MethodError } from "../errors";
 
-DOM.register({
+register({
     /**
      * Invokes a function for element if it's not empty and return array of results
      * @memberof! $Element#

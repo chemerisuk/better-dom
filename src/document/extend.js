@@ -1,4 +1,4 @@
-import { filter, each } from "../util/index";
+import { register, filter, each } from "../util/index";
 import { $Element, $Document } from "../types";
 import { DOM, JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
 import { StaticMethodError } from "../errors";
@@ -23,7 +23,7 @@ if (JSCRIPT_VERSION < 10) {
     cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
 }
 
-DOM.register({
+register({
     /**
      * Declare a live extension
      * @memberof $Document#

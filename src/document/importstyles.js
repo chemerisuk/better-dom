@@ -1,9 +1,9 @@
-import _ from "../util/index";
+import { register } from "../util/index";
 import { injectElement } from "../util/index";
 import { DOM } from "../const";
 import { StaticMethodError } from "../errors";
 
-DOM.register({
+register({
     /**
      * Append global css styles
      * @memberof $Document#

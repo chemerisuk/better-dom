@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { register } from "../util/index";
 import { DOM, HTML, RETURN_FALSE, RETURN_THIS } from "../const";
 import { MethodError } from "../errors";
 
@@ -6,7 +6,7 @@ import { MethodError } from "../errors";
 
 var reSpace = /[\n\t\r]/g;
 
-DOM.register({
+register({
     /**
      * Check if element contains class name
      * @memberof! $Element#

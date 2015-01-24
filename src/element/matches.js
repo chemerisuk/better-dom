@@ -1,10 +1,10 @@
-import _ from "../util/index";
-import { DOM, RETURN_FALSE } from "../const";
+import { register } from "../util/index";
+import { RETURN_FALSE } from "../const";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";
 
-DOM.register({
+register({
     /**
      * Check if the element matches selector
      * @memberof! $Element#

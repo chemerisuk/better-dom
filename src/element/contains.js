@@ -1,9 +1,9 @@
-import _ from "../util/index";
+import { register } from "../util/index";
 import { MethodError } from "../errors";
 import { $Element } from "../types";
-import { DOM, RETURN_FALSE } from "../const";
+import { RETURN_FALSE } from "../const";
 
-DOM.register({
+register({
     /**
      * Check if element is inside of context
      * @memberof! $Element#

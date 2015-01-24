@@ -1,4 +1,4 @@
-import { computeStyle } from "../util/index";
+import { register, computeStyle } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, WEBKIT_PREFIX, RETURN_THIS } from "../const";
 import AnimationHandler from "../util/animationhandler";
@@ -6,7 +6,7 @@ import AnimationHandler from "../util/animationhandler";
 var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
     ANIMATION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
 
-DOM.register({
+register({
     /**
      * Show an element using CSS3 transition or animation
      * @memberof! $Element#

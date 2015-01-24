@@ -1,9 +1,9 @@
-import { isArray, keys } from "../util/index";
+import { register, isArray, keys } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import EventHandler from "../util/eventhandler";
 
-DOM.register({
+register({
     /**
      * Bind a DOM event
      * @memberof! $Element#

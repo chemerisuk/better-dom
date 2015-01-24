@@ -1,8 +1,8 @@
-import { every } from "../util/index";
+import { register, every } from "../util/index";
 import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import { $Element } from "../types";
 
-DOM.register({
+register({
     /**
      * Read or write inner content of the element
      * @memberof! $Element#

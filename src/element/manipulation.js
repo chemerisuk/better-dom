@@ -1,8 +1,8 @@
-import { isArray } from "../util/index";
+import { register, isArray } from "../util/index";
 import { DOM, RETURN_THIS } from "../const";
 import { $Element } from "../types";
 
-DOM.register({
+register({
     /**
      * Insert HTMLString or {@link $Element} after the current element
      * @memberof! $Element#

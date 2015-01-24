@@ -1,11 +1,10 @@
-import _ from "../util/index";
-import { safeCall } from "../util/index";
+import { register, safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, CUSTOM_EVENT_TYPE, RETURN_TRUE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 
-DOM.register({
+register({
     /**
      * Triggers an event of specific type with optional extra arguments
      * @memberof! $Element#

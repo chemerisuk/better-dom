@@ -1,4 +1,4 @@
-import { isArray } from "../util/index";
+import { register, isArray } from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
 import { DOM } from "../const";
@@ -24,7 +24,7 @@ var reUpper = /[A-Z]/g,
         return value;
     };
 
-DOM.register({
+register({
     /**
      * Get property or attribute value by name
      * @memberof! $Element#

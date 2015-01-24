@@ -1,9 +1,8 @@
-import _ from "../util/index";
-import { injectElement } from "../util/index";
+import { register, injectElement } from "../util/index";
 import { DOM } from "../const";
 import { StaticMethodError } from "../errors";
 
-DOM.register({
+register({
     /**
      * Import external scripts on the page and call optional callback when it will be done
      * @memberof $Document#

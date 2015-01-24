@@ -28,21 +28,3 @@ export const DOM = new $Document(DOCUMENT);
  * @namespace DOM
  * @extends {$Document}
  */
-
-DOM.register = function(mixins, factory, defaultFactory) {
-    var proto = defaultFactory ? $Element.prototype : $Document.prototype;
-
-    if (factory == null) {
-        factory = (methodName, strategy) => strategy;
-    }
-
-    keys(mixins).forEach((methodName) => {
-        var args = [methodName].concat(mixins[methodName]);
-
-        proto[methodName] = factory.apply(null, args);
-
-        if (defaultFactory) {
-            $NullElement.prototype[methodName] = defaultFactory.apply(null, args);
-        }
-    });
-};

@@ -1,10 +1,10 @@
-import _ from "../util/index";
+import { register } from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
+import { JSCRIPT_VERSION, RETURN_THIS } from "../const";
 
 const ATTR_CASE = JSCRIPT_VERSION < 9 ? "toUpperCase" : "toLowerCase";
 
-DOM.register({
+register({
     /**
      * Define a new attribute for the current element
      * @memberof! $Element#

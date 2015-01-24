@@ -1,10 +1,10 @@
-import { map } from "../util/index";
+import { register, map } from "../util/index";
 import { DOM } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-DOM.register({
+register({
     /**
      * Find next sibling element filtered by optional selector
      * @memberof! $Element#

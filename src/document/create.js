@@ -1,8 +1,9 @@
 import { DOM } from "../const";
 import { $Element } from "../types";
 import tagCache from "../global/emmet";
+import { register } from "../util/index";
 
-DOM.register({
+register({
     /**
      * Create a new {@link $Element} from Emmet or HTML string
      * @memberof $Document#

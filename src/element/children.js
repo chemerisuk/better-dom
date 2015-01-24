@@ -1,10 +1,10 @@
-import { filter, map } from "../util/index";
+import { register, filter, map } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
-DOM.register({
+register({
     /**
      * Return child element by index filtered by optional selector
      * @memberof! $Element#

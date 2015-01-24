@@ -1,7 +1,7 @@
-import _ from "../util/index";
+import { register } from "../util/index";
 import { DOM, WINDOW } from "../const";
 
-DOM.register({
+register({
     /**
      * Calculates offset of the current element
      * @memberof! $Element#
@@ -28,4 +28,6 @@ DOM.register({
             height: boundingRect.bottom - boundingRect.top
         };
     }
-}, null, () => function() { return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 } });
+}, null, () => function() {
+    return { top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0 };
+});

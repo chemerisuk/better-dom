@@ -1,6 +1,7 @@
-import { DOM, RETURN_THIS } from "../const";
+import { register } from "../util/index";
+import { RETURN_THIS } from "../const";
 
-DOM.register({
+register({
     /**
      * Watch for changes of a particular property/attribute
      * @memberof! $Element#

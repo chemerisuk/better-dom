@@ -1,8 +1,7 @@
-import { each } from "../util/index";
+import { register, each } from "../util/index";
 import { $NullElement } from "../types";
-import { DOM } from "../const";
 
-DOM.register({
+register({
     /**
      * Return {@link $Element} initialized with all existing live extensions.
      * Also exposes private functions that do not usually exist. Accepts the
@@ -17,7 +16,7 @@ DOM.register({
     mock(content, varMap) {
         if (!content) return new $NullElement();
 
-        var result = DOM.create(content, varMap),
+        var result = this.create(content, varMap),
             mappings = this._["<%= prop('mappings') %>"],
             applyExtensions = (node) => {
                 mappings.forEach((ext) => { ext(node, true) });
