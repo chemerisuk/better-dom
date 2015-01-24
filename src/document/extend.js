@@ -1,6 +1,6 @@
 import { register, filter, each } from "../util/index";
 import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE, RETURN_THIS } from "../const";
-import { StaticMethodError } from "../errors";
+import { DocumentTypeError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 
 // Inspired by trick discovered by Daniel Buchner:
@@ -58,7 +58,7 @@ register({
         if (typeof condition === "boolean") condition = condition ? RETURN_TRUE : RETURN_FALSE;
         if (typeof definition === "function") definition = {constructor: definition};
 
-        if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new StaticMethodError("extend", arguments);
+        if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new DocumentTypeError("extend", arguments);
 
         var node = this[0],
             mappings = this._["<%= prop('mappings') %>"];

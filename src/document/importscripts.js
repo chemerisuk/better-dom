@@ -1,5 +1,5 @@
 import { register, injectElement } from "../util/index";
-import { StaticMethodError } from "../errors";
+import { DocumentTypeError } from "../errors";
 
 register({
     /**
@@ -33,7 +33,7 @@ register({
             } else if (argType === "function") {
                 arg();
             } else if (arg) {
-                throw new StaticMethodError("importScripts", arguments);
+                throw new DocumentTypeError("importScripts", arguments);
             }
         };
 

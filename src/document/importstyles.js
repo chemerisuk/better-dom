@@ -1,6 +1,6 @@
 import { register } from "../util/index";
 import { injectElement } from "../util/index";
-import { StaticMethodError } from "../errors";
+import { DocumentTypeError } from "../errors";
 
 register({
     /**
@@ -27,7 +27,7 @@ register({
         }
 
         if (typeof selector !== "string" || typeof cssText !== "string") {
-            throw new StaticMethodError("importStyles", arguments);
+            throw new DocumentTypeError("importStyles", arguments);
         }
 
         // insert rules one by one because of several reasons:
