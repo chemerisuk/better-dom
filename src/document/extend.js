@@ -1,5 +1,5 @@
 import { register, filter, each } from "../util/index";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE, RETURN_THIS } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 
@@ -42,6 +42,14 @@ register({
      * });
      */
     extend(selector, condition, definition) {
+        if (arguments.length === 1) {
+            // handle case when $Document protytype is extended
+            return register(selector);
+        } else if (selector === "*") {
+            // handle case when $Element protytype is extended
+            return register(condition, null, () => RETURN_THIS);
+        }
+
         if (arguments.length === 2) {
             definition = condition;
             condition = true;
