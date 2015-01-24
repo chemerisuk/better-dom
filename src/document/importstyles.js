@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { injectElement } from "../util/index";
 import { DOM } from "../const";
 import { StaticMethodError } from "../errors";
 
@@ -19,7 +20,7 @@ DOM.register({
 
         if (!styleSheet) {
             let doc = this[0].ownerDocument,
-                styleNode = _.injectElement(doc.createElement("style"));
+                styleNode = injectElement(doc.createElement("style"));
 
             styleSheet = styleNode.sheet || styleNode.styleSheet;
             // store object internally

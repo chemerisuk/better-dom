@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { safeCall } from "../util/index";
 import { DOM, DOCUMENT } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
@@ -73,7 +74,7 @@ DOM.register({
             selector = nid + selector.split(",").join("," + nid);
         }
 
-        result = _.safeCall(context, "querySelector" + all, selector);
+        result = safeCall(context, "querySelector" + all, selector);
 
         if (!old) node.removeAttribute("id");
     }

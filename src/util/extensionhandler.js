@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { safeCall } from "../util/index";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
@@ -36,7 +37,7 @@ export default (selector, condition, mixins, index) => {
 
             // invoke constructor if it exists
             // make a safe call so live extensions can't break each other
-            if (ctr) _.safeCall(el, ctr);
+            if (ctr) safeCall(el, ctr);
             // remove event handlers from element's interface
             privateFunctions.forEach((prop) => { delete el[prop] });
         }

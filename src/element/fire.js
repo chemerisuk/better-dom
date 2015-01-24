@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, CUSTOM_EVENT_TYPE, RETURN_TRUE } from "../const";
 import EventHandler from "../util/eventhandler";
@@ -54,7 +55,7 @@ DOM.register({
             // prevent re-triggering of the current event
             EventHandler.skip = type;
 
-            _.safeCall(node, type);
+            safeCall(node, type);
 
             EventHandler.skip = null;
         }

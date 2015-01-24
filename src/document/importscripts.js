@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { injectElement } from "../util/index";
 import { DOM } from "../const";
 import { StaticMethodError } from "../errors";
 
@@ -30,7 +31,7 @@ DOM.register({
                 script.onload = callback;
                 script.async = true;
 
-                _.injectElement(script);
+                injectElement(script);
             } else if (argType === "function") {
                 arg();
             } else if (arg) {

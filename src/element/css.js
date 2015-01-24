@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { computeStyle } from "../util/index";
 import { DOM } from "../const";
 import { MethodError } from "../errors";
 import HOOK from "../util/stylehooks";
@@ -29,7 +30,7 @@ DOM.register({
                     value = typeof getter === "function" ? getter(style) : style[getter];
 
                 if (!value) {
-                    if (!computed) computed = _.computeStyle(node);
+                    if (!computed) computed = computeStyle(node);
 
                     value = typeof getter === "function" ? getter(computed) : computed[getter];
                 }

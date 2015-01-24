@@ -1,7 +1,8 @@
 import _ from "../util/index";
+import { computeStyle } from "../util/index";
 
 var isHidden = (node) => {
-    var computed = _.computeStyle(node);
+    var computed = computeStyle(node);
 
     return computed.visibility === "hidden" || computed.display === "none";
 };

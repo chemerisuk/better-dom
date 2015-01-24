@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { computeStyle } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, WEBKIT_PREFIX, RETURN_THIS } from "../const";
 import AnimationHandler from "../util/animationhandler";
@@ -82,7 +83,7 @@ DOM.register({
 
     var node = this[0],
         style = node.style,
-        computed = _.computeStyle(node),
+        computed = computeStyle(node),
         hiding = condition,
         frameId = this._["<%= prop('frame') %>"],
         done = () => {

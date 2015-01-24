@@ -1,4 +1,5 @@
 import _ from "../util/index";
+import { safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, LEGACY_ANDROID, RETURN_THIS } from "../const";
 import PROP from "../util/accessorhooks";
@@ -65,7 +66,7 @@ DOM.register({
 
         if (watchers && oldValue !== value) {
             watchers.forEach((w) => {
-                _.safeCall(this, w, value, oldValue);
+                safeCall(this, w, value, oldValue);
             });
         }
 

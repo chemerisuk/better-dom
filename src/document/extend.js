@@ -1,6 +1,6 @@
 import _ from "../util/index";
 import { $Element, $Document } from "../types";
-import { DOM, JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
+import { DOM, JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 
@@ -11,7 +11,13 @@ var cssText;
 
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 10) {
-    cssText = "-ms-behavior:url(" + _.getLegacyFile("htc") + ") !important";
+    let legacyScripts = _.filter.call(DOCUMENT.scripts, (el) => el.src.indexOf("better-dom-legacy.js") >= 0);
+
+    if (legacyScripts.length < 1) {
+        throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
+    }
+
+    cssText = "-ms-behavior:url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important";
 } else {
     cssText = WEBKIT_PREFIX + "animation-name:<%= prop('DOM') %> !important;";
     cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
