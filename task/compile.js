@@ -42,7 +42,7 @@ module.exports = function(dest, pkg) {
             var ast = container.convert();
             var code = recast.print(ast[0]).code;
             // improve internal type names
-            code = code.replace(/types\$\$(\$?\w+)/g, "$1");
+            code = code.replace(/(?:errors|types)\$\$(\$?\w+)/g, "$1");
             // remove generated prefix from constants
             code = code.replace(/const\$\$/g, "");
             // fix for browserify that prohibits global this

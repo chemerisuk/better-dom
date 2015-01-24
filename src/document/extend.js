@@ -79,12 +79,14 @@ DOM.register({
         var ext = ExtensionHandler(selector, condition, definition, mappings.length);
 
         mappings.push(ext);
-
-        // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.extend.
-        // Also fixes legacy IEs when the HTC behavior is already attached
-        _.each.call(node.ownerDocument.querySelectorAll(selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs quirks
-        this.importStyles(selector, cssText);
+        // live extensions are always async - append CSS asynchronously
+        WINDOW.setTimeout(() => {
+            // initialize extension manually to make sure that all elements
+            // have appropriate methods before they are used in other DOM.extend.
+            // Also fixes legacy IEs when the HTC behavior is already attached
+            _.each.call(node.ownerDocument.querySelectorAll(selector), ext);
+            // MUST be after querySelectorAll because of legacy IEs quirks
+            this.importStyles(selector, cssText);
+        }, 0);
     }
 });

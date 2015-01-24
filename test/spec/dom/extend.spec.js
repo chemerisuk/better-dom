@@ -264,6 +264,16 @@ describe("extend", function() {
         }, 50);
     });
 
+    it("is always async", function() {
+        var spy = jasmine.createSpy("ctr");
+
+        jasmine.sandbox.set("<a class=" + randomClass + "></a>");
+
+        DOM.extend("." + randomClass, spy);
+
+        expect(spy).not.toHaveBeenCalled();
+    });
+
     // it("allows extending the $Element prototype", function() {
     //     DOM.extend("*", {
     //         test: function() { return 555 }
