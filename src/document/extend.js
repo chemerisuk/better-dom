@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { filter, each } from "../util/index";
 import { $Element, $Document } from "../types";
 import { DOM, JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
 import { StaticMethodError } from "../errors";
@@ -11,7 +11,7 @@ var cssText;
 
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 10) {
-    let legacyScripts = _.filter.call(DOCUMENT.scripts, (el) => el.src.indexOf("better-dom-legacy.js") >= 0);
+    let legacyScripts = filter.call(DOCUMENT.scripts, (el) => el.src.indexOf("better-dom-legacy.js") >= 0);
 
     if (legacyScripts.length < 1) {
         throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
@@ -90,7 +90,7 @@ DOM.register({
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.extend.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            _.each.call(node.ownerDocument.querySelectorAll(selector), ext);
+            each.call(node.ownerDocument.querySelectorAll(selector), ext);
             // MUST be after querySelectorAll because of legacy IEs quirks
             this.importStyles(selector, cssText);
         }, 0);

@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { slice } from "../util/index";
 import { JSCRIPT_VERSION, WINDOW, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
@@ -82,7 +82,7 @@ function EventHandler(type, selector, callback, props, el, once) {
                 args = args.map((name) => getEventProperty(
                     name, e, type, node, target, currentTarget));
             } else {
-                args = _.slice.call(e["<%= prop() %>"] || [0], 1);
+                args = slice.call(e["<%= prop() %>"] || [0], 1);
             }
 
             // prevent default if handler returns false

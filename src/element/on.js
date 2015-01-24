@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { isArray, keys } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import EventHandler from "../util/eventhandler";
@@ -83,10 +83,10 @@ DOM.register({
         // store event entry
         this._["<%= prop('handler') %>"].push(handler);
     } else if (typeof type === "object") {
-        if (_.isArray(type)) {
+        if (isArray(type)) {
             type.forEach((name) => { this[method](name, selector, args, callback) });
         } else {
-            _.keys(type).forEach((name) => { this[method](name, type[name]) });
+            keys(type).forEach((name) => { this[method](name, type[name]) });
         }
     } else {
         throw new MethodError(method, arguments);

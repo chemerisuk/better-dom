@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { each } from "../util/index";
 import { $NullElement } from "../types";
 import { DOM } from "../const";
 
@@ -22,7 +22,7 @@ DOM.register({
             applyExtensions = (node) => {
                 mappings.forEach((ext) => { ext(node, true) });
 
-                _.each.call(node.children, applyExtensions);
+                each.call(node.children, applyExtensions);
             };
 
         applyExtensions(result[0]);

@@ -1,5 +1,4 @@
-import _ from "../util/index";
-import { safeCall } from "../util/index";
+import { map, safeCall } from "../util/index";
 import { DOM, DOCUMENT } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
@@ -79,5 +78,5 @@ DOM.register({
         if (!old) node.removeAttribute("id");
     }
 
-    return all ? _.map.call(result, $Element) : $Element(result);
+    return all ? map.call(result, $Element) : $Element(result);
 }, (methodName, all) => () => all ? [] : new $NullElement());

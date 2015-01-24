@@ -1,5 +1,4 @@
-import _ from "../util/index";
-import { computeStyle } from "../util/index";
+import { keys, isArray, computeStyle } from "../util/index";
 import { DOM } from "../const";
 import { MethodError } from "../errors";
 import HOOK from "../util/stylehooks";
@@ -24,7 +23,7 @@ DOM.register({
             style = node.style,
             computed;
 
-        if (len === 1 && (typeof name === "string" || _.isArray(name))) {
+        if (len === 1 && (typeof name === "string" || isArray(name))) {
             let strategy = (name) => {
                 var getter = HOOK.get[name] || HOOK.find(name, style),
                     value = typeof getter === "function" ? getter(style) : style[getter];
@@ -64,7 +63,7 @@ DOM.register({
                 style[setter] = typeof value === "number" ? value + "px" : value.toString();
             }
         } else if (len === 1 && name && typeof name === "object") {
-            _.keys(name).forEach((key) => { this.css(key, name[key]) });
+            keys(name).forEach((key) => { this.css(key, name[key]) });
         } else {
             throw new MethodError("css", arguments);
         }
@@ -72,7 +71,7 @@ DOM.register({
         return this;
     }
 }, null, () => function(name) {
-    if (arguments.length === 1 && _.isArray(name)) {
+    if (arguments.length === 1 && isArray(name)) {
         return {};
     }
 

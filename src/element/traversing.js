@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { map } from "../util/index";
 import { DOM } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $NullElement } from "../types";
@@ -104,5 +104,5 @@ DOM.register({
         }
     }
 
-    return all ? _.map.call(nodes, $Element) : $Element(it);
+    return all ? map.call(nodes, $Element) : $Element(it);
 }, (methodName) => () => methodName.slice(-3) === "All" ? [] : new $NullElement());

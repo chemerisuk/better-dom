@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { keys } from "../util/index";
 import { HTML } from "../const";
 
 // Helper for CSS properties access
@@ -42,7 +42,7 @@ var reDash = /\-./g,
 });
 
 // normalize property shortcuts
-_.keys(shortCuts).forEach((key) => {
+keys(shortCuts).forEach((key) => {
     var props = shortCuts[key];
 
     hooks.get[key] = (style) => {

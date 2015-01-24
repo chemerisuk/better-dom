@@ -1,7 +1,7 @@
 /* jshint unused: false */
 /* globals window, document */
 
-import _ from "./util/index";
+import { keys } from "./util/index";
 import { $Document, $Element, $NullElement } from "./types";
 
 // globals
@@ -36,7 +36,7 @@ DOM.register = function(mixins, factory, defaultFactory) {
         factory = (methodName, strategy) => strategy;
     }
 
-    _.keys(mixins).forEach((methodName) => {
+    keys(mixins).forEach((methodName) => {
         var args = [methodName].concat(mixins[methodName]);
 
         proto[methodName] = factory.apply(null, args);

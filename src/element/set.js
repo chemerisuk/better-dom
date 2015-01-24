@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { isArray, keys } from "../util/index";
 import { safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION, LEGACY_ANDROID, RETURN_THIS } from "../const";
@@ -56,10 +56,10 @@ DOM.register({
                     node.className = node.className;
                 }
             }
-        } else if (_.isArray(name)) {
+        } else if (isArray(name)) {
             name.forEach((key) => { this.set(key, value) });
         } else if (typeof name === "object") {
-            _.keys(name).forEach((key) => { this.set(key, name[key]) });
+            keys(name).forEach((key) => { this.set(key, name[key]) });
         } else {
             throw new MethodError("set", arguments);
         }

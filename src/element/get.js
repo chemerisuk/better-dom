@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { isArray } from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
 import { DOM } from "../const";
@@ -57,7 +57,7 @@ DOM.register({
 
                 return data[key];
             }
-        } else if (_.isArray(name)) {
+        } else if (isArray(name)) {
             return name.reduce((memo, key) => {
                 return memo[key] = this.get(key), memo;
             }, {});

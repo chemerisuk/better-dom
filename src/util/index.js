@@ -30,13 +30,10 @@ export function safeCall(context, fn, arg1, arg2) {
     }
 }
 
-export default {
-    // utilites
-    every: arrayProto.every,
-    each: arrayProto.forEach,
-    filter: arrayProto.filter,
-    map: arrayProto.map,
-    slice: arrayProto.slice,
-    isArray: Array.isArray,
-    keys: Object.keys
-};
+export const every = arrayProto.every;
+export const each = arrayProto.forEach;
+export const filter = arrayProto.filter;
+export const map = arrayProto.map;
+export const slice = arrayProto.slice;
+export const isArray = Array.isArray;
+export const keys = Object.keys;

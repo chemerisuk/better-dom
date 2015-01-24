@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { filter, map } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
@@ -45,13 +45,13 @@ DOM.register({
     /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         // fix IE8 bug with children collection
-        children = _.filter.call(children, (node) => node.nodeType === 1);
+        children = filter.call(children, (node) => node.nodeType === 1);
     }
 
     if (all) {
-        if (matcher) children = _.filter.call(children, matcher);
+        if (matcher) children = filter.call(children, matcher);
 
-        return _.map.call(children, $Element);
+        return map.call(children, $Element);
     } else {
         if (selector < 0) selector = children.length + selector;
 

@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { isArray } from "../util/index";
 import { DOM, RETURN_THIS } from "../const";
 import { $Element } from "../types";
 
@@ -121,7 +121,7 @@ DOM.register({
             content = [ content ];
         }
 
-        if (_.isArray(content)) {
+        if (isArray(content)) {
             if (typeof fragment === "string") {
                 // append existing string to fragment
                 content = DOM.createAll(fragment).concat(content);

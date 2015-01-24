@@ -1,4 +1,4 @@
-import _ from "../util/index";
+import { every } from "../util/index";
 import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import { $Element } from "../types";
 
@@ -52,7 +52,7 @@ DOM.register({
 
         case "SELECT":
             // selectbox has special case
-            if (_.every.call(node.options, (o) => !(o.selected = o.value === content))) {
+            if (every.call(node.options, (o) => !(o.selected = o.value === content))) {
                 node.selectedIndex = -1;
             }
             // return earlier

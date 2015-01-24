@@ -1,4 +1,3 @@
-import _ from "../util/index";
 import { computeStyle } from "../util/index";
 import { MethodError } from "../errors";
 import { DOM, WEBKIT_PREFIX, RETURN_THIS } from "../const";
