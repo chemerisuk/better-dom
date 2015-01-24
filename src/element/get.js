@@ -1,7 +1,6 @@
 import { register, isArray } from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
-import { DOM } from "../const";
 
 var reUpper = /[A-Z]/g,
     readPrivateProperty = (node, key) => {

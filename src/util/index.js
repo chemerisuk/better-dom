@@ -1,4 +1,4 @@
-import { WINDOW, DOCUMENT, JSCRIPT_VERSION } from "../const";
+import { WINDOW, JSCRIPT_VERSION } from "../const";
 import { $Document, $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype;

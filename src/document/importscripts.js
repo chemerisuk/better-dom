@@ -1,5 +1,4 @@
 import { register, injectElement } from "../util/index";
-import { DOM } from "../const";
 import { StaticMethodError } from "../errors";
 
 register({

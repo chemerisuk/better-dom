@@ -1,6 +1,6 @@
 import { register, filter, map } from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 

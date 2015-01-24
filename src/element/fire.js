@@ -1,6 +1,6 @@
 import { register, safeCall } from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION, CUSTOM_EVENT_TYPE, RETURN_TRUE } from "../const";
+import { JSCRIPT_VERSION, CUSTOM_EVENT_TYPE, RETURN_TRUE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 

@@ -1,6 +1,5 @@
 import { register, filter, each } from "../util/index";
-import { $Element, $Document } from "../types";
-import { DOM, JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE } from "../const";
 import { StaticMethodError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 

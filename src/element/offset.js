@@ -1,5 +1,5 @@
 import { register } from "../util/index";
-import { DOM, WINDOW } from "../const";
+import { WINDOW } from "../const";
 
 register({
     /**

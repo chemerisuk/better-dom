@@ -1,6 +1,6 @@
 import { register, isArray, keys } from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION, RETURN_THIS } from "../const";
+import { JSCRIPT_VERSION, RETURN_THIS } from "../const";
 import EventHandler from "../util/eventhandler";
 
 register({

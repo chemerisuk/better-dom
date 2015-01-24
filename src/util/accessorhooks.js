@@ -1,5 +1,4 @@
-import _ from "../util/index";
-import { JSCRIPT_VERSION, DOCUMENT } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 
 var hooks = {get: {}, set: {}};
 

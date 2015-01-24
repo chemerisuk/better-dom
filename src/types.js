@@ -1,5 +1,3 @@
-import { DOCUMENT } from "./const";
-
 function $NullElement() {}
 
 /**

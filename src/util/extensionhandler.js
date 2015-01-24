@@ -1,4 +1,3 @@
-import _ from "../util/index";
 import { safeCall } from "../util/index";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";

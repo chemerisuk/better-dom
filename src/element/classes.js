@@ -1,5 +1,5 @@
 import { register } from "../util/index";
-import { DOM, HTML, RETURN_FALSE, RETURN_THIS } from "../const";
+import { HTML, RETURN_FALSE, RETURN_THIS } from "../const";
 import { MethodError } from "../errors";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
