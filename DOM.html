@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Index</title>
+    <title>Namespace: DOM</title>
     
     
     
@@ -291,115 +291,8 @@
     </ul>
 </div>
     <div class="main">
-        <h1 class="page-title" data-filename="index.html">Index</h1>
+        <h1 class="page-title" data-filename="DOM.html">Namespace: DOM</h1>
         
-
-
-    
-
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
-    
-
-
-
-
-    <section>
-        <article class="readme"><h1 id="-better-dom-https-github-com-chemerisuk-better-dom-live-extension-playground-br-build-status-travis-image-travis-url-coverage-status-coveralls-image-coveralls-url-bower-version-bower-image-bower-url-"><a href="https://github.com/chemerisuk/better-dom">better-dom</a>: Live extension playground<br><a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a> <a href="https://github.com/chemerisuk/better-dom"><img src="http://img.shields.io/bower/v/better-dom.svg" alt="Bower version"></a></h1>
-<p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
-<p>This library is about <strong>ideas</strong>. After some time of using jQuery I found that it&#39;s just too big, has lack of <a href="#features">features</a> I need and the API design is debatable. In particular <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> was one of the main ideas that encouraged me to build a new library from scratch.</p>
-<p>Vanilla DOM also has a lot of bad parts, that I&#39;m trying to fix by providing a JavaScript wrapper for each DOM element you use in code. This extra layer allows to abstract from legacy interfaces and to add new methods on <strong>the top of particular elements</strong> without touching vanilla DOM prototypes. So the object model used is very different from what jQuery does.</p>
-<p>Note, that the better-dom project is only about the DOM. It does not contain any AJAX or BOM helper.</p>
-<p><a href="https://saucelabs.com/u/chemerisuk"><img src="https://saucelabs.com/browser-matrix/chemerisuk.svg" alt="Sauce Test Status"></a></p>
-<h2 id="features">Features</h2>
-<ul>
-<li>lightweight: ~5 kB gzipped</li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter">getter and setter</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Declarative-animations">declarative animations</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">microtemplating using the Emmet syntax</a></li>
-<li><a href="https://github.com/chemerisuk/better-dom/wiki/Event-handling">improved event handling</a></li>
-</ul>
-<h2 id="installation">Installation</h2>
-<p>The simplest way is to use <a href="http://bower.io/">bower</a>:</p>
-<pre><code class="lang-sh">$ bower install better-dom
-</code></pre>
-<p>This will clone the latest version of the <strong>better-dom</strong> with dependencies into the <code>bower_components</code> directory at the root of your project. Then just include the script below on your web page:</p>
-<pre><code class="lang-html">&lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
-</code></pre>
-<p>If you need to support IE8-9 please read <a href="#notes-about-old-ies">the section below</a>.</p>
-<h2 id="documentation">Documentation</h2>
-<ul>
-<li>Read the <a href="https://github.com/chemerisuk/better-dom/wiki/FAQ">FAQ</a></li>
-<li>Take a look at the <a href="https://github.com/chemerisuk/better-dom/wiki">better-dom wiki</a></li>
-<li>Check <a href="https://github.com/chemerisuk/better-dom/releases">releases tab</a> for getting the changes log</li>
-<li>Walk through the sorce code of existing <a href="http://bower.io/search/?q=better-dom">projects that use better-dom</a>.</li>
-</ul>
-<h2 id="contributing">Contributing</h2>
-<p>In order to modify the source code you have to install <a href="http://gulpjs.com">gulp</a> globally:</p>
-<pre><code class="lang-sh">$ npm install -g gulp
-</code></pre>
-<p>The project uses set of ES6 transpilers to compile the output file. You can use command below to start development: </p>
-<pre><code class="lang-sh">$ npm start
-</code></pre>
-<p>After any change it recompiles <code>build/better-dom.js</code> and runs unit tests automatically.</p>
-<h2 id="notes-about-old-ies">Notes about old IEs</h2>
-<p>For IE8-9 support you have to incude an extra file via the conditional comment below <strong>before end of the <code>&lt;head&gt;</code></strong> on your page:</p>
-<pre><code class="lang-html">&lt;html&gt;
-&lt;head&gt;
-...
-&lt;!--[if IE]&gt;
-    &lt;script src=&quot;bower_components/better-dom/dist/better-dom-legacy.js&quot;&gt;&lt;/script&gt;
-&lt;![endif]--&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    ...
-    &lt;script src=&quot;bower_components/better-dom/dist/better-dom.js&quot;&gt;&lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>This file contains several important addons for IE8-9:</p>
-<ol>
-<li><a href="https://github.com/kriskowal/es5-shim">es5-shim</a> is used to polyfill/fix missed standards-based functions</li>
-<li><a href="https://github.com/aFarkas/html5shiv">html5shiv</a> solves issue with HTML5 tags in IE8</li>
-<li>polyfill/fix for the <code>input</code> event in IE8-9</li>
-<li><code>change</code> event fix for checkboxes and radio buttons in IE8</li>
-<li>fix for bubbling of the <code>submit</code> and <code>reset</code> events in IE8</li>
-</ol>
-<p>Later the library downloads <code>better-dom-legacy.htc</code> file. This file helps to implement <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> support and should be in the same folder with <code>better-dom-legacy.js</code>. And that fact applies several important limitations which you should be aware of in case when IE8-9 support is needed:</p>
-<p>1) <a href="http://msdn.microsoft.com/en-us/library/ms531079(v=vs.85">HTC behaviors</a>.aspx) have to serve up with a <code>content-type</code> header of “text/x-component”, otherwise IE will simply ignore the file. Many web servers are preconfigured with the correct <code>content-type</code>, but others are not:</p>
-<pre><code>AddType text/x-component .htc
-</code></pre><p>2) IE requires that the HTC file must be in the same domain with as the HTML page which uses it. If you try to load the behavior from a different domain, you will get an “Access Denied” error.</p>
-<h2 id="browser-support">Browser support</h2>
-<h4 id="desktop">Desktop</h4>
-<ul>
-<li>Chrome</li>
-<li>Safari 6.0+</li>
-<li>Firefox 16+</li>
-<li>Internet Explorer 8+ (see <a href="#notes-about-old-ies">notes</a>)</li>
-<li>Opera 12.10+</li>
-</ul>
-<h4 id="mobile">Mobile</h4>
-<ul>
-<li>iOS Safari 6+</li>
-<li>Android 2.3+</li>
-<li>Chrome for Android</li>
-</ul>
-<p>Opera Mini is out of the scope because of lack of support for CSS3 Animations.</p>
-</article>
-    </section>
-
-
-
-
 
 
 
@@ -407,7 +300,7 @@
     
 <header>
     <h2>
-    better-dom.js
+    DOM
     </h2>
     
 </header>  
@@ -418,16 +311,13 @@
     
     
         
-            <div class="description">better-dom: Live extension playground</div>
+            <div class="description">Global namespace to access the document object tree</div>
         
         
         
 <dl class="details">
     
         
-    
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.1.3 Wed, 28 Jan 2015 18:13:21 GMT</li></ul></dd>
     
     
     
@@ -437,13 +327,6 @@
     
     
     
-    <dt class="tag-copyright">Copyright:</dt>
-    <dd class="tag-copyright"><ul class="dummy"><li>2013-2015 Maksim Chemerisuk</li></ul></dd>
-    
-    
-    
-    <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
     
     
     
@@ -451,12 +334,6 @@
     
     
     
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom">https://github.com/chemerisuk/better-dom</a></li>
-        </ul>
-    </dd>
     
     
     
@@ -468,6 +345,11 @@
     </div>
     
     
+        <h3 class="subsection-title">Extends</h3>
+        
+        <ul>
+            <li><a href="$Document.html">$Document</a></li>
+        </ul>
     
     
     
@@ -481,43 +363,224 @@
     
     
     
+        <h3 class="subsection-title">Methods</h3>
+        
+        <dl>
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="cancelFrame">
+            
+            <span class="type-signature static">static</span>DOM.cancelFrame<span class="signature">(frameId)</span>
+        </h4>
     
-    
-    
-</article>
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2573">line 2573</a>
+        </div>
+        
+    </div>
 
-</section>  
-
-
-
-
-
-
-<section>
     
-<header>
-    <h2>
-    better-dom.min.js
-    </h2>
+</dt>
+<dd>
     
-</header>  
+    
+    <div class="description">
+        Cancel a scheduled frame
+    </div>
+    
 
-<article>
-    <div class="container-overview">
+    
+    
     
     
     
         
-            <div class="description">better-dom: Live extension playground</div>
-        
-        
-        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>frameId</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                id of the frame</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
 <dl class="details">
     
         
     
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.1.2 Thu, 22 Jan 2015 17:49:22 GMT</li></ul></dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>var frameId = DOM.requestFrame(function() {
+  div.remove();
+});
+// div won't be removed
+DOM.cancelFrame(frameId);</code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="constructor">
+            
+            <span class="type-signature static">static</span>DOM.constructor<span class="signature">(<span class="optional">node</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>|<a href="$Document.html">$Document</a>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2483">line 2483</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Create a <a href="$Element.html"><code>$Element</code></a> for a native DOM element
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                native element</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
     
     
     
@@ -527,13 +590,180 @@
     
     
     
-    <dt class="tag-copyright">Copyright:</dt>
-    <dd class="tag-copyright"><ul class="dummy"><li>2013-2015 Maksim Chemerisuk</li></ul></dd>
     
     
     
-    <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+wrapper object
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>var bodyEl = DOM.constructor(document.body);
+// bodyEl is an instance of $Element
+bodyEl.hide();</code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="emmet">
+            
+            <span class="type-signature static">static</span>DOM.emmet<span class="signature">(template, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{String}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line234">line 234</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Parse emmet-like template and return resulting HTML string
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>template</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                input EmmetString</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                key/value map of variables</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
     
     
     
@@ -544,7 +774,9 @@
     <dt class="tag-see">See:</dt>
     <dd class="tag-see">
         <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom">https://github.com/chemerisuk/better-dom</a></li>
+            <li><a href="https://github.com/chemerisuk/better-dom/wiki/Microtemplating">https://github.com/chemerisuk/better-dom/wiki/Microtemplating</a></li>
+        
+            <li><a href="http://docs.emmet.io/cheat-sheet/">http://docs.emmet.io/cheat-sheet/</a></li>
         </ul>
     </dd>
     
@@ -552,11 +784,149 @@
     
 </dl>
 
-        
-        
     
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+resulting HTML string
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.emmet("a");                                    // => '&lt;a>&lt;/a>'
+DOM.emmet("ul>li*2");                              // => '&lt;ul>&lt;li>&lt;/li>&lt;li>&lt;/li>&lt;/ul>'
+DOM.emmet("b>`hello {user}`", {user: "world"});    // => '&lt;b>hello world&lt;/b>'
+DOM.emmet("i.{0}+span", ["icon"]);                 // => '&lt;i class="icon">&lt;/i>&lt;span>&lt;/span>'
+DOM.emmet("i.{a}>span#{b}", {a: "foo", b: "bar"}); // => '&lt;i class="foo">&lt;span id="bar">&lt;/span>&lt;/i>'</code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="format">
+            
+            <span class="type-signature static">static</span>DOM.format<span class="signature">(tmpl, varMap)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{String}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2503">line 2503</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Formats a template string using variables
     </div>
     
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>tmpl</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                template string</td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>varMap</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                key/value map of variables</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
     
     
     
@@ -569,6 +939,260 @@
     
     
     
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+resulting string
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.format("foo {name}", {name: "bar"}); // => "foo bar"
+DOM.format("your {0}", ["title"]); // => "your title"</code></pre>
+    
+
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="noConflict">
+            
+            <span class="type-signature static">static</span>DOM.noConflict<span class="signature">()</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2590">line 2590</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Restores original DOM namespace
+    </div>
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+DOM namespace
+<br />
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="requestFrame">
+            
+            <span class="type-signature static">static</span>DOM.requestFrame<span class="signature">(callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Number}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2545">line 2545</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        Executes a callback in the next frame
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Fuction</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                function to execute in the next frame</td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+
+
+<h5>Returns:</h5>
+id of the frame
+<br />
+
+    
+    
+    
+        <h5>Example</h5>
+        
+
+    
+    <pre class="prettyprint"><code>DOM.requestFrame(function() {
+  // postpone removing a div to the next frame
+  div.remove();
+});</code></pre>
+    
+
+    
+</dd>
+
+        </dl>
     
     
     
