@@ -40,13 +40,13 @@ If you need to support IE8-9 please read [the section below](#notes-about-old-ie
 * Walk through the sorce code of existing [projects that use better-dom](http://bower.io/search/?q=better-dom).
 
 ## Contributing
-In order to modify the source code you have to have [gulp](http://gulpjs.com) installed globally:
+In order to modify the source code you have to install [gulp](http://gulpjs.com) globally:
 
 ```sh
 $ npm install -g gulp
 ```
 
-The project uses set of ES6 transpilers to compile an output file. You can use the command below to start development: 
+The project uses set of ES6 transpilers to compile the output file. You can use command below to start development: 
 
 ```sh
 $ npm start

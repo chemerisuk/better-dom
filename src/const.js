@@ -21,10 +21,11 @@ export const RETURN_THIS = function() { return this };
 export const RETURN_TRUE = () => true;
 export const RETURN_FALSE = () => false;
 
-export const DOM = new $Document(DOCUMENT);
-
 /**
  * Global namespace to access the document object tree
  * @namespace DOM
  * @extends {$Document}
  */
+var DOM = new $Document(DOCUMENT);
+
+export { DOM };
