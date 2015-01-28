@@ -1,15 +1,14 @@
 import { keys } from "../util/index";
-import { HTML } from "../const";
+import { VENDOR_PREFIXES, HTML } from "../const";
 
 // Helper for CSS properties access
 
 var reDash = /\-./g,
-    cssPrefixes = ["Webkit", "O", "Moz", "ms"],
     hooks = {get: {}, set: {}, find(name, style) {
         var propName = name.replace(reDash, (str) => str[1].toUpperCase());
 
         if (!(propName in style)) {
-            propName = cssPrefixes
+            propName = VENDOR_PREFIXES
                 .map((prefix) => prefix + propName[0].toUpperCase() + propName.slice(1))
                 .filter((prop) => prop in style)[0];
         }
@@ -26,7 +25,7 @@ var reDash = /\-./g,
     };
 
 // Exclude the following css properties from adding px
-" float fill-opacity font-weight line-height opacity orphans widows z-index zoom ".split(" ").forEach((propName) => {
+"float fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" ").forEach((propName) => {
     var stylePropName = propName.replace(reDash, (str) => str[1].toUpperCase());
 
     if (propName === "float") {

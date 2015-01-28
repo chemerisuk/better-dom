@@ -1,15 +1,13 @@
-import { HTML } from "../const";
+import { HTML, VENDOR_PREFIXES } from "../const";
 
 /* es6-transpiler has-iterators:false, has-generators: false */
 
 // Helper for css selectors
 
 var rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
-    propName = "m oM msM mozM webkitM".split(" ").reduce((result, prefix) => {
-            var propertyName = prefix + "atchesSelector";
-
-            return result || HTML[propertyName] && propertyName;
-        }, null);
+    propName = VENDOR_PREFIXES.concat(null)
+        .map((p) => (p ? p.toLowerCase() + "M" : "m") + "atchesSelector")
+        .reduceRight((propName, p) => propName || p in HTML && p, null);
 
 export default function(selector, context) {
     if (typeof selector !== "string") return null;

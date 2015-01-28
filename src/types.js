@@ -20,9 +20,8 @@ function $Element(node) {
             };
         }
     } else if (node) {
-        var cached = node["<%= prop() %>"];
         // create a wrapper only once for each native element
-        return cached ? cached : new $Element(node);
+        return node["<%= prop() %>"] || new $Element(node);
     } else {
         return new $NullElement();
     }

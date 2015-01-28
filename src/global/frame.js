@@ -1,4 +1,4 @@
-import { DOM, WINDOW } from "../const";
+import { DOM, WINDOW, VENDOR_PREFIXES } from "../const";
 
 var raf = WINDOW.requestAnimationFrame,
     craf = WINDOW.cancelAnimationFrame,
@@ -6,7 +6,9 @@ var raf = WINDOW.requestAnimationFrame,
 
 /* istanbul ignore else */
 if (!(raf && craf)) {
-    ["ms", "moz", "webkit", "o"].forEach((prefix) => {
+    VENDOR_PREFIXES.forEach((prefix) => {
+        prefix = prefix.toLowerCase();
+
         raf = raf || WINDOW[prefix + "RequestAnimationFrame"];
         craf = craf || WINDOW[prefix + "CancelAnimationFrame"];
     });
