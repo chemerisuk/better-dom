@@ -1,6 +1,6 @@
 /**
  * @overview better-dom: Live extension playground
- * @version 2.1.3 Sat, 24 Jan 2015 15:18:02 GMT
+ * @version 2.1.4 Sun, 22 Mar 2015 19:22:57 GMT
  * @copyright 2013-2015 Maksim Chemerisuk
  * @license MIT
  * @see https://github.com/chemerisuk/better-dom
@@ -14,20 +14,19 @@
             if (node) {
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__2001003__"] = this;
+                node["__2001004__"] = this;
 
                 this[0] = node;
                 this._ = {
-                    "handler2001003": [],
-                    "watcher2001003": {},
-                    "extension2001003": [],
-                    "context2001003": {}
+                    "handler2001004": [],
+                    "watcher2001004": {},
+                    "extension2001004": [],
+                    "context2001004": {}
                 };
             }
         } else if (node) {
-            var cached = node["__2001003__"];
             // create a wrapper only once for each native element
-            return cached ? cached : new $Element(node);
+            return node["__2001004__"] || new $Element(node);
         } else {
             return new $NullElement();
         }
@@ -42,7 +41,7 @@
         toString: function() {
             return "<" + this[0].tagName.toLowerCase() + ">";
         },
-        version: "2.1.3"
+        version: "2.1.4"
     };
 
     $NullElement.prototype = new $Element();
@@ -50,6 +49,25 @@
 
     $Document.prototype = new $Element();
     $Document.prototype.toString = function()  {return "#document"};
+
+    var WINDOW = window;
+    var DOCUMENT = document;
+    var HTML = DOCUMENT.documentElement;
+
+    var CUSTOM_EVENT_TYPE = "dataavailable";
+    var RETURN_THIS = function() { return this };
+    var RETURN_TRUE = function()  {return true};
+    var RETURN_FALSE = function()  {return false};
+    var VENDOR_PREFIXES = ["Webkit", "O", "Moz", "ms"];
+
+    var userAgent = WINDOW.navigator.userAgent;
+    var jscriptVersion = WINDOW.ScriptEngineMajorVersion;
+
+    var JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
+    var LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
+    var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
+
+    var DOM = new $Document(DOCUMENT);
 
     var util$index$$arrayProto = Array.prototype;
 
@@ -104,23 +122,6 @@
             }
         });
     }
-    var WINDOW = window;
-    var DOCUMENT = document;
-    var HTML = DOCUMENT.documentElement;
-
-    var userAgent = WINDOW.navigator.userAgent;
-    var jscriptVersion = WINDOW.ScriptEngineMajorVersion;
-
-    var JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
-    var LEGACY_ANDROID = ~userAgent.indexOf("Android") && userAgent.indexOf("Chrome") < 0;
-    var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
-    var CUSTOM_EVENT_TYPE = "dataavailable";
-    var RETURN_THIS = function() { return this };
-    var RETURN_TRUE = function()  {return true};
-    var RETURN_FALSE = function()  {return false};
-
-    var DOM = new $Document(DOCUMENT);
-
     function MethodError(methodName, args) {var type = arguments[2];if(type === void 0)type = "$Element";
         var url = "http://chemerisuk.github.io/better-dom/" + type + ".html#" + methodName,
             line = "invalid call `" + type + (type === "DOM" ? "." : "#") + methodName + "(";
@@ -316,11 +317,11 @@
 
     }, function(methodName, all)  {return function(value, varMap) {
         var doc = this[0].ownerDocument,
-            sandbox = this._["sandbox2001003"];
+            sandbox = this._["sandbox2001004"];
 
         if (!sandbox) {
             sandbox = doc.createElement("div");
-            this._["sandbox2001003"] = sandbox;
+            this._["sandbox2001004"] = sandbox;
         }
 
         var nodes, el;
@@ -361,11 +362,9 @@
     // Helper for css selectors
 
     var util$selectormatcher$$rquickIs = /^(\w*)(?:#([\w\-]+))?(?:\[([\w\-\=]+)\])?(?:\.([\w\-]+))?$/,
-        util$selectormatcher$$propName = "m oM msM mozM webkitM".split(" ").reduce(function(result, prefix)  {
-                var propertyName = prefix + "atchesSelector";
-
-                return result || HTML[propertyName] && propertyName;
-            }, null);
+        util$selectormatcher$$propName = VENDOR_PREFIXES.concat(null)
+            .map(function(p)  {return (p ? p.toLowerCase() + "M" : "m") + "atchesSelector"})
+            .reduceRight(function(propName, p)  {return propName || p in HTML && p}, null);
 
     var util$selectormatcher$$default = function(selector, context) {
         if (typeof selector !== "string") return null;
@@ -421,9 +420,9 @@
         return function(node, mock)  {
             var el = $Element(node);
             // skip previously invoked or mismatched elements
-            if (~el._["extension2001003"].indexOf(index) || !matcher(node)) return;
+            if (~el._["extension2001004"].indexOf(index) || !matcher(node)) return;
             // mark extension as invoked
-            el._["extension2001003"].push(index);
+            el._["extension2001004"].push(index);
 
             if (mock === true || condition(el) !== false) {
                 // apply all private/public members to the element's interface
@@ -467,7 +466,7 @@
 
         document$extend$$cssText = "-ms-behavior:url(" + document$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important";
     } else {
-        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001003 !important;";
+        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM2001004 !important;";
         document$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
     }
 
@@ -492,10 +491,10 @@
             if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new DocumentTypeError("extend", arguments);
 
             var node = this[0],
-                mappings = this._["mappings2001003"];
+                mappings = this._["mappings2001004"];
 
             if (!mappings) {
-                this._["mappings2001003"] = mappings = [];
+                this._["mappings2001004"] = mappings = [];
 
                 if (JSCRIPT_VERSION < 10) {
                     node.attachEvent("on" + CUSTOM_EVENT_TYPE, function()  {
@@ -507,10 +506,10 @@
                     });
                 } else {
                     // declare the fake animation on the first DOM.extend method call
-                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001003", "from {opacity:.99} to {opacity:1}");
+                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM2001004", "from {opacity:.99} to {opacity:1}");
                     // use capturing to suppress internal animationstart events
                     node.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function(e)  {
-                        if (e.animationName === "DOM2001003") {
+                        if (e.animationName === "DOM2001004") {
                             mappings.forEach(function(ext)  { ext(e.target) });
                             // this is an internal event - stop it immediately
                             e.stopImmediatePropagation();
@@ -563,7 +562,7 @@
 
     util$index$$register({
         importStyles: function(selector, cssText) {
-            var styleSheet = this._["styles2001003"];
+            var styleSheet = this._["styles2001004"];
 
             if (!styleSheet) {
                 var doc = this[0].ownerDocument,
@@ -571,7 +570,7 @@
 
                 styleSheet = styleNode.sheet || styleNode.styleSheet;
                 // store object internally
-                this._["styles2001003"] = styleSheet;
+                this._["styles2001004"] = styleSheet;
             }
 
             if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -603,14 +602,16 @@
             if (!content) return new $NullElement();
 
             var result = this.create(content, varMap),
-                mappings = this._["mappings2001003"],
+                mappings = this._["mappings2001004"],
                 applyExtensions = function(node)  {
                     mappings.forEach(function(ext)  { ext(node, true) });
 
                     util$index$$each.call(node.children, applyExtensions);
                 };
 
-            applyExtensions(result[0]);
+            if (mappings && mappings.length) {
+                applyExtensions(result[0]);
+            }
 
             return result;
         }
@@ -749,12 +750,11 @@
     // Helper for CSS properties access
 
     var util$stylehooks$$reDash = /\-./g,
-        util$stylehooks$$cssPrefixes = ["Webkit", "O", "Moz", "ms"],
         util$stylehooks$$hooks = {get: {}, set: {}, find: function(name, style) {
             var propName = name.replace(util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
 
             if (!(propName in style)) {
-                propName = util$stylehooks$$cssPrefixes
+                propName = VENDOR_PREFIXES
                     .map(function(prefix)  {return prefix + propName[0].toUpperCase() + propName.slice(1)})
                     .filter(function(prop)  {return prop in style})[0];
             }
@@ -771,7 +771,7 @@
         };
 
     // Exclude the following css properties from adding px
-    " float fill-opacity font-weight line-height opacity orphans widows z-index zoom ".split(" ").forEach(function(propName)  {
+    "float fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" ").forEach(function(propName)  {
         var stylePropName = propName.replace(util$stylehooks$$reDash, function(str)  {return str[1].toUpperCase()});
 
         if (propName === "float") {
@@ -987,7 +987,7 @@
                 if ( (old = node.getAttribute("id")) ) {
                     nid = old.replace(element$find$$rescape, "\\$&");
                 } else {
-                    nid = "DOM2001003";
+                    nid = "DOM2001004";
                     node.setAttribute("id", nid);
                 }
 
@@ -1026,7 +1026,7 @@
 
     function util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget) {
         if (typeof name === "number") {
-            var args = e["__2001003__"];
+            var args = e["__2001004__"];
 
             return args ? args[name] : void 0;
         }
@@ -1100,7 +1100,7 @@
                     args = args.map(function(name)  {return util$eventhandler$$getEventProperty(
                         name, e, type, node, target, currentTarget)});
                 } else {
-                    args = util$index$$slice.call(e["__2001003__"] || [0], 1);
+                    args = util$index$$slice.call(e["__2001004__"] || [0], 1);
                 }
 
                 // prevent default if handler returns false
@@ -1145,7 +1145,7 @@
             }
             if (JSCRIPT_VERSION < 9) {
                 e = node.ownerDocument.createEventObject();
-                e["__2001003__"] = arguments;
+                e["__2001004__"] = arguments;
                 // handle custom events for legacy IE
                 if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
@@ -1156,7 +1156,7 @@
                 canContinue = e.returnValue !== false;
             } else {
                 e = node.ownerDocument.createEvent("HTMLEvents");
-                e["__2001003__"] = arguments;
+                e["__2001004__"] = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
             }
@@ -1398,7 +1398,7 @@
 
             var node = this[0];
 
-            this._["handler2001003"] = this._["handler2001003"].filter(function(handler)  {
+            this._["handler2001004"] = this._["handler2001004"].filter(function(handler)  {
                 var skip = type !== handler.type;
 
                 skip = skip || selector && selector !== handler.selector;
@@ -1478,7 +1478,7 @@
                 node.addEventListener(handler._type || type, handler, !!handler.capturing);
             }
             // store event entry
-            this._["handler2001003"].push(handler);
+            this._["handler2001004"].push(handler);
         } else if (typeof type === "object") {
             if (util$index$$isArray(type)) {
                 type.forEach(function(name)  { this$0[method](name, selector, args, callback) });
@@ -1497,7 +1497,7 @@
             var node = this[0];
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._["watcher2001003"][name],
+                watchers = this._["watcher2001004"][name],
                 oldValue;
 
             if (watchers) {
@@ -1603,7 +1603,7 @@
                 }
 
                 return node[name];
-            } else if (content instanceof $Element) {
+            } else if ((content instanceof $Element) || Array.isArray(content)) {
                 return this.set("").append(content);
             }
 
@@ -1640,7 +1640,9 @@
 
             return this.set(name, content);
         }
-    }, null, function()  {return RETURN_THIS});
+    }, null, function()  {return function() {
+        if (arguments.length) return this;
+    }});
 
     var util$animationhandler$$TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map(function(prop)  {return "transition-" + prop}),
         util$animationhandler$$parseTimeValue = function(value)  {
@@ -1763,7 +1765,7 @@
             style = node.style,
             computed = util$index$$computeStyle(node),
             hiding = condition,
-            frameId = this._["frame2001003"],
+            frameId = this._["frame2001004"],
             done = function()  {
                 if (animationHandler) {
                     node.removeEventListener(eventType, animationHandler, true);
@@ -1777,7 +1779,7 @@
                 // from setting cssText because of Opera 12 quirks
                 style.visibility = hiding ? "hidden" : "inherit";
 
-                this$0._["frame2001003"] = null;
+                this$0._["frame2001004"] = null;
 
                 if (callback) callback(this$0);
             };
@@ -1799,7 +1801,7 @@
             // use requestAnimationFrame to avoid animation quirks for
             // new elements inserted into the DOM
             // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-            this._["frame2001003"] = DOM.requestFrame(!animationHandler ? done : function()  {
+            this._["frame2001004"] = DOM.requestFrame(!animationHandler ? done : function()  {
                 node.addEventListener(eventType, animationHandler, true);
                 // update modified style rules
                 style.cssText = animationHandler.initialCssText + animationHandler.cssText;
@@ -1813,7 +1815,7 @@
 
     util$index$$register({
         watch: function(name, callback) {
-            var watchers = this._["watcher2001003"];
+            var watchers = this._["watcher2001004"];
 
             if (!watchers[name]) watchers[name] = [];
 
@@ -1823,7 +1825,7 @@
         },
 
         unwatch: function(name, callback) {
-            var watchers = this._["watcher2001003"];
+            var watchers = this._["watcher2001004"];
 
             if (watchers[name]) {
                 watchers[name] = watchers[name].filter(function(w)  {return w !== callback});
@@ -1865,7 +1867,9 @@
         global$frame$$lastTime = 0;
 
     if (!(global$frame$$raf && global$frame$$craf)) {
-        ["ms", "moz", "webkit", "o"].forEach(function(prefix)  {
+        VENDOR_PREFIXES.forEach(function(prefix)  {
+            prefix = prefix.toLowerCase();
+
             global$frame$$raf = global$frame$$raf || WINDOW[prefix + "RequestAnimationFrame"];
             global$frame$$craf = global$frame$$craf || WINDOW[prefix + "CancelAnimationFrame"];
         });
