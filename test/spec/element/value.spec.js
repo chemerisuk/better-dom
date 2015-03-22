@@ -20,6 +20,14 @@ describe("$Element#value", function() {
         expect(input).toHaveProp("value", "bar");
     });
 
+    it("supports array of elements", function() {
+        var content = DOM.createAll("b*5");
+
+        expect(div[0].childNodes.length).toBe(2);
+        div.value(content);
+        expect(div[0].childNodes.length).toBe(5);
+    });
+
     describe("getter", function() {
         it("handles different tags", function() {
             expect(div.value().toLowerCase()).toBe("<a></a><a></a>");
@@ -50,8 +58,6 @@ describe("$Element#value", function() {
             expect(select.child(0).get()).toBe("a1");
             expect(select.child(1).get()).toBe("a3");
         });
-
-
     });
 
     it("works for empty node", function() {

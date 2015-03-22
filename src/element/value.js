@@ -32,7 +32,7 @@ register({
             }
 
             return node[name];
-        } else if (content instanceof $Element) {
+        } else if ((content instanceof $Element) || Array.isArray(content)) {
             return this.set("").append(content);
         }
 
