@@ -3,7 +3,7 @@ import { DOM, WINDOW } from "./const";
 var _DOM = WINDOW.DOM;
 
 /**
- * Restores original DOM namespace
+ * Restore previous DOM namespace
  * @memberof DOM
  * @alias DOM.noConflict
  * @return {$Element} previous DOM namespace

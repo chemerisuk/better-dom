@@ -50,6 +50,15 @@ describe("$Element#value", function() {
             expect(select.child(0).get()).toBe("a1");
             expect(select.child(1).get()).toBe("a3");
         });
+
+
+    });
+
+    it("works for empty node", function() {
+        var foo = DOM.find("x-foo");
+
+        expect(foo.value()).toBeUndefined();
+        expect(foo.value("123")).toBe(foo);
     });
 
     // it("should set value of text input to string value of provided element", function () {

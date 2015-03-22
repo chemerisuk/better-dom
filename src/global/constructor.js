@@ -2,7 +2,7 @@ import { DOM } from "../const";
 import { $Document, $Element } from "../types";
 
 /**
- * Create a {@link $Element} for a native DOM element
+ * Create an instance of {@link $Element} or {@link $Document} for a native element
  * @memberof DOM
  * @alias DOM.constructor
  * @param {Object}  [node]  native element

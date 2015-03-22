@@ -1,5 +1,5 @@
 import { register, every } from "../util/index";
-import { JSCRIPT_VERSION, RETURN_THIS } from "../const";
+import { JSCRIPT_VERSION } from "../const";
 import { $Element } from "../types";
 
 register({
@@ -69,4 +69,6 @@ register({
 
         return this.set(name, content);
     }
-}, null, () => RETURN_THIS);
+}, null, () => function() {
+    if (arguments.length) return this;
+});

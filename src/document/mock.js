@@ -24,7 +24,9 @@ register({
                 each.call(node.children, applyExtensions);
             };
 
-        applyExtensions(result[0]);
+        if (mappings && mappings.length) {
+            applyExtensions(result[0]);
+        }
 
         return result;
     }
