@@ -60,9 +60,6 @@ register({
             return name.reduce((memo, key) => {
                 return memo[key] = this.get(key), memo;
             }, {});
-        } else if (name === void 0) {
-            // TODO: remove this line in future
-            return this.value();
         } else {
             throw new MethodError("get", arguments);
         }

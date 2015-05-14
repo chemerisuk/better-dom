@@ -33,7 +33,7 @@ register({
 
             return node[name];
         } else if ((content instanceof $Element) || Array.isArray(content)) {
-            return this.set("").append(content);
+            return this.set("innerHTML", "").append(content);
         }
 
         if (typeof content === "function") {

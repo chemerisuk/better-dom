@@ -35,11 +35,6 @@ describe("set", function() {
         // expect(link.set(undefined)).toHaveHtml("");
     });
 
-    it("should accept primitive types", function() {
-        expect(link.set(1)).toHaveHtml("1");
-        expect(link.set(true)).toHaveHtml("true");
-    });
-
     it("should accept function", function() {
         var spy = jasmine.createSpy("setter").and.returnValue("test_changed");
 
@@ -63,11 +58,11 @@ describe("set", function() {
         expect(link).toHaveAttr("autocorrect", "off");
     });
 
-    it("should polyfill textContent", function() {
+    it("polyfills textContent", function() {
         expect(link.get("textContent")).toBe("set-test");
         link.set("textContent", "<i>changed</i>");
         expect(link.get("textContent")).toBe("<i>changed</i>");
-        expect(link.get()).toBe("&lt;i&gt;changed&lt;/i&gt;");
+        expect(link).toHaveHtml("&lt;i&gt;changed&lt;/i&gt;");
     });
 
     it("should throw error if argument is invalid", function() {
@@ -123,54 +118,6 @@ describe("set", function() {
             expect(input.set("_nmb", nmb).get("_nmb")).toEqual(nmb);
             expect(input.set("_func", func).get("_func")).toEqual(func);
         });
-    });
-
-    describe("setter", function() {
-        it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
-            var value = "set-test-changed";
-
-            link.set(value);
-            input.set(value);
-
-            expect(link).toHaveHtml(value);
-            expect(input).toHaveProp("value", value);
-        });
-
-        it("should set select value properly", function() {
-            var select = DOM.create("<select><option>AM</option><option>PM</option></select>");
-
-            expect(select.get()).toBe("AM");
-            select.set("PM");
-            expect(select.get()).toBe("PM");
-            select.set("MM");
-            expect(select.get()).toBe("");
-        });
-
-        it("should accept function", function() {
-            var spy = jasmine.createSpy("set").and.returnValue("ok");
-
-            link.set(spy);
-            input.set(spy);
-
-            expect(spy.calls.count()).toBe(2);
-
-            expect(link).toHaveHtml("ok");
-            expect(input).toHaveProp("value", "ok");
-        });
-
-        // it("accept object with overriden toString", function() {
-        //     function Type() {
-        //         this.name = "bar";
-        //     }
-
-        //     Type.prototype.toString = function() {
-        //         return "foo";
-        //     };
-
-        //     input.set(new Type());
-        //     expect(input.get()).toBe("foo");
-        //     expect(input).not.toHaveAttr("name", "bar");
-        // });
     });
 
 });

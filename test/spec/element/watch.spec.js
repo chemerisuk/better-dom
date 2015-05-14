@@ -92,11 +92,11 @@ describe("watch", function() {
             });
 
             input.watch("value", spy);
-            input.set("test2");
+            input.value("test2");
         });
 
         link.watch("innerHTML", spy);
-        link.set("test1");
+        link.value("test1");
     });
 
     it("does nothing for empty nodes", function() {

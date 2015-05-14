@@ -79,7 +79,7 @@ describe("manipulation", function() {
             });
         });
 
-        it("should accept DOMElement", function() {
+        it("accept DOMElement", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 //var arg = DOM.create(createDiv(strategy));
                 var arg = DOM.create(createDivHtml(strategy)),
@@ -87,7 +87,7 @@ describe("manipulation", function() {
 
                 expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
 
-                otherDiv.set("<section>This <mark>highlighted</mark>?</section>");
+                otherDiv.value("<section>This <mark>highlighted</mark>?</section>");
 
                 expect(checkMethod(div[strategy](otherDiv))).toHaveTag("div");
                 expect(otherDiv.find("section")).toHaveTag("section");

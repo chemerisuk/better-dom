@@ -28,11 +28,6 @@ register({
             oldValue = this.get(name);
         }
 
-        if (arguments.length === 1 && typeof name !== "object") {
-            // TODO: remove this check in future
-            return this.value(name);
-        }
-
         if (typeof name === "string") {
             if (name[0] === "_") {
                 this._[name.slice(1)] = value;

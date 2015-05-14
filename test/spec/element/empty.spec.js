@@ -5,7 +5,7 @@ describe("empty", function() {
         div = DOM.create("div>a+a");
     });
 
-    it("should remove child element(s) from DOM", function() {
+    it("removes child element(s) from DOM", function() {
         expect(div[0].childNodes.length).toBe(2);
         expect(div.empty()).toBe(div);
         expect(div).toBeEmpty();

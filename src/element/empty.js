@@ -13,6 +13,6 @@ register({
      * div.empty();                     // <div></div>
      */
     empty() {
-        return this.set("");
+        return this.value("");
     }
 }, null, () => RETURN_THIS);
