@@ -19,7 +19,7 @@ describe("create", function() {
         expect(el).toHaveTag("a");
         expect(el.child(0)).toHaveTag("span");
 
-        expect(DOM.createAll("a+b").length).toBe(2);
+        expect(DOM.createAll("<a></a><b></b>").length).toBe(2);
     });
 
     it("should accept empty strings", function() {
@@ -43,15 +43,6 @@ describe("create", function() {
         expect(el).toHaveHtml("yo");
     });
 
-    it("should parse emmet-like expressions", function() {
-        var el = DOM.create("ul>li");
-
-        jasmine.sandbox.set(el);
-
-        expect(el).toHaveTag("ul");
-        expect(el.child(0)).toHaveTag("li");
-    });
-
     it("should throw error if argument is invalid", function() {
         expect(function() { DOM.create(2); }).toThrow();
         // expect(function() { DOM.create(null); }).toThrow();
@@ -60,21 +51,21 @@ describe("create", function() {
 
     describe("createAll", function() {
         it("should always return array of elements", function() {
-            var els = DOM.createAll("a");
+            var els = DOM.createAll("<a></a>");
 
             expect(Array.isArray(els)).toBeTruthy();
             expect(els[0]).toHaveTag("a");
         });
 
-        it("should wrap element to div if HTML string has several root nodes", function() {
-            var el = DOM.createAll("a+b");
+        it("wraps element to div if HTML string has several root nodes", function() {
+            var el = DOM.createAll("<a></a><b></b>");
 
             expect(el[0]).toHaveTag("a");
             expect(el[1]).toHaveTag("b");
         });
 
-        it("should skip non elements", function() {
-            var links = DOM.createAll("a+`text`+a");
+        it("skips non elements", function() {
+            var links = DOM.createAll("<a></a>text<a></a>");
 
             expect(links.length).toBe(2);
             expect(links[0]).toHaveTag("a");

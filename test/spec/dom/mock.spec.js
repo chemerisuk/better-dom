@@ -67,15 +67,6 @@ describe("DOM.mock", function() {
         expect(el.c).toBe(9);
     });
 
-    it("should accept Emmet variables", function() {
-        var el;
-
-        DOM.extend(".mock6", function() { return true }, { d: 2 });
-        el = DOM.mock("a.mock6[title={title}]", {title: "c"});
-        expect(el.d).toBe(2);
-        expect(el.get("title")).toBe("c");
-    });
-
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.mock(1); }).toThrow();
     });

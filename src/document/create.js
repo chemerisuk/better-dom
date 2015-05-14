@@ -5,10 +5,10 @@ import { register } from "../util/index";
 
 register({
     /**
-     * Create a new {@link $Element} from Emmet or HTML string
+     * Create a new {@link $Element} from a HTML string
      * @memberof $Document#
      * @alias $Document#create
-     * @param  {String}       value     Emmet or HTML string
+     * @param  {String}       value     HTML string
      * @param  {Object|Array} [varMap]  key/value map of variables
      * @return {$Element} an element wrapper
      * @function
@@ -19,10 +19,10 @@ register({
      */
     create: "",
     /**
-     * Create a new array of {@link $Element}s from Emmet or HTML string
+     * Create a new array of {@link $Element}s from a HTML string
      * @memberof $Document#
      * @alias $Document#createAll
-     * @param  {String}       value     Emmet or HTML string
+     * @param  {String}       value     HTML string
      * @param  {Object|Array} [varMap]  key/value map of variables
      * @return {Array.<$Element>} an array of element wrappers
      * @function
@@ -48,15 +48,9 @@ register({
 
         if (all) nodes = [ new $Element(nodes) ];
     } else {
-        value = value.trim();
+        value = varMap ? DOM.format(value, varMap) : value;
 
-        if (value[0] === "<" && value[value.length - 1] === ">") {
-            value = varMap ? DOM.format(value, varMap) : value;
-        } else {
-            value = DOM.emmet(value, varMap);
-        }
-
-        sandbox.innerHTML = value; // parse input HTML string
+        sandbox.innerHTML = value.trim(); // parse input HTML string
 
         for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
             sandbox.removeChild(el); // detach element from the sandbox

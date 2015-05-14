@@ -2,7 +2,7 @@ describe("empty", function() {
     var div;
 
     beforeEach(function() {
-        div = DOM.create("div>a+a");
+        div = DOM.create("<div><a></a><a></a></div>");
     });
 
     it("removes child element(s) from DOM", function() {
@@ -12,7 +12,7 @@ describe("empty", function() {
     });
 
     it("should set text input value to empty string", function () {
-        var input = DOM.create("input[value=foo]");
+        var input = DOM.create("<input value='foo' />");
         expect(input).toHaveProp("value", "foo");
         expect(input.empty()).toBe(input);
         expect(input).toBeEmpty();

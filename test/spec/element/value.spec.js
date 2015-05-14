@@ -4,8 +4,8 @@ describe("$Element#value", function() {
     var div, input;
 
     beforeEach(function() {
-        div = DOM.create("div>a+a");
-        input = DOM.create("input[value=foo]");
+        div = DOM.create("<div><a><a></div>");
+        input = DOM.create("<input value='foo'>");
     });
 
     it("should replace child element(s) from node with provided element", function() {
@@ -21,7 +21,7 @@ describe("$Element#value", function() {
     });
 
     it("supports array of elements", function() {
-        var content = DOM.createAll("b*5");
+        var content = DOM.createAll("<b></b><b></b><b></b><b></b><b></b>");
 
         expect(div[0].childNodes.length).toBe(2);
         div.value(content);
@@ -72,7 +72,7 @@ describe("$Element#value", function() {
         });
 
         it("handles textarea", function() {
-            var textarea = DOM.create("textarea");
+            var textarea = DOM.create("<textarea>");
 
             expect(textarea.value()).toBe("");
             textarea.set("value", "123");

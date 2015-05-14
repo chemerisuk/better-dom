@@ -12,7 +12,7 @@ describe("children", function() {
     });
 
     it("should allow to filter children by selector", function() {
-        var list = DOM.create("ul>li*3");
+        var list = DOM.create("<ul><li></li><li></li><li></li></ul>");
 
         expect(list.children().length).toBe(3);
         expect(list.children("a").length).toBe(0);

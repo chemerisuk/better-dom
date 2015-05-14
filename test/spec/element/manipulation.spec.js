@@ -94,7 +94,7 @@ describe("manipulation", function() {
             });
         });
 
-        it("should access array of $Element", function() {
+        it("access array of $Element", function() {
             var sandbox = DOM.find("#" + jasmine.sandbox.id);
 
             _forIn(checkStrategies, function(_, strategy) {
@@ -163,7 +163,7 @@ describe("manipulation", function() {
     }
 
     function createArray(className) {
-        return DOM.createAll("i.{0}+b.{0}", [className]);
+        return DOM.createAll("<i class='{0}'></i><b class='{0}'></b>", [className]);
     }
 
     function expectToBeReplaced(id) {

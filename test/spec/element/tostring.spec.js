@@ -6,9 +6,9 @@ describe("Node", function() {
     // });
 
     it("should have overloaded toString", function() {
-        var link = DOM.create("a"),
-            input = DOM.create("input"),
-            spans = DOM.createAll("i+b"),
+        var link = DOM.create("<a>"),
+            input = DOM.create("<input>"),
+            spans = DOM.createAll("<i></i><b></b>"),
             empty = DOM.mock();
 
         expect(link.toString()).toBe("<a>");
