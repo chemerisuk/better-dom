@@ -83,7 +83,7 @@ describe("manipulation", function() {
             _forIn(checkStrategies, function(checkMethod, strategy) {
                 //var arg = DOM.create(createDiv(strategy));
                 var arg = DOM.create(createDivHtml(strategy)),
-                    otherDiv = DOM.create("div");
+                    otherDiv = DOM.create("<div>");
 
                 expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
 

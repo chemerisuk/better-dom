@@ -279,7 +279,7 @@ describe("extend", function() {
             test: function() { return 555 }
         });
 
-        expect(DOM.create("a").test()).toBe(555);
+        expect(DOM.create("<a>").test()).toBe(555);
 
         var mocked = DOM.mock();
 

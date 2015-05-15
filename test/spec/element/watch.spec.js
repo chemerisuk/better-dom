@@ -79,7 +79,7 @@ describe("watch", function() {
 
     it("should work for the value shortcut", function(done) {
         var spy = jasmine.createSpy("watcher"),
-            input = DOM.create("input");
+            input = DOM.create("<input>");
 
         spy.and.callFake(function() {
             expect(spy).toHaveBeenCalledWith("test1", "");

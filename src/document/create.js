@@ -1,6 +1,6 @@
 import { DOM } from "../const";
 import { $Element } from "../types";
-import tagCache from "../global/emmet";
+// import tagCache from "../global/emmet";
 import { register } from "../util/index";
 
 register({
@@ -43,29 +43,29 @@ register({
 
     var nodes, el;
 
-    if (value && value in tagCache) {
-        nodes = doc.createElement(value);
+    // if (value && value in tagCache) {
+    //     nodes = doc.createElement(value);
 
-        if (all) nodes = [ new $Element(nodes) ];
-    } else {
-        value = varMap ? DOM.format(value, varMap) : value;
+    //     if (all) nodes = [ new $Element(nodes) ];
+    // } else {
+    value = varMap ? DOM.format(value, varMap) : value;
 
-        sandbox.innerHTML = value.trim(); // parse input HTML string
+    sandbox.innerHTML = value.trim(); // parse input HTML string
 
-        for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
-            sandbox.removeChild(el); // detach element from the sandbox
+    for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
+        sandbox.removeChild(el); // detach element from the sandbox
 
-            if (el.nodeType === 1) {
-                if (all) {
-                    nodes.push(new $Element(el));
-                } else {
-                    nodes = el;
+        if (el.nodeType === 1) {
+            if (all) {
+                nodes.push(new $Element(el));
+            } else {
+                nodes = el;
 
-                    break; // stop early, because need only the first element
-                }
+                break; // stop early, because need only the first element
             }
         }
     }
+    // }
 
     return all ? nodes : $Element(nodes);
 });

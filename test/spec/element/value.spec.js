@@ -10,7 +10,7 @@ describe("$Element#value", function() {
 
     it("should replace child element(s) from node with provided element", function() {
         expect(div[0].childNodes.length).toBe(2);
-        expect(div.value(DOM.create("b"))).toBe(div);
+        expect(div.value(DOM.create("<b>"))).toBe(div);
         expect(div[0].childNodes.length).toBe(1);
         expect(div.child(0)).toHaveTag("b");
     });

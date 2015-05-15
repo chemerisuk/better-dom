@@ -46,7 +46,7 @@ describe("$Element#define", function() {
     var el;
 
     beforeEach(function() {
-        el = DOM.mock("div");
+        el = DOM.mock("<div>");
     });
 
     it("updates attribute if setter returns a value", function() {

@@ -2,7 +2,7 @@ describe("$Element#map", function() {
     var el;
 
     beforeEach(function() {
-        el = DOM.create("a");
+        el = DOM.create("<a>");
     });
 
     it("applies function and returns array", function() {
