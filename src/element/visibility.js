@@ -1,6 +1,6 @@
 import { register, computeStyle } from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, WEBKIT_PREFIX, RETURN_THIS } from "../const";
+import { WINDOW, WEBKIT_PREFIX, RETURN_THIS } from "../const";
 import AnimationHandler from "../util/animationhandler";
 
 var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
@@ -84,50 +84,41 @@ register({
         style = node.style,
         computed = computeStyle(node),
         hiding = condition,
-        frameId = this._["<%= prop('frame') %>"],
         done = () => {
             if (animationHandler) {
                 node.removeEventListener(eventType, animationHandler, true);
                 // clear inline style adjustments were made previously
                 style.cssText = animationHandler.initialCssText;
-            } else {
-                this.set("aria-hidden", String(hiding));
             }
             // always update element visibility property: use value "inherit"
             // to respect parent container visibility. Should be a separate
             // from setting cssText because of Opera 12 quirks
             style.visibility = hiding ? "hidden" : "inherit";
 
-            this._["<%= prop('frame') %>"] = null;
-
-            if (callback) callback(this);
+            if (callback) {
+                if (animationHandler) {
+                    callback(this);
+                } else {
+                    // done callback is always async
+                    WINDOW.setTimeout(() => { callback(this) }, 0);
+                }
+            }
         };
 
     if (typeof hiding !== "boolean") {
         hiding = computed.visibility !== "hidden";
     }
 
-    // cancel previous frame if it exists
-    if (frameId) DOM.cancelFrame(frameId);
+    var animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
+        eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
 
-    if (!node.ownerDocument.documentElement.contains(node)) {
-        // apply attribute/visibility syncronously for detached DOM elements
-        // because browser returns zero animation/transition duration for them
-        done();
+    if (animationHandler) {
+        node.addEventListener(eventType, animationHandler, true);
+        // trigger animation(s)
+        style.cssText = animationHandler.initialCssText + animationHandler.cssText;
     } else {
-        var animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
-            eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
-        // use requestAnimationFrame to avoid animation quirks for
-        // new elements inserted into the DOM
-        // http://christianheilmann.com/2013/09/19/quicky-fading-in-a-newly-created-element-using-css/
-        this._["<%= prop('frame') %>"] = DOM.requestFrame(!animationHandler ? done : () => {
-            node.addEventListener(eventType, animationHandler, true);
-            // update modified style rules
-            style.cssText = animationHandler.initialCssText + animationHandler.cssText;
-            // trigger CSS3 transition / animation
-            this.set("aria-hidden", String(hiding));
-        });
+        done();
     }
-
-    return this;
+    // trigger CSS3 transition if it exists
+    return this.set("aria-hidden", String(hiding));
 }, () => RETURN_THIS);
