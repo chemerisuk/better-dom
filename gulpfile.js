@@ -60,7 +60,7 @@ gulp.task("compile", function() {
         version = pkg.version;
     }
 
-    return gulp.src(["document/*.js", "element/*.js", "global/*.js", "util/*.js", "*.js"], {cwd: "./src"})
+    return gulp.src(["document/*.js", "element/*.js", "util/*.js", "*.js"], {cwd: "./src"})
         .pipe(gulpif(!process.env.TRAVIS_JOB_NUMBER, plumber()))
         .pipe(jshint(".jshintrc"))
         .pipe(jshint.reporter("jshint-stylish"))
@@ -118,7 +118,7 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
 });
 
 gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function() {
-    gulp.watch(["src/document/*.js", "src/element/*.js", "src/global/*.js", "src/util/*.js", "src/*.js"], ["compile"]);
+    gulp.watch(["src/document/*.js", "src/element/*.js", "src/util/*.js", "src/*.js"], ["compile"]);
     gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
     gulp.watch(["test/spec/**/*.js"], ["lint-test"]);
 
