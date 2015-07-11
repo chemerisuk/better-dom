@@ -1,7 +1,7 @@
 import { register, isArray, keys } from "../util/index";
 import { safeCall } from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, LEGACY_ANDROID, RETURN_THIS } from "../const";
+import { LEGACY_BROWSER, RETURN_THIS } from "../const";
 import PROP from "../util/accessorhooks";
 
 register({
@@ -46,7 +46,7 @@ register({
                     node.setAttribute(name, value);
                 }
                 /* istanbul ignore if */
-                if (JSCRIPT_VERSION < 9 || LEGACY_ANDROID) {
+                if (LEGACY_BROWSER) {
                     // always trigger reflow manually for IE8 and legacy Android
                     node.className = node.className;
                 }

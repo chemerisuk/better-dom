@@ -1,5 +1,5 @@
 import CSS from "./stylehooks";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, LEGACY_ANDROID, HTML } from "../const";
+import { WEBKIT_PREFIX, LEGACY_BROWSER, HTML } from "../const";
 
 var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => "transition-" + prop),
     parseTimeValue = (value) => {
@@ -32,7 +32,7 @@ export default (node, computed, animationName, hiding, done) => {
     // has non-zero width. It also fixes animation of new elements
     // inserted into the DOM in Webkit and Opera 12 browsers
     /* istanbul ignore next */
-    if (LEGACY_ANDROID || JSCRIPT_VERSION < 10 || !computed.width) return null;
+    if (LEGACY_BROWSER || !computed.width) return null;
 
     if (animationName) {
         duration = parseTimeValue(computed[CSS.get["animation-duration"]]);

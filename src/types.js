@@ -18,8 +18,7 @@ function $Element(node) {
             this._ = {
                 "<%= prop('handler') %>": [],
                 "<%= prop('watcher') %>": {},
-                "<%= prop('extension') %>": [],
-                "<%= prop('context') %>": {}
+                "<%= prop('extension') %>": []
             };
         }
     } else if (node) {
