@@ -48,7 +48,7 @@ describe("DOM.mock", function() {
             onClick: function() {}
         });
 
-        expect(typeof DOM.mock(DOM.format("<a class=\"{0}\"></a>", [cls])).onClick).toBe("function");
+        expect(typeof DOM.mock("<a class=\"" + cls + "\"></a>").onClick).toBe("function");
     });
 
     it("should ignore extension condition", function() {

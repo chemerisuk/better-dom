@@ -2,7 +2,7 @@ describe("create", function() {
     "use strict";
 
     it("should create single DOM element if parameter is not an HTML string", function() {
-        var link = DOM.create(DOM.format("<a id=\"{id}\" title=\"{title}\"></a>", {id: "b", title: "c"}));
+        var link = DOM.create("<a id=\"b\" title=\"c\"></a>");
 
         jasmine.sandbox.set(link);
 
@@ -36,11 +36,11 @@ describe("create", function() {
         expect(el.child(0)).toHaveTag("span");
     });
 
-    it("supports varMap for HTML strings", function() {
-        var el = DOM.create("<a>{0}</a>", ["yo"]);
+    it("supports HTML strings", function() {
+        var el = DOM.create("<a>you</a>");
 
         expect(el).toHaveTag("a");
-        expect(el).toHaveHtml("yo");
+        expect(el).toHaveHtml("you");
     });
 
     it("should throw error if argument is invalid", function() {

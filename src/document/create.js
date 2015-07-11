@@ -1,4 +1,3 @@
-import { DOM } from "../const";
 import { $Element } from "../types";
 // import tagCache from "../global/emmet";
 import { register } from "../util/index";
@@ -9,12 +8,10 @@ register({
      * @memberof $Document#
      * @alias $Document#create
      * @param  {String}       value     HTML string
-     * @param  {Object|Array} [varMap]  key/value map of variables
      * @return {$Element} an element wrapper
      * @function
      * @example
-     * DOM.create("div");                  // => wrapper of <div>
-     * DOM.create("span>`{0}`", ["foo"]);  // => wrapper of <span>foo</span>
+     * DOM.create("<div>");                // => wrapper of <div>
      * DOM.create("<a><span></span></a>"); // => wrapper of <a> + innner <span>
      */
     create: "",
@@ -23,16 +20,14 @@ register({
      * @memberof $Document#
      * @alias $Document#createAll
      * @param  {String}       value     HTML string
-     * @param  {Object|Array} [varMap]  key/value map of variables
      * @return {Array.<$Element>} an array of element wrappers
      * @function
      * @example
-     * DOM.createAll("li*5");                 // => array with 5 <li> $Elements
      * DOM.createAll("<span></span><b></b>"); // => array with 2 $Elements: <span> and <b>
      */
     createAll: "All"
 
-}, (methodName, all) => function(value, varMap) {
+}, (methodName, all) => function(value) {
     var doc = this[0].ownerDocument,
         sandbox = this._["<%= prop('sandbox') %>"];
 
@@ -48,7 +43,7 @@ register({
 
     //     if (all) nodes = [ new $Element(nodes) ];
     // } else {
-    value = varMap ? DOM.format(value, varMap) : value;
+    // value = varMap ? DOM.format(value, varMap) : value;
 
     sandbox.innerHTML = value.trim(); // parse input HTML string
 

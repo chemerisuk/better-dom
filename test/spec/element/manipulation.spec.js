@@ -163,7 +163,7 @@ describe("manipulation", function() {
     }
 
     function createArray(className) {
-        return DOM.createAll("<i class='{0}'></i><b class='{0}'></b>", [className]);
+        return DOM.createAll("<i class='$0'></i><b class='$0'></b>".split("$0").join(className));
     }
 
     function expectToBeReplaced(id) {
