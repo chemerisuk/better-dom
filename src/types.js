@@ -1,4 +1,6 @@
-function $NullElement() {}
+function $NullElement() {
+    this.length = 0;
+}
 
 /**
  * Used to represent an element in better-dom
@@ -12,6 +14,7 @@ function $Element(node) {
             node["<%= prop() %>"] = this;
 
             this[0] = node;
+            this.length = 1;
             this._ = {
                 "<%= prop('handler') %>": [],
                 "<%= prop('watcher') %>": {},

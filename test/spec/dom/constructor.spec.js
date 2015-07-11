@@ -23,4 +23,10 @@ describe("DOM.constructor", function() {
 
         expect(el[0]).not.toBe(node);
     });
+
+    it("sets property length", function() {
+        expect(DOM.mock().length).toBe(0);
+        expect(DOM.create("<a>").length).toBe(1);
+        expect(DOM.createAll("<b></b><b></b>").length).toBe(2);
+    });
 });
