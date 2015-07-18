@@ -1,7 +1,6 @@
-import { register, isArray, keys } from "../util/index";
-import { safeCall } from "../util/index";
+import { register, isArray, keys, safeCall } from "../util/index";
 import { MethodError } from "../errors";
-import { LEGACY_BROWSER, RETURN_THIS } from "../const";
+import { RETURN_THIS } from "../const";
 import PROP from "../util/accessorhooks";
 
 register({
@@ -44,11 +43,6 @@ register({
                     node[name] = value;
                 } else {
                     node.setAttribute(name, value);
-                }
-                /* istanbul ignore if */
-                if (LEGACY_BROWSER) {
-                    // always trigger reflow manually for IE8 and legacy Android
-                    node.className = node.className;
                 }
             }
         } else if (isArray(name)) {

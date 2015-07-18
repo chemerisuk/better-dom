@@ -19,9 +19,6 @@ const jscriptVersion = WINDOW.ScriptEngineMajorVersion;
 // feature checks
 export const JSCRIPT_VERSION = jscriptVersion && jscriptVersion();
 export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
-// legacy browser is IE<10 and Android WebKit
-// https://twitter.com/jaffathecake/status/570872103227953153
-export const LEGACY_BROWSER = "visibilityState" in DOCUMENT;
 
 /**
  * Global namespace to access the document object tree

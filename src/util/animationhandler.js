@@ -1,7 +1,9 @@
 import CSS from "./stylehooks";
-import { WEBKIT_PREFIX, LEGACY_BROWSER, HTML } from "../const";
+import { WEBKIT_PREFIX, HTML, DOCUMENT } from "../const";
 
-var TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => "transition-" + prop),
+// https://twitter.com/jaffathecake/status/570872103227953153
+var LEGACY_BROWSER = !("visibilityState" in DOCUMENT),
+    TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => "transition-" + prop),
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;
         // if duration is in seconds, then multiple result value by 1000
