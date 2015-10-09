@@ -22,7 +22,7 @@ var concat = require("gulp-concat");
 var plumber = require("gulp-plumber");
 var header = require("gulp-header");
 
-var karma = require("karma").server;
+var karma = require("karma");
 var karmaConfig = require.resolve("./conf/karma.conf");
 
 var banner = [
@@ -102,7 +102,7 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
         };
     } else {
         if (argv.all) {
-            config.browsers = ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"];
+            config.browsers = ["PhantomJS2", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"];
         } else if (argv.ie8) {
             config.browsers = ["IE8 - WinXP"];
         } else if (argv.ie9 || argv.ie10 || argv.ie11) {
@@ -112,9 +112,9 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
 
     config.configFile = karmaConfig;
 
-    karma.start(config, function(resultCode) {
+    new karma.Server(config, function(resultCode) {
         done(resultCode ? new gutil.PluginError("karma", "Tests failed") : null);
-    });
+    }).start();
 });
 
 gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function() {
@@ -122,23 +122,23 @@ gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function
     gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
     gulp.watch(["test/spec/**/*.js"], ["lint-test"]);
 
-    karma.start({
+    new karma.Server({
         // browsers: ["IE8 - WinXP"],
         configFile: karmaConfig,
         reporters: ["coverage", "progress"],
         background: true,
         singleRun: false
-    });
+    }).start();
 });
 
 gulp.task("sauce", function(done) {
-    karma.start({
+    new karma.Server({
         configFile: require.resolve("./conf/karma.conf-ci.js")
     }, function() {
         // always return success result for this task
         // have to use process.exit to make travis to be happy
         process.exit(0);
-    });
+    }).start();
 });
 
 gulp.task("clean-jsdoc", function() {

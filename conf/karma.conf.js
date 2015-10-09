@@ -5,7 +5,7 @@ module.exports = function(config) {
         basePath: "..",
         singleRun: true,
         frameworks: ["jasmine"],
-        browsers: ["PhantomJS"],
+        browsers: ["PhantomJS2"],
         preprocessors: { "build/better-dom.js": "coverage" },
         coverageReporter: {
             type: "html",
