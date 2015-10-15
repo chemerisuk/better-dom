@@ -14,6 +14,8 @@ if (JSCRIPT_VERSION < 10) {
 
     if (legacyScripts.length < 1) {
         throw new Error("In order to use live extensions in IE < 10 you have to include extra files. See <%= pkg.repository.url %>#notes-about-old-ies for details.");
+    } else if (DOCUMENT.documentMode < 8) {
+        throw new Error("The library does not support quirks mode or legacy versions of Internat Explorer. Check <%= pkg.repository.url %>#browser-support for details.");
     }
 
     cssText = "-ms-behavior:url(" + legacyScripts[0].src.replace(".js", ".htc") + ") !important";
