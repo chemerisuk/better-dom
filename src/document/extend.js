@@ -1,5 +1,5 @@
 import { register, filter, each } from "../util/index";
-import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_FALSE, RETURN_TRUE, RETURN_THIS } from "../const";
+import { JSCRIPT_VERSION, WEBKIT_PREFIX, WINDOW, DOCUMENT, CUSTOM_EVENT_TYPE, RETURN_THIS } from "../const";
 import { DocumentTypeError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
 
@@ -28,7 +28,6 @@ register({
      * @memberof $Document#
      * @alias $Document#extend
      * @param  {String}           selector         css selector of which elements to capture
-     * @param  {Boolean|Function} [condition=true] indicates if live extension should be attached or not
      * @param  {Object}           definition       live extension definition
      * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
      * @example
@@ -41,24 +40,22 @@ register({
      *     }
      * });
      */
-    extend(selector, condition, definition) {
+    extend(selector, definition) {
         if (arguments.length === 1) {
             // handle case when $Document protytype is extended
             return register(selector);
         } else if (selector === "*") {
             // handle case when $Element protytype is extended
-            return register(condition, null, () => RETURN_THIS);
+            return register(definition, null, () => RETURN_THIS);
         }
 
-        if (arguments.length === 2) {
-            definition = condition;
-            condition = true;
+        if (typeof definition === "function") {
+            definition = {constructor: definition};
         }
 
-        if (typeof condition === "boolean") condition = condition ? RETURN_TRUE : RETURN_FALSE;
-        if (typeof definition === "function") definition = {constructor: definition};
-
-        if (!definition || typeof definition !== "object" || typeof condition !== "function") throw new DocumentTypeError("extend", arguments);
+        if (!definition || typeof definition !== "object") {
+            throw new DocumentTypeError("extend", arguments);
+        }
 
         var node = this[0],
             mappings = this._["<%= prop('mappings') %>"];
@@ -89,7 +86,7 @@ register({
             }
         }
 
-        var ext = ExtensionHandler(selector, condition, definition, mappings.length);
+        var ext = ExtensionHandler(selector, definition, mappings.length);
 
         mappings.push(ext);
         // live extensions are always async - append CSS asynchronously

@@ -162,22 +162,6 @@ describe("extend", function() {
         jasmine.sandbox.set("<div class='" + randomClass + "' id=two><div class='" + randomClass + "' id=one></div></div>");
     });
 
-    it("should not apply extension if condition returns false", function(done) {
-        var spy = jasmine.createSpy("ctr"),
-            el = DOM.create("<a class=" + randomClass + "></a>");
-
-        jasmine.sandbox.set(el);
-
-        DOM.extend("." + randomClass, false, {constructor: spy, a: "b"});
-
-        setTimeout(function() {
-            expect(el.a).toBeUndefined();
-            expect(el[0]).toBeDefined();
-
-            done();
-        }, 50);
-    });
-
     it("is always async", function() {
         var spy = jasmine.createSpy("ctr");
 

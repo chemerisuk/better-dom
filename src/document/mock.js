@@ -19,7 +19,7 @@ register({
         var result = this.create(content, varMap),
             mappings = this._["<%= prop('mappings') %>"],
             applyExtensions = (node) => {
-                mappings.forEach((ext) => { ext(node, true) });
+                mappings.forEach((ext) => { ext(node) });
 
                 each.call(node.children, applyExtensions);
             };
