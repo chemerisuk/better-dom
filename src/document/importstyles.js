@@ -18,8 +18,7 @@ register({
         var styleSheet = this._["<%= prop('styles') %>"];
 
         if (!styleSheet) {
-            let doc = this[0].ownerDocument,
-                styleNode = injectElement(doc.createElement("style"));
+            let styleNode = injectElement(this[0].createElement("style"));
 
             styleSheet = styleNode.sheet || styleNode.styleSheet;
             // store object internally

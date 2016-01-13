@@ -12,7 +12,7 @@ function getEventProperty(name, e, type, node, target, currentTarget) {
     }
     /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
-        var docEl = node.ownerDocument.documentElement;
+        var docEl = (node.ownerDocument || node).documentElement;
 
         switch (name) {
         case "which":

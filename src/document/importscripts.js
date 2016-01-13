@@ -16,15 +16,13 @@ register({
      * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
      */
     importScripts(...urls) {
-        var doc = this[0].ownerDocument;
-
         var callback = () => {
             var arg = urls.shift(),
                 argType = typeof arg,
                 script;
 
             if (argType === "string") {
-                script = doc.createElement("script");
+                script = this[0].createElement("script");
                 script.src = arg;
                 script.onload = callback;
                 script.async = true;

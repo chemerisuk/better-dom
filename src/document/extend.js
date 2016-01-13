@@ -59,7 +59,7 @@ register({
             throw new DocumentTypeError("extend", arguments);
         }
 
-        var node = this[0],
+        var doc = this[0],
             mappings = this._["<%= prop('mappings') %>"];
 
         if (!mappings) {
@@ -67,7 +67,7 @@ register({
 
             /* istanbul ignore if */
             if (JSCRIPT_VERSION < 10) {
-                node.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
+                doc.attachEvent("on" + CUSTOM_EVENT_TYPE, () => {
                     var e = WINDOW.event;
 
                     if (e.srcUrn === CUSTOM_EVENT_TYPE) {
@@ -78,7 +78,7 @@ register({
                 // declare the fake animation on the first DOM.extend method call
                 this.importStyles("@" + WEBKIT_PREFIX + "keyframes <%= prop('DOM') %>", "from {opacity:.99} to {opacity:1}");
                 // use capturing to suppress internal animationstart events
-                node.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
+                doc.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
                     if (e.animationName === "<%= prop('DOM') %>") {
                         mappings.forEach((ext) => { ext(e.target) });
                         // this is an internal event - stop it immediately
@@ -96,7 +96,7 @@ register({
             // initialize extension manually to make sure that all elements
             // have appropriate methods before they are used in other DOM.extend.
             // Also fixes legacy IEs when the HTC behavior is already attached
-            each.call(node.ownerDocument.querySelectorAll(selector), ext);
+            each.call(doc.querySelectorAll(selector), ext);
             // MUST be after querySelectorAll because of legacy IEs quirks
             this.importStyles(selector, cssText);
         }, 0);

@@ -32,7 +32,7 @@ register({
         }
         /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
-            e = node.ownerDocument.createEventObject();
+            e = (node.ownerDocument || node).createEventObject();
             e["<%= prop() %>"] = arguments;
             // handle custom events for legacy IE
             if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
@@ -43,7 +43,7 @@ register({
 
             canContinue = e.returnValue !== false;
         } else {
-            e = node.ownerDocument.createEvent("HTMLEvents");
+            e = (node.ownerDocument || node).createEvent("HTMLEvents");
             e["<%= prop() %>"] = arguments;
             e.initEvent(eventType, true, true);
             canContinue = node.dispatchEvent(e);

@@ -13,7 +13,7 @@ describe("DOM.constructor", function() {
     it("supports document objects", function() {
         var el = DOM.constructor(document);
 
-        expect(el[0]).toBe(document.documentElement);
+        expect(el[0]).toBe(document);
         expect(el).toBe(DOM);
     });
 

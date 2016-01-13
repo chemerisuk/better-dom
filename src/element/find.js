@@ -1,7 +1,7 @@
 import { register, map, safeCall } from "../util/index";
 import { DOCUMENT } from "../const";
 import { MethodError } from "../errors";
-import { $Element, $NullElement } from "../types";
+import { $Element, $Document, $NullElement } from "../types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -58,7 +58,7 @@ register({
         old = true;
         context = node;
 
-        if (node !== node.ownerDocument.documentElement) {
+        if (!(this instanceof $Document)) {
             // qSA works strangely on Element-rooted queries
             // We can work around this by specifying an extra ID on the root
             // and working up from there (Thanks to Andrew Dupont for the technique)

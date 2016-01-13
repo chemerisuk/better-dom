@@ -28,11 +28,10 @@ register({
     createAll: "All"
 
 }, (methodName, all) => function(value) {
-    var doc = this[0].ownerDocument,
-        sandbox = this._["<%= prop('sandbox') %>"];
+    var sandbox = this._["<%= prop('sandbox') %>"];
 
     if (!sandbox) {
-        sandbox = doc.createElement("div");
+        sandbox = this[0].createElement("div");
         this._["<%= prop('sandbox') %>"] = sandbox;
     }
 

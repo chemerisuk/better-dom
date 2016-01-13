@@ -11,19 +11,6 @@ var hooks = {get: {}, set: {}};
 hooks.get.style = (node) => node.style.cssText;
 hooks.set.style = (node, value) => { node.style.cssText = value };
 
-// title hook for DOM
-hooks.get.title = (node) => {
-    var doc = node.ownerDocument;
-
-    return (node === doc.documentElement ? doc : node).title;
-};
-
-hooks.set.title = (node, value) => {
-    var doc = node.ownerDocument;
-
-    (node === doc.documentElement ? doc : node).title = value;
-};
-
 // some browsers don't recognize input[type=email] etc.
 hooks.get.type = (node) => node.getAttribute("type") || node.type;
 /* istanbul ignore if */

@@ -36,7 +36,7 @@ function $Element(node) {
  */
 function $Document(node) {
     // use documentElement for a $Document wrapper
-    return $Element.call(this, node.documentElement);
+    return $Element.call(this, node);
 }
 
 $Element.prototype = {

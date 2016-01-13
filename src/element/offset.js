@@ -12,7 +12,7 @@ register({
      */
     offset() {
         var node = this[0],
-            docEl = node.ownerDocument.documentElement,
+            docEl = (node.ownerDocument || node).documentElement,
             clientTop = docEl.clientTop,
             clientLeft = docEl.clientLeft,
             scrollTop = WINDOW.pageYOffset || docEl.scrollTop,
