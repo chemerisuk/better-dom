@@ -11,7 +11,7 @@ var reUpper = /[A-Z]/g,
 
         if (value != null) {
             // try to recognize and parse  object notation syntax
-            if (value[0] === "{" && value[value.length - 1] === "}") {
+            if (value[0] === "{" && value[value.length - 1] === "}" || value[0] === "[" && value[value.length - 1] === "]") {
                 try {
                     value = JSON.parse(value);
                 } catch (err) {
