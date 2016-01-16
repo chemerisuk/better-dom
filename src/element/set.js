@@ -14,7 +14,6 @@ register({
      * @example
      * link.set("title", "mytitle");   // set title property
      * link.set("data-custom", "foo"); // set custom attribute data-custom
-     * link.set("_prop", {a: "b"});    // update private property _prop
      */
     set(name, value) {
         var node = this[0];
@@ -28,22 +27,18 @@ register({
         }
 
         if (typeof name === "string") {
-            if (name[0] === "_") {
-                this._[name.slice(1)] = value;
-            } else {
-                if (typeof value === "function") {
-                    value = value(this);
-                }
+            if (typeof value === "function") {
+                value = value(this);
+            }
 
-                if (hook) {
-                    hook(node, value);
-                } else if (value == null) {
-                    node.removeAttribute(name);
-                } else if (name in node) {
-                    node[name] = value;
-                } else {
-                    node.setAttribute(name, value);
-                }
+            if (hook) {
+                hook(node, value);
+            } else if (value == null) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = value;
+            } else {
+                node.setAttribute(name, value);
             }
         } else if (isArray(name)) {
             name.forEach((key) => { this.set(key, value) });

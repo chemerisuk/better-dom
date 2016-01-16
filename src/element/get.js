@@ -2,27 +2,6 @@ import { register, isArray } from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
 
-var reUpper = /[A-Z]/g,
-    readPrivateProperty = (node, key) => {
-        // convert from camel case to dash-separated value
-        key = key.replace(reUpper, (l) => "-" + l.toLowerCase());
-
-        var value = node.getAttribute("data-" + key);
-
-        if (value != null) {
-            // try to recognize and parse  object notation syntax
-            if (value[0] === "{" && value[value.length - 1] === "}" || value[0] === "[" && value[value.length - 1] === "]") {
-                try {
-                    value = JSON.parse(value);
-                } catch (err) {
-                    // just return the value itself
-                }
-            }
-        }
-
-        return value;
-    };
-
 register({
     /**
      * Get property or attribute value by name
@@ -33,7 +12,6 @@ register({
      * @example
      * link.get("title");       // => property title
      * link.get("data-custom"); // => custom attribute data-custom
-     * link.get("_prop");       // => private property _prop
      */
     get(name) {
         var node = this[0],
@@ -44,17 +22,8 @@ register({
         if (typeof name === "string") {
             if (name in node) {
                 return node[name];
-            } else if (name[0] !== "_") {
-                return node.getAttribute(name);
             } else {
-                let key = name.slice(1),
-                    data = this._;
-
-                if (!(key in data)) {
-                    data[key] = readPrivateProperty(node, key);
-                }
-
-                return data[key];
+                return node.getAttribute(name);
             }
         } else if (isArray(name)) {
             return name.reduce((memo, key) => {

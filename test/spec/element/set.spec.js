@@ -103,21 +103,4 @@ describe("set", function() {
     //     // TODO: need to catch IE bug with innerHTML = ""
     // });
 
-    describe("private properties", function() {
-        it("shoud be stored in _ object", function() {
-            input.set("_test", "yeah");
-
-            expect(input).not.toHaveAttr("_test", "yeah");
-            expect(input).not.toHaveProp("_test", "yeah");
-        });
-
-        it("should accept any kind of object", function() {
-            var obj = {}, nmb = 123, func = function() {};
-
-            expect(input.set("_obj", obj).get("_obj")).toEqual(obj);
-            expect(input.set("_nmb", nmb).get("_nmb")).toEqual(nmb);
-            expect(input.set("_func", func).get("_func")).toEqual(func);
-        });
-    });
-
 });
