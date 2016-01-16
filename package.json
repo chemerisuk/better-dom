@@ -10,7 +10,6 @@
   },
   "docs": "http://chemerisuk.github.io/better-dom",
   "devDependencies": {
-    "benchmark": "1.0.0",
     "es6-module-transpiler": "^0.9.5",
     "gulp": "^3.8.8",
     "gulp-bump": "^0.1.11",
@@ -46,9 +45,7 @@
     "karma-phantomjs-launcher": "^0.2.1",
     "karma-safari-launcher": "^0.1.1",
     "karma-sauce-launcher": "^0.2.10",
-    "lodash": "1.2.1",
     "phantomjs": "^1.9.18",
-    "platform": "1.0.0",
     "through": "^2.3.6",
     "yargs": "^1.3.1"
   },

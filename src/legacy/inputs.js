@@ -9,7 +9,8 @@
 
     if (!JSCRIPT_VERSION || JSCRIPT_VERSION > 9) return;
 
-    var inputEventHandler = function() {
+    var capturedNode, capturedNodeValue,
+        inputEventHandler = function() {
             if (capturedNode && capturedNode.value !== capturedNodeValue) {
                 capturedNodeValue = capturedNode.value;
                 // trigger custom event that bubbles
@@ -25,8 +26,7 @@
         },
         changeEventHandler = function() {
             DOM.constructor(capturedNode).fire("change");
-        },
-        capturedNode, capturedNodeValue;
+        };
 
     if (JSCRIPT_VERSION === 9) {
         // IE9 doesn't fire oninput when text is deleted, so use

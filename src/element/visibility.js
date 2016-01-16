@@ -84,6 +84,7 @@ register({
         style = node.style,
         computed = computeStyle(node),
         hiding = condition,
+        animationHandler, eventType,
         done = () => {
             if (animationHandler) {
                 node.removeEventListener(eventType, animationHandler, true);
@@ -109,8 +110,8 @@ register({
         hiding = computed.visibility !== "hidden";
     }
 
-    var animationHandler = AnimationHandler(node, computed, animationName, hiding, done),
-        eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
+    animationHandler = AnimationHandler(node, computed, animationName, hiding, done);
+    eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
 
     if (animationHandler) {
         node.addEventListener(eventType, animationHandler, true);

@@ -9,6 +9,12 @@ describe("traversing", function() {
         link = DOM.find("#test");
     });
 
+    function _forIn(obj, callback, thisPtr) {
+        for (var prop in obj) {
+            callback.call(thisPtr, obj[prop], prop, obj);
+        }
+    }
+
     describe("next, prev, closest", function() {
         it("should return an appropriate element", function() {
             var expectedResults = {
@@ -107,11 +113,5 @@ describe("traversing", function() {
             expect(function() { link.prevAll(function() {}) }).toThrow();
         });
     });
-
-    function _forIn(obj, callback, thisPtr) {
-        for (var prop in obj) {
-            callback.call(thisPtr, obj[prop], prop, obj);
-        }
-    }
 
 });

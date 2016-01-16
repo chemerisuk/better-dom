@@ -32,6 +32,28 @@ describe("manipulation", function() {
         // });
     });
 
+    function createDivHtml(className) {
+        return "<div class='" + className + "'></div>";
+    }
+
+    function createDivHtmlWhitespaced(className) {
+        return "   <div class='" + className + "'></div>  ";
+    }
+
+    function createArray(className) {
+        return DOM.createAll("<i class='$0'></i><b class='$0'></b>".split("$0").join(className));
+    }
+
+    function expectToBeReplaced(id) {
+        expect(document.getElementById(id)).toBeNull();
+    }
+
+    function _forIn(obj, callback, thisPtr) {
+        for (var prop in obj) {
+            callback.call(thisPtr, obj[prop], prop, obj);
+        }
+    }
+
     describe("append, prepend, after, before", function() {
         var checkStrategies = {
                 prepend: function(el) { return el.child(0); },
@@ -153,27 +175,5 @@ describe("manipulation", function() {
         //     expect(function() { div.replace(1); }).toThrow();
         // });
     });
-
-    function createDivHtml(className) {
-        return "<div class='" + className + "'></div>";
-    }
-
-    function createDivHtmlWhitespaced(className) {
-        return "   <div class='" + className + "'></div>  ";
-    }
-
-    function createArray(className) {
-        return DOM.createAll("<i class='$0'></i><b class='$0'></b>".split("$0").join(className));
-    }
-
-    function expectToBeReplaced(id) {
-        expect(document.getElementById(id)).toBeNull();
-    }
-
-    function _forIn(obj, callback, thisPtr) {
-        for (var prop in obj) {
-            callback.call(thisPtr, obj[prop], prop, obj);
-        }
-    }
 
 });
