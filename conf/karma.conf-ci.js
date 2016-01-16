@@ -5,14 +5,12 @@ var customLaunchers = {
     sl_chrome: {
         base: "SauceLabs",
         browserName: "chrome",
-        platform: "Windows 7",
-        version: "47"
+        platform: "Windows 10"
     },
     sl_firefox: {
         base: "SauceLabs",
         browserName: "firefox",
-        platform: "Windows 7",
-        version: "43"
+        platform: "Windows 10"
     },
     el_opera_12: {
         base: "SauceLabs",
@@ -23,15 +21,18 @@ var customLaunchers = {
     sl_safari: {
         base: "SauceLabs",
         browserName: "safari",
-        platform: "OS X 10.11",
-        version: "9",
-        deviceName: ""
+        platform: "OS X 10.11"
     },
     sl_ie_11: {
         base: "SauceLabs",
         browserName: "internet explorer",
         platform: "Windows 7",
         version: "11"
+    },
+    sl_edge_20: {
+        base: "SauceLabs",
+        browserName: "edge",
+        platform: "Windows 10"
     },
     // sl_ie_10: {
     //     base: "SauceLabs",
