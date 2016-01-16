@@ -43,7 +43,7 @@ register({
      * });
      */
     extend(selector, definition) {
-        if (arguments.length === 1) {
+        if (arguments.length === 1 && typeof selector === "object") {
             // handle case when $Document protytype is extended
             return register(selector);
         } else if (selector === "*") {
