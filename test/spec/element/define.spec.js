@@ -112,7 +112,7 @@ describe("$Element#define", function() {
         el.define("foo", function(value) { return value }, spy);
 
         expect(spy).not.toHaveBeenCalled();
-        expect(el.get("foo")).toBeNull();
+        expect(el.get("foo")).toBeUndefined();
 
         spy.calls.reset();
         el[0].setAttribute("foo", "bar");
@@ -126,7 +126,7 @@ describe("$Element#define", function() {
 
         spy.calls.reset();
         el[0].removeAttribute("foo");
-        expect(el.get("foo")).toBeNull();
+        expect(el.get("foo")).toBeUndefined();
         // expect(spy).toHaveBeenCalledWith(null);
         // el[0].removeAttribute("bar");
         // expect(spy.calls.count()).toBe(1);

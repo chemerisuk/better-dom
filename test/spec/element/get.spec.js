@@ -45,9 +45,9 @@ describe("get", function() {
         expect(form.get("textContent")).toBe("");
     });
 
-    it("should return null if attribute doesn't exist", function() {
-        expect(link.get("xxx")).toBeNull();
-        expect(link.get("data-test")).toBeNull();
+    it("should return undefined if attribute doesn't exist", function() {
+        expect(link.get("xxx")).toBeUndefined();
+        expect(link.get("data-test")).toBeUndefined();
     });
 
     it("should fix camel cased attributes", function() {
@@ -61,6 +61,12 @@ describe("get", function() {
         input.css("float", "left");
 
         expect(input.get("style").trim().toLowerCase().indexOf("float: left")).toBe(0);
+    });
+
+    it("supports default values", function() {
+        expect(input.get("data-test123", "foo")).toBe("foo");
+        expect(input.get("selectedIndex", 0)).toBe(0);
+        expect(input.get("type", "none")).toBe("email");
     });
 
     it("should return undefined for empty node", function() {

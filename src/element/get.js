@@ -13,24 +13,27 @@ register({
      * link.get("title");       // => property title
      * link.get("data-custom"); // => custom attribute data-custom
      */
-    get(name) {
+    get(name, defaultValue) {
         var node = this[0],
-            hook = PROP.get[name];
+            hook = PROP.get[name],
+            value;
 
-        if (hook) return hook(node, name);
-
-        if (typeof name === "string") {
+        if (hook) {
+            value = hook(node, name);
+        } else if (typeof name === "string") {
             if (name in node) {
-                return node[name];
+                value = node[name];
             } else {
-                return node.getAttribute(name);
+                value = node.getAttribute(name);
             }
         } else if (isArray(name)) {
-            return name.reduce((memo, key) => {
+            value = name.reduce((memo, key) => {
                 return memo[key] = this.get(key), memo;
             }, {});
         } else {
             throw new MethodError("get", arguments);
         }
+
+        return value != null ? value : defaultValue;
     }
 }, null, () => function() {});
