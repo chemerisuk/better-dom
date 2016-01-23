@@ -29,7 +29,7 @@ var banner = [
     "/**",
     " * @overview <%= pkg.name %>: <%= pkg.description %>",
     " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
-    " * @copyright 2013-2015 <%= pkg.author %>",
+    " * @copyright " + new Date().getFullYear() + " <%= pkg.author %>",
     " * @license <%= pkg.license %>",
     " * @see <%= pkg.repository.url %>",
     " */"
@@ -51,14 +51,7 @@ gulp.task("lint-test", function() {
 });
 
 gulp.task("compile", function() {
-    var version = argv.tag;
-    var dest = version ? "dist/" : "build/";
-
-    if (version) {
-        pkg.version = version;
-    } else {
-        version = pkg.version;
-    }
+    var dest = argv.dist ? "dist/" : "build/";
 
     return gulp.src(["document/*.js", "element/*.js", "util/*.js", "*.js"], {cwd: "./src"})
         .pipe(gulpif(!process.env.TRAVIS_JOB_NUMBER, plumber()))
@@ -74,8 +67,7 @@ gulp.task("compile", function() {
 });
 
 gulp.task("compile-legacy", ["lint-legacy"], function() {
-    var version = argv.tag;
-    var dest = version ? "dist/" : "build/";
+    var dest = argv.dist ? "dist/" : "build/";
 
     return gulp.src(["bower_components/html5shiv/dist/html5shiv.js","bower_components/es5-shim/es5-shim.js","src/legacy/*.js"])
         .pipe(template({ pkg: pkg }))
@@ -162,7 +154,7 @@ gulp.task("gh-pages", ["docs"], function() {
 });
 
 gulp.task("compress", ["test"], function() {
-    var dest = argv.tag ? "dist/" : "build/";
+    var dest = argv.dist ? "dist/" : "build/";
 
     return gulp.src(dest + "better-dom.js")
         .pipe(uglify({preserveComments: "some"}))
@@ -172,17 +164,13 @@ gulp.task("compress", ["test"], function() {
 
 gulp.task("bump", function() {
     return gulp.src(["./*.json"])
-        .pipe(bump({version: argv.tag}))
+        .pipe(bump({version: pkg.version}))
         .pipe(gulp.dest("./"));
 });
 
 gulp.task("release", ["bump", "compress"], function(done) {
-    var version = argv.tag;
-
-    if (!version) throw new gutil.PluginError("release", "You need to specify --tag parameter");
-
     gulp.src(["./*.json", "./dist/*.js"])
-        .pipe(git.commit("version " + version))
+        .pipe(git.commit("version " + pkg.version))
         .pipe(filter("package.json"))
         .pipe(tag_version())
         .on("end", function() {
