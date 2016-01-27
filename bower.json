@@ -14,10 +14,5 @@
     "task",
     "gulpfile.js",
     "package.json"
-  ],
-  "devDependencies": {
-    "jquery": "latest",
-    "html5shiv": "latest",
-    "es5-shim": "latest"
-  }
+  ]
 }

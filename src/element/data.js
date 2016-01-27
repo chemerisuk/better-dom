@@ -9,8 +9,10 @@ var reUpper = /[A-Z]/g,
         var value = node.getAttribute("data-" + key);
 
         if (value != null) {
+            var firstSymbol = value[0];
+            var lastSymbol = value[value.length - 1];
             // try to recognize and parse  object notation syntax
-            if (value[0] === "{" && value[value.length - 1] === "}" || value[0] === "[" && value[value.length - 1] === "]") {
+            if (firstSymbol === "{" && lastSymbol === "}" || firstSymbol === "[" && lastSymbol === "]") {
                 try {
                     value = JSON.parse(value);
                 } catch (err) {
