@@ -54,6 +54,6 @@
   "scripts": {
     "test": "gulp test",
     "start": "gulp dev",
-    "install": "bower install"
+    "install": "cd node_modules/es6-module-transpiler && npm install && cd -"
   }
 }

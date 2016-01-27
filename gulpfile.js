@@ -69,7 +69,7 @@ gulp.task("compile", function() {
 gulp.task("compile-legacy", ["lint-legacy"], function() {
     var dest = argv.dist ? "dist/" : "build/";
 
-    return gulp.src(["bower_components/html5shiv/dist/html5shiv.js","bower_components/es5-shim/es5-shim.js","src/legacy/*.js"])
+    return gulp.src(["node_modules/html5shiv/dist/html5shiv.js","node_modules/es5-shim/es5-shim.js","src/legacy/*.js"])
         .pipe(template({ pkg: pkg }))
         .pipe(concat("better-dom-legacy.js"))
         .pipe(gulpif(dest === "dist/", uglify({ output: {comments: /^!|@preserve|@license|@cc_on/i} })))
