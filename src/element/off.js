@@ -26,24 +26,27 @@ register({
             selector = void 0;
         }
 
-        var node = this[0];
+        var node = this[0],
+            propName = "<%= prop('handler') %>";
 
-        this._["<%= prop('handler') %>"] = this._["<%= prop('handler') %>"].filter((handler) => {
-            var skip = type !== handler.type;
+        if (this._[propName]) {
+            this._[propName] = this._[propName].filter((handler) => {
+                var skip = type !== handler.type;
 
-            skip = skip || selector && selector !== handler.selector;
-            skip = skip || callback && callback !== handler.callback;
+                skip = skip || selector && selector !== handler.selector;
+                skip = skip || callback && callback !== handler.callback;
 
-            if (skip) return true;
+                if (skip) return true;
 
-            type = handler._type || handler.type;
-            /* istanbul ignore if */
-            if (JSCRIPT_VERSION < 9) {
-                node.detachEvent("on" + type, handler);
-            } else {
-                node.removeEventListener(type, handler, !!handler.capturing);
-            }
-        });
+                type = handler._type || handler.type;
+                /* istanbul ignore if */
+                if (JSCRIPT_VERSION < 9) {
+                    node.detachEvent("on" + type, handler);
+                } else {
+                    node.removeEventListener(type, handler, !!handler.capturing);
+                }
+            });
+        }
 
         return this;
     }

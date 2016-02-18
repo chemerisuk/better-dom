@@ -15,11 +15,7 @@ function $Element(node) {
 
             this[0] = node;
             this.length = 1;
-            this._ = {
-                "<%= prop('handler') %>": [],
-                "<%= prop('watcher') %>": {},
-                "<%= prop('extension') %>": []
-            };
+            this._ = {};
         }
     } else if (node) {
         // create a wrapper only once for each native element

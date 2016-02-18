@@ -19,8 +19,10 @@ register({
         var node = this[0];
 
         var hook = PROP.set[name],
-            watchers = this._["<%= prop('watcher') %>"][name],
+            watchers = this._["<%= prop('watcher') %>"],
             oldValue;
+
+        watchers = watchers && watchers[name];
 
         if (watchers) {
             oldValue = this.get(name);

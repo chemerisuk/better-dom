@@ -2,13 +2,19 @@ import { safeCall } from "../util/index";
 import { $Element } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
+var propName = "<%= prop('extension') %>";
+
 export default (selector, mixins, index) => {
     var matcher = SelectorMatcher(selector);
 
     return (node) => {
         var el = $Element(node),
-            extensions = el._["<%= prop('extension') %>"],
+            extensions = el._[propName],
             ctr;
+
+        if (!extensions) {
+            el._[propName] = extensions = [];
+        }
         // skip previously invoked or mismatched elements
         if (~extensions.indexOf(index) || !matcher(node)) return;
         // mark extension as invoked

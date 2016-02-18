@@ -1,6 +1,8 @@
 import { register } from "../util/index";
 import { RETURN_THIS } from "../const";
 
+var propName = "<%= prop('watcher') %>";
+
 register({
     /**
      * Watch for changes of a particular property/attribute
@@ -15,9 +17,15 @@ register({
      * });
      */
     watch(name, callback) {
-        var watchers = this._["<%= prop('watcher') %>"];
+        var watchers = this._[propName];
 
-        if (!watchers[name]) watchers[name] = [];
+        if (!watchers) {
+            this._[propName] = watchers = {};
+        }
+
+        if (!watchers[name]) {
+            watchers[name] = [];
+        }
 
         watchers[name].push(callback);
 
@@ -34,9 +42,9 @@ register({
      * @see $Element#watch
      */
     unwatch(name, callback) {
-        var watchers = this._["<%= prop('watcher') %>"];
+        var watchers = this._[propName];
 
-        if (watchers[name]) {
+        if (watchers && watchers[name]) {
             watchers[name] = watchers[name].filter((w) => w !== callback);
         }
 

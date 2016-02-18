@@ -72,7 +72,8 @@ register({
         }
 
         var node = this[0],
-            handler = EventHandler(type, selector, callback, args, this, single);
+            handler = EventHandler(type, selector, callback, args, this, single),
+            propName = "<%= prop('handler') %>";
 
         /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
@@ -81,7 +82,8 @@ register({
             node.addEventListener(handler._type || type, handler, !!handler.capturing);
         }
         // store event entry
-        this._["<%= prop('handler') %>"].push(handler);
+        this._[propName] = this._[propName] || [];
+        this._[propName].push(handler);
     } else if (typeof type === "object") {
         if (isArray(type)) {
             type.forEach((name) => { this[method](name, selector, args, callback) });
