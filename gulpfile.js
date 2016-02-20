@@ -3,7 +3,7 @@ var gulpif = require("gulp-if");
 var gutil = require("gulp-util");
 var pkg = require("./package.json");
 var compile = require("./task/compile");
-var es6transpiler = require("gulp-es6-transpiler");
+var babel = require("gulp-babel");
 var template = require("gulp-template");
 var jshint = require("gulp-jshint");
 var symlink = require("gulp-symlink");
@@ -59,7 +59,7 @@ gulp.task("compile", function() {
         .pipe(jshint.reporter("jshint-stylish"))
         .pipe(jshint.reporter("fail"))
         .pipe(compile("better-dom.js", pkg))
-        .pipe(es6transpiler())
+        .pipe(babel())
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(gulpif(dest === "dist/", replace(/\/\*([\s\S]*?)\*\/\s+/gm, "")))
         .pipe(header(banner + "\n", { pkg: pkg }))

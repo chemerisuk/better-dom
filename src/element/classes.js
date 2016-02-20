@@ -97,9 +97,9 @@ register({
         };
     } else {
         return function() {
-            var tokens = arguments;
+            for (var i = 0, n = arguments.length; i < n; ++i) {
+                let token = arguments[i];
 
-            for (var token of tokens) {
                 if (typeof token !== "string") throw new MethodError(methodName, arguments);
 
                 strategy(this, token);

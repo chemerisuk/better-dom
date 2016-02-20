@@ -43,7 +43,9 @@ export default function(selector, context) {
                 if (propName) {
                     result = node[propName](selector);
                 } else {
-                    for (let n of found) {
+                    for (let i = 0, n = found.length; i < n; ++i) {
+                        let n = found[i];
+
                         if (n === node) return n;
                     }
                 }
