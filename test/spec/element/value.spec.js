@@ -4,7 +4,7 @@ describe("$Element#value", function() {
     var div, input;
 
     beforeEach(function() {
-        div = DOM.create("<div><a><a></div>");
+        div = DOM.create("<div><a></a><a></a></div>");
         input = DOM.create("<input value='foo'>");
     });
 
