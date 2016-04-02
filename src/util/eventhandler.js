@@ -5,11 +5,11 @@ import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
 
 function getEventProperty(name, e, type, node, target, currentTarget) {
-    if (typeof name === "number") {
-        var args = e["<%= prop() %>"];
+    // if (typeof name === "number") {
+    //     var args = e["<%= prop() %>"];
 
-        return args ? args[name] : void 0;
-    }
+    //     return args ? args[name] : void 0;
+    // }
     /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         var docEl = (node.ownerDocument || node).documentElement;
@@ -70,7 +70,7 @@ function EventHandler(type, selector, callback, props, el, once) {
             // srcElement can be null in legacy IE when target is document
             var target = e.target || e.srcElement || node.ownerDocument.documentElement,
                 currentTarget = matcher ? matcher(target) : node,
-                args = props || [];
+                args = slice.call(e["<%= prop() %>"] || [0], 1);
 
             // early stop for late binding or when target doesn't match selector
             if (!currentTarget) return;
@@ -79,10 +79,8 @@ function EventHandler(type, selector, callback, props, el, once) {
             if (once) el.off(type, callback);
 
             if (props) {
-                args = args.map((name) => getEventProperty(
-                    name, e, type, node, target, currentTarget));
-            } else {
-                args = slice.call(e["<%= prop() %>"] || [0], 1);
+                args = props.map((name) => getEventProperty(
+                    name, e, type, node, target, currentTarget)).concat(args);
             }
 
             // prevent default if handler returns false

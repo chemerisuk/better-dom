@@ -44,7 +44,7 @@ describe("fire", function() {
             expect(callback).toHaveBeenCalled();
         });
 
-        it("prepend extra arguments if they exist", function() {
+        it("append extra arguments if they exist", function() {
             var data1 = {x: 1, y: 2}, data2 = function() {};
 
             callback.and.callFake(function(a, b) {
@@ -57,23 +57,28 @@ describe("fire", function() {
                 }
             });
 
-            input.on("my:click", callback);
+            input.once("my:click", callback);
             input.fire("my:click", data1);
             expect(callback.calls.count()).toBe(1);
 
-            input.on("click", callback);
+            input.once("click", callback);
             input.fire("click", data1, data2);
             expect(callback.calls.count()).toBe(2);
+
+            data1 = input;
+            input.on("click", ["currentTarget"], callback);
+            input.fire("click", data2);
+            expect(callback.calls.count()).toBe(3);
         });
 
-        it("ignore event fire arguments when event props are specified", function() {
-            var spy = jasmine.createSpy("on");
+        // it("ignore event fire arguments when event props are specified", function() {
+        //     var spy = jasmine.createSpy("on");
 
-            input.on("my:test", ["target"], spy);
-            input.fire("my:test", 123);
+        //     input.on("my:test", ["target"], spy);
+        //     input.fire("my:test", 123);
 
-            expect(spy).toHaveBeenCalledWith(input);
-        });
+        //     expect(spy).toHaveBeenCalledWith(input);
+        // });
     });
 
     it("should return false if default action was prevented", function() {

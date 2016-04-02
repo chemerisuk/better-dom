@@ -98,19 +98,19 @@ describe("on", function() {
             expect(spy).toHaveBeenCalled();
         });
 
-        it("handle numbers as event argument index", function() {
-            input.on("my:test", [1, 3, "target"], spy);
-            input.fire("my:test", 123, 555, "testing");
+        // it("handle numbers as event argument index", function() {
+        //     input.on("my:test", [1, 3, "target"], spy);
+        //     input.fire("my:test", 123, 555, "testing");
 
-            expect(spy).toHaveBeenCalledWith(123, "testing", input);
-        });
+        //     expect(spy).toHaveBeenCalledWith(123, "testing", input);
+        // });
 
-        it("can use zero to access event type",  function() {
-            input.on("focus", [0, "target"], spy);
-            input.fire("focus");
+        // it("can use zero to access event type",  function() {
+        //     input.on("focus", [0, "target"], spy);
+        //     input.fire("focus");
 
-            expect(spy).toHaveBeenCalledWith("focus", input);
-        });
+        //     expect(spy).toHaveBeenCalledWith("focus", input);
+        // });
 
         it("may return preventDefault functor", function() {
             spy.and.callFake(function(cancel) {
