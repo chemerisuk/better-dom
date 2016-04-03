@@ -52,12 +52,13 @@ var customLaunchers = {
     //     platform: "Windows 7",
     //     version: "9"
     // },
-    sl_ios_safari_9: {
+    sl_ios_safari: {
         base: "SauceLabs",
         browserName: "iphone",
-        platform: "OS X 10.11"
+        platform: "OS X 10.11",
+        version: "9.2"
     },
-    sl_android_5_1: {
+    sl_android: {
         base: "SauceLabs",
         browserName: "android",
         platform: "Linux"
