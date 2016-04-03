@@ -8,6 +8,10 @@
     "type": "git",
     "url": "https://github.com/chemerisuk/better-dom"
   },
+  "keywords": [
+    "ecosystem:better-dom",
+    "better-dom"
+  ],
   "docs": "http://chemerisuk.github.io/better-dom",
   "devDependencies": {
     "babel-plugin-check-es2015-constants": "^6.5.0",
