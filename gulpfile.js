@@ -63,7 +63,7 @@ gulp.task("compile-legacy", ["lint-legacy"], function() {
     return gulp.src(["node_modules/html5shiv/dist/html5shiv.js","node_modules/es5-shim/es5-shim.js","src/legacy/*.js"])
         .pipe(template({ pkg: pkg }))
         .pipe(concat("better-dom-legacy.js"))
-        .pipe(gulp.dest("build/"));
+        .pipe(gulp.dest(process.env.npm_package_version ? "dist/" : "build/"));
 });
 
 gulp.task("symlink", ["compile-legacy"], function() {
@@ -143,7 +143,7 @@ gulp.task("gh-pages", ["docs"], function() {
 });
 
 gulp.task("dist", ["test"], function(done) {
-    return gulp.src("build/*.js")
+    gulp.src("build/better-dom.js")
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(replace(/\/\*([\s\S]*?)\*\/\s+/gm, ""))
         .pipe(gulp.dest("dist/"))
