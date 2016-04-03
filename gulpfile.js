@@ -12,12 +12,9 @@ var jsdoc = require("gulp-jsdoc");
 var clean = require("gulp-clean");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
-var bump = require("gulp-bump");
 var deploy = require("gulp-gh-pages");
 var replace = require("gulp-replace");
 var git = require("gulp-git");
-var filter = require("gulp-filter");
-var tag_version = require("gulp-tag-version");
 var concat = require("gulp-concat");
 var plumber = require("gulp-plumber");
 var header = require("gulp-header");
@@ -28,10 +25,10 @@ var karmaConfig = require.resolve("./conf/karma.conf");
 var banner = [
     "/**",
     " * @overview <%= pkg.name %>: <%= pkg.description %>",
-    " * @version <%= pkg.version %> <%= new Date().toUTCString() %>",
-    " * @copyright " + new Date().getFullYear() + " <%= pkg.author %>",
+    " * @version <%= version %> <%= new Date().toUTCString() %>",
+    " * @copyright <%= new Date().getFullYear() %> <%= pkg.author %>",
     " * @license <%= pkg.license %>",
-    " * @see <%= pkg.repository.url %>",
+    " * @link <%= pkg.repository.url %>",
     " */"
 ].join("\n");
 
@@ -51,8 +48,6 @@ gulp.task("lint-test", function() {
 });
 
 gulp.task("compile", function() {
-    var dest = argv.dist ? "dist/" : "build/";
-
     return gulp.src(["document/*.js", "element/*.js", "util/*.js", "*.js"], {cwd: "./src"})
         .pipe(gulpif(!process.env.TRAVIS_JOB_NUMBER, plumber()))
         .pipe(jshint(".jshintrc"))
@@ -60,20 +55,15 @@ gulp.task("compile", function() {
         .pipe(jshint.reporter("fail"))
         .pipe(compile("better-dom.js", pkg))
         .pipe(babel())
-        // clienup multiline comments: jsdocs, directives etc.
-        .pipe(gulpif(dest === "dist/", replace(/\/\*([\s\S]*?)\*\/\s+/gm, "")))
-        .pipe(header(banner + "\n", { pkg: pkg }))
-        .pipe(gulp.dest(dest));
+        .pipe(header(banner + "\n", { pkg: pkg, version: process.env.npm_package_version }))
+        .pipe(gulp.dest("build/"));
 });
 
 gulp.task("compile-legacy", ["lint-legacy"], function() {
-    var dest = argv.dist ? "dist/" : "build/";
-
     return gulp.src(["node_modules/html5shiv/dist/html5shiv.js","node_modules/es5-shim/es5-shim.js","src/legacy/*.js"])
         .pipe(template({ pkg: pkg }))
         .pipe(concat("better-dom-legacy.js"))
-        .pipe(gulpif(dest === "dist/", uglify({ output: {comments: /^!|@preserve|@license|@cc_on/i} })))
-        .pipe(gulp.dest(dest));
+        .pipe(gulp.dest("build/"));
 });
 
 gulp.task("symlink", ["compile-legacy"], function() {
@@ -93,7 +83,7 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
             }
         };
     } else {
-        if (argv.all) {
+        if (argv.all || process.env.npm_package_version) {
             config.browsers = ["PhantomJS", "Chrome", "ChromeCanary", "Opera", "Safari", "Firefox"];
         } else if (argv.ie8) {
             config.browsers = ["IE8 - WinXP"];
@@ -128,8 +118,7 @@ gulp.task("sauce", function(done) {
         configFile: require.resolve("./conf/karma.conf-ci.js")
     }, function() {
         // always return success result for this task
-        // have to use process.exit to make travis to be happy
-        process.exit(0);
+        done(null);
     }).start();
 });
 
@@ -153,29 +142,15 @@ gulp.task("gh-pages", ["docs"], function() {
         .pipe(deploy());
 });
 
-gulp.task("compress", ["test"], function() {
-    var dest = argv.dist ? "dist/" : "build/";
-
-    return gulp.src(dest + "better-dom.js")
-        .pipe(uglify({preserveComments: "some"}))
-        .pipe(rename("better-dom.min.js"))
-        .pipe(gulp.dest(dest));
-});
-
-gulp.task("bump", function() {
-    return gulp.src(["./*.json"])
-        .pipe(bump({version: pkg.version}))
-        .pipe(gulp.dest("./"));
-});
-
-gulp.task("release", ["bump", "compress"], function(done) {
-    gulp.src(["./*.json", "./dist/*.js"])
-        .pipe(git.commit("version " + pkg.version))
-        .pipe(filter("package.json"))
-        .pipe(tag_version())
+gulp.task("dist", ["test"], function(done) {
+    return gulp.src("build/*.js")
+        // clienup multiline comments: jsdocs, directives etc.
+        .pipe(replace(/\/\*([\s\S]*?)\*\/\s+/gm, ""))
+        .pipe(gulp.dest("dist/"))
+        .pipe(uglify({preserveComments: "license"}))
+        .pipe(rename({extname: ".min.js"}))
+        .pipe(gulp.dest("dist/"))
         .on("end", function() {
-            git.push("origin", "master", {}, function() {
-                git.push("origin", "master", {args: "--tags"}, done);
-            });
+            git.exec({args: "add -A dist", quiet: true}, done);
         });
 });

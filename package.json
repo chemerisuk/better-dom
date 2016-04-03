@@ -25,10 +25,8 @@
     "es6-module-transpiler": "^0.9.5",
     "gulp": "^3.8.8",
     "gulp-babel": "^6.1.2",
-    "gulp-bump": "^0.1.11",
     "gulp-clean": "^0.3.1",
     "gulp-concat": "^2.4.1",
-    "gulp-filter": "^1.0.2",
     "gulp-gh-pages": "^0.3.4",
     "gulp-git": "^0.5.1",
     "gulp-header": "^1.2.2",
@@ -39,7 +37,6 @@
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.4.0",
     "gulp-symlink": "^1.1.0",
-    "gulp-tag-version": "^1.1.0",
     "gulp-template": "^1.1.0",
     "gulp-uglify": "^1.0.2",
     "gulp-util": "^3.0.1",
@@ -65,6 +62,8 @@
   "scripts": {
     "test": "gulp test",
     "start": "gulp dev",
-    "install": "cd node_modules/es6-module-transpiler && npm install && cd -"
+    "install": "cd node_modules/es6-module-transpiler && npm install && cd -",
+    "version": "gulp dist",
+    "postversion": "git push && git push --tags"
   }
 }
