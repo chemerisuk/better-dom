@@ -71,7 +71,15 @@ register({
     toggle: null
 
 }, (methodName, condition) => function(animationName, callback) {
-    if (typeof animationName !== "string") {
+    if (typeof animationName === "boolean") {
+        if (animationName === true) {
+            return this.css("display", condition ? "none" : "");
+        } else if (condition == null) {
+            return this.css("display", "none");
+        } else {
+            return this;
+        }
+    } else if (typeof animationName !== "string") {
         callback = animationName;
         animationName = null;
     }

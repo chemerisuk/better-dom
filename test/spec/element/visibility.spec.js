@@ -81,7 +81,13 @@ describe("visibility", function() {
         it("should throw error if arguments are invalid", function() {
             // expect(function() { link.hide("123") }).toThrow();
             expect(function() { link.hide(-10) }).toThrow();
-            expect(function() { link.hide(true) }).toThrow();
+            // expect(function() { link.hide(true) }).toThrow();
+        });
+
+        it("supports force argument to change element display", function() {
+            expect(link).not.toHaveStyle("display", "none");
+            link.hide(true);
+            expect(link).toHaveStyle("display", "none");
         });
     });
 
@@ -95,7 +101,7 @@ describe("visibility", function() {
         it("should throw error if arguments are invalid", function() {
             // expect(function() { link.show("123") }).toThrow();
             expect(function() { link.show(-10) }).toThrow();
-            expect(function() { link.show(true) }).toThrow();
+            // expect(function() { link.show(true) }).toThrow();
         });
 
         // it("should handle initially hidden element", function(done) {
@@ -118,6 +124,14 @@ describe("visibility", function() {
 
                 done();
             });
+        });
+
+        it("supports force argument to change element display", function() {
+            link.css("display", "none");
+            expect(link).toHaveStyle("display", "none");
+
+            link.show(true);
+            expect(link).not.toHaveStyle("display", "none");
         });
     });
 
@@ -182,6 +196,14 @@ describe("visibility", function() {
                     done();
                 });
             });
+        });
+
+        it("supports force argument to change element display", function() {
+            expect(link).not.toHaveStyle("display", "none");
+            link.toggle(false);
+            expect(link).toHaveStyle("display", "none");
+            link.toggle(true);
+            expect(link).not.toHaveStyle("display", "none");
         });
 
         // it("cancel previous call if it was scheduled", function(done) {
