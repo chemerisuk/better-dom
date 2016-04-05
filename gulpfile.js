@@ -24,13 +24,17 @@ var karmaConfig = require.resolve("./conf/karma.conf");
 
 var banner = [
     "/**",
-    " * @overview <%= pkg.name %>: <%= pkg.description %>",
+    " * <%= name %>: <%= description %>",
     " * @version <%= version %> <%= new Date().toUTCString() %>",
-    " * @copyright <%= new Date().getFullYear() %> <%= pkg.author %>",
-    " * @license <%= pkg.license %>",
-    " * @link <%= pkg.repository.url %>",
+    " * @link <%= homepage %>",
+    " * @copyright <%= new Date().getFullYear() %> <%= author %>",
+    " * @license <%= license %>",
     " */"
 ].join("\n");
+
+if (process.env.npm_package_version) {
+    pkg.version = process.env.npm_package_version;
+}
 
 
 gulp.task("lint-legacy", function() {
@@ -55,7 +59,7 @@ gulp.task("compile", function() {
         .pipe(jshint.reporter("fail"))
         .pipe(compile("better-dom.js", pkg))
         .pipe(babel())
-        .pipe(header(banner + "\n", { pkg: pkg, version: process.env.npm_package_version }))
+        .pipe(header(banner + "\n", pkg))
         .pipe(gulp.dest("build/"));
 });
 
