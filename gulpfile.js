@@ -157,6 +157,7 @@ gulp.task("dist", ["test", "bower"], function(done) {
     gulp.src("build/better-dom.js")
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(replace(/\/\*([\s\S]*?)\*\/\s+/gm, ""))
+        .pipe(header(banner + "\n", pkg))
         .pipe(gulp.dest("dist/"))
         .pipe(uglify({preserveComments: "license"}))
         .pipe(rename({extname: ".min.js"}))
