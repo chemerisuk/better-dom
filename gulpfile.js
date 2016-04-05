@@ -18,6 +18,7 @@ var git = require("gulp-git");
 var concat = require("gulp-concat");
 var plumber = require("gulp-plumber");
 var header = require("gulp-header");
+var bump = require("gulp-bump");
 
 var karma = require("karma");
 var karmaConfig = require.resolve("./conf/karma.conf");
@@ -146,7 +147,13 @@ gulp.task("gh-pages", ["docs"], function() {
         .pipe(deploy());
 });
 
-gulp.task("dist", ["test"], function(done) {
+gulp.task("bower", function() {
+    return gulp.src("./bower.json")
+        .pipe(bump({version: pkg.version}))
+        .pipe(gulp.dest("./"));
+});
+
+gulp.task("dist", ["test", "bower"], function(done) {
     gulp.src("build/better-dom.js")
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(replace(/\/\*([\s\S]*?)\*\/\s+/gm, ""))
