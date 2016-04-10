@@ -8,63 +8,6 @@ describe("$Element#value", function() {
         input = DOM.create("<input value='foo'>");
     });
 
-    // it("should replace child element(s) from node with provided element", function() {
-    //     expect(div[0].childNodes.length).toBe(2);
-    //     expect(div.value(DOM.create("<b>"))).toBe(div);
-    //     expect(div[0].childNodes.length).toBe(1);
-    //     expect(div.child(0)).toHaveTag("b");
-    // });
-
-    // it("should set value of text input to provided string value", function () {
-    //     expect(input.value("bar")).toBe(input);
-    //     expect(input).toHaveProp("value", "bar");
-    // });
-
-    // it("supports array of elements", function() {
-    //     var content = DOM.createAll("<b></b><b></b><b></b><b></b><b></b>");
-
-    //     expect(div[0].childNodes.length).toBe(2);
-    //     div.value(content);
-    //     expect(div[0].childNodes.length).toBe(5);
-    // });
-
-    // it("accepts primitive types", function() {
-    //     expect(div.value(1)).toHaveHtml("1");
-    //     expect(div.value(true)).toHaveHtml("true");
-    // });
-
-    // it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
-    //     var value = "set-test-changed";
-
-    //     link.set(value);
-    //     input.set(value);
-
-    //     expect(link).toHaveHtml(value);
-    //     expect(input).toHaveProp("value", value);
-    // });
-
-    // it("should set select value properly", function() {
-    //     var select = DOM.create("<select><option>AM</option><option>PM</option></select>");
-
-    //     expect(select.get()).toBe("AM");
-    //     select.set("PM");
-    //     expect(select.get()).toBe("PM");
-    //     select.set("MM");
-    //     expect(select.get()).toBe("");
-    // });
-
-    // it("should accept function", function() {
-    //     var spy = jasmine.createSpy("set").and.returnValue("ok");
-
-    //     link.set(spy);
-    //     input.set(spy);
-
-    //     expect(spy.calls.count()).toBe(2);
-
-    //     expect(link).toHaveHtml("ok");
-    //     expect(input).toHaveProp("value", "ok");
-    // });
-
     describe("getter", function() {
         it("handles different tags", function() {
             expect(input.value()).toBe("foo");
@@ -101,19 +44,60 @@ describe("$Element#value", function() {
     });
 
     describe("setter", function() {
+        it("should set value of text input to provided string value", function () {
+            expect(input.value("bar")).toBe(input);
+            expect(input).toHaveProp("value", "bar");
+        });
 
+        it("should replace child element(s) from node with provided text", function() {
+            expect(div[0].childNodes.length).toBe(2);
+            expect(div.value("foo")).toBe(div);
+            expect(div[0].childNodes.length).toBe(1);
+            expect(div[0].firstChild.nodeValue).toBe("foo");
+        });
+
+        it("should set select value properly", function() {
+            var select = DOM.create("<select><option>AM</option><option>PM</option></select>");
+
+            expect(select.value()).toBe("AM");
+            select.value("PM");
+            expect(select.value()).toBe("PM");
+            select.value("MM");
+            expect(select.value()).toBe("");
+        });
+
+        it("accepts primitive types", function() {
+            expect(div.value(1)).toHaveHtml("1");
+            expect(div.value(true)).toHaveHtml("true");
+        });
+
+        // it("uses 'textContent' or 'value' if name argument is undefined", function() {
+        //     var value = "set-test-changed";
+
+        //     link.set(value);
+        //     input.set(value);
+
+        //     expect(link).toHaveHtml(value);
+        //     expect(input).toHaveProp("value", value);
+        // });
+
+        // it("should accept function", function() {
+        //     var spy = jasmine.createSpy("set").and.returnValue("ok");
+
+        //     link.set(spy);
+        //     input.set(spy);
+
+        //     expect(spy.calls.count()).toBe(2);
+
+        //     expect(link).toHaveHtml("ok");
+        //     expect(input).toHaveProp("value", "ok");
+        // });
     });
 
-    // it("works for empty node", function() {
-    //     var foo = DOM.find("x-foo");
+    it("works for empty node", function() {
+        var foo = DOM.find("x-foo");
 
-    //     expect(foo.value()).toBeUndefined();
-    //     expect(foo.value("123")).toBe(foo);
-    // });
-
-    // it("should set value of text input to string value of provided element", function () {
-    //     expect(input.value(DOM.create("div"))).toBe(input);
-    //     expect(input[0].value).toBe("<div>");
-    //     expect(input[0].childNodes.length).toBe(0);
-    // });
+        expect(foo.value()).toBeUndefined();
+        expect(foo.value("123")).toBe(foo);
+    });
 });

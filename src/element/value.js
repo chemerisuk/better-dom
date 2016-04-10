@@ -6,7 +6,7 @@ register({
      * Read or write inner content of the element
      * @memberof! $Element#
      * @alias $Element#value
-     * @param  {Mixed}  [content]  optional value to set
+     * @param  {String}  [content]  optional value to set
      * @return {$Element}
      * @function
      * @example
@@ -47,6 +47,7 @@ register({
                     break;
 
                 default:
+                    /* istanbul ignore if */
                     if (JSCRIPT_VERSION < 9) {
                         // IE8 uses innerText for TEXTAREA because
                         // it doesn't trigger onpropertychange
