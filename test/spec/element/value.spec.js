@@ -100,6 +100,10 @@ describe("$Element#value", function() {
         });
     });
 
+    describe("setter", function() {
+
+    });
+
     // it("works for empty node", function() {
     //     var foo = DOM.find("x-foo");
 

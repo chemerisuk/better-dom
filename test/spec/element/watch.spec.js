@@ -77,27 +77,27 @@ describe("watch", function() {
         link.set("title", "modified");
     });
 
-    it("should work for the value shortcut", function(done) {
-        var spy = jasmine.createSpy("watcher"),
-            input = DOM.create("<input>");
+    // it("should work for the value shortcut", function(done) {
+    //     var spy = jasmine.createSpy("watcher"),
+    //         input = DOM.create("<input>");
 
-        spy.and.callFake(function() {
-            expect(spy).toHaveBeenCalledWith("test1", "");
+    //     spy.and.callFake(function() {
+    //         expect(spy).toHaveBeenCalledWith("test1", "");
 
-            spy = jasmine.createSpy("watcher");
-            spy.and.callFake(function() {
-                expect(spy).toHaveBeenCalledWith("test2", "");
+    //         spy = jasmine.createSpy("watcher");
+    //         spy.and.callFake(function() {
+    //             expect(spy).toHaveBeenCalledWith("test2", "");
 
-                done();
-            });
+    //             done();
+    //         });
 
-            input.watch("value", spy);
-            input.value("test2");
-        });
+    //         input.watch("value", spy);
+    //         input.value("test2");
+    //     });
 
-        link.watch("innerHTML", spy);
-        link.value("test1");
-    });
+    //     link.watch("innerHTML", spy);
+    //     link.value("test1");
+    // });
 
     it("does nothing for empty nodes", function() {
         var spy = jasmine.createSpy("watcher");

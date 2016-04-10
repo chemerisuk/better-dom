@@ -1,6 +1,5 @@
 import { register, every } from "../util/index";
 import { JSCRIPT_VERSION } from "../const";
-import { $Element } from "../types";
 
 register({
     /**
@@ -16,7 +15,7 @@ register({
      * div.value();                     // => "<i></i>"
      */
     value(content) {
-        var node = this[0], name;
+        var node = this[0];
 
         if (content === void 0) {
             switch (node.tagName) {
@@ -33,42 +32,30 @@ register({
                     return node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"];
                 }
             }
-        } else if ((content instanceof $Element) || Array.isArray(content)) {
-            return this.set("innerHTML", "").append(content);
-        }
+        } else {
+            switch (node.tagName) {
+                case "INPUT":
+                case "OPTION":
+                    node.value = content;
+                    break;
 
-        if (typeof content === "function") {
-            content = content(this);
-        }
+                case "SELECT":
+                    if (every.call(node.options, (o) => !(o.selected = o.value === content))) {
+                        node.selectedIndex = -1;
+                    }
+                    break;
 
-        if (typeof content !== "string") {
-            content = content == null ? "" : String(content);
-        }
+                case "TEXTAREA":
+                    // for IE8 use innerText for textareabecause it doesn't trigger onpropertychange
+                    node[JSCRIPT_VERSION < 9 ? "innerText" : "value"] = content;
+                    break;
 
-        switch (node.tagName) {
-        case "INPUT":
-        case "OPTION":
-            name = "value";
-            break;
-
-        case "SELECT":
-            // selectbox has special case
-            if (every.call(node.options, (o) => !(o.selected = o.value === content))) {
-                node.selectedIndex = -1;
+                default:
+                    node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"] = content;
             }
-            // return earlier
+
             return this;
-
-        case "TEXTAREA":
-            // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-            name = JSCRIPT_VERSION < 9 ? "innerText" : "value";
-            break;
-
-        default:
-            name = "innerHTML";
         }
-
-        return this.set(name, content);
     }
 }, null, () => function() {
     if (arguments.length) return this;

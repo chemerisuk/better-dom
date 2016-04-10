@@ -101,20 +101,20 @@ describe("manipulation", function() {
             });
         });
 
-        it("accept DOMElement", function() {
-            _forIn(checkStrategies, function(checkMethod, strategy) {
-                //var arg = DOM.create(createDiv(strategy));
-                var arg = DOM.create(createDivHtml(strategy)),
-                    otherDiv = DOM.create("<div>");
+        // it("accept DOMElement", function() {
+        //     _forIn(checkStrategies, function(checkMethod, strategy) {
+        //         //var arg = DOM.create(createDiv(strategy));
+        //         var arg = DOM.create(createDivHtml(strategy)),
+        //             otherDiv = DOM.create("<div>");
 
-                expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
+        //         expect(checkMethod(div[strategy](arg))).toHaveClass(strategy);
 
-                otherDiv.value("<section>This <mark>highlighted</mark>?</section>");
+        //         otherDiv.value("<section>This <mark>highlighted</mark>?</section>");
 
-                expect(checkMethod(div[strategy](otherDiv))).toHaveTag("div");
-                expect(otherDiv.find("section")).toHaveTag("section");
-            });
-        });
+        //         expect(checkMethod(div[strategy](otherDiv))).toHaveTag("div");
+        //         expect(otherDiv.find("section")).toHaveTag("section");
+        //     });
+        // });
 
         it("access array of $Element", function() {
             var sandbox = DOM.find("#" + jasmine.sandbox.id);
