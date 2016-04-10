@@ -15,10 +15,6 @@ hooks.set.style = (node, value) => { node.style.cssText = value };
 hooks.get.type = (node) => node.getAttribute("type") || node.type;
 /* istanbul ignore if */
 if (JSCRIPT_VERSION < 9) {
-    // IE8 has innerText but not textContent
-    hooks.get.textContent = (node) => node.innerText;
-    hooks.set.textContent = (node, value) => { node.innerText = value };
-
     // IE8 sometimes breaks on innerHTML
     hooks.set.innerHTML = function(node, value) {
         try {

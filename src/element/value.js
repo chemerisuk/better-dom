@@ -16,9 +16,10 @@ register({
      */
     value(content) {
         var node = this[0];
+        var tagName = node.tagName;
 
         if (content === void 0) {
-            switch (node.tagName) {
+            switch (tagName) {
             case "SELECT":
                 return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
 
@@ -33,7 +34,7 @@ register({
                 }
             }
         } else {
-            switch (node.tagName) {
+            switch (tagName) {
                 case "INPUT":
                 case "OPTION":
                     node.value = content;
@@ -45,13 +46,14 @@ register({
                     }
                     break;
 
-                case "TEXTAREA":
-                    // for IE8 use innerText for textareabecause it doesn't trigger onpropertychange
-                    node[JSCRIPT_VERSION < 9 ? "innerText" : "value"] = content;
-                    break;
-
                 default:
-                    node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"] = content;
+                    if (JSCRIPT_VERSION < 9) {
+                        // IE8 uses innerText for TEXTAREA because
+                        // it doesn't trigger onpropertychange
+                        node.innerText = content;
+                    } else {
+                        node[tagName === "TEXTAREA" ? "value" : "textContent"] = content;
+                    }
             }
 
             return this;
