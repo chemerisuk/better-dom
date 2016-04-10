@@ -26,12 +26,12 @@ register({
             case "OPTION":
                 return node[node.hasAttribute("value") ? "value" : "text"];
 
+            case "INPUT":
+            case "TEXTAREA":
+                return node.value;
+
             default:
-                if (node.type && "value" in node) {
-                    return node.value;
-                } else {
-                    return node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"];
-                }
+                return node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"];
             }
         } else {
             switch (tagName) {

@@ -18,7 +18,7 @@ describe("$Element#value", function() {
         });
 
         it("handles textarea", function() {
-            var textarea = DOM.create("<textarea>");
+            var textarea = DOM.create("<textarea></textarea>");
 
             expect(textarea.value()).toBe("");
             textarea.set("value", "123");
