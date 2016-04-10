@@ -24,14 +24,15 @@ register({
                 return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
 
             case "OPTION":
-                name = node.hasAttribute("value") ? "value" : "text";
-                break;
+                return node[node.hasAttribute("value") ? "value" : "text"];
 
             default:
-                name = node.type && "value" in node ? "value" : "innerHTML";
+                if (node.type && "value" in node) {
+                    return node.value;
+                } else {
+                    return node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"];
+                }
             }
-
-            return node[name];
         } else if ((content instanceof $Element) || Array.isArray(content)) {
             return this.set("innerHTML", "").append(content);
         }

@@ -8,30 +8,30 @@ describe("$Element#value", function() {
         input = DOM.create("<input value='foo'>");
     });
 
-    it("should replace child element(s) from node with provided element", function() {
-        expect(div[0].childNodes.length).toBe(2);
-        expect(div.value(DOM.create("<b>"))).toBe(div);
-        expect(div[0].childNodes.length).toBe(1);
-        expect(div.child(0)).toHaveTag("b");
-    });
+    // it("should replace child element(s) from node with provided element", function() {
+    //     expect(div[0].childNodes.length).toBe(2);
+    //     expect(div.value(DOM.create("<b>"))).toBe(div);
+    //     expect(div[0].childNodes.length).toBe(1);
+    //     expect(div.child(0)).toHaveTag("b");
+    // });
 
-    it("should set value of text input to provided string value", function () {
-        expect(input.value("bar")).toBe(input);
-        expect(input).toHaveProp("value", "bar");
-    });
+    // it("should set value of text input to provided string value", function () {
+    //     expect(input.value("bar")).toBe(input);
+    //     expect(input).toHaveProp("value", "bar");
+    // });
 
-    it("supports array of elements", function() {
-        var content = DOM.createAll("<b></b><b></b><b></b><b></b><b></b>");
+    // it("supports array of elements", function() {
+    //     var content = DOM.createAll("<b></b><b></b><b></b><b></b><b></b>");
 
-        expect(div[0].childNodes.length).toBe(2);
-        div.value(content);
-        expect(div[0].childNodes.length).toBe(5);
-    });
+    //     expect(div[0].childNodes.length).toBe(2);
+    //     div.value(content);
+    //     expect(div[0].childNodes.length).toBe(5);
+    // });
 
-    it("accepts primitive types", function() {
-        expect(div.value(1)).toHaveHtml("1");
-        expect(div.value(true)).toHaveHtml("true");
-    });
+    // it("accepts primitive types", function() {
+    //     expect(div.value(1)).toHaveHtml("1");
+    //     expect(div.value(true)).toHaveHtml("true");
+    // });
 
     // it("should use 'innerHTML' or 'value' if name argument is undefined", function() {
     //     var value = "set-test-changed";
@@ -67,8 +67,11 @@ describe("$Element#value", function() {
 
     describe("getter", function() {
         it("handles different tags", function() {
-            expect(div.value().toLowerCase()).toBe("<a></a><a></a>");
             expect(input.value()).toBe("foo");
+
+            expect(div.value().toLowerCase()).toBe("");
+            div.append("bar");
+            expect(div.value().toLowerCase()).toBe("bar");
         });
 
         it("handles textarea", function() {
@@ -90,19 +93,19 @@ describe("$Element#value", function() {
             expect(select.value()).toBe("");
         });
 
-        it("handles option", function() {
+        it("handles options", function() {
             var select = DOM.create("<select><option value='a1'>a2</option><option selected>a3</option></select>");
             expect(select.child(0).value()).toBe("a1");
             expect(select.child(1).value()).toBe("a3");
         });
     });
 
-    it("works for empty node", function() {
-        var foo = DOM.find("x-foo");
+    // it("works for empty node", function() {
+    //     var foo = DOM.find("x-foo");
 
-        expect(foo.value()).toBeUndefined();
-        expect(foo.value("123")).toBe(foo);
-    });
+    //     expect(foo.value()).toBeUndefined();
+    //     expect(foo.value("123")).toBe(foo);
+    // });
 
     // it("should set value of text input to string value of provided element", function () {
     //     expect(input.value(DOM.create("div"))).toBe(input);
