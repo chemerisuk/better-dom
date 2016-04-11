@@ -1,6 +1,6 @@
 /**
  * better-dom: Live extension playground
- * @version 3.0.0-beta.3 Tue, 05 Apr 2016 12:59:26 GMT
+ * @version 3.0.0-rc.1 Mon, 11 Apr 2016 09:32:34 GMT
  * @link https://github.com/chemerisuk/better-dom
  * @copyright 2016 Maksim Chemerisuk
  * @license MIT
@@ -17,7 +17,7 @@
             if (node) {
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__3000000-beta003__"] = this;
+                node["__3000000-rc001__"] = this;
 
                 this[0] = node;
                 this.length = 1;
@@ -25,7 +25,7 @@
             }
         } else if (node) {
             // create a wrapper only once for each native element
-            return node["__3000000-beta003__"] || new $Element(node);
+            return node["__3000000-rc001__"] || new $Element(node);
         } else {
             return new $NullElement();
         }
@@ -41,7 +41,7 @@
             return "<" + this[0].tagName.toLowerCase() + ">";
         },
 
-        version: "3.0.0-beta.3"
+        version: "3.0.0-rc.1"
     };
 
     $NullElement.prototype = new $Element();
@@ -141,11 +141,11 @@
 
     }, function (methodName, all) {
         return function (value) {
-            var sandbox = this._["sandbox3000000-beta003"];
+            var sandbox = this._["sandbox3000000-rc001"];
 
             if (!sandbox) {
                 sandbox = this[0].createElement("div");
-                this._["sandbox3000000-beta003"] = sandbox;
+                this._["sandbox3000000-rc001"] = sandbox;
             }
 
             var nodes, el;
@@ -253,7 +253,7 @@
         };
     };
 
-    var util$extensionhandler$$propName = "extension3000000-beta003";
+    var util$extensionhandler$$propName = "extension3000000-rc001";
 
     var util$extensionhandler$$default = function (selector, mixins, index) {
         var matcher = util$selectormatcher$$default(selector);
@@ -305,7 +305,7 @@
 
         document$extend$$cssText = "-ms-behavior:url(" + document$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important";
     } else {
-        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM3000000-beta003 !important;";
+        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM3000000-rc001 !important;";
         document$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
     }
 
@@ -332,10 +332,10 @@
             }
 
             var doc = this[0],
-                mappings = this._["mappings3000000-beta003"];
+                mappings = this._["mappings3000000-rc001"];
 
             if (!mappings) {
-                this._["mappings3000000-beta003"] = mappings = [];
+                this._["mappings3000000-rc001"] = mappings = [];
 
                 if (JSCRIPT_VERSION < 10) {
                     doc.attachEvent("on" + CUSTOM_EVENT_TYPE, function () {
@@ -349,10 +349,10 @@
                     });
                 } else {
                     // declare the fake animation on the first DOM.extend method call
-                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM3000000-beta003", "from {opacity:.99} to {opacity:1}");
+                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM3000000-rc001", "from {opacity:.99} to {opacity:1}");
                     // use capturing to suppress internal animationstart events
                     doc.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function (e) {
-                        if (e.animationName === "DOM3000000-beta003") {
+                        if (e.animationName === "DOM3000000-rc001") {
                             mappings.forEach(function (ext) {
                                 ext(e.target);
                             });
@@ -412,14 +412,14 @@
 
     util$index$$register({
         importStyles: function (selector, cssText) {
-            var styleSheet = this._["styles3000000-beta003"];
+            var styleSheet = this._["styles3000000-rc001"];
 
             if (!styleSheet) {
                 var styleNode = util$index$$injectElement(this[0].createElement("style"));
 
                 styleSheet = styleNode.sheet || styleNode.styleSheet;
                 // store object internally
-                this._["styles3000000-beta003"] = styleSheet;
+                this._["styles3000000-rc001"] = styleSheet;
             }
 
             if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -451,7 +451,7 @@
             if (!content) return new $NullElement();
 
             var result = this.create(content, varMap),
-                mappings = this._["mappings3000000-beta003"],
+                mappings = this._["mappings3000000-rc001"],
                 applyExtensions = function (node) {
                 mappings.forEach(function (ext) {
                     ext(node);
@@ -903,14 +903,6 @@
         return RETURN_THIS;
     });
 
-    util$index$$register({
-        empty: function () {
-            return this.value("");
-        }
-    }, null, function () {
-        return RETURN_THIS;
-    });
-
     // big part of code inspired by Sizzle:
     // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
@@ -954,7 +946,7 @@
                     if (old = node.getAttribute("id")) {
                         nid = old.replace(element$find$$rescape, "\\$&");
                     } else {
-                        nid = "DOM3000000-beta003";
+                        nid = "DOM3000000-rc001";
                         node.setAttribute("id", nid);
                     }
 
@@ -1010,7 +1002,7 @@
         var _arguments2 = arguments;
 
         // if (typeof name === "number") {
-        //     var args = e["__3000000-beta003__"];
+        //     var args = e["__3000000-rc001__"];
 
         //     return args ? args[name] : void 0;
         // }
@@ -1078,7 +1070,7 @@
             // srcElement can be null in legacy IE when target is document
             var target = e.target || e.srcElement || node.ownerDocument.documentElement,
                 currentTarget = matcher ? matcher(target) : node,
-                args = util$index$$slice.call(e["__3000000-beta003__"] || [0], 1);
+                args = util$index$$slice.call(e["__3000000-rc001__"] || [0], 1);
 
             // early stop for late binding or when target doesn't match selector
             if (!currentTarget) return;
@@ -1136,7 +1128,7 @@
             }
             if (JSCRIPT_VERSION < 9) {
                 e = (node.ownerDocument || node).createEventObject();
-                e["__3000000-beta003__"] = arguments;
+                e["__3000000-rc001__"] = arguments;
                 // handle custom events for legacy IE
                 if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
                 // store original event type
@@ -1147,7 +1139,7 @@
                 canContinue = e.returnValue !== false;
             } else {
                 e = (node.ownerDocument || node).createEvent("HTMLEvents");
-                e["__3000000-beta003__"] = arguments;
+                e["__3000000-rc001__"] = arguments;
                 e.initEvent(eventType, true, true);
                 canContinue = node.dispatchEvent(e);
             }
@@ -1190,14 +1182,6 @@
         return node.getAttribute("type") || node.type;
     };
     if (JSCRIPT_VERSION < 9) {
-        // IE8 has innerText but not textContent
-        util$accessorhooks$$hooks.get.textContent = function (node) {
-            return node.innerText;
-        };
-        util$accessorhooks$$hooks.set.textContent = function (node, value) {
-            node.innerText = value;
-        };
-
         // IE8 sometimes breaks on innerHTML
         util$accessorhooks$$hooks.set.innerHTML = function (node, value) {
             try {
@@ -1370,7 +1354,7 @@
             }
 
             var node = this[0],
-                propName = "handler3000000-beta003";
+                propName = "handler3000000-rc001";
 
             if (this._[propName]) {
                 this._[propName] = this._[propName].filter(function (handler) {
@@ -1455,7 +1439,7 @@
 
                 var node = this[0],
                     handler = util$eventhandler$$default(type, selector, callback, args, this, single),
-                    propName = "handler3000000-beta003";
+                    propName = "handler3000000-rc001";
 
                 if (JSCRIPT_VERSION < 9) {
                     node.attachEvent("on" + (handler._type || type), handler);
@@ -1492,7 +1476,7 @@
             var node = this[0];
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._["watcher3000000-beta003"],
+                watchers = this._["watcher3000000-rc001"],
                 oldValue;
 
             watchers = watchers && watchers[name];
@@ -1583,61 +1567,51 @@
 
     util$index$$register({
         value: function (content) {
-            var node = this[0],
-                name;
+            var node = this[0];
+            var tagName = node.tagName;
 
             if (content === void 0) {
-                switch (node.tagName) {
+                switch (tagName) {
                     case "SELECT":
                         return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
 
                     case "OPTION":
-                        name = node.hasAttribute("value") ? "value" : "text";
+                        return node[node.hasAttribute("value") ? "value" : "text"];
+
+                    case "INPUT":
+                    case "TEXTAREA":
+                        return node.value;
+
+                    default:
+                        return node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"];
+                }
+            } else {
+                switch (tagName) {
+                    case "INPUT":
+                    case "OPTION":
+                        node.value = content;
+                        break;
+
+                    case "SELECT":
+                        if (util$index$$every.call(node.options, function (o) {
+                            return !(o.selected = o.value === content);
+                        })) {
+                            node.selectedIndex = -1;
+                        }
                         break;
 
                     default:
-                        name = node.type && "value" in node ? "value" : "innerHTML";
+                        if (JSCRIPT_VERSION < 9) {
+                            // IE8 uses innerText for TEXTAREA because
+                            // it doesn't trigger onpropertychange
+                            node.innerText = content;
+                        } else {
+                            node[tagName === "TEXTAREA" ? "value" : "textContent"] = content;
+                        }
                 }
 
-                return node[name];
-            } else if (content instanceof $Element || Array.isArray(content)) {
-                return this.set("innerHTML", "").append(content);
+                return this;
             }
-
-            if (typeof content === "function") {
-                content = content(this);
-            }
-
-            if (typeof content !== "string") {
-                content = content == null ? "" : String(content);
-            }
-
-            switch (node.tagName) {
-                case "INPUT":
-                case "OPTION":
-                    name = "value";
-                    break;
-
-                case "SELECT":
-                    // selectbox has special case
-                    if (util$index$$every.call(node.options, function (o) {
-                        return !(o.selected = o.value === content);
-                    })) {
-                        node.selectedIndex = -1;
-                    }
-                    // return earlier
-                    return this;
-
-                case "TEXTAREA":
-                    // for IE use innerText for textareabecause it doesn't trigger onpropertychange
-                    name = JSCRIPT_VERSION < 9 ? "innerText" : "value";
-                    break;
-
-                default:
-                    name = "innerHTML";
-            }
-
-            return this.set(name, content);
         }
     }, null, function () {
         return function () {
@@ -1833,7 +1807,7 @@
         return RETURN_THIS;
     });
 
-    var element$watch$$propName = "watcher3000000-beta003";
+    var element$watch$$propName = "watcher3000000-rc001";
 
     util$index$$register({
         watch: function (name, callback) {
