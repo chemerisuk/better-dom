@@ -82,7 +82,7 @@ register({
                     if (e.animationName === "<%= prop('DOM') %>") {
                         mappings.forEach((ext) => { ext(e.target) });
                         // this is an internal event - stop it immediately
-                        e.stopImmediatePropagation();
+                        e.stopPropagation();
                     }
                 }, true);
             }
