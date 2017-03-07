@@ -1,15 +1,9 @@
-import { slice } from "../util/index";
 import { JSCRIPT_VERSION, WINDOW, CUSTOM_EVENT_TYPE } from "../const";
 import { $Element } from "../types";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
 
 function getEventProperty(name, e, type, node, target, currentTarget) {
-    // if (typeof name === "number") {
-    //     var args = e["<%= prop() %>"];
-
-    //     return args ? args[name] : void 0;
-    // }
     /* istanbul ignore if */
     if (JSCRIPT_VERSION < 9) {
         var docEl = (node.ownerDocument || node).documentElement;
@@ -80,12 +74,10 @@ function EventHandler(type, selector, callback, props, el, once) {
             if (props) {
                 props = props.map((name) => getEventProperty(
                     name, e, type, node, target, currentTarget));
-            } else {
-                props = [];
             }
 
             // prevent default if handler returns false
-            if (callback.apply(el, props) === false) {
+            if ((props ? callback.apply(el, props) : callback.call(el)) === false) {
                 /* istanbul ignore if */
                 if (JSCRIPT_VERSION < 9) {
                     e.returnValue = false;
