@@ -1,6 +1,6 @@
 /**
  * better-dom: Live extension playground
- * @version 3.0.0 Tue, 07 Mar 2017 18:00:37 GMT
+ * @version 3.0.1 Tue, 07 Mar 2017 18:16:49 GMT
  * @link https://github.com/chemerisuk/better-dom
  * @copyright 2017 Maksim Chemerisuk
  * @license MIT
@@ -17,7 +17,7 @@
             if (node) {
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__3000000__"] = this;
+                node["__3000001__"] = this;
 
                 this[0] = node;
                 this.length = 1;
@@ -25,7 +25,7 @@
             }
         } else if (node) {
             // create a wrapper only once for each native element
-            return node["__3000000__"] || new $Element(node);
+            return node["__3000001__"] || new $Element(node);
         } else {
             return new $NullElement();
         }
@@ -41,7 +41,7 @@
             return "<" + this[0].tagName.toLowerCase() + ">";
         },
 
-        version: "3.0.0"
+        version: "3.0.1"
     };
 
     $NullElement.prototype = new $Element();
@@ -141,11 +141,11 @@
 
     }, function (methodName, all) {
         return function (value) {
-            var sandbox = this._["sandbox3000000"];
+            var sandbox = this._["sandbox3000001"];
 
             if (!sandbox) {
                 sandbox = this[0].createElement("div");
-                this._["sandbox3000000"] = sandbox;
+                this._["sandbox3000001"] = sandbox;
             }
 
             var nodes, el;
@@ -253,7 +253,7 @@
         };
     };
 
-    var util$extensionhandler$$propName = "extension3000000";
+    var util$extensionhandler$$propName = "extension3000001";
 
     var util$extensionhandler$$default = function (selector, mixins, index) {
         var matcher = util$selectormatcher$$default(selector);
@@ -305,7 +305,7 @@
 
         document$extend$$cssText = "-ms-behavior:url(" + document$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important";
     } else {
-        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM3000000 !important;";
+        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM3000001 !important;";
         document$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
     }
 
@@ -332,10 +332,10 @@
             }
 
             var doc = this[0],
-                mappings = this._["mappings3000000"];
+                mappings = this._["mappings3000001"];
 
             if (!mappings) {
-                this._["mappings3000000"] = mappings = [];
+                this._["mappings3000001"] = mappings = [];
 
                 if (JSCRIPT_VERSION < 10) {
                     doc.attachEvent("on" + CUSTOM_EVENT_TYPE, function () {
@@ -349,10 +349,10 @@
                     });
                 } else {
                     // declare the fake animation on the first DOM.extend method call
-                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM3000000", "from {opacity:.99} to {opacity:1}");
+                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM3000001", "from {opacity:.99} to {opacity:1}");
                     // use capturing to suppress internal animationstart events
                     doc.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function (e) {
-                        if (e.animationName === "DOM3000000") {
+                        if (e.animationName === "DOM3000001") {
                             mappings.forEach(function (ext) {
                                 ext(e.target);
                             });
@@ -412,14 +412,14 @@
 
     util$index$$register({
         importStyles: function (selector, cssText) {
-            var styleSheet = this._["styles3000000"];
+            var styleSheet = this._["styles3000001"];
 
             if (!styleSheet) {
                 var styleNode = util$index$$injectElement(this[0].createElement("style"));
 
                 styleSheet = styleNode.sheet || styleNode.styleSheet;
                 // store object internally
-                this._["styles3000000"] = styleSheet;
+                this._["styles3000001"] = styleSheet;
             }
 
             if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -451,7 +451,7 @@
             if (!content) return new $NullElement();
 
             var result = this.create(content, varMap),
-                mappings = this._["mappings3000000"],
+                mappings = this._["mappings3000001"],
                 applyExtensions = function (node) {
                 mappings.forEach(function (ext) {
                     ext(node);
@@ -946,7 +946,7 @@
                     if (old = node.getAttribute("id")) {
                         nid = old.replace(element$find$$rescape, "\\$&");
                     } else {
-                        nid = "DOM3000000";
+                        nid = "DOM3000001";
                         node.setAttribute("id", nid);
                     }
 
@@ -1064,7 +1064,10 @@
             }
             // srcElement can be null in legacy IE when target is document
             var target = e.target || e.srcElement || node.ownerDocument.documentElement,
-                currentTarget = matcher ? matcher(target) : node;
+                currentTarget = matcher ? matcher(target) : node,
+                args = props ? props.map(function (name) {
+                return util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget);
+            }) : null;
 
             // early stop for late binding or when target doesn't match selector
             if (!currentTarget) return;
@@ -1072,14 +1075,8 @@
             // off callback even if it throws an exception later
             if (once) el.off(type, callback);
 
-            if (props) {
-                props = props.map(function (name) {
-                    return util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget);
-                });
-            }
-
             // prevent default if handler returns false
-            if ((props ? callback.apply(el, props) : callback.call(el)) === false) {
+            if ((args ? callback.apply(el, args) : callback.call(el)) === false) {
                 if (JSCRIPT_VERSION < 9) {
                     e.returnValue = false;
                 } else {
@@ -1348,7 +1345,7 @@
             }
 
             var node = this[0],
-                propName = "handler3000000";
+                propName = "handler3000001";
 
             if (this._[propName]) {
                 this._[propName] = this._[propName].filter(function (handler) {
@@ -1433,7 +1430,7 @@
 
                 var node = this[0],
                     handler = util$eventhandler$$default(type, selector, callback, args, this, single),
-                    propName = "handler3000000";
+                    propName = "handler3000001";
 
                 if (JSCRIPT_VERSION < 9) {
                     node.attachEvent("on" + (handler._type || type), handler);
@@ -1470,7 +1467,7 @@
             var node = this[0];
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._["watcher3000000"],
+                watchers = this._["watcher3000001"],
                 oldValue;
 
             watchers = watchers && watchers[name];
@@ -1801,7 +1798,7 @@
         return RETURN_THIS;
     });
 
-    var element$watch$$propName = "watcher3000000";
+    var element$watch$$propName = "watcher3000001";
 
     util$index$$register({
         watch: function (name, callback) {
