@@ -44,8 +44,8 @@ describe("fire", function() {
             expect(callback).toHaveBeenCalled();
         });
 
-        it("append extra arguments if they exist", function() {
-            var data1 = {x: 1, y: 2}, data2 = function() {};
+        it("allow to pass extra data into event", function() {
+            var data1 = {x: 1, y: 2};
 
             callback.and.callFake(function(a, b) {
                 expect(a).toBe(data1);
@@ -53,22 +53,17 @@ describe("fire", function() {
                 if (callback.calls.count() === 1) {
                     expect(b).toBeUndefined();
                 } else {
-                    expect(b).toBe(data2);
+                    expect(b).toBe(input);
                 }
             });
 
-            input.once("my:click", callback);
+            input.once("my:click", ["detail"], callback);
             input.fire("my:click", data1);
             expect(callback.calls.count()).toBe(1);
 
-            input.once("click", callback);
-            input.fire("click", data1, data2);
+            input.once("click", ["detail", "currentTarget"], callback);
+            input.fire("click", data1);
             expect(callback.calls.count()).toBe(2);
-
-            data1 = input;
-            input.on("click", ["currentTarget"], callback);
-            input.fire("click", data2);
-            expect(callback.calls.count()).toBe(3);
         });
 
         // it("ignore event fire arguments when event props are specified", function() {

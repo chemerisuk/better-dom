@@ -69,8 +69,7 @@ function EventHandler(type, selector, callback, props, el, once) {
             }
             // srcElement can be null in legacy IE when target is document
             var target = e.target || e.srcElement || node.ownerDocument.documentElement,
-                currentTarget = matcher ? matcher(target) : node,
-                args = slice.call(e["<%= prop() %>"] || [0], 1);
+                currentTarget = matcher ? matcher(target) : node;
 
             // early stop for late binding or when target doesn't match selector
             if (!currentTarget) return;
@@ -79,12 +78,14 @@ function EventHandler(type, selector, callback, props, el, once) {
             if (once) el.off(type, callback);
 
             if (props) {
-                args = props.map((name) => getEventProperty(
-                    name, e, type, node, target, currentTarget)).concat(args);
+                props = props.map((name) => getEventProperty(
+                    name, e, type, node, target, currentTarget));
+            } else {
+                props = [];
             }
 
             // prevent default if handler returns false
-            if (callback.apply(el, args) === false) {
+            if (callback.apply(el, props) === false) {
                 /* istanbul ignore if */
                 if (JSCRIPT_VERSION < 9) {
                     e.returnValue = false;

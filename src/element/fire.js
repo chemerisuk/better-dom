@@ -9,14 +9,14 @@ register({
      * Triggers an event of specific type with optional extra arguments
      * @memberof! $Element#
      * @alias $Element#fire
-     * @param  {String}     type    type of event
-     * @param  {...Object}  [args]  extra arguments to pass into each event handler
+     * @param  {String}   type    type of event
+     * @param  {Object}  [detail] custom event data
      * @return {Boolean} returns <code>true</code> if default action wasn't prevented
      * @example
      * link.fire("click");                   // fire click event
      * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments
      */
-    fire(type) {
+    fire(type, detail) {
         var node = this[0],
             e, eventType, canContinue;
 
@@ -33,7 +33,8 @@ register({
         /* istanbul ignore if */
         if (JSCRIPT_VERSION < 9) {
             e = (node.ownerDocument || node).createEventObject();
-            e["<%= prop() %>"] = arguments;
+
+            if (detail) e.detail = detail;
             // handle custom events for legacy IE
             if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
             // store original event type
@@ -43,9 +44,8 @@ register({
 
             canContinue = e.returnValue !== false;
         } else {
-            e = (node.ownerDocument || node).createEvent("HTMLEvents");
-            e["<%= prop() %>"] = arguments;
-            e.initEvent(eventType, true, true);
+            e = (node.ownerDocument || node).createEvent("CustomEvent");
+            e.initCustomEvent(eventType, true, true, detail);
             canContinue = node.dispatchEvent(e);
         }
 
