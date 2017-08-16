@@ -1,6 +1,6 @@
 /**
  * better-dom: Live extension playground
- * @version 3.0.1 Tue, 07 Mar 2017 18:16:49 GMT
+ * @version 3.0.2 Wed, 16 Aug 2017 08:32:58 GMT
  * @link https://github.com/chemerisuk/better-dom
  * @copyright 2017 Maksim Chemerisuk
  * @license MIT
@@ -17,7 +17,7 @@
             if (node) {
                 // use a generated property to store a reference
                 // to the wrapper for circular object binding
-                node["__3000001__"] = this;
+                node["__3000002__"] = this;
 
                 this[0] = node;
                 this.length = 1;
@@ -25,7 +25,7 @@
             }
         } else if (node) {
             // create a wrapper only once for each native element
-            return node["__3000001__"] || new $Element(node);
+            return node["__3000002__"] || new $Element(node);
         } else {
             return new $NullElement();
         }
@@ -41,7 +41,7 @@
             return "<" + this[0].tagName.toLowerCase() + ">";
         },
 
-        version: "3.0.1"
+        version: "3.0.2"
     };
 
     $NullElement.prototype = new $Element();
@@ -141,11 +141,11 @@
 
     }, function (methodName, all) {
         return function (value) {
-            var sandbox = this._["sandbox3000001"];
+            var sandbox = this._["sandbox3000002"];
 
             if (!sandbox) {
                 sandbox = this[0].createElement("div");
-                this._["sandbox3000001"] = sandbox;
+                this._["sandbox3000002"] = sandbox;
             }
 
             var nodes, el;
@@ -253,7 +253,7 @@
         };
     };
 
-    var util$extensionhandler$$propName = "extension3000001";
+    var util$extensionhandler$$propName = "extension3000002";
 
     var util$extensionhandler$$default = function (selector, mixins, index) {
         var matcher = util$selectormatcher$$default(selector);
@@ -305,7 +305,7 @@
 
         document$extend$$cssText = "-ms-behavior:url(" + document$extend$$legacyScripts[0].src.replace(".js", ".htc") + ") !important";
     } else {
-        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM3000001 !important;";
+        document$extend$$cssText = WEBKIT_PREFIX + "animation-name:DOM3000002 !important;";
         document$extend$$cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
     }
 
@@ -332,10 +332,10 @@
             }
 
             var doc = this[0],
-                mappings = this._["mappings3000001"];
+                mappings = this._["mappings3000002"];
 
             if (!mappings) {
-                this._["mappings3000001"] = mappings = [];
+                this._["mappings3000002"] = mappings = [];
 
                 if (JSCRIPT_VERSION < 10) {
                     doc.attachEvent("on" + CUSTOM_EVENT_TYPE, function () {
@@ -349,10 +349,10 @@
                     });
                 } else {
                     // declare the fake animation on the first DOM.extend method call
-                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM3000001", "from {opacity:.99} to {opacity:1}");
+                    this.importStyles("@" + WEBKIT_PREFIX + "keyframes DOM3000002", "from {opacity:.99} to {opacity:1}");
                     // use capturing to suppress internal animationstart events
                     doc.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", function (e) {
-                        if (e.animationName === "DOM3000001") {
+                        if (e.animationName === "DOM3000002") {
                             mappings.forEach(function (ext) {
                                 ext(e.target);
                             });
@@ -412,14 +412,14 @@
 
     util$index$$register({
         importStyles: function (selector, cssText) {
-            var styleSheet = this._["styles3000001"];
+            var styleSheet = this._["styles3000002"];
 
             if (!styleSheet) {
                 var styleNode = util$index$$injectElement(this[0].createElement("style"));
 
                 styleSheet = styleNode.sheet || styleNode.styleSheet;
                 // store object internally
-                this._["styles3000001"] = styleSheet;
+                this._["styles3000002"] = styleSheet;
             }
 
             if (typeof selector !== "string" || typeof cssText !== "string") {
@@ -451,7 +451,7 @@
             if (!content) return new $NullElement();
 
             var result = this.create(content, varMap),
-                mappings = this._["mappings3000001"],
+                mappings = this._["mappings3000002"],
                 applyExtensions = function (node) {
                 mappings.forEach(function (ext) {
                     ext(node);
@@ -946,7 +946,7 @@
                     if (old = node.getAttribute("id")) {
                         nid = old.replace(element$find$$rescape, "\\$&");
                     } else {
-                        nid = "DOM3000001";
+                        nid = "DOM3000002";
                         node.setAttribute("id", nid);
                     }
 
@@ -1063,7 +1063,7 @@
                 return; // handle custom events in legacy IE
             }
             // srcElement can be null in legacy IE when target is document
-            var target = e.target || e.srcElement || node.ownerDocument.documentElement,
+            var target = e.target || e.srcElement || (node.ownerDocument ? node.ownerDocument.documentElement : null),
                 currentTarget = matcher ? matcher(target) : node,
                 args = props ? props.map(function (name) {
                 return util$eventhandler$$getEventProperty(name, e, type, node, target, currentTarget);
@@ -1345,7 +1345,7 @@
             }
 
             var node = this[0],
-                propName = "handler3000001";
+                propName = "handler3000002";
 
             if (this._[propName]) {
                 this._[propName] = this._[propName].filter(function (handler) {
@@ -1430,7 +1430,7 @@
 
                 var node = this[0],
                     handler = util$eventhandler$$default(type, selector, callback, args, this, single),
-                    propName = "handler3000001";
+                    propName = "handler3000002";
 
                 if (JSCRIPT_VERSION < 9) {
                     node.attachEvent("on" + (handler._type || type), handler);
@@ -1467,7 +1467,7 @@
             var node = this[0];
 
             var hook = util$accessorhooks$$default.set[name],
-                watchers = this._["watcher3000001"],
+                watchers = this._["watcher3000002"],
                 oldValue;
 
             watchers = watchers && watchers[name];
@@ -1798,7 +1798,7 @@
         return RETURN_THIS;
     });
 
-    var element$watch$$propName = "watcher3000001";
+    var element$watch$$propName = "watcher3000002";
 
     util$index$$register({
         watch: function (name, callback) {
