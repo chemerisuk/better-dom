@@ -32,6 +32,7 @@ register({
      * @param  {String|Object}      name    style property name or key/value object
      * @param  {String|Function}    [value] style property value or functor
      * @return {String|$Element} a property value or reference to <code>this</code>
+     * @deprecated Use private properties on $Element object instead
      * @example
      * link.data("prop");              // => private property prop
      * link.data("prop", {a: "b"});    // update private property _prop
