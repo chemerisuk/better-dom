@@ -25,6 +25,11 @@ register({
             this._["<%= prop('styles') %>"] = styleSheet;
         }
 
+        if (!cssText && typeof selector === "string") {
+            cssText = selector;
+            selector = "@media screen";
+        }
+
         if (typeof selector !== "string" || typeof cssText !== "string") {
             throw new DocumentTypeError("importStyles", arguments);
         }

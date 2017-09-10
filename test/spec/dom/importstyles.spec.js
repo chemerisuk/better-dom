@@ -58,9 +58,19 @@ describe("DOM.importStyles", function() {
         expect(link.css("display")).toBe("none");
     });
 
+    it("supports simgle argument", function() {
+        jasmine.sandbox.set("<a id='importStyles5'></a>");
+
+        var link = DOM.find("#importStyles5");
+
+        expect(link.css("display")).not.toBe("none");
+        DOM.importStyles("#importStyles5 {display: none}");
+        expect(link.css("display")).toBe("none");
+    });
+
     it("should throw error if arguments are invalid", function() {
         expect(function() { DOM.importStyles(1); }).toThrow();
-        expect(function() { DOM.importStyles("a"); }).toThrow();
-        expect(function() { DOM.importStyles("a", null); }).toThrow();
+        expect(function() { DOM.importStyles({}); }).toThrow();
+        expect(function() { DOM.importStyles("a", function(){}); }).toThrow();
     });
 });
