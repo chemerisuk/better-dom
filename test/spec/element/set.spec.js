@@ -52,10 +52,10 @@ describe("set", function() {
     });
 
     it("should accept array of key values", function() {
-        link.set(["autocomplete", "autocorrect"], "off");
+        link.set(["foo", "bar"], "off");
 
-        expect(link).toHaveAttr("autocomplete", "off");
-        expect(link).toHaveAttr("autocorrect", "off");
+        expect(link).toHaveAttr("foo", "off");
+        expect(link).toHaveAttr("bar", "off");
     });
 
     it("polyfills textContent", function() {

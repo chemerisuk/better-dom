@@ -1,38 +1,41 @@
-var fs = require("fs");
+const fs = require("fs");
+const TEST_WIN_VERSION = "Windows 10";
+const TEST_WIN_LEGACY_VERSION = "Windows 7";
+const TEST_OSX_VERSION = "OS X 10.12";
 
 // Browsers to run on Sauce Labs
 var customLaunchers = {
     sl_chrome: {
         base: "SauceLabs",
         browserName: "chrome",
-        platform: "Windows 10"
+        platform: TEST_WIN_VERSION
     },
     sl_firefox: {
         base: "SauceLabs",
         browserName: "firefox",
-        platform: "Windows 10"
+        platform: TEST_WIN_VERSION
     },
     el_opera_12: {
         base: "SauceLabs",
         browserName: "opera",
-        platform: "Windows 7",
+        platform: TEST_WIN_LEGACY_VERSION,
         version: "12"
     },
     sl_safari: {
         base: "SauceLabs",
         browserName: "safari",
-        platform: "OS X 10.11"
+        platform: TEST_OSX_VERSION
     },
     sl_ie_11: {
         base: "SauceLabs",
         browserName: "internet explorer",
-        platform: "Windows 7",
+        platform: TEST_WIN_LEGACY_VERSION,
         version: "11"
     },
     sl_microsoftedge: {
         base: "SauceLabs",
         browserName: "microsoftedge",
-        platform: "Windows 10"
+        platform: TEST_WIN_VERSION
     },
     // sl_ie_10: {
     //     base: "SauceLabs",
@@ -55,7 +58,7 @@ var customLaunchers = {
     sl_ios_safari: {
         base: "SauceLabs",
         browserName: "iphone",
-        platform: "OS X 10.11"
+        platform: TEST_OSX_VERSION
     },
     sl_android: {
         base: "SauceLabs",
