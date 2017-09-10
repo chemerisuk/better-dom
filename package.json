@@ -69,6 +69,7 @@
     "test": "gulp test",
     "start": "gulp dev",
     "version": "gulp dist",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "postpublish": "gulp gh-pages"
   }
 }
