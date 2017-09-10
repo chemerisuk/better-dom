@@ -43,41 +43,6 @@
     </div>
     <ul class="list">
     
-        <li class="item" data-name="DOM">
-            <span class="title">
-                <a href="DOM.html">DOM</a>
-                
-                <span class="static">static</span>
-                
-            </span>
-            <ul class="members itemMembers">
-            
-            </ul>
-            <ul class="typedefs itemMembers">
-            
-            </ul>
-            <ul class="methods itemMembers">
-            
-            <span class="subtitle">Methods</span>
-            
-                <li data-name="DOM.cancelFrame"><a href="DOM.html#cancelFrame">cancelFrame</a></li>
-            
-                <li data-name="DOM.constructor"><a href="DOM.html#constructor">constructor</a></li>
-            
-                <li data-name="DOM.emmet"><a href="DOM.html#emmet">emmet</a></li>
-            
-                <li data-name="DOM.format"><a href="DOM.html#format">format</a></li>
-            
-                <li data-name="DOM.noConflict"><a href="DOM.html#noConflict">noConflict</a></li>
-            
-                <li data-name="DOM.requestFrame"><a href="DOM.html#requestFrame">requestFrame</a></li>
-            
-            </ul>
-            <ul class="events itemMembers">
-            
-            </ul>
-        </li>
-    
         <li class="item" data-name="$Document">
             <span class="title">
                 <a href="$Document.html">$Document</a>
@@ -117,9 +82,9 @@
             
                 <li data-name="$Document#css"><a href="$Document.html#css">css</a></li>
             
-                <li data-name="$Document#define"><a href="$Document.html#define">define</a></li>
+                <li data-name="$Document#data"><a href="$Document.html#data">data</a></li>
             
-                <li data-name="$Document#empty"><a href="$Document.html#empty">empty</a></li>
+                <li data-name="$Document#define"><a href="$Document.html#define">define</a></li>
             
                 <li data-name="$Document#extend"><a href="$Document.html#extend">extend</a></li>
             
@@ -138,8 +103,6 @@
                 <li data-name="$Document#importScripts"><a href="$Document.html#importScripts">importScripts</a></li>
             
                 <li data-name="$Document#importStyles"><a href="$Document.html#importStyles">importStyles</a></li>
-            
-                <li data-name="$Document#map"><a href="$Document.html#map">map</a></li>
             
                 <li data-name="$Document#matches"><a href="$Document.html#matches">matches</a></li>
             
@@ -224,9 +187,9 @@
             
                 <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
             
-                <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
+                <li data-name="$Element#data"><a href="$Element.html#data">data</a></li>
             
-                <li data-name="$Element#empty"><a href="$Element.html#empty">empty</a></li>
+                <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
             
                 <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
             
@@ -239,8 +202,6 @@
                 <li data-name="$Element#hasClass"><a href="$Element.html#hasClass">hasClass</a></li>
             
                 <li data-name="$Element#hide"><a href="$Element.html#hide">hide</a></li>
-            
-                <li data-name="$Element#map"><a href="$Element.html#map">map</a></li>
             
                 <li data-name="$Element#matches"><a href="$Element.html#matches">matches</a></li>
             
@@ -313,7 +274,7 @@
 
 
     <section>
-        <article class="readme"><h1 id="-better-dom-https-github-com-chemerisuk-better-dom-live-extension-playground-br-build-status-travis-image-travis-url-coverage-status-coveralls-image-coveralls-url-bower-version-bower-image-bower-url-"><a href="https://github.com/chemerisuk/better-dom">better-dom</a>: Live extension playground<br><a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a> <a href="https://github.com/chemerisuk/better-dom"><img src="http://img.shields.io/bower/v/better-dom.svg" alt="Bower version"></a></h1>
+        <article class="readme"><h1 id="-better-dom-https-github-com-chemerisuk-better-dom-live-extension-playground-br-npm-version-npm-version-npm-url-npm-downloads-npm-downloads-npm-url-build-status-travis-image-travis-url-coverage-status-coveralls-image-coveralls-url-bower-version-bower-image-bower-url-"><a href="https://github.com/chemerisuk/better-dom">better-dom</a>: Live extension playground<br><a href="https://www.npmjs.com/package/better-dom"><img src="https://img.shields.io/npm/v/better-dom.svg" alt="NPM version"></a> <a href="https://www.npmjs.com/package/better-dom"><img src="https://img.shields.io/npm/dt/better-dom.svg" alt="NPM downloads"></a> <a href="http://travis-ci.org/chemerisuk/better-dom"><img src="http://img.shields.io/travis/chemerisuk/better-dom/master.svg" alt="Build Status"></a> <a href="https://coveralls.io/r/chemerisuk/better-dom"><img src="http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg" alt="Coverage Status"></a> <a href="https://github.com/chemerisuk/better-dom"><img src="http://img.shields.io/bower/v/better-dom.svg" alt="Bower version"></a></h1>
 <p><a href="http://chemerisuk.github.io/better-dom/">API DOCUMENTATION</a></p>
 <p>This library is about <strong>ideas</strong>. After some time of using jQuery I found that it&#39;s just too big, has lack of <a href="#features">features</a> I need and the API design is debatable. In particular <a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">live extensions</a> was one of the main ideas that encouraged me to build a new library from scratch.</p>
 <p>Vanilla DOM also has a lot of bad parts, that I&#39;m trying to fix by providing a JavaScript wrapper for each DOM element you use in code. This extra layer allows to abstract from legacy interfaces and to add new methods on <strong>the top of particular elements</strong> without touching vanilla DOM prototypes. So the object model used is very different from what jQuery does.</p>
@@ -402,186 +363,6 @@
 
 
 
-
-<section>
-    
-<header>
-    <h2>
-    better-dom.js
-    </h2>
-    
-</header>  
-
-<article>
-    <div class="container-overview">
-    
-    
-    
-        
-            <div class="description">better-dom: Live extension playground</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.1.3 Wed, 28 Jan 2015 18:13:21 GMT</li></ul></dd>
-    
-    
-    
-
-    
-    
-    
-    
-    
-    <dt class="tag-copyright">Copyright:</dt>
-    <dd class="tag-copyright"><ul class="dummy"><li>2013-2015 Maksim Chemerisuk</li></ul></dd>
-    
-    
-    
-    <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom">https://github.com/chemerisuk/better-dom</a></li>
-        </ul>
-    </dd>
-    
-    
-    
-</dl>
-
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</article>
-
-</section>  
-
-
-
-
-
-
-<section>
-    
-<header>
-    <h2>
-    better-dom.min.js
-    </h2>
-    
-</header>  
-
-<article>
-    <div class="container-overview">
-    
-    
-    
-        
-            <div class="description">better-dom: Live extension playground</div>
-        
-        
-        
-<dl class="details">
-    
-        
-    
-    <dt class="tag-version">Version:</dt>
-    <dd class="tag-version"><ul class="dummy"><li>2.1.2 Thu, 22 Jan 2015 17:49:22 GMT</li></ul></dd>
-    
-    
-    
-
-    
-    
-    
-    
-    
-    <dt class="tag-copyright">Copyright:</dt>
-    <dd class="tag-copyright"><ul class="dummy"><li>2013-2015 Maksim Chemerisuk</li></ul></dd>
-    
-    
-    
-    <dt class="tag-license">License:</dt>
-    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom">https://github.com/chemerisuk/better-dom</a></li>
-        </ul>
-    </dd>
-    
-    
-    
-</dl>
-
-        
-        
-    
-    </div>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</article>
-
-</section>  
-
-
-
-
-
         
         <!-- disqus code -->
         <div id="disqus_thread"></div>
@@ -591,7 +372,7 @@
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Wed Jan 28 2015 21:13:24 GMT+0300 (FET)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Sep 10 2017 08:36:28 GMT+0300 (+03)
         </footer>
     </div>
 </div>
