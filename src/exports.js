@@ -4,6 +4,7 @@ import { $Document, $Element } from "./types";
 import { $Node } from "./node/index";
 import "./node/get";
 import "./node/set";
+import "./node/find";
 
 import { $NewElement } from "./element/index";
 import { $NewDocument } from "./document/index";
