@@ -47,28 +47,7 @@ register({
      *   // do something when "fade" animation is completed
      * });
      */
-    hide: true,
-
-    /**
-     * Toggle an element using CSS3 transition or animation
-     * @memberof! $Element#
-     * @alias $Element#toggle
-     * @param {String}   [animationName]  CSS animation to apply during transition
-     * @param {Function} [callback]       function that executes when animation is done
-     * @return {$Element}
-     * @function
-     * @example
-     * link.toggle(); // toggles element visibility
-     *
-     * foo.toggle(function() {
-     *   // do something when transition is completed
-     * });
-     *
-     * bar.toggle("fade", function() {
-     *   // do something when "fade" animation is completed
-     * });
-     */
-    toggle: null
+    hide: true
 
 }, (methodName, condition) => function(animationName, callback) {
     if (typeof animationName === "boolean") {
