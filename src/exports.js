@@ -1,6 +1,25 @@
 import { DOM, WINDOW } from "./const";
 import { $Document, $Element } from "./types";
 
+import { $Node } from "./node/index";
+import "./node/get";
+import "./node/set";
+
+import { $NewElement } from "./element/index";
+import { $NewDocument } from "./document/index";
+
+DOM.$ = (node) => {
+    const nodeType = node && node.nodeType;
+
+    if (nodeType === 1) {
+        return new $NewElement(node);
+    } else if (nodeType === 9) {
+        return new $NewDocument(node);
+    } else {
+        return new $Node();
+    }
+};
+
 var _DOM = WINDOW.DOM;
 
 /**
