@@ -1,6 +1,5 @@
 import { register } from "../util/index";
 import { MethodError } from "../errors";
-import { DOM, JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 
 register({
@@ -17,16 +16,8 @@ register({
     clone(deep) {
         if (typeof deep !== "boolean") throw new MethodError("clone", arguments);
 
-        var node = this[0], result;
-        /* istanbul ignore if */
-        if (JSCRIPT_VERSION < 9) {
-            result = DOM.create(node.outerHTML);
+        var node = this[0];
 
-            if (!deep) result.set("");
-        } else {
-            result = new $Element(node.cloneNode(deep));
-        }
-
-        return result;
+        return new $Element(node.cloneNode(deep));
     }
 }, null, () => () => new $NullElement());

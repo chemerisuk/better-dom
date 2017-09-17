@@ -1,4 +1,4 @@
-import { WINDOW, JSCRIPT_VERSION } from "../const";
+import { WINDOW } from "../const";
 import { $Document, $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype;
@@ -12,12 +12,7 @@ export const isArray = Array.isArray;
 export const keys = Object.keys;
 
 export function computeStyle(node) {
-    /* istanbul ignore if */
-    if (JSCRIPT_VERSION < 9) {
-        return node.currentStyle;
-    } else {
-        return node.ownerDocument.defaultView.getComputedStyle(node);
-    }
+    return node.ownerDocument.defaultView.getComputedStyle(node);
 }
 
 export function injectElement(node) {

@@ -1,6 +1,5 @@
 import { register, filter, map } from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION } from "../const";
 import { $Element, $NullElement } from "../types";
 import SelectorMatcher from "../util/selectormatcher";
 
@@ -42,11 +41,6 @@ register({
     var node = this[0],
         matcher = SelectorMatcher(selector),
         children = node.children;
-    /* istanbul ignore if */
-    if (JSCRIPT_VERSION < 9) {
-        // fix IE8 bug with children collection
-        children = filter.call(children, (node) => node.nodeType === 1);
-    }
 
     if (all) {
         if (matcher) children = filter.call(children, matcher);

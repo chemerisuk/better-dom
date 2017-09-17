@@ -2,9 +2,7 @@
   "name": "better-dom",
   "version": "3.1.0",
   "main": [
-    "dist/better-dom.js",
-    "dist/better-dom-legacy.js",
-    "dist/better-dom-legacy.htc"
+    "dist/better-dom.js"
   ],
   "ignore": [
     ".*",

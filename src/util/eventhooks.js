@@ -1,4 +1,4 @@
-import { JSCRIPT_VERSION, DOCUMENT } from "../const";
+import { DOCUMENT } from "../const";
 
 var hooks = {};
 /* istanbul ignore if */
@@ -12,14 +12,6 @@ if ("onfocusin" in DOCUMENT.documentElement) {
 /* istanbul ignore else */
 if (DOCUMENT.createElement("input").validity) {
     hooks.invalid = (handler) => { handler.capturing = true };
-}
-/* istanbul ignore if */
-if (JSCRIPT_VERSION < 9) {
-    // fix non-bubbling form events for IE8 therefore
-    // use custom event type instead of original one
-    ["submit", "change", "reset"].forEach((name) => {
-        hooks[name] = (handler) => { handler._type = "_" };
-    });
 }
 
 export default hooks;

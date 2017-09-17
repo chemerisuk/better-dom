@@ -1,6 +1,6 @@
 import { register, safeCall } from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, CUSTOM_EVENT_TYPE, RETURN_TRUE } from "../const";
+import { RETURN_TRUE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 
@@ -30,24 +30,10 @@ register({
         } else {
             throw new MethodError("fire", arguments);
         }
-        /* istanbul ignore if */
-        if (JSCRIPT_VERSION < 9) {
-            e = (node.ownerDocument || node).createEventObject();
 
-            if (detail) e.detail = detail;
-            // handle custom events for legacy IE
-            if (!("on" + eventType in node)) eventType = CUSTOM_EVENT_TYPE;
-            // store original event type
-            if (eventType === CUSTOM_EVENT_TYPE) e.srcUrn = type;
-
-            node.fireEvent("on" + eventType, e);
-
-            canContinue = e.returnValue !== false;
-        } else {
-            e = (node.ownerDocument || node).createEvent("CustomEvent");
-            e.initCustomEvent(eventType, true, true, detail);
-            canContinue = node.dispatchEvent(e);
-        }
+        e = (node.ownerDocument || node).createEvent("CustomEvent");
+        e.initCustomEvent(eventType, true, true, detail);
+        canContinue = node.dispatchEvent(e);
 
         // call native function to trigger default behavior
         if (canContinue && node[type]) {

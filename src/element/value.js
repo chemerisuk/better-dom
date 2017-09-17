@@ -1,5 +1,4 @@
 import { register, every } from "../util/index";
-import { JSCRIPT_VERSION } from "../const";
 
 register({
     /**
@@ -31,7 +30,7 @@ register({
                 return node.value;
 
             default:
-                return node[JSCRIPT_VERSION < 9 ? "innerText" : "textContent"];
+                return node.textContent;
             }
         } else {
             switch (tagName) {
@@ -47,14 +46,7 @@ register({
                     break;
 
                 default:
-                    /* istanbul ignore if */
-                    if (JSCRIPT_VERSION < 9) {
-                        // IE8 uses innerText for TEXTAREA because
-                        // it doesn't trigger onpropertychange
-                        node.innerText = content;
-                    } else {
-                        node[tagName === "TEXTAREA" ? "value" : "textContent"] = content;
-                    }
+                    node[tagName === "TEXTAREA" ? "value" : "textContent"] = content;
             }
 
             return this;

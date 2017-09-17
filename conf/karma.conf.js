@@ -12,10 +12,6 @@ module.exports = function(config) {
             dir: "coverage/"
         },
         files: [
-            // legacy IE file includes
-            {pattern: "./build/better-dom-legacy.htc", served: true, included: false},
-            "./build/better-dom-legacy.js",
-            // normal browser file includes
             "./test/lib/jasmine-better-dom-matchers.js",
             "./build/better-dom.js",
             "./test/spec/**/*.spec.js"

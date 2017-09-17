@@ -1,6 +1,6 @@
 import { register, isArray, keys } from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, RETURN_THIS } from "../const";
+import { RETURN_THIS } from "../const";
 import EventHandler from "../util/eventhandler";
 
 register({
@@ -75,12 +75,7 @@ register({
             handler = EventHandler(type, selector, callback, args, this, single),
             propName = "<%= prop('handler') %>";
 
-        /* istanbul ignore if */
-        if (JSCRIPT_VERSION < 9) {
-            node.attachEvent("on" + (handler._type || type), handler);
-        } else {
-            node.addEventListener(handler._type || type, handler, !!handler.capturing);
-        }
+        node.addEventListener(handler._type || type, handler, !!handler.capturing);
         // store event entry
         this._[propName] = this._[propName] || [];
         this._[propName].push(handler);

@@ -1,6 +1,6 @@
 import { register } from "../util/index";
 import { MethodError } from "../errors";
-import { JSCRIPT_VERSION, RETURN_THIS } from "../const";
+import { RETURN_THIS } from "../const";
 
 register({
     /**
@@ -39,12 +39,8 @@ register({
                 if (skip) return true;
 
                 type = handler._type || handler.type;
-                /* istanbul ignore if */
-                if (JSCRIPT_VERSION < 9) {
-                    node.detachEvent("on" + type, handler);
-                } else {
-                    node.removeEventListener(type, handler, !!handler.capturing);
-                }
+
+                node.removeEventListener(type, handler, !!handler.capturing);
             });
         }
 

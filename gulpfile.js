@@ -6,7 +6,6 @@ var compile = require("./task/compile");
 var babel = require("gulp-babel");
 var template = require("gulp-template");
 var jshint = require("gulp-jshint");
-var symlink = require("gulp-symlink");
 var argv = require("yargs").argv;
 var jsdoc = require("gulp-jsdoc");
 var clean = require("gulp-clean");
@@ -37,14 +36,6 @@ if (process.env.npm_package_version) {
     pkg.version = process.env.npm_package_version;
 }
 
-
-gulp.task("lint-legacy", function() {
-    return gulp.src(["src/legacy/*.js"])
-        .pipe(jshint(".jshintrc"))
-        .pipe(jshint.reporter("jshint-stylish"))
-        .pipe(gulpif(process.env.TRAVIS_JOB_NUMBER, jshint.reporter("fail")));
-});
-
 gulp.task("lint-test", function() {
     return gulp.src(["test/spec/**/*.js"])
         .pipe(jshint(require("./conf/jshintrc-test")))
@@ -64,19 +55,7 @@ gulp.task("compile", function() {
         .pipe(gulp.dest("build/"));
 });
 
-gulp.task("compile-legacy", ["lint-legacy"], function() {
-    return gulp.src(["node_modules/html5shiv/dist/html5shiv.js","node_modules/es5-shim/es5-shim.js","src/legacy/*.js"])
-        .pipe(template({ pkg: pkg }))
-        .pipe(concat("better-dom-legacy.js"))
-        .pipe(gulp.dest(process.env.npm_package_version ? "dist/" : "build/"));
-});
-
-gulp.task("symlink", ["compile-legacy"], function() {
-    return gulp.src(["dist/better-dom-legacy.ht*"])
-        .pipe(symlink("build/"));
-});
-
-gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], function(done) {
+gulp.task("test", ["compile", "lint-test"], function(done) {
     var config = {preprocessors: []};
 
     if (process.env.TRAVIS_JOB_NUMBER) {
@@ -90,10 +69,8 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
     } else {
         if (argv.all || process.env.npm_package_version) {
             config.browsers = ["ChromeHeadless", "Chrome", "Opera", "Safari", "Firefox"];
-        } else if (argv.ie8) {
-            config.browsers = ["IE8 - WinXP"];
-        } else if (argv.ie9 || argv.ie10 || argv.ie11) {
-            config.browsers = ["IE" + (argv.ie9 ? "9" : (argv.ie10 ? "10" : "11")) + " - Win7"];
+        } else if (argv.ie10 || argv.ie11) {
+            config.browsers = ["IE" + (argv.ie10 ? "10" : "11") + " - Win7"];
         }
     }
 
@@ -104,13 +81,11 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
     }).start();
 });
 
-gulp.task("dev", ["compile", "compile-legacy", "symlink", "lint-test"], function() {
-    gulp.watch(["src/document/*.js", "src/element/*.js", "src/util/*.js", "src/*.js"], ["compile"]);
-    gulp.watch(["src/legacy/*.js"], ["compile-legacy"]);
+gulp.task("dev", ["compile", "lint-test"], function() {
+    gulp.watch(["src/**/*.js"], ["compile"]);
     gulp.watch(["test/spec/**/*.js"], ["lint-test"]);
 
     new karma.Server({
-        // browsers: ["IE8 - WinXP"],
         configFile: karmaConfig,
         reporters: ["coverage", "progress"],
         background: true,
