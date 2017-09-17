@@ -5,6 +5,9 @@ import { $Node } from "./node/index";
 import "./node/get";
 import "./node/set";
 import "./node/find";
+import "./node/contains";
+import "./node/clone";
+import "./node/matches";
 
 import { $NewElement } from "./element/index";
 import { $NewDocument } from "./document/index";
