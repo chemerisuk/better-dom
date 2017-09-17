@@ -89,7 +89,7 @@ gulp.task("test", ["compile", "compile-legacy", "symlink", "lint-test"], functio
         };
     } else {
         if (argv.all || process.env.npm_package_version) {
-            config.browsers = ["PhantomJS", "Chrome", /*"ChromeCanary", */"Opera", "Safari", "Firefox"];
+            config.browsers = ["ChromeHeadless", "Chrome", "Opera", "Safari", "Firefox"];
         } else if (argv.ie8) {
             config.browsers = ["IE8 - WinXP"];
         } else if (argv.ie9 || argv.ie10 || argv.ie11) {
