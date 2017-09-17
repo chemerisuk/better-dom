@@ -1,5 +1,5 @@
 import { $Node } from "./index";
-import { $NewElement } from "../element/index";
+import { $Element } from "../element/index";
 import { MethodError } from "../errors";
 
 /**
@@ -15,7 +15,9 @@ import { MethodError } from "../errors";
 $Node.prototype.contains = function(element) {
     const node = this["<%= prop() %>"];
 
-    if (element instanceof $NewElement) {
+    if (!node) return false;
+
+    if (element instanceof $Element) {
         const otherNode = element["<%= prop() %>"];
 
         if (otherNode === node) return true;

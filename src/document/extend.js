@@ -1,5 +1,6 @@
-import { $NewDocument } from "../document/index";
-import { each } from "../util/index";
+import { $Document } from "../document/index";
+import { $Element } from "../element/index";
+import { each, keys } from "../util/index";
 import { WEBKIT_PREFIX, WINDOW } from "../const";
 import { DocumentTypeError } from "../errors";
 import ExtensionHandler from "../util/extensionhandler";
@@ -29,17 +30,26 @@ cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
  *     }
  * });
  */
-$NewDocument.prototype.extend = function(selector, definition) {
+$Document.prototype.extend = function(selector, definition) {
     const node = this["<%= prop() %>"];
 
     if (!node) return this;
-    // if (arguments.length === 1 && typeof selector === "object") {
-    //     // handle case when $Document protytype is extended
-    //     return register(selector);
-    // } else if (selector === "*") {
-    //     // handle case when $Element protytype is extended
-    //     return register(definition, null, () => RETURN_THIS);
-    // }
+
+    if (arguments.length === 1 && typeof selector === "object") {
+        // handle case when $Document protytype is extended
+        keys(selector).forEach((key) => {
+            $Document.prototype[key] = selector[key];
+        });
+
+        return this;
+    } else if (selector === "*") {
+        // handle case when $Element protytype is extended
+        keys(definition).forEach((key) => {
+            $Element.prototype[key] = definition[key];
+        });
+
+        return this;
+    }
 
     if (typeof definition === "function") {
         definition = {constructor: definition};

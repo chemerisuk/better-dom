@@ -37,10 +37,11 @@ describe("clone", function() {
     it("should work on empty elements", function() {
         var emptyEl = DOM.find("xxx");
 
-        expect(emptyEl.clone()).toBeTruthy();
+        expect(emptyEl.clone(false)).toBeTruthy();
     });
 
     it("should throw error if argument is invalud", function() {
+        expect(function() { link.clone() }).toThrow();
         expect(function() { link.clone(1) }).toThrow();
         expect(function() { link.clone({}) }).toThrow();
         expect(function() { link.clone(function() {}) }).toThrow();

@@ -1,5 +1,5 @@
 import { $Node } from "./index";
-import { $NewElement } from "../element/index";
+import { $Element } from "../element/index";
 import { isArray } from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
@@ -26,7 +26,7 @@ $Node.prototype.get = function(name, defaultValue) {
     } else if (typeof name === "string") {
         if (name in node) {
             value = node[name];
-        } else if (this instanceof $NewElement) {
+        } else if (this instanceof $Element) {
             value = node.getAttribute(name);
         } else {
             value = null;

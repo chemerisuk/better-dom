@@ -1,5 +1,5 @@
 import { $Node } from "./index";
-import { $NewElement } from "../element/index";
+import { $Element } from "../element/index";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";

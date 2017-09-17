@@ -1,21 +1,33 @@
 import { DOM, WINDOW } from "./const";
 
 import { $Node } from "./node/index";
+import "./node/on";
+import "./node/off";
+import "./node/fire";
 import "./node/get";
 import "./node/set";
 import "./node/find";
 import "./node/contains";
 import "./node/clone";
 import "./node/matches";
+import "./node/then";
 
-import { $NewDocument } from "./document/index";
-import "./document/importscripts";
-import "./document/importstyles";
+import { $Document } from "./document/index";
 import "./document/create";
 import "./document/extend";
+import "./document/importscripts";
+import "./document/importstyles";
 import "./document/mock";
 
-import { $NewElement } from "./element/index";
+import { $Element } from "./element/index";
+import "./element/children";
+import "./element/classes";
+import "./element/css";
+import "./element/manipulation";
+import "./element/offset";
+import "./element/traversing";
+import "./element/value";
+import "./element/visibility";
 
 /**
  * Create an instance of {@link $Element} or {@link $Document} for a native element
@@ -32,9 +44,9 @@ DOM.$ = (node) => {
     const nodeType = node && node.nodeType;
 
     if (nodeType === 1) {
-        return new $NewElement(node);
+        return $Element(node);
     } else if (nodeType === 9) {
-        return new $NewDocument(node);
+        return $Document(node);
     } else {
         return new $Node();
     }

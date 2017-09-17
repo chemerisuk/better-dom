@@ -7,7 +7,9 @@
                 el.innerHTML = content;
             } else if (typeof content === "object") {
                 el.innerHTML = "";
-                el.appendChild(content[0]);
+                content.then((n) => {
+                    el.appendChild(n);
+                });
             }
         },
         get: function() {
@@ -36,7 +38,9 @@
                 var result = {};
 
                 if (actual) {
-                    result.pass = actual[0].nodeName.toLowerCase() === tagName;
+                    actual.then((n) => {
+                        result.pass = n.nodeName.toLowerCase() === tagName;
+                    });
                 }
 
                 return result;
@@ -49,7 +53,9 @@
                 var result = {};
 
                 if (actual) {
-                    result.pass = ~(" " + actual[0].className + " ").indexOf(" " + className + " ");
+                    actual.then((n) => {
+                        result.pass = ~(" " + n.className + " ").indexOf(" " + className + " ");
+                    });
                 }
 
                 return result;
@@ -62,7 +68,9 @@
                 var result = {};
 
                 if (actual) {
-                    result.pass = actual[0].id === value;
+                    actual.then((n) => {
+                        result.pass = n.id === value;
+                    });
                 }
 
                 return result;
@@ -75,11 +83,13 @@
                 var result = {};
 
                 if (actual) {
-                    if (arguments.length === 2) {
-                        result.pass = actual[0].hasAttribute(name);
-                    } else if (arguments.length === 3) {
-                        result.pass = actual[0].getAttribute(name) === value;
-                    }
+                    actual.then((n) => {
+                        if (arguments.length === 2) {
+                            result.pass = n.hasAttribute(name);
+                        } else if (arguments.length === 3) {
+                            result.pass = n.getAttribute(name) === value;
+                        }
+                    });
                 }
 
                 return result;
@@ -92,7 +102,9 @@
                 var result = {};
 
                 if (actual) {
-                    result.pass = actual[0][name] === value;
+                    actual.then((n) => {
+                        result.pass = n[name] === value;
+                    });
                 }
 
                 return result;
@@ -105,11 +117,13 @@
                 var result = {};
 
                 if (actual) {
-                    if ("value" in actual[0]) {
-                        result.pass = actual[0].value === "";
-                    } else {
-                        result.pass = actual[0].innerHTML === "";
-                    }
+                    actual.then((n) => {
+                        if ("value" in n) {
+                            result.pass = n.value === "";
+                        } else {
+                            result.pass = n.innerHTML === "";
+                        }
+                    });
                 }
 
                 return result;
@@ -121,7 +135,11 @@
             compare: function(actual) {
                 var result = {};
 
-                result.pass = actual && !actual[0];
+                if (+actual) {
+                    result.pass = false;
+                } else {
+                    result.pass = true;
+                }
 
                 return result;
             }
@@ -133,7 +151,9 @@
                 var result = {};
 
                 if (actual) {
-                    result.pass = actual[0].innerHTML === value;
+                    actual.then((n) => {
+                        result.pass = n.innerHTML === value;
+                    });
                 }
 
                 return result;
@@ -146,14 +166,16 @@
                 var result = {};
 
                 if (actual) {
-                    var style = actual[0] && actual[0].style;
+                    actual.then((n) => {
+                        var style = n && n.style;
 
-                    if (style) {
-                        // IE8 has upper cased props
-                        if (!(name in style)) name = name.toUpperCase();
+                        if (style) {
+                            // IE8 has upper cased props
+                            if (!(name in style)) name = name.toUpperCase();
 
-                        result.pass = style[name] === value;
-                    }
+                            result.pass = style[name] === value;
+                        }
+                    });
                 }
 
                 return result;

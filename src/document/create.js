@@ -1,11 +1,11 @@
-import { $NewDocument } from "../document/index";
-import { $NewElement } from "../element/index";
+import { $Document } from "../document/index";
+import { $Element } from "../element/index";
 
-function makeMethod(methodName, all) {
+function makeMethod(all) {
     return function(value) {
         const node = this["<%= prop() %>"];
 
-        if (!node) return new $NewElement();
+        if (!node) return new $Element();
 
         var sandbox = this["<%= prop('sandbox') %>"];
 
@@ -30,7 +30,7 @@ function makeMethod(methodName, all) {
 
             if (el.nodeType === 1) {
                 if (all) {
-                    nodes.push(new $NewElement(el));
+                    nodes.push(new $Element(el));
                 } else {
                     nodes = el;
 
@@ -40,9 +40,32 @@ function makeMethod(methodName, all) {
         }
         // }
 
-        return all ? nodes : $NewElement(nodes);
+        return all ? nodes : $Element(nodes);
     };
 }
 
-$NewDocument.prototype.create = makeMethod("");
-$NewDocument.prototype.createAll = makeMethod("All");
+
+/**
+ * Create a new {@link $Element} from a HTML string
+ * @memberof $Document#
+ * @alias $Document#create
+ * @param  {String}       value     HTML string
+ * @return {$Element} an element wrapper
+ * @function
+ * @example
+ * DOM.create("<div>");                // => wrapper of <div>
+ * DOM.create("<a><span></span></a>"); // => wrapper of <a> + innner <span>
+ */
+$Document.prototype.create = makeMethod("");
+
+/**
+ * Create a new array of {@link $Element}s from a HTML string
+ * @memberof $Document#
+ * @alias $Document#createAll
+ * @param  {String}       value     HTML string
+ * @return {Array.<$Element>} an array of element wrappers
+ * @function
+ * @example
+ * DOM.createAll("<span></span><b></b>"); // => array with 2 $Elements: <span> and <b>
+ */
+$Document.prototype.createAll = makeMethod("All");

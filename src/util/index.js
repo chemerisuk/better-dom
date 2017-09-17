@@ -1,5 +1,4 @@
 import { WINDOW } from "../const";
-import { $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype;
 
@@ -32,22 +31,4 @@ export function safeCall(context, fn, arg1, arg2) {
 
         return false;
     }
-}
-
-export function register(mixins, factory, defaultFactory) {
-    var proto = $Element.prototype;
-
-    if (factory == null) {
-        factory = (methodName, strategy) => strategy;
-    }
-
-    keys(mixins).forEach((methodName) => {
-        var args = [methodName].concat(mixins[methodName]);
-
-        proto[methodName] = factory.apply(null, args);
-
-        if (defaultFactory) {
-            $NullElement.prototype[methodName] = defaultFactory.apply(null, args);
-        }
-    });
 }

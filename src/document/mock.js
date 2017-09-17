@@ -1,5 +1,5 @@
-import { $NewDocument } from "../document/index";
-import { $NewElement } from "../element/index";
+import { $Document } from "../document/index";
+import { $Element } from "../element/index";
 import { each } from "../util/index";
 
 /**
@@ -13,8 +13,8 @@ import { each } from "../util/index";
  * @return {$Element} a mocked instance
  * @see $Document#create
  */
-$NewDocument.prototype.mock = function(content, varMap) {
-    if (!content) return new $NewElement();
+$Document.prototype.mock = function(content, varMap) {
+    if (!content) return new $Element();
 
     var result = this.create(content, varMap),
         mappings = this["<%= prop('mappings') %>"],
@@ -25,7 +25,7 @@ $NewDocument.prototype.mock = function(content, varMap) {
         };
 
     if (mappings && mappings.length) {
-        applyExtensions(result[0]);
+        applyExtensions(result["<%= prop() %>"]);
     }
 
     return result;

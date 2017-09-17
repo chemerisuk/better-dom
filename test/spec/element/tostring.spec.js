@@ -14,6 +14,6 @@ describe("Node", function() {
         expect(link.toString()).toBe("<a>");
         expect(input.toString()).toBe("<input>");
         expect(spans.toString()).toBe("<i>,<b>");
-        expect(empty.toString()).toBe("");
+        expect(empty.toString()).toBe("#unknown");
     });
 });

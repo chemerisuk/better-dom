@@ -1,4 +1,4 @@
-import { $NewDocument } from "../document/index";
+import { $Document } from "../document/index";
 import { injectElement } from "../util/index";
 import { DocumentTypeError } from "../errors";
 
@@ -15,7 +15,7 @@ import { DocumentTypeError } from "../errors";
  * // loading several scripts sequentially
  * DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");
  */
-$NewDocument.prototype.importScripts = function(...urls) {
+$Document.prototype.importScripts = function(...urls) {
     var callback = () => {
         const node = this["<%= prop() %>"];
 

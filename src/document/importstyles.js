@@ -1,4 +1,4 @@
-import { $NewDocument } from "../document/index";
+import { $Document } from "../document/index";
 import { injectElement } from "../util/index";
 import { DocumentTypeError } from "../errors";
 
@@ -13,7 +13,7 @@ import { DocumentTypeError } from "../errors";
  * // more complex selectors
  * DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");
  */
-$NewDocument.prototype.importStyles = function(selector, cssText) {
+$Document.prototype.importStyles = function(selector, cssText) {
     const node = this["<%= prop() %>"];
 
     if (!node) return;

@@ -1,6 +1,6 @@
 import { $Node } from "./index";
-import { $NewElement } from "../element/index";
-import { isArray } from "../util/index";
+import { $Element } from "../element/index";
+import { isArray, keys } from "../util/index";
 import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
 
@@ -28,14 +28,12 @@ $Node.prototype.set = function(name, value) {
 
         if (hook) {
             hook(node, value);
+        } else if (value == null && this instanceof $Element) {
+            node.removeAttribute(name);
         } else if (name in node) {
             node[name] = value;
-        } else if (this instanceof $NewElement) {
-            if (value == null) {
-                node.removeAttribute(name);
-            } else {
-                node.setAttribute(name, value);
-            }
+        } else if (this instanceof $Element) {
+            node.setAttribute(name, value);
         }
     } else if (isArray(name)) {
         name.forEach((key) => { this.set(key, value) });

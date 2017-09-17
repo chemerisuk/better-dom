@@ -18,7 +18,10 @@ describe("extend", function() {
 
         callback.and.callFake(function() {
             expect(this).toBeDefined();
-            expect(this[0]).toBeDefined();
+
+            this.then((n) => {
+                expect(n).toBeDefined();
+            });
 
             if (callback.calls.count() === 3) done();
         });
@@ -178,10 +181,7 @@ describe("extend", function() {
         });
 
         expect(DOM.create("<a>").test()).toBe(555);
-
-        var mocked = DOM.mock();
-
-        expect(mocked.test()).toBe(mocked);
+        expect(DOM.mock("<a>").test()).toBe(555);
     });
 
     it("allows extending the $Document prototype", function() {

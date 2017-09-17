@@ -50,10 +50,10 @@ describe("$Element#value", function() {
         });
 
         it("should replace child element(s) from node with provided text", function() {
-            expect(div[0].childNodes.length).toBe(2);
+            expect(div.get("childNodes").length).toBe(2);
             expect(div.value("foo")).toBe(div);
-            expect(div[0].childNodes.length).toBe(1);
-            expect(div[0].firstChild.nodeValue).toBe("foo");
+            expect(div.get("childNodes").length).toBe(1);
+            expect(div.get("firstChild").nodeValue).toBe("foo");
         });
 
         it("should set select value properly", function() {

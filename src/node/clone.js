@@ -1,6 +1,6 @@
 import { $Node } from "./index";
-import { $NewElement } from "../element/index";
-import { $NewDocument } from "../document/index";
+import { $Element } from "../element/index";
+import { $Document } from "../document/index";
 import { MethodError } from "../errors";
 
 /**
@@ -10,7 +10,7 @@ import { MethodError } from "../errors";
  * @param {Boolean} deep <code>true</code> if all children should also be cloned, or <code>false</code> otherwise
  * @return {$Node} a clone of current element
  * @example
- * ul.clone();      // => clone of <ul> with all it's children
+ * ul.clone(true);  // => clone of <ul> with all it's children
  * ul.clone(false); // => clone of <ul> element ONLY
  */
 $Node.prototype.clone = function(deep) {
@@ -19,13 +19,16 @@ $Node.prototype.clone = function(deep) {
     }
 
     const node = this["<%= prop() %>"];
-    const clonedNode = node ? node.cloneNode(deep) : null;
 
-    if (this instanceof $NewElement) {
-        return new $NewElement(clonedNode);
-    } else if (this instanceof $NewDocument) {
-        return new $NewDocument(clonedNode);
-    } else {
-        return new $Node();
+    if (node) {
+        const clonedNode = node.cloneNode(deep);
+
+        if (this instanceof $Element) {
+            return new $Element(clonedNode);
+        } else if (this instanceof $Document) {
+            return new $Document(clonedNode);
+        }
     }
+
+    return new $Node();
 };

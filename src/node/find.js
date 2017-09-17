@@ -1,8 +1,8 @@
 import { register, map, safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { $Node } from "../node/index";
-import { $NewElement } from "../element/index";
-import { $NewDocument } from "../document/index";
+import { $Element } from "../element/index";
+import { $Document } from "../document/index";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
@@ -37,7 +37,7 @@ function makeMethod(methodName, all) {
             old = true;
             context = node;
 
-            if (!(this instanceof $NewDocument)) {
+            if (!(this instanceof $Document)) {
                 // qSA works strangely on Element-rooted queries
                 // We can work around this by specifying an extra ID on the root
                 // and working up from there (Thanks to Andrew Dupont for the technique)
@@ -57,9 +57,9 @@ function makeMethod(methodName, all) {
             if (!old) node.removeAttribute("id");
         }
 
-        return all ? map.call(result, $NewElement) : $NewElement(result);
+        return all ? map.call(result, $Element) : $Element(result);
     };
 }
 
-$Node.prototype.find = makeMethod("");
-$Node.prototype.findAll = makeMethod("All");
+$Node.prototype.find = makeMethod("find", "");
+$Node.prototype.findAll = makeMethod("findAll", "All");

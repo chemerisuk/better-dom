@@ -22,7 +22,7 @@ describe("fire", function() {
     });
 
     it("should trigger native handlers", function() {
-        input[0].onclick = callback.and.returnValue(false);
+        input.set("onclick", callback.and.returnValue(false));
 
         input.fire("click");
 
@@ -34,7 +34,9 @@ describe("fire", function() {
 
         expect(input.matches(":focus")).toBe(true);
 
-        expect(input[0]).toBe(document.activeElement);
+        input.then((n) => {
+            expect(n).toBe(document.activeElement);
+        });
     });
 
     describe("custom events", function() {
