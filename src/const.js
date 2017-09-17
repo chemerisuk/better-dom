@@ -1,6 +1,6 @@
 /* globals window, document */
 
-import { $Document } from "./types";
+import { $NewDocument } from "./document/index";
 
 // globals
 export const WINDOW = window;
@@ -20,4 +20,4 @@ export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
  * @namespace DOM
  * @extends {$Document}
  */
-export var DOM = new $Document(document);
+export var DOM = new $NewDocument(document);

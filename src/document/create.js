@@ -1,65 +1,48 @@
-import { $Element } from "../types";
-// import tagCache from "../global/emmet";
-import { register } from "../util/index";
+import { $NewDocument } from "../document/index";
+import { $NewElement } from "../element/index";
 
-register({
-    /**
-     * Create a new {@link $Element} from a HTML string
-     * @memberof $Document#
-     * @alias $Document#create
-     * @param  {String}       value     HTML string
-     * @return {$Element} an element wrapper
-     * @function
-     * @example
-     * DOM.create("<div>");                // => wrapper of <div>
-     * DOM.create("<a><span></span></a>"); // => wrapper of <a> + innner <span>
-     */
-    create: "",
-    /**
-     * Create a new array of {@link $Element}s from a HTML string
-     * @memberof $Document#
-     * @alias $Document#createAll
-     * @param  {String}       value     HTML string
-     * @return {Array.<$Element>} an array of element wrappers
-     * @function
-     * @example
-     * DOM.createAll("<span></span><b></b>"); // => array with 2 $Elements: <span> and <b>
-     */
-    createAll: "All"
+function makeMethod(methodName, all) {
+    return function(value) {
+        const node = this["<%= prop() %>"];
 
-}, (methodName, all) => function(value) {
-    var sandbox = this._["<%= prop('sandbox') %>"];
+        if (!node) return new $NewElement();
 
-    if (!sandbox) {
-        sandbox = this[0].createElement("div");
-        this._["<%= prop('sandbox') %>"] = sandbox;
-    }
+        var sandbox = this["<%= prop('sandbox') %>"];
 
-    var nodes, el;
+        if (!sandbox) {
+            sandbox = node.createElement("div");
+            this["<%= prop('sandbox') %>"] = sandbox;
+        }
 
-    // if (value && value in tagCache) {
-    //     nodes = doc.createElement(value);
+        var nodes, el;
 
-    //     if (all) nodes = [ new $Element(nodes) ];
-    // } else {
-    // value = varMap ? DOM.format(value, varMap) : value;
+        // if (value && value in tagCache) {
+        //     nodes = doc.createElement(value);
 
-    sandbox.innerHTML = value.trim(); // parse input HTML string
+        //     if (all) nodes = [ new $Element(nodes) ];
+        // } else {
+        // value = varMap ? DOM.format(value, varMap) : value;
 
-    for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
-        sandbox.removeChild(el); // detach element from the sandbox
+        sandbox.innerHTML = value.trim(); // parse input HTML string
 
-        if (el.nodeType === 1) {
-            if (all) {
-                nodes.push(new $Element(el));
-            } else {
-                nodes = el;
+        for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
+            sandbox.removeChild(el); // detach element from the sandbox
 
-                break; // stop early, because need only the first element
+            if (el.nodeType === 1) {
+                if (all) {
+                    nodes.push(new $NewElement(el));
+                } else {
+                    nodes = el;
+
+                    break; // stop early, because need only the first element
+                }
             }
         }
-    }
-    // }
+        // }
 
-    return all ? nodes : $Element(nodes);
-});
+        return all ? nodes : $NewElement(nodes);
+    };
+}
+
+$NewDocument.prototype.create = makeMethod("");
+$NewDocument.prototype.createAll = makeMethod("All");

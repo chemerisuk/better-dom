@@ -1,5 +1,5 @@
 import { WINDOW } from "../const";
-import { $Document, $Element, $NullElement } from "../types";
+import { $Element, $NullElement } from "../types";
 
 var arrayProto = Array.prototype;
 
@@ -35,7 +35,7 @@ export function safeCall(context, fn, arg1, arg2) {
 }
 
 export function register(mixins, factory, defaultFactory) {
-    var proto = defaultFactory ? $Element.prototype : $Document.prototype;
+    var proto = $Element.prototype;
 
     if (factory == null) {
         factory = (methodName, strategy) => strategy;

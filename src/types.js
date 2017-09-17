@@ -25,16 +25,6 @@ function $Element(node) {
     }
 }
 
-/**
- * Used to represent a document in better-dom
- * @class $Document
- * @extends {$Element}
- */
-function $Document(node) {
-    // use documentElement for a $Document wrapper
-    return $Element.call(this, node);
-}
-
 $Element.prototype = {
     toString() {
         return "<" + this[0].tagName.toLowerCase() + ">";
@@ -45,7 +35,4 @@ $Element.prototype = {
 $NullElement.prototype = new $Element();
 $NullElement.prototype.toString = () => "";
 
-$Document.prototype = new $Element();
-$Document.prototype.toString = () => "#document";
-
-export { $Element, $NullElement, $Document };
+export { $Element, $NullElement };

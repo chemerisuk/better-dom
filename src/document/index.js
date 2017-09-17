@@ -1,5 +1,10 @@
 import { $Node } from "../node/index";
 
+/**
+ * Used to represent a document in better-dom
+ * @class $Document
+ * @extends {$Element}
+ */
 export function $NewDocument(node) {
     if (this instanceof $NewDocument) {
         $Node.call(this, node);
