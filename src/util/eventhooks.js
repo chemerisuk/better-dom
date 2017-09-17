@@ -1,8 +1,8 @@
-import { DOCUMENT } from "../const";
+import { HTML, WINDOW } from "../const";
 
 var hooks = {};
 /* istanbul ignore if */
-if ("onfocusin" in DOCUMENT.documentElement) {
+if ("onfocusin" in HTML) {
     hooks.focus = (handler) => { handler._type = "focusin" };
     hooks.blur = (handler) => { handler._type = "focusout" };
 } else {
@@ -10,7 +10,7 @@ if ("onfocusin" in DOCUMENT.documentElement) {
     hooks.focus = hooks.blur = (handler) => { handler.capturing = true };
 }
 /* istanbul ignore else */
-if (DOCUMENT.createElement("input").validity) {
+if (WINDOW.document.createElement("input").validity) {
     hooks.invalid = (handler) => { handler.capturing = true };
 }
 

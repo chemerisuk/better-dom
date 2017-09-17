@@ -1,8 +1,9 @@
 import CSS from "./stylehooks";
-import { WEBKIT_PREFIX, HTML, DOCUMENT } from "../const";
+import { WEBKIT_PREFIX, HTML, WINDOW } from "../const";
 
 // https://twitter.com/jaffathecake/status/570872103227953153
-var LEGACY_BROWSER = !("visibilityState" in DOCUMENT || "webkitVisibilityState" in DOCUMENT),
+var DOCUMENT = WINDOW.document,
+    LEGACY_BROWSER = !("visibilityState" in DOCUMENT || "webkitVisibilityState" in DOCUMENT),
     TRANSITION_PROPS = ["timing-function", "property", "duration", "delay"].map((prop) => "transition-" + prop),
     parseTimeValue = (value) => {
         var result = parseFloat(value) || 0;

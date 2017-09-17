@@ -1,4 +1,4 @@
-import { register, isArray, keys, safeCall } from "../util/index";
+import { register, isArray, keys } from "../util/index";
 import { MethodError } from "../errors";
 import { RETURN_THIS } from "../const";
 import PROP from "../util/accessorhooks";
@@ -18,15 +18,7 @@ register({
     set(name, value) {
         var node = this[0];
 
-        var hook = PROP.set[name],
-            watchers = this._["<%= prop('watcher') %>"],
-            oldValue;
-
-        watchers = watchers && watchers[name];
-
-        if (watchers) {
-            oldValue = this.get(name);
-        }
+        var hook = PROP.set[name];
 
         if (typeof name === "string") {
             if (typeof value === "function") {
@@ -48,12 +40,6 @@ register({
             keys(name).forEach((key) => { this.set(key, name[key]) });
         } else {
             throw new MethodError("set", arguments);
-        }
-
-        if (watchers && oldValue !== value) {
-            watchers.forEach((w) => {
-                safeCall(this, w, value, oldValue);
-            });
         }
 
         return this;

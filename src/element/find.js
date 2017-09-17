@@ -1,12 +1,11 @@
 import { register, map, safeCall } from "../util/index";
-import { DOCUMENT } from "../const";
 import { MethodError } from "../errors";
 import { $Element, $Document, $NullElement } from "../types";
 
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-var rquick = DOCUMENT.getElementsByClassName ? /^(?:(\w+)|\.([\w\-]+))$/ : /^(?:(\w+))$/,
+var rquick = /^(?:(\w+)|\.([\w\-]+))$/,
     rescape = /'|\\/g;
 
 register({

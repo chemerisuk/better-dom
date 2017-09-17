@@ -4,8 +4,7 @@ import { $Document } from "./types";
 
 // globals
 export const WINDOW = window;
-export const DOCUMENT = document;
-export const HTML = DOCUMENT.documentElement;
+export const HTML = document.documentElement;
 
 // constants
 export const RETURN_THIS = function() { return this };
@@ -21,4 +20,4 @@ export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
  * @namespace DOM
  * @extends {$Document}
  */
-export var DOM = new $Document(DOCUMENT);
+export var DOM = new $Document(document);
