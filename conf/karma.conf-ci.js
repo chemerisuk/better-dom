@@ -40,21 +40,21 @@ var customLaunchers = {
     // sl_ie_10: {
     //     base: "SauceLabs",
     //     browserName: "internet explorer",
-    //     platform: "Windows 7",
+    //     platform: TEST_WIN_LEGACY_VERSION,
     //     version: "10"
     // },
-    sl_ie_8: {
-        base: "SauceLabs",
-        browserName: "internet explorer",
-        platform: "Windows XP",
-        version: "8"
-    },
-    // sl_ie_9: {
+    // sl_ie_8: {
     //     base: "SauceLabs",
     //     browserName: "internet explorer",
-    //     platform: "Windows 7",
-    //     version: "9"
+    //     platform: "Windows XP",
+    //     version: "8"
     // },
+    sl_ie_9: {
+        base: "SauceLabs",
+        browserName: "internet explorer",
+        platform: TEST_WIN_LEGACY_VERSION,
+        version: "9"
+    },
     sl_ios_safari: {
         base: "SauceLabs",
         browserName: "iphone",
