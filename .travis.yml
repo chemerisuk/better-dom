@@ -1,10 +1,13 @@
 language: node_js
 node_js:
   - 4.5
-dist: trusty # needs Ubuntu Trusty
-sudo: false  # no need for virtualization.
+dist: trusty
+sudo: false
 addons:
-  chrome: stable # have Travis install chrome stable.
+  chrome: stable
+  sauce_connect: true
+git:
+  depth: 1
 cache:
   directories:
     - node_modules
@@ -17,5 +20,3 @@ env:
   global:
     - secure: JUEHpRY6mX0+vHbm/swGR+x0NZDSqusihJyk9oHY1PzoqPCiXLWxZu/3gxR9zwy4CF3EudNDVf+lNTLiAI0SsBRfQBgxwlVYEhbWk8Fcqt5WLEG/zkkv0NheFdrKQbgA6oerL6zstwRUwY5hgCN8MgVQaYnXlCiQmpMk/7HzVcM=
     - secure: EaanBOOFDcsSnv6OkTsEeBRXVHhW9iGq4vnUg7qmsL3llWJdt2abcQEM6xlkGsA7xeX/CZwNIrwcb5mPD26gonJEctGsEsc/VWkI18zc0LVZbNMFxcn0IZijuPjs/jCpoXJ/y0szLb53zcrISz8pEur0Bt19DqUG/Vw/tYxfqmw=
-addons:
-  sauce_connect: true
