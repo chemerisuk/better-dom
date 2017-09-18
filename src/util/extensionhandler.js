@@ -1,4 +1,3 @@
-import { safeCall } from "../util/index";
 import { $Element } from "../element/index";
 import SelectorMatcher from "../util/selectormatcher";
 
@@ -32,6 +31,6 @@ export default (selector, mixins, index) => {
 
         // invoke constructor if it exists
         // make a safe call so live extensions can't break each other
-        if (ctr) safeCall(el, ctr);
+        if (ctr) ctr.call(el);
     };
 };

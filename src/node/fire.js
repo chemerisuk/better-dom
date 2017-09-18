@@ -1,5 +1,4 @@
 import { $Node } from "./index";
-import { safeCall } from "../util/index";
 import { MethodError } from "../errors";
 import { RETURN_TRUE } from "../const";
 import EventHandler from "../util/eventhandler";
@@ -42,7 +41,7 @@ $Node.prototype.fire = function(type, detail) {
         // prevent re-triggering of the current event
         EventHandler.skip = type;
 
-        safeCall(node, type);
+        node[type]();
 
         EventHandler.skip = null;
     }

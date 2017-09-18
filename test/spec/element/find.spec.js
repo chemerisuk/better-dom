@@ -69,10 +69,10 @@ describe("find", function() {
         expect(function() { DOM.find(1); }).toThrow();
     });
 
-    it("should not throw error if selector is not valid", function() {
+    it("should throw error if selector is not valid", function() {
         jasmine.clock().install();
 
-        expect(function() { DOM.find("$test"); }).not.toThrow();
+        expect(function() { DOM.find("$test"); }).toThrow();
 
         jasmine.clock().uninstall();
     });

@@ -19,10 +19,6 @@ describe("extend", function() {
         callback.and.callFake(function() {
             expect(this).toBeDefined();
 
-            this.then((n) => {
-                expect(n).toBeDefined();
-            });
-
             if (callback.calls.count() === 3) done();
         });
 

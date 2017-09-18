@@ -1,4 +1,4 @@
-import { register, map, safeCall } from "../util/index";
+import { map } from "../util/index";
 import { MethodError } from "../errors";
 import { $Node } from "../node/index";
 import { $Element } from "../element/index";
@@ -52,7 +52,7 @@ function makeMethod(methodName, all) {
                 selector = nid + selector.split(",").join("," + nid);
             }
 
-            result = safeCall(context, "querySelector" + all, selector);
+            result = context["querySelector" + all](selector);
 
             if (!old) node.removeAttribute("id");
         }

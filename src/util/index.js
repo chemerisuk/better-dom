@@ -1,5 +1,3 @@
-import { WINDOW } from "../const";
-
 var arrayProto = Array.prototype;
 
 export const every = arrayProto.every;
@@ -17,18 +15,5 @@ export function computeStyle(node) {
 export function injectElement(node) {
     if (node && node.nodeType === 1) {
         return node.ownerDocument.getElementsByTagName("head")[0].appendChild(node);
-    }
-}
-
-export function safeCall(context, fn, arg1, arg2) {
-    if (typeof fn === "string") fn = context[fn];
-
-    try {
-        return fn.call(context, arg1, arg2);
-    } catch (err) {
-        /* istanbul ignore next */
-        WINDOW.setTimeout(() => { throw err }, 1);
-
-        return false;
     }
 }

@@ -11,12 +11,11 @@ $Node.prototype.then = function(resolve) {
         } catch (e) {
             err = e;
         }
-    } else {
-        err = new TypeError("node must not be null");
     }
 
     if (err) {
-        console.error(err);
+        /* istanbul ignore next */
+        WINDOW.setTimeout(() => { throw err }, 1);
     } else {
         return result;
     }
