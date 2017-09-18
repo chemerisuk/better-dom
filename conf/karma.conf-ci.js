@@ -15,12 +15,17 @@ var customLaunchers = {
         browserName: "firefox",
         platform: TEST_WIN_VERSION
     },
-    el_opera_12: {
+    el_opera: {
         base: "SauceLabs",
         browserName: "opera",
-        platform: TEST_WIN_LEGACY_VERSION,
-        version: "12"
+        platform: TEST_WIN_VERSION
     },
+    // el_opera_12: {
+    //     base: "SauceLabs",
+    //     browserName: "opera",
+    //     platform: TEST_WIN_LEGACY_VERSION,
+    //     version: "12"
+    // },
     sl_safari: {
         base: "SauceLabs",
         browserName: "safari",
@@ -37,24 +42,24 @@ var customLaunchers = {
         browserName: "microsoftedge",
         platform: TEST_WIN_VERSION
     },
-    // sl_ie_10: {
-    //     base: "SauceLabs",
-    //     browserName: "internet explorer",
-    //     platform: TEST_WIN_LEGACY_VERSION,
-    //     version: "10"
-    // },
+    sl_ie_10: {
+        base: "SauceLabs",
+        browserName: "internet explorer",
+        platform: TEST_WIN_LEGACY_VERSION,
+        version: "10"
+    },
     // sl_ie_8: {
     //     base: "SauceLabs",
     //     browserName: "internet explorer",
     //     platform: "Windows XP",
     //     version: "8"
     // },
-    sl_ie_9: {
-        base: "SauceLabs",
-        browserName: "internet explorer",
-        platform: TEST_WIN_LEGACY_VERSION,
-        version: "9"
-    },
+    // sl_ie_9: {
+    //     base: "SauceLabs",
+    //     browserName: "internet explorer",
+    //     platform: TEST_WIN_LEGACY_VERSION,
+    //     version: "9"
+    // },
     sl_ios_safari: {
         base: "SauceLabs",
         browserName: "iphone",
