@@ -1,20 +1,16 @@
-import { DOM, WINDOW } from "../const";
+import { WINDOW } from "../const";
+import { $Element } from "../element/index";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
 
 function getEventProperty(name, e, type, node, target, currentTarget) {
     switch (name) {
-    case "type":
-        return type;
-    case "defaultPrevented":
-        // IE8 and Android 2.3 use returnValue instead of defaultPrevented
-        return "defaultPrevented" in e ? e.defaultPrevented : e.returnValue === false;
     case "target":
-        return DOM.$(target);
+        return $Element(target);
     case "currentTarget":
-        return DOM.$(currentTarget);
+        return $Element(currentTarget);
     case "relatedTarget":
-        return DOM.$(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
+        return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
     }
 
     var value = e[name];

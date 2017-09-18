@@ -1,4 +1,5 @@
 import { $Node } from "../node/index";
+import { UNKNOWN_NODE, ELEMENT_NODE } from "../const";
 
 export function $Element(node) {
     if (this instanceof $Element) {
@@ -18,7 +19,7 @@ $Element.prototype = ElementProto;
 ElementProto.valueOf = () => function() {
     const node = this["<%= prop() %>"];
 
-    return node ? 1 : 0; // Node.ELEMENT_NODE;
+    return node ? ELEMENT_NODE : UNKNOWN_NODE;
 };
 
 ElementProto.toString = function() {

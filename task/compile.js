@@ -52,7 +52,7 @@ module.exports = function(dest, pkg) {
                 pkg: pkg,
                 file: dest,
                 prop: function(name) {
-                    return name ? name + version : "__" + version + "__";
+                    return "__" + (name ? name + version : version) + "__";
                 }
             });
 

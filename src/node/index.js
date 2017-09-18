@@ -1,3 +1,5 @@
+import { UNKNOWN_NODE } from "../const";
+
 export function $Node(node) {
     if (node) {
         // use a generated property to store a reference
@@ -9,5 +11,5 @@ export function $Node(node) {
 
 $Node.prototype = {
     toString: () => "",
-    valueOf: () => 0 // undefined
+    valueOf: () => UNKNOWN_NODE // undefined
 };

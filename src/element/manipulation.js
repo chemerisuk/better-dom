@@ -1,6 +1,6 @@
 import { $Element } from "../element/index";
+import { $Document } from "../document/index";
 import { isArray } from "../util/index";
-import { DOM } from "../const";
 
 function makeMethod(fastStrategy, requiresParent, strategy) {
     return function(...contents) {
@@ -22,7 +22,7 @@ function makeMethod(fastStrategy, requiresParent, strategy) {
                 if (typeof fragment === "string") {
                     fragment += content.trim();
                 } else {
-                    content = DOM.createAll(content);
+                    content = $Document(node.ownerDocument).createAll(content);
                 }
             } else if (content instanceof $Element) {
                 content = [ content ];
@@ -31,7 +31,7 @@ function makeMethod(fastStrategy, requiresParent, strategy) {
             if (isArray(content)) {
                 if (typeof fragment === "string") {
                     // append existing string to fragment
-                    content = DOM.createAll(fragment).concat(content);
+                    content = $Document(node.ownerDocument).createAll(fragment).concat(content);
                     // fallback to document fragment strategy
                     fragment = node.ownerDocument.createDocumentFragment();
                 }

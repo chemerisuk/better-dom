@@ -16,13 +16,6 @@ function makeMethod(all) {
 
         var nodes, el;
 
-        // if (value && value in tagCache) {
-        //     nodes = doc.createElement(value);
-
-        //     if (all) nodes = [ new $Element(nodes) ];
-        // } else {
-        // value = varMap ? DOM.format(value, varMap) : value;
-
         sandbox.innerHTML = value.trim(); // parse input HTML string
 
         for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
@@ -38,7 +31,6 @@ function makeMethod(all) {
                 }
             }
         }
-        // }
 
         return all ? nodes : $Element(nodes);
     };

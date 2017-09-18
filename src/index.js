@@ -1,4 +1,4 @@
-import { DOM, WINDOW } from "./const";
+import { WINDOW, ELEMENT_NODE, DOCUMENT_NODE } from "./const";
 
 import { $Node } from "./node/index";
 import "./node/on";
@@ -13,21 +13,14 @@ import "./node/matches";
 import "./node/then";
 
 import { $Document } from "./document/index";
-import "./document/create";
-import "./document/extend";
-import "./document/importscripts";
-import "./document/importstyles";
-import "./document/mock";
-
 import { $Element } from "./element/index";
-import "./element/children";
-import "./element/classes";
-import "./element/css";
-import "./element/manipulation";
-import "./element/offset";
-import "./element/traversing";
-import "./element/value";
-import "./element/visibility";
+
+/**
+ * Global namespace to access the document object tree
+ * @namespace DOM
+ * @extends {$Document}
+ */
+export var DOM = new $Document(WINDOW.document);
 
 /**
  * Create an instance of {@link $Element} or {@link $Document} for a native element
@@ -43,9 +36,9 @@ import "./element/visibility";
 DOM.$ = (node) => {
     const nodeType = node && node.nodeType;
 
-    if (nodeType === 1) {
+    if (nodeType === ELEMENT_NODE) {
         return $Element(node);
-    } else if (nodeType === 9) {
+    } else if (nodeType === DOCUMENT_NODE) {
         return $Document(node);
     } else {
         return new $Node();

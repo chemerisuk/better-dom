@@ -1,4 +1,5 @@
 import { $Node } from "../node/index";
+import { UNKNOWN_NODE, DOCUMENT_NODE } from "../const";
 
 /**
  * Used to represent a document in better-dom
@@ -23,7 +24,7 @@ $Document.prototype = DocumentProto;
 DocumentProto.valueOf = () => function() {
     const node = this["<%= prop() %>"];
 
-    return node ? 9 : 0; // Node.DOCUMENT_NODE;
+    return node ? DOCUMENT_NODE : UNKNOWN_NODE;
 };
 
 DocumentProto.toString = () => "#document";
