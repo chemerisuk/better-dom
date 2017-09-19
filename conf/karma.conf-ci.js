@@ -15,17 +15,12 @@ var customLaunchers = {
         browserName: "firefox",
         platform: TEST_WIN_VERSION
     },
-    el_opera: {
+    el_opera_12: {
         base: "SauceLabs",
         browserName: "opera",
-        platform: TEST_WIN_VERSION
+        platform: TEST_WIN_LEGACY_VERSION,
+        version: "12"
     },
-    // el_opera_12: {
-    //     base: "SauceLabs",
-    //     browserName: "opera",
-    //     platform: TEST_WIN_LEGACY_VERSION,
-    //     version: "12"
-    // },
     sl_safari: {
         base: "SauceLabs",
         browserName: "safari",

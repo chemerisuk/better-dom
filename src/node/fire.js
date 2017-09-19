@@ -1,6 +1,5 @@
 import { $Node } from "./index";
 import { MethodError } from "../errors";
-import { RETURN_TRUE } from "../const";
 import EventHandler from "../util/eventhandler";
 import HOOK from "../util/eventhooks";
 

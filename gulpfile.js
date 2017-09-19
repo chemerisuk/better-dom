@@ -44,7 +44,7 @@ gulp.task("lint-test", function() {
 });
 
 gulp.task("compile", function() {
-    return gulp.src(["document/*.js", "element/*.js", "util/*.js", "*.js"], {cwd: "./src"})
+    return gulp.src(["**/*.js"], {cwd: "./src"})
         .pipe(gulpif(!process.env.TRAVIS_JOB_NUMBER, plumber()))
         .pipe(jshint(".jshintrc"))
         .pipe(jshint.reporter("jshint-stylish"))

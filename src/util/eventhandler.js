@@ -1,4 +1,3 @@
-import { WINDOW } from "../const";
 import { $Element } from "../element/index";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
@@ -10,7 +9,7 @@ function getEventProperty(name, e, type, node, target, currentTarget) {
     case "currentTarget":
         return $Element(currentTarget);
     case "relatedTarget":
-        return $Element(e.relatedTarget || e[(e.toElement === node ? "from" : "to") + "Element"]);
+        return $Element(e.relatedTarget);
     }
 
     var value = e[name];
@@ -27,7 +26,6 @@ function EventHandler(type, selector, callback, props, el, once) {
         hook = HOOK[type],
         matcher = SelectorMatcher(selector, node),
         handler = (e) => {
-            e = e || WINDOW.event;
             // early stop in case of default action
             if (EventHandler.skip === type) return;
             // srcElement can be null in legacy IE when target is document
@@ -38,10 +36,8 @@ function EventHandler(type, selector, callback, props, el, once) {
 
             // early stop for late binding or when target doesn't match selector
             if (!currentTarget) return;
-
             // off callback even if it throws an exception later
-            if (once) el.off(type, callback);
-
+            if (once) handler.off();
             // prevent default if handler returns false
             if ((args ? callback.apply(el, args) : callback.call(el)) === false) {
                 e.preventDefault();
@@ -53,6 +49,9 @@ function EventHandler(type, selector, callback, props, el, once) {
     handler.type = type;
     handler.callback = callback;
     handler.selector = selector;
+    handler.off = () => {
+        node.removeEventListener(type, handler, !!handler.capturing);
+    };
 
     return handler;
 }

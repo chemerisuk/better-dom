@@ -15,7 +15,8 @@ describe("fire", function() {
         var events = ["click", "focus", "blur", "change"], i;
 
         for (i = 0; i < 3; ++i) {
-            input.on(events[i], callback).fire(events[i]);
+            input.on(events[i], callback);
+            input.fire(events[i]);
 
             expect(callback.calls.count()).toBe(i + 1);
         }
@@ -41,7 +42,8 @@ describe("fire", function() {
 
     describe("custom events", function() {
         it("should be allowed", function() {
-            input.on("my:click", callback).fire("my:click");
+            input.on("my:click", callback);
+            input.fire("my:click");
 
             expect(callback).toHaveBeenCalled();
         });

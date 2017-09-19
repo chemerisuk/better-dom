@@ -1,17 +1,6 @@
 import { WINDOW, ELEMENT_NODE, DOCUMENT_NODE } from "./const";
 
 import { $Node } from "./node/index";
-import "./node/on";
-import "./node/off";
-import "./node/fire";
-import "./node/get";
-import "./node/set";
-import "./node/find";
-import "./node/contains";
-import "./node/clone";
-import "./node/matches";
-import "./node/then";
-
 import { $Document } from "./document/index";
 import { $Element } from "./element/index";
 
