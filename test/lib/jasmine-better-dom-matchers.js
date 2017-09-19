@@ -82,8 +82,8 @@
     toHaveAttr: function() {
         return {
             compare: function(actual, name, value) {
-                const result = {};
-                const len = arguments.length;
+                var result = {};
+                var len = arguments.length;
 
                 if (actual) {
                     actual.then(function(n) {

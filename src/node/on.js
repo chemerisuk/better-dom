@@ -34,11 +34,13 @@ function makeMethod(methodName) {
         const node = this["<%= prop() %>"];
 
         if (node) {
-            const handler = EventHandler(type, selector, callback, args, this, single);
+            const handler = new EventHandler(this, node, args, callback);
+            handler.subscribe(type, selector, !single ? callback : function() {
+                handler.unsubscribe(); // stop callback on the first invokation
 
-            node.addEventListener(handler._type || type, handler, !!handler.capturing);
-
-            return single ? this : handler.off;
+                return callback.apply(this, arguments);
+            });
+            return single ? this : () => handler.unsubscribe();
         }
 
         return single ? this : () => {};

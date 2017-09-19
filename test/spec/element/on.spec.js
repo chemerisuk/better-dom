@@ -303,14 +303,14 @@ describe("on", function() {
     });
 
     it("removes event registraction on function onvokation", function() {
-        const spy1 = jasmine.createSpy("click");
-        const stop1 = input.on("click", spy1);
+        var spy1 = jasmine.createSpy("click");
+        var stop1 = input.on("click", spy1);
         stop1();
         input.fire("click");
         expect(spy).not.toHaveBeenCalled();
 
-        const spy2 = jasmine.createSpy("click");
-        const stop2 = input.on("click", "a", spy2);
+        var spy2 = jasmine.createSpy("click");
+        var stop2 = input.on("click", "a", spy2);
         stop2();
         input.fire("click");
         expect(spy).not.toHaveBeenCalled();

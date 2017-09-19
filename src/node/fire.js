@@ -38,11 +38,11 @@ $Node.prototype.fire = function(type, detail) {
     // call native function to trigger default behavior
     if (canContinue && node[type]) {
         // prevent re-triggering of the current event
-        EventHandler.skip = type;
+        EventHandler.supress = type;
 
         node[type]();
 
-        EventHandler.skip = null;
+        EventHandler.supress = null;
     }
 
     return canContinue;

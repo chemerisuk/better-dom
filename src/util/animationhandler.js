@@ -26,7 +26,7 @@ export default (node, computed, animationName, hiding, done) => {
     var rules, duration;
 
     // browser returns zero animation/transition duration for detached elements
-    if (!node.ownerDocument.contains(node)) return null;
+    if (!node.ownerDocument.documentElement.contains(node)) return null;
 
     // Legacy Android is usually slow and has lots of bugs in the
     // CSS animations implementation, so skip any animations for it

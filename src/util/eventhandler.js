@@ -2,10 +2,12 @@ import { $Element } from "../element/index";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
 
-function getEventProperty(name, e, type, node, target, currentTarget) {
+function getEventProperty(name, e, type, currentTarget) {
     switch (name) {
+    case "type":
+        return type;
     case "target":
-        return $Element(target);
+        return $Element(e.target);
     case "currentTarget":
         return $Element(currentTarget);
     case "relatedTarget":
@@ -21,39 +23,41 @@ function getEventProperty(name, e, type, node, target, currentTarget) {
     return value;
 }
 
-function EventHandler(type, selector, callback, props, el, once) {
-    var node = el["<%= prop() %>"],
-        hook = HOOK[type],
-        matcher = SelectorMatcher(selector, node),
-        handler = (e) => {
-            // early stop in case of default action
-            if (EventHandler.skip === type) return;
-            // srcElement can be null in legacy IE when target is document
-            var target = e.target || e.srcElement || (node.ownerDocument ? node.ownerDocument.documentElement : null),
-                currentTarget = matcher ? matcher(target) : node,
-                args = props ? props.map((name) => getEventProperty(
-                    name, e, type, node, target, currentTarget)) : null;
-
-            // early stop for late binding or when target doesn't match selector
-            if (!currentTarget) return;
-            // off callback even if it throws an exception later
-            if (once) handler.off();
-            // prevent default if handler returns false
-            if ((args ? callback.apply(el, args) : callback.call(el)) === false) {
-                e.preventDefault();
-            }
-        };
-
-    if (hook) handler = hook(handler, type) || handler;
-
-    handler.type = type;
-    handler.callback = callback;
-    handler.selector = selector;
-    handler.off = () => {
-        node.removeEventListener(type, handler, !!handler.capturing);
-    };
-
-    return handler;
+function EventHandler(context, node, props) {
+    this.context = context;
+    this.node = node;
+    this.props = props || [];
 }
+
+EventHandler.prototype = {
+    handleEvent(e) {
+        if (EventHandler.supress !== this.type) {
+            const currentTarget = this.matcher ? this.matcher(e.target) : this.node;
+            // early stop when target doesn't match selector
+            if (currentTarget) {
+                const args = this.props.map((name) => getEventProperty(
+                    name, e, this.type, currentTarget));
+                // prevent default if handler returns false
+                if (this.callback.apply(this.context, args) === false) {
+                    e.preventDefault();
+                }
+            }
+        }
+    },
+    subscribe(type, selector, callback) {
+        const hook = HOOK[type];
+
+        this.type = type;
+        this.callback = callback;
+        this.matcher = SelectorMatcher(selector, this.node);
+
+        if (hook) hook(this);
+
+        this.node.addEventListener(this._type || this.type, this, !!this.capturing);
+    },
+    unsubscribe() {
+        this.node.removeEventListener(this._type || this.type, this, !!this.capturing);
+    }
+};
 
 export default EventHandler;
