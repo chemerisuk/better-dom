@@ -7,7 +7,7 @@ describe("DOM.constructor", function() {
 
         expect(el).toHaveTag("a");
 
-        el.then((n) => {
+        el.then(function(n) {
             expect(n).toBe(node);
         });
     });
@@ -17,7 +17,7 @@ describe("DOM.constructor", function() {
 
         expect(el).toBe(DOM);
 
-        el.then((n) => {
+        el.then(function(n) {
             expect(n).toBe(document);
         });
     });
@@ -26,7 +26,7 @@ describe("DOM.constructor", function() {
         var node = document.createTextNode("text"),
             el = DOM.$(node);
 
-        el.then((n) => {
+        el.then(function(n) {
             expect(n).not.toBe(node);
         });
     });

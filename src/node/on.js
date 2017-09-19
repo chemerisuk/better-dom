@@ -67,10 +67,6 @@ function makeMethod(methodName) {
  * link.on("click", "span", ["currentTarget"], function(span) {
  *     // <span> is the element was clicked
  * });
- *
- * link.on(["focus", "blur"], function() {
- *     // you can pass several event types
- * });
  */
 $Node.prototype.on = makeMethod("on");
 

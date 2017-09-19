@@ -7,7 +7,7 @@
                 el.innerHTML = content;
             } else if (typeof content === "object") {
                 el.innerHTML = "";
-                content.then((n) => {
+                content.then(function(n) {
                     el.appendChild(n);
                 });
             }
@@ -29,7 +29,9 @@
     });
 
     afterEach(function() {
-        if (el.parentNode) el.parentNode.removeChild(el);
+        if (el.parentNode) {
+            el.parentNode.removeChild(el);
+        }
     });
 }({
     toHaveTag: function() {
@@ -38,7 +40,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         result.pass = n.nodeName.toLowerCase() === tagName;
                     });
                 }
@@ -53,7 +55,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         result.pass = ~(" " + n.className + " ").indexOf(" " + className + " ");
                     });
                 }
@@ -68,7 +70,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         result.pass = n.id === value;
                     });
                 }
@@ -80,13 +82,14 @@
     toHaveAttr: function() {
         return {
             compare: function(actual, name, value) {
-                var result = {};
+                const result = {};
+                const len = arguments.length;
 
                 if (actual) {
-                    actual.then((n) => {
-                        if (arguments.length === 2) {
+                    actual.then(function(n) {
+                        if (len === 2) {
                             result.pass = n.hasAttribute(name);
-                        } else if (arguments.length === 3) {
+                        } else if (len === 3) {
                             result.pass = n.getAttribute(name) === value;
                         }
                     });
@@ -102,7 +105,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         result.pass = n[name] === value;
                     });
                 }
@@ -117,7 +120,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         if ("value" in n) {
                             result.pass = n.value === "";
                         } else {
@@ -151,7 +154,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         result.pass = n.innerHTML === value;
                     });
                 }
@@ -166,13 +169,10 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then((n) => {
+                    actual.then(function(n) {
                         var style = n && n.style;
 
                         if (style) {
-                            // IE8 has upper cased props
-                            if (!(name in style)) name = name.toUpperCase();
-
                             result.pass = style[name] === value;
                         }
                     });

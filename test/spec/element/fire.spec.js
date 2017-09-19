@@ -35,7 +35,7 @@ describe("fire", function() {
 
         expect(input.matches(":focus")).toBe(true);
 
-        input.then((n) => {
+        input.then(function(n) {
             expect(n).toBe(document.activeElement);
         });
     });

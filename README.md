@@ -68,10 +68,10 @@ After any change it recompiles `build/better-dom.js` and runs unit tests automat
 * Chrome for Android
 
 Opera Mini is out of the scope because of lack of support for CSS3 Animations.
-
+    
 [npm-url]: https://www.npmjs.com/package/better-dom
 [npm-version]: https://img.shields.io/npm/v/better-dom.svg
-[npm-downloads]: https://img.shields.io/npm/dt/better-dom.svg
+[npm-downloads]: https://img.shields.io/npm/dm/better-dom.svg
 
 [travis-url]: http://travis-ci.org/chemerisuk/better-dom
 [travis-image]: http://img.shields.io/travis/chemerisuk/better-dom/master.svg

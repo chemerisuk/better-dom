@@ -34,10 +34,8 @@ describe("find", function() {
         jasmine.sandbox.set("<div id=test><a data-attr='0'>test</a></div>");
         expect(DOM.find("#test").find("[data-attr='0']")).toHaveAttr("data-attr");
 
-
         jasmine.sandbox.set("<div id=test><a data-attr='1'>test</a></div>");
         expect(DOM.find("#test").find("[data-attr='1']")).toHaveAttr("data-attr");
-
 
         jasmine.sandbox.set("<div class=test><a data-attr='2'>test</a></div>");
         expect(DOM.find(".test").find("[data-attr='2']")).toHaveAttr("data-attr");
@@ -57,7 +55,7 @@ describe("find", function() {
 
         var foo = DOM.find(".foo");
 
-        foo.then((n) => {
+        foo.then(function(n) {
             expect(n.querySelectorAll("div span").length).toBe(1);
         });
 
