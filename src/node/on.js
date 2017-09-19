@@ -34,8 +34,8 @@ function makeMethod(methodName) {
         const node = this["<%= prop() %>"];
 
         if (node) {
-            const handler = new EventHandler(this, node, args, callback);
-            handler.subscribe(type, selector, !single ? callback : function() {
+            const handler = new EventHandler(this, node, args, selector);
+            handler.subscribe(type, !single ? callback : function() {
                 handler.unsubscribe(); // stop callback on the first invokation
 
                 return callback.apply(this, arguments);

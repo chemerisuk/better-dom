@@ -2,41 +2,24 @@ import { $Element } from "../element/index";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
 
-function getEventProperty(name, e, type, currentTarget) {
-    switch (name) {
-    case "type":
-        return type;
-    case "target":
-        return $Element(e.target);
-    case "currentTarget":
-        return $Element(currentTarget);
-    case "relatedTarget":
-        return $Element(e.relatedTarget);
-    }
 
-    var value = e[name];
-
-    if (typeof value === "function") {
-        return () => value.apply(e, arguments);
-    }
-
-    return value;
-}
-
-function EventHandler(context, node, props) {
+function EventHandler(context, node, props, selector) {
     this.context = context;
     this.node = node;
     this.props = props || [];
+    this.matcher = SelectorMatcher(selector, node);
 }
 
 EventHandler.prototype = {
     handleEvent(e) {
+        this.event = e;
+
         if (EventHandler.supress !== this.type) {
-            const currentTarget = this.matcher ? this.matcher(e.target) : this.node;
+            // update value of currentTarget if selector exists
+            this.currentTarget = this.matcher ? this.matcher(e.target) : this.node;
             // early stop when target doesn't match selector
-            if (currentTarget) {
-                const args = this.props.map((name) => getEventProperty(
-                    name, e, this.type, currentTarget));
+            if (this.currentTarget) {
+                const args = this.props.map(this.getEventProperty, this);
                 // prevent default if handler returns false
                 if (this.callback.apply(this.context, args) === false) {
                     e.preventDefault();
@@ -44,12 +27,33 @@ EventHandler.prototype = {
             }
         }
     },
-    subscribe(type, selector, callback) {
+    getEventProperty(name) {
+        const e = this.event;
+
+        switch (name) {
+        case "type":
+            return this.type;
+        case "target":
+            return $Element(e.target);
+        case "currentTarget":
+            return $Element(this.currentTarget);
+        case "relatedTarget":
+            return $Element(e.relatedTarget);
+        }
+
+        const value = e[name];
+
+        if (typeof value === "function") {
+            return () => value.apply(e, arguments);
+        } else {
+            return value;
+        }
+    },
+    subscribe(type, callback) {
         const hook = HOOK[type];
 
         this.type = type;
         this.callback = callback;
-        this.matcher = SelectorMatcher(selector, this.node);
 
         if (hook) hook(this);
 
