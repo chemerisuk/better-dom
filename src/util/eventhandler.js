@@ -13,17 +13,14 @@ function EventHandler(context, node, props, selector) {
 EventHandler.prototype = {
     handleEvent(e) {
         this.event = e;
-
-        if (EventHandler.supress !== this.type) {
-            // update value of currentTarget if selector exists
-            this.currentTarget = this.matcher ? this.matcher(e.target) : this.node;
-            // early stop when target doesn't match selector
-            if (this.currentTarget) {
-                const args = this.props.map(this.getEventProperty, this);
-                // prevent default if handler returns false
-                if (this.callback.apply(this.context, args) === false) {
-                    e.preventDefault();
-                }
+        // update value of currentTarget if selector exists
+        this.currentTarget = this.matcher ? this.matcher(e.target) : this.node;
+        // early stop when target doesn't match selector
+        if (this.currentTarget) {
+            const args = this.props.map(this.getEventProperty, this);
+            // prevent default if handler returns false
+            if (this.callback.apply(this.context, args) === false) {
+                e.preventDefault();
             }
         }
     },
@@ -35,10 +32,10 @@ EventHandler.prototype = {
             return this.type;
         case "target":
             return $Element(e.target);
-        case "currentTarget":
-            return $Element(this.currentTarget);
         case "relatedTarget":
             return $Element(e.relatedTarget);
+        case "currentTarget":
+            return $Element(this.currentTarget);
         }
 
         const value = e[name];

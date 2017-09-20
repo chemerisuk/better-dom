@@ -37,12 +37,18 @@ $Node.prototype.fire = function(type, detail) {
 
     // call native function to trigger default behavior
     if (canContinue && node[type]) {
-        // prevent re-triggering of the current event
-        EventHandler.supress = type;
+        const _handleEvent = EventHandler.prototype.handleEvent;
+        // intercept handleEvent to prevent double event callbacks
+        EventHandler.prototype.handleEvent = function(e) {
+            // prevent re-triggering of the current event
+            if (this.type !== type) {
+                return _handleEvent.call(this, e);
+            }
+        };
 
         node[type]();
-
-        EventHandler.supress = null;
+        // restore original method
+        EventHandler.prototype.handleEvent = _handleEvent;
     }
 
     return canContinue;
