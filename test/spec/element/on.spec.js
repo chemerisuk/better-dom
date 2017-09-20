@@ -13,10 +13,6 @@ describe("on", function() {
         spy = jasmine.createSpy("callback");
     });
 
-    it("should return function", function() {
-        expect(typeof input.on("click", spy)).toBe("function");
-    });
-
     it("should accept single callback with the element as 'this' by default", function() {
         input.on("focus", spy);
         input.fire("focus");
@@ -28,7 +24,7 @@ describe("on", function() {
         expect(spy).toHaveBeenCalled();
     });
 
-    it("should accept optional event filter", function() {
+    it("accepts selector option", function() {
         DOM.once("focus", "input", spy);
 
         link.fire("focus");
@@ -243,7 +239,7 @@ describe("on", function() {
         expect(spy2).toHaveBeenCalled();
     });
 
-    it("should handle global DOM as target", function() {
+    it("DOM could be a target", function() {
         var spy = jasmine.createSpy("callback");
 
         DOM.once("custom:event1", ["target", "defaultPrevented"], spy);
@@ -316,24 +312,16 @@ describe("on", function() {
         expect(spy).not.toHaveBeenCalled();
     });
 
-    describe("once", function() {
-        it("should trigger callback only one time", function() {
-            spy.and.callFake(function() {
-                expect(this).toBe(input);
-            });
-
-            input.once("focus", spy).fire("focus");
-            expect(spy).toHaveBeenCalled();
-
-            input.fire("focus");
-            expect(spy.calls.count()).toBe(1);
+    it("supports once option", function() {
+        spy.and.callFake(function() {
+            expect(this).toBe(input);
         });
 
-        // it("should work for with late binding", function() {
-        //     spy.and.callFake(function() { expect(this).toBe(input) });
-        //     input.callback = spy;
-        //     input.once("focus", "callback").fire("focus");
-        //     expect(spy).toHaveBeenCalled();
-        // });
+        input.on("focus", {once: true}, spy);
+        input.fire("focus");
+        expect(spy).toHaveBeenCalled();
+
+        input.fire("focus");
+        expect(spy.calls.count()).toBe(1);
     });
 });

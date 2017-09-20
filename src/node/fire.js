@@ -20,7 +20,7 @@ $Node.prototype.fire = function(type, detail) {
 
     if (typeof type === "string") {
         let hook = HOOK[type],
-            handler = {};
+            handler = {options: {}};
 
         if (hook) handler = hook(handler) || handler;
 

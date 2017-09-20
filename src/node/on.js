@@ -1,49 +1,51 @@
 import { $Node } from "./index";
 import { MethodError } from "../errors";
 import EventHandler from "../util/eventhandler";
+import { isArray } from "../util/index";
 
 function makeMethod(methodName) {
-    return function(type, selector, args, callback) {
-        const single = methodName === "once";
+    return function(type, options, args, callback) {
+        if (typeof type === "string") {
+            if (typeof options === "string") {
+                options = {selector: options};
 
-        if (typeof type !== "string") {
-            throw new MethodError(methodName, arguments);
-        }
+                if (isArray(args)) {
+                    options.args = args;
+                } else {
+                    callback = args;
+                }
+            } else if (typeof options === "function") {
+                callback = options;
+                options = {};
+            } else if (typeof options === "object") {
+                callback = args;
 
-        if (typeof args === "function") {
-            callback = args;
+                if (isArray(options)) {
+                    options = {args: options};
+                }
+            }
 
-            if (typeof selector === "string") {
-                args = null;
-            } else {
-                args = selector;
-                selector = null;
+            if (options && typeof options === "object" && typeof callback === "function") {
+                const node = this["<%= prop() %>"];
+                const single = methodName === "once";
+
+                if (single) {
+                    options.once = true;
+                }
+
+                if (!node) {
+                    return single ? this : () => {};
+                } else {
+                    const handler = new EventHandler(this, node, options);
+
+                    handler.subscribe(type, callback);
+
+                    return single ? this : () => handler.unsubscribe();
+                }
             }
         }
 
-        if (typeof selector === "function") {
-            callback = selector;
-            selector = null;
-            args = null;
-        }
-
-        if (typeof callback !== "function") {
-            throw new MethodError(methodName, arguments);
-        }
-
-        const node = this["<%= prop() %>"];
-
-        if (node) {
-            const handler = new EventHandler(this, node, args, selector);
-            handler.subscribe(type, !single ? callback : function() {
-                handler.unsubscribe(); // stop callback on the first invokation
-
-                return callback.apply(this, arguments);
-            });
-            return single ? this : () => handler.unsubscribe();
-        }
-
-        return single ? this : () => {};
+        throw new MethodError(methodName, arguments);
     };
 }
 

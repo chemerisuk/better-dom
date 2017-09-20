@@ -1,13 +1,27 @@
+import { WINDOW } from "../const";
 import { $Element } from "../element/index";
 import SelectorMatcher from "./selectormatcher";
 import HOOK from "./eventhooks";
 
+// https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
+var supportsPassive = false;
+try {
+    const opts = Object.defineProperty({}, "passive", {
+        get() {
+            supportsPassive = true;
+        }
+    });
+    WINDOW.addEventListener("test", null, opts);
+} catch (e) {}
 
-function EventHandler(context, node, props, selector) {
+function EventHandler(context, node, options) {
     this.context = context;
     this.node = node;
-    this.props = props || [];
-    this.matcher = SelectorMatcher(selector, node);
+    this.options = options;
+
+    if (options.selector) {
+        this.matcher = SelectorMatcher(options.selector, node);
+    }
 }
 
 EventHandler.prototype = {
@@ -17,7 +31,14 @@ EventHandler.prototype = {
         this.currentTarget = this.matcher ? this.matcher(e.target) : this.node;
         // early stop when target doesn't match selector
         if (this.currentTarget) {
-            const args = this.props.map(this.getEventProperty, this);
+            if (this.options.once === true) {
+                this.unsubscribe();
+            }
+
+            var args = [];
+            if (this.options.args) {
+                args = this.options.args.map(this.getEventProperty, this);
+            }
             // prevent default if handler returns false
             if (this.callback.apply(this.context, args) === false) {
                 e.preventDefault();
@@ -54,10 +75,17 @@ EventHandler.prototype = {
 
         if (hook) hook(this);
 
-        this.node.addEventListener(this._type || this.type, this, !!this.capturing);
+        this.node.addEventListener(this._type || this.type, this, this.getLastArgument());
     },
     unsubscribe() {
-        this.node.removeEventListener(this._type || this.type, this, !!this.capturing);
+        this.node.removeEventListener(this._type || this.type, this, this.getLastArgument());
+    },
+    getLastArgument() {
+        var lastArg = !!this.options.capture;
+        if (this.options.passive && supportsPassive) {
+            lastArg = {passive: true, capture: lastArg};
+        }
+        return lastArg;
     }
 };
 

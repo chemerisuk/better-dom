@@ -2,7 +2,8 @@
 
 // globals
 export const WINDOW = window;
-export const HTML = document.documentElement;
+export const DOCUMENT = document;
+export const HTML = DOCUMENT.documentElement;
 
 // constants
 export const UNKNOWN_NODE = 0;
