@@ -1,23 +1,14 @@
+import { WINDOW } from "../const";
+import { MethodError } from "../errors";
 import { $Element } from "../element/index";
 import { computeStyle } from "../util/index";
-import { MethodError } from "../errors";
-import { WINDOW, WEBKIT_PREFIX } from "../const";
 import AnimationHandler from "../util/animationhandler";
 
-var TRANSITION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitTransitionEnd" : "transitionend",
-    ANIMATION_EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationEnd" : "animationend";
+const raf = WINDOW.requestAnimationFrame;
 
 function makeMethod(methodName, condition) {
     return function(animationName, callback) {
-        if (typeof animationName === "boolean") {
-            if (animationName === true) {
-                return this.css("display", condition ? "none" : "");
-            } else if (condition == null) {
-                return this.css("display", "none");
-            } else {
-                return this;
-            }
-        } else if (typeof animationName !== "string") {
+        if (typeof animationName !== "string") {
             callback = animationName;
             animationName = null;
         }
@@ -26,48 +17,38 @@ function makeMethod(methodName, condition) {
             throw new MethodError(methodName, arguments);
         }
 
-        var node = this["<%= prop() %>"],
-            style = node.style,
-            computed = computeStyle(node),
-            hiding = condition,
-            animationHandler, eventType,
-            done = () => {
-                if (animationHandler) {
-                    node.removeEventListener(eventType, animationHandler, true);
-                    // clear inline style adjustments were made previously
-                    style.cssText = animationHandler.initialCssText;
-                }
-                // always update element visibility property: use value "inherit"
-                // to respect parent container visibility. Should be a separate
-                // from setting cssText because of Opera 12 quirks
-                style.visibility = hiding ? "hidden" : "inherit";
+        const node = this["<%= prop() %>"];
+        const computed = computeStyle(node);
 
-                if (callback) {
-                    if (animationHandler) {
-                        callback(this);
-                    } else {
-                        // done callback is always async
-                        WINDOW.setTimeout(() => { callback(this) }, 0);
-                    }
+        // Determine of we need animation by checking if an element
+        // has non-zero width. Triggers reflow but fixes animation
+        // for new elements inserted into the DOM in some browsers
+
+        if (node && computed.width) {
+            const complete = () => {
+                node.style.visibility = condition ? "hidden" : "inherit";
+
+                if (typeof callback === "function") {
+                    callback(this);
                 }
             };
 
-        if (typeof hiding !== "boolean") {
-            hiding = computed.visibility !== "hidden";
-        }
+            if (!node.ownerDocument.documentElement.contains(node)) {
+                raf(complete); // skip animating of detached elements
+            } else if (!animationName && parseFloat(computed["transition-duration"]) === 0) {
+                raf(complete); // skip animating with zero transition duration
+            } else if (animationName && parseFloat(computed["animation-duration"]) === 0) {
+                raf(complete); // skip animating with zero animation duration
+            } else {
+                // always make an element visible before animation start
+                node.style.visibility = "visible";
 
-        animationHandler = AnimationHandler(node, computed, animationName, hiding, done);
-        eventType = animationName ? ANIMATION_EVENT_TYPE : TRANSITION_EVENT_TYPE;
-
-        if (animationHandler) {
-            node.addEventListener(eventType, animationHandler, true);
-            // trigger animation(s)
-            style.cssText = animationHandler.initialCssText + animationHandler.cssText;
-        } else {
-            done();
+                new AnimationHandler(node, animationName)
+                    .start(complete, condition ? "normal" : "reverse");
+            }
         }
         // trigger CSS3 transition if it exists
-        return this.set("aria-hidden", String(hiding));
+        return this.set("aria-hidden", String(condition));
     };
 }
 
