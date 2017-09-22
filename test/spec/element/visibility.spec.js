@@ -4,6 +4,7 @@ jasmine.clock().install();
 DOM.importStyles("@keyframes fade", "from {opacity: 1} to {opacity: 0}");
 DOM.importStyles("@-webkit-keyframes fade", "from {opacity: 1} to {opacity: 0}");
 DOM.importStyles(".animate[aria-hidden=true]", "opacity:0;transform:scale(0,0);-webkit-transform:scale(0,0)");
+DOM.importStyles(".invisible", "visibility:hidden");
 
 jasmine.clock().uninstall();
 
@@ -33,9 +34,25 @@ describe("show", function() {
         });
     });
 
+    it("throws an error if arguments are invalid", function() {
+        expect(function() { link.show(-10) }).toThrow();
+        expect(function() { link.show(true) }).toThrow();
+    });
+
     it("invokes callback when animation ends", function(done) {
         link.show("fade", function(el) {
             expect(el).toBe(link);
+
+            done();
+        });
+    });
+
+    it("handles initially invisible element", function(done) {
+        link.addClass("invisible");
+
+        link.show(function() {
+            expect(link).not.toHaveStyle("visibility", "hidden");
+            expect(link).toHaveAttr("aria-hidden", "false");
 
             done();
         });
@@ -66,6 +83,11 @@ describe("hide", function() {
 
             done();
         });
+    });
+
+    it("throws an error if arguments are invalid", function() {
+        expect(function() { link.hide(-10) }).toThrow();
+        expect(function() { link.hide(true) }).toThrow();
     });
 
     it("invokes callback when animation ends", function(done) {

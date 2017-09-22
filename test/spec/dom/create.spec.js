@@ -11,7 +11,7 @@ describe("create", function() {
         expect(link.get("title")).toBe("c");
     });
 
-    it("makes new elements", () => {
+    it("makes new elements", function() {
         var el = DOM.create("<i>");
         expect(el).toHaveTag("i");
 
