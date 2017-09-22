@@ -1,34 +1,38 @@
 import { $Element } from "../element/index";
-import { map } from "../util/index";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 
-function makeMethod(methodName, propertyName) {
+function makeMethod(methodName, propertyName, all) {
     return function(selector) {
         if (selector && typeof selector !== "string") {
             throw new MethodError(methodName, arguments);
         }
 
-        var all = methodName.slice(-3) === "All",
-            matcher = SelectorMatcher(selector),
-            nodes = all ? [] : null,
-            it = this["<%= prop() %>"];
+        var node = this["<%= prop() %>"];
+        var result = all ? [] : null;
 
-        // method closest starts traversing from the element itself
-        // except no selector was specified where it returns parent
-        if (it && (!matcher || methodName !== "closest")) {
-            it = it[propertyName];
-        }
+        if (node) {
+            const matcher = SelectorMatcher(selector);
+            // method closest starts traversing from the element itself
+            // except no selector was specified where it returns parent
+            if (node && (!matcher || methodName !== "closest")) {
+                node = node[propertyName];
+            }
 
-        for (; it; it = it[propertyName]) {
-            if (it.nodeType === 1 && (!matcher || matcher(it))) {
-                if (!all) break;
-
-                nodes.push(it);
+            for (var it = node; it; it = it[propertyName]) {
+                if (!matcher || matcher(it)) {
+                    if (result) {
+                        result.push($Element(it));
+                    } else {
+                        result = $Element(it);
+                        // need only the first element
+                        break;
+                    }
+                }
             }
         }
 
-        return all ? map.call(nodes, $Element) : $Element(it);
+        return result || new $Element();
     };
 }
 
@@ -45,7 +49,7 @@ function makeMethod(methodName, propertyName) {
  * link.next();                       // <b>
  * link.next("i");                    // <i>
  */
-$Element.prototype.next = makeMethod("next", "nextSibling");
+$Element.prototype.next = makeMethod("next", "nextElementSibling");
 
 /**
  * Find previous sibling element filtered by optional selector
@@ -60,7 +64,7 @@ $Element.prototype.next = makeMethod("next", "nextSibling");
  * link.prev();                       // <i>
  * link.prev("b");                    // <b>
  */
-$Element.prototype.prev = makeMethod("prev", "previousSibling");
+$Element.prototype.prev = makeMethod("prev", "previousElementSibling");
 
 /**
  * Find all next sibling elements filtered by optional selector
@@ -75,7 +79,7 @@ $Element.prototype.prev = makeMethod("prev", "previousSibling");
  * link.nextAll();                      // [<i>, <b>, <i>]
  * link.nextAll("i");                   // [<i>, <i>]
  */
-$Element.prototype.nextAll = makeMethod("nextAll", "nextSibling");
+$Element.prototype.nextAll = makeMethod("nextAll", "nextElementSibling", true);
 
 /**
  * Find all previous sibling elements filtered by optional selector
@@ -90,7 +94,7 @@ $Element.prototype.nextAll = makeMethod("nextAll", "nextSibling");
  * link.prevAll();                      // [<i>, <b>, <i>]
  * link.prevAll("b");                   // [<b>]
  */
-$Element.prototype.prevAll = makeMethod("prevAll", "previousSibling");
+$Element.prototype.prevAll = makeMethod("prevAll", "previousElementSibling", true);
 
 /**
  * Find the closest ancestor of the current element (or the current element itself) which matches selector

@@ -1,4 +1,5 @@
-import { DOCUMENT, ELEMENT_NODE } from "../const";
+import { DOCUMENT } from "../const";
+import { MethodError } from "../errors";
 import { $Document } from "../document/index";
 import { $Element } from "../element/index";
 
@@ -9,37 +10,37 @@ function makeMethod(all) {
     return function(value) {
         const node = this["<%= prop() %>"];
 
-        if (!node) return all ? [] : new $Element();
+        if (!node || typeof value !== "string") {
+            throw new MethodError("create" + all, arguments);
+        }
 
-        const quickMatch = !all && reQuick.exec(value);
+        var result = all ? [] : null;
+
+        const quickMatch = !result && reQuick.exec(value);
         if (quickMatch) {
             return new $Element(node.createElement(quickMatch[1]));
         }
 
         sandbox.innerHTML = value.trim(); // parse HTML string
 
-        var result = all ? [] : null;
+        for (var it; it = sandbox.firstElementChild; ) {
+            sandbox.removeChild(it); // detach element from the sandbox
 
-        for (var el; el = sandbox.firstChild; ) {
-            sandbox.removeChild(el); // detach element from the sandbox
+            if (node !== DOCUMENT) {
+                // adopt node for external documents
+                it = node.adoptNode(it);
+            }
 
-            if (el.nodeType === ELEMENT_NODE) {
-                if (node !== DOCUMENT) {
-                    // adopt node for external documents
-                    el = node.adoptNode(el);
-                }
-
-                if (all) {
-                    result.push(new $Element(el));
-                } else {
-                    result = el;
-                    // stop early, because need only the first element
-                    break;
-                }
+            if (result) {
+                result.push(new $Element(it));
+            } else {
+                result = new $Element(it);
+                // need only the first element
+                break;
             }
         }
 
-        return all ? result : $Element(result);
+        return result || new $Element();
     };
 }
 
