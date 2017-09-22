@@ -3,32 +3,28 @@ import { filter, map } from "../util/index";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 
-function makeMethod(all) {
+function makeMethod(methodName, validSelectorType) {
     return function(selector) {
-        if (all) {
-            if (selector && typeof selector !== "string") {
-                throw new MethodError("children", arguments);
-            }
-        } else {
-            if (selector && typeof selector !== "number") {
-                throw new MethodError("child", arguments);
-            }
+        if (selector && typeof selector !== validSelectorType) {
+            throw new MethodError(methodName, arguments);
         }
 
         const node = this["<%= prop() %>"];
         const matcher = SelectorMatcher(selector);
         const children = node ? node.children : [];
 
-        if (all) {
+        if (typeof selector === "number") {
+            if (selector < 0) {
+                selector = children.length + selector;
+            }
+
+            return $Element(children[selector]);
+        } else {
             if (matcher) {
                 return filter.call(children, matcher).map($Element);
             } else {
                 return map.call(children, $Element);
             }
-        } else {
-            if (selector < 0) selector = children.length + selector;
-
-            return $Element(children[selector]);
         }
     };
 }
@@ -45,7 +41,7 @@ function makeMethod(all) {
  * ul.child(2);  // => 3th child <li>
  * ul.child(-1); // => last child <li>
  */
-$Element.prototype.child = makeMethod(false);
+$Element.prototype.child = makeMethod("child", "number");
 
 /**
  * Fetch children elements filtered by optional selector
@@ -58,4 +54,4 @@ $Element.prototype.child = makeMethod(false);
  * ul.children();       // => array with all child <li>
  * ul.children(".foo"); // => array with of child <li> with class "foo"
  */
-$Element.prototype.children = makeMethod(true);
+$Element.prototype.children = makeMethod("children", "string");
