@@ -1,38 +1,45 @@
+import { DOCUMENT, ELEMENT_NODE } from "../const";
 import { $Document } from "../document/index";
 import { $Element } from "../element/index";
+
+const reQuick = /^<([a-zA-Z-]+)\/?>$/;
+const sandbox = DOCUMENT.createElement("body");
 
 function makeMethod(all) {
     return function(value) {
         const node = this["<%= prop() %>"];
 
-        if (!node) return new $Element();
+        if (!node) return all ? [] : new $Element();
 
-        var sandbox = this["<%= prop('sandbox') %>"];
-
-        if (!sandbox) {
-            sandbox = node.createElement("div");
-            this["<%= prop('sandbox') %>"] = sandbox;
+        const quickMatch = !all && reQuick.exec(value);
+        if (quickMatch) {
+            return new $Element(node.createElement(quickMatch[1]));
         }
 
-        var nodes, el;
+        sandbox.innerHTML = value.trim(); // parse HTML string
 
-        sandbox.innerHTML = value.trim(); // parse input HTML string
+        var result = all ? [] : null;
 
-        for (nodes = all ? [] : null; el = sandbox.firstChild; ) {
+        for (var el; el = sandbox.firstChild; ) {
             sandbox.removeChild(el); // detach element from the sandbox
 
-            if (el.nodeType === 1) {
-                if (all) {
-                    nodes.push(new $Element(el));
-                } else {
-                    nodes = el;
+            if (el.nodeType === ELEMENT_NODE) {
+                if (node !== DOCUMENT) {
+                    // adopt node for external documents
+                    el = node.adoptNode(el);
+                }
 
-                    break; // stop early, because need only the first element
+                if (all) {
+                    result.push(new $Element(el));
+                } else {
+                    result = el;
+                    // stop early, because need only the first element
+                    break;
                 }
             }
         }
 
-        return all ? nodes : $Element(nodes);
+        return all ? result : $Element(result);
     };
 }
 

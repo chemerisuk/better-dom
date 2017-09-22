@@ -11,6 +11,15 @@ describe("create", function() {
         expect(link.get("title")).toBe("c");
     });
 
+    it("makes new elements", () => {
+        var el = DOM.create("<i>");
+        expect(el).toHaveTag("i");
+
+        var els = DOM.createAll("<a></a><b></b>");
+        expect(els[0]).toHaveTag("a");
+        expect(els[1]).toHaveTag("b");
+    });
+
     it("should parse HTML strings", function() {
         var el = DOM.create("<a><span></span></a>");
 

@@ -7,8 +7,8 @@ export const HTML = DOCUMENT.documentElement;
 
 // constants
 export const UNKNOWN_NODE = 0;
-export const ELEMENT_NODE = 1;
-export const DOCUMENT_NODE = 9;
+export const ELEMENT_NODE = DOCUMENT.ELEMENT_NODE;
+export const DOCUMENT_NODE = DOCUMENT.DOCUMENT_NODE;
 export const RETURN_THIS = function() { return this };
 export const RETURN_TRUE = () => true;
 export const RETURN_FALSE = () => false;
