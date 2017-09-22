@@ -27,6 +27,12 @@ describe("get", function() {
         expect(textarea.get("type")).toBe("textarea");
     });
 
+    it("supports innerHTML shortcut", function() {
+        expect(link.get()).toBe("get-test");
+        expect(input.get()).toBe("");
+        expect(form.get()).toBe("<input type=\"email\" id=\"get_input\" value=\"test\" readonly=\"true\" tabindex=\"10\"><textarea id=\"get_textarea\"></textarea>");
+    });
+
     it("should try to read property value first", function() {
         expect(link.get("href")).not.toBe("test.html");
         expect(input.get("tabIndex")).toBe(10);

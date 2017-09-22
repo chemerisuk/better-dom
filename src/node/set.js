@@ -23,10 +23,12 @@ $Node.prototype.set = function(name, value) {
 
     if (typeof name === "string") {
         if (typeof value === "function") {
-            value = value(this);
+            value = value(this.get(name));
         }
 
-        if (hook) {
+        if (arguments.length === 1) { // innerHTML shortcut
+            node.innerHTML = name;
+        } else if (hook) {
             hook(node, value);
         } else if (value == null && this instanceof $Element) {
             node.removeAttribute(name);

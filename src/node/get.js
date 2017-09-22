@@ -21,6 +21,10 @@ $Node.prototype.get = function(name, defaultValue) {
 
     if (!node) return value;
 
+    if (arguments.length === 0) {
+        return node.innerHTML;
+    }
+
     if (hook) {
         value = hook(node, name);
     } else if (typeof name === "string") {

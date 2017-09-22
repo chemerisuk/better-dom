@@ -35,13 +35,23 @@ describe("set", function() {
         // expect(link.set(undefined)).toHaveHtml("");
     });
 
-    it("should accept function", function() {
+    it("accepts function", function() {
         var spy = jasmine.createSpy("setter").and.returnValue("test_changed");
 
         link.set("id", spy);
 
-        expect(spy).toHaveBeenCalledWith(link);
+        expect(spy).toHaveBeenCalledWith("test");
         expect(link).toHaveAttr("id", "test_changed");
+    });
+
+    it("supports innerHTML shortcut", function() {
+        expect(link.get("innerHTML")).toBe("set-test");
+        expect(link.get("firstElementChild")).toBeUndefined();
+
+        link.set("test <b>content</b>");
+
+        expect(link.get("innerHTML")).toBe("test <b>content</b>");
+        expect(link.get("firstElementChild").nodeType).toBe(1);
     });
 
     it("should accept object with key-value pairs", function() {
