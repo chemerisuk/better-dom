@@ -66,12 +66,22 @@ gulp.task("test", ["compile", "lint-test"], function(done) {
                 dir: "coverage/"
             }
         };
+    }
+
+    config.configFile = karmaConfig;
+
+    new karma.Server(config, function(resultCode) {
+        done(resultCode ? new gutil.PluginError("karma", "Tests failed") : null);
+    }).start();
+});
+
+gulp.task("browsers", ["compile", "lint-test"], function(done) {
+    var config = {preprocessors: []};
+
+    if (argv.ie10 || argv.ie11) {
+        config.browsers = ["IE" + (argv.ie10 ? "10" : "11") + " - Win7"];
     } else {
-        if (argv.all || process.env.npm_package_version) {
-            config.browsers = ["ChromeHeadless", "Chrome", "Opera", "Safari", "Firefox"];
-        } else if (argv.ie10 || argv.ie11) {
-            config.browsers = ["IE" + (argv.ie10 ? "10" : "11") + " - Win7"];
-        }
+        config.browsers = ["Chrome", "Safari", "Firefox"];
     }
 
     config.configFile = karmaConfig;
@@ -128,7 +138,7 @@ gulp.task("bower", function() {
         .pipe(gulp.dest("./"));
 });
 
-gulp.task("dist", ["test", "bower"], function(done) {
+gulp.task("dist", ["browsers", "bower"], function(done) {
     gulp.src("build/better-dom.js")
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(replace(/\/\*([\s\S]*?)\*\/\s+/gm, ""))

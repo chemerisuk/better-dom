@@ -13,6 +13,7 @@ export const RETURN_THIS = function() { return this };
 export const RETURN_TRUE = () => true;
 export const RETURN_FALSE = () => false;
 export const VENDOR_PREFIXES = ["Webkit", "O", "Moz", "ms"];
+export const FAKE_ANIMATION_NAME = "<%= prop('v') %>";
 
 // feature checks
 export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";

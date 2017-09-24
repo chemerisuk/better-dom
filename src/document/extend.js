@@ -1,17 +1,33 @@
 import { $Document } from "../document/index";
 import { $Element } from "../element/index";
-import { each, keys } from "../util/index";
-import { WEBKIT_PREFIX, WINDOW } from "../const";
+import { keys, each } from "../util/index";
+import { WEBKIT_PREFIX, WINDOW, FAKE_ANIMATION_NAME } from "../const";
 import { DocumentTypeError } from "../errors";
-import ExtensionHandler from "../util/extensionhandler";
+import SelectorMatcher from "../util/selectormatcher";
 
 // Inspired by trick discovered by Daniel Buchner:
 // https://github.com/csuwldcat/SelectorListener
 
-var cssText;
+const extensions = [];
+const EVENT_TYPE = WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart";
+const CSS_IMPORT_TEXT = [
+    WEBKIT_PREFIX + "animation-name:" + FAKE_ANIMATION_NAME + " !important",
+    WEBKIT_PREFIX + "animation-duration:1ms !important"
+].join(";");
 
-cssText = WEBKIT_PREFIX + "animation-name:<%= prop('DOM') %> !important;";
-cssText += WEBKIT_PREFIX + "animation-duration:1ms !important";
+function applyLiveExtension(definition, node) {
+    const el = $Element(node);
+    const ctr = definition.constructor;
+    // apply all element mixins
+    Object.keys(definition).forEach((mixinName) => {
+        const mixinProperty = definition[mixinName];
+        if (mixinProperty !== ctr) {
+            el[mixinName] = mixinProperty;
+        }
+    });
+
+    if (ctr) ctr.call(el);
+}
 
 /**
  * Declare a live extension
@@ -59,32 +75,65 @@ $Document.prototype.extend = function(selector, definition) {
         throw new DocumentTypeError("extend", arguments);
     }
 
-    var mappings = this["<%= prop('mappings') %>"];
+    extensions.push([SelectorMatcher(selector), definition]);
+    // use capturing to suppress internal animationstart events
+    node.addEventListener(EVENT_TYPE, (e) => {
+        if (e.animationName === FAKE_ANIMATION_NAME) {
+            e.stopPropagation(); // this is an internal event
+            // prevent any future events
+            e.target.style.setProperty(WEBKIT_PREFIX + "animation-name", "none", "important");
 
-    if (!mappings) {
-        this["<%= prop('mappings') %>"] = mappings = [];
-        // declare the fake animation on the first DOM.extend method call
-        this.importStyles("@" + WEBKIT_PREFIX + "keyframes <%= prop('DOM') %>", "from {opacity:.99} to {opacity:1}");
-        // use capturing to suppress internal animationstart events
-        node.addEventListener(WEBKIT_PREFIX ? "webkitAnimationStart" : "animationstart", (e) => {
-            if (e.animationName === "<%= prop('DOM') %>") {
-                mappings.forEach((ext) => { ext(e.target) });
-                // this is an internal event - stop it immediately
-                e.stopPropagation();
-            }
-        }, true);
+            applyLiveExtension(definition, e.target);
+        }
+    }, true);
+
+    // initialize extension manually to make sure that all elements
+    // have appropriate methods before they are used in other DOM.extend
+    // also fix cases when a matched element already has another LE
+    each.call(node.querySelectorAll(selector), (node) => {
+        // prevent any future events
+        node.style.setProperty(WEBKIT_PREFIX + "animation-name", "none", "important");
+        // use timeout to invoke constructor safe and async
+        WINDOW.setTimeout(() => {
+            applyLiveExtension(definition, node);
+        }, 0);
+    });
+
+    // subscribe selector to a fake animation
+    this.importStyles(selector, CSS_IMPORT_TEXT);
+};
+
+/**
+ * Return {@link $Element} initialized with all existing live extensions.
+ * Also exposes private functions that do not usually exist. Accepts the
+ * same arguments as {@link DOM.create}
+ * @memberof $Document#
+ * @alias $Document#mock
+ * @param  {String}       value     EmmetString or HTMLString
+ * @param  {Object|Array} [varMap]  key/value map of variables
+ * @return {$Element} a mocked instance
+ * @see $Document#create
+ */
+$Document.prototype.mock = function(content) {
+    if (!content) return new $Element();
+
+    var result = this.create(content),
+        applyExtensions = (node) => {
+            extensions.forEach((args) => {
+                const matcher = args[0];
+                const definition = args[1];
+
+                if (matcher(node)) {
+                    applyLiveExtension(definition, node);
+                }
+            });
+
+            each.call(node.children, applyExtensions);
+        };
+
+    if (extensions.length) {
+        applyExtensions(result["<%= prop() %>"]);
     }
 
-    var ext = ExtensionHandler(selector, definition, mappings.length);
-
-    mappings.push(ext);
-    // live extensions are always async - append CSS asynchronously
-    WINDOW.setTimeout(() => {
-        // initialize extension manually to make sure that all elements
-        // have appropriate methods before they are used in other DOM.extend.
-        // Also fixes legacy IEs when the HTC behavior is already attached
-        each.call(node.querySelectorAll(selector), ext);
-        // MUST be after querySelectorAll because of legacy IEs quirks
-        this.importStyles(selector, cssText);
-    }, 0);
+    return result;
 };

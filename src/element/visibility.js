@@ -1,10 +1,7 @@
-import { WINDOW } from "../const";
 import { MethodError } from "../errors";
 import { $Element } from "../element/index";
-import { computeStyle } from "../util/index";
+import { computeStyle, raf } from "../util/index";
 import AnimationHandler from "../util/animationhandler";
-
-const raf = WINDOW.requestAnimationFrame;
 
 function makeMethod(methodName, condition) {
     return function(animationName, callback) {

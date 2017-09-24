@@ -9,7 +9,8 @@ import { $Element } from "./element/index";
  * @namespace DOM
  * @extends {$Document}
  */
-export var DOM = new $Document(WINDOW.document);
+const DOM = new $Document(WINDOW.document);
+const _DOM = WINDOW.DOM;
 
 /**
  * Create an instance of {@link $Element} or {@link $Document} for a native element
@@ -33,8 +34,6 @@ DOM.$ = (node) => {
         return new $Node();
     }
 };
-
-var _DOM = WINDOW.DOM;
 
 /**
  * Restore previous DOM namespace

@@ -78,6 +78,7 @@
     </style>
 </head>
 <body>
+    <h1>test foo</h1>
     <h2>With removing from the DOM</h2>
     <div class="bar">
         <div class="bar-item" style="background: yellow"></div>
@@ -135,6 +136,17 @@
             animatableBar.hide("fade");
         }
     }, 1000);
+
+    DOM.extend("h1", {
+        constructor() {
+            console.log(this, this.test());
+
+            debugger;
+        },
+        test() {
+            return 12345;
+        }
+    })
     </script>
 </body>
 </html>
