@@ -1,7 +1,7 @@
+import { MethodError } from "../errors";
 import { $Node } from "./index";
 import { $Element } from "../element/index";
 import { isArray, keys } from "../util/index";
-import { MethodError } from "../errors";
 import PROP from "../util/accessorhooks";
 
 /**
@@ -17,32 +17,41 @@ import PROP from "../util/accessorhooks";
  */
 $Node.prototype.set = function(name, value) {
     const node = this["<%= prop() %>"];
+    const len = arguments.length;
     const hook = PROP.set[name];
 
-    if (!node) return this;
+    if (node) {
+        if (typeof name === "string") {
+            if (len === 1) { // innerHTML shortcut
+                value = name;
+                name = "innerHTML";
+            }
 
-    if (typeof name === "string") {
-        if (typeof value === "function") {
-            value = value(this.get(name));
-        }
+            if (typeof value === "function") {
+                value = value(this.get(name));
+            }
 
-        if (arguments.length === 1) { // innerHTML shortcut
-            node.innerHTML = name;
-        } else if (hook) {
-            hook(node, value);
-        } else if (value == null && this instanceof $Element) {
-            node.removeAttribute(name);
-        } else if (name in node) {
-            node[name] = value;
-        } else if (this instanceof $Element) {
-            node.setAttribute(name, value);
+            if (hook) {
+                hook(node, value);
+            } else if (value == null && this instanceof $Element) {
+                node.removeAttribute(name);
+            } else if (name in node) {
+                node[name] = value;
+            } else if (this instanceof $Element) {
+                node.setAttribute(name, value);
+            }
+        } else if (isArray(name)) {
+            if (len === 1) {
+                node.textContent = ""; // clear node children
+                this.append.apply(this, name);
+            } else {
+                name.forEach((key) => { this.set(key, value) });
+            }
+        } else if (typeof name === "object") {
+            keys(name).forEach((key) => { this.set(key, name[key]) });
+        } else {
+            throw new MethodError("set", arguments);
         }
-    } else if (isArray(name)) {
-        name.forEach((key) => { this.set(key, value) });
-    } else if (typeof name === "object") {
-        keys(name).forEach((key) => { this.set(key, name[key]) });
-    } else {
-        throw new MethodError("set", arguments);
     }
 
     return this;

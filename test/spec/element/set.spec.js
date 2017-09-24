@@ -49,9 +49,11 @@ describe("set", function() {
         expect(link.get("firstElementChild")).toBeUndefined();
 
         link.set("test <b>content</b>");
-
         expect(link.get("innerHTML")).toBe("test <b>content</b>");
         expect(link.get("firstElementChild").nodeType).toBe(1);
+
+        link.set(["a", "b"]);
+        expect(link.get("innerHTML")).toBe("ab");
     });
 
     it("should accept object with key-value pairs", function() {
