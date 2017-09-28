@@ -75,15 +75,19 @@ $Document.prototype.extend = function(selector, definition) {
         throw new DocumentTypeError("extend", arguments);
     }
 
-    extensions.push([SelectorMatcher(selector), definition]);
+    const matcher = SelectorMatcher(selector);
+
+    extensions.push([matcher, definition]);
     // use capturing to suppress internal animationstart events
     node.addEventListener(EVENT_TYPE, (e) => {
-        if (e.animationName === FAKE_ANIMATION_NAME) {
+        const node = e.target;
+
+        if (e.animationName === FAKE_ANIMATION_NAME && matcher(node)) {
             e.stopPropagation(); // this is an internal event
             // prevent any future events
-            e.target.style.setProperty(WEBKIT_PREFIX + "animation-name", "none", "important");
+            node.style.setProperty(WEBKIT_PREFIX + "animation-name", "none", "important");
 
-            applyLiveExtension(definition, e.target);
+            applyLiveExtension(definition, node);
         }
     }, true);
 

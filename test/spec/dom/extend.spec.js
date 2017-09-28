@@ -93,47 +93,47 @@ describe("extend", function() {
         DOM.extend("#t6-2", {constructor: spy2.and.callFake(complete)});
     });
 
-    // it("does not initialize twise after hide/show", function(done) {
-    //     jasmine.sandbox.set("<a class='t7'></a>");
+    it("does not initialize twise after hide/show", function(done) {
+        jasmine.sandbox.set("<a class='t7'></a>");
 
-    //     var link = DOM.find(".t7");
-    //     var spy = callback;
+        var link = DOM.find(".t7");
+        var spy = callback;
 
-    //     callback.and.callFake(function() {
-    //         link.hide();
+        callback.and.callFake(function() {
+            link.hide();
 
-    //         setTimeout(function() {
-    //             expect(spy.calls.count()).toBe(1);
+            setTimeout(function() {
+                expect(spy.calls.count()).toBe(1);
 
-    //             done();
-    //         }, 50);
-    //     });
+                done();
+            }, 50);
+        });
 
-    //     DOM.extend(".t7", {constructor: callback});
-    // });
+        DOM.extend(".t7", {constructor: callback});
+    });
 
-    // it("does not initialize twise after removing element from DOM", function(done) {
-    //     jasmine.sandbox.set("<a class='t8'></a>");
+    it("does not initialize twise after removing element from DOM", function(done) {
+        jasmine.sandbox.set("<a class='t8'></a>");
 
-    //     var link = DOM.find(".t8");
-    //     var spy = callback;
+        var link = DOM.find(".t8");
+        var spy = callback;
 
-    //     callback.and.callFake(function() {
-    //         link.remove();
+        callback.and.callFake(function() {
+            link.remove();
 
-    //         DOM.find("body").append(link);
+            DOM.find("body").append(link);
 
-    //         setTimeout(function() {
-    //             expect(spy.calls.count()).toBe(1);
+            setTimeout(function() {
+                expect(spy.calls.count()).toBe(1);
 
-    //             link.remove();
+                link.remove();
 
-    //             done();
-    //         }, 50);
-    //     });
+                done();
+            }, 50);
+        });
 
-    //     DOM.extend(".t8", {constructor: callback});
-    // });
+        DOM.extend(".t8", {constructor: callback});
+    });
 
     it("handles nested elements", function(done) {
         var spy = jasmine.createSpy("ctr");
