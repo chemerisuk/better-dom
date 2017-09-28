@@ -16,9 +16,8 @@ const ElementProto = new $Node();
 
 $Element.prototype = ElementProto;
 
-ElementProto.valueOf = () => function() {
+ElementProto.valueOf = function() {
     const node = this["<%= prop() %>"];
-
     return node ? ELEMENT_NODE : UNKNOWN_NODE;
 };
 

@@ -28,9 +28,8 @@ const DocumentProto = new $Node();
 
 $Document.prototype = DocumentProto;
 
-DocumentProto.valueOf = () => function() {
+DocumentProto.valueOf = function() {
     const node = this["<%= prop() %>"];
-
     return node ? DOCUMENT_NODE : UNKNOWN_NODE;
 };
 
