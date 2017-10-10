@@ -56,3 +56,18 @@ $Element.prototype.value = function(content) {
         return this;
     }
 };
+
+
+/**
+ * Clears all children
+ * @memberof! $Element#
+ * @alias $Element#empty
+ * @return {$Element}
+ * @function
+ * @example
+ * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>
+ * div.empty();                     // <div></div>
+ */
+$Element.prototype.empty = function() {
+    return this.value("");
+};

@@ -94,6 +94,14 @@ describe("$Element#value", function() {
         // });
     });
 
+    describe("empty", function() {
+        it("clears all children", function() {
+            expect(div).not.toBeEmpty();
+            div.empty();
+            expect(div).toBeEmpty();
+        });
+    });
+
     it("works for empty node", function() {
         var foo = DOM.find("x-foo");
 
