@@ -15,8 +15,10 @@ function makeMethod(methodName, condition) {
         }
 
         const node = this["<%= prop() %>"];
-        const computed = computeStyle(node);
 
+        if (!node) return this;
+
+        const computed = computeStyle(node);
         // Determine of we need animation by checking if an element
         // has non-zero width. Triggers reflow but fixes animation
         // for new elements inserted into the DOM in some browsers

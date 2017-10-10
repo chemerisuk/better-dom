@@ -57,6 +57,10 @@ describe("show", function() {
             done();
         });
     });
+
+    it("does nothing for empty node", function() {
+        DOM.find("x-show").show();
+    });
 });
 
 describe("hide", function() {
@@ -96,5 +100,9 @@ describe("hide", function() {
 
             done();
         });
+    });
+
+    it("does nothing for empty node", function() {
+        DOM.find("x-hide").hide();
     });
 });
