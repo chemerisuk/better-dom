@@ -26,7 +26,9 @@ $Element.prototype.value = function(content) {
             return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
 
         case "OPTION":
-            return node[node.hasAttribute("value") ? "value" : "text"];
+            if (!node.hasAttribute("value")) {
+                return node.text;
+            }
 
         case "INPUT":
         case "TEXTAREA":
@@ -40,16 +42,25 @@ $Element.prototype.value = function(content) {
             case "INPUT":
             case "OPTION":
             case "TEXTAREA":
+                if (typeof content === "function") {
+                    content = content(node.value);
+                }
                 node.value = content;
                 break;
 
             case "SELECT":
+                if (typeof content === "function") {
+                    content = content(node.value);
+                }
                 if (every.call(node.options, (o) => !(o.selected = o.value === content))) {
                     node.selectedIndex = -1;
                 }
                 break;
 
             default:
+                if (typeof content === "function") {
+                    content = content(node.textContent);
+                }
                 node.textContent = content;
         }
 

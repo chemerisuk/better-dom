@@ -71,6 +71,10 @@ describe("$Element#value", function() {
             expect(div.value(true)).toHaveHtml("true");
         });
 
+        it("accepts functor", function() {
+            expect(div.value(function() { return "5" })).toHaveHtml("5");
+        });
+
         // it("uses 'textContent' or 'value' if name argument is undefined", function() {
         //     var value = "set-test-changed";
 
