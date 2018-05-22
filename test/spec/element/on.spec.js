@@ -25,7 +25,7 @@ describe("on", function() {
     });
 
     it("accepts selector option", function() {
-        DOM.once("focus", "input", spy);
+        DOM.on("focus", {selector: "input", once: true}, spy);
 
         link.fire("focus");
         expect(spy).not.toHaveBeenCalled();
@@ -41,7 +41,7 @@ describe("on", function() {
             return false;
         });
 
-        DOM.once("click", "a", ["currentTarget"], spy);
+        DOM.on("click", {selector: "a", once: true}, ["currentTarget"], spy);
         link.find("i").fire("click");
         expect(spy).toHaveBeenCalled();
     });
@@ -156,11 +156,11 @@ describe("on", function() {
     // });
 
     it("should fix some non-bubbling events", function() {
-        DOM.once("focus", spy);
+        DOM.on("focus", {once: true}, spy);
         input.fire("focus");
         expect(spy).toHaveBeenCalled();
 
-        DOM.once("invalid", spy);
+        DOM.on("invalid", {once: true}, spy);
         input.fire("invalid");
         expect(spy.calls.count()).toBe(2);
     });
@@ -242,7 +242,7 @@ describe("on", function() {
     it("DOM could be a target", function() {
         var spy = jasmine.createSpy("callback");
 
-        DOM.once("custom:event1", ["target", "defaultPrevented"], spy);
+        DOM.on("custom:event1", {once: true}, ["target", "defaultPrevented"], spy);
         DOM.fire("custom:event1");
 
         var args = spy.calls.allArgs()[0];
@@ -251,7 +251,7 @@ describe("on", function() {
         expect(args[1]).toBe(false);
 
         spy.calls.reset();
-        DOM.once("custom:event2", "ul > li", spy);
+        DOM.on("custom:event2", {selector: "ul > li", once: true}, spy);
         DOM.fire("custom:event2");
         expect(spy).not.toHaveBeenCalled();
     });

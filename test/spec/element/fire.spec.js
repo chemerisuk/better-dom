@@ -61,11 +61,11 @@ describe("fire", function() {
                 }
             });
 
-            input.once("my:click", ["detail"], callback);
+            input.on("my:click", {once: true}, ["detail"], callback);
             input.fire("my:click", data1);
             expect(callback.calls.count()).toBe(1);
 
-            input.once("click", ["detail", "currentTarget"], callback);
+            input.on("click", {once: true}, ["detail", "currentTarget"], callback);
             input.fire("click", data1);
             expect(callback.calls.count()).toBe(2);
         });
