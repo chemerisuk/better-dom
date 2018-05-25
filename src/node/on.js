@@ -30,21 +30,21 @@ $Node.prototype.on = function(type, options, args, callback) {
     if (typeof type === "string") {
         if (typeof options === "string") {
             options = {selector: options};
-
-            if (isArray(args)) {
-                options.args = args;
-            } else {
-                callback = args;
-            }
         } else if (typeof options === "function") {
             callback = options;
             options = {};
+            args = [];
         } else if (typeof options === "object") {
-            callback = args;
-
             if (isArray(options)) {
-                options = {args: options};
+                callback = args;
+                args = options;
+                options = {};
             }
+        }
+
+        if (typeof args === "function") {
+            callback = args;
+            args = [];
         }
 
         if (options && typeof options === "object" && typeof callback === "function") {
@@ -52,7 +52,7 @@ $Node.prototype.on = function(type, options, args, callback) {
 
             if (!node) return () => {};
 
-            const handler = new EventHandler(this, node, options);
+            const handler = new EventHandler(this, node, options, args);
             handler.subscribe(type, callback);
             return () => handler.unsubscribe();
         }

@@ -21,20 +21,13 @@ $Element.prototype.value = function(content) {
     const tagName = node.tagName;
 
     if (content === void 0) {
-        switch (tagName) {
-        case "SELECT":
-            return ~node.selectedIndex ? node.options[ node.selectedIndex ].value : "";
-
-        case "OPTION":
-            if (!node.hasAttribute("value")) {
-                return node.text;
-            }
-
-        case "INPUT":
-        case "TEXTAREA":
+        if (tagName === "SELECT") {
+            return ~node.selectedIndex ? node.options[node.selectedIndex].value : "";
+        } else if (tagName === "OPTION") {
+            return node.hasAttribute("value") ? node.value : node.text;
+        } else if (tagName === "INPUT" || tagName === "TEXTAREA") {
             return node.value;
-
-        default:
+        } else {
             return node.textContent;
         }
     } else {

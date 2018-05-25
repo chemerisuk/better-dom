@@ -14,10 +14,11 @@ try {
     WINDOW.addEventListener("test", null, opts);
 } catch (e) {}
 
-function EventHandler(context, node, options) {
+function EventHandler(context, node, options, args) {
     this.context = context;
     this.node = node;
     this.options = options;
+    this.args = args;
 
     if (options.selector) {
         this.matcher = SelectorMatcher(options.selector, node);
@@ -35,10 +36,7 @@ EventHandler.prototype = {
                 this.unsubscribe();
             }
 
-            var args = [];
-            if (this.options.args) {
-                args = this.options.args.map(this.getEventProperty, this);
-            }
+            const args = this.args.map(this.getEventProperty, this);
             // prevent default if handler returns false
             if (this.callback.apply(this.context, args) === false) {
                 e.preventDefault();
@@ -47,20 +45,15 @@ EventHandler.prototype = {
     },
     getEventProperty(name) {
         const e = this.event;
-
-        switch (name) {
-        case "type":
+        if (name === "type") {
             return this.type;
-        case "target":
-            return $Element(e.target);
-        case "relatedTarget":
-            return $Element(e.relatedTarget);
-        case "currentTarget":
+        } else if (name === "target" || name === "relatedTarget") {
+            return $Element(e[name]);
+        } else if (name === "currentTarget") {
             return $Element(this.currentTarget);
         }
 
         const value = e[name];
-
         if (typeof value === "function") {
             return () => value.apply(e, arguments);
         } else {

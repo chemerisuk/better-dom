@@ -13,7 +13,6 @@ var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
 var deploy = require("gulp-gh-pages");
 var replace = require("gulp-replace");
-var git = require("gulp-git");
 var concat = require("gulp-concat");
 var plumber = require("gulp-plumber");
 var header = require("gulp-header");
@@ -146,8 +145,5 @@ gulp.task("dist", ["browsers", "bower"], function(done) {
         .pipe(gulp.dest("dist/"))
         .pipe(uglify({preserveComments: "license"}))
         .pipe(rename({extname: ".min.js"}))
-        .pipe(gulp.dest("dist/"))
-        .on("end", function() {
-            git.exec({args: "add -A dist bower.json", quiet: true}, done);
-        });
+        .pipe(gulp.dest("dist/"));
 });

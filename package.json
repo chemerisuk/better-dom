@@ -33,7 +33,6 @@
     "gulp-clean": "^0.3.1",
     "gulp-concat": "^2.4.1",
     "gulp-gh-pages": "^0.3.4",
-    "gulp-git": "^0.5.1",
     "gulp-header": "^1.2.2",
     "gulp-if": "^1.2.5",
     "gulp-jsdoc": "^0.1.4",
@@ -63,8 +62,9 @@
   "scripts": {
     "test": "gulp test",
     "start": "gulp dev",
-    "version": "gulp dist",
+    "version": "gulp dist && git add -A dist bower.json",
     "postversion": "git push && git push --tags",
-    "postpublish": "gulp gh-pages"
+    "postpublish": "gulp gh-pages",
+    "install": "cd node_modules/es6-module-transpiler && npm install"
   }
 }
