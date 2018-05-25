@@ -1,7 +1,7 @@
 const fs = require("fs");
 const TEST_WIN_VERSION = "Windows 10";
 const TEST_WIN_LEGACY_VERSION = "Windows 7";
-const TEST_OSX_VERSION = "OS X 10.12";
+const TEST_OSX_VERSION = "MacOS 10.13";
 
 // Browsers to run on Sauce Labs
 var customLaunchers = {
@@ -15,12 +15,12 @@ var customLaunchers = {
         browserName: "firefox",
         platform: TEST_WIN_VERSION
     },
-    el_opera_12: {
-        base: "SauceLabs",
-        browserName: "opera",
-        platform: TEST_WIN_LEGACY_VERSION,
-        version: "12"
-    },
+    // el_opera_12: {
+    //     base: "SauceLabs",
+    //     browserName: "opera",
+    //     platform: TEST_WIN_LEGACY_VERSION,
+    //     version: "12"
+    // },
     sl_safari: {
         base: "SauceLabs",
         browserName: "safari",
@@ -57,8 +57,10 @@ var customLaunchers = {
     // },
     sl_ios_safari: {
         base: "SauceLabs",
-        browserName: "iphone",
-        platform: TEST_OSX_VERSION
+        browserName: "Safari",
+        deviceName: "iPhone Simulator",
+        deviceOrientation: "portrait",
+        platform: "iOS 11.2"
     },
     sl_android: {
         base: "SauceLabs",
