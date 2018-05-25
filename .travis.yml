@@ -1,8 +1,8 @@
 language: node_js
 node_js:
-  - 4.5
+  - 8
 dist: trusty
-sudo: false
+sudo: required
 addons:
   chrome: stable
   sauce_connect: true
