@@ -51,8 +51,8 @@ module.exports = function(dest, pkg) {
             code = gutil.template(code, {
                 pkg: pkg,
                 file: dest,
-                prop: function(name) {
-                    return "__" + (name ? name + version : version) + "__";
+                prop: function() {
+                    return "__" + version + "__";
                 }
             });
 

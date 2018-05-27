@@ -44,7 +44,7 @@ function makeMethod(methodName, all) {
                 if ( (old = node.getAttribute("id")) ) {
                     nid = old.replace(rescape, "\\$&");
                 } else {
-                    nid = "<%= prop('DOM') %>";
+                    nid = "_<%= prop() %>";
                     node.setAttribute("id", nid);
                 }
 

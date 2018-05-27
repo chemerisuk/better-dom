@@ -2,6 +2,8 @@ import { $Document } from "../document/index";
 import { injectElement } from "../util/index";
 import { DocumentTypeError } from "../errors";
 
+const PROP_NAME = "<%= prop() %>styles";
+
 /**
  * Append global css styles
  * @memberof $Document#
@@ -18,14 +20,13 @@ $Document.prototype.importStyles = function(selector, cssText) {
 
     if (!node) return;
 
-    var styleSheet = this["<%= prop('styles') %>"];
+    var styleSheet = node[PROP_NAME];
 
     if (!styleSheet) {
-        let styleNode = injectElement(node.createElement("style"));
-
+        const styleNode = injectElement(node.createElement("style"));
         styleSheet = styleNode.sheet || styleNode.styleSheet;
         // store object internally
-        this["<%= prop('styles') %>"] = styleSheet;
+        node[PROP_NAME] = styleSheet;
     }
 
     if (!cssText && typeof selector === "string") {
@@ -37,12 +38,12 @@ $Document.prototype.importStyles = function(selector, cssText) {
         throw new DocumentTypeError("importStyles", arguments);
     }
 
-    // insert rules one by one because of several reasons:
-    // 1. IE8 does not support comma in a selector string
-    // 2. if one selector fails it doesn't break others
+    var lastIndex = styleSheet.cssRules.length;
+    // insert rules one by one: if one selector fails
+    // it should not break other rules
     selector.split(",").forEach((selector) => {
         try {
-            styleSheet.insertRule(selector + "{" + cssText + "}", styleSheet.cssRules.length);
+            lastIndex = styleSheet.insertRule(selector + "{" + cssText + "}", lastIndex);
         } catch(err) {
             // silently ignore invalid rules
         }
