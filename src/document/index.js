@@ -1,8 +1,9 @@
 import { $Node } from "../node/index";
-import { WINDOW, UNKNOWN_NODE, DOCUMENT_NODE, WEBKIT_PREFIX, FAKE_ANIMATION_NAME } from "../const";
+import { injectElement } from "../util/index";
+import { UNKNOWN_NODE, DOCUMENT_NODE, WEBKIT_PREFIX, FAKE_ANIMATION_NAME, SHEET_PROP_NAME } from "../const";
 
-const LIVE_EXTENSION_KEYFRAMES = "@" + WEBKIT_PREFIX + "keyframes " + FAKE_ANIMATION_NAME;
-const LIVE_EXTENSION_KEYFRAMES_BODY = "from {opacity:.99} to {opacity:1}";
+// fake animation for live extensions
+const STYLE_NODE_HTML = "@" + WEBKIT_PREFIX + "keyframes " + FAKE_ANIMATION_NAME + " {from {opacity:.99} to {opacity:1}}";
 
 /**
  * Used to represent a document in better-dom
@@ -11,11 +12,14 @@ const LIVE_EXTENSION_KEYFRAMES_BODY = "from {opacity:.99} to {opacity:1}";
  */
 export function $Document(node) {
     if (this instanceof $Document) {
+        // initialize state and all internal properties
         $Node.call(this, node);
-        // declare fake animation for live extensions
-        WINDOW.setTimeout(() => {
-            this.importStyles(LIVE_EXTENSION_KEYFRAMES, LIVE_EXTENSION_KEYFRAMES_BODY);
-        }, 0);
+        // add style element to append required css
+        const styleNode = node.createElement("style");
+        styleNode.innerHTML = STYLE_NODE_HTML;
+        injectElement(styleNode);
+        // store sheet object internally to use in importStyles later
+        node[SHEET_PROP_NAME] = styleNode.sheet || styleNode.styleSheet;
     } else if (node) {
         // create a new wrapper or return existing object
         return node["<%= prop() %>"] || new $Document(node);

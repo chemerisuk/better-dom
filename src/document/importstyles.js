@@ -1,8 +1,6 @@
-import { $Document } from "../document/index";
-import { injectElement } from "../util/index";
+import { SHEET_PROP_NAME } from "../const";
 import { DocumentTypeError } from "../errors";
-
-const PROP_NAME = "<%= prop() %>styles";
+import { $Document } from "../document/index";
 
 /**
  * Append global css styles
@@ -20,15 +18,6 @@ $Document.prototype.importStyles = function(selector, cssText) {
 
     if (!node) return;
 
-    var styleSheet = node[PROP_NAME];
-
-    if (!styleSheet) {
-        const styleNode = injectElement(node.createElement("style"));
-        styleSheet = styleNode.sheet || styleNode.styleSheet;
-        // store object internally
-        node[PROP_NAME] = styleSheet;
-    }
-
     if (!cssText && typeof selector === "string") {
         cssText = selector;
         selector = "@media screen";
@@ -38,9 +27,10 @@ $Document.prototype.importStyles = function(selector, cssText) {
         throw new DocumentTypeError("importStyles", arguments);
     }
 
+    const styleSheet = node[SHEET_PROP_NAME];
     var lastIndex = styleSheet.cssRules.length;
-    // insert rules one by one: if one selector fails
-    // it should not break other rules
+    // insert rules one by one:
+    // failed selector does not break others
     selector.split(",").forEach((selector) => {
         try {
             lastIndex = styleSheet.insertRule(selector + "{" + cssText + "}", lastIndex);

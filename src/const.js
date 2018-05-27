@@ -14,6 +14,7 @@ export const RETURN_TRUE = () => true;
 export const RETURN_FALSE = () => false;
 export const VENDOR_PREFIXES = ["Webkit", "O", "Moz", "ms"];
 export const FAKE_ANIMATION_NAME = "v<%= prop() %>";
+export const SHEET_PROP_NAME = "<%= prop() %>sheet";
 
 // feature checks
 export const WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";

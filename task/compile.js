@@ -16,7 +16,7 @@ module.exports = function(dest, pkg) {
     var container = null;
     // make a version number string, e.g. "1.20.3" -> "1020300"
     var version = pkg.version.replace(/\.(\d+)/g, function(_, n) {
-        return ("000" + n).slice(-3);
+        return ("00" + n).slice(-2);
     });
 
     function bufferContents(file) {
