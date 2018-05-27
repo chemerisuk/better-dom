@@ -99,9 +99,8 @@
         lastBars = bar.next(".bar").findAll(".bar-item"),
         animatableBar = DOM.find(".animatable-bar-item"),
         andRemove = function(el) {
-            el.remove().show().then((n) => {
-                n.cssText = ""
-            });
+            el.remove().show();
+            el[0].cssText = "";
         },
         it = 1;
 

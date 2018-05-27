@@ -17,7 +17,7 @@ import { DocumentTypeError } from "../errors";
  */
 $Document.prototype.importScripts = function(...urls) {
     var callback = () => {
-        const node = this["<%= prop() %>"];
+        const node = this[0];
 
         if (!node) return;
 

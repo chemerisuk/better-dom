@@ -14,7 +14,7 @@ import { every } from "../util/index";
  * div.value();                     // => "<i></i>"
  */
 $Element.prototype.value = function(content) {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
 
     if (!node) return content ? this : void 0;
 

@@ -15,7 +15,7 @@ import PROP from "../util/accessorhooks";
  * link.get("data-custom"); // => custom attribute data-custom
  */
 $Node.prototype.get = function(name, defaultValue) {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
     const hook = PROP.get[name];
     var value;
 

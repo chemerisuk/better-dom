@@ -11,7 +11,7 @@ function makeMethod(methodName, defaultStrategy, nativeMethodName, strategy) {
     if (HTML.classList) {
         // use native classList property if possible
         strategy = function(el, token) {
-            return el["<%= prop() %>"].classList[nativeMethodName](token);
+            return el[0].classList[nativeMethodName](token);
         };
     }
 
@@ -53,7 +53,7 @@ function makeMethod(methodName, defaultStrategy, nativeMethodName, strategy) {
  * link.hasClass("foo");
  */
 $Element.prototype.hasClass = makeMethod("hasClass", RETURN_FALSE, "contains", (el, token) => {
-    return (" " + el["<%= prop() %>"].className + " ")
+    return (" " + el[0].className + " ")
         .replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
 });
 
@@ -68,7 +68,7 @@ $Element.prototype.hasClass = makeMethod("hasClass", RETURN_FALSE, "contains", (
  * link.addClass("foo", "bar");
  */
 $Element.prototype.addClass = makeMethod("addClass", RETURN_THIS, "add", (el, token) => {
-    if (!el.hasClass(token)) el["<%= prop() %>"].className += " " + token;
+    if (!el.hasClass(token)) el[0].className += " " + token;
 });
 
 /**
@@ -82,7 +82,7 @@ $Element.prototype.addClass = makeMethod("addClass", RETURN_THIS, "add", (el, to
  * link.removeClass("foo", "bar");
  */
 $Element.prototype.removeClass = makeMethod("removeClass", RETURN_THIS, "remove", (el, token) => {
-    el["<%= prop() %>"].className = (" " + el["<%= prop() %>"].className + " ")
+    el[0].className = (" " + el[0].className + " ")
         .replace(reSpace, " ").replace(" " + token + " ", " ").trim();
 });
 
@@ -104,7 +104,7 @@ $Element.prototype.toggleClass = makeMethod("toggleClass", RETURN_FALSE, "toggle
     if (hasClass) {
         el.removeClass(token);
     } else {
-        el["<%= prop() %>"].className += " " + token;
+        el[0].className += " " + token;
     }
 
     return !hasClass;

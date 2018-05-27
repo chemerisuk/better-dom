@@ -15,7 +15,7 @@ import HOOK from "../util/eventhooks";
  * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments
  */
 $Node.prototype.fire = function(type, detail) {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
     var e, eventType, canContinue;
 
     if (typeof type === "string") {

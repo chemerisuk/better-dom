@@ -9,7 +9,7 @@ function makeMethod(methodName, validSelectorType) {
             throw new MethodError(methodName, arguments);
         }
 
-        const node = this["<%= prop() %>"];
+        const node = this[0];
         const matcher = SelectorMatcher(selector);
         const children = node ? node.children : [];
 

@@ -18,7 +18,7 @@ import HOOK from "../util/stylehooks";
  */
 $Element.prototype.css = function(name, value) {
     const len = arguments.length;
-    const node = this["<%= prop() %>"];
+    const node = this[0];
 
     if (!node) {
         if (len === 1 && isArray(name)) {

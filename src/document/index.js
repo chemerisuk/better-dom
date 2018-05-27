@@ -17,7 +17,7 @@ export function $Document(node) {
             this.importStyles(LIVE_EXTENSION_KEYFRAMES, LIVE_EXTENSION_KEYFRAMES_BODY);
         }, 0);
     } else if (node) {
-        // create a wrapper only once for each native element
+        // create a new wrapper or return existing object
         return node["<%= prop() %>"] || new $Document(node);
     } else {
         return new $Document();
@@ -29,7 +29,7 @@ const DocumentProto = new $Node();
 $Document.prototype = DocumentProto;
 
 DocumentProto.valueOf = function() {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
     return node ? DOCUMENT_NODE : UNKNOWN_NODE;
 };
 

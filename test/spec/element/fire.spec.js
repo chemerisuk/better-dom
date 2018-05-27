@@ -34,10 +34,7 @@ describe("fire", function() {
         input.fire("focus");
 
         expect(input.matches(":focus")).toBe(true);
-
-        input.then(function(n) {
-            expect(n).toBe(document.activeElement);
-        });
+        expect(input[0]).toBe(document.activeElement);
     });
 
     describe("custom events", function() {

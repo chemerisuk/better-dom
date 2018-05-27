@@ -20,5 +20,5 @@ $Node.prototype.matches = function(selector) {
 
     const checker = HOOK[selector] || SelectorMatcher(selector);
 
-    return !!checker(this["<%= prop() %>"]);
+    return !!checker(this[0]);
 };

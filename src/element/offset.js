@@ -10,7 +10,7 @@ import { WINDOW } from "../const";
  * el.offset(); // => {left: 1, top: 2, right: 3, bottom: 4, width: 2, height: 2}
  */
 $Element.prototype.offset = function() {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
     const result = {top: 0, left: 0, right: 0, bottom: 0, width: 0, height: 0};
 
     if (node) {

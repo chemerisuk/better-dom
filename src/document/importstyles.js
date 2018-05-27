@@ -14,7 +14,7 @@ import { DocumentTypeError } from "../errors";
  * DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");
  */
 $Document.prototype.importStyles = function(selector, cssText) {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
 
     if (!node) return;
 

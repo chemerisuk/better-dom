@@ -6,29 +6,21 @@ describe("DOM.constructor", function() {
             el = DOM.$(node);
 
         expect(el).toHaveTag("a");
-
-        el.then(function(n) {
-            expect(n).toBe(node);
-        });
+        expect(el[0]).toBe(node);
     });
 
     it("supports document objects", function() {
         var el = DOM.$(document);
 
         expect(el).toBe(DOM);
-
-        el.then(function(n) {
-            expect(n).toBe(document);
-        });
+        expect(el[0]).toBe(document);
     });
 
     it("should not accept non-elements", function() {
         var node = document.createTextNode("text"),
             el = DOM.$(node);
 
-        el.then(function(n) {
-            expect(n).not.toBe(node);
-        });
+        expect(el[0]).not.toBe(node);
     });
 
     it("sets property length", function() {

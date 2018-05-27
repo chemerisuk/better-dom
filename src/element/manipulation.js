@@ -4,7 +4,7 @@ import { isArray } from "../util/index";
 
 function makeMethod(fastStrategy, requiresParent, strategy) {
     return function(...contents) {
-        const node = this["<%= prop() %>"];
+        const node = this[0];
 
         if (!node || requiresParent && !node.parentNode) return this;
 
@@ -37,7 +37,7 @@ function makeMethod(fastStrategy, requiresParent, strategy) {
                 }
 
                 content.forEach((el) => {
-                    fragment.appendChild(el["<%= prop() %>"]);
+                    fragment.appendChild(el[0]);
                 });
             }
         });

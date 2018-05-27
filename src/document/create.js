@@ -8,7 +8,7 @@ const sandbox = DOCUMENT.createElement("body");
 
 function makeMethod(all) {
     return function(value) {
-        const node = this["<%= prop() %>"];
+        const node = this[0];
 
         if (!node || typeof value !== "string") {
             throw new MethodError("create" + all, arguments);

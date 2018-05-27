@@ -18,7 +18,7 @@ $Node.prototype.clone = function(deep) {
         throw new MethodError("clone", arguments);
     }
 
-    const node = this["<%= prop() %>"];
+    const node = this[0];
 
     if (node) {
         const clonedNode = node.cloneNode(deep);

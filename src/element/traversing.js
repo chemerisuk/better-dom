@@ -8,7 +8,7 @@ function makeMethod(methodName, propertyName, all) {
             throw new MethodError(methodName, arguments);
         }
 
-        var node = this["<%= prop() %>"];
+        var node = this[0];
         var result = all ? [] : null;
 
         if (node) {

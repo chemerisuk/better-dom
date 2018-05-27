@@ -16,7 +16,7 @@ function makeMethod(methodName, all) {
             throw new MethodError(methodName, arguments);
         }
 
-        const node = this["<%= prop() %>"];
+        const node = this[0];
 
         if (!node) return all ? [] : new $Node();
 

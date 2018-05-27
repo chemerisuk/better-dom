@@ -7,9 +7,7 @@
                 el.innerHTML = content;
             } else if (typeof content === "object") {
                 el.innerHTML = "";
-                content.then(function(n) {
-                    el.appendChild(n);
-                });
+                el.appendChild(content[0]);
             }
         },
         get: function() {
@@ -40,9 +38,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        result.pass = n.nodeName.toLowerCase() === tagName;
-                    });
+                    result.pass = actual[0].nodeName.toLowerCase() === tagName;
                 }
 
                 return result;
@@ -55,9 +51,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        result.pass = ~(" " + n.className + " ").indexOf(" " + className + " ");
-                    });
+                    result.pass = ~(" " + actual[0].className + " ").indexOf(" " + className + " ");
                 }
 
                 return result;
@@ -70,9 +64,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        result.pass = n.id === value;
-                    });
+                    result.pass = actual[0].id === value;
                 }
 
                 return result;
@@ -86,13 +78,11 @@
                 var len = arguments.length;
 
                 if (actual) {
-                    actual.then(function(n) {
-                        if (len === 2) {
-                            result.pass = n.hasAttribute(name);
-                        } else if (len === 3) {
-                            result.pass = n.getAttribute(name) === value;
-                        }
-                    });
+                    if (len === 2) {
+                        result.pass = actual[0].hasAttribute(name);
+                    } else if (len === 3) {
+                        result.pass = actual[0].getAttribute(name) === value;
+                    }
                 }
 
                 return result;
@@ -105,9 +95,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        result.pass = n[name] === value;
-                    });
+                    result.pass = actual[0][name] === value;
                 }
 
                 return result;
@@ -120,13 +108,11 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        if ("value" in n) {
-                            result.pass = n.value === "";
-                        } else {
-                            result.pass = n.innerHTML === "";
-                        }
-                    });
+                    if ("value" in actual[0]) {
+                        result.pass = actual[0].value === "";
+                    } else {
+                        result.pass = actual[0].innerHTML === "";
+                    }
                 }
 
                 return result;
@@ -154,9 +140,7 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        result.pass = n.innerHTML === value;
-                    });
+                    result.pass = actual[0].innerHTML === value;
                 }
 
                 return result;
@@ -169,13 +153,11 @@
                 var result = {};
 
                 if (actual) {
-                    actual.then(function(n) {
-                        var style = n && n.style;
+                    var style = actual[0] && actual[0].style;
 
-                        if (style) {
-                            result.pass = style[name] === value;
-                        }
-                    });
+                    if (style) {
+                        result.pass = style[name] === value;
+                    }
                 }
 
                 return result;

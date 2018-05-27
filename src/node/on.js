@@ -48,7 +48,7 @@ $Node.prototype.on = function(type, options, args, callback) {
         }
 
         if (options && typeof options === "object" && typeof callback === "function") {
-            const node = this["<%= prop() %>"];
+            const node = this[0];
 
             if (!node) return () => {};
 

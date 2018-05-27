@@ -47,7 +47,7 @@ function applyLiveExtension(definition, node) {
  * });
  */
 $Document.prototype.extend = function(selector, definition) {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
 
     if (!node) return this;
 
@@ -136,7 +136,7 @@ $Document.prototype.mock = function(content) {
         };
 
     if (extensions.length) {
-        applyExtensions(result["<%= prop() %>"]);
+        applyExtensions(result[0]);
     }
 
     return result;

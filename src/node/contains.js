@@ -13,12 +13,12 @@ import { MethodError } from "../errors";
  * DOM.find("body").contains(DOM); // => false
  */
 $Node.prototype.contains = function(element) {
-    const node = this["<%= prop() %>"];
+    const node = this[0];
 
     if (!node) return false;
 
     if (element instanceof $Element) {
-        const otherNode = element["<%= prop() %>"];
+        const otherNode = element[0];
 
         if (otherNode === node) return true;
         /* istanbul ignore else */

@@ -64,7 +64,6 @@
     "start": "gulp dev",
     "version": "gulp dist && git add -A dist bower.json",
     "postversion": "git push && git push --tags",
-    "postpublish": "gulp gh-pages",
-    "install": "cd node_modules/es6-module-transpiler && npm install"
+    "postpublish": "gulp gh-pages"
   }
 }
