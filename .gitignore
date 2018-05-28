@@ -6,3 +6,4 @@ coverage
 build
 docs/html
 conf/sauce.json
+.publish

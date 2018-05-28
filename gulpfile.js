@@ -128,7 +128,7 @@ gulp.task("gh-pages", ["build-jsdoc"], function() {
     return gulp.src("./docs/html/**/*")
         // remove absolute paths from jsdocs
         // .pipe(replace(lib, "better-dom.js"))
-        .pipe(deploy());
+        .pipe(deploy({message: "v" + pkg.version}));
 });
 
 gulp.task("bower", function() {
