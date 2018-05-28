@@ -1,46 +1,8 @@
 import { $Element } from "../element/index";
-import { HTML, RETURN_FALSE, RETURN_THIS } from "../const";
 import { MethodError } from "../errors";
 
-/* es6-transpiler has-iterators:false, has-generators: false */
-
-const reSpace = /[\n\t\r]/g;
-
-function makeMethod(methodName, defaultStrategy, nativeMethodName, strategy) {
-    /* istanbul ignore else  */
-    if (HTML.classList) {
-        // use native classList property if possible
-        strategy = function(el, token) {
-            return el[0].classList[nativeMethodName](token);
-        };
-    }
-
-    if (defaultStrategy === RETURN_FALSE) {
-        return function(token, force) {
-            if (typeof force === "boolean" && nativeMethodName === "toggle") {
-                this[force ? "addClass" : "removeClass"](token);
-
-                return force;
-            }
-
-            if (typeof token !== "string") throw new MethodError(methodName, arguments);
-
-            return strategy(this, token);
-        };
-    } else {
-        return function() {
-            for (var i = 0, n = arguments.length; i < n; ++i) {
-                let token = arguments[i];
-
-                if (typeof token !== "string") throw new MethodError(methodName, arguments);
-
-                strategy(this, token);
-            }
-
-            return this;
-        };
-    }
-}
+const REGEXP_SPACE = /[\n\t\r]/g;
+const normalizedClass = node => (" " + node.className + " ").replace(REGEXP_SPACE, " ");
 
 /**
  * Check if element contains class name
@@ -52,10 +14,20 @@ function makeMethod(methodName, defaultStrategy, nativeMethodName, strategy) {
  * @example
  * link.hasClass("foo");
  */
-$Element.prototype.hasClass = makeMethod("hasClass", RETURN_FALSE, "contains", (el, token) => {
-    return (" " + el[0].className + " ")
-        .replace(reSpace, " ").indexOf(" " + token + " ") >= 0;
-});
+$Element.prototype.hasClass = function(className) {
+    if (typeof className !== "string") {
+        throw new MethodError("hasClass", arguments);
+    }
+
+    const node = this[0];
+    if (!node) return false;
+
+    if (node.classList) {
+        return node.classList.contains(className);
+    } else {
+        return normalizedClass(node).indexOf(" " + className + " ") >= 0;
+    }
+};
 
 /**
  * Add class(es) to element
@@ -67,9 +39,23 @@ $Element.prototype.hasClass = makeMethod("hasClass", RETURN_FALSE, "contains", (
  * @example
  * link.addClass("foo", "bar");
  */
-$Element.prototype.addClass = makeMethod("addClass", RETURN_THIS, "add", (el, token) => {
-    if (!el.hasClass(token)) el[0].className += " " + token;
-});
+$Element.prototype.addClass = function(...classNames) {
+    const node = this[0];
+    if (node) {
+        classNames.forEach((className) => {
+            if (typeof className !== "string") {
+                throw new MethodError("addClass", arguments);
+            }
+            if (node.classList) {
+                node.classList.add(className);
+            } else if (!this.hasClass(className)) {
+                this[0].className += " " + className;
+            }
+        });
+    }
+
+    return this;
+};
 
 /**
  * Remove class(es) from element
@@ -81,10 +67,23 @@ $Element.prototype.addClass = makeMethod("addClass", RETURN_THIS, "add", (el, to
  * @example
  * link.removeClass("foo", "bar");
  */
-$Element.prototype.removeClass = makeMethod("removeClass", RETURN_THIS, "remove", (el, token) => {
-    el[0].className = (" " + el[0].className + " ")
-        .replace(reSpace, " ").replace(" " + token + " ", " ").trim();
-});
+$Element.prototype.removeClass = function(...classNames) {
+    const node = this[0];
+    if (node) {
+        classNames.forEach((className) => {
+            if (typeof className !== "string") {
+                throw new MethodError("removeClass", arguments);
+            }
+            if (node.classList) {
+                node.classList.remove(className);
+            } else {
+                node.className = normalizedClass(node).replace(" " + className + " ", " ").trim();
+            }
+        });
+    }
+
+    return this;
+};
 
 /**
  * Toggle a class on element
@@ -98,14 +97,23 @@ $Element.prototype.removeClass = makeMethod("removeClass", RETURN_THIS, "remove"
  * link.toggleClass("foo");
  * link.toggleClass("bar", true);
  */
-$Element.prototype.toggleClass = makeMethod("toggleClass", RETURN_FALSE, "toggle", (el, token) => {
-    var hasClass = el.hasClass(token);
-
-    if (hasClass) {
-        el.removeClass(token);
-    } else {
-        el[0].className += " " + token;
+$Element.prototype.toggleClass = function(className, force) {
+    if (typeof className !== "string") {
+        throw new MethodError("toggleClass", arguments);
     }
 
-    return !hasClass;
-});
+    if (typeof force !== "boolean") {
+        force = !this.hasClass(className);
+    }
+
+    const node = this[0];
+    if (node) {
+        if (force) {
+            this.addClass(className);
+        } else {
+            this.removeClass(className);
+        }
+    }
+
+    return force;
+};

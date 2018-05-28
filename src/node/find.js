@@ -7,8 +7,8 @@ import { $Document } from "../document/index";
 // big part of code inspired by Sizzle:
 // https://github.com/jquery/sizzle/blob/master/sizzle.js
 
-const rquick = /^(?:(\w+)|\.([\w\-]+))$/;
-const rescape = /'|\\/g;
+const REGEXP_QUICK = /^(?:(\w+)|\.([\w\-]+))$/;
+const REGEXP_ESCAPE = /'|\\/g;
 
 function makeMethod(methodName, all) {
     return function(selector) {
@@ -20,7 +20,7 @@ function makeMethod(methodName, all) {
 
         if (!node) return all ? [] : new $Node();
 
-        const quickMatch = rquick.exec(selector);
+        const quickMatch = REGEXP_QUICK.exec(selector);
         var result, old, nid, context;
 
         if (quickMatch) {
@@ -42,7 +42,7 @@ function makeMethod(methodName, all) {
                 // We can work around this by specifying an extra ID on the root
                 // and working up from there (Thanks to Andrew Dupont for the technique)
                 if ( (old = node.getAttribute("id")) ) {
-                    nid = old.replace(rescape, "\\$&");
+                    nid = old.replace(REGEXP_ESCAPE, "\\$&");
                 } else {
                     nid = "_<%= prop() %>";
                     node.setAttribute("id", nid);
