@@ -1,3095 +1,1625 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Class: $Document</title>
-    
-    
-    
-    
-    
-    <meta property="og:title" content="Live extension playground"/>
-    <meta property="og:type" content="website"/>
-    <meta property="og:image" content="https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400"/>
-    <meta property="og:site_name" content="better-dom"/>
-    <meta property="og:url" content="https://github.com/chemerisuk/better-dom"/>
-    
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
-    <script src="scripts/jquery.min.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/jaguar.css">
-    
-    
-    <script>
-    var config = {"default":{"outputSourceFiles":true},"monospaceLinks":true,"cleverLinks":true,"linenums":true,"applicationName":"better-dom","disqus":"better-dom","googleAnalytics":"","openGraph":{"title":"Live extension playground","type":"website","image":"https://avatars2.githubusercontent.com/u/7883192?v=2&amp;s=400","site_name":"better-dom","url":"https://github.com/chemerisuk/better-dom"},"meta":{"title":"","description":"","keyword":""}};
-    </script>
-    
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Class: $Document</title>
 
-    
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.spacelab.css">
+
 </head>
+
 <body>
-<div id="wrap" class="clearfix">
-    
-<div class="navigation">
-    <h3 class="applicationName"><a href="index.html">better-dom</a></h3>
 
-    <div class="search">
-        <input id="search" type="text" class="form-control input-sm" placeholder="Search Documentations">
-    </div>
-    <ul class="list">
-    
-        <li class="item" data-name="$Document">
-            <span class="title">
-                <a href="$Document.html">$Document</a>
-                
-            </span>
-            <ul class="members itemMembers">
-            
-            </ul>
-            <ul class="typedefs itemMembers">
-            
-            </ul>
-            <ul class="methods itemMembers">
-            
-            <span class="subtitle">Methods</span>
-            
-                <li data-name="$Document#addClass"><a href="$Document.html#addClass">addClass</a></li>
-            
-                <li data-name="$Document#after"><a href="$Document.html#after">after</a></li>
-            
-                <li data-name="$Document#append"><a href="$Document.html#append">append</a></li>
-            
-                <li data-name="$Document#before"><a href="$Document.html#before">before</a></li>
-            
-                <li data-name="$Document#child"><a href="$Document.html#child">child</a></li>
-            
-                <li data-name="$Document#children"><a href="$Document.html#children">children</a></li>
-            
-                <li data-name="$Document#clone"><a href="$Document.html#clone">clone</a></li>
-            
-                <li data-name="$Document#closest"><a href="$Document.html#closest">closest</a></li>
-            
-                <li data-name="$Document#contains"><a href="$Document.html#contains">contains</a></li>
-            
-                <li data-name="$Document#create"><a href="$Document.html#create">create</a></li>
-            
-                <li data-name="$Document#createAll"><a href="$Document.html#createAll">createAll</a></li>
-            
-                <li data-name="$Document#css"><a href="$Document.html#css">css</a></li>
-            
-                <li data-name="$Document#data"><a href="$Document.html#data">data</a></li>
-            
-                <li data-name="$Document#define"><a href="$Document.html#define">define</a></li>
-            
-                <li data-name="$Document#extend"><a href="$Document.html#extend">extend</a></li>
-            
-                <li data-name="$Document#find"><a href="$Document.html#find">find</a></li>
-            
-                <li data-name="$Document#findAll"><a href="$Document.html#findAll">findAll</a></li>
-            
-                <li data-name="$Document#fire"><a href="$Document.html#fire">fire</a></li>
-            
-                <li data-name="$Document#get"><a href="$Document.html#get">get</a></li>
-            
-                <li data-name="$Document#hasClass"><a href="$Document.html#hasClass">hasClass</a></li>
-            
-                <li data-name="$Document#hide"><a href="$Document.html#hide">hide</a></li>
-            
-                <li data-name="$Document#importScripts"><a href="$Document.html#importScripts">importScripts</a></li>
-            
-                <li data-name="$Document#importStyles"><a href="$Document.html#importStyles">importStyles</a></li>
-            
-                <li data-name="$Document#matches"><a href="$Document.html#matches">matches</a></li>
-            
-                <li data-name="$Document#mock"><a href="$Document.html#mock">mock</a></li>
-            
-                <li data-name="$Document#next"><a href="$Document.html#next">next</a></li>
-            
-                <li data-name="$Document#nextAll"><a href="$Document.html#nextAll">nextAll</a></li>
-            
-                <li data-name="$Document#off"><a href="$Document.html#off">off</a></li>
-            
-                <li data-name="$Document#offset"><a href="$Document.html#offset">offset</a></li>
-            
-                <li data-name="$Document#on"><a href="$Document.html#on">on</a></li>
-            
-                <li data-name="$Document#once"><a href="$Document.html#once">once</a></li>
-            
-                <li data-name="$Document#prepend"><a href="$Document.html#prepend">prepend</a></li>
-            
-                <li data-name="$Document#prev"><a href="$Document.html#prev">prev</a></li>
-            
-                <li data-name="$Document#prevAll"><a href="$Document.html#prevAll">prevAll</a></li>
-            
-                <li data-name="$Document#remove"><a href="$Document.html#remove">remove</a></li>
-            
-                <li data-name="$Document#removeClass"><a href="$Document.html#removeClass">removeClass</a></li>
-            
-                <li data-name="$Document#replace"><a href="$Document.html#replace">replace</a></li>
-            
-                <li data-name="$Document#set"><a href="$Document.html#set">set</a></li>
-            
-                <li data-name="$Document#show"><a href="$Document.html#show">show</a></li>
-            
-                <li data-name="$Document#toggle"><a href="$Document.html#toggle">toggle</a></li>
-            
-                <li data-name="$Document#toggleClass"><a href="$Document.html#toggleClass">toggleClass</a></li>
-            
-                <li data-name="$Document#unwatch"><a href="$Document.html#unwatch">unwatch</a></li>
-            
-                <li data-name="$Document#value"><a href="$Document.html#value">value</a></li>
-            
-                <li data-name="$Document#watch"><a href="$Document.html#watch">watch</a></li>
-            
-            </ul>
-            <ul class="events itemMembers">
-            
-            </ul>
-        </li>
-    
-        <li class="item" data-name="$Element">
-            <span class="title">
-                <a href="$Element.html">$Element</a>
-                
-            </span>
-            <ul class="members itemMembers">
-            
-            </ul>
-            <ul class="typedefs itemMembers">
-            
-            </ul>
-            <ul class="methods itemMembers">
-            
-            <span class="subtitle">Methods</span>
-            
-                <li data-name="$Element#addClass"><a href="$Element.html#addClass">addClass</a></li>
-            
-                <li data-name="$Element#after"><a href="$Element.html#after">after</a></li>
-            
-                <li data-name="$Element#append"><a href="$Element.html#append">append</a></li>
-            
-                <li data-name="$Element#before"><a href="$Element.html#before">before</a></li>
-            
-                <li data-name="$Element#child"><a href="$Element.html#child">child</a></li>
-            
-                <li data-name="$Element#children"><a href="$Element.html#children">children</a></li>
-            
-                <li data-name="$Element#clone"><a href="$Element.html#clone">clone</a></li>
-            
-                <li data-name="$Element#closest"><a href="$Element.html#closest">closest</a></li>
-            
-                <li data-name="$Element#contains"><a href="$Element.html#contains">contains</a></li>
-            
-                <li data-name="$Element#css"><a href="$Element.html#css">css</a></li>
-            
-                <li data-name="$Element#data"><a href="$Element.html#data">data</a></li>
-            
-                <li data-name="$Element#define"><a href="$Element.html#define">define</a></li>
-            
-                <li data-name="$Element#find"><a href="$Element.html#find">find</a></li>
-            
-                <li data-name="$Element#findAll"><a href="$Element.html#findAll">findAll</a></li>
-            
-                <li data-name="$Element#fire"><a href="$Element.html#fire">fire</a></li>
-            
-                <li data-name="$Element#get"><a href="$Element.html#get">get</a></li>
-            
-                <li data-name="$Element#hasClass"><a href="$Element.html#hasClass">hasClass</a></li>
-            
-                <li data-name="$Element#hide"><a href="$Element.html#hide">hide</a></li>
-            
-                <li data-name="$Element#matches"><a href="$Element.html#matches">matches</a></li>
-            
-                <li data-name="$Element#next"><a href="$Element.html#next">next</a></li>
-            
-                <li data-name="$Element#nextAll"><a href="$Element.html#nextAll">nextAll</a></li>
-            
-                <li data-name="$Element#off"><a href="$Element.html#off">off</a></li>
-            
-                <li data-name="$Element#offset"><a href="$Element.html#offset">offset</a></li>
-            
-                <li data-name="$Element#on"><a href="$Element.html#on">on</a></li>
-            
-                <li data-name="$Element#once"><a href="$Element.html#once">once</a></li>
-            
-                <li data-name="$Element#prepend"><a href="$Element.html#prepend">prepend</a></li>
-            
-                <li data-name="$Element#prev"><a href="$Element.html#prev">prev</a></li>
-            
-                <li data-name="$Element#prevAll"><a href="$Element.html#prevAll">prevAll</a></li>
-            
-                <li data-name="$Element#remove"><a href="$Element.html#remove">remove</a></li>
-            
-                <li data-name="$Element#removeClass"><a href="$Element.html#removeClass">removeClass</a></li>
-            
-                <li data-name="$Element#replace"><a href="$Element.html#replace">replace</a></li>
-            
-                <li data-name="$Element#set"><a href="$Element.html#set">set</a></li>
-            
-                <li data-name="$Element#show"><a href="$Element.html#show">show</a></li>
-            
-                <li data-name="$Element#toggle"><a href="$Element.html#toggle">toggle</a></li>
-            
-                <li data-name="$Element#toggleClass"><a href="$Element.html#toggleClass">toggleClass</a></li>
-            
-                <li data-name="$Element#unwatch"><a href="$Element.html#unwatch">unwatch</a></li>
-            
-                <li data-name="$Element#value"><a href="$Element.html#value">value</a></li>
-            
-                <li data-name="$Element#watch"><a href="$Element.html#watch">watch</a></li>
-            
-            </ul>
-            <ul class="events itemMembers">
-            
-            </ul>
-        </li>
-    
-    </ul>
-</div>
-    <div class="main">
-        <h1 class="page-title" data-filename="$Document.html">Class: $Document</h1>
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="$Document.html">$Document</a></li><li><a href="$Element.html">$Element</a></li><li><a href="$Node.html">$Node</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="global.html#DOM">DOM</a></li>
+				</ul>
+			</li>
+			
+		</ul>
         
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
 
 
+<div class="container" id="toc-content">
+<div class="row">
 
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	<h1 class="page-title">Class: $Document</h1>
 <section>
-    
+
 <header>
-    <h2>
-    $Document
-    </h2>
     
-</header>  
+        <h2>
+        $Document
+        </h2>
+        
+    
+</header>
+
 
 <article>
     <div class="container-overview">
     
-    
-    
         
+<hr>
 <dt>
-    <div class="nameContainer">
-        <h4 class="name" id="$Document">
-            
-            new $Document<span class="signature">()</span>
-        </h4>
+    <h4 class="name" id="$Document"><span class="type-signature"></span>new $Document()</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line38">line 38</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Used to represent a document in better-dom
+        <p>Used to represent a document in better-dom</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
 </dd>
 
     
     </div>
-    
+
     
         <h3 class="subsection-title">Extends</h3>
+
         
-        <ul>
-            <li><a href="$Element.html">$Element</a></li>
-        </ul>
+
+
+    <ul>
+        <li><a href="$Node.html">$Node</a></li>
+    </ul>
+
+
     
+
     
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
+
     
         <h3 class="subsection-title">Methods</h3>
-        
+
         <dl>
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="addClass">
-            
-                <span class="inherited"><a href="$Element.html#addClass">inherited</a></span>
-            
-            addClass<span class="signature">(tokens)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
+    <h4 class="name" id="clone"><span class="type-signature"></span>clone(deep)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line663">line 663</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Add class(es) to element
+        <p>Clone element</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>tokens</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                class name(s)</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
+    <tr>
         
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
+        <th>Name</th>
         
 
-    
-    <pre class="prettyprint"><code>link.addClass("foo", "bar");</code></pre>
-    
-
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="after">
-            
-                <span class="inherited"><a href="$Element.html#after">inherited</a></span>
-            
-            after<span class="signature">(contents)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1533">line 1533</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Insert HTMLString or <a href="$Element.html"><code>$Element</code></a> after the current element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>contents</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                HTMLString, <a href="$Element.html"><code>$Element</code></a>, Array.<<a href="$Element.html"><code>$Element</code></a>> or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var link = DOM.create("a");                   // &lt;a>&lt;/a>
-link.after(DOM.create("b"));                  // &lt;a>&lt;/a>&lt;b>&lt;/b>
-link.after(DOM.create("i"), DOM.create("u")); // &lt;a>&lt;/a>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;u>&lt;/u></code></pre>
-    
-
-    
-</dd>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="append">
-            
-                <span class="inherited"><a href="$Element.html#append">inherited</a></span>
-            
-            append<span class="signature">(contents)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1581">line 1581</a>
-        </div>
-        
-    </div>
 
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Append HTMLString or <a href="$Element.html"><code>$Element</code></a> to the current element
-    </div>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>contents</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                HTMLString, <a href="$Element.html"><code>$Element</code></a>, Array.<<a href="$Element.html"><code>$Element</code></a>> or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var link = DOM.create("a>`foo`");              // &lt;a>foo&lt;/a>
-link.append(DOM.create("b"));                  // &lt;a>foo&lt;b>&lt;/b>&lt;/a>
-link.append(DOM.create("i"), DOM.create("u")); // &lt;a>foo&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;u>&lt;/u>&lt;/a></code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="before">
-            
-                <span class="inherited"><a href="$Element.html#before">inherited</a></span>
-            
-            before<span class="signature">(contents)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1549">line 1549</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Insert HTMLString or <a href="$Element.html"><code>$Element</code></a> before the current element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>contents</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                HTMLString, <a href="$Element.html"><code>$Element</code></a>, Array.<<a href="$Element.html"><code>$Element</code></a>> or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var link = DOM.create("a");                    // &lt;a>&lt;/a>
-link.before(DOM.create("b"));                  // &lt;b>&lt;/b>&lt;a>&lt;/a>
-link.before(DOM.create("i"), DOM.create("u")); // &lt;i>&lt;/i>&lt;u>&lt;/u>&lt;b>&lt;/b>&lt;a>&lt;/a></code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="child">
-            
-                <span class="inherited"><a href="$Element.html#child">inherited</a></span>
-            
-            child<span class="signature">(index)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line584">line 584</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Return child element by index filtered by optional selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>index</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                child index</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-matched child
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>ul.child(0);  // => the first &lt;li>
-ul.child(2);  // => 3th child &lt;li>
-ul.child(-1); // => last child &lt;li></code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="children">
-            
-                <span class="inherited"><a href="$Element.html#children">inherited</a></span>
-            
-            children<span class="signature">(<span class="optional">selector</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line597">line 597</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Fetch children elements filtered by optional selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-array of all matched elements
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>ul.children();       // => array with all child &lt;li>
-ul.children(".foo"); // => array with of child &lt;li> with class "foo"</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="clone">
-            
-                <span class="inherited"><a href="$Element.html#clone">inherited</a></span>
-            
-            clone<span class="signature">(deep)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line754">line 754</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Clone element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
         <tr>
             
                 <td class="name"><code>deep</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">Boolean</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                <code>true</code> if all children should also be cloned, or <code>false</code> otherwise</td>
+
+            <td class="description last"><p><code>true</code> if all children should also be cloned, or <code>false</code> otherwise</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#clone">$Node#clone</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-clone of current element
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>a clone of the current element</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="$Node.html">$Node</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">ul.clone(true);  // =&gt; clone of &lt;ul&gt; with all it&#x27;s children
+ul.clone(false); // =&gt; clone of &lt;ul&gt; element ONLY</pre>
 
-    
-    <pre class="prettyprint"><code>ul.clone();      // => clone of &lt;ul> with all it's children
-ul.clone(false); // => clone of &lt;ul> element ONLY</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="closest">
-            
-                <span class="inherited"><a href="$Element.html#closest">inherited</a></span>
-            
-            closest<span class="signature">(<span class="optional">selector</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
+    <h4 class="name" id="contains"><span class="type-signature"></span>contains(element)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2047">line 2047</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Find the closest ancestor of the current element (or the current element itself) which matches selector
+        <p>Check if element is inside of context</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
+    <tr>
         
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-element wrapper
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
+        <th>Name</th>
         
 
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div.foo>div.bar>a"); // &lt;div class="foo">&lt;div class="bar">&lt;a>&lt;/a>&lt;/div>&lt;/div>
-var link = div.find("a");                  // => &lt;a>
-link.closest();                            // => &lt;div class="bar">
-link.closest("a");                         // => itself
-link.closest(".bar");                      // => &lt;div class="bar">
-link.closest(".foo");                      // => &lt;div class="foo"></code></pre>
-    
-
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="contains">
-            
-                <span class="inherited"><a href="$Element.html#contains">inherited</a></span>
-            
-            contains<span class="signature">(element)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Boolean}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line787">line 787</a>
-        </div>
-        
-    </div>
 
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Check if element is inside of context
-    </div>
-    
-
-    
-    
-    
-    
-    
         
 
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>element</code></td>
             
-            
+
             <td class="type">
             
                 
+<span class="param-type"><a href="$Node.html">$Node</a></span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>element to check</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#contains">$Node#contains</a>
+			</li>
+		</ul>
+	</dd>
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>returns <code>true</code> if success and <code>false</code> otherwise</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+        <h5>Example</h5>
+        
+    <pre class="sunlight-highlight-javascript">DOM.contains(DOM.find(&quot;body&quot;)); // =&gt; true
+DOM.find(&quot;body&quot;).contains(DOM); // =&gt; false</pre>
+
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="create"><span class="type-signature"></span>create(content)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Create a new <a href="$Element.html">$Element</a> from a HTML string</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>content</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>HTMLString</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>an element wrapper</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
 <span class="param-type"><a href="$Element.html">$Element</a></span>
 
 
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                element to check</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    </dd>
 </dl>
 
-    
-    
 
-    
+        
 
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-<code>true</code> if success and <code>false</code> otherwise
-<br />
-
-    
-    
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">DOM.create(&quot;&lt;div&gt;&quot;);                // =&gt; wrapper of &lt;div&gt;
+DOM.create(&quot;&lt;a&gt;&lt;span&gt;&lt;/span&gt;&lt;/a&gt;&quot;); // =&gt; wrapper of &lt;a&gt; + innner &lt;span&gt;</pre>
 
-    
-    <pre class="prettyprint"><code>DOM.contains(DOM.find("body")); // => true
-DOM.find("body").contains(DOM); // => false</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer">
-        <h4 class="name" id="create">
-            
-            create<span class="signature">(value)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
+    <h4 class="name" id="createAll"><span class="type-signature"></span>createAll(content)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line161">line 161</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Create a new <a href="$Element.html"><code>$Element</code></a> from a HTML string
+        <p>Create a new Array.&lt;<a href="$Element.html">$Element</a>&gt; from a HTML string</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
-                <td class="name"><code>value</code></td>
+                <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                HTML string</td>
+
+            <td class="description last"><p>HTMLString</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-element wrapper
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>an array of element wrappers</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;<a href="$Element.html">$Element</a>></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">DOM.createAll(&quot;&lt;span&gt;&lt;/span&gt;&lt;b&gt;&lt;/b&gt;&quot;); // =&gt; array with 2 $Elements: &lt;span&gt; and &lt;b&gt;</pre>
 
-    
-    <pre class="prettyprint"><code>DOM.create("&lt;div>");                // => wrapper of &lt;div>
-DOM.create("&lt;a>&lt;span>&lt;/span>&lt;/a>"); // => wrapper of &lt;a> + innner &lt;span></code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer">
-        <h4 class="name" id="createAll">
-            
-            createAll<span class="signature">(value)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
-        </h4>
+    <h4 class="name" id="extend"><span class="type-signature"></span>extend(selector, definition)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line172">line 172</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Create a new array of <a href="$Element.html"><code>$Element</code></a>s from a HTML string
+        <p>Declare a live extension</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                HTML string</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
+    <tr>
         
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-array of element wrappers
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
+        <th>Name</th>
         
 
-    
-    <pre class="prettyprint"><code>DOM.createAll("&lt;span>&lt;/span>&lt;b>&lt;/b>"); // => array with 2 $Elements: &lt;span> and &lt;b></code></pre>
-    
-
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="css">
-            
-                <span class="inherited"><a href="$Element.html#css">inherited</a></span>
-            
-            css<span class="signature">(name, <span class="optional">value</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{String|<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line906">line 906</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        CSS properties accessor for an element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                style property name or key/value object</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                style property value or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-property value or reference to <code>this</code>
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.css("color");                 // => element color property
-link.css("box-sizing");            // => value of "box-sizing" (no vendor prefix needed)
-link.css("color", "red");          // update element color
-link.css("animation-delay", "1s"); // update animation-delay (no vendor prefix needed)</code></pre>
-    
-
-    
-</dd>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="data">
-            
-                <span class="inherited"><a href="$Element.html#data">inherited</a></span>
-            
-            data<span class="signature">(name, <span class="optional">value</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{String|<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1014">line 1014</a>
-        </div>
-        
-    </div>
 
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Private properties accessor
-    </div>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                style property name or key/value object</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                style property value or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-        <dt class="important tag-deprecated">Deprecated</dt><dd><ul class="dummy"><li>Use private properties on $Element object instead</li><ul></dd>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-property value or reference to <code>this</code>
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.data("prop");              // => private property prop
-link.data("prop", {a: "b"});    // update private property _prop</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="define">
-            
-                <span class="inherited"><a href="$Element.html#define">inherited</a></span>
-            
-            define<span class="signature">(name, getter, setter)</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1078">line 1078</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Define a new attribute for the current element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                attribute name</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>getter</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                attribute to property convertor</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>setter</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                property to attribute convertor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>DOM.find("body").define("foo", function(attrValue) {
-  // getter returns property value
-  return String(attrValue).toLowerCase();
-}, function(propValue) {
-  if (propValue != null) {
-    // setter returns attribute value
-    return String(propValue).toUpperCase();
-  }
-});</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="extend">
-            
-            extend<span class="signature">(selector, definition)</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line368">line 368</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Declare a live extension
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                css selector of which elements to capture</td>
+
+            <td class="description last"><p>css selector of which elements to capture</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>definition</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">Object</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                live extension definition</td>
+
+            <td class="description last"><p>live extension definition</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">https://github.com/chemerisuk/better-dom/wiki/Live-extensions</a></li>
-        </ul>
-    </dd>
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="https://github.com/chemerisuk/better-dom/wiki/Live-extensions">https://github.com/chemerisuk/better-dom/wiki/Live-extensions</a></li>
+			</ul>
+	</dd>
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
         <h5>Example</h5>
         
-
-    
-    <pre class="prettyprint"><code>DOM.extend("selector", {
+    <pre class="sunlight-highlight-javascript">DOM.extend(&quot;selector&quot;, {
     constructor: function() {
         // initialize component
     },
     publicMethod: function() {
         // ...
     }
-});</code></pre>
-    
+});</pre>
+
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="find">
-            
-                <span class="inherited"><a href="$Element.html#find">inherited</a></span>
-            
-            find<span class="signature">(selector)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
+    <h4 class="name" id="find"><span class="type-signature"></span>find(selector)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1164">line 1164</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Find the first matched element by css selector
+        <p>Find the first matched element by css selector</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#find">$Node#find</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-first matched element
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>the first matched element</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="$Element.html">$Element</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">var body = DOM.find(&quot;body&quot;);  // =&gt; &lt;body&gt; wrapper
+var foo  = body.find(&quot;.foo&quot;); // =&gt; the first element with class &quot;foo&quot;
+foo.find(&quot;.bar&gt;span&quot;);        // =&gt; the first element that matches &quot;.bar&gt;span&quot;</pre>
 
-    
-    <pre class="prettyprint"><code>var body = DOM.find("body");  // => &lt;body> wrapper
-var foo  = body.find(".foo"); // => the first element with class "foo"
-foo.find(".bar>span");        // => the first element that matches ".bar>span"</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="findAll">
-            
-                <span class="inherited"><a href="$Element.html#findAll">inherited</a></span>
-            
-            findAll<span class="signature">(selector)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
-        </h4>
+    <h4 class="name" id="findAll"><span class="type-signature"></span>findAll(selector)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1177">line 1177</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Find all matched elements by css selector
+        <p>Find all matched elements by css selector</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#findAll">$Node#findAll</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-array of element wrappers
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>an array of element wrappers</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;<a href="$Element.html">$Element</a>></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">DOM.findAll(&quot;a&quot;);         // =&gt; all links in the document
+context.findAll(&quot;ol&gt;li&quot;); // =&gt; all &lt;li&gt; inside of &lt;ol&gt;</pre>
 
-    
-    <pre class="prettyprint"><code>DOM.findAll("a");         // => all links in the document
-context.findAll("ol>li"); // => all &lt;li> inside of &lt;ol></code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="fire">
-            
-                <span class="inherited"><a href="$Element.html#fire">inherited</a></span>
-            
-            fire<span class="signature">(type, <span class="optional">detail</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Boolean}</span>
-        </h4>
+    <h4 class="name" id="fire"><span class="type-signature"></span>fire(type [, detail])</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1385">line 1385</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Triggers an event of specific type with optional extra arguments
+        <p>Triggers an event of specific type with optional extra arguments</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                    
-                        
-                    
+
                 
-                type of event</td>
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>type of event</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>detail</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">Object</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+                    &lt;optional><br>
                 
-                custom event data</td>
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>custom event data</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#fire">$Node#fire</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-<code>true</code> if default action wasn't prevented
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p><code>true</code> if default event action was NOT prevented</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">link.fire(&quot;click&quot;);                   // fire click event
+link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}, 123); // fire &quot;my:event&quot; with arguments</pre>
 
-    
-    <pre class="prettyprint"><code>link.fire("click");                   // fire click event
-link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="get">
-            
-                <span class="inherited"><a href="$Element.html#get">inherited</a></span>
-            
-            get<span class="signature">(name)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{String|Object}</span>
-        </h4>
+    <h4 class="name" id="get"><span class="type-signature"></span>get(name [, defaultValue])</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1491">line 1491</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Get property or attribute value by name
+        <p>Get property or attribute value by name</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>name</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -3099,925 +1629,761 @@ link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments</code></
 <span class="param-type">Array</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                property or attribute name or array of names</td>
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>property or attribute name or array of names</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>defaultValue</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>default value if returned is <code>null</code></p></td>
+        </tr>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#get">$Node#get</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-value of property or attribute
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>a value of property or attribute</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">link.get(&quot;title&quot;);       // =&gt; property title
+link.get(&quot;data-custom&quot;); // =&gt; custom attribute data-custom</pre>
 
-    
-    <pre class="prettyprint"><code>link.get("title");       // => property title
-link.get("data-custom"); // => custom attribute data-custom</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="hasClass">
-            
-                <span class="inherited"><a href="$Element.html#hasClass">inherited</a></span>
-            
-            hasClass<span class="signature">(token)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Boolean}</span>
-        </h4>
+    <h4 class="name" id="importScripts"><span class="type-signature"></span>importScripts(url [, callback])</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line649">line 649</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Check if element contains class name
+        <p>Import external scripts on the page and call optional callback when it will be done</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
-                <td class="name"><code>token</code></td>
+                <td class="name"><code>url</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                class name</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-<code>true</code> if the element contains the class
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.hasClass("foo");</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="hide">
-            
-                <span class="inherited"><a href="$Element.html#hide">inherited</a></span>
-            
-            hide<span class="signature">(<span class="optional">animationName</span>, <span class="optional">callback</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2299">line 2299</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Hide an element using CSS3 transition or animation
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>animationName</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
 
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+
                 
-                CSS animation to apply during transition</td>
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>script file url(s)</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">function</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+                    &lt;optional><br>
                 
-                function that executes when animation is done</td>
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>callback that is triggered when all scripts are loaded</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
 
     
+
     
+
     
         <h5>Example</h5>
         
-
-    
-    <pre class="prettyprint"><code>link.hide(); // hides element
-
-foo.hide(function() {
-  // do something when transition is completed
-});
-
-bar.hide("fade", function() {
-  // do something when "fade" animation is completed
-});</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="importScripts">
-            
-            importScripts<span class="signature">(urls, <span class="optional">callback</span>)</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line452">line 452</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Import external scripts on the page and call optional callback when it will be done
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>urls</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                script file urls</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                callback that is triggered when all scripts are loaded</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>DOM.importScripts("http://cdn/script1.js", function() {
+    <pre class="sunlight-highlight-javascript">DOM.importScripts(&quot;http://cdn/script1.js&quot;, function() {
     // do something when the script is loaded
 });
 // loading several scripts sequentially
-DOM.importScripts("http://cdn/script2.js", "http://cdn/script3.js");</code></pre>
-    
+DOM.importScripts(&quot;http://cdn/script2.js&quot;, &quot;http://cdn/script3.js&quot;);</pre>
+
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer">
-        <h4 class="name" id="importStyles">
-            
-            importStyles<span class="signature">(selector, cssText)</span>
-        </h4>
+    <h4 class="name" id="importStyles"><span class="type-signature"></span>importStyles(selector, cssText)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line496">line 496</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Append global css styles
+        <p>Append global css styles</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                css selector</td>
+
+            <td class="description last"><p>css selector</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>cssText</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                css rules</td>
+
+            <td class="description last"><p>css rules</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
+
     
+
     
-    
-    
-    
+
     
         <h5>Example</h5>
         
-
-    
-    <pre class="prettyprint"><code>DOM.importStyles(".foo, .bar", "background: white; color: gray");
+    <pre class="sunlight-highlight-javascript">DOM.importStyles(&quot;.foo, .bar&quot;, &quot;background: white; color: gray&quot;);
 // more complex selectors
-DOM.importStyles("@keyframes fade", "from {opacity: 0.99} to {opacity: 1}");</code></pre>
-    
+DOM.importStyles(&quot;@keyframes fade&quot;, &quot;from {opacity: 0.99} to {opacity: 1}&quot;);</pre>
+
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="matches">
-            
-                <span class="inherited"><a href="$Element.html#matches">inherited</a></span>
-            
-            matches<span class="signature">(selector)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Boolean}</span>
-        </h4>
+    <h4 class="name" id="matches"><span class="type-signature"></span>matches(selector)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1702">line 1702</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Check if the element matches selector
+        <p>Check if the element matches selector</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>selector</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                css selector for checking</td>
+
+            <td class="description last"><p>css selector for checking</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#matches">$Node#matches</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-<code>true</code> if success and <code>false</code> otherwise
-<br />
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <p>returns <code>true</code> if success and <code>false</code> otherwise</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">DOM.find(&quot;body&quot;).matches(&quot;html&gt;body&quot;); // =&gt; true
+DOM.find(&quot;body&quot;).matches(&quot;body&gt;html&quot;); // =&gt; false</pre>
 
-    
-    <pre class="prettyprint"><code>DOM.find("body").matches("html>body"); // => true
-DOM.find("body").matches("body>html"); // => false</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer">
-        <h4 class="name" id="mock">
-            
-            mock<span class="signature">(value, <span class="optional">varMap</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
+    <h4 class="name" id="mock"><span class="type-signature"></span>mock(content [, varMap])</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line550">line 550</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Return <a href="$Element.html"><code>$Element</code></a> initialized with all existing live extensions.
+        <p>Return <a href="$Element.html">$Element</a> initialized with all existing live extensions.
 Also exposes private functions that do not usually exist. Accepts the
-same arguments as <code>DOM.create</code>
+same arguments as DOM.create</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Argument</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
-                <td class="name"><code>value</code></td>
+                <td class="name"><code>content</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                    
-                        
-                    
+
                 
-                EmmetString or HTMLString</td>
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>HTMLString</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>varMap</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -4027,1980 +2393,455 @@ same arguments as <code>DOM.create</code>
 <span class="param-type">Array</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+                    &lt;optional><br>
                 
-                key/value map of variables</td>
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>key/value map of variables</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+<dl class="details">
     
+
+	
+
+	
+
+	
+
     
+
     
+
     
+
     
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="$Document.html#create">$Document#create</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
     
+
     
+
     
+
     
+
     
+
     
+    <h5>Returns:</h5>
     
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="$Document.html#create">$Document#create</a></li>
-        </ul>
+            
+<div class="param-desc">
+    <p>a mocked instance</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="$Element.html">$Element</a></span>
+
+
+
     </dd>
-    
-    
-    
 </dl>
 
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-mocked instance
-<br />
-
-    
-    
-    
-</dd>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="next">
-            
-                <span class="inherited"><a href="$Element.html#next">inherited</a></span>
-            
-            next<span class="signature">(<span class="optional">selector</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1985">line 1985</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Find next sibling element filtered by optional selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-element wrapper
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div>a+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
-var link = div.child(0);           // &lt;a>
-link.next();                       // &lt;b>
-link.next("i");                    // &lt;i></code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="nextAll">
-            
-                <span class="inherited"><a href="$Element.html#nextAll">inherited</a></span>
-            
-            nextAll<span class="signature">(<span class="optional">selector</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
-        </h4>
+    <h4 class="name" id="on"><span class="type-signature"></span>on(type [, options] [, args], callback)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2015">line 2015</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Find all next sibling elements filtered by optional selector
+        <p>Bind a DOM event listener</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
+    <tr>
         
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-array of all matched element wrappers
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
+        <th>Name</th>
         
 
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;a>&lt;/a>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;/div>
-var link = DOM.child(0);             // &lt;a>
-link.nextAll();                      // [&lt;i>, &lt;b>, &lt;i>]
-link.nextAll("i");                   // [&lt;i>, &lt;i>]</code></pre>
-    
-
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="off">
-            
-                <span class="inherited"><a href="$Element.html#off">inherited</a></span>
-            
-            off<span class="signature">(type, <span class="optional">selector</span>, <span class="optional">callback</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1730">line 1730</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Unbind an event from the element
-    </div>
-    
-
-    
-    
-    
-    
-    
+        <th>Argument</th>
         
 
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
         <tr>
             
                 <td class="name"><code>type</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">String</span>
 
 
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                type of event</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
 
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+
                 
-                event selector</td>
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>event type with optional selector</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
-                <td class="name"><code>callback</code></td>
+                <td class="name"><code>options</code></td>
             
-            
+
             <td class="type">
             
                 
-<span class="param-type">function</span>
+<span class="param-type">Object</span>
 |
 
 <span class="param-type">String</span>
 
 
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                event handler</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.off("focus", focusHandler);
-// removes click for a particular selector
-link.off("focus", "i", focusHandler);
-// removes ALL click handlers
-link.off("click");</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="offset">
-            
-                <span class="inherited"><a href="$Element.html#offset">inherited</a></span>
-            
-            offset<span class="signature">()</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Object}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1776">line 1776</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Calculates offset of the current element
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-with left, top, bottom, right, width and height properties
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>el.offset(); // => {left: 1, top: 2, right: 3, bottom: 4, width: 2, height: 2}</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="on">
-            
-                <span class="inherited"><a href="$Element.html#on">inherited</a></span>
-            
-            on<span class="signature">(type, <span class="optional">selector</span>, <span class="optional">args</span>, callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1828">line 1828</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Bind a DOM event
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array</span>
-
 
             
             </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                event type(s) with optional selector</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
 
             
-            </td>
-            
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+                    &lt;optional><br>
                 
-                event selector filter</td>
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>event options object or css selector to match on</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>args</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">Array</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
+                    &lt;optional><br>
                 
-                array of handler arguments to pass into the callback</td>
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>array of handler arguments to pass into the callback</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>callback</code></td>
             
-            
+
             <td class="type">
             
                 
 <span class="param-type">function</span>
 
 
+
             
             </td>
+
             
-            
-            
-            <td class="description last">
+                <td class="attributes">
                 
-                    
-                    
-                        
-                    
+
                 
-                event callback</td>
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>event callback</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
+
     
-    
+
     
 <dl class="details">
     
-        
-    
-    
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#on">$Node#on</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
 
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
 
     
+
     
+    <h5>Returns:</h5>
+    
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="$Element.html">$Element</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
     
         <h5>Example</h5>
         
-
-    
-    <pre class="prettyprint"><code>link.on("focus", function() {
+    <pre class="sunlight-highlight-javascript">link.on(&quot;focus&quot;, function() {
     // do something on focus
 });
 
-link.on("click", "i", function() {
-    // do something on internal &lt;i> click
+link.on(&quot;click&quot;, &quot;i&quot;, function() {
+    // do something on internal &lt;i&gt; click
 });
 
-link.on("click", "span", ["currentTarget"], function(span) {
-    // &lt;span> is the element was clicked
-});
+link.on(&quot;click&quot;, &quot;span&quot;, [&quot;currentTarget&quot;], function(span) {
+    // &lt;span&gt; is the element was clicked
+});</pre>
 
-link.on(["focus", "blur"], function() {
-    // you can pass several event types
-});</code></pre>
-    
 
     
 </dd>
 
         
             
+<hr>
 <dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="once">
-            
-                <span class="inherited"><a href="$Element.html#once">inherited</a></span>
-            
-            once<span class="signature">(type, <span class="optional">selector</span>, <span class="optional">args</span>, callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
+    <h4 class="name" id="set"><span class="type-signature"></span>set(name, value)</h4>
     
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1843">line 1843</a>
-        </div>
-        
-    </div>
-
     
 </dt>
 <dd>
-    
+
     
     <div class="description">
-        Bind a DOM event but fire once before being removed. Same as
-<a href="$Element.html#on"><code>$Element#on</code></a>, but removes the handler after a first event
+        <p>Set property/attribute value by name</p>
     </div>
     
 
     
+
+    
+
     
     
-    
-    
+        <h5>Parameters:</h5>
         
 
-<table class="params">
+<table class="params table table-striped">
     <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                event type(s) with optional selector</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                event selector filter</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>args</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                array of handler arguments to pass into the callback</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                event callback</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
+    <tr>
         
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="$Element.html#on">$Element#on</a></li>
-        </ul>
-    </dd>
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="prepend">
-            
-                <span class="inherited"><a href="$Element.html#prepend">inherited</a></span>
-            
-            prepend<span class="signature">(contents)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1565">line 1565</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Prepend HTMLString or <a href="$Element.html"><code>$Element</code></a> to the current element
-    </div>
-    
-
-    
-    
-    
-    
-    
+        <th>Name</th>
         
 
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>contents</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                HTMLString, <a href="$Element.html"><code>$Element</code></a>, Array.<<a href="$Element.html"><code>$Element</code></a>> or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var link = DOM.create("a>`foo`");               // &lt;a>foo&lt;/a>
-link.prepend(DOM.create("b"));                  // &lt;a>&lt;b>&lt;/b>foo&lt;/a>
-link.prepend(DOM.create("i"), DOM.create("u")); // &lt;a>&lt;i>&lt;/i>&lt;u>&lt;/u>&lt;b>&lt;/b>foo&lt;/a></code></pre>
-    
-
-    
-</dd>
+        <th>Type</th>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="prev">
-            
-                <span class="inherited"><a href="$Element.html#prev">inherited</a></span>
-            
-            prev<span class="signature">(<span class="optional">selector</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2000">line 2000</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Find previous sibling element filtered by optional selector
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-element wrapper
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div>b+i+a"); // &lt;div>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
-var link = div.child(-1);          // &lt;a>
-link.prev();                       // &lt;i>
-link.prev("b");                    // &lt;b></code></pre>
-    
-
-    
-</dd>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="prevAll">
-            
-                <span class="inherited"><a href="$Element.html#prevAll">inherited</a></span>
-            
-            prevAll<span class="signature">(<span class="optional">selector</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Array.&lt;<a href="$Element.html">$Element</a>>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2030">line 2030</a>
-        </div>
-        
-    </div>
 
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Find all previous sibling elements filtered by optional selector
-    </div>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>selector</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                css selector</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-array of all matched element wrappers
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div>a+i+b+i"); // &lt;div>&lt;i>&lt;/i>&lt;b>&lt;/b>&lt;i>&lt;/i>&lt;a>&lt;/a>&lt;/div>
-var link = DOM.child(-1);            // &lt;a>
-link.prevAll();                      // [&lt;i>, &lt;b>, &lt;i>]
-link.prevAll("b");                   // [&lt;b>]</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="remove">
-            
-                <span class="inherited"><a href="$Element.html#remove">inherited</a></span>
-            
-            remove<span class="signature">()</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1611">line 1611</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Remove current element from the DOM
-    </div>
-    
-
-    
-    
-    
-    
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var foo = DOM.find(".foo");
-foo.remove();
-DOM.contains(foo); // => false</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="removeClass">
-            
-                <span class="inherited"><a href="$Element.html#removeClass">inherited</a></span>
-            
-            removeClass<span class="signature">(tokens)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line677">line 677</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Remove class(es) from element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>tokens</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                        <span class="repeatable">repeatable</span>
-                    
-                
-                class name(s)</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.removeClass("foo", "bar");</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="replace">
-            
-                <span class="inherited"><a href="$Element.html#replace">inherited</a></span>
-            
-            replace<span class="signature">(content)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1596">line 1596</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Replace current element with HTMLString or <a href="$Element.html"><code>$Element</code></a>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>content</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Mixed</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                HTMLString, <a href="$Element.html"><code>$Element</code></a>, Array.<<a href="$Element.html"><code>$Element</code></a>> or functor</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div>span>`foo`");      // &lt;div>&lt;span>foo&lt;/span>&lt;/div>
-div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div></code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="set">
-            
-                <span class="inherited"><a href="$Element.html#set">inherited</a></span>
-            
-            set<span class="signature">(name, value)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line1918">line 1918</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Set property/attribute value by name
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
         <tr>
             
                 <td class="name"><code>name</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6013,23 +2854,24 @@ div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div
 <span class="param-type">Array</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                property/attribute name</td>
+
+            <td class="description last"><p>property/attribute name</p></td>
         </tr>
-	
-	
-	
+
+    
+
         <tr>
             
                 <td class="name"><code>value</code></td>
             
-            
+
             <td class="type">
             
                 
@@ -6039,1075 +2881,253 @@ div.child(0).replace(DOM.create("b>`bar`")); // &lt;div>&lt;b>bar&lt;/b>&lt;/div
 <span class="param-type">function</span>
 
 
+
             
             </td>
+
             
+
             
-            
-            <td class="description last">
-                
-                property/attribute value or functor</td>
+
+            <td class="description last"><p>property/attribute value or functor</p></td>
         </tr>
-	
-	
-	</tbody>
+
+    
+    </tbody>
 </table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
+
     
 
     
+<dl class="details">
     
+
+	
+
+	
+
+	
+	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
+	<dd class="inherited-from">
+		<ul class="dummy">
+			<li>
+				<a href="$Node.html#set">$Node#set</a>
+			</li>
+		</ul>
+	</dd>
+	
+
     
+
     
+
     
+
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
 </dl>
 
+
     
+
     
 
     
 
     
-    
-    
-    
-    
-    
-    
-
 
     
+
     
+    <h5>Returns:</h5>
     
-        <h5>Example</h5>
+            
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
         
+<span class="param-type"><a href="$Node.html">$Node</a></span>
 
-    
-    <pre class="prettyprint"><code>link.set("title", "mytitle");   // set title property
-link.set("data-custom", "foo"); // set custom attribute data-custom</code></pre>
-    
 
-    
-</dd>
 
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="show">
-            
-                <span class="inherited"><a href="$Element.html#show">inherited</a></span>
-            
-            show<span class="signature">(<span class="optional">animationName</span>, <span class="optional">callback</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2278">line 2278</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Show an element using CSS3 transition or animation
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>animationName</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                CSS animation to apply during transition</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                function that executes when animation is done</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.show(); // displays element
-
-foo.show(function() {
-  // do something when transition is completed
-});
-
-bar.show("fade", function() {
-  // do something when "fade" animation is completed
-});</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="toggle">
-            
-                <span class="inherited"><a href="$Element.html#toggle">inherited</a></span>
-            
-            toggle<span class="signature">(<span class="optional">animationName</span>, <span class="optional">callback</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2320">line 2320</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Toggle an element using CSS3 transition or animation
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>animationName</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                CSS animation to apply during transition</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                function that executes when animation is done</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.toggle(); // toggles element visibility
-
-foo.toggle(function() {
-  // do something when transition is completed
-});
-
-bar.toggle("fade", function() {
-  // do something when "fade" animation is completed
-});</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="toggleClass">
-            
-                <span class="inherited"><a href="$Element.html#toggleClass">inherited</a></span>
-            
-            toggleClass<span class="signature">(token, <span class="optional">force</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{Boolean}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line693">line 693</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Toggle a class on element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>token</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                    
-                        
-                    
-                
-                class name</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>force</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                if <code>true</code> then adds the className; if <code>false</code> - removes it</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-<h5>Returns:</h5>
-<code>true</code> if the className is now present, and <code>false</code> otherwise.
-<br />
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>link.toggleClass("foo");
-link.toggleClass("bar", true);</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="unwatch">
-            
-                <span class="inherited"><a href="$Element.html#unwatch">inherited</a></span>
-            
-            unwatch<span class="signature">(name, callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2436">line 2436</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Disable watching of a particular property/attribute
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                property/attribute name</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                function for watching changes of the property/attribute</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="$Element.html#watch">$Element#watch</a></li>
-        </ul>
     </dd>
-    
-    
-    
 </dl>
 
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-</dd>
 
         
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="value">
-            
-                <span class="inherited"><a href="$Element.html#value">inherited</a></span>
-            
-            value<span class="signature">(<span class="optional">content</span>)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2094">line 2094</a>
-        </div>
-        
-    </div>
 
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Read or write inner content of the element
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>content</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                optional value to set</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
     
         <h5>Example</h5>
         
+    <pre class="sunlight-highlight-javascript">link.set(&quot;title&quot;, &quot;mytitle&quot;);   // set title property
+link.set(&quot;data-custom&quot;, &quot;foo&quot;); // set custom attribute data-custom</pre>
 
-    
-    <pre class="prettyprint"><code>var div = DOM.create("div>a+b"); // &lt;div>&lt;a>&lt;/a>&lt;b>&lt;/b>&lt;/div>
-div.value(DOM.create("i"));      // &lt;div>&lt;i>&lt;/i>&lt;/div>
-div.value();                     // => "&lt;i>&lt;/i>"</code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer inherited">
-        <h4 class="name" id="watch">
-            
-                <span class="inherited"><a href="$Element.html#watch">inherited</a></span>
-            
-            watch<span class="signature">(name, callback)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{<a href="$Element.html">$Element</a>}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="better-dom.js.html">better-dom.js</a>, <a href="better-dom.js.html#line2410">line 2410</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        Watch for changes of a particular property/attribute
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                property/attribute name</td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                function for watching changes of the property/attribute</td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code>targetInput.watch("value", function(value, oldValue) {
-    // do what you want AFTER the value of targetInput was changed
-});</code></pre>
-    
 
     
 </dd>
 
         </dl>
     
+
     
-    
-    
+
     
 </article>
 
-</section>  
+</section>
 
 
 
 
+		</div>
+	</div>
 
-        
-        <!-- disqus code -->
-        <div id="disqus_thread"></div>
-        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-        <!-- // disqus code -->
-        
+	<div class="clearfix"></div>
 
-        <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha5</a> on Sun Sep 17 2017 10:48:43 GMT+0300 (+03)
-        </footer>
-    </div>
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
 </div>
-<script>prettyPrint();</script>
-<script src="scripts/linenumber.js"></script>
-<script src="scripts/main.js"></script>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
+	
+		on May 28th 2018, 4:16:53 pm
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
 </body>
 </html>
