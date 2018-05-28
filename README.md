@@ -1,4 +1,4 @@
-# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![NPM version][npm-version]][npm-url] [![NPM downloads][npm-downloads]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![Bower version][bower-image]][bower-url]
+# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![NPM version][npm-version]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![NPM downloads][npm-downloads]][npm-url]
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
@@ -61,13 +61,11 @@ After any change it recompiles `build/better-dom.js` and runs unit tests automat
 * Opera
 * Safari
 * Edge
-* Internet Explorer 10+
+* Internet Explorer 10-11
 
 #### Mobile
-* iOS Safari
-* Chrome for Android
-
-Opera Mini is out of the scope because of lack of support for CSS3 Animations.
+* iOS Safari 7+
+* Chrome for Android 30+
     
 [npm-url]: https://www.npmjs.com/package/better-dom
 [npm-version]: https://img.shields.io/npm/v/better-dom.svg
@@ -78,7 +76,3 @@ Opera Mini is out of the scope because of lack of support for CSS3 Animations.
 
 [coveralls-url]: https://coveralls.io/r/chemerisuk/better-dom
 [coveralls-image]: http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg
-
-[bower-url]: https://github.com/chemerisuk/better-dom
-[bower-image]: http://img.shields.io/bower/v/better-dom.svg
-

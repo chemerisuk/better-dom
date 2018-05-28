@@ -57,10 +57,9 @@ var customLaunchers = {
     // },
     sl_ios_safari: {
         base: "SauceLabs",
-        browserName: "Safari",
-        deviceName: "iPhone Simulator",
-        deviceOrientation: "portrait",
-        platform: "iOS 11.2"
+        browserName: "iphone",
+        platform: TEST_OSX_VERSION,
+        version: "11.2"
     },
     sl_android: {
         base: "SauceLabs",
@@ -89,7 +88,7 @@ module.exports = function(config) {
         reporters: ["saucelabs"],
 
         colors: true,
-        captureTimeout: 120000,
+        captureTimeout: 90000,
         logLevel: config.LOG_INFO,
 
         sauceLabs: {

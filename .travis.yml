@@ -13,6 +13,8 @@ cache:
     - node_modules
 before_install:
   - npm install -g gulp
+install:
+  - cd node_modules/es6-module-transpiler && npm install
 script:
   - gulp test
   - gulp sauce
