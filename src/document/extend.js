@@ -31,8 +31,6 @@ function applyLiveExtension(definition, node) {
 
 /**
  * Declare a live extension
- * @memberof $Document#
- * @alias $Document#extend
  * @param  {String}           selector         css selector of which elements to capture
  * @param  {Object}           definition       live extension definition
  * @see https://github.com/chemerisuk/better-dom/wiki/Live-extensions
@@ -111,9 +109,7 @@ $Document.prototype.extend = function(selector, definition) {
  * Return {@link $Element} initialized with all existing live extensions.
  * Also exposes private functions that do not usually exist. Accepts the
  * same arguments as {@link DOM.create}
- * @memberof $Document#
- * @alias $Document#mock
- * @param  {String}       value     EmmetString or HTMLString
+ * @param  {String}       content   HTMLString
  * @param  {Object|Array} [varMap]  key/value map of variables
  * @return {$Element} a mocked instance
  * @see $Document#create

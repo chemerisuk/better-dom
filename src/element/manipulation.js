@@ -54,8 +54,6 @@ function makeMethod(fastStrategy, requiresParent, strategy) {
 
 /**
  * Insert HTMLString or {@link $Element} after the current element
- * @memberof! $Element#
- * @alias $Element#after
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
  * @return {$Element}
  * @function
@@ -70,8 +68,6 @@ $Element.prototype.after = makeMethod("afterend", true, (node, relatedNode) => {
 
 /**
  * Insert HTMLString or {@link $Element} before the current element
- * @memberof! $Element#
- * @alias $Element#before
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
  * @return {$Element}
  * @function
@@ -86,8 +82,6 @@ $Element.prototype.before = makeMethod("beforebegin", true, (node, relatedNode) 
 
 /**
  * Prepend HTMLString or {@link $Element} to the current element
- * @memberof! $Element#
- * @alias $Element#prepend
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
  * @return {$Element}
  * @function
@@ -102,8 +96,6 @@ $Element.prototype.prepend = makeMethod("afterbegin", false, (node, relatedNode)
 
 /**
  * Append HTMLString or {@link $Element} to the current element
- * @memberof! $Element#
- * @alias $Element#append
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
  * @return {$Element}
  * @function
@@ -118,8 +110,6 @@ $Element.prototype.append = makeMethod("beforeend", false, (node, relatedNode) =
 
 /**
  * Replace current element with HTMLString or {@link $Element}
- * @memberof! $Element#
- * @alias $Element#replace
  * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
  * @return {$Element}
  * @function
@@ -133,8 +123,6 @@ $Element.prototype.replace = makeMethod("", true, (node, relatedNode) => {
 
 /**
  * Remove current element from the DOM
- * @memberof! $Element#
- * @alias $Element#remove
  * @return {$Element}
  * @function
  * @example

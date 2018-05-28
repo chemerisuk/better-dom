@@ -8,7 +8,7 @@ const STYLE_NODE_HTML = "@" + WEBKIT_PREFIX + "keyframes " + FAKE_ANIMATION_NAME
 /**
  * Used to represent a document in better-dom
  * @class $Document
- * @extends {$Element}
+ * @extends {$Node}
  */
 export function $Document(node) {
     if (this instanceof $Document) {

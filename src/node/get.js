@@ -6,9 +6,8 @@ import PROP from "../util/accessorhooks";
 
 /**
  * Get property or attribute value by name
- * @memberof! $Node#
- * @alias $Node#get
  * @param  {String|Array}  name  property or attribute name or array of names
+ * @param  {Object} [defaultValue] default value if returned is `null`
  * @return {String|Object} a value of property or attribute
  * @example
  * link.get("title");       // => property title

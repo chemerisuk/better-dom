@@ -5,21 +5,18 @@ import { $Document } from "./document/index";
 import { $Element } from "./element/index";
 
 /**
- * Global namespace to access the document object tree
- * @namespace DOM
- * @extends {$Document}
+ * Global object to access the current page document tree
+ * @global
  */
 const DOM = new $Document(WINDOW.document);
 const _DOM = WINDOW.DOM;
 
 /**
  * Create an instance of {@link $Element} or {@link $Document} for a native element
- * @memberof DOM
- * @alias DOM.constructor
- * @param {Object}  [node]  native element
+ * @param {Object} [node] native element
  * @return {$Element|$Document} a wrapper object
  * @example
- * var bodyEl = DOM.constructor(document.body);
+ * var bodyEl = DOM.$(document.body);
  * // bodyEl is an instance of $Element
  * bodyEl.hide();
  */
@@ -37,8 +34,6 @@ DOM.$ = (node) => {
 
 /**
  * Restore previous DOM namespace
- * @memberof DOM
- * @alias DOM.noConflict
  * @return {$Element} previous DOM namespace
  */
 DOM.noConflict = function() {

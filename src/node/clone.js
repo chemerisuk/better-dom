@@ -5,10 +5,8 @@ import { MethodError } from "../errors";
 
 /**
  * Clone element
- * @memberof! $Node#
- * @alias $Node#clone
  * @param {Boolean} deep <code>true</code> if all children should also be cloned, or <code>false</code> otherwise
- * @return {$Node} a clone of current element
+ * @return {$Node} a clone of the current element
  * @example
  * ul.clone(true);  // => clone of <ul> with all it's children
  * ul.clone(false); // => clone of <ul> element ONLY

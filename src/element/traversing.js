@@ -38,8 +38,6 @@ function makeMethod(methodName, propertyName, all) {
 
 /**
  * Find next sibling element filtered by optional selector
- * @memberof! $Element#
- * @alias $Element#next
  * @param {String} [selector] css selector
  * @return {$Element} matched element wrapper
  * @function
@@ -53,8 +51,6 @@ $Element.prototype.next = makeMethod("next", "nextElementSibling");
 
 /**
  * Find previous sibling element filtered by optional selector
- * @memberof! $Element#
- * @alias $Element#prev
  * @param {String} [selector] css selector
  * @return {$Element} matched element wrapper
  * @function
@@ -68,8 +64,6 @@ $Element.prototype.prev = makeMethod("prev", "previousElementSibling");
 
 /**
  * Find all next sibling elements filtered by optional selector
- * @memberof! $Element#
- * @alias $Element#nextAll
  * @param {String} [selector] css selector
  * @return {Array.<$Element>} an array of all matched element wrappers
  * @function
@@ -83,8 +77,6 @@ $Element.prototype.nextAll = makeMethod("nextAll", "nextElementSibling", true);
 
 /**
  * Find all previous sibling elements filtered by optional selector
- * @memberof! $Element#
- * @alias $Element#prevAll
  * @param {String} [selector] css selector
  * @return {Array.<$Element>} an array of all matched element wrappers
  * @function
@@ -98,8 +90,6 @@ $Element.prototype.prevAll = makeMethod("prevAll", "previousElementSibling", tru
 
 /**
  * Find the closest ancestor of the current element (or the current element itself) which matches selector
- * @memberof! $Element#
- * @alias $Element#closest
  * @param {String} [selector] css selector
  * @return {$Element} matched element wrapper
  * @function

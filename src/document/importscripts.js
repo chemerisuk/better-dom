@@ -4,9 +4,7 @@ import { DocumentTypeError } from "../errors";
 
 /**
  * Import external scripts on the page and call optional callback when it will be done
- * @memberof $Document#
- * @alias $Document#importScripts
- * @param {...String} urls       script file urls
+ * @param {...String}  url       script file url(s)
  * @param {Function}  [callback] callback that is triggered when all scripts are loaded
  * @example
  * DOM.importScripts("http://cdn/script1.js", function() {

@@ -47,9 +47,7 @@ function makeMethod(all) {
 
 /**
  * Create a new {@link $Element} from a HTML string
- * @memberof $Document#
- * @alias $Document#create
- * @param  {String}       value     HTML string
+ * @param  {String} content HTMLString
  * @return {$Element} an element wrapper
  * @function
  * @example
@@ -59,10 +57,8 @@ function makeMethod(all) {
 $Document.prototype.create = makeMethod("");
 
 /**
- * Create a new array of {@link $Element}s from a HTML string
- * @memberof $Document#
- * @alias $Document#createAll
- * @param  {String}       value     HTML string
+ * Create a new Array.<{@link $Element}> from a HTML string
+ * @param  {String} content HTMLString
  * @return {Array.<$Element>} an array of element wrappers
  * @function
  * @example

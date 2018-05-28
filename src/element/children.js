@@ -31,8 +31,6 @@ function makeMethod(methodName, validSelectorType) {
 
 /**
  * Return child element by index filtered by optional selector
- * @memberof! $Element#
- * @alias $Element#child
  * @param  {Number} index child index
  * @return {$Element} a matched child
  * @function
@@ -45,8 +43,6 @@ $Element.prototype.child = makeMethod("child", "number");
 
 /**
  * Fetch children elements filtered by optional selector
- * @memberof! $Element#
- * @alias $Element#children
  * @param  {String} [selector] css selector
  * @return {Array.<$Element>} an array of all matched elements
  * @function

@@ -3,15 +3,13 @@ import { every } from "../util/index";
 
 /**
  * Read or write inner content of the element
- * @memberof! $Element#
- * @alias $Element#value
- * @param  {String}  [content]  optional value to set
- * @return {$Element}
+ * @param  {String} [content] value to set to
+ * @return {$Element|String} self or inner content value
  * @function
  * @example
  * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>
- * div.value(DOM.create("i"));      // <div><i></i></div>
- * div.value();                     // => "<i></i>"
+ * div.value("inner content");      // <div>inner content</div>
+ * div.value();                     // => "inner content"
  */
 $Element.prototype.value = function(content) {
     const node = this[0];
@@ -64,9 +62,7 @@ $Element.prototype.value = function(content) {
 
 /**
  * Clears all children
- * @memberof! $Element#
- * @alias $Element#empty
- * @return {$Element}
+ * @return {$Element} self
  * @function
  * @example
  * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>

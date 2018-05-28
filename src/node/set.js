@@ -6,8 +6,6 @@ import PROP from "../util/accessorhooks";
 
 /**
  * Set property/attribute value by name
- * @memberof! $Node#
- * @alias $Node#set
  * @param {String|Object|Array}   name    property/attribute name
  * @param {String|Function}       value   property/attribute value or functor
  * @return {$Node}

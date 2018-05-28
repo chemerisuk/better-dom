@@ -61,5 +61,25 @@ function makeMethod(methodName, all) {
     };
 }
 
+/**
+ * Find the first matched element by css selector
+ * @param  {String} selector css selector
+ * @return {$Element} the first matched element
+ * @function
+ * @example
+ * var body = DOM.find("body");  // => <body> wrapper
+ * var foo  = body.find(".foo"); // => the first element with class "foo"
+ * foo.find(".bar>span");        // => the first element that matches ".bar>span"
+ */
 $Node.prototype.find = makeMethod("find", "");
+
+/**
+ * Find all matched elements by css selector
+ * @param  {String} selector css selector
+ * @return {Array.<$Element>} an array of element wrappers
+ * @function
+ * @example
+ * DOM.findAll("a");         // => all links in the document
+ * context.findAll("ol>li"); // => all <li> inside of <ol>
+ */
 $Node.prototype.findAll = makeMethod("findAll", "All");

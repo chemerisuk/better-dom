@@ -115,11 +115,11 @@ gulp.task("clean-jsdoc", function() {
     return gulp.src("docs/html", {read: false}).pipe(clean());
 });
 
-gulp.task("build-jsdoc", ["clean-jsdoc"], function(cb) {
+gulp.task("build-jsdoc", ["clean-jsdoc"], function(done) {
     const config = require("./docs/jsdoc.json");
 
     gulp.src(["./src/**/*.js"], {read: false})
-        .pipe(jsdoc(config, cb));
+        .pipe(jsdoc(config, done));
 });
 
 gulp.task("gh-pages", ["build-jsdoc"], function() {
@@ -137,8 +137,8 @@ gulp.task("bower", function() {
         .pipe(gulp.dest("./"));
 });
 
-gulp.task("dist", ["browsers", "bower"], function(done) {
-    gulp.src("build/better-dom.js")
+gulp.task("dist", ["browsers", "bower"], function() {
+    return gulp.src("build/better-dom.js")
         // clienup multiline comments: jsdocs, directives etc.
         .pipe(replace(/\/\*([\s\S]*?)\*\/\s+/gm, ""))
         .pipe(header(banner + "\n", pkg))

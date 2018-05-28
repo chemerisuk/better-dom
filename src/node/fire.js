@@ -5,11 +5,9 @@ import HOOK from "../util/eventhooks";
 
 /**
  * Triggers an event of specific type with optional extra arguments
- * @memberof! $Element#
- * @alias $Element#fire
  * @param  {String}   type    type of event
  * @param  {Object}  [detail] custom event data
- * @return {Boolean} returns <code>true</code> if default action wasn't prevented
+ * @return {Boolean} `true` if default event action was NOT prevented
  * @example
  * link.fire("click");                   // fire click event
  * link.fire("my:event", {a: "b"}, 123); // fire "my:event" with arguments

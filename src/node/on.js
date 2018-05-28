@@ -4,15 +4,12 @@ import EventHandler from "../util/eventhandler";
 import { isArray } from "../util/index";
 
 /**
- * Bind a DOM event
- * @memberof! $Element#
- * @alias $Element#on
+ * Bind a DOM event listener
  * @param  {String}        type        event type with optional selector
- * @param  {String}        [selector]  event selector filter
+ * @param  {Object|String} [options]   event options object or css selector to match on
  * @param  {Array}         [args]      array of handler arguments to pass into the callback
  * @param  {Function}      callback    event callback
  * @return {$Element}
- * @function
  * @example
  * link.on("focus", function() {
  *     // do something on focus

@@ -4,8 +4,6 @@ import { MethodError } from "../errors";
 
 /**
  * Check if element is inside of context
- * @memberof! $Node#
- * @alias $Node#contains
  * @param  {$Node} element element to check
  * @return {Boolean} returns <code>true</code> if success and <code>false</code> otherwise
  * @example
