@@ -5,12 +5,9 @@ const REGEXP_SPACE = /[\n\t\r]/g;
 const normalizedClass = node => (" " + node.className + " ").replace(REGEXP_SPACE, " ");
 
 /**
- * Check if element contains class name
- * @memberof! $Element#
- * @alias $Element#hasClass
- * @param  {String}   token class name
- * @return {Boolean}  returns <code>true</code> if the element contains the class
- * @function
+ * Check if element contains a class name
+ * @param  {String}   className class name to verify
+ * @return {Boolean}  <code>true</code> if the element contains the class
  * @example
  * link.hasClass("foo");
  */
@@ -31,11 +28,8 @@ $Element.prototype.hasClass = function(className) {
 
 /**
  * Add class(es) to element
- * @memberof! $Element#
- * @alias $Element#addClass
- * @param  {...String} tokens class name(s)
+ * @param  {...String} className class name to add
  * @return {$Element}
- * @function
  * @example
  * link.addClass("foo", "bar");
  */
@@ -59,11 +53,8 @@ $Element.prototype.addClass = function(...classNames) {
 
 /**
  * Remove class(es) from element
- * @memberof! $Element#
- * @alias $Element#removeClass
- * @param  {...String} tokens class name(s)
+ * @param  {...String} className class name to remove
  * @return {$Element}
- * @function
  * @example
  * link.removeClass("foo", "bar");
  */
@@ -87,12 +78,9 @@ $Element.prototype.removeClass = function(...classNames) {
 
 /**
  * Toggle a class on element
- * @memberof! $Element#
- * @alias $Element#toggleClass
- * @param  {String}  token class name
+ * @param  {String}  className class name to toggle
  * @param  {Boolean} [force] if <code>true</code> then adds the className; if <code>false</code> - removes it
- * @return {Boolean} returns <code>true</code> if the className is now present, and <code>false</code> otherwise.
- * @function
+ * @return {Boolean} <code>true</code> if the className is now present, and <code>false</code> otherwise.
  * @example
  * link.toggleClass("foo");
  * link.toggleClass("bar", true);

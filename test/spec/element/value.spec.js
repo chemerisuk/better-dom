@@ -104,6 +104,13 @@ describe("$Element#value", function() {
             div.empty();
             expect(div).toBeEmpty();
         });
+
+        it("clears input value", function() {
+            input.set("test");
+            expect(input).not.toBeEmpty();
+            input.empty();
+            expect(input).toBeEmpty();
+        });
     });
 
     it("works for empty node", function() {

@@ -1,6 +1,11 @@
 import { $Node } from "../node/index";
 import { UNKNOWN_NODE, ELEMENT_NODE } from "../const";
 
+/**
+ * Used to represent an element in better-dom
+ * @class $Element
+ * @extends {$Node}
+ */
 export function $Element(node) {
     if (this instanceof $Element) {
         $Node.call(this, node);

@@ -7,7 +7,7 @@ var babel = require("gulp-babel");
 var template = require("gulp-template");
 var jshint = require("gulp-jshint");
 var argv = require("yargs").argv;
-var jsdoc = require("gulp-jsdoc");
+var jsdoc = require("gulp-jsdoc3");
 var clean = require("gulp-clean");
 var uglify = require("gulp-uglify");
 var rename = require("gulp-rename");
@@ -112,22 +112,22 @@ gulp.task("sauce", function(done) {
 });
 
 gulp.task("clean-jsdoc", function() {
-    return gulp.src("jsdoc", {read: false}).pipe(clean());
+    return gulp.src("docs/html", {read: false}).pipe(clean());
 });
 
-gulp.task("docs", ["clean-jsdoc", "compile"], function() {
-    var config = require("./conf/jsdoc.conf");
+gulp.task("build-jsdoc", ["clean-jsdoc"], function(cb) {
+    const config = require("./docs/jsdoc.json");
 
-    return gulp.src(["build/*.js", "README.md"])
-        .pipe(jsdoc("jsdoc", config));
+    gulp.src(["./src/**/*.js"], {read: false})
+        .pipe(jsdoc(config, cb));
 });
 
-gulp.task("gh-pages", ["docs"], function() {
-    var lib = require.resolve("./build/better-dom");
+gulp.task("gh-pages", ["build-jsdoc"], function() {
+    // var lib = require.resolve("./build/better-dom");
 
-    return gulp.src("./jsdoc/**/*")
+    return gulp.src("./docs/html/**/*")
         // remove absolute paths from jsdocs
-        .pipe(replace(lib, "better-dom.js"))
+        // .pipe(replace(lib, "better-dom.js"))
         .pipe(deploy());
 });
 

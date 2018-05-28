@@ -1,8 +1,8 @@
 .DS_Store
 node_modules
 bower_components
-jsdoc
 coverage
 *.log
 build
+docs/html
 conf/sauce.json

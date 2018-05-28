@@ -1,5 +1,9 @@
 import { UNKNOWN_NODE } from "../const";
 
+/**
+ * Used to represent a node in better-dom
+ * @class $Node
+ */
 export function $Node(node) {
     if (node) {
         this[0] = node;

@@ -26,7 +26,7 @@
     "gulp-gh-pages": "^0.3.4",
     "gulp-header": "^1.2.2",
     "gulp-if": "^1.2.5",
-    "gulp-jsdoc": "^0.1.4",
+    "gulp-jsdoc3": "^2.0.0",
     "gulp-jshint": "^1.8.5",
     "gulp-plumber": "^0.6.6",
     "gulp-rename": "^1.2.0",
