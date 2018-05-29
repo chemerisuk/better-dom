@@ -43,8 +43,8 @@ module.exports = function(dest, pkg) {
             var code = recast.print(ast[0]).code;
             // improve internal type names
             code = code.replace(/(?:errors|types)\$\$(\$?\w+)/g, "$1");
-            // remove generated prefix from constants
-            code = code.replace(/const\$\$/g, "");
+            // remove some generated prefixes
+            code = code.replace(/(const|node\$index|element\$index|document\$index)\$\$/g, "");
             // fix for browserify that prohibits global this
             code = code.replace("}).call(this);", "})();\n");
             // filter source code

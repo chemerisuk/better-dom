@@ -1,17 +1,17 @@
-import { $Node } from "./index";
+import { $Element } from "./index";
 import { MethodError } from "../errors";
 import SelectorMatcher from "../util/selectormatcher";
 import HOOK from "../util/selectorhooks";
 
 /**
- * Check if the element matches selector
- * @param  {String}  selector  css selector for checking
- * @return {Boolean} returns <code>true</code> if success and <code>false</code> otherwise
+ * Check if element matches a specified selector
+ * @param  {String} selector css selector for checking
+ * @return {Boolean} `true` if matches and `false` otherwise
  * @example
  * DOM.find("body").matches("html>body"); // => true
  * DOM.find("body").matches("body>html"); // => false
  */
-$Node.prototype.matches = function(selector) {
+$Element.prototype.matches = function(selector) {
     if (!selector || typeof selector !== "string") {
         throw new MethodError("matches", arguments);
     }
