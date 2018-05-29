@@ -3,8 +3,8 @@ import { every } from "../util/index";
 
 /**
  * Read or write inner content of the element
- * @param  {String} [content] value to set to
- * @return {$Element|String} self or inner content value
+ * @param  {HTMLString} [content] Value to set to
+ * @return {$Element|String} Self or inner content value
  * @function
  * @example
  * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>
@@ -62,7 +62,7 @@ $Element.prototype.value = function(content) {
 
 /**
  * Clears all children
- * @return {$Element} self
+ * @return {$Element} Self
  * @function
  * @example
  * var div = DOM.create("div>a+b"); // <div><a></a><b></b></div>

@@ -6,8 +6,8 @@ const normalizedClass = node => (" " + node.className + " ").replace(REGEXP_SPAC
 
 /**
  * Check if element contains a class name
- * @param  {String}   className class name to verify
- * @return {Boolean}  <code>true</code> if the element contains the class
+ * @param  {String} className class name to verify
+ * @return {Boolean} `true` if the element contains the class
  * @example
  * link.hasClass("foo");
  */
@@ -29,7 +29,7 @@ $Element.prototype.hasClass = function(className) {
 /**
  * Add class(es) to element
  * @param  {...String} className class name to add
- * @return {$Element}
+ * @return {$Element} Self
  * @example
  * link.addClass("foo", "bar");
  */
@@ -54,7 +54,7 @@ $Element.prototype.addClass = function(...classNames) {
 /**
  * Remove class(es) from element
  * @param  {...String} className class name to remove
- * @return {$Element}
+ * @return {$Element} Self
  * @example
  * link.removeClass("foo", "bar");
  */
@@ -78,9 +78,9 @@ $Element.prototype.removeClass = function(...classNames) {
 
 /**
  * Toggle a class on element
- * @param  {String}  className class name to toggle
- * @param  {Boolean} [force] if <code>true</code> then adds the className; if <code>false</code> - removes it
- * @return {Boolean} <code>true</code> if the className is now present, and <code>false</code> otherwise.
+ * @param  {String} className class name to toggle
+ * @param  {Boolean} [force] if `true` then adds the className; if `false` - removes it
+ * @return {Boolean} `true` if the `className` is now present, and `false` otherwise.
  * @example
  * link.toggleClass("foo");
  * link.toggleClass("bar", true);

@@ -6,9 +6,9 @@ import PROP from "../util/accessorhooks";
 
 /**
  * Get property or attribute value by name
- * @param  {String|Array}  name  property or attribute name or array of names
- * @param  {Object} [defaultValue] default value if returned is `null`
- * @return {String|Object} a value of property or attribute
+ * @param  {String|Array} name Property or attribute name or array of names
+ * @param  {Object} [defaultValue] Default value if returned is `null`
+ * @return {Object} Value of property or attribute
  * @example
  * link.get("title");       // => property title
  * link.get("data-custom"); // => custom attribute data-custom

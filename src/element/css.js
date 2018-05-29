@@ -5,9 +5,9 @@ import HOOK from "../util/stylehooks";
 
 /**
  * CSS properties accessor for an element
- * @param  {String|Object}      name    style property name or key/value object
- * @param  {String|Function}    [value] style property value or functor
- * @return {String|$Element} a property value or reference to <code>this</code>
+ * @param  {String|Object} name Style property name or key/value object
+ * @param  {String|Function} [value] Style property value or functor
+ * @return {String|$Element} Property value or self
  * @example
  * link.css("color");                 // => element color property
  * link.css("box-sizing");            // => value of "box-sizing" (no vendor prefix needed)

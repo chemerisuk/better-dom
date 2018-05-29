@@ -32,7 +32,7 @@ function makeMethod(methodName, validSelectorType) {
 /**
  * Return child element by index filtered by optional selector
  * @param  {Number} index child index
- * @return {$Element} a matched child
+ * @return {$Element} A matched child element
  * @function
  * @example
  * ul.child(0);  // => the first <li>
@@ -44,7 +44,7 @@ $Element.prototype.child = makeMethod("child", "number");
 /**
  * Fetch children elements filtered by optional selector
  * @param  {String} [selector] css selector
- * @return {Array.<$Element>} an array of all matched elements
+ * @return {Array.<$Element>} An array of all matched elements
  * @function
  * @example
  * ul.children();       // => array with all child <li>

@@ -3,7 +3,7 @@ import { WINDOW } from "../const";
 
 /**
  * Calculates offset of the current element
- * @return {Object} object with left, top, bottom, right, width and height properties
+ * @return {Object} An object with left, top, bottom, right, width and height properties
  * @example
  * el.offset(); // => {left: 1, top: 2, right: 3, bottom: 4, width: 2, height: 2}
  */

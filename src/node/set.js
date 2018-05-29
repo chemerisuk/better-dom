@@ -6,9 +6,9 @@ import PROP from "../util/accessorhooks";
 
 /**
  * Set property/attribute value by name
- * @param {String|Object|Array}   name    property/attribute name
- * @param {String|Function}       value   property/attribute value or functor
- * @return {$Node}
+ * @param {String|Object|Array|Function} name property/attribute name
+ * @param {String|Function} value property/attribute value or functor
+ * @return {$Node} Self
  * @example
  * link.set("title", "mytitle");   // set title property
  * link.set("data-custom", "foo"); // set custom attribute data-custom

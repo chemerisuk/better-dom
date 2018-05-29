@@ -20,7 +20,7 @@ const _DOM = WINDOW.DOM;
  * // bodyEl is an instance of $Element
  * bodyEl.hide();
  */
-DOM.$ = (node) => {
+DOM.constructor = (node) => {
     const nodeType = node && node.nodeType;
 
     if (nodeType === ELEMENT_NODE) {

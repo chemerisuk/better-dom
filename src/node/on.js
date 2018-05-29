@@ -5,11 +5,11 @@ import { isArray } from "../util/index";
 
 /**
  * Bind a DOM event listener
- * @param  {String}        type        event type with optional selector
- * @param  {Object|String} [options]   event options object or css selector to match on
- * @param  {Array}         [args]      array of handler arguments to pass into the callback
- * @param  {Function}      callback    event callback
- * @return {$Element}
+ * @param  {String} type Event type
+ * @param  {Object|String} [options] Event options object or css selector to match on
+ * @param  {Array} [args] Array of handler arguments to pass into the callback
+ * @param  {Function} callback Event listener callback
+ * @return {Function} Functor to cancel the listener
  * @example
  * link.on("focus", function() {
  *     // do something on focus
@@ -21,6 +21,14 @@ import { isArray } from "../util/index";
  *
  * link.on("click", "span", ["currentTarget"], function(span) {
  *     // <span> is the element was clicked
+ * });
+ *
+ * link.on("blur", {once: true}, function() {
+ *     // event fired only once
+ * });
+ *
+ * link.on("mousedown", {capture: true}, function() {
+ *     // event fired on capturing phase
  * });
  */
 $Node.prototype.on = function(type, options, args, callback) {

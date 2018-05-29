@@ -53,9 +53,9 @@ function makeMethod(methodName, condition) {
 
 /**
  * Show an element using CSS3 transition or animation
- * @param {String}   [animationName]  CSS animation to apply during transition
- * @param {Function} [callback]       function that executes when animation is done
- * @return {$Element}
+ * @param {String} [animationName] CSS animation name to apply during transition
+ * @param {Function} [callback] function that executes when animation is done
+ * @return {$Element} Self
  * @function
  * @example
  * link.show(); // displays element
@@ -72,9 +72,9 @@ $Element.prototype.show = makeMethod("show", false);
 
 /**
  * Hide an element using CSS3 transition or animation
- * @param {String}   [animationName]  CSS animation to apply during transition
- * @param {Function} [callback]       function that executes when animation is done
- * @return {$Element}
+ * @param {String} [animationName] CSS animation name to apply during transition
+ * @param {Function} [callback] function that executes when animation is done
+ * @return {$Element} Self
  * @function
  * @example
  * link.hide(); // hides element

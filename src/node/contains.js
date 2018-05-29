@@ -3,9 +3,9 @@ import { $Element } from "../element/index";
 import { MethodError } from "../errors";
 
 /**
- * Check if element is inside of context
- * @param  {$Node} element element to check
- * @return {Boolean} returns <code>true</code> if success and <code>false</code> otherwise
+ * Check if an element is inside of the current context
+ * @param  {$Node} element Element to check
+ * @return {Boolean} `true` if success and `false` otherwise
  * @example
  * DOM.contains(DOM.find("body")); // => true
  * DOM.find("body").contains(DOM); // => false

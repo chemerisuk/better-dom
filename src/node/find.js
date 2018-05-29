@@ -62,9 +62,9 @@ function makeMethod(methodName, all) {
 }
 
 /**
- * Find the first matched element by css selector
- * @param  {String} selector css selector
- * @return {$Element} the first matched element
+ * Find the first matched element in the current context by a CSS selector
+ * @param  {String} selector CSS selector
+ * @return {$Element} The first matched element
  * @function
  * @example
  * var body = DOM.find("body");  // => <body> wrapper
@@ -74,9 +74,9 @@ function makeMethod(methodName, all) {
 $Node.prototype.find = makeMethod("find", "");
 
 /**
- * Find all matched elements by css selector
- * @param  {String} selector css selector
- * @return {Array.<$Element>} an array of element wrappers
+ * Find all matched elements in the current context by a CSS selector
+ * @param  {String} selector CSS selector
+ * @return {Array.<$Element>} An array of matched elements
  * @function
  * @example
  * DOM.findAll("a");         // => all links in the document

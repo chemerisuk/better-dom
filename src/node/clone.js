@@ -5,21 +5,21 @@ import { MethodError } from "../errors";
 
 /**
  * Clone element
- * @param {Boolean} deep <code>true</code> if all children should also be cloned, or <code>false</code> otherwise
- * @return {$Node} a clone of the current element
+ * @param  {Boolean} deepCopy `true` when all children should also be cloned, otherwise `false`
+ * @return {$Node} A clone of the current element
  * @example
  * ul.clone(true);  // => clone of <ul> with all it's children
  * ul.clone(false); // => clone of <ul> element ONLY
  */
-$Node.prototype.clone = function(deep) {
-    if (typeof deep !== "boolean") {
+$Node.prototype.clone = function(deepCopy) {
+    if (typeof deepCopy !== "boolean") {
         throw new MethodError("clone", arguments);
     }
 
     const node = this[0];
 
     if (node) {
-        const clonedNode = node.cloneNode(deep);
+        const clonedNode = node.cloneNode(deepCopy);
 
         if (this instanceof $Element) {
             return new $Element(clonedNode);

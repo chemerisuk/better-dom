@@ -38,8 +38,8 @@ function makeMethod(methodName, propertyName, all) {
 
 /**
  * Find next sibling element filtered by optional selector
- * @param {String} [selector] css selector
- * @return {$Element} matched element wrapper
+ * @param {String} [selector] CSS selector
+ * @return {$Element} Matched element
  * @function
  * @example
  * var div = DOM.create("div>a+b+i"); // <div><a></a><b></b><i></i></div>
@@ -51,8 +51,8 @@ $Element.prototype.next = makeMethod("next", "nextElementSibling");
 
 /**
  * Find previous sibling element filtered by optional selector
- * @param {String} [selector] css selector
- * @return {$Element} matched element wrapper
+ * @param {String} [selector] CSS selector
+ * @return {$Element} Matched element
  * @function
  * @example
  * var div = DOM.create("div>b+i+a"); // <div><b></b><i></i><a></a></div>
@@ -64,8 +64,8 @@ $Element.prototype.prev = makeMethod("prev", "previousElementSibling");
 
 /**
  * Find all next sibling elements filtered by optional selector
- * @param {String} [selector] css selector
- * @return {Array.<$Element>} an array of all matched element wrappers
+ * @param {String} [selector] CSS selector
+ * @return {Array.<$Element>} An array of all matched elements
  * @function
  * @example
  * var div = DOM.create("div>a+i+b+i"); // <div><a></a><i></i><b></b><i></i></div>
@@ -77,8 +77,8 @@ $Element.prototype.nextAll = makeMethod("nextAll", "nextElementSibling", true);
 
 /**
  * Find all previous sibling elements filtered by optional selector
- * @param {String} [selector] css selector
- * @return {Array.<$Element>} an array of all matched element wrappers
+ * @param {String} [selector] CSS selector
+ * @return {Array.<$Element>} An array of all matched elements
  * @function
  * @example
  * var div = DOM.create("div>a+i+b+i"); // <div><i></i><b></b><i></i><a></a></div>
@@ -90,8 +90,8 @@ $Element.prototype.prevAll = makeMethod("prevAll", "previousElementSibling", tru
 
 /**
  * Find the closest ancestor of the current element (or the current element itself) which matches selector
- * @param {String} [selector] css selector
- * @return {$Element} matched element wrapper
+ * @param {String} [selector] CSS selector
+ * @return {$Element} Matched element
  * @function
  * @example
  * var div = DOM.create("div.foo>div.bar>a"); // <div class="foo"><div class="bar"><a></a></div></div>

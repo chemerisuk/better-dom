@@ -55,7 +55,7 @@ function makeMethod(fastStrategy, requiresParent, strategy) {
 /**
  * Insert HTMLString or {@link $Element} after the current element
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
- * @return {$Element}
+ * @return {$Element} Self
  * @function
  * @example
  * var link = DOM.create("a");                   // <a></a>
@@ -69,7 +69,7 @@ $Element.prototype.after = makeMethod("afterend", true, (node, relatedNode) => {
 /**
  * Insert HTMLString or {@link $Element} before the current element
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
- * @return {$Element}
+ * @return {$Element} Self
  * @function
  * @example
  * var link = DOM.create("a");                    // <a></a>
@@ -83,7 +83,7 @@ $Element.prototype.before = makeMethod("beforebegin", true, (node, relatedNode) 
 /**
  * Prepend HTMLString or {@link $Element} to the current element
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
- * @return {$Element}
+ * @return {$Element} Self
  * @function
  * @example
  * var link = DOM.create("a>`foo`");               // <a>foo</a>
@@ -97,7 +97,7 @@ $Element.prototype.prepend = makeMethod("afterbegin", false, (node, relatedNode)
 /**
  * Append HTMLString or {@link $Element} to the current element
  * @param {...Mixed} contents HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
- * @return {$Element}
+ * @return {$Element} Self
  * @function
  * @example
  * var link = DOM.create("a>`foo`");              // <a>foo</a>
@@ -111,7 +111,7 @@ $Element.prototype.append = makeMethod("beforeend", false, (node, relatedNode) =
 /**
  * Replace current element with HTMLString or {@link $Element}
  * @param {Mixed} content HTMLString, {@link $Element}, Array.<{@link $Element}> or functor
- * @return {$Element}
+ * @return {$Element} Self
  * @function
  * @example
  * var div = DOM.create("div>span>`foo`");      // <div><span>foo</span></div>
