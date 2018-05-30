@@ -333,6 +333,10 @@
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -499,6 +503,10 @@
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -667,6 +675,10 @@ link.after(DOM.create(&quot;i&quot;), DOM.create(&quot;u&quot;)); // &lt;a&gt;&l
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -835,6 +847,10 @@ link.append(DOM.create(&quot;i&quot;), DOM.create(&quot;u&quot;)); // &lt;a&gt;f
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -992,7 +1008,7 @@ link.before(DOM.create(&quot;i&quot;), DOM.create(&quot;u&quot;)); // &lt;i&gt;&
     
             
 <div class="param-desc">
-    <p>a matched child</p>
+    <p>A matched child element</p>
 </div>
 
 
@@ -1164,7 +1180,7 @@ ul.child(-1); // =&gt; last child &lt;li&gt;</pre>
     
             
 <div class="param-desc">
-    <p>an array of all matched elements</p>
+    <p>An array of all matched elements</p>
 </div>
 
 
@@ -1199,7 +1215,7 @@ ul.children(&quot;.foo&quot;); // =&gt; array with of child &lt;li&gt; with clas
             
 <hr>
 <dt>
-    <h4 class="name" id="clone"><span class="type-signature"></span>clone(deep)</h4>
+    <h4 class="name" id="clone"><span class="type-signature"></span>clone(deepCopy)</h4>
     
     
 </dt>
@@ -1242,7 +1258,7 @@ ul.children(&quot;.foo&quot;); // =&gt; array with of child &lt;li&gt; with clas
 
         <tr>
             
-                <td class="name"><code>deep</code></td>
+                <td class="name"><code>deepCopy</code></td>
             
 
             <td class="type">
@@ -1259,7 +1275,7 @@ ul.children(&quot;.foo&quot;); // =&gt; array with of child &lt;li&gt; with clas
 
             
 
-            <td class="description last"><p><code>true</code> if all children should also be cloned, or <code>false</code> otherwise</p></td>
+            <td class="description last"><p><code>true</code> when all children should also be cloned, otherwise <code>false</code></p></td>
         </tr>
 
     
@@ -1332,7 +1348,7 @@ ul.children(&quot;.foo&quot;); // =&gt; array with of child &lt;li&gt; with clas
     
             
 <div class="param-desc">
-    <p>a clone of the current element</p>
+    <p>A clone of the current element</p>
 </div>
 
 
@@ -1439,7 +1455,7 @@ ul.clone(false); // =&gt; clone of &lt;ul&gt; element ONLY</pre>
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -1503,7 +1519,7 @@ ul.clone(false); // =&gt; clone of &lt;ul&gt; element ONLY</pre>
     
             
 <div class="param-desc">
-    <p>matched element wrapper</p>
+    <p>Matched element</p>
 </div>
 
 
@@ -1550,7 +1566,7 @@ link.closest(&quot;.foo&quot;);                      // =&gt; &lt;div class=&quo
 
     
     <div class="description">
-        <p>Check if element is inside of context</p>
+        <p>Check if an element is inside of the current context</p>
     </div>
     
 
@@ -1602,7 +1618,7 @@ link.closest(&quot;.foo&quot;);                      // =&gt; &lt;div class=&quo
 
             
 
-            <td class="description last"><p>element to check</p></td>
+            <td class="description last"><p>Element to check</p></td>
         </tr>
 
     
@@ -1675,7 +1691,7 @@ link.closest(&quot;.foo&quot;);                      // =&gt; &lt;div class=&quo
     
             
 <div class="param-desc">
-    <p>returns <code>true</code> if success and <code>false</code> otherwise</p>
+    <p><code>true</code> if success and <code>false</code> otherwise</p>
 </div>
 
 
@@ -1783,7 +1799,7 @@ DOM.find(&quot;body&quot;).contains(DOM); // =&gt; false</pre>
 
             
 
-            <td class="description last"><p>style property name or key/value object</p></td>
+            <td class="description last"><p>Style property name or key/value object</p></td>
         </tr>
 
     
@@ -1820,7 +1836,7 @@ DOM.find(&quot;body&quot;).contains(DOM); // =&gt; false</pre>
 
             
 
-            <td class="description last"><p>style property value or functor</p></td>
+            <td class="description last"><p>Style property value or functor</p></td>
         </tr>
 
     
@@ -1884,7 +1900,7 @@ DOM.find(&quot;body&quot;).contains(DOM); // =&gt; false</pre>
     
             
 <div class="param-desc">
-    <p>a property value or reference to <code>this</code></p>
+    <p>Property value or self</p>
 </div>
 
 
@@ -1998,7 +2014,7 @@ link.css(&quot;animation-delay&quot;, &quot;1s&quot;); // update animation-delay
     
             
 <div class="param-desc">
-    <p>self</p>
+    <p>Self</p>
 </div>
 
 
@@ -2041,7 +2057,7 @@ div.empty();                     // &lt;div&gt;&lt;/div&gt;</pre>
 
     
     <div class="description">
-        <p>Find the first matched element by css selector</p>
+        <p>Find the first matched element in the current context by a CSS selector</p>
     </div>
     
 
@@ -2093,7 +2109,7 @@ div.empty();                     // &lt;div&gt;&lt;/div&gt;</pre>
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -2166,7 +2182,7 @@ div.empty();                     // &lt;div&gt;&lt;/div&gt;</pre>
     
             
 <div class="param-desc">
-    <p>the first matched element</p>
+    <p>The first matched element</p>
 </div>
 
 
@@ -2210,7 +2226,7 @@ foo.find(&quot;.bar&gt;span&quot;);        // =&gt; the first element that match
 
     
     <div class="description">
-        <p>Find all matched elements by css selector</p>
+        <p>Find all matched elements in the current context by a CSS selector</p>
     </div>
     
 
@@ -2262,7 +2278,7 @@ foo.find(&quot;.bar&gt;span&quot;);        // =&gt; the first element that match
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -2335,7 +2351,7 @@ foo.find(&quot;.bar&gt;span&quot;);        // =&gt; the first element that match
     
             
 <div class="param-desc">
-    <p>an array of element wrappers</p>
+    <p>An array of matched elements</p>
 </div>
 
 
@@ -2378,7 +2394,7 @@ context.findAll(&quot;ol&gt;li&quot;); // =&gt; all &lt;li&gt; inside of &lt;ol&
 
     
     <div class="description">
-        <p>Triggers an event of specific type with optional extra arguments</p>
+        <p>Trigger an event of specific type with optional data</p>
     </div>
     
 
@@ -2440,7 +2456,7 @@ context.findAll(&quot;ol&gt;li&quot;); // =&gt; all &lt;li&gt; inside of &lt;ol&
 
             
 
-            <td class="description last"><p>type of event</p></td>
+            <td class="description last"><p>Type of event</p></td>
         </tr>
 
     
@@ -2474,7 +2490,7 @@ context.findAll(&quot;ol&gt;li&quot;); // =&gt; all &lt;li&gt; inside of &lt;ol&
 
             
 
-            <td class="description last"><p>custom event data</p></td>
+            <td class="description last"><p>Custom event data</p></td>
         </tr>
 
     
@@ -2571,8 +2587,8 @@ context.findAll(&quot;ol&gt;li&quot;); // =&gt; all &lt;li&gt; inside of &lt;ol&
     
         <h5>Example</h5>
         
-    <pre class="sunlight-highlight-javascript">link.fire(&quot;click&quot;);                   // fire click event
-link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}, 123); // fire &quot;my:event&quot; with arguments</pre>
+    <pre class="sunlight-highlight-javascript">link.fire(&quot;click&quot;);              // fire click event
+link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}); // fire &quot;my:event&quot; with custom data</pre>
 
 
     
@@ -2655,7 +2671,7 @@ link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}, 123); // fire &quot;my:event
 
             
 
-            <td class="description last"><p>property or attribute name or array of names</p></td>
+            <td class="description last"><p>Property or attribute name or array of names</p></td>
         </tr>
 
     
@@ -2689,7 +2705,7 @@ link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}, 123); // fire &quot;my:event
 
             
 
-            <td class="description last"><p>default value if returned is <code>null</code></p></td>
+            <td class="description last"><p>Default value if returned is <code>null</code></p></td>
         </tr>
 
     
@@ -2762,7 +2778,7 @@ link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}, 123); // fire &quot;my:event
     
             
 <div class="param-desc">
-    <p>a value of property or attribute</p>
+    <p>Value of property or attribute</p>
 </div>
 
 
@@ -2773,9 +2789,6 @@ link.fire(&quot;my:event&quot;, {a: &quot;b&quot;}, 123); // fire &quot;my:event
     </dt>
     <dd>
         
-<span class="param-type">String</span>
-|
-
 <span class="param-type">Object</span>
 
 
@@ -3030,7 +3043,7 @@ link.get(&quot;data-custom&quot;); // =&gt; custom attribute data-custom</pre>
 
             
 
-            <td class="description last"><p>CSS animation to apply during transition</p></td>
+            <td class="description last"><p>CSS animation name to apply during transition</p></td>
         </tr>
 
     
@@ -3127,6 +3140,10 @@ link.get(&quot;data-custom&quot;); // =&gt; custom attribute data-custom</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -3174,7 +3191,7 @@ bar.hide(&quot;fade&quot;, function() {
 
     
     <div class="description">
-        <p>Check if the element matches selector</p>
+        <p>Check if element matches a specified selector</p>
     </div>
     
 
@@ -3244,15 +3261,6 @@ bar.hide(&quot;fade&quot;, function() {
 	
 
 	
-	<dt class="inherited-from method-doc-label method-doc-details-label">Inherited From:</dt>
-	<dd class="inherited-from">
-		<ul class="dummy">
-			<li>
-				<a href="$Node.html#matches">$Node#matches</a>
-			</li>
-		</ul>
-	</dd>
-	
 
     
 
@@ -3299,7 +3307,7 @@ bar.hide(&quot;fade&quot;, function() {
     
             
 <div class="param-desc">
-    <p>returns <code>true</code> if success and <code>false</code> otherwise</p>
+    <p><code>true</code> if matches and <code>false</code> otherwise</p>
 </div>
 
 
@@ -3406,7 +3414,7 @@ DOM.find(&quot;body&quot;).matches(&quot;body&gt;html&quot;); // =&gt; false</pr
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -3470,7 +3478,7 @@ DOM.find(&quot;body&quot;).matches(&quot;body&gt;html&quot;); // =&gt; false</pr
     
             
 <div class="param-desc">
-    <p>matched element wrapper</p>
+    <p>Matched element</p>
 </div>
 
 
@@ -3579,7 +3587,7 @@ link.next(&quot;i&quot;);                    // &lt;i&gt;</pre>
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -3643,7 +3651,7 @@ link.next(&quot;i&quot;);                    // &lt;i&gt;</pre>
     
             
 <div class="param-desc">
-    <p>an array of all matched element wrappers</p>
+    <p>An array of all matched elements</p>
 </div>
 
 
@@ -3754,7 +3762,7 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
     
             
 <div class="param-desc">
-    <p>object with left, top, bottom, right, width and height properties</p>
+    <p>An object with left, top, bottom, right, width and height properties</p>
 </div>
 
 
@@ -3858,7 +3866,7 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
 
             
 
-            <td class="description last"><p>event type with optional selector</p></td>
+            <td class="description last"><p>Event type</p></td>
         </tr>
 
     
@@ -3895,7 +3903,7 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
 
             
 
-            <td class="description last"><p>event options object or css selector to match on</p></td>
+            <td class="description last"><p>Event options object or css selector to match on</p></td>
         </tr>
 
     
@@ -3929,7 +3937,7 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
 
             
 
-            <td class="description last"><p>array of handler arguments to pass into the callback</p></td>
+            <td class="description last"><p>Array of handler arguments to pass into the callback</p></td>
         </tr>
 
     
@@ -3961,7 +3969,7 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
 
             
 
-            <td class="description last"><p>event callback</p></td>
+            <td class="description last"><p>Event listener callback</p></td>
         </tr>
 
     
@@ -4033,6 +4041,10 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Functor to cancel the listener</p>
+</div>
+
 
 
 <dl>
@@ -4041,7 +4053,7 @@ link.nextAll(&quot;i&quot;);                   // [&lt;i&gt;, &lt;i&gt;]</pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="$Element.html">$Element</a></span>
+<span class="param-type">function</span>
 
 
 
@@ -4064,6 +4076,14 @@ link.on(&quot;click&quot;, &quot;i&quot;, function() {
 
 link.on(&quot;click&quot;, &quot;span&quot;, [&quot;currentTarget&quot;], function(span) {
     // &lt;span&gt; is the element was clicked
+});
+
+link.on(&quot;blur&quot;, {once: true}, function() {
+    // event fired only once
+});
+
+link.on(&quot;mousedown&quot;, {capture: true}, function() {
+    // event fired on capturing phase
 });</pre>
 
 
@@ -4209,6 +4229,10 @@ link.on(&quot;click&quot;, &quot;span&quot;, [&quot;currentTarget&quot;], functi
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -4314,7 +4338,7 @@ link.prepend(DOM.create(&quot;i&quot;), DOM.create(&quot;u&quot;)); // &lt;a&gt;
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -4378,7 +4402,7 @@ link.prepend(DOM.create(&quot;i&quot;), DOM.create(&quot;u&quot;)); // &lt;a&gt;
     
             
 <div class="param-desc">
-    <p>matched element wrapper</p>
+    <p>Matched element</p>
 </div>
 
 
@@ -4487,7 +4511,7 @@ link.prev(&quot;b&quot;);                    // &lt;b&gt;</pre>
 
             
 
-            <td class="description last"><p>css selector</p></td>
+            <td class="description last"><p>CSS selector</p></td>
         </tr>
 
     
@@ -4551,7 +4575,7 @@ link.prev(&quot;b&quot;);                    // &lt;b&gt;</pre>
     
             
 <div class="param-desc">
-    <p>an array of all matched element wrappers</p>
+    <p>An array of all matched elements</p>
 </div>
 
 
@@ -4829,6 +4853,10 @@ DOM.contains(foo); // =&gt; false</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -4983,6 +5011,10 @@ DOM.contains(foo); // =&gt; false</pre>
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -5071,6 +5103,9 @@ div.child(0).replace(DOM.create(&quot;b&gt;&#x60;bar&#x60;&quot;)); // &lt;div&g
 |
 
 <span class="param-type">Array</span>
+|
+
+<span class="param-type">function</span>
 
 
 
@@ -5180,6 +5215,10 @@ div.child(0).replace(DOM.create(&quot;b&gt;&#x60;bar&#x60;&quot;)); // &lt;div&g
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -5284,7 +5323,7 @@ link.set(&quot;data-custom&quot;, &quot;foo&quot;); // set custom attribute data
 
             
 
-            <td class="description last"><p>CSS animation to apply during transition</p></td>
+            <td class="description last"><p>CSS animation name to apply during transition</p></td>
         </tr>
 
     
@@ -5381,6 +5420,10 @@ link.set(&quot;data-custom&quot;, &quot;foo&quot;); // set custom attribute data
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    <p>Self</p>
+</div>
+
 
 
 <dl>
@@ -5588,7 +5631,7 @@ bar.show(&quot;fade&quot;, function() {
     
             
 <div class="param-desc">
-    <p><code>true</code> if the className is now present, and <code>false</code> otherwise.</p>
+    <p><code>true</code> if the <code>className</code> is now present, and <code>false</code> otherwise.</p>
 </div>
 
 
@@ -5674,7 +5717,7 @@ link.toggleClass(&quot;bar&quot;, true);</pre>
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">HTMLString</span>
 
 
 
@@ -5695,7 +5738,7 @@ link.toggleClass(&quot;bar&quot;, true);</pre>
 
             
 
-            <td class="description last"><p>value to set to</p></td>
+            <td class="description last"><p>Value to set to</p></td>
         </tr>
 
     
@@ -5759,7 +5802,7 @@ link.toggleClass(&quot;bar&quot;, true);</pre>
     
             
 <div class="param-desc">
-    <p>self or inner content value</p>
+    <p>Self or inner content value</p>
 </div>
 
 
@@ -5844,7 +5887,7 @@ div.value();                     // =&gt; &quot;inner content&quot;</pre>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a>
 	
-		on May 28th 2018, 4:27:42 pm
+		on May 30th 2018, 1:11:55
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
