@@ -112,11 +112,11 @@ gulp.task("sauce", function(done) {
 });
 
 gulp.task("clean-jsdoc", function() {
-    return gulp.src("docs/html", {read: false}).pipe(clean());
+    return gulp.src("docs", {read: false}).pipe(clean());
 });
 
 gulp.task("build-jsdoc", ["clean-jsdoc"], function(done) {
-    const config = require("./docs/jsdoc.json");
+    const config = require("./conf/jsdoc.json");
 
     gulp.src(["./src/**/*.js"], {read: false})
         .pipe(jsdoc(config, done));
@@ -125,7 +125,7 @@ gulp.task("build-jsdoc", ["clean-jsdoc"], function(done) {
 gulp.task("gh-pages", ["build-jsdoc"], function() {
     // var lib = require.resolve("./build/better-dom");
 
-    return gulp.src("./docs/html/**/*")
+    return gulp.src("./docs/**/*")
         // remove absolute paths from jsdocs
         // .pipe(replace(lib, "better-dom.js"))
         .pipe(deploy({message: "v" + pkg.version}));

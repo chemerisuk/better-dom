@@ -4,6 +4,6 @@ bower_components
 coverage
 *.log
 build
-docs/html
+docs
 conf/sauce.json
 .publish
