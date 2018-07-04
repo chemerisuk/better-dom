@@ -1,6 +1,6 @@
 /**
  * better-dom: Live extension playground
- * @version 4.0.0-rc.2 Wed, 30 May 2018 10:10:01 GMT
+ * @version 4.0.0 Wed, 04 Jul 2018 18:30:49 GMT
  * @link https://github.com/chemerisuk/better-dom
  * @copyright 2018 Maksim Chemerisuk
  * @license MIT
@@ -15,8 +15,8 @@
   var ELEMENT_NODE = DOCUMENT.ELEMENT_NODE;
   var DOCUMENT_NODE = DOCUMENT.DOCUMENT_NODE;
   var VENDOR_PREFIXES = ["Webkit", "O", "Moz", "ms"];
-  var FAKE_ANIMATION_NAME = "v__40000-rc02__";
-  var SHEET_PROP_NAME = "__40000-rc02__sheet";
+  var FAKE_ANIMATION_NAME = "v__40000__";
+  var SHEET_PROP_NAME = "__40000__sheet";
 
   var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
 
@@ -67,7 +67,7 @@
       this[0] = node;
       // use a generated property to store a reference
       // to the wrapper for circular object binding
-      node["__40000-rc02__"] = this;
+      node["__40000__"] = this;
     }
   }
 
@@ -91,7 +91,7 @@
       node[SHEET_PROP_NAME] = styleNode.sheet || styleNode.styleSheet;
     } else if (node) {
       // create a new wrapper or return existing object
-      return node["__40000-rc02__"] || new $Document(node);
+      return node["__40000__"] || new $Document(node);
     } else {
       return new $Document();
     }
@@ -112,7 +112,7 @@
       $Node.call(this, node);
     } else if (node) {
       // create a new wrapper or return existing object
-      return node["__40000-rc02__"] || new $Element(node);
+      return node["__40000__"] || new $Element(node);
     } else {
       return new $Element();
     }
@@ -549,20 +549,17 @@
     "border-style": util$stylehooks$$directions.map(function (dir) {return "border" + dir + "Style";}) };
 
 
-  // Exclude the following css properties from adding px
-  "float fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" ").forEach(function (propName) {
+  // normalize float css property
+  util$stylehooks$$hooks.get.float = util$stylehooks$$hooks.set.float = "cssFloat";
+
+  // Exclude the following css properties from adding suffix 'px'
+  "fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" ").forEach(function (propName) {
     var stylePropName = propName.replace(util$stylehooks$$reDash, function (str) {return str[1].toUpperCase();});
 
-    if (propName === "float") {
-      stylePropName = "cssFloat" in HTML.style ? "cssFloat" : "styleFloat";
-      // normalize float css property
-      util$stylehooks$$hooks.get[propName] = util$stylehooks$$hooks.set[propName] = stylePropName;
-    } else {
-      util$stylehooks$$hooks.get[propName] = stylePropName;
-      util$stylehooks$$hooks.set[propName] = function (value, style) {
-        style[stylePropName] = value.toString();
-      };
-    }
+    util$stylehooks$$hooks.get[propName] = stylePropName;
+    util$stylehooks$$hooks.set[propName] = function (value, style) {
+      style[stylePropName] = value.toString();
+    };
   });
 
   // normalize property shortcuts
@@ -582,7 +579,7 @@
 
     util$stylehooks$$hooks.set[key] = function (value, style) {
       if (value && "cssText" in style) {
-        // normalize setting complex property across browsers
+        // normalize setting a complex property across browsers
         style.cssText += ";" + key + ":" + value;
       } else {
         props.forEach(function (name) {return style[name] = typeof value === "number" ? value + "px" : value.toString();});
@@ -1041,7 +1038,7 @@
           if (old = node.getAttribute("id")) {
             nid = old.replace(node$find$$REGEXP_ESCAPE, "\\$&");
           } else {
-            nid = "___40000-rc02__";
+            nid = "___40000__";
             node.setAttribute("id", nid);
           }
 
