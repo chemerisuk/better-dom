@@ -88,7 +88,7 @@ module.exports = function(config) {
         reporters: ["saucelabs"],
 
         colors: true,
-        captureTimeout: 90000,
+        captureTimeout: 120000,
         logLevel: config.LOG_INFO,
 
         sauceLabs: {

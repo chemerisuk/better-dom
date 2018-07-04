@@ -15,7 +15,6 @@ Note, that the better-dom project is only about the DOM. It does not contain any
 * [live extensions](https://github.com/chemerisuk/better-dom/wiki/Live-extensions)
 * [getter and setter](https://github.com/chemerisuk/better-dom/wiki/Getter-and-setter)
 * [declarative animations](https://github.com/chemerisuk/better-dom/wiki/Declarative-animations)
-* [microtemplating using the Emmet syntax](https://github.com/chemerisuk/better-dom/wiki/Microtemplating)
 * [improved event handling](https://github.com/chemerisuk/better-dom/wiki/Event-handling)
 
 ## Installation

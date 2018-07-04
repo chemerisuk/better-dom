@@ -11,10 +11,10 @@ git:
 cache:
   directories:
     - node_modules
-before_install:
-  - npm install -g gulp
 install:
+  - npm install
   - cd node_modules/es6-module-transpiler && npm install
+  - npm install -g gulp
 script:
   - gulp test
   - gulp sauce
