@@ -1,5 +1,5 @@
 import { keys } from "../util/index";
-import { VENDOR_PREFIXES, HTML } from "../const";
+import { VENDOR_PREFIXES } from "../const";
 
 // Helper for CSS properties access
 
@@ -24,20 +24,17 @@ var reDash = /\-./g,
         "border-style": directions.map((dir) => "border" + dir + "Style")
     };
 
-// Exclude the following css properties from adding px
-"float fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" ").forEach((propName) => {
+// normalize float css property
+hooks.get.float = hooks.set.float = "cssFloat";
+
+// Exclude the following css properties from adding suffix 'px'
+"fill-opacity font-weight line-height opacity orphans widows z-index zoom".split(" ").forEach((propName) => {
     var stylePropName = propName.replace(reDash, (str) => str[1].toUpperCase());
 
-    if (propName === "float") {
-        stylePropName = "cssFloat" in HTML.style ? "cssFloat" : "styleFloat";
-        // normalize float css property
-        hooks.get[propName] = hooks.set[propName] = stylePropName;
-    } else {
-        hooks.get[propName] = stylePropName;
-        hooks.set[propName] = (value, style) => {
-            style[stylePropName] = value.toString();
-        };
-    }
+    hooks.get[propName] = stylePropName;
+    hooks.set[propName] = (value, style) => {
+        style[stylePropName] = value.toString();
+    };
 });
 
 // normalize property shortcuts
@@ -57,7 +54,7 @@ keys(shortCuts).forEach((key) => {
 
     hooks.set[key] = (value, style) => {
         if (value && "cssText" in style) {
-            // normalize setting complex property across browsers
+            // normalize setting a complex property across browsers
             style.cssText += ";" + key + ":" + value;
         } else {
             props.forEach((name) => style[name] = typeof value === "number" ? value + "px" : value.toString());
