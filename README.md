@@ -1,4 +1,4 @@
-# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![NPM version][npm-version]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![NPM downloads][npm-downloads]][npm-url]
+# [better-dom](https://github.com/chemerisuk/better-dom): Live extension playground<br>[![NPM version][npm-version]][npm-url] [![Build Status][travis-image]][travis-url] [![Coverage Status][coveralls-image]][coveralls-url] [![NPM downloads][npm-downloads]][npm-url] [![Twitter][twitter-follow]][twitter-url]
 
 [API DOCUMENTATION](http://chemerisuk.github.io/better-dom/)
 
@@ -69,3 +69,6 @@ After any change it recompiles `build/better-dom.js` and runs unit tests automat
 
 [coveralls-url]: https://coveralls.io/r/chemerisuk/better-dom
 [coveralls-image]: http://img.shields.io/coveralls/chemerisuk/better-dom/master.svg
+
+[twitter-url]: https://twitter.com/chemerisuk
+[twitter-follow]: https://img.shields.io/twitter/follow/chemerisuk.svg?style=social&label=Follow%20me
