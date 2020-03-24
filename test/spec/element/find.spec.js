@@ -78,4 +78,11 @@ describe("find", function() {
         expect(DOM.find("details")[0]).toBeUndefined();
     });
 
+    it("works for fragments", function() {
+        var fragment = document.createDocumentFragment();
+        var fragmentEl = DOM.constructor(fragment);
+
+        expect(fragmentEl.findAll("*")).toEqual([]);
+    });
+
 });

@@ -20,41 +20,48 @@ function makeMethod(methodName, all) {
 
         if (!node) return all ? [] : new $Node();
 
-        const quickMatch = REGEXP_QUICK.exec(selector);
-        var result, old, nid, context;
+        let result;
 
-        if (quickMatch) {
-            if (quickMatch[1]) {
-                // speed-up: "TAG"
-                result = node.getElementsByTagName(selector);
-            } else {
-                // speed-up: ".CLASS"
-                result = node.getElementsByClassName(quickMatch[2]);
-            }
+        if (this instanceof $Document || this instanceof $Element) {
+            const quickMatch = REGEXP_QUICK.exec(selector);
 
-            if (result && !all) result = result[0];
-        } else {
-            old = true;
-            context = node;
+            if (quickMatch) {
+                if (quickMatch[1]) {
+                    // speed-up: "TAG"
+                    result = node.getElementsByTagName(selector);
+                } else {
+                    // speed-up: ".CLASS"
+                    result = node.getElementsByClassName(quickMatch[2]);
+                }
 
-            if (!(this instanceof $Document)) {
+                if (result && !all) result = result[0];
+            } else if (this instanceof $Element) {
+                const id = node.getAttribute("id");
+
                 // qSA works strangely on Element-rooted queries
                 // We can work around this by specifying an extra ID on the root
                 // and working up from there (Thanks to Andrew Dupont for the technique)
-                if ( (old = node.getAttribute("id")) ) {
-                    nid = old.replace(REGEXP_ESCAPE, "\\$&");
+
+                let prefix;
+                if (id) {
+                    prefix = id.replace(REGEXP_ESCAPE, "\\$&");
                 } else {
-                    nid = "_<%= prop() %>";
-                    node.setAttribute("id", nid);
+                    prefix = "_<%= prop() %>";
+                    // set fake id attribute value
+                    node.setAttribute("id", prefix);
                 }
 
-                nid = "[id='" + nid + "'] ";
-                selector = nid + selector.split(",").join("," + nid);
+                prefix = "[id='" + prefix + "'] ";
+                selector = prefix + selector.split(",").join("," + prefix);
+
+                result = node["querySelector" + all](selector);
+                // cleanup fake id attribute value
+                if (!id) node.removeAttribute("id");
+            } else {
+                result = node["querySelector" + all](selector);
             }
-
-            result = context["querySelector" + all](selector);
-
-            if (!old) node.removeAttribute("id");
+        } else {
+            result = node["querySelector" + all](selector);
         }
 
         return all ? map.call(result, $Element) : $Element(result);
