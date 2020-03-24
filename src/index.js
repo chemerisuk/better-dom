@@ -28,7 +28,7 @@ DOM.constructor = (node) => {
     } else if (nodeType === DOCUMENT_NODE) {
         return $Document(node);
     } else {
-        return new $Node();
+        return new $Node(node);
     }
 };
 

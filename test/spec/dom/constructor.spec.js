@@ -16,11 +16,16 @@ describe("DOM.constructor", function() {
         expect(el[0]).toBe(document);
     });
 
-    it("should not accept non-elements", function() {
+    it("should accept non-elements", function() {
         var node = document.createTextNode("text"),
             el = DOM.constructor(node);
 
-        expect(el[0]).not.toBe(node);
+        expect(el[0]).toBe(node);
+
+        var fragment = document.createDocumentFragment();
+        var fragmentEl = DOM.constructor(fragment);
+
+        expect(fragmentEl[0]).toBe(fragment);
     });
 
     it("sets property length", function() {
