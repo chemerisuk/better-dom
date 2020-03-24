@@ -1,8 +1,8 @@
 /**
  * better-dom: Live extension playground
- * @version 4.0.0 Wed, 04 Jul 2018 18:30:49 GMT
+ * @version 4.1.0 Tue, 24 Mar 2020 09:55:50 GMT
  * @link https://github.com/chemerisuk/better-dom
- * @copyright 2018 Maksim Chemerisuk
+ * @copyright 2020 Maksim Chemerisuk
  * @license MIT
  */
 (function () {
@@ -15,8 +15,8 @@
   var ELEMENT_NODE = DOCUMENT.ELEMENT_NODE;
   var DOCUMENT_NODE = DOCUMENT.DOCUMENT_NODE;
   var VENDOR_PREFIXES = ["Webkit", "O", "Moz", "ms"];
-  var FAKE_ANIMATION_NAME = "v__40000__";
-  var SHEET_PROP_NAME = "__40000__sheet";
+  var FAKE_ANIMATION_NAME = "v__40100__";
+  var SHEET_PROP_NAME = "__40100__sheet";
 
   var WEBKIT_PREFIX = WINDOW.WebKitAnimationEvent ? "-webkit-" : "";
 
@@ -67,7 +67,7 @@
       this[0] = node;
       // use a generated property to store a reference
       // to the wrapper for circular object binding
-      node["__40000__"] = this;
+      node["__40100__"] = this;
     }
   }
 
@@ -91,7 +91,7 @@
       node[SHEET_PROP_NAME] = styleNode.sheet || styleNode.styleSheet;
     } else if (node) {
       // create a new wrapper or return existing object
-      return node["__40000__"] || new $Document(node);
+      return node["__40100__"] || new $Document(node);
     } else {
       return new $Document();
     }
@@ -112,7 +112,7 @@
       $Node.call(this, node);
     } else if (node) {
       // create a new wrapper or return existing object
-      return node["__40000__"] || new $Element(node);
+      return node["__40100__"] || new $Element(node);
     } else {
       return new $Element();
     }
@@ -144,7 +144,7 @@
     } else if (nodeType === DOCUMENT_NODE) {
       return $Document(node);
     } else {
-      return new $Node();
+      return new $Node(node);
     }
   };
 
@@ -1014,41 +1014,48 @@
 
       if (!node) return all ? [] : new $Node();
 
-      var quickMatch = node$find$$REGEXP_QUICK.exec(selector);
-      var result, old, nid, context;
+      var result;
 
-      if (quickMatch) {
-        if (quickMatch[1]) {
-          // speed-up: "TAG"
-          result = node.getElementsByTagName(selector);
-        } else {
-          // speed-up: ".CLASS"
-          result = node.getElementsByClassName(quickMatch[2]);
-        }
+      if (this instanceof $Document || this instanceof $Element) {
+        var quickMatch = node$find$$REGEXP_QUICK.exec(selector);
 
-        if (result && !all) result = result[0];
-      } else {
-        old = true;
-        context = node;
+        if (quickMatch) {
+          if (quickMatch[1]) {
+            // speed-up: "TAG"
+            result = node.getElementsByTagName(selector);
+          } else {
+            // speed-up: ".CLASS"
+            result = node.getElementsByClassName(quickMatch[2]);
+          }
 
-        if (!(this instanceof $Document)) {
+          if (result && !all) result = result[0];
+        } else if (this instanceof $Element) {
+          var id = node.getAttribute("id");
+
           // qSA works strangely on Element-rooted queries
           // We can work around this by specifying an extra ID on the root
           // and working up from there (Thanks to Andrew Dupont for the technique)
-          if (old = node.getAttribute("id")) {
-            nid = old.replace(node$find$$REGEXP_ESCAPE, "\\$&");
+
+          var prefix;
+          if (id) {
+            prefix = id.replace(node$find$$REGEXP_ESCAPE, "\\$&");
           } else {
-            nid = "___40000__";
-            node.setAttribute("id", nid);
+            prefix = "___40100__";
+            // set fake id attribute value
+            node.setAttribute("id", prefix);
           }
 
-          nid = "[id='" + nid + "'] ";
-          selector = nid + selector.split(",").join("," + nid);
+          prefix = "[id='" + prefix + "'] ";
+          selector = prefix + selector.split(",").join("," + prefix);
+
+          result = node["querySelector" + all](selector);
+          // cleanup fake id attribute value
+          if (!id) node.removeAttribute("id");
+        } else {
+          result = node["querySelector" + all](selector);
         }
-
-        result = context["querySelector" + all](selector);
-
-        if (!old) node.removeAttribute("id");
+      } else {
+        result = node["querySelector" + all](selector);
       }
 
       return all ? util$index$$map.call(result, $Element) : $Element(result);
